@@ -1,8 +1,9 @@
 # RBR-0782: Collapse remaining owner-manifest loader wrappers onto canonical bundle loads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Delete the last four file-local owner-manifest loader wrappers that simply restate `load_published_fixture_bundles(...)` input order and manifest ids already covered by `tests/python/test_fixture_parity_support_contract.py`.
@@ -51,3 +52,8 @@ Created: 2026-03-20
 - This follows the same post-JSON simplification track as the recent owner-bundle cleanups that removed mirrored full-manifest metadata from adjacent suites without changing behavior:
   - `ops/tasks/done/RBR-0778-collapse-open-ended-quantified-group-bundle-spec-sidecars-onto-owner-manifests.md`
   - `ops/tasks/done/RBR-0780-collapse-quantified-alternation-bundle-spec-sidecars-onto-owner-manifests.md`
+
+## Completion Note
+- Removed the redundant manifest-id sidecars and file-local owner-manifest loader wrappers from the four remaining parity suites, leaving each existing `*_FIXTURE_NAMES` tuple as the only local ownership list.
+- Updated each suite to build `FIXTURE_BUNDLES` directly through `load_published_fixture_bundles(...)` with `CORRECTNESS_FIXTURES_ROOT / fixture_name` and `pattern_extractor=case_pattern`, while keeping all existing published-manifest aliases, generated parity anchors, bytes follow-on routing, trace buckets, and direct-test coverage buckets unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_fixture_parity_support_contract.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py -q` (`6830 passed in 5.78s`) and the negative grep acceptance check proving the four wrapper names and four `*_MANIFEST_IDS` sidecars are gone.

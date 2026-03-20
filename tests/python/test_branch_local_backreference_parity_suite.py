@@ -130,50 +130,17 @@ BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES = (
     "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
     "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
 )
-BRANCH_LOCAL_BACKREFERENCE_MANIFEST_IDS = (
-    "named-backreference-workflows",
-    "numbered-backreference-workflows",
-    "branch-local-backreference-workflows",
-    "quantified-branch-local-backreference-workflows",
-    "optional-group-alternation-branch-local-backreference-workflows",
-    "conditional-group-exists-branch-local-backreference-workflows",
-    "nested-group-alternation-branch-local-backreference-workflows",
-    "quantified-alternation-branch-local-backreference-workflows",
-    "quantified-nested-group-alternation-branch-local-backreference-workflows",
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
-)
 WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES = (
     "named_backreference_workflows.py",
     "numbered_backreference_workflows.py",
 )
-
-
-def _load_branch_local_backreference_fixture_bundles() -> tuple[FixtureBundle, ...]:
-    bundles = load_published_fixture_bundles(
-        tuple(
-            CORRECTNESS_FIXTURES_ROOT / fixture_name
-            for fixture_name in BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES
-        ),
-        pattern_extractor=case_pattern,
-    )
-    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
-    if loaded_fixture_names != BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES:
-        raise AssertionError(
-            "branch-local backreference owner manifests changed fixture path "
-            f"order: {loaded_fixture_names}"
-        )
-    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
-    if loaded_manifest_ids != BRANCH_LOCAL_BACKREFERENCE_MANIFEST_IDS:
-        raise AssertionError(
-            "branch-local backreference owner manifests changed manifest ids: "
-            f"{loaded_manifest_ids}"
-        )
-    return bundles
-
-
-FIXTURE_BUNDLES = _load_branch_local_backreference_fixture_bundles()
+FIXTURE_BUNDLES = load_published_fixture_bundles(
+    tuple(
+        CORRECTNESS_FIXTURES_ROOT / fixture_name
+        for fixture_name in BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES
+    ),
+    pattern_extractor=case_pattern,
+)
 NAMED_BACKREFERENCE_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "named-backreference-workflows",

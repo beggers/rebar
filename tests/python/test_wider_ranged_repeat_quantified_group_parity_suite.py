@@ -78,46 +78,13 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES = (
     "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
     "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
 )
-WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_MANIFEST_IDS = (
-    "exact-repeat-quantified-group-workflows",
-    "ranged-repeat-quantified-group-workflows",
-    "wider-ranged-repeat-quantified-group-workflows",
-    "broader-range-wider-ranged-repeat-quantified-group-workflows",
-    "wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
-    "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+FIXTURE_BUNDLES = load_published_fixture_bundles(
+    tuple(
+        CORRECTNESS_FIXTURES_ROOT / fixture_name
+        for fixture_name in WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES
+    ),
+    pattern_extractor=case_pattern,
 )
-
-
-def _load_wider_ranged_repeat_quantified_group_fixture_bundles() -> tuple[FixtureBundle, ...]:
-    bundles = load_published_fixture_bundles(
-        tuple(
-            CORRECTNESS_FIXTURES_ROOT / fixture_name
-            for fixture_name in WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES
-        ),
-        pattern_extractor=case_pattern,
-    )
-    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
-    if loaded_fixture_names != WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES:
-        raise AssertionError(
-            "wider-ranged-repeat quantified-group owner manifests changed fixture "
-            f"path order: {loaded_fixture_names}"
-        )
-    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
-    if loaded_manifest_ids != WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_MANIFEST_IDS:
-        raise AssertionError(
-            "wider-ranged-repeat quantified-group owner manifests changed manifest "
-            f"ids: {loaded_manifest_ids}"
-        )
-    return bundles
-
-
-FIXTURE_BUNDLES = _load_wider_ranged_repeat_quantified_group_fixture_bundles()
 NESTED_BROADER_RANGE_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",

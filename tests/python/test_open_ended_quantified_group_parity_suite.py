@@ -75,41 +75,13 @@ OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES = (
     "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
     "nested_open_ended_quantified_group_alternation_workflows.py",
 )
-OPEN_ENDED_QUANTIFIED_GROUP_MANIFEST_IDS = (
-    "open-ended-quantified-group-alternation-workflows",
-    "open-ended-quantified-group-alternation-conditional-workflows",
-    "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-    "broader-range-open-ended-quantified-group-alternation-workflows",
-    "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
-    "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-    "nested-open-ended-quantified-group-alternation-workflows",
+FIXTURE_BUNDLES = load_published_fixture_bundles(
+    tuple(
+        CORRECTNESS_FIXTURES_ROOT / fixture_name
+        for fixture_name in OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES
+    ),
+    pattern_extractor=case_pattern,
 )
-
-
-def _load_open_ended_quantified_group_fixture_bundles() -> tuple[FixtureBundle, ...]:
-    bundles = load_published_fixture_bundles(
-        tuple(
-            CORRECTNESS_FIXTURES_ROOT / fixture_name
-            for fixture_name in OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES
-        ),
-        pattern_extractor=case_pattern,
-    )
-    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
-    if loaded_fixture_names != OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES:
-        raise AssertionError(
-            "open-ended quantified group owner manifests changed fixture path order: "
-            f"{loaded_fixture_names}"
-        )
-    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
-    if loaded_manifest_ids != OPEN_ENDED_QUANTIFIED_GROUP_MANIFEST_IDS:
-        raise AssertionError(
-            "open-ended quantified group owner manifests changed manifest ids: "
-            f"{loaded_manifest_ids}"
-        )
-    return bundles
-
-
-FIXTURE_BUNDLES = _load_open_ended_quantified_group_fixture_bundles()
 OPEN_ENDED_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "open-ended-quantified-group-alternation-workflows",

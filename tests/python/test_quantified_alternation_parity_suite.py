@@ -118,43 +118,13 @@ QUANTIFIED_ALTERNATION_FIXTURE_NAMES = (
     "quantified_alternation_open_ended_workflows.py",
     "quantified_alternation_nested_branch_workflows.py",
 )
-QUANTIFIED_ALTERNATION_MANIFEST_IDS = (
-    "literal-alternation-workflows",
-    "exact-repeat-quantified-group-alternation-workflows",
-    "quantified-alternation-workflows",
-    "quantified-nested-group-alternation-workflows",
-    "quantified-alternation-backtracking-heavy-workflows",
-    "quantified-alternation-broader-range-workflows",
-    "quantified-alternation-conditional-workflows",
-    "quantified-alternation-open-ended-workflows",
-    "quantified-alternation-nested-branch-workflows",
+FIXTURE_BUNDLES = load_published_fixture_bundles(
+    tuple(
+        CORRECTNESS_FIXTURES_ROOT / fixture_name
+        for fixture_name in QUANTIFIED_ALTERNATION_FIXTURE_NAMES
+    ),
+    pattern_extractor=case_pattern,
 )
-
-
-def _load_quantified_alternation_fixture_bundles() -> tuple[FixtureBundle, ...]:
-    bundles = load_published_fixture_bundles(
-        tuple(
-            CORRECTNESS_FIXTURES_ROOT / fixture_name
-            for fixture_name in QUANTIFIED_ALTERNATION_FIXTURE_NAMES
-        ),
-        pattern_extractor=case_pattern,
-    )
-    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
-    if loaded_fixture_names != QUANTIFIED_ALTERNATION_FIXTURE_NAMES:
-        raise AssertionError(
-            "quantified alternation owner manifests changed fixture path order: "
-            f"{loaded_fixture_names}"
-        )
-    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
-    if loaded_manifest_ids != QUANTIFIED_ALTERNATION_MANIFEST_IDS:
-        raise AssertionError(
-            "quantified alternation owner manifests changed manifest ids: "
-            f"{loaded_manifest_ids}"
-        )
-    return bundles
-
-
-FIXTURE_BUNDLES = _load_quantified_alternation_fixture_bundles()
 QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "quantified-alternation-workflows",
