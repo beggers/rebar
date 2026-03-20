@@ -22,6 +22,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -1096,6 +1097,7 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
 PUBLISHED_CALLABLE_CASES = tuple(
     case for bundle in FIXTURE_BUNDLES for case in bundle.cases
 )
+PUBLISHED_CALLABLE_CASE_IDS = tuple(case.case_id for case in PUBLISHED_CALLABLE_CASES)
 SHARED_CALLABLE_CASES = tuple(
     case for case in PUBLISHED_CALLABLE_CASES if not _is_pending_rebar_callable_case(case)
 )
@@ -1133,6 +1135,12 @@ BYTES_PATTERN_CASES = tuple(
     case
     for case in PUBLISHED_CALLABLE_CASES
     if case.operation == "pattern_call" and case.text_model == "bytes"
+)
+PENDING_REBAR_MODULE_CASES = tuple(
+    case for case in BYTES_MODULE_CASES if _is_pending_rebar_callable_case(case)
+)
+PENDING_REBAR_PATTERN_CASES = tuple(
+    case for case in BYTES_PATTERN_CASES if _is_pending_rebar_callable_case(case)
 )
 CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS = (
     "quantified",
@@ -2146,6 +2154,23 @@ def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
     assert near_miss_bytes_patterns <= shared_bytes_patterns
     assert near_miss_str_patterns.isdisjoint(PENDING_REBAR_STR_PATTERNS)
     assert near_miss_bytes_patterns.isdisjoint(PENDING_REBAR_BYTES_PATTERNS)
+
+
+def test_callable_replacement_direct_test_buckets_cover_selected_frontier() -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        {
+            "shared-module": frozenset(case.case_id for case in MODULE_CASES),
+            "shared-pattern": frozenset(case.case_id for case in PATTERN_CASES),
+            "pending-rebar-bytes-module": frozenset(
+                case.case_id for case in PENDING_REBAR_MODULE_CASES
+            ),
+            "pending-rebar-bytes-pattern": frozenset(
+                case.case_id for case in PENDING_REBAR_PATTERN_CASES
+            ),
+        },
+        selected_case_ids=PUBLISHED_CALLABLE_CASE_IDS,
+        coverage_label="callable replacement direct-test case-id buckets",
+    )
 
 
 NO_MATCH_PATTERNS = tuple(sorted({*COMPILE_PATTERNS, _literal_callable_pattern()}))
