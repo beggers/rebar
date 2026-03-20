@@ -1,8 +1,9 @@
 # RBR-0787: Collapse open-ended replacement bundle-spec sidecars onto canonical selector bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining three whole-manifest `FixtureBundleSpec(...)` entries from the `open-ended-quantified-group-replacement` surface in `tests/python/test_fixture_backed_replacement_parity_suite.py`; that block still duplicates published-manifest ownership, case ordering, expected pattern sets, operation/helper counts, and mixed-text expectations even though the same three owner manifests already load cleanly through the canonical selector path.
@@ -122,3 +123,8 @@ PY`
   - `ops/tasks/done/RBR-0778-collapse-open-ended-quantified-group-bundle-spec-sidecars-onto-owner-manifests.md`
   - `ops/tasks/done/RBR-0780-collapse-quantified-alternation-bundle-spec-sidecars-onto-owner-manifests.md`
   - `ops/tasks/done/RBR-0785-collapse-conditional-replacement-bundle-spec-sidecars-onto-canonical-selector-bundles.md`
+
+## Completion Note
+- Removed the three mirrored full-manifest `FixtureBundleSpec(...)` sidecars from the `open-ended-quantified-group-replacement` surface, leaving `OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS` as the only published ownership list for that surface.
+- Added a small file-local bundle-order helper so the surface now loads through `load_published_fixture_bundles(...)`, derives bundle contracts from live owner rows, and still preserves the existing downstream open-ended/broader-range/conditional bundle and case ordering.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`1152 passed in 0.88s`) plus the three acceptance probes covering canonical owner-bundle loading (`ok`), downstream surface order (`ok`), and the structural check proving the open-ended surface block no longer contains `FixtureBundleSpec(` (`ok`).

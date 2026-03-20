@@ -93,6 +93,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS = (
     )
 )
 GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID = "grouped-replacement-template"
+OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID = (
+    "open-ended-quantified-group-replacement"
+)
 GROUPED_TEMPLATE_CALLABLE_CASE_ID = "module-sub-callable-str"
 GROUPED_TEMPLATE_SELECTED_CASE_ID = "module-sub-grouping-template"
 GROUPED_REPLACEMENT_COLLECTION_CASE_IDS = (
@@ -155,6 +158,11 @@ GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     "abc",
     rb"a((b|c){1,4})\2d",
     rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+)
+OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_BUNDLE_MANIFEST_IDS = (
+    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
+    NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
+    NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID,
 )
 DIRECT_LITERAL_MODULE_REPLACEMENT_CASES = [
     pytest.param("abc", "x", "zzz", 0, id="str-no-match"),
@@ -880,6 +888,26 @@ def _cases_for_manifest_ids(
     )
 
 
+def _bundles_in_manifest_order(
+    bundles: tuple[FixtureBundle, ...],
+    manifest_ids: tuple[str, ...],
+) -> tuple[FixtureBundle, ...]:
+    loaded_manifest_ids = frozenset(
+        bundle.expected_manifest_id for bundle in bundles
+    )
+    expected_manifest_ids = frozenset(manifest_ids)
+    if loaded_manifest_ids != expected_manifest_ids:
+        raise ValueError(
+            "bundle manifest ids drifted: "
+            f"{tuple(sorted(loaded_manifest_ids))!r} != "
+            f"{tuple(sorted(expected_manifest_ids))!r}"
+        )
+    return tuple(
+        published_fixture_bundle_by_manifest_id(bundles, manifest_id)
+        for manifest_id in manifest_ids
+    )
+
+
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     bundles = (
         load_fixture_bundles(spec.bundle_specs)
@@ -889,6 +917,11 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
             pattern_extractor=spec.pattern_extractor,
         )
     )
+    if spec.id == OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID:
+        bundles = _bundles_in_manifest_order(
+            bundles,
+            OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_BUNDLE_MANIFEST_IDS,
+        )
     published_replacement_cases = tuple(
         case for bundle in bundles for case in bundle.cases
     )
@@ -1214,105 +1247,7 @@ REPLACEMENT_SURFACE_SPECS = (
     ),
     ReplacementSurfaceSpec(
         id="open-ended-quantified-group-replacement",
-        bundle_specs=(
-            FixtureBundleSpec(
-                "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-                expected_manifest_id=(
-                    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
-                ),
-                expected_case_ids=frozenset(
-                    {
-                        "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
-                        "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
-                        "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
-                        "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
-                        "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
-                        "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
-                        "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
-                        "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
-                    }
-                ),
-                expected_patterns=frozenset(
-                    {
-                        r"a((b|c){1,})\2d",
-                        r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
-                    }
-                ),
-                expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
-            ),
-            FixtureBundleSpec(
-                "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-                expected_manifest_id=(
-                    NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
-                ),
-                expected_case_ids=frozenset(
-                    {
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-bytes",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
-                    }
-                ),
-                expected_patterns=frozenset(
-                    {
-                        r"a((b|c){2,})\2d",
-                        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-                        rb"a((b|c){2,})\2d",
-                        rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-                    }
-                ),
-                expected_operation_helper_counts=MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS,
-                expected_text_models=MIXED_TEXT_MODELS,
-            ),
-            FixtureBundleSpec(
-                "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
-                expected_manifest_id=(
-                    NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID
-                ),
-                expected_case_ids=frozenset(
-                    {
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-bytes",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-bytes",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-bytes",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-str",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-bytes",
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
-                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-bytes",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-str",
-                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-bytes",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
-                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-bytes",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
-                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-bytes",
-                    }
-                ),
-                expected_patterns=frozenset(
-                    {
-                        r"a((b|c){2,})\2(?(2)d|e)",
-                        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-                        rb"a((b|c){2,})\2(?(2)d|e)",
-                        rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-                    }
-                ),
-                expected_operation_helper_counts=MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS,
-                expected_text_models=MIXED_TEXT_MODELS,
-            ),
-        ),
+        bundle_specs=(),
         pattern_extractor=case_pattern,
         compile_patterns=(
             r"a((b|c){1,})\2d",
@@ -1334,9 +1269,7 @@ REPLACEMENT_SURFACE_SPECS = (
             NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows",
         ),
-        selector_fixture_paths=(
-            OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS
-        ),
+        selector_fixture_paths=OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS,
         supplemental_no_match_cases=OPEN_ENDED_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=OPEN_ENDED_SUPPLEMENTAL_REPEATED_CASES,
     ),
@@ -1381,7 +1314,7 @@ GROUPED_REPLACEMENT_TEMPLATE_SURFACE = _replacement_surface_by_id(
     GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
 )
 OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE = _replacement_surface_by_id(
-    "open-ended-quantified-group-replacement"
+    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID
 )
 MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE = published_fixture_bundle_by_manifest_id(
     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles,
