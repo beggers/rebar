@@ -1524,6 +1524,15 @@ def parse_run_id_timestamp(value: str | None) -> datetime | None:
         return None
 
 
+def run_dir_has_result_artifacts(run_dir: Path) -> bool:
+    # `prompt.md` is written before the child agent runs, so prompt-only stubs
+    # should not be treated as completed runtime artifacts.
+    for name in ("metadata.json", "stdout.log", "stderr.log", "last_message.md"):
+        if (run_dir / name).exists():
+            return True
+    return False
+
+
 def run_artifacts_newer_than_loop_state(loop_state: dict[str, Any], runs_root: Path) -> bool:
     updated_at = parse_iso8601_timestamp(loop_state.get("updated_at"))
     if updated_at is None:
@@ -1533,6 +1542,8 @@ def run_artifacts_newer_than_loop_state(loop_state: dict[str, Any], runs_root: P
     except OSError:
         return False
     for path in run_dirs:
+        if not run_dir_has_result_artifacts(path):
+            continue
         run_started = parse_run_id_timestamp(path.name)
         if run_started is not None and run_started > updated_at:
             return True
