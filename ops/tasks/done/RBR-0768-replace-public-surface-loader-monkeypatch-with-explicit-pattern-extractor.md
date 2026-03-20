@@ -1,8 +1,9 @@
 # RBR-0768: Replace public-surface loader monkeypatch with explicit pattern extractor
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining shared-state mutation from `tests/python/test_module_workflow_parity_suite.py`; `_published_public_surface_bundles()` currently rebinds `tests.python.fixture_parity_support.case_pattern` just to make `load_published_fixture_bundles(...)` derive case-id-based contract tokens for the three public-surface owner manifests.
@@ -142,3 +143,10 @@ assert bundle.expected_operation_helper_counts == Counter(
 assert bundle.expected_text_models == frozenset({'str'})
 print('ok')
 PY` currently raises `TypeError: load_published_fixture_bundles() got an unexpected keyword argument 'pattern_extractor'`.
+
+## Completion
+- 2026-03-20: Added a keyword-only `pattern_extractor` hook to `tests/python/fixture_parity_support.py::load_published_fixture_bundles(...)`, keeping the default `case_pattern` path for ordinary manifests while letting callers override only `expected_patterns`.
+- Removed the remaining `fixture_parity_support.case_pattern` monkeypatch from `tests/python/test_module_workflow_parity_suite.py`; `_published_public_surface_bundles()` now passes `pattern_extractor=_public_surface_loader_token` directly and no longer imports `tests.python.fixture_parity_support` only for shared-state rebinding.
+- Added focused contract coverage in `tests/python/test_fixture_parity_support_contract.py` proving a custom published-bundle extractor changes only `expected_patterns`, not manifest order, loaded cases, operation/helper counts, or text-model expectations.
+- Kept the public-surface owner contract intact: `PUBLIC_SURFACE_BUNDLES` still load in the `public_api_surface.py`, `exported_symbol_surface.py`, `pattern_object_surface.py` order; manifest ids still resolve as `public-api-surface`, `exported-symbol-surface`, and `pattern-object-surface`; the three bundle lookups still route through `published_fixture_bundle_by_manifest_id(...)`; public-surface `expected_patterns`/`expected_operation_helper_counts`/`expected_case_ids` still derive from `bundle.cases`; and `PATTERN_OBJECT_BUNDLE.expected_text_models` stays `frozenset({"bytes", "str"})`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/python/test_fixture_parity_support_contract.py -k 'published_fixture_bundles or public_surface or module_workflow'` (`679 passed, 1 skipped, 243 deselected in 0.58s`), the explicit extractor smoke probe from Acceptance (`ok`), and `bash -lc "! rg -n 'fixture_parity_support\\.case_pattern = _public_surface_loader_token|original_case_pattern = fixture_parity_support\\.case_pattern' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches).

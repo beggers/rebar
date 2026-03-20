@@ -243,6 +243,18 @@ def load_fixture_bundles(
     return tuple(bundles)
 
 
+def case_pattern(case: FixtureCase) -> str | bytes:
+    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
+    assert isinstance(pattern, (str, bytes))
+    return pattern
+
+
+def str_case_pattern(case: FixtureCase) -> str:
+    pattern = case_pattern(case)
+    assert isinstance(pattern, str)
+    return pattern
+
+
 def fixture_cases_for_operation(
     bundles: Iterable[FixtureBundle],
     operation: str,
@@ -408,6 +420,8 @@ def partition_direct_bytes_follow_on_case_buckets(
 
 def load_published_fixture_bundles(
     fixture_paths: Iterable[pathlib.Path],
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes] = case_pattern,
 ) -> tuple[FixtureBundle, ...]:
     bundles: list[FixtureBundle] = []
 
@@ -419,13 +433,13 @@ def load_published_fixture_bundles(
                 manifest=manifest,
                 cases=loaded_cases,
                 expected_patterns=frozenset(
-                    case_pattern(case) for case in loaded_cases
+                    pattern_extractor(case) for case in loaded_cases
                 ),
                 expected_operation_helper_counts=Counter(
                     (case.operation, case.helper) for case in loaded_cases
                 ),
                 expected_text_models=frozenset(
-                    case.text_model for case in loaded_cases
+                    case.text_model or "str" for case in loaded_cases
                 ),
             )
         )
@@ -696,17 +710,6 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
         raise AssertionError(
             f"{coverage_label} drifted; " + "; ".join(message_parts)
         )
-
-def case_pattern(case: FixtureCase) -> str | bytes:
-    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
-    assert isinstance(pattern, (str, bytes))
-    return pattern
-
-
-def str_case_pattern(case: FixtureCase) -> str:
-    pattern = case_pattern(case)
-    assert isinstance(pattern, str)
-    return pattern
 
 
 def case_replacement_argument(case: FixtureCase) -> object:

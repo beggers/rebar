@@ -28,7 +28,6 @@ from rebar_harness.correctness import (
 )
 from tests.conftest import PYTHON_SOURCE
 from tests.python import conftest as python_conftest
-from tests.python import fixture_parity_support
 from tests.python.conftest import _unsupported_backend_skip_reason
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -356,18 +355,14 @@ def _public_surface_loader_token(case: FixtureCase) -> str | bytes:
 def _published_public_surface_bundles() -> tuple[FixtureBundle, ...]:
     # Reuse the shared full-manifest loader even for owner rows without pattern payloads,
     # then reapply this file's case-id-based contract on the returned bundles.
-    original_case_pattern = fixture_parity_support.case_pattern
-    fixture_parity_support.case_pattern = _public_surface_loader_token
-    try:
-        bundles = load_published_fixture_bundles(
-            (
-                CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
-                CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
-                CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
-            )
-        )
-    finally:
-        fixture_parity_support.case_pattern = original_case_pattern
+    bundles = load_published_fixture_bundles(
+        (
+            CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
+            CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
+            CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
+        ),
+        pattern_extractor=_public_surface_loader_token,
+    )
     loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
     expected_manifest_ids = (
         "public-api-surface",

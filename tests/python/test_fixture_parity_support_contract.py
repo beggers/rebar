@@ -2149,6 +2149,59 @@ def test_load_published_fixture_bundles_derives_full_manifest_contracts_in_input
     )
 
 
+def test_load_published_fixture_bundles_custom_pattern_extractor_only_changes_expected_patterns(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+
+    default_bundles = fixture_parity_support.load_published_fixture_bundles(
+        (mixed_path, str_path)
+    )
+
+    def _case_id_pattern(case: FixtureCase) -> str:
+        return case.case_id
+
+    custom_bundles = fixture_parity_support.load_published_fixture_bundles(
+        (mixed_path, str_path),
+        pattern_extractor=_case_id_pattern,
+    )
+
+    assert tuple(bundle.expected_manifest_id for bundle in custom_bundles) == tuple(
+        bundle.expected_manifest_id for bundle in default_bundles
+    )
+
+    for default_bundle, custom_bundle, expected_path in zip(
+        default_bundles,
+        custom_bundles,
+        (mixed_path, str_path),
+        strict=True,
+    ):
+        assert (
+            custom_bundle.manifest.path
+            == default_bundle.manifest.path
+            == expected_path
+        )
+        assert custom_bundle.manifest.manifest_id == default_bundle.manifest.manifest_id
+        assert custom_bundle.cases == default_bundle.cases
+        assert custom_bundle.expected_operation_helper_counts == (
+            default_bundle.expected_operation_helper_counts
+        )
+        assert custom_bundle.expected_case_ids == default_bundle.expected_case_ids
+        assert custom_bundle.expected_text_models == default_bundle.expected_text_models
+        assert custom_bundle.expected_patterns == frozenset(
+            case.case_id for case in custom_bundle.cases
+        )
+        assert_fixture_bundle_contract(
+            custom_bundle,
+            pattern_extractor=_case_id_pattern,
+            expected_fixture_path=expected_path,
+        )
+
+    assert tuple(bundle.expected_patterns for bundle in custom_bundles) != tuple(
+        bundle.expected_patterns for bundle in default_bundles
+    )
+
+
 def test_published_fixture_bundle_by_manifest_id_returns_requested_bundle(
     tmp_path: pathlib.Path,
 ) -> None:
