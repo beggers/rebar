@@ -1521,6 +1521,83 @@ def test_workflow_result_with_cpython_parity_rejects_helperless_cases(
 
 
 @pytest.mark.parametrize(
+    ("check_convenience_api", "check_group_access", "expected_helper_calls"),
+    (
+        pytest.param(
+            True,
+            False,
+            ("match", "convenience"),
+            id="convenience-only",
+        ),
+        pytest.param(
+            False,
+            True,
+            ("match", "valid-group-access", "invalid-group-access"),
+            id="group-access-only",
+        ),
+        pytest.param(
+            True,
+            True,
+            (
+                "match",
+                "convenience",
+                "valid-group-access",
+                "invalid-group-access",
+            ),
+            id="convenience-and-group-access",
+        ),
+    ),
+)
+def test_optional_match_case_parity_runs_baseline_match_parity_before_optional_checks(
+    monkeypatch: pytest.MonkeyPatch,
+    check_convenience_api: bool,
+    check_group_access: bool,
+    expected_helper_calls: tuple[str, ...],
+) -> None:
+    helper_calls: list[tuple[str, dict[str, object]]] = []
+
+    def record_call(name: str):
+        def recorder(*args: object, **kwargs: object) -> None:
+            helper_calls.append((name, dict(kwargs)))
+
+        return recorder
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_parity",
+        record_call("match"),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        record_call("convenience"),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        record_call("valid-group-access"),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        record_call("invalid-group-access"),
+    )
+
+    fixture_parity_support._assert_optional_match_case_parity(
+        "rebar",
+        object(),
+        object(),
+        check_regs=True,
+        check_convenience_api=check_convenience_api,
+        check_group_access=check_group_access,
+    )
+
+    assert tuple(name for name, _ in helper_calls) == expected_helper_calls
+    assert helper_calls[0] == ("match", {"check_regs": True})
+    assert all(kwargs == {} for _, kwargs in helper_calls[1:])
+
+
+@pytest.mark.parametrize(
     "case",
     (
         pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="str-match"),

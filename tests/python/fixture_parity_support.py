@@ -1148,14 +1148,12 @@ def _assert_optional_match_case_parity(
         return
 
     assert observed is not None
-    if not check_convenience_api and not check_group_access:
-        assert_match_parity(
-            backend_name,
-            observed,
-            expected,
-            check_regs=check_regs,
-        )
-        return
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=check_regs,
+    )
 
     if check_convenience_api:
         assert_match_convenience_api_parity(observed, expected)
