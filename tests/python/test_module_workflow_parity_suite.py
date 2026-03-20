@@ -31,7 +31,6 @@ from tests.python import conftest as python_conftest
 from tests.python.conftest import _unsupported_backend_skip_reason
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -44,7 +43,6 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    load_fixture_bundles,
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
 )
@@ -174,6 +172,17 @@ def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
 
 
+def _fixture_case_ids(cases: tuple[FixtureCase, ...]) -> tuple[str, ...]:
+    return tuple(case.case_id for case in cases)
+
+
+def _fixture_cases_for_helpers(
+    bundle: FixtureBundle,
+    helpers: frozenset[str],
+) -> tuple[FixtureCase, ...]:
+    return tuple(case for case in bundle.cases if case.helper in helpers)
+
+
 def _load_module_workflow_owner_bundles() -> tuple[FixtureBundle, FixtureBundle]:
     bundles = load_published_fixture_bundles(
         (MODULE_WORKFLOW_FIXTURE_PATH, MATCH_BEHAVIOR_FIXTURE_PATH)
@@ -186,6 +195,20 @@ def _load_module_workflow_owner_bundles() -> tuple[FixtureBundle, FixtureBundle]
             f"expected {expected_manifest_ids}, got {loaded_manifest_ids}"
         )
     return bundles
+
+
+def _load_collection_replacement_owner_bundle() -> FixtureBundle:
+    bundles = load_published_fixture_bundles(
+        (CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",)
+    )
+    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
+    expected_manifest_ids = ("collection-replacement-workflows",)
+    if loaded_manifest_ids != expected_manifest_ids:
+        raise ValueError(
+            "collection/replacement owner bundle manifest ids drifted: "
+            f"expected {expected_manifest_ids}, got {loaded_manifest_ids}"
+        )
+    return bundles[0]
 
 
 (MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = _load_module_workflow_owner_bundles()
@@ -958,55 +981,29 @@ class _ModuleWorkflowFakeNativeBoundary(RecordingNativeBoundary):
         return f"native:{pattern}"
 
 
-# Keep the detached collection-helper surface on the module workflow owner file.
-COLLECTION_TARGET_FIXTURE_CASE_IDS = (
-    "module-split-str-leading-trailing",
-    "module-split-str-no-match",
-    "pattern-split-bytes-maxsplit",
-    "module-findall-bytes-repeated",
-    "pattern-findall-str-no-match",
-    "module-finditer-str-repeated",
-    "pattern-finditer-bytes-bounded",
-    "module-findall-nonliteral-str",
+# Keep the published collection/replacement owner surface on its own fixture manifest.
+_COLLECTION_FRONTIER_HELPERS = frozenset({"split", "findall", "finditer"})
+_REPLACEMENT_FRONTIER_HELPERS = frozenset({"sub", "subn"})
+COLLECTION_REPLACEMENT_BUNDLE = _load_collection_replacement_owner_bundle()
+PUBLISHED_COLLECTION_FIXTURE_CASES = _fixture_cases_for_helpers(
+    COLLECTION_REPLACEMENT_BUNDLE,
+    _COLLECTION_FRONTIER_HELPERS,
 )
-(COLLECTION_FIXTURE_BUNDLE,) = load_fixture_bundles(
-    (
-        FixtureBundleSpec(
-            "collection_replacement_workflows.py",
-            expected_manifest_id="collection-replacement-workflows",
-            selected_case_ids=COLLECTION_TARGET_FIXTURE_CASE_IDS,
-            expected_patterns=frozenset({"abc", "a.c", b"abc"}),
-            expected_operation_helper_counts=Counter(
-                {
-                    ("module_call", "split"): 2,
-                    ("pattern_call", "split"): 1,
-                    ("module_call", "findall"): 2,
-                    ("pattern_call", "findall"): 1,
-                    ("module_call", "finditer"): 1,
-                    ("pattern_call", "finditer"): 1,
-                }
-            ),
-            expected_text_models=frozenset({"bytes", "str"}),
-        ),
+PUBLISHED_COLLECTION_CASE_IDS = _fixture_case_ids(PUBLISHED_COLLECTION_FIXTURE_CASES)
+PUBLISHED_REPLACEMENT_CASE_IDS = _fixture_case_ids(
+    _fixture_cases_for_helpers(
+        COLLECTION_REPLACEMENT_BUNDLE,
+        _REPLACEMENT_FRONTIER_HELPERS,
     )
-)
-COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS = (
-    "module-sub-str-repeated",
-    "module-subn-bytes-count",
-    "pattern-sub-str-no-match",
-    "pattern-subn-str-count",
-    "module-sub-template-str",
-    "module-sub-callable-str",
-    "module-sub-grouping-template",
 )
 PUBLISHED_COLLECTION_MODULE_CASES = tuple(
     _module_collection_case_from_fixture(case)
-    for case in COLLECTION_FIXTURE_BUNDLE.cases
+    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
     if case.operation == "module_call"
 )
 PUBLISHED_COLLECTION_PATTERN_CASES = tuple(
     _pattern_collection_case_from_fixture(case)
-    for case in COLLECTION_FIXTURE_BUNDLE.cases
+    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
     if case.operation == "pattern_call"
 )
 MODULE_COLLECTION_CASES = (
@@ -4185,14 +4182,21 @@ def test_source_package_escape_preserves_explicit_bytes_cases(
 
 
 def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() -> None:
-    assert_fixture_bundle_contract(COLLECTION_FIXTURE_BUNDLE, pattern_extractor=case_pattern)
+    assert_fixture_bundle_contract(
+        COLLECTION_REPLACEMENT_BUNDLE,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=(
+            CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py"
+        ),
+        expected_ordered_case_ids=_published_case_ids(COLLECTION_REPLACEMENT_BUNDLE),
+    )
 
 
 def test_literal_collection_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
-        COLLECTION_FIXTURE_BUNDLE,
-        selected_case_ids=COLLECTION_TARGET_FIXTURE_CASE_IDS,
-        expected_uncovered_case_ids=COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS,
+        COLLECTION_REPLACEMENT_BUNDLE,
+        selected_case_ids=PUBLISHED_COLLECTION_CASE_IDS,
+        expected_uncovered_case_ids=PUBLISHED_REPLACEMENT_CASE_IDS,
     )
 
 
@@ -4230,7 +4234,7 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
                 if case.helper == "finditer"
             ),
         },
-        selected_case_ids=COLLECTION_TARGET_FIXTURE_CASE_IDS,
+        selected_case_ids=PUBLISHED_COLLECTION_CASE_IDS,
         coverage_label="literal collection direct-test case-id buckets",
     )
 

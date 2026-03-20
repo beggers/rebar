@@ -1,8 +1,9 @@
 # RBR-0770: Collapse module-workflow collection subset sidecar onto owner helper partition
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining selected-case sidecar from `tests/python/test_module_workflow_parity_suite.py`; `COLLECTION_TARGET_FIXTURE_CASE_IDS`, `COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS`, and `COLLECTION_FIXTURE_BUNDLE = load_fixture_bundles(FixtureBundleSpec(...))` currently hand-partition `collection_replacement_workflows.py` even though the selected eight rows are exactly the manifest-order `split`/`findall`/`finditer` helper partition and the uncovered seven rows are the complementary `sub`/`subn` partition.
@@ -194,3 +195,8 @@ assert mod.COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS == replacement_case_ids
 print("ok")
 PY` passed (`ok`);
   - the future-state owner-bundle probe in Acceptance currently fails for the exact missing cleanup because `tests/python/test_module_workflow_parity_suite.py` does not yet expose `COLLECTION_REPLACEMENT_BUNDLE`.
+
+## Completion
+- 2026-03-20: Replaced the detached collection sidecar in `tests/python/test_module_workflow_parity_suite.py` with one owner-bundle load via `_load_collection_replacement_owner_bundle()` and helper-based manifest-order partitions over `COLLECTION_REPLACEMENT_BUNDLE`.
+- Derived the selected collection frontier directly from the owner rows whose helpers are `split`, `findall`, or `finditer`, derived the uncovered replacement frontier from the complementary `sub`/`subn` rows, and removed the now-unused `FixtureBundleSpec` / `load_fixture_bundles` imports.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`, the owner-bundle probe from Acceptance (`ok`), and `bash -lc "! rg -n '^(COLLECTION_FIXTURE_BUNDLE|COLLECTION_TARGET_FIXTURE_CASE_IDS|COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS) =|FixtureBundleSpec\\(|load_fixture_bundles\\(' tests/python/test_module_workflow_parity_suite.py"`.
