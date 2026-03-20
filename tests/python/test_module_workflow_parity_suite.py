@@ -238,7 +238,9 @@ PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-split-maxsplit-keyword-bytes",
         "workflow-module-sub-count-keyword-str",
+        "workflow-module-sub-count-indexlike-str",
         "workflow-module-subn-count-keyword-bytes",
+        "workflow-module-subn-count-indexlike-bytes",
     }
 )
 PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
@@ -269,6 +271,18 @@ def _fixture_cases_for_text_model(
         for case in cases
         if case.text_model == text_model
     )
+
+
+def _module_keyword_kwargs_signature(
+    kwargs: dict[str, object],
+) -> tuple[tuple[str, str, object], ...]:
+    signature: list[tuple[str, str, object]] = []
+    for name, value in sorted(kwargs.items()):
+        if hasattr(value, "__index__") and not isinstance(value, bool):
+            signature.append((name, "indexlike", int(value.__index__())))
+            continue
+        signature.append((name, type(value).__name__, repr(value)))
+    return tuple(signature)
 
 
 ESCAPE_CASES = tuple(
@@ -2122,15 +2136,15 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 63
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 65
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 41, "bytes": 22}
+        {"str": 42, "bytes": 23}
     )
     assert len(PATTERN_CASES) == 26
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {"search": 10, "match": 3, "fullmatch": 9, "findall": 2, "finditer": 2}
     )
-    assert len(MODULE_CALL_CASES) == 25
+    assert len(MODULE_CALL_CASES) == 27
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "search": 5,
@@ -2139,8 +2153,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "split": 2,
             "findall": 1,
             "finditer": 1,
-            "sub": 3,
-            "subn": 3,
+            "sub": 4,
+            "subn": 4,
             "escape": 2,
         }
     )
@@ -2427,13 +2441,13 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
 ) -> None:
     def direct_signature(
         case: ModuleKeywordCallCase,
-    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, object], ...], str]:
+    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
         pattern, *args = case.args
         return (
             case.helper,
             pattern,
             tuple(args),
-            tuple(sorted(case.kwargs.items())),
+            _module_keyword_kwargs_signature(case.kwargs),
             "bytes" if isinstance(pattern, bytes) else "str",
         )
 
@@ -2446,7 +2460,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
                 case.helper,
                 case_pattern(case),
                 tuple(case.args),
-                tuple(sorted(case.kwargs.items())),
+                _module_keyword_kwargs_signature(case.kwargs),
                 case.text_model,
             )
         ]
@@ -2463,6 +2477,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-search-flags-keyword-str",
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-sub-count-keyword-str",
+        "workflow-module-sub-count-indexlike-str",
     )
     assert tuple(
         case.case_id
@@ -2474,6 +2489,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-match-flags-keyword-bytes",
         "workflow-module-split-maxsplit-keyword-bytes",
         "workflow-module-subn-count-keyword-bytes",
+        "workflow-module-subn-count-indexlike-bytes",
     )
     assert tuple(
         case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
@@ -2483,7 +2499,9 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-split-maxsplit-keyword-bytes",
         "workflow-module-sub-count-keyword-str",
+        "workflow-module-sub-count-indexlike-str",
         "workflow-module-subn-count-keyword-bytes",
+        "workflow-module-subn-count-indexlike-bytes",
     )
     assert tuple(
         case.case_id for case in selected_direct_cases
@@ -2493,7 +2511,9 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "module-fullmatch-flags-keyword-str",
         "module-split-maxsplit-keyword-bytes",
         "module-sub-count-keyword-str",
+        "module-sub-count-indexlike-str",
         "module-subn-count-keyword-bytes",
+        "module-subn-count-indexlike-bytes",
     )
     assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES)
     assert Counter(case.helper for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES) == (
@@ -2503,8 +2523,8 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
                 "match": 1,
                 "fullmatch": 1,
                 "split": 1,
-                "sub": 1,
-                "subn": 1,
+                "sub": 2,
+                "subn": 2,
             }
         )
     )
@@ -2523,7 +2543,9 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         )
         assert case_pattern(fixture_case) == direct_pattern
         assert tuple(fixture_case.args) == tuple(direct_args)
-        assert fixture_case.kwargs == direct_case.kwargs
+        assert _module_keyword_kwargs_signature(
+            fixture_case.kwargs
+        ) == _module_keyword_kwargs_signature(direct_case.kwargs)
         assert fixture_case.flags == 0
 
 

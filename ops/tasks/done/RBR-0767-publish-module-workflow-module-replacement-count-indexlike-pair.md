@@ -1,6 +1,6 @@
 # RBR-0767: Publish the module-workflow module replacement count index-like pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -54,3 +54,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_argument_calls_match_cpython and (module-sub-count-indexlike-str or module-subn-count-indexlike-bytes)'` passed in this run (`4 passed, 674 deselected`);
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the adjacent plain replacement `count=` rows but not this `__index__` pair, leaving these two rows as the next bounded publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion Note
+- Published `workflow-module-sub-count-indexlike-str` and `workflow-module-subn-count-indexlike-bytes` on the existing `module-workflow-surface` manifest using fixture-local `__index__` carriers so the correctness publication can serialize the new kwargs without widening into another manifest or harness edit.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared owner path now expects `65` published rows, `42` `str` rows, `23` `bytes` rows, and `27` `module_call` rows with `4` `sub` and `4` `subn` helpers; the module-keyword selector still maps to the existing direct anchors, now through a semantic `__index__` kwargs signature instead of object identity.
+- Regenerated `reports/correctness/latest.py`; the tracked publication now reports `1435` total / `1435` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `65` / `65` / `0`, `module.workflow.str` at `42` / `42` / `0`, `module.workflow.bytes` at `23` / `23` / `0`, and `module.workflow.module_call` at `27` / `27` / `0`. The tracked report includes both new case ids.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0767-module-workflow-module-replacement-count-indexlike-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

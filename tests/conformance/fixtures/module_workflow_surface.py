@@ -1,3 +1,19 @@
+class _IndexLike:
+    __slots__ = ("value",)
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __index__(self) -> int:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"IndexLike({self.value})"
+
+
+_INDEX_TWO = _IndexLike(2)
+
+
 MANIFEST = {
   "schema_version": 1,
   "manifest_id": "module-workflow-surface",
@@ -670,6 +686,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-count-indexlike-str",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abcabcabc"],
+      "kwargs": {
+        "count": _INDEX_TWO
+      },
+      "categories": ["workflow", "sub", "literal", "str", "count"],
+      "notes": [
+        "Publishes the adjacent raw module-level sub() count=__index__ keyword workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-subn-count-keyword-bytes",
       "operation": "module_call",
       "family": "module_subn_workflow",
@@ -694,6 +725,33 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "count"],
       "notes": [
         "Publishes the adjacent raw module-level subn() count= keyword workflow on bytes payloads without widening into the remaining module keyword helper ladder."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-indexlike-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabcabc"
+        }
+      ],
+      "kwargs": {
+        "count": _INDEX_TWO
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "count"],
+      "notes": [
+        "Publishes the adjacent raw module-level subn() count=__index__ keyword workflow on bytes payloads without widening into the remaining module keyword helper ladder."
       ]
     },
     {
