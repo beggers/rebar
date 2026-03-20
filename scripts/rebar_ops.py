@@ -683,6 +683,14 @@ def bullet_lines(lines: list[str]) -> list[str]:
     return bullets
 
 
+def bullet_or_single_line_items(lines: list[str]) -> list[str]:
+    bullets = bullet_lines(lines)
+    if bullets:
+        return bullets
+    single = first_nonempty_line(lines)
+    return [single] if single else []
+
+
 def configured_section_lines(
     sections: dict[str, list[str]],
     reporting_cfg: dict[str, Any],
@@ -965,7 +973,7 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
         "next_steps",
         "Immediate Next Steps",
     )
-    next_steps = bullet_lines(next_step_lines)
+    next_steps = bullet_or_single_line_items(next_step_lines)
     risks = bullet_lines(
         configured_section_lines(status_sections, reporting_cfg, "risks", "Risks")
     )
