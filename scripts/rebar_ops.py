@@ -959,12 +959,22 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
             "Compatibility Heuristic",
         )
     )
-    next_steps = bullet_lines(
-        configured_section_lines(status_sections, reporting_cfg, "next_steps", "Immediate Next Steps")
+    next_step_lines = configured_section_lines(
+        status_sections,
+        reporting_cfg,
+        "next_steps",
+        "Immediate Next Steps",
     )
+    next_steps = bullet_lines(next_step_lines)
     risks = bullet_lines(
         configured_section_lines(status_sections, reporting_cfg, "risks", "Risks")
     )
+    milestone = first_nonempty_line(backlog_sections.get("Current Milestone", []))
+    feature_ready = claimable_task_files("ready", {"feature-implementation"})
+    feature_in_progress = claimable_task_files("in_progress", {"feature-implementation"})
+    if not feature_ready and not feature_in_progress and next_steps:
+        # Backlog is planning-owned and can lag one cycle after the head task drains.
+        milestone = next_steps[0]
 
     return {
         "phase": phase,
@@ -972,7 +982,7 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
         "compatibility_heuristic": first_nonempty_line(
             status_sections.get("Compatibility Heuristic", [])
         ),
-        "milestone": first_nonempty_line(backlog_sections.get("Current Milestone", [])),
+        "milestone": milestone,
         "next_steps": limited_items(next_steps, readme_limits.get("next_steps")),
         "risks": limited_items(risks, readme_limits.get("risks")),
         "queue_counts": queue_counts(),
