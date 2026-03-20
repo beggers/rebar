@@ -798,6 +798,67 @@ def test_case_text_argument_rejects_non_text_payloads() -> None:
         case_text_argument(pattern_case)
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="raw-module-str"),
+        pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="raw-module-bytes"),
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+            id="compiled-module-str",
+        ),
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE,
+            id="compiled-module-bytes",
+        ),
+    ),
+)
+def test_fixture_case_module_call_args_return_isolated_helper_arguments(
+    case: FixtureCase,
+) -> None:
+    original_args = list(case.args)
+    compiled_pattern = object()
+
+    observed = case.module_call_args(
+        compiled_pattern if case.use_compiled_pattern else None
+    )
+
+    assert observed is not case.args
+    if case.use_compiled_pattern:
+        assert observed[0] is compiled_pattern
+        assert observed[1:] == original_args
+    else:
+        assert observed == original_args
+
+    observed.append("mutated")
+    assert case.args == original_args
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+            id="compiled-module-str",
+        ),
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE,
+            id="compiled-module-bytes",
+        ),
+    ),
+)
+def test_fixture_case_module_call_args_require_compiled_pattern_argument(
+    case: FixtureCase,
+) -> None:
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"case {case.case_id!r} requires a compiled pattern helper argument"
+        ),
+    ):
+        case.module_call_args()
+
+
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
     manifests = published_fixture_manifests()
     cases = [case for manifest in manifests for case in manifest.cases]
