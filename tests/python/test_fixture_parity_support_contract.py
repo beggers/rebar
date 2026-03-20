@@ -423,6 +423,15 @@ def _load_bundle_loader_contract_str_bundle(tmp_path: pathlib.Path) -> FixtureBu
     return bundle
 
 
+def _load_bundle_loader_contract_mixed_bundle(tmp_path: pathlib.Path) -> FixtureBundle:
+    _write_bundle_loader_contract_fixture_modules(tmp_path)
+    (bundle,) = _load_fixture_bundles_from_root(
+        tmp_path,
+        (_bundle_loader_contract_mixed_spec(),),
+    )
+    return bundle
+
+
 SYNTHETIC_CASE_PATTERN = r"(?P<word>abc)"
 SYNTHETIC_PATTERN_HELPER_CASE = FixtureCase(
     case_id="synthetic-pattern-helper-case",
@@ -2468,6 +2477,49 @@ def test_load_fixture_bundles_selected_case_ids_preserve_requested_order(
     )
 
 
+def test_load_fixture_bundles_selected_mixed_text_case_ids_preserve_requested_order_and_text_models(
+    tmp_path: pathlib.Path,
+) -> None:
+    selected_case_ids = (
+        "bundle-loader-contract-mixed-pattern-fullmatch-bytes",
+        "bundle-loader-contract-mixed-module-search-str",
+    )
+    _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    spec = _bundle_loader_contract_mixed_spec()
+    (bundle,) = _load_fixture_bundles_from_root(
+        tmp_path,
+        (
+            replace(
+                spec,
+                selected_case_ids=selected_case_ids,
+                expected_case_ids=None,
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("pattern_call", "fullmatch"): 1,
+                        ("module_call", "search"): 1,
+                    }
+                ),
+            ),
+        ),
+    )
+
+    assert bundle.expected_case_ids == frozenset(selected_case_ids)
+    assert bundle.expected_text_models == frozenset({"bytes", "str"})
+    assert fixture_cases_for_operation((bundle,), "compile") == ()
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
+    ) == ("bundle-loader-contract-mixed-module-search-str",)
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation((bundle,), "pattern_call")
+    ) == ("bundle-loader-contract-mixed-pattern-fullmatch-bytes",)
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=mixed_path,
+        expected_ordered_case_ids=selected_case_ids,
+    )
+
+
 def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -2554,6 +2606,19 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_accepts_selected_a
         bundle,
         selected_case_ids=(published_case_ids[0], published_case_ids[2]),
         expected_uncovered_case_ids=(published_case_ids[1],),
+    )
+
+
+def test_assert_fixture_bundle_tracks_published_case_frontier_accepts_selected_and_uncovered_rows_for_mixed_manifest(
+    tmp_path: pathlib.Path,
+) -> None:
+    bundle = _load_bundle_loader_contract_mixed_bundle(tmp_path)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+
+    assert_fixture_bundle_tracks_published_case_frontier(
+        bundle,
+        selected_case_ids=(published_case_ids[1], published_case_ids[3]),
+        expected_uncovered_case_ids=(published_case_ids[0], published_case_ids[2]),
     )
 
 
