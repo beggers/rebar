@@ -25,6 +25,7 @@ Constraints:
 - Do not batch multiple unrelated cleanups into one run.
 - Do not try to boil the ocean; take the next single concrete cleanup target and stop there for the cycle.
 - Do not spend the run deleting one-line placeholders or making similarly cosmetic tracked-file edits unless that change is part of a larger structural cleanup.
+- Ignored caches, build outputs, and other ephemeral untracked files are not valid cleanup targets by themselves; if those are the only waste you find, exit without changes.
 - Treat "plain Python + Rust only" as the target shape for the repository, and prefer deleting intermediate data layers over preserving them for convenience.
 - Keep the repo in the same overall state: implemented features stay implemented, existing failing tests stay failing unless a cleanup change incidentally fixes a real bug, and passing tests must remain passing.
 - Prefer deleting code over moving it unless movement is necessary to remove duplication cleanly.
