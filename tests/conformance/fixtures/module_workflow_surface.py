@@ -722,6 +722,36 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-split-str-maxsplit-keyword",
+      "operation": "pattern_call",
+      "family": "bound_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": ["zabczabc"],
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "str"],
+      "notes": [
+        "Publishes the representative bound Pattern.split maxsplit= keyword workflow without widening into __index__ or replacement keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-split-str-maxsplit-indexlike",
+      "operation": "pattern_call",
+      "family": "bound_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": ["zabcabcabc"],
+      "kwargs": {
+        "maxsplit": _INDEX_TWO
+      },
+      "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "indexlike", "str"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.split maxsplit=__index__ workflow without widening into the remaining Pattern replacement keyword rows."
+      ]
+    },
+    {
       "id": "workflow-cache-hit-str",
       "operation": "cache_workflow",
       "family": "cache_workflow",

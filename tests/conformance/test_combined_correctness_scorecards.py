@@ -122,6 +122,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-pattern-finditer-bytes-window-keyword",
             "workflow-pattern-finditer-bytes-window-indexlike",
             "workflow-pattern-finditer-bytes-bool-window-keyword",
+            "workflow-pattern-split-str-maxsplit-keyword",
+            "workflow-pattern-split-str-maxsplit-indexlike",
             "workflow-module-search-str-bounded-wildcard-ignorecase",
             "workflow-module-match-str-bounded-wildcard-miss",
             "workflow-module-fullmatch-str-bounded-wildcard",

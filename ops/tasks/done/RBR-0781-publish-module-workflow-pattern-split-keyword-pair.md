@@ -1,8 +1,9 @@
 # RBR-0781: Publish the module-workflow `Pattern.split` keyword pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next adjacent pattern-keyword pair, publishing the exact `Pattern.split(maxsplit=1)` and `Pattern.split(maxsplit=__index__)` workflows for the existing `"abc"` anchor before the remaining pattern `sub` / `subn` keyword rows, compiled-pattern module keyword rows, benchmark catch-up, or another owner family reopens the queue.
@@ -93,3 +94,12 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed both `workflow-pattern-split-str-maxsplit-keyword` and `workflow-pattern-split-str-maxsplit-indexlike` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - the current owner path already publishes the adjacent `Pattern.findall` / `Pattern.finditer` keyword-window rows, leaving this `Pattern.split(maxsplit=...)` pair as the smallest unpublished neighbor on the same owner file; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added the two adjacent `module-workflow-surface` pattern-keyword rows on the existing owner path: `workflow-pattern-split-str-maxsplit-keyword` and `workflow-pattern-split-str-maxsplit-indexlike`.
+- Updated the shared parity-suite publication counts and direct-case alignment assertions to `83` owner-path cases, `54` `str` rows, `29` `bytes` rows, `38` published `pattern_call` rows, and `17` published pattern-keyword rows while keeping `module_call` at `33`.
+- Regenerated the tracked published correctness scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `1453` total / `1453` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `83/83/0`, `module.workflow.str` at `54/54/0`, `module.workflow.bytes` at `29/29/0`, `module.workflow.pattern_call` at `38/38/0`, and `module.workflow.module_call` unchanged at `33/33/0`. The tracked report includes both new `workflow-pattern-split-*` cases.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0781-module-workflow-pattern-split-keyword-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
