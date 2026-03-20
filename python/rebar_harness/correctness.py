@@ -363,6 +363,7 @@ class FixtureCase:
     source_kwargs: dict[str, Any]
     args: list[Any]
     kwargs: dict[str, Any]
+    use_compiled_pattern: bool = False
 
     @classmethod
     def from_dict(cls, manifest: FixtureManifest, raw_case: dict[str, Any]) -> "FixtureCase":
@@ -403,6 +404,12 @@ class FixtureCase:
                 source_kwargs,
                 callback_module_name="rebar_harness.correctness",
             ),
+            use_compiled_pattern=bool(
+                raw_case.get(
+                    "use_compiled_pattern",
+                    defaults.get("use_compiled_pattern", False),
+                )
+            ),
         )
 
     def pattern_payload(self) -> str | bytes:
@@ -419,6 +426,15 @@ class FixtureCase:
 
     def serialized_kwargs(self) -> dict[str, Any]:
         return {key: _normalize_value(value) for key, value in sorted(self.kwargs.items())}
+
+    def module_call_args(self, compiled_pattern: Any | None = None) -> list[Any]:
+        if not self.use_compiled_pattern:
+            return list(self.args)
+        if compiled_pattern is None:
+            raise ValueError(
+                f"case {self.case_id!r} requires a compiled pattern helper argument"
+            )
+        return [compiled_pattern, *self.args]
 
 
 def _optional_string(value: Any) -> str | None:
@@ -820,7 +836,13 @@ class Adapter:
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             try:
-                result = helper(*case.args, **case.kwargs)
+                compiled_pattern = (
+                    self._compile_pattern(case) if case.use_compiled_pattern else None
+                )
+                result = helper(
+                    *case.module_call_args(compiled_pattern),
+                    **case.kwargs,
+                )
             except NotImplementedError as exc:
                 return finalize_observation(
                     adapter=self.adapter_name,
@@ -1027,6 +1049,8 @@ def evaluate_case(case: FixtureCase, cpython_adapter: Adapter, rebar_adapter: Ad
         result["flags"] = case.flags
     if case.helper is not None:
         result["helper"] = case.helper
+    if case.use_compiled_pattern:
+        result["use_compiled_pattern"] = True
     if case.args:
         result["args"] = case.serialized_args()
     if case.kwargs:

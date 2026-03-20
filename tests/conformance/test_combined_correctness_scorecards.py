@@ -100,6 +100,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-pattern-fullmatch-bytes-verbose-regression",
             "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
             "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
+            "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+            "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
             "workflow-cache-hit-str",
             "workflow-purge-reset-str",
             "workflow-pattern-search-str",
@@ -2488,7 +2490,14 @@ def assert_correctness_case_record_matches(
     ):
         testcase.assertEqual(actual_case.get(key), expected_case.get(key))
 
-    for key in ("text_model", "pattern", "flags", "helper", "kwargs"):
+    for key in (
+        "text_model",
+        "pattern",
+        "flags",
+        "helper",
+        "kwargs",
+        "use_compiled_pattern",
+    ):
         testcase.assertEqual(actual_case.get(key), expected_case.get(key))
 
     actual_args = actual_case.get("args")

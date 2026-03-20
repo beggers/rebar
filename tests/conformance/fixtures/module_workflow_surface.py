@@ -358,6 +358,48 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_search_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "helper": "search",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "prefix\nENV_VAR=ABCD\nsuffix"
+        }
+      ],
+      "categories": ["workflow", "search", "verbose", "multiline", "regression", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the first bytes module-level search() helper workflow that accepts a compiled verbose regression pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_fullmatch_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ENV_VAR = 123"
+        }
+      ],
+      "categories": ["workflow", "fullmatch", "verbose", "multiline", "regression", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the first bytes module-level fullmatch() helper workflow that accepts a compiled verbose regression pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-escape-str",
       "operation": "module_call",
       "family": "escape_workflow",

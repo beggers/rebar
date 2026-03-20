@@ -452,6 +452,15 @@ SYNTHETIC_MODULE_PATTERN_CASE = replace(
     source_args=[SYNTHETIC_CASE_PATTERN, "zzabczz"],
     args=[SYNTHETIC_CASE_PATTERN, "zzabczz"],
 )
+SYNTHETIC_COMPILED_MODULE_PATTERN_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-module-compiled-pattern-str",
+    operation="module_call",
+    helper="search",
+    source_args=["zzabczz"],
+    args=["zzabczz"],
+    use_compiled_pattern=True,
+)
 SYNTHETIC_COMPILED_PATTERN_CASE = replace(
     SYNTHETIC_PATTERN_HELPER_CASE,
     case_id="synthetic-pattern-pattern-str",
@@ -467,6 +476,14 @@ SYNTHETIC_MODULE_BYTES_SEARCH_CASE = replace(
     text_model="bytes",
     source_args=[b"abc", b"zzabczz"],
     args=[b"abc", b"zzabczz"],
+)
+SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE = replace(
+    SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+    case_id="synthetic-module-compiled-pattern-bytes",
+    pattern="abc",
+    text_model="bytes",
+    source_args=[b"zzabczz"],
+    args=[b"zzabczz"],
 )
 SYNTHETIC_FULLMATCH_PATTERN_CASE = replace(
     SYNTHETIC_PATTERN_HELPER_CASE,
@@ -1017,6 +1034,47 @@ def test_fixture_case_pattern_payload_supports_encoding_override_and_clear_error
         missing_pattern_case.pattern_payload()
 
 
+def test_fixture_manifest_loads_use_compiled_pattern_for_module_call_rows(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_fixture_module(
+        tmp_path,
+        "compiled_module_call_contract.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "compiled-module-call-contract",
+            "layer": "module_workflow",
+            "defaults": {
+                "operation": "module_call",
+            },
+            "cases": [
+                {
+                    "id": "raw-module-search",
+                    "helper": "search",
+                    "args": ["abc", "zzabczz"],
+                },
+                {
+                    "id": "compiled-module-search",
+                    "helper": "search",
+                    "pattern": "abc",
+                    "args": ["zzabczz"],
+                    "use_compiled_pattern": True,
+                },
+            ],
+        }
+        """,
+    )
+
+    raw_case, compiled_case = load_fixture_manifest(fixture_path).cases
+
+    assert raw_case.use_compiled_pattern is False
+    assert raw_case.args == ["abc", "zzabczz"]
+    assert compiled_case.use_compiled_pattern is True
+    assert compiled_case.pattern == "abc"
+    assert compiled_case.args == ["zzabczz"]
+
+
 @pytest.mark.parametrize(
     ("filename", "source", "expected_suite_id", "expected_layer", "expected_operation"),
     (
@@ -1420,7 +1478,15 @@ def test_invoke_bounded_pattern_case_preserves_helper_and_bound_semantics(
     "case",
     (
         pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="module-str"),
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+            id="compiled-module-str",
+        ),
         pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="module-bytes"),
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE,
+            id="compiled-module-bytes",
+        ),
         pytest.param(SYNTHETIC_FULLMATCH_PATTERN_CASE, id="pattern-str"),
         pytest.param(SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE, id="pattern-bytes"),
     ),

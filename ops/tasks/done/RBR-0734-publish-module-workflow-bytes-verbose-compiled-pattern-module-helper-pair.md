@@ -1,6 +1,6 @@
 # RBR-0734: Publish the module-workflow bytes verbose compiled-pattern module-helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -60,3 +60,10 @@ Created: 2026-03-20
   - `tests/python/test_module_workflow_parity_suite.py` already carries the exact direct parity anchor `VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES` on the same verbose bytes family, and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'preserve_verbose_bytes_compiled_pattern_identity_like_cpython'` passes with `16 passed`;
   - a direct runtime probe in this run confirmed that `rebar.search(compiled_pattern, b"prefix\\nENV_VAR=ABCD\\nsuffix")` and `rebar.fullmatch(compiled_pattern, b"ENV_VAR = 123")` already match CPython with the same spans on the anchored bytes verbose pattern; and
   - `module-workflow-surface` currently publishes only the `escape()` `module_call` rows, so the next adjacent owner-path publication slice is the first bounded compiled-pattern module-helper pair rather than another compile row or benchmark catch-up pass.
+
+## Completion
+- 2026-03-20: Added the reusable `FixtureCase.use_compiled_pattern` switch in `python/rebar_harness/correctness.py` and taught the shared Python fixture/parity helpers to compile `case.pattern` and prepend the compiled pattern for ordinary `module_call` rows, without changing existing raw-pattern module-call behavior.
+- Published only the requested two `module-workflow-surface` rows in `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-module-search-bytes-verbose-regression-compiled-pattern` and `workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern`, both pinned to the existing bytes verbose regression pattern, `flags == 72`, `text_model == "bytes"`, and the direct parity anchors in `VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES`.
+- Updated `tests/python/test_fixture_parity_support_contract.py`, `tests/python/test_module_workflow_parity_suite.py`, and `tests/conformance/test_combined_correctness_scorecards.py` so the fixture contract, shared module-workflow owner path, and tracked report checks all cover the compiled-pattern module-helper publication.
+- Regenerated `reports/correctness/latest.py`. The tracked publication now reads `1399` total / `1399` passed / `0` `unimplemented` across `114` manifests overall, with `module.workflow` at `29` / `29` / `0`, `module.workflow.bytes` at `14` / `14` / `0`, and `module.workflow.module_call` at `4` / `4` / `0`; both new compiled-pattern module-helper rows are present in the tracked artifact with `use_compiled_pattern=True`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0734-module-workflow-bytes-verbose-compiled-pattern-module-helpers.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `29` total / `29` passed / `0` `unimplemented`.

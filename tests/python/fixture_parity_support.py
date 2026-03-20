@@ -587,7 +587,7 @@ def published_bytes_texts_by_pattern(
         pattern = case_pattern(case)
         assert isinstance(pattern, bytes)
         if case.operation == "module_call":
-            text = case.args[1]
+            text = case.args[0] if case.use_compiled_pattern else case.args[1]
             assert isinstance(text, bytes)
             published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
         elif case.operation == "pattern_call":
@@ -837,7 +837,8 @@ def str_case_pattern(case: FixtureCase) -> str:
 
 def case_replacement_argument(case: FixtureCase) -> object:
     if case.operation == "module_call":
-        return case.args[1]
+        replacement_index = 0 if case.use_compiled_pattern else 1
+        return case.args[replacement_index]
     if case.operation == "pattern_call":
         return case.args[0]
     raise AssertionError(f"unsupported case operation {case.operation!r}")
@@ -845,7 +846,8 @@ def case_replacement_argument(case: FixtureCase) -> object:
 
 def case_text_argument(case: FixtureCase) -> str | bytes:
     if case.operation == "module_call":
-        text = case.args[2]
+        text_index = 1 if case.use_compiled_pattern else 2
+        text = case.args[text_index]
     elif case.operation == "pattern_call":
         text = case.args[1]
     else:
@@ -883,8 +885,25 @@ def workflow_result_with_cpython_parity(
     assert case.helper is not None
 
     if case.operation == "module_call":
-        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
-        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+        if case.use_compiled_pattern:
+            observed_pattern, expected_pattern = compile_with_cpython_parity(
+                backend_name,
+                backend,
+                case_pattern(case),
+                case.flags or 0,
+            )
+            observed = getattr(backend, case.helper)(
+                *case.module_call_args(observed_pattern),
+                **case.kwargs,
+            )
+            expected = getattr(re, case.helper)(
+                *case.module_call_args(expected_pattern),
+                **case.kwargs,
+            )
+            return observed, expected
+
+        observed = getattr(backend, case.helper)(*case.module_call_args(), **case.kwargs)
+        expected = getattr(re, case.helper)(*case.module_call_args(), **case.kwargs)
         return observed, expected
 
     observed_pattern, expected_pattern = compile_with_cpython_parity(
@@ -1190,13 +1209,23 @@ def _evaluate_fixture_case_optional_match(
     backend_name, backend = regex_backend
     assert case.helper == expected_helper
 
-    if compile_pattern:
+    if compile_pattern or case.use_compiled_pattern:
         observed_target, expected_target = compile_with_cpython_parity(
             backend_name,
             backend,
             case_pattern(case),
             case.flags or 0,
         )
+        if case.operation == "module_call":
+            observed = getattr(backend, expected_helper)(
+                *case.module_call_args(observed_target),
+                **case.kwargs,
+            )
+            expected = getattr(re, expected_helper)(
+                *case.module_call_args(expected_target),
+                **case.kwargs,
+            )
+            return backend_name, observed, expected
     else:
         observed_target = backend
         expected_target = re
