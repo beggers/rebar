@@ -132,15 +132,6 @@ GROUPED_REPLACEMENT_NESTED_ALTERNATION_GROUP_KIND_COUNTS = Counter(
         ("pattern_call", "subn", "named"): 2,
     }
 )
-GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS = frozenset(
-    {
-        "grouped-alternation-replacement-workflows",
-        "nested-group-replacement-workflows",
-        "nested-group-alternation-replacement-workflows",
-        "quantified-nested-group-replacement-workflows",
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
-    }
-)
 GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     "(?P<word>abc)",
     "(abc)",
@@ -1747,7 +1738,16 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
     if (
         surface.spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
-        and bundle.expected_manifest_id in GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS
+        and bundle.expected_manifest_id
+        in {
+            bundle_spec.expected_manifest_id
+            for bundle_spec in surface.spec.bundle_specs
+            if bundle_spec.expected_manifest_id
+            not in {
+                "collection-replacement-workflows",
+                "named-group-replacement-workflows",
+            }
+        }
     ):
         _assert_grouped_replacement_fixture_bundle_contract(bundle)
 
