@@ -1423,59 +1423,6 @@ def prepare_benchmark_run(
     )
 
 
-def build_deferred_sections(workloads: list[dict[str, Any]]) -> list[dict[str, str]]:
-    deferred: list[dict[str, str]] = []
-    if not any(workload["family"] == "module" for workload in workloads):
-        deferred.append(
-            {
-                "area": "module-boundary",
-                "reason": "Phase 1 benchmark suite measures compile-path workloads only.",
-                "follow_up": "RBR-0015",
-            }
-        )
-    deferred.append(
-        {
-            "area": "regex-execution-throughput",
-            "reason": "Execution benchmarks stay deferred until parser and module-boundary harnesses exist.",
-            "follow_up": "future milestone",
-        }
-    )
-    return deferred
-
-
-def build_artifacts(
-    *,
-    manifests: list[BenchmarkManifest],
-    selection_mode: str,
-) -> dict[str, Any]:
-    manifest_records = [
-        {
-            "manifest": str(manifest.path.relative_to(REPO_ROOT)),
-            "manifest_id": manifest.manifest_id,
-            "manifest_schema_version": manifest.schema_version,
-            "workload_count": len(manifest.workloads),
-            "smoke_workload_ids": manifest.smoke_workload_ids(),
-            "spec_refs": list(manifest.spec_refs),
-        }
-        for manifest in manifests
-    ]
-    if len(manifest_records) == 1:
-        return {
-            **manifest_records[0],
-            "manifests": manifest_records,
-            "raw_samples": None,
-            "selection_mode": selection_mode,
-        }
-    return {
-        "manifest": None,
-        "manifest_id": "combined-benchmark-suite",
-        "manifest_schema_version": MANIFEST_SCHEMA_VERSION,
-        "manifests": manifest_records,
-        "raw_samples": None,
-        "selection_mode": selection_mode,
-    }
-
-
 def run_internal_workload_probe(
     *,
     workload_payload: str,
@@ -1519,6 +1466,50 @@ def build_scorecard(
     execution_model: str,
 ) -> dict[str, Any]:
     summary = build_summary(workloads)
+    deferred: list[dict[str, str]] = []
+    if not any(workload["family"] == "module" for workload in workloads):
+        deferred.append(
+            {
+                "area": "module-boundary",
+                "reason": "Phase 1 benchmark suite measures compile-path workloads only.",
+                "follow_up": "RBR-0015",
+            }
+        )
+    deferred.append(
+        {
+            "area": "regex-execution-throughput",
+            "reason": "Execution benchmarks stay deferred until parser and module-boundary harnesses exist.",
+            "follow_up": "future milestone",
+        }
+    )
+    manifest_records = [
+        {
+            "manifest": str(manifest.path.relative_to(REPO_ROOT)),
+            "manifest_id": manifest.manifest_id,
+            "manifest_schema_version": manifest.schema_version,
+            "workload_count": len(manifest.workloads),
+            "smoke_workload_ids": manifest.smoke_workload_ids(),
+            "spec_refs": list(manifest.spec_refs),
+        }
+        for manifest in manifests
+    ]
+    artifacts: dict[str, Any]
+    if len(manifest_records) == 1:
+        artifacts = {
+            **manifest_records[0],
+            "manifests": manifest_records,
+            "raw_samples": None,
+            "selection_mode": selection_mode,
+        }
+    else:
+        artifacts = {
+            "manifest": None,
+            "manifest_id": "combined-benchmark-suite",
+            "manifest_schema_version": MANIFEST_SCHEMA_VERSION,
+            "manifests": manifest_records,
+            "raw_samples": None,
+            "selection_mode": selection_mode,
+        }
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "suite": "benchmarks",
@@ -1550,11 +1541,8 @@ def build_scorecard(
         },
         "cache_modes": build_cache_mode_summary(workloads),
         "workloads": workloads,
-        "deferred": build_deferred_sections(workloads),
-        "artifacts": build_artifacts(
-            manifests=manifests,
-            selection_mode=selection_mode,
-        ),
+        "deferred": deferred,
+        "artifacts": artifacts,
     }
 
 
