@@ -55,21 +55,10 @@ class SupplementalNoMatchCase:
 
 
 @dataclass(frozen=True)
-class QuantifiedAlternationBytesCaseExpectation:
-    search_matches: tuple[bytes, ...]
-    fullmatch_matches: tuple[bytes, ...]
-    fullmatch_misses: tuple[bytes, ...]
-
-
-@dataclass(frozen=True)
 class QuantifiedAlternationDirectBytesFollowOnSpec:
     follow_on_id: str
     bundle: FixtureBundle
     cases: tuple[SupplementalCase, ...]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-    expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
-    expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
-    expected_case_payloads: dict[str, QuantifiedAlternationBytesCaseExpectation]
 
 
 @dataclass(frozen=True)
@@ -365,241 +354,31 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         follow_on_id="bounded",
         bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-        expected_module_search_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES[0].pattern: frozenset(
-                {b"zzacdz"}
-            ),
-            QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES[1].pattern: frozenset(
-                {b"zzacbdzz"}
-            ),
-        },
-        expected_pattern_fullmatch_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES[0].pattern: frozenset(
-                {b"abcd"}
-            ),
-            QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES[1].pattern: frozenset(
-                {b"abd"}
-            ),
-        },
-        expected_case_payloads={
-            "quantified-alternation-numbered-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzacdz",),
-                fullmatch_matches=(b"abcd",),
-                fullmatch_misses=(),
-            ),
-            "quantified-alternation-named-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzacbdzz",),
-                fullmatch_matches=(b"abd",),
-                fullmatch_misses=(),
-            ),
-        },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
         follow_on_id="broader-range",
         bundle=QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 10,
-            }
-        ),
-        expected_module_search_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES[0].pattern: frozenset(
-                {b"zzabdzz", b"zzacdzz"}
-            ),
-            QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES[1].pattern: frozenset(
-                {b"zzabdzz", b"zzacdzz"}
-            ),
-        },
-        expected_pattern_fullmatch_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES[0].pattern: frozenset(
-                {b"abbbd", b"abccd", b"abcbd", b"ad", b"abbbcd"}
-            ),
-            QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES[1].pattern: frozenset(
-                {b"abbbd", b"abccd", b"abcbd", b"ad", b"abbbcd"}
-            ),
-        },
-        expected_case_payloads={
-            "quantified-alternation-broader-range-numbered-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzabdzz", b"zzacdzz"),
-                fullmatch_matches=(b"abbbd", b"abccd", b"abcbd"),
-                fullmatch_misses=(b"ad", b"abbbcd"),
-            ),
-            "quantified-alternation-broader-range-named-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzabdzz", b"zzacdzz"),
-                fullmatch_matches=(b"abbbd", b"abccd", b"abcbd"),
-                fullmatch_misses=(b"ad", b"abbbcd"),
-            ),
-        },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
         follow_on_id="conditional",
         bundle=QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 6,
-            }
-        ),
-        expected_module_search_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES[0].pattern: frozenset(
-                {b"zzaezz", b"zzabdzz"}
-            ),
-            QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES[1].pattern: frozenset(
-                {b"zzaezz", b"zzacdzz"}
-            ),
-        },
-        expected_pattern_fullmatch_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES[0].pattern: frozenset(
-                {b"abbd", b"abcd", b"abe"}
-            ),
-            QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES[1].pattern: frozenset(
-                {b"accd", b"abcd", b"acce"}
-            ),
-        },
-        expected_case_payloads={
-            "quantified-alternation-conditional-numbered-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzaezz", b"zzabdzz"),
-                fullmatch_matches=(b"abbd", b"abcd"),
-                fullmatch_misses=(b"abe",),
-            ),
-            "quantified-alternation-conditional-named-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzaezz", b"zzacdzz"),
-                fullmatch_matches=(b"accd", b"abcd"),
-                fullmatch_misses=(b"acce",),
-            ),
-        },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
         follow_on_id="open-ended",
         bundle=QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 10,
-            }
-        ),
-        expected_module_search_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES[0].pattern: frozenset(
-                {b"zzabdzz", b"zzacdzz"}
-            ),
-            QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES[1].pattern: frozenset(
-                {b"zzabdzz", b"zzacdzz"}
-            ),
-        },
-        expected_pattern_fullmatch_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES[0].pattern: frozenset(
-                {b"abcd", b"abccd", b"abcbcd", b"ad", b"abed"}
-            ),
-            QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES[1].pattern: frozenset(
-                {b"abcd", b"abccd", b"abcbcd", b"ad", b"abed"}
-            ),
-        },
-        expected_case_payloads={
-            "quantified-alternation-open-ended-numbered-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzabdzz", b"zzacdzz"),
-                fullmatch_matches=(b"abcd", b"abccd", b"abcbcd"),
-                fullmatch_misses=(b"ad", b"abed"),
-            ),
-            "quantified-alternation-open-ended-named-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzabdzz", b"zzacdzz"),
-                fullmatch_matches=(b"abcd", b"abccd", b"abcbcd"),
-                fullmatch_misses=(b"ad", b"abed"),
-            ),
-        },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
         follow_on_id="nested-branch",
         bundle=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 6,
-            }
-        ),
-        expected_module_search_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES[0].pattern: frozenset(
-                {b"zzabdzz"}
-            ),
-            QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES[1].pattern: frozenset(
-                {b"zzadedzz"}
-            ),
-        },
-        expected_pattern_fullmatch_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES[0].pattern: frozenset(
-                {b"aded", b"abded", b"abde"}
-            ),
-            QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES[1].pattern: frozenset(
-                {b"acd", b"adebd", b"adeb"}
-            ),
-        },
-        expected_case_payloads={
-            "quantified-alternation-nested-branch-numbered-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzabdzz",),
-                fullmatch_matches=(b"aded", b"abded"),
-                fullmatch_misses=(b"abde",),
-            ),
-            "quantified-alternation-nested-branch-named-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzadedzz",),
-                fullmatch_matches=(b"acd", b"adebd"),
-                fullmatch_misses=(b"adeb",),
-            ),
-        },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
         follow_on_id="backtracking-heavy",
         bundle=BACKTRACKING_HEAVY_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 8,
-            }
-        ),
-        expected_module_search_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES[0].pattern: frozenset(
-                {b"zzabdzz"}
-            ),
-            QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES[1].pattern: frozenset(
-                {b"zzabcdzz"}
-            ),
-        },
-        expected_pattern_fullmatch_texts_by_pattern={
-            QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES[0].pattern: frozenset(
-                {b"abcd", b"abbcd", b"abcbd", b"abcbcd", b"abccd"}
-            ),
-            QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES[1].pattern: frozenset(
-                {b"abbd", b"abcbd", b"abccd"}
-            ),
-        },
-        expected_case_payloads={
-            "quantified-alternation-backtracking-heavy-numbered-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzabdzz",),
-                fullmatch_matches=(b"abcd", b"abbcd", b"abcbd", b"abcbcd"),
-                fullmatch_misses=(b"abccd",),
-            ),
-            "quantified-alternation-backtracking-heavy-named-bytes": QuantifiedAlternationBytesCaseExpectation(
-                search_matches=(b"zzabcdzz",),
-                fullmatch_matches=(b"abbd", b"abcbd"),
-                fullmatch_misses=(b"abccd",),
-            ),
-        },
     ),
 )
 
@@ -1028,26 +807,34 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
         for case in fixture_cases_for_operation((spec.bundle,), "compile")
         if case.text_model == "bytes"
     )
+    expected_operation_helper_counts = Counter(
+        {
+            ("compile", None): len(spec.cases),
+            ("module_call", "search"): sum(
+                len(case.search_matches) for case in spec.cases
+            ),
+            ("pattern_call", "fullmatch"): sum(
+                len(case.fullmatch_matches) + len(case.fullmatch_misses)
+                for case in spec.cases
+            ),
+        }
+    )
 
     assert len(spec.cases) == 2
     assert {case.pattern for case in spec.cases} == expected_compile_patterns
     assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(
-        spec.expected_operation_helper_counts.values()
+        expected_operation_helper_counts.values()
     )
     assert {case.case_id for case in bundle_bytes_cases} == {
         f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
     }
     assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == (
-        spec.expected_operation_helper_counts
+        expected_operation_helper_counts
     )
 
     for case in spec.cases:
-        expected_payload = spec.expected_case_payloads[case.id]
         assert case.unsupported_backends == ()
         assert case.unsupported_backend_reason is None
-        assert case.search_matches == expected_payload.search_matches
-        assert case.fullmatch_matches == expected_payload.fullmatch_matches
-        assert case.fullmatch_misses == expected_payload.fullmatch_misses
         assert set(case.search_matches).isdisjoint(case.fullmatch_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(
@@ -1065,11 +852,19 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
     assert (
         published_module_texts_by_pattern
-        == spec.expected_module_search_texts_by_pattern
+        == {
+            case.pattern: frozenset(case.search_matches)
+            for case in spec.cases
+        }
     )
     assert (
         published_fullmatch_texts_by_pattern
-        == spec.expected_pattern_fullmatch_texts_by_pattern
+        == {
+            case.pattern: frozenset(
+                (*case.fullmatch_matches, *case.fullmatch_misses)
+            )
+            for case in spec.cases
+        }
     )
 
 
