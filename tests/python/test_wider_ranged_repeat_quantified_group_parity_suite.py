@@ -7,11 +7,10 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
     BoundedPatternCase,
     FixtureBundle,
-    FixtureBundleSpec,
     SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -28,7 +27,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    load_fixture_bundles,
+    load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
@@ -65,266 +64,60 @@ class BacktrackingTraceCase:
     search_text: str
     fullmatch_text: str
 
-FIXTURE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        "exact_repeat_quantified_group_workflows.py",
-        expected_manifest_id="exact-repeat-quantified-group-workflows",
-        expected_case_ids=frozenset(
-            {
-                "exact-repeat-numbered-group-compile-metadata-str",
-                "exact-repeat-numbered-group-module-search-str",
-                "exact-repeat-numbered-group-pattern-fullmatch-str",
-                "exact-repeat-named-group-compile-metadata-str",
-                "exact-repeat-named-group-module-search-str",
-                "exact-repeat-named-group-pattern-fullmatch-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(bc){2}d",
-                r"a(?P<word>bc){2}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "ranged_repeat_quantified_group_workflows.py",
-        expected_manifest_id="ranged-repeat-quantified-group-workflows",
-        expected_case_ids=frozenset(
-            {
-                "ranged-repeat-numbered-group-compile-metadata-str",
-                "ranged-repeat-numbered-group-module-search-lower-bound-str",
-                "ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
-                "ranged-repeat-named-group-compile-metadata-str",
-                "ranged-repeat-named-group-module-search-upper-bound-str",
-                "ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(bc){1,2}d",
-                r"a(?P<word>bc){1,2}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "wider_ranged_repeat_quantified_group_workflows.py",
-        expected_manifest_id="wider-ranged-repeat-quantified-group-workflows",
-        expected_patterns=frozenset(
-            {
-                r"a(bc){1,3}d",
-                r"a(?P<word>bc){1,3}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
-        expected_manifest_id=(
-            "broader-range-wider-ranged-repeat-quantified-group-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(bc){1,4}d",
-                r"a(?P<word>bc){1,4}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        expected_manifest_id=(
-            "wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((bc|de){1,3})?(?(1)d|e)",
-                r"a(?P<outer>(bc|de){1,3})?(?(outer)d|e)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 6,
-                ("pattern_call", "fullmatch"): 4,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-        expected_manifest_id=(
-            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((bc|b)c){1,3}d",
-                r"a(?P<word>(bc|b)c){1,3}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 6,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-        expected_manifest_id=(
-            "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(bc|de){1,4}d",
-                r"a(?P<word>bc|de){1,4}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 4,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        expected_manifest_id=(
-            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((bc|de){1,4})?(?(1)d|e)",
-                r"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
-                rb"a((bc|de){1,4})?(?(1)d|e)",
-                rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 12,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-        expected_manifest_id=(
-            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((bc|b)c){1,4}d",
-                r"a(?P<word>(bc|b)c){1,4}d",
-                rb"a((bc|b)c){1,4}d",
-                rb"a(?P<word>(bc|b)c){1,4}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 10,
-                ("pattern_call", "fullmatch"): 14,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-        expected_manifest_id=(
-            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((bc|de){1,4})d",
-                r"a(?P<outer>(bc|de){1,4})d",
-                rb"a((bc|de){1,4})d",
-                rb"a(?P<outer>(bc|de){1,4})d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 16,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        expected_manifest_id=(
-            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(((bc|de){1,4})d)?(?(1)e|f)",
-                r"a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)",
-                rb"a(((bc|de){1,4})d)?(?(1)e|f)",
-                rb"a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 12,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-        expected_manifest_id=(
-            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(((bc|b)c){1,4})d",
-                r"a(?P<outer>((bc|b)c){1,4})d",
-                rb"a(((bc|b)c){1,4})d",
-                rb"a(?P<outer>((bc|b)c){1,4})d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 10,
-                ("pattern_call", "fullmatch"): 14,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
+WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES = (
+    "exact_repeat_quantified_group_workflows.py",
+    "ranged_repeat_quantified_group_workflows.py",
+    "wider_ranged_repeat_quantified_group_workflows.py",
+    "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
+    "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+    "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+    "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+    "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+    "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
 )
-FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_MANIFEST_IDS = (
+    "exact-repeat-quantified-group-workflows",
+    "ranged-repeat-quantified-group-workflows",
+    "wider-ranged-repeat-quantified-group-workflows",
+    "broader-range-wider-ranged-repeat-quantified-group-workflows",
+    "wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+    "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+)
+
+
+def _load_wider_ranged_repeat_quantified_group_fixture_bundles() -> tuple[FixtureBundle, ...]:
+    bundles = load_published_fixture_bundles(
+        tuple(
+            CORRECTNESS_FIXTURES_ROOT / fixture_name
+            for fixture_name in WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES
+        ),
+        pattern_extractor=case_pattern,
+    )
+    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
+    if loaded_fixture_names != WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES:
+        raise AssertionError(
+            "wider-ranged-repeat quantified-group owner manifests changed fixture "
+            f"path order: {loaded_fixture_names}"
+        )
+    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
+    if loaded_manifest_ids != WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_MANIFEST_IDS:
+        raise AssertionError(
+            "wider-ranged-repeat quantified-group owner manifests changed manifest "
+            f"ids: {loaded_manifest_ids}"
+        )
+    return bundles
+
+
+FIXTURE_BUNDLES = _load_wider_ranged_repeat_quantified_group_fixture_bundles()
 NESTED_BROADER_RANGE_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
