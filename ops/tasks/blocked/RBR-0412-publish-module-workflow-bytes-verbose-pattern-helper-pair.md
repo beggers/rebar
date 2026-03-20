@@ -1,6 +1,6 @@
 # RBR-0412: Publish the module-workflow bytes verbose pattern-helper pair
 
-Status: ready
+Status: blocked
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -58,3 +58,10 @@ Created: 2026-03-20
   - `tests/python/test_module_workflow_parity_suite.py` already keeps the verbose regression compile pattern, bytes compile anchor, and generic compiled-pattern parity assertions on the same owner path, so adding two bytes `pattern_call` rows extends existing coverage instead of opening a new branch;
   - `tests/conformance/test_combined_correctness_scorecards.py` currently names the finished `str` verbose helper rows as representative `module-workflow-surface` pattern-call coverage, but no bytes verbose helper companions from the same anchored pattern family; and
   - `reports/correctness/latest.py` currently reports `1391` total / `1391` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `21` / `21` / `0`, `module.workflow.bytes` at `6` / `6` / `0`, and `module.workflow.pattern_call` at `9` / `9` / `0`, so this slice widens the tracked frontier through adjacent owner-path publication rather than another family.
+
+## Blocker Note
+- 2026-03-20: Attempted to add the two bytes verbose `pattern_call` rows on the existing module-workflow owner path, but the required parity gate immediately exposed a real implementation gap on the current branch.
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` failed on the added `rebar` bytes verbose `Pattern.search()` row with `NotImplementedError: rebar.Pattern.search() is a scaffold placeholder; compiled pattern semantics are not implemented yet`.
+- A direct runtime probe against the current checkout confirms the blocker without any fixture edits: compiling `b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"` with `MULTILINE | VERBOSE` succeeds, but both `compiled.search(b"prefix\\nENV_VAR=ABCD\\nsuffix")` and `compiled.fullmatch(b"ENV_VAR = 123")` still raise the same placeholder `NotImplementedError`.
+- The exploratory fixture/test edits were reverted, `reports/correctness/latest.py` was not republished, and the checkout was returned to green by rerunning the required published gate.
+- Follow-up needed: land bytes verbose compiled-pattern execution support for this anchored regression pair before retrying the publication-only manifest/report task.
