@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives beyond the active queue head. `RBR-0733` carries the remaining bytes verbose miss-path compiled-pattern helper pair on the existing `module-workflow-surface` owner path.
+No ready feature follow-on currently survives beyond the active queue head. `RBR-0734` carries the first bytes verbose compiled-pattern module-helper pair on the existing `module-workflow-surface` owner path.
 
 ## Ordered Work
-1. `RBR-0733`: Publish the remaining bytes verbose miss-path compiled-pattern helper pair in `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`.
+1. `RBR-0734`: Publish the first bytes verbose compiled-pattern module-helper pair in `python/rebar_harness/correctness.py`, `tests/python/test_fixture_parity_support_contract.py`, `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

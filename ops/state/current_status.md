@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1397 cases across 114 manifests, with all 1397 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- The ready feature queue is empty; the next step is to seed the next Rust-boundary slice rather than deepen the Python shim.
+- Drain `RBR-0734` on the shared module-workflow owner path; no ready feature follow-on currently survives behind it.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1397 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready feature queue is empty; the next step is to seed the next Rust-boundary slice rather than deepen the Python shim.
+- Drain `RBR-0734` on the shared module-workflow owner path; no ready feature follow-on currently survives behind it.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
