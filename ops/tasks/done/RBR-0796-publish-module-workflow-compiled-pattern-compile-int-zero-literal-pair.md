@@ -1,6 +1,6 @@
 # RBR-0796: Publish the module-workflow compiled-pattern compile explicit-int-zero literal pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -71,3 +71,9 @@ Created: 2026-03-20
   - `flags=re.NOFLAG` publication is not this task because the current owner-path selector normalizes `RegexFlag(0)` and `int(0)` to the same keyword signature, while `flags=False` remains a later distinct bool-shaped follow-on on the same boundary;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added `workflow-module-compile-flags-int-zero-str-compiled-pattern` and `workflow-module-compile-flags-int-zero-bytes-compiled-pattern` to `tests/conformance/fixtures/module_workflow_surface.py` directly beside the existing compiled-pattern literal compile rows, keeping the shared owner path pinned to the literal `"abc"` / `b"abc"` anchors with `helper == "compile"`, `use_compiled_pattern == True`, no positional args, and `kwargs == {"flags": 0}`.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared owner-path contract now expects `110` `module-workflow-surface` rows with a `69`/`41` str/bytes split, `56` `module_call` rows, `5` published `compile` helper rows, and `37` published compiled-pattern module-helper rows; the direct-anchor alignment now inserts `compiled-pattern-compile-flags-int-zero-str` after `compiled-pattern-compile-str-literal` and `compiled-pattern-compile-flags-int-zero-bytes` after `compiled-pattern-compile-bytes-literal`, and the existing compiled-pattern module-keyword parity test now handles `compile(...)` results as pattern objects while preserving identity checks.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked report diff includes both new representative compiled-pattern compile rows, and the published scorecard now reads `1480` total / `1480` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `110`, `module.workflow.str` at `69`, `module.workflow.bytes` at `41`, `module.workflow.module_call` at `56`, and `module.workflow.pattern_call` unchanged at `42`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython tests/python/test_module_workflow_parity_suite.py::test_compiled_pattern_module_keyword_argument_calls_match_cpython` (`46 passed in 0.39s`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`780 passed, 1 skipped, 1985 subtests passed in 34.91s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0796-module-workflow-compiled-pattern-compile-int-zero-literal-pair.py` (`110/110`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1480/1480`).
