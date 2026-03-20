@@ -276,8 +276,16 @@ impl<'a> PatternRef<'a> {
     }
 
     fn supports_verbose_compile_regression_execution(self, flags: i32) -> bool {
-        matches!(self, Self::Str(VERBOSE_COMPILE_REGRESSION_PATTERN))
-            && flags == VERBOSE_COMPILE_REGRESSION_FLAGS
+        match self {
+            Self::Str(pattern) => {
+                pattern == VERBOSE_COMPILE_REGRESSION_PATTERN
+                    && flags == VERBOSE_COMPILE_REGRESSION_FLAGS
+            }
+            Self::Bytes(pattern) => {
+                pattern == VERBOSE_COMPILE_REGRESSION_BYTES_PATTERN
+                    && flags == VERBOSE_COMPILE_REGRESSION_BYTES_FLAGS
+            }
+        }
     }
 
     fn is_empty(self) -> bool {
@@ -6472,8 +6480,9 @@ fn parse_nested_broader_range_grouped_alternation_backtracking_heavy_pattern_byt
 
 fn parse_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_pattern_bytes(
     pattern: &[u8],
-) -> Option<NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationBacktrackingHeavyBytesPattern>
-{
+) -> Option<
+    NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationBacktrackingHeavyBytesPattern,
+> {
     match pattern {
         NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN => Some(
             NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationBacktrackingHeavyBytesPattern {
@@ -7481,32 +7490,30 @@ fn parse_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_b
         (None, remainder)
     };
 
-    let (inner_name, has_repeated_capture, inner_body_and_remainder) = if let Some(
-        repeated_remainder,
-    ) = outer_body.strip_prefix("(?:")
-    {
-        let inner_remainder = repeated_remainder.strip_prefix("(?P<")?;
-        let inner_name_end = inner_remainder.find('>')?;
-        let inner_name = &inner_remainder[..inner_name_end];
-        if !is_supported_group_name(inner_name) {
-            return None;
-        }
-        (
-            Some(inner_name),
-            false,
-            &inner_remainder[inner_name_end + 1..],
-        )
-    } else {
-        let repeated_remainder = outer_body.strip_prefix('(')?;
-        if repeated_remainder.starts_with("?P<") {
-            return None;
-        }
-        let inner_remainder = repeated_remainder.strip_prefix('(')?;
-        if inner_remainder.starts_with("?P<") {
-            return None;
-        }
-        (None, true, inner_remainder)
-    };
+    let (inner_name, has_repeated_capture, inner_body_and_remainder) =
+        if let Some(repeated_remainder) = outer_body.strip_prefix("(?:") {
+            let inner_remainder = repeated_remainder.strip_prefix("(?P<")?;
+            let inner_name_end = inner_remainder.find('>')?;
+            let inner_name = &inner_remainder[..inner_name_end];
+            if !is_supported_group_name(inner_name) {
+                return None;
+            }
+            (
+                Some(inner_name),
+                false,
+                &inner_remainder[inner_name_end + 1..],
+            )
+        } else {
+            let repeated_remainder = outer_body.strip_prefix('(')?;
+            if repeated_remainder.starts_with("?P<") {
+                return None;
+            }
+            let inner_remainder = repeated_remainder.strip_prefix('(')?;
+            if inner_remainder.starts_with("?P<") {
+                return None;
+            }
+            (None, true, inner_remainder)
+        };
 
     let inner_close_offset = inner_body_and_remainder.find(')')?;
     let inner_body = &inner_body_and_remainder[..inner_close_offset];
@@ -7563,32 +7570,30 @@ fn parse_nested_broader_range_open_ended_quantified_group_alternation_backtracki
         (None, remainder)
     };
 
-    let (inner_name, has_repeated_capture, inner_body_and_remainder) = if let Some(
-        repeated_remainder,
-    ) = outer_body.strip_prefix("(?:")
-    {
-        let inner_remainder = repeated_remainder.strip_prefix("(?P<")?;
-        let inner_name_end = inner_remainder.find('>')?;
-        let inner_name = &inner_remainder[..inner_name_end];
-        if !is_supported_group_name(inner_name) {
-            return None;
-        }
-        (
-            Some(inner_name),
-            false,
-            &inner_remainder[inner_name_end + 1..],
-        )
-    } else {
-        let repeated_remainder = outer_body.strip_prefix('(')?;
-        if repeated_remainder.starts_with("?P<") {
-            return None;
-        }
-        let inner_remainder = repeated_remainder.strip_prefix('(')?;
-        if inner_remainder.starts_with("?P<") {
-            return None;
-        }
-        (None, true, inner_remainder)
-    };
+    let (inner_name, has_repeated_capture, inner_body_and_remainder) =
+        if let Some(repeated_remainder) = outer_body.strip_prefix("(?:") {
+            let inner_remainder = repeated_remainder.strip_prefix("(?P<")?;
+            let inner_name_end = inner_remainder.find('>')?;
+            let inner_name = &inner_remainder[..inner_name_end];
+            if !is_supported_group_name(inner_name) {
+                return None;
+            }
+            (
+                Some(inner_name),
+                false,
+                &inner_remainder[inner_name_end + 1..],
+            )
+        } else {
+            let repeated_remainder = outer_body.strip_prefix('(')?;
+            if repeated_remainder.starts_with("?P<") {
+                return None;
+            }
+            let inner_remainder = repeated_remainder.strip_prefix('(')?;
+            if inner_remainder.starts_with("?P<") {
+                return None;
+            }
+            (None, true, inner_remainder)
+        };
 
     let inner_close_offset = inner_body_and_remainder.find(')')?;
     let inner_body = &inner_body_and_remainder[..inner_close_offset];
@@ -10023,6 +10028,42 @@ fn literal_match_bytes(
     }
 
     let pattern = PatternRef::Bytes(pattern);
+    if pattern.supports_verbose_compile_regression_execution(flags) {
+        if mode == MatchMode::Match {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) = find_verbose_compile_regression_match_span_bytes(
+            string,
+            mode,
+            normalized_pos,
+            normalized_endpos,
+        )
+        .map_or((None, Vec::new()), |(span, group_spans)| {
+            (Some(span), group_spans)
+        });
+        let lastindex = lastindex_from_group_spans(&group_spans);
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
     if !pattern.supports_literal_execution(flags) {
         return MatchOutcome {
             status: MatchStatus::Unsupported,
@@ -17123,6 +17164,10 @@ fn is_line_start_in_multiline_mode(string: &[char], index: usize) -> bool {
     index == 0 || matches!(string.get(index - 1), Some('\n'))
 }
 
+fn is_line_start_in_multiline_mode_bytes(string: &[u8], index: usize) -> bool {
+    index == 0 || matches!(string.get(index - 1), Some(b'\n'))
+}
+
 fn match_verbose_compile_regression_at_str(
     string: &[char],
     start: usize,
@@ -17225,6 +17270,113 @@ fn find_verbose_compile_regression_match_span_str(
                 return None;
             }
             let (span, group_spans) = match_verbose_compile_regression_at_str(string, pos, endpos)?;
+            if span == (pos, endpos) {
+                Some((span, group_spans))
+            } else {
+                None
+            }
+        }
+    }
+}
+
+fn match_verbose_compile_regression_at_bytes(
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    if start >= endpos {
+        return None;
+    }
+
+    let line_end = string[start..endpos]
+        .iter()
+        .position(|byte| *byte == b'\n')
+        .map_or(endpos, |offset| start + offset);
+
+    let mut cursor = start;
+    let key_start = cursor;
+    while cursor < line_end && (string[cursor].is_ascii_uppercase() || string[cursor] == b'_') {
+        cursor += 1;
+    }
+    if cursor == key_start {
+        return None;
+    }
+    let key_span = (key_start, cursor);
+
+    while cursor < line_end && string[cursor].is_ascii_whitespace() {
+        cursor += 1;
+    }
+    if cursor == line_end || string[cursor] != b'=' {
+        return None;
+    }
+    cursor += 1;
+
+    while cursor < line_end && string[cursor].is_ascii_whitespace() {
+        cursor += 1;
+    }
+    if cursor == line_end {
+        return None;
+    }
+
+    let value_start = cursor;
+    if string[cursor].is_ascii_uppercase() {
+        while cursor < line_end && string[cursor].is_ascii_uppercase() {
+            cursor += 1;
+        }
+        let value_len = cursor - value_start;
+        if !(2..=4).contains(&value_len) {
+            return None;
+        }
+    } else if string[cursor].is_ascii_digit() {
+        while cursor < line_end && string[cursor].is_ascii_digit() {
+            cursor += 1;
+        }
+        let value_len = cursor - value_start;
+        if !(2..=3).contains(&value_len) {
+            return None;
+        }
+    } else {
+        return None;
+    }
+
+    if cursor != line_end {
+        return None;
+    }
+
+    Some(((start, line_end), vec![Some(key_span)]))
+}
+
+fn find_verbose_compile_regression_match_span_bytes(
+    string: &[u8],
+    mode: MatchMode,
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => {
+            let mut candidate = pos;
+            while candidate <= endpos {
+                if is_line_start_in_multiline_mode_bytes(string, candidate) {
+                    if let Some(matched) =
+                        match_verbose_compile_regression_at_bytes(string, candidate, endpos)
+                    {
+                        return Some(matched);
+                    }
+                }
+                if candidate == endpos {
+                    break;
+                }
+                candidate += 1;
+            }
+            None
+        }
+        MatchMode::Match => None,
+        MatchMode::Fullmatch => {
+            if !is_line_start_in_multiline_mode_bytes(string, pos) {
+                return None;
+            }
+            let (span, group_spans) =
+                match_verbose_compile_regression_at_bytes(string, pos, endpos)?;
             if span == (pos, endpos) {
                 Some((span, group_spans))
             } else {

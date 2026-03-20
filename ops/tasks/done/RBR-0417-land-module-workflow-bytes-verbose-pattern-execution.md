@@ -1,6 +1,6 @@
 # RBR-0417: Land module-workflow bytes verbose compiled-pattern execution
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -51,3 +51,10 @@ Created: 2026-03-20
   - a fresh runtime probe in this run reproduced that blocker exactly under `PYTHONPATH=python ./.venv/bin/python`: `rebar.compile()` succeeds for the shared bytes verbose pattern and `MULTILINE | VERBOSE`, but all six positive and miss helper calls from the anchored verbose owner table still raise `NotImplementedError: rebar.Pattern.search()/fullmatch() is a scaffold placeholder; compiled pattern semantics are not implemented yet`;
   - `tests/python/test_module_workflow_parity_suite.py` already defines the direct owner-path `VERBOSE_COMPILE_WORKFLOW_CASES` and the adjacent `VERBOSE_BYTES_COMPILE_CASE_ID`, so this prerequisite can stay on the existing parity surface by exercising the bytes-encoded forms of the same six cases instead of opening another branch; and
   - `ops/state/current_status.md` already names this exact implementation prerequisite as the immediate next step, while `ops/state/backlog.md` already truthfully says that no ready feature follow-on survives after the next likely drain, so no additional state prose refresh is needed in this run.
+
+## Completion
+- 2026-03-20: Landed bounded Rust-backed bytes verbose compiled-pattern execution in `crates/rebar-core/src/lib.rs` for the exact shared `b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"` plus `MULTILINE | VERBOSE` slice. Compiled bytes `Pattern.search()` / `Pattern.fullmatch()` now return grouped matches and misses that align with CPython on the six shared owner-path verbose workflow cases, while `Pattern.match()` stays outside this task's supported slice.
+- Updated `tests/python/test_module_workflow_parity_suite.py` on the existing owner path to reuse `VERBOSE_COMPILE_WORKFLOW_CASES` and `VERBOSE_BYTES_COMPILE_CASE_ID` for bytes-encoded direct parity checks, and extended the existing source-package verbose metadata test so the bytes helper slice is asserted positively instead of only compiling successfully.
+- `crates/rebar-cpython/src/lib.rs` and `python/rebar/__init__.py` did not need logic changes: the existing `boundary_literal_match` result shape and Python wrapper marshalling already carried grouped bytes matches once the Rust core returned them.
+- Verification passed with `cargo build -p rebar-cpython` and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`537 passed, 1 skipped`). No correctness publication or benchmark artifacts changed in this task.
+- This implementation unblocks `ops/tasks/blocked/RBR-0412-publish-module-workflow-bytes-verbose-pattern-helper-pair.md`.

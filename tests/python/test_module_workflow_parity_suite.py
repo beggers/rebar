@@ -253,6 +253,9 @@ MULTILINE_BYTES_COMPILE_CASE_ID = "workflow-compile-bytes-multiline-regression"
 (VERBOSE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
 )
+(VERBOSE_BYTES_COMPILE_CASE,) = tuple(
+    case for case in COMPILE_CASES if case.case_id == VERBOSE_BYTES_COMPILE_CASE_ID
+)
 (MULTILINE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == MULTILINE_COMPILE_CASE_ID
 )
@@ -1686,6 +1689,25 @@ def _compile_verbose_regression_pattern(
     return observed_pattern, expected_pattern
 
 
+def _compile_verbose_regression_bytes_pattern(
+    backend_name: str,
+    backend: object,
+) -> tuple[object, re.Pattern[bytes]]:
+    pattern = case_pattern(VERBOSE_BYTES_COMPILE_CASE)
+    assert isinstance(pattern, bytes)
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        VERBOSE_BYTES_COMPILE_CASE.flags or 0,
+    )
+
+    assert expected_pattern.flags == int(re.MULTILINE | re.VERBOSE)
+    assert expected_pattern.groupindex == {"key": 1}
+    return observed_pattern, expected_pattern
+
+
 def _compile_compiled_pattern_case(
     regex_api: object,
     pattern: str | bytes,
@@ -1828,6 +1850,35 @@ def _assert_verbose_compile_case_matches_cpython(
     assert observed.group(0) == expected.group(0) == case.expected_group0
     assert observed.group("key") == expected.group("key") == case.expected_key
     assert observed.groupdict() == expected.groupdict() == {"key": case.expected_key}
+    assert observed.span() == expected.span() == case.expected_span
+    assert_match_convenience_api_parity(observed, expected)
+
+
+def _assert_verbose_compile_bytes_case_matches_cpython(
+    backend_name: str,
+    observed_pattern: object,
+    expected_pattern: re.Pattern[bytes],
+    case: VerboseCompileWorkflowCase,
+) -> None:
+    bytes_text = case.text.encode("ascii")
+    observed = getattr(observed_pattern, case.helper)(bytes_text)
+    expected = getattr(expected_pattern, case.helper)(bytes_text)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+    if case.expected_group0 is None:
+        assert observed is None
+        assert expected is None
+        return
+
+    expected_group0 = case.expected_group0.encode("ascii")
+    expected_key = case.expected_key.encode("ascii")
+
+    assert observed is not None
+    assert expected is not None
+    assert observed.group(0) == expected.group(0) == expected_group0
+    assert observed.group("key") == expected.group("key") == expected_key
+    assert observed.groupdict() == expected.groupdict() == {"key": expected_key}
     assert observed.span() == expected.span() == case.expected_span
     assert_match_convenience_api_parity(observed, expected)
 
@@ -2302,6 +2353,27 @@ def test_verbose_compile_workflow_contract_matches_cpython(
     )
 
     _assert_verbose_compile_case_matches_cpython(
+        backend_name,
+        observed_pattern,
+        expected_pattern,
+        case,
+    )
+
+
+@pytest.mark.parametrize(
+    "case", VERBOSE_COMPILE_WORKFLOW_CASES, ids=lambda case: f"bytes-{case.case_id}"
+)
+def test_verbose_bytes_compile_workflow_contract_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: VerboseCompileWorkflowCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = _compile_verbose_regression_bytes_pattern(
+        backend_name,
+        backend,
+    )
+
+    _assert_verbose_compile_bytes_case_matches_cpython(
         backend_name,
         observed_pattern,
         expected_pattern,
@@ -2891,6 +2963,13 @@ def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned
         rebar.compile(bytes_pattern, int(VERBOSE_COMPILE_CASE.flags or 0))
         is compiled_bytes
     )
+    for case in VERBOSE_COMPILE_WORKFLOW_CASES:
+        _assert_verbose_compile_bytes_case_matches_cpython(
+            "rebar",
+            compiled_bytes,
+            expected_bytes,
+            case,
+        )
 
     compiled_multiline, expected_multiline = compile_with_cpython_parity(
         "rebar",
