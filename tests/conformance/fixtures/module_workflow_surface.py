@@ -12,6 +12,7 @@ class _IndexLike:
 
 
 _INDEX_TWO = _IndexLike(2)
+_INDEX_FOUR = _IndexLike(4)
 
 
 MANIFEST = {
@@ -449,6 +450,80 @@ MANIFEST = {
       "categories": ["workflow", "search", "literal", "keyword", "pos", "str"],
       "notes": [
         "Publishes the representative bound Pattern.search pos= keyword workflow without widening into bool or __index__ variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-search-str-bool-endpos-keyword",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "z",
+      "helper": "search",
+      "args": ["zabcabc"],
+      "kwargs": {
+        "endpos": True
+      },
+      "categories": ["workflow", "search", "literal", "keyword", "endpos", "bool", "str"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.search endpos= bool workflow without widening into match/fullmatch or collection keyword variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-search-bytes-endpos-keyword",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabc"
+        }
+      ],
+      "kwargs": {
+        "endpos": 4
+      },
+      "categories": ["workflow", "search", "literal", "keyword", "endpos", "bytes"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.search endpos= keyword workflow on bytes payloads without widening into other bytes keyword variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-search-str-pos-indexlike",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "args": ["zabcabc"],
+      "kwargs": {
+        "pos": _INDEX_TWO
+      },
+      "categories": ["workflow", "search", "literal", "keyword", "pos", "indexlike", "str"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.search pos= __index__ workflow without widening into the remaining Pattern.search window keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-search-bytes-endpos-indexlike",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabc"
+        }
+      ],
+      "kwargs": {
+        "endpos": _INDEX_FOUR
+      },
+      "categories": ["workflow", "search", "literal", "keyword", "endpos", "indexlike", "bytes"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.search endpos= __index__ workflow on bytes payloads without widening into the remaining Pattern.search window keyword rows."
       ]
     },
     {

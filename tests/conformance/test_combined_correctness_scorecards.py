@@ -110,6 +110,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
             "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
             "workflow-pattern-search-str-pos-keyword",
+            "workflow-pattern-search-str-bool-endpos-keyword",
+            "workflow-pattern-search-bytes-endpos-keyword",
             "workflow-pattern-match-str-pos-keyword",
             "workflow-pattern-fullmatch-bytes-window-keyword",
             "workflow-pattern-findall-str-window-keyword",

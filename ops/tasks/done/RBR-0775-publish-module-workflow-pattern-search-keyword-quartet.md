@@ -1,8 +1,9 @@
 # RBR-0775: Publish the module-workflow `Pattern.search` keyword quartet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the remaining bounded `Pattern.search` keyword quartet, publishing the exact `endpos=` / `endpos=True` / `pos=__index__` / `endpos=__index__` workflows for the adjacent `"z"`, `"abc"`, and `b"abc"` anchors before the remaining `Pattern.match` / `Pattern.fullmatch` / `Pattern.findall` / `Pattern.finditer` bool-or-indexlike rows, pattern replacement keyword rows, compiled-pattern module keyword rows, or another owner family reopens the queue.
@@ -81,3 +82,9 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed the four new workflow ids are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the representative `workflow-pattern-search-str-pos-keyword` row but still stops short of the remaining `Pattern.search` `endpos=` / bool / `__index__` variants; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- 2026-03-20: Added exactly four new `pattern_call` rows to `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-pattern-search-str-bool-endpos-keyword`, `workflow-pattern-search-bytes-endpos-keyword`, `workflow-pattern-search-str-pos-indexlike`, and `workflow-pattern-search-bytes-endpos-indexlike`. The rows stay on the existing `module-workflow-surface` owner manifest, preserve the required `str`/`bytes` split, and reuse the exact direct anchors already defined in `PATTERN_KEYWORD_CALL_CASES`, including `_INDEX_TWO` and `_INDEX_FOUR` for the `__index__` cases.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the owner-path contract now expects `75` published rows, a `49`/`26` `str`/`bytes` split, and `30` published `pattern_call` rows with a `14`/`3`/`9`/`2`/`2` `search`/`match`/`fullmatch`/`findall`/`finditer` helper breakdown. The published pattern-keyword slice now contains nine rows in the required order and maps back to the nine direct anchors in that same order, using normalized keyword signatures so the new `__index__` rows compare by value rather than object identity.
+- Extended `tests/conformance/test_combined_correctness_scorecards.py` to include the newly published `Pattern.search` keyword slice in the `module-workflow-surface` representative inventory, then republished `reports/correctness/latest.py`. Reading the tracked artifact shows `1445` total / `1445` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `75/75/0`, `module.workflow.str` at `49/49/0`, `module.workflow.bytes` at `26/26/0`, `module.workflow.pattern_call` at `30/30/0`, and `module.workflow.module_call` unchanged at `33/33/0`. The tracked report now includes `workflow-pattern-search-str-bool-endpos-keyword` as a visible representative `module-workflow-surface` pattern-call case.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0775-module-workflow-pattern-search-keyword-quartet.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`. No existing benchmark workload or benchmark expectation module matched these four exact keyword rows, so this run stayed on the required correctness-publication path only.
