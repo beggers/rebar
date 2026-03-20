@@ -358,6 +358,32 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-search-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "use_compiled_pattern": True,
+      "args": ["zabczz"],
+      "categories": ["workflow", "search", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the first literal str module-level search() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-match-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "use_compiled_pattern": True,
+      "args": ["abcdef"],
+      "categories": ["workflow", "match", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the first literal str module-level match() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-bytes-verbose-regression-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",

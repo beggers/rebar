@@ -181,6 +181,8 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-cache-hit-str",
     "workflow-cache-hit-bytes",
     "workflow-purge-reset-str",
+    "workflow-module-search-str-compiled-pattern",
+    "workflow-module-match-str-compiled-pattern",
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
     "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
     "workflow-escape-str",
@@ -209,7 +211,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "fullmatch"): 7,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
-        ("module_call", "search"): 1,
+        ("module_call", "search"): 2,
+        ("module_call", "match"): 1,
         ("module_call", "fullmatch"): 1,
         ("module_call", "escape"): 2,
     }
@@ -276,6 +279,15 @@ PATTERN_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "pattern_
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
+PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
+    "workflow-module-search-str-compiled-pattern",
+    "workflow-module-match-str-compiled-pattern",
+)
+PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
+    case
+    for case in MODULE_CALL_CASES
+    if case.case_id in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+)
 PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
     "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
@@ -284,6 +296,15 @@ PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
     if case.case_id in PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+)
+PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
+    *PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS,
+    *PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS,
+)
+PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
+    case
+    for case in MODULE_CALL_CASES
+    if case.case_id in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
 )
 ESCAPE_CASES = tuple(
     case
@@ -502,8 +523,7 @@ def _module_workflow_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
         "cache": frozenset(case.case_id for case in CACHE_CASES),
         "purge": frozenset(case.case_id for case in PURGE_CASES),
         "compiled-module-helper": frozenset(
-            case.case_id
-            for case in PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
+            case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
         ),
         "escape": frozenset(case.case_id for case in ESCAPE_CASES),
     }
@@ -1336,6 +1356,19 @@ COMPILED_PATTERN_MODULE_HELPER_CASES = (
         result_kind="value",
     ),
 )
+PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
+    "compiled-pattern-search-str",
+    "compiled-pattern-match-str",
+)
+PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
+    case
+    for case in COMPILED_PATTERN_MODULE_HELPER_CASES
+    if case.case_id in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
+)
+PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = (
+    *PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES,
+    *VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES,
+)
 COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
     CompiledPatternModuleHelperErrorCase(
         case_id="compiled-pattern-search-str-on-bytes-string",
@@ -2113,23 +2146,32 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
     ].args == [verbose_cases_by_id["fullmatch-rejects-lowercase-key"].text.encode("latin-1")]
 
 
-def test_module_workflow_surface_publishes_verbose_bytes_compiled_pattern_module_helpers_from_direct_cases(
+def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
     assert tuple(
-        case.case_id for case in PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ) == PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+        case.case_id for case in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES
+    ) == PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
     assert tuple(
-        case.helper for case in PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
+        case.case_id
+        for case in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
+    ) == PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
+    assert tuple(
+        case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+    ) == PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+    assert tuple(
+        case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == tuple(
-        case.helper for case in VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
+        case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
     )
 
     for fixture_case, direct_case in zip(
-        PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES,
-        VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES,
+        PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
+        PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES,
     ):
         assert fixture_case.use_compiled_pattern is True
-        assert fixture_case.text_model == "bytes"
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
+        )
         assert case_pattern(fixture_case) == direct_case.pattern
         assert tuple(fixture_case.args) == direct_case.args
         assert fixture_case.flags == direct_case.flags

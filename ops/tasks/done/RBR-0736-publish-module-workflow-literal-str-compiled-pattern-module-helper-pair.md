@@ -1,6 +1,6 @@
 # RBR-0736: Publish the module-workflow literal str compiled-pattern module-helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -53,3 +53,9 @@ Created: 2026-03-20
   - a direct runtime probe in this run confirmed that `rebar.search(rebar.compile("abc"), "zabczz")` and `rebar.match(rebar.compile("abc"), "abcdef")` already match CPython with spans `(1, 4)` and `(0, 3)`;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes only the bytes verbose compiled-pattern `module_call` pair plus `escape()` rows, leaving this literal `str` pair as the next bounded adjacent publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added only the requested `module_call` rows to `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-module-search-str-compiled-pattern` and `workflow-module-match-str-compiled-pattern`, both pinned to `pattern == "abc"`, zero flags, `use_compiled_pattern == True`, and the literal `str` helper args from the task.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the existing `module-workflow-surface` owner path now expects `31` published rows, a `module_call` helper breakdown of `search == 2`, `match == 1`, `fullmatch == 1`, and `escape == 2`, and a compiled-module-helper ownership bucket that covers the new literal `str` pair alongside the published bytes verbose pair. The fixture-backed publication is explicitly pinned to the direct parity anchors `compiled-pattern-search-str` and `compiled-pattern-match-str`.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated `reports/correctness/latest.py`. The tracked publication now reads `1401` total / `1401` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `31` / `31` / `0`, `module.workflow.str` at `17` / `17` / `0`, and `module.workflow.module_call` at `6` / `6` / `0`; both new literal `str` compiled-pattern rows are present in the tracked artifact with `comparison == "pass"`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0736-module-workflow-literal-str-compiled-pattern-module-helpers.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `31` total / `31` passed / `0` `unimplemented`.
