@@ -1,8 +1,9 @@
 # RBR-0742: Collapse wider-ranged-repeat direct-bytes follow-on case sidecar onto canonical surface specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `DIRECT_BYTES_FOLLOW_ON_CASES` tuple from `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` so `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` becomes the sole canonical owner of direct-bytes follow-on case ordering and payload routing inside the wider-ranged-repeat parity owner.
@@ -107,3 +108,8 @@ PY` reported the existing tail through `RBR-0741`, no reserved missing tail ids,
   - `rg -n 'DIRECT_BYTES_FOLLOW_ON_CASES' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` shows one declaration plus the seven target parametrizations in this file; and
   - the inline source-absence probe and final `rg` absence check in Acceptance currently fail exactly on this cleanup because the mirrored tuple still exists.
 - This stays on the same bounded post-JSON parity-harness cleanup track as `RBR-0709` and `RBR-0741`: those tasks already removed the detached direct-bytes sidecars from adjacent quantified-alternation and wider-ranged owner metadata, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` already carries the case payloads and ordering needed to delete this remaining flattened tuple without changing behavior.
+
+## Completion Notes
+- 2026-03-20: Removed `DIRECT_BYTES_FOLLOW_ON_CASES` from `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`.
+- 2026-03-20: Added a tiny file-local helper that flattens `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` for the seven direct-bytes follow-on parametrizations, preserving the existing canonical case order and payload routing.
+- 2026-03-20: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1341 passed in 0.99s`), the canonical-order probe from the task (`ok`), the inline source-absence probe (`ok`), and `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_CASES' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"` (no matches).
