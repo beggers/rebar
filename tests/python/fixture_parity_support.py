@@ -767,11 +767,14 @@ def compile_with_cpython_parity(
     backend: object,
     pattern: str | bytes,
     flags: int = 0,
+    *,
+    check_cache_identity: bool = True,
 ) -> tuple[object, re.Pattern[str] | re.Pattern[bytes]]:
     observed = backend.compile(pattern, flags)
     expected = re.compile(pattern, flags)
 
-    assert observed is backend.compile(pattern, flags)
+    if check_cache_identity:
+        assert observed is backend.compile(pattern, flags)
     assert_pattern_parity(backend_name, observed, expected)
     return observed, expected
 

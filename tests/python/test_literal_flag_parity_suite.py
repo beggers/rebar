@@ -57,6 +57,25 @@ class FakeBoundaryCase:
     expected_calls: tuple[tuple[object, ...], ...]
 
 
+@dataclass(frozen=True)
+class NativeCompileCase:
+    id: str
+    pattern: str | bytes
+    flags: int
+    expected_flags: int
+    check_cache_identity: bool = True
+
+
+@dataclass(frozen=True)
+class CompiledModuleCallCase:
+    id: str
+    helper: str
+    pattern: str | bytes
+    string: str | bytes
+    flags: int = 0
+    check_cache_identity: bool = True
+
+
 def _module_case_from_fixture(case: FixtureCase) -> ModuleCallCase:
     assert case.operation == "module_call"
     assert case.helper is not None
@@ -111,6 +130,14 @@ def _call_pattern_helper(pattern: object, case: PatternCallCase) -> object:
         if case.endpos is not None:
             args.append(case.endpos)
     return getattr(pattern, case.helper)(*args)
+
+
+def _call_module_helper_with_compiled_pattern(
+    regex_api: object,
+    compiled_pattern: object,
+    case: CompiledModuleCallCase,
+) -> object:
+    return getattr(regex_api, case.helper)(compiled_pattern, case.string)
 
 
 def _require_native_module() -> None:
@@ -331,6 +358,58 @@ NATIVE_PATTERN_PARITY_CASES = (
         flags=LOCALE_FLAGS,
     ),
 )
+NATIVE_COMPILE_CASES = (
+    NativeCompileCase(
+        id="inline-flag-compile",
+        pattern="(?i)abc",
+        flags=0,
+        expected_flags=IGNORECASE_UNICODE_FLAGS,
+        check_cache_identity=False,
+    ),
+    NativeCompileCase(
+        id="locale-bytes-compile",
+        pattern=b"abc",
+        flags=LOCALE_FLAGS,
+        expected_flags=LOCALE_FLAGS,
+    ),
+)
+NATIVE_COMPILED_MODULE_HELPER_CASES = (
+    CompiledModuleCallCase(
+        id="inline-flag-compiled-module-search",
+        helper="search",
+        pattern="(?i)abc",
+        string="zzABCzz",
+        check_cache_identity=False,
+    ),
+    CompiledModuleCallCase(
+        id="locale-bytes-compiled-module-search",
+        helper="search",
+        pattern=b"abc",
+        string=b"zzabczz",
+        flags=LOCALE_FLAGS,
+    ),
+    CompiledModuleCallCase(
+        id="locale-bytes-compiled-module-match",
+        helper="match",
+        pattern=b"abc",
+        string=b"abczz",
+        flags=LOCALE_FLAGS,
+    ),
+    CompiledModuleCallCase(
+        id="locale-bytes-compiled-module-fullmatch",
+        helper="fullmatch",
+        pattern=b"abc",
+        string=b"abc",
+        flags=LOCALE_FLAGS,
+    ),
+    CompiledModuleCallCase(
+        id="locale-bytes-compiled-module-fullmatch-miss",
+        helper="fullmatch",
+        pattern=b"abc",
+        string=b"abcz",
+        flags=LOCALE_FLAGS,
+    ),
+)
 
 CACHE_HIT_BYTES_IGNORECASE_CASE = LITERAL_FLAG_CASES_BY_ID[
     "flag-cache-hit-bytes-ignorecase"
@@ -535,6 +614,61 @@ def test_native_literal_flag_compiled_workflows_match_cpython(
     assert_match_result_parity("rebar", observed, expected)
     assert expected is not None
     assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", NATIVE_COMPILE_CASES, ids=lambda case: case.id)
+def test_native_literal_flag_compile_metadata_matches_cpython(
+    case: NativeCompileCase,
+) -> None:
+    _require_native_module()
+
+    observed, expected = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        case.pattern,
+        case.flags,
+        check_cache_identity=case.check_cache_identity,
+    )
+
+    assert_pattern_parity("rebar", observed, expected)
+    assert observed.pattern == expected.pattern == case.pattern
+    assert observed.flags == expected.flags == case.expected_flags
+
+
+@pytest.mark.parametrize(
+    "case",
+    NATIVE_COMPILED_MODULE_HELPER_CASES,
+    ids=lambda case: case.id,
+)
+def test_native_literal_flag_module_helpers_accept_compiled_patterns_with_cpython_parity(
+    case: CompiledModuleCallCase,
+) -> None:
+    _require_native_module()
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        case.pattern,
+        case.flags,
+        check_cache_identity=case.check_cache_identity,
+    )
+
+    observed = _call_module_helper_with_compiled_pattern(
+        rebar,
+        observed_pattern,
+        case,
+    )
+    expected = _call_module_helper_with_compiled_pattern(
+        re,
+        expected_pattern,
+        case,
+    )
+
+    assert_match_result_parity("rebar", observed, expected, check_regs=True)
+    if expected is not None:
+        assert observed.re is observed_pattern
+        assert expected.re is expected_pattern
+        assert_match_convenience_api_parity(observed, expected)
 
 
 @pytest.mark.parametrize("case", FAKE_BOUNDARY_CASES, ids=lambda case: case.id)

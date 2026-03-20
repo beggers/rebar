@@ -66,6 +66,18 @@ from tests.python.fixture_parity_support import (
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
+
+
+class _NonCachingStdlibBackend:
+    @staticmethod
+    def compile(
+        pattern: str | bytes,
+        flags: int = 0,
+    ) -> re.Pattern[str] | re.Pattern[bytes]:
+        re.purge()
+        return re.compile(pattern, flags)
+
+
 SELECTOR_EXPECTATION_TABLE = (
     (
         COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
@@ -3171,6 +3183,27 @@ def test_compile_with_cpython_parity_covers_representative_supported_patterns(
         assert observed.groupindex == expected.groupindex == {"word": 1}
     else:
         assert observed.groupindex == expected.groupindex == {}
+
+
+def test_compile_with_cpython_parity_can_skip_cache_identity_for_supported_non_caching_backend() -> None:
+    observed, expected = compile_with_cpython_parity(
+        "stdlib",
+        _NonCachingStdlibBackend(),
+        "abc",
+        check_cache_identity=False,
+    )
+
+    assert observed.pattern == expected.pattern == "abc"
+    assert observed.flags == expected.flags == int(re.UNICODE)
+
+
+def test_compile_with_cpython_parity_rejects_non_caching_backend_by_default() -> None:
+    with pytest.raises(AssertionError):
+        compile_with_cpython_parity(
+            "stdlib",
+            _NonCachingStdlibBackend(),
+            "abc",
+        )
 
 
 @pytest.mark.parametrize(
