@@ -115,6 +115,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-match-str-compiled-pattern",
             "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
             "workflow-module-match-str-bounded-wildcard-compiled-pattern",
+            "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
             "workflow-module-search-bytes-verbose-regression-compiled-pattern",
             "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
             "workflow-module-split-str-compiled-pattern",

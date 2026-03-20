@@ -1,6 +1,6 @@
 # RBR-0753: Publish the module-workflow bounded wildcard remaining compiled-pattern fullmatch row
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -52,3 +52,8 @@ Created: 2026-03-20
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the bounded-wildcard raw module-level `search()` / `match()` / `fullmatch()` rows plus the compiled-pattern bounded-wildcard `search()` / `match()` pair, but not the remaining compiled-pattern bounded-wildcard `fullmatch()` row, leaving this exact row as the next bounded adjacent publication on the same owner path; and
   - no blocked feature task exists to reopen first.
 - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on currently survives after the likely same-cycle drain, so this one-task refill does not need a tracked state-prose change.
+
+## Completion
+- 2026-03-20: Added `workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern` to `tests/conformance/fixtures/module_workflow_surface.py`, extended the shared parity-owner expectations in `tests/python/test_module_workflow_parity_suite.py`, and refreshed the combined-scorecard representative case inventory in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0753-module-workflow-bounded-wildcard-remaining-compiled-pattern-fullmatch-row.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- The tracked published scorecard changed in `reports/correctness/latest.py`: combined totals are now `1417` total / `1417` passed / `0` unimplemented across `114` manifests, `module.workflow` is `47` / `47` / `0`, `module.workflow.str` is `32` / `32` / `0`, and `module.workflow.module_call` is `14` / `14` / `0`.

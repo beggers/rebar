@@ -542,6 +542,19 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_fullmatch_workflow",
+      "pattern": "a.c",
+      "helper": "fullmatch",
+      "use_compiled_pattern": True,
+      "args": ["abc"],
+      "categories": ["workflow", "fullmatch", "wildcard", "bounded", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the exact compiled-pattern module-level fullmatch() workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-bytes-verbose-regression-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
