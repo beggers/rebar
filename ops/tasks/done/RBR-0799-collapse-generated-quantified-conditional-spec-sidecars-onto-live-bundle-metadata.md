@@ -1,6 +1,6 @@
 # RBR-0799: Collapse generated quantified conditional spec sidecars onto live bundle metadata
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -63,3 +63,4 @@ print("ok")
 PY` currently passes (`ok`), showing both sidecars are still live and are duplicating facts already available from the bundle metadata and generated candidate-text table.
 - This follows the same post-JSON generated-spec sidecar-removal track as:
   - `ops/tasks/done/RBR-0797-collapse-generated-quantified-alternation-spec-sidecars-onto-live-bundle-metadata.md`
+- 2026-03-20: Removed `GeneratedQuantifiedConditionalParitySpec.fixture_name` and `.expected_candidate_count` from `tests/python/test_conditional_group_exists_parity_suite.py`, updated the generated-manifest anchoring test to derive the two published fixture paths from the live `FixtureBundle` metadata and to derive candidate-count expectations from the existing generated candidate-text helper/table, and kept the generated parity spec registries, bounded cases, optional-group conditional branch cases, and supplemental fullmatch/miss coverage intact. Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py` (`530 passed in 0.47s`) and `bash -lc "! rg -n 'fixture_name: str|expected_candidate_count: int|fixture_name=|expected_candidate_count=|spec\\.fixture_name|spec\\.expected_candidate_count' tests/python/test_conditional_group_exists_parity_suite.py"` (passed with no matches).

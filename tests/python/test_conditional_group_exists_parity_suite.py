@@ -70,11 +70,9 @@ class SupplementalMissCase:
 @dataclass(frozen=True)
 class GeneratedQuantifiedConditionalParitySpec:
     bundle: FixtureBundle
-    fixture_name: str
     expected_compile_case_ids: tuple[str, ...]
     expected_patterns: frozenset[str]
     branch_choices: tuple[str, ...]
-    expected_candidate_count: int
     failure_prefix: str
 
 
@@ -168,7 +166,6 @@ NESTED_ALTERNATION_PATTERN_CASES = fixture_cases_for_operation(
 GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
     GeneratedQuantifiedConditionalParitySpec(
         bundle=QUANTIFIED_CONDITIONAL_BUNDLE,
-        fixture_name="conditional_group_exists_quantified_workflows.py",
         expected_compile_case_ids=(
             "conditional-group-exists-quantified-compile-metadata-str",
             "named-conditional-group-exists-quantified-compile-metadata-str",
@@ -180,12 +177,10 @@ GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
             }
         ),
         branch_choices=("d", "e"),
-        expected_candidate_count=32,
         failure_prefix="quantified conditional generated parity drifted",
     ),
     GeneratedQuantifiedConditionalParitySpec(
         bundle=QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE,
-        fixture_name="conditional_group_exists_quantified_alternation_workflows.py",
         expected_compile_case_ids=(
             "conditional-group-exists-quantified-alternation-compile-metadata-str",
             "named-conditional-group-exists-quantified-alternation-compile-metadata-str",
@@ -197,7 +192,6 @@ GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
             }
         ),
         branch_choices=("de", "df", "eg", "eh"),
-        expected_candidate_count=128,
         failure_prefix="quantified conditional alternation generated parity drifted",
     ),
 )
@@ -583,18 +577,26 @@ def test_generated_quantified_conditional_compile_cases_stay_anchored_to_publish
     spec: GeneratedQuantifiedConditionalParitySpec,
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+    candidate_texts = GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+        spec.bundle.expected_manifest_id
+    ]
 
-    assert spec.bundle.manifest.path == CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
+    assert tuple(
+        generated_spec.bundle.manifest.path
+        for generated_spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+    ) == (
+        QUANTIFIED_CONDITIONAL_BUNDLE.manifest.path,
+        QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE.manifest.path,
+    )
+    assert spec.bundle.manifest.path == published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        spec.bundle.expected_manifest_id,
+    ).manifest.path
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {str_case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == {"str"}
-    assert (
-        len(
-            GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
-                spec.bundle.expected_manifest_id
-            ]
-        )
-        == spec.expected_candidate_count
+    assert len(candidate_texts) == len(
+        _build_generated_quantified_conditional_candidate_texts(spec.branch_choices)
     )
 
 
