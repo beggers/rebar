@@ -1324,6 +1324,45 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "use_compiled_pattern": True,
+      "args": ["abc", 1],
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "categories": ["workflow", "split", "literal", "str", "maxsplit", "duplicate-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level split() duplicate maxsplit= keyword rejection on str payloads without widening into the remaining compiled-pattern keyword-error ladder."
+      ]
+    },
+    {
+      "id": "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "split", "literal", "bytes", "unexpected-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level split() unexpected keyword rejection on bytes payloads without widening into the remaining compiled-pattern keyword-error ladder."
+      ]
+    },
+    {
       "id": "workflow-module-findall-bytes-compiled-pattern",
       "operation": "module_call",
       "family": "module_findall_workflow",
@@ -1411,6 +1450,38 @@ MANIFEST = {
       "categories": ["workflow", "sub", "literal", "keyword", "count", "indexlike", "bytes", "compiled-pattern"],
       "notes": [
         "Publishes the adjacent compiled-pattern module-level sub() count=__index__ keyword workflow on bytes payloads without widening into compiled-pattern keyword-error rows."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "use_compiled_pattern": True,
+      "args": ["x", "abc", 1],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "count", "duplicate-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level sub() duplicate count= keyword rejection on str payloads without widening into the remaining compiled-pattern keyword-error ladder."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "use_compiled_pattern": True,
+      "args": ["x", "abc"],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "unexpected-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level sub() unexpected keyword rejection on str payloads without widening into the remaining compiled-pattern keyword-error ladder."
       ]
     },
     {
@@ -1503,6 +1574,63 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "keyword", "count", "indexlike", "str", "compiled-pattern"],
       "notes": [
         "Publishes the adjacent compiled-pattern module-level subn() count=__index__ keyword workflow on str payloads without widening into compiled-pattern keyword-error rows."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        1
+      ],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "count", "duplicate-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level subn() duplicate count= keyword rejection on bytes payloads without widening into the remaining compiled-pattern keyword-error ladder."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level subn() unexpected keyword rejection on bytes payloads without widening into the remaining compiled-pattern keyword-error ladder."
       ]
     },
     {
