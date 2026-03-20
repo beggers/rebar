@@ -3834,6 +3834,25 @@ def test_finditer_parity_helper_covers_match_metadata_and_iterator_exhaustion(
     )
 
 
+def test_finditer_parity_helper_rejects_exhausted_non_self_iterables() -> None:
+    class _AlreadyExhaustedNonSelfIterator:
+        def __iter__(self) -> object:
+            return iter(())
+
+        def __next__(self) -> object:
+            raise StopIteration
+
+    with pytest.raises(
+        AssertionError,
+        match="finditer result must be its own iterator",
+    ):
+        assert_finditer_parity(
+            "stub-backend",
+            _AlreadyExhaustedNonSelfIterator(),
+            iter(()),
+        )
+
+
 @pytest.mark.parametrize(
     "use_compiled_pattern",
     (

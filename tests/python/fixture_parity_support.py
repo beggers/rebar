@@ -938,11 +938,24 @@ def assert_finditer_parity(
     *,
     check_regs: bool = False,
 ) -> None:
-    observed_matches = list(observed_iter)
-    expected_matches = list(expected_iter)
+    assert iter(observed_iter) is observed_iter, (
+        f"{backend_name} finditer result must be its own iterator"
+    )
+    assert iter(expected_iter) is expected_iter, (
+        "CPython finditer result must be its own iterator"
+    )
 
-    assert len(observed_matches) == len(expected_matches)
-    for observed, expected in zip(observed_matches, expected_matches):
+    sentinel = object()
+    while True:
+        observed = next(observed_iter, sentinel)
+        expected = next(expected_iter, sentinel)
+
+        assert (observed is sentinel) == (expected is sentinel), (
+            f"{backend_name} finditer yielded a different number of matches than CPython"
+        )
+        if expected is sentinel:
+            break
+
         assert_match_result_parity(
             backend_name,
             observed,
