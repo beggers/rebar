@@ -10,7 +10,6 @@ import pytest
 from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    FixtureBundleSpec,
     SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -25,7 +24,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
-    load_fixture_bundles,
+    load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
@@ -108,374 +107,54 @@ FAILURE_PREVIEW_LIMIT = 20
 STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
 
 
-FIXTURE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        "literal_alternation_workflows.py",
-        expected_manifest_id="literal-alternation-workflows",
-        expected_case_ids=frozenset(
-            {
-                "literal-alternation-compile-metadata-str",
-                "literal-alternation-module-search-str",
-                "literal-alternation-pattern-fullmatch-str",
-            }
-        ),
-        expected_patterns=frozenset({"ab|ac"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "fullmatch"): 1,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "exact_repeat_quantified_group_alternation_workflows.py",
-        expected_manifest_id="exact-repeat-quantified-group-alternation-workflows",
-        expected_case_ids=frozenset(
-            {
-                "exact-repeat-quantified-group-alternation-numbered-compile-metadata-str",
-                "exact-repeat-quantified-group-alternation-numbered-module-search-bc-bc-str",
-                "exact-repeat-quantified-group-alternation-numbered-module-search-bc-de-str",
-                "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-de-de-str",
-                "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
-                "exact-repeat-quantified-group-alternation-named-compile-metadata-str",
-                "exact-repeat-quantified-group-alternation-named-module-search-bc-bc-str",
-                "exact-repeat-quantified-group-alternation-named-module-search-bc-de-str",
-                "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-de-de-str",
-                "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-extra-repetition-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(bc|de){2}d",
-                r"a(?P<word>bc|de){2}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 4,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "quantified_alternation_workflows.py",
-        expected_manifest_id="quantified-alternation-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-alternation-numbered-compile-metadata-str",
-                "quantified-alternation-numbered-module-search-lower-bound-str",
-                "quantified-alternation-numbered-pattern-fullmatch-second-repetition-str",
-                "quantified-alternation-named-compile-metadata-str",
-                "quantified-alternation-named-module-search-second-repetition-str",
-                "quantified-alternation-named-pattern-fullmatch-lower-bound-str",
-                "quantified-alternation-numbered-compile-metadata-bytes",
-                "quantified-alternation-numbered-module-search-lower-bound-bytes",
-                "quantified-alternation-numbered-pattern-fullmatch-second-repetition-bytes",
-                "quantified-alternation-named-compile-metadata-bytes",
-                "quantified-alternation-named-module-search-second-repetition-bytes",
-                "quantified-alternation-named-pattern-fullmatch-lower-bound-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(b|c){1,2}d",
-                r"a(?P<word>b|c){1,2}d",
-                rb"a(b|c){1,2}d",
-                rb"a(?P<word>b|c){1,2}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 4,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "quantified_nested_group_alternation_workflows.py",
-        expected_manifest_id="quantified-nested-group-alternation-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-nested-group-alternation-numbered-compile-metadata-str",
-                "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",
-                "quantified-nested-group-alternation-numbered-pattern-fullmatch-repeated-mixed-str",
-                "quantified-nested-group-alternation-named-compile-metadata-str",
-                "quantified-nested-group-alternation-named-module-search-lower-bound-c-str",
-                "quantified-nested-group-alternation-named-pattern-fullmatch-repeated-mixed-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c)+)d",
-                r"a(?P<outer>(?P<inner>b|c)+)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "quantified_alternation_backtracking_heavy_workflows.py",
-        expected_manifest_id="quantified-alternation-backtracking-heavy-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-alternation-backtracking-heavy-numbered-compile-metadata-str",
-                "quantified-alternation-backtracking-heavy-numbered-module-search-lower-bound-b-branch-str",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-bc-branch-str",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-b-then-bc-str",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-b-str",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-bc-str",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-str",
-                "quantified-alternation-backtracking-heavy-named-compile-metadata-str",
-                "quantified-alternation-backtracking-heavy-named-module-search-lower-bound-bc-branch-str",
-                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-b-then-b-str",
-                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-bc-then-b-str",
-                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-str",
-                "quantified-alternation-backtracking-heavy-numbered-compile-metadata-bytes",
-                "quantified-alternation-backtracking-heavy-numbered-module-search-lower-bound-b-branch-bytes",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-bc-branch-bytes",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-b-then-bc-bytes",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-b-bytes",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-bc-bytes",
-                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-bytes",
-                "quantified-alternation-backtracking-heavy-named-compile-metadata-bytes",
-                "quantified-alternation-backtracking-heavy-named-module-search-lower-bound-bc-branch-bytes",
-                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-b-then-b-bytes",
-                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-bc-then-b-bytes",
-                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(b|bc){1,2}d",
-                r"a(?P<word>b|bc){1,2}d",
-                rb"a(b|bc){1,2}d",
-                rb"a(?P<word>b|bc){1,2}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 16,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "quantified_alternation_broader_range_workflows.py",
-        expected_manifest_id="quantified-alternation-broader-range-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-alternation-broader-range-numbered-compile-metadata-str",
-                "quantified-alternation-broader-range-numbered-module-search-lower-bound-b-str",
-                "quantified-alternation-broader-range-numbered-module-search-lower-bound-c-str",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bbb-str",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcc-str",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcb-str",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-below-lower-bound-str",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-overflow-str",
-                "quantified-alternation-broader-range-named-compile-metadata-str",
-                "quantified-alternation-broader-range-named-module-search-lower-bound-b-str",
-                "quantified-alternation-broader-range-named-module-search-lower-bound-c-str",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bbb-str",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcc-str",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcb-str",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-below-lower-bound-str",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-overflow-str",
-                "quantified-alternation-broader-range-numbered-compile-metadata-bytes",
-                "quantified-alternation-broader-range-numbered-module-search-lower-bound-b-bytes",
-                "quantified-alternation-broader-range-numbered-module-search-lower-bound-c-bytes",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bbb-bytes",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcc-bytes",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcb-bytes",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-below-lower-bound-bytes",
-                "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-overflow-bytes",
-                "quantified-alternation-broader-range-named-compile-metadata-bytes",
-                "quantified-alternation-broader-range-named-module-search-lower-bound-b-bytes",
-                "quantified-alternation-broader-range-named-module-search-lower-bound-c-bytes",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bbb-bytes",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcc-bytes",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcb-bytes",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-below-lower-bound-bytes",
-                "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-overflow-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(b|c){1,3}d",
-                r"a(?P<word>b|c){1,3}d",
-                rb"a(b|c){1,3}d",
-                rb"a(?P<word>b|c){1,3}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 20,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "quantified_alternation_conditional_workflows.py",
-        expected_manifest_id="quantified-alternation-conditional-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-alternation-conditional-numbered-compile-metadata-str",
-                "quantified-alternation-conditional-numbered-module-search-absent-workflow-str",
-                "quantified-alternation-conditional-numbered-module-search-lower-bound-b-workflow-str",
-                "quantified-alternation-conditional-numbered-pattern-fullmatch-second-repetition-b-workflow-str",
-                "quantified-alternation-conditional-numbered-pattern-fullmatch-second-repetition-mixed-workflow-str",
-                "quantified-alternation-conditional-numbered-pattern-fullmatch-no-match-workflow-str",
-                "quantified-alternation-conditional-named-compile-metadata-str",
-                "quantified-alternation-conditional-named-module-search-absent-workflow-str",
-                "quantified-alternation-conditional-named-module-search-lower-bound-c-workflow-str",
-                "quantified-alternation-conditional-named-pattern-fullmatch-second-repetition-c-workflow-str",
-                "quantified-alternation-conditional-named-pattern-fullmatch-second-repetition-mixed-workflow-str",
-                "quantified-alternation-conditional-named-pattern-fullmatch-no-match-workflow-str",
-                "quantified-alternation-conditional-numbered-compile-metadata-bytes",
-                "quantified-alternation-conditional-numbered-module-search-absent-workflow-bytes",
-                "quantified-alternation-conditional-numbered-module-search-lower-bound-b-workflow-bytes",
-                "quantified-alternation-conditional-numbered-pattern-fullmatch-second-repetition-b-workflow-bytes",
-                "quantified-alternation-conditional-numbered-pattern-fullmatch-second-repetition-mixed-workflow-bytes",
-                "quantified-alternation-conditional-numbered-pattern-fullmatch-no-match-workflow-bytes",
-                "quantified-alternation-conditional-named-compile-metadata-bytes",
-                "quantified-alternation-conditional-named-module-search-absent-workflow-bytes",
-                "quantified-alternation-conditional-named-module-search-lower-bound-c-workflow-bytes",
-                "quantified-alternation-conditional-named-pattern-fullmatch-second-repetition-c-workflow-bytes",
-                "quantified-alternation-conditional-named-pattern-fullmatch-second-repetition-mixed-workflow-bytes",
-                "quantified-alternation-conditional-named-pattern-fullmatch-no-match-workflow-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c){1,2})?(?(1)d|e)",
-                r"a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
-                rb"a((b|c){1,2})?(?(1)d|e)",
-                rb"a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "quantified_alternation_open_ended_workflows.py",
-        expected_manifest_id="quantified-alternation-open-ended-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-alternation-open-ended-numbered-compile-metadata-str",
-                "quantified-alternation-open-ended-numbered-module-search-lower-bound-b-str",
-                "quantified-alternation-open-ended-numbered-module-search-lower-bound-c-str",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-second-repetition-str",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-third-repetition-bcc-str",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-fourth-repetition-bcbc-str",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-no-match-below-lower-bound-str",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-no-match-invalid-branch-str",
-                "quantified-alternation-open-ended-named-compile-metadata-str",
-                "quantified-alternation-open-ended-named-module-search-lower-bound-b-str",
-                "quantified-alternation-open-ended-named-module-search-lower-bound-c-str",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-second-repetition-str",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-third-repetition-bcc-str",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-fourth-repetition-bcbc-str",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-below-lower-bound-str",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-invalid-branch-str",
-                "quantified-alternation-open-ended-numbered-compile-metadata-bytes",
-                "quantified-alternation-open-ended-numbered-module-search-lower-bound-b-bytes",
-                "quantified-alternation-open-ended-numbered-module-search-lower-bound-c-bytes",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-second-repetition-bytes",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-third-repetition-bcc-bytes",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-fourth-repetition-bcbc-bytes",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-no-match-below-lower-bound-bytes",
-                "quantified-alternation-open-ended-numbered-pattern-fullmatch-no-match-invalid-branch-bytes",
-                "quantified-alternation-open-ended-named-compile-metadata-bytes",
-                "quantified-alternation-open-ended-named-module-search-lower-bound-b-bytes",
-                "quantified-alternation-open-ended-named-module-search-lower-bound-c-bytes",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-second-repetition-bytes",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-third-repetition-bcc-bytes",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-fourth-repetition-bcbc-bytes",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-below-lower-bound-bytes",
-                "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-invalid-branch-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a(b|c){1,}d",
-                r"a(?P<word>b|c){1,}d",
-                rb"a(b|c){1,}d",
-                rb"a(?P<word>b|c){1,}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 20,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "quantified_alternation_nested_branch_workflows.py",
-        expected_manifest_id="quantified-alternation-nested-branch-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-alternation-nested-branch-numbered-compile-metadata-str",
-                "quantified-alternation-nested-branch-numbered-module-search-lower-bound-inner-branch-str",
-                "quantified-alternation-nested-branch-numbered-pattern-fullmatch-lower-bound-literal-branch-str",
-                "quantified-alternation-nested-branch-numbered-pattern-fullmatch-second-repetition-mixed-branches-str",
-                "quantified-alternation-nested-branch-numbered-pattern-fullmatch-no-match-str",
-                "quantified-alternation-nested-branch-named-compile-metadata-str",
-                "quantified-alternation-nested-branch-named-module-search-lower-bound-literal-branch-str",
-                "quantified-alternation-nested-branch-named-pattern-fullmatch-lower-bound-inner-branch-str",
-                "quantified-alternation-nested-branch-named-pattern-fullmatch-second-repetition-mixed-branches-str",
-                "quantified-alternation-nested-branch-named-pattern-fullmatch-no-match-str",
-                "quantified-alternation-nested-branch-numbered-compile-metadata-bytes",
-                "quantified-alternation-nested-branch-numbered-module-search-lower-bound-inner-branch-bytes",
-                "quantified-alternation-nested-branch-numbered-pattern-fullmatch-lower-bound-literal-branch-bytes",
-                "quantified-alternation-nested-branch-numbered-pattern-fullmatch-second-repetition-mixed-branches-bytes",
-                "quantified-alternation-nested-branch-numbered-pattern-fullmatch-no-match-bytes",
-                "quantified-alternation-nested-branch-named-compile-metadata-bytes",
-                "quantified-alternation-nested-branch-named-module-search-lower-bound-literal-branch-bytes",
-                "quantified-alternation-nested-branch-named-pattern-fullmatch-lower-bound-inner-branch-bytes",
-                "quantified-alternation-nested-branch-named-pattern-fullmatch-second-repetition-mixed-branches-bytes",
-                "quantified-alternation-nested-branch-named-pattern-fullmatch-no-match-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c)|de){1,2}d",
-                r"a(?P<word>(b|c)|de){1,2}d",
-                rb"a((b|c)|de){1,2}d",
-                rb"a(?P<word>(b|c)|de){1,2}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
+QUANTIFIED_ALTERNATION_FIXTURE_NAMES = (
+    "literal_alternation_workflows.py",
+    "exact_repeat_quantified_group_alternation_workflows.py",
+    "quantified_alternation_workflows.py",
+    "quantified_nested_group_alternation_workflows.py",
+    "quantified_alternation_backtracking_heavy_workflows.py",
+    "quantified_alternation_broader_range_workflows.py",
+    "quantified_alternation_conditional_workflows.py",
+    "quantified_alternation_open_ended_workflows.py",
+    "quantified_alternation_nested_branch_workflows.py",
 )
-FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+QUANTIFIED_ALTERNATION_MANIFEST_IDS = (
+    "literal-alternation-workflows",
+    "exact-repeat-quantified-group-alternation-workflows",
+    "quantified-alternation-workflows",
+    "quantified-nested-group-alternation-workflows",
+    "quantified-alternation-backtracking-heavy-workflows",
+    "quantified-alternation-broader-range-workflows",
+    "quantified-alternation-conditional-workflows",
+    "quantified-alternation-open-ended-workflows",
+    "quantified-alternation-nested-branch-workflows",
+)
+
+
+def _load_quantified_alternation_fixture_bundles() -> tuple[FixtureBundle, ...]:
+    bundles = load_published_fixture_bundles(
+        tuple(
+            CORRECTNESS_FIXTURES_ROOT / fixture_name
+            for fixture_name in QUANTIFIED_ALTERNATION_FIXTURE_NAMES
+        ),
+        pattern_extractor=case_pattern,
+    )
+    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
+    if loaded_fixture_names != QUANTIFIED_ALTERNATION_FIXTURE_NAMES:
+        raise AssertionError(
+            "quantified alternation owner manifests changed fixture path order: "
+            f"{loaded_fixture_names}"
+        )
+    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
+    if loaded_manifest_ids != QUANTIFIED_ALTERNATION_MANIFEST_IDS:
+        raise AssertionError(
+            "quantified alternation owner manifests changed manifest ids: "
+            f"{loaded_manifest_ids}"
+        )
+    return bundles
+
+
+FIXTURE_BUNDLES = _load_quantified_alternation_fixture_bundles()
 QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "quantified-alternation-workflows",
