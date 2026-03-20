@@ -2616,6 +2616,57 @@ def test_invalid_match_group_access_parity_handles_missing_name_collisions() -> 
     assert_invalid_match_group_access_parity(match, match)
 
 
+@pytest.mark.parametrize(
+    ("non_raising_accessor", "unexpected_result"),
+    (
+        pytest.param("group", "unexpected-group", id="group"),
+        pytest.param("getitem", "unexpected-item", id="getitem"),
+    ),
+)
+def test_invalid_match_group_access_parity_rejects_non_raising_accessors(
+    non_raising_accessor: str,
+    unexpected_result: object,
+) -> None:
+    expected_match = re.fullmatch(r"(?P<missing>a)(?P<missing_group>b)", "ab")
+
+    assert expected_match is not None
+
+    class _UnexpectedlyPermissiveMatch:
+        def __init__(self, wrapped_match: re.Match[str]) -> None:
+            self.re = wrapped_match.re
+            self._wrapped_match = wrapped_match
+
+        def group(self, reference: object) -> object:
+            if non_raising_accessor == "group":
+                return unexpected_result
+            return self._wrapped_match.group(reference)
+
+        def span(self, reference: object) -> tuple[int, int]:
+            return self._wrapped_match.span(reference)
+
+        def start(self, reference: object) -> int:
+            return self._wrapped_match.start(reference)
+
+        def end(self, reference: object) -> int:
+            return self._wrapped_match.end(reference)
+
+        def __getitem__(self, reference: object) -> object:
+            if non_raising_accessor == "getitem":
+                return unexpected_result
+            return self._wrapped_match[reference]
+
+    permissive_match = _UnexpectedlyPermissiveMatch(expected_match)
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            f"expected {non_raising_accessor}(-1) to raise for "
+            f"{expected_match.re.pattern!r}"
+        ),
+    ):
+        assert_invalid_match_group_access_parity(permissive_match, expected_match)
+
+
 def test_record_generated_match_failure_skips_match_specific_checks_for_no_match(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
