@@ -164,7 +164,9 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-bytes-multiline-regression",
     "workflow-compile-bytes-literal",
     "workflow-pattern-search-str-verbose-regression",
+    "workflow-pattern-search-str-verbose-regression-digits",
     "workflow-pattern-fullmatch-str-verbose-regression",
+    "workflow-pattern-fullmatch-str-verbose-regression-alpha",
     "workflow-pattern-search-str",
     "workflow-pattern-match-str",
     "workflow-pattern-fullmatch-bytes",
@@ -192,9 +194,9 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 7,
-        ("pattern_call", "search"): 2,
+        ("pattern_call", "search"): 3,
         ("pattern_call", "match"): 1,
-        ("pattern_call", "fullmatch"): 2,
+        ("pattern_call", "fullmatch"): 3,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
         ("module_call", "escape"): 2,
@@ -1890,8 +1892,26 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
     } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
     assert {
         "workflow-pattern-search-str-verbose-regression",
+        "workflow-pattern-search-str-verbose-regression-digits",
         "workflow-pattern-fullmatch-str-verbose-regression",
+        "workflow-pattern-fullmatch-str-verbose-regression-alpha",
     } <= {case.case_id for case in PATTERN_CASES}
+
+    verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
+    pattern_cases_by_id = {case.case_id: case for case in PATTERN_CASES}
+
+    assert pattern_cases_by_id["workflow-pattern-search-str-verbose-regression-digits"].helper == (
+        verbose_cases_by_id["search-multiline-middle-line-digits"].helper
+    )
+    assert pattern_cases_by_id["workflow-pattern-search-str-verbose-regression-digits"].args == [
+        verbose_cases_by_id["search-multiline-middle-line-digits"].text
+    ]
+    assert pattern_cases_by_id[
+        "workflow-pattern-fullmatch-str-verbose-regression-alpha"
+    ].helper == verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].helper
+    assert pattern_cases_by_id[
+        "workflow-pattern-fullmatch-str-verbose-regression-alpha"
+    ].args == [verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].text]
 
 
 def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:
