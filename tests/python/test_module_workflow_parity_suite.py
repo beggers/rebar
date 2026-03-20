@@ -239,6 +239,18 @@ PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
         "workflow-module-split-maxsplit-keyword-bytes",
     }
 )
+PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
+    case
+    for case in PATTERN_CASES
+    if case.case_id
+    in {
+        "workflow-pattern-search-str-pos-keyword",
+        "workflow-pattern-match-str-pos-keyword",
+        "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-findall-str-window-keyword",
+        "workflow-pattern-finditer-bytes-window-keyword",
+    }
+)
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
@@ -262,6 +274,16 @@ def _published_module_keyword_module_helper_cases_for_text_model(
     return tuple(
         case
         for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+        if case.text_model == text_model
+    )
+
+
+def _published_pattern_keyword_pattern_cases_for_text_model(
+    text_model: str,
+) -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
         if case.text_model == text_model
     )
 
@@ -2058,9 +2080,13 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 56
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 61
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 37, "bytes": 19}
+        {"str": 40, "bytes": 21}
+    )
+    assert len(PATTERN_CASES) == 26
+    assert Counter(case.helper for case in PATTERN_CASES) == Counter(
+        {"search": 10, "match": 3, "fullmatch": 9, "findall": 2, "finditer": 2}
     )
     assert len(MODULE_CALL_CASES) == 23
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
@@ -2094,15 +2120,20 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-search-str-verbose-regression",
         "workflow-pattern-search-str-verbose-regression-digits",
         "workflow-pattern-search-str-verbose-regression-too-many-digits",
+        "workflow-pattern-search-str-pos-keyword",
         "workflow-pattern-search-bytes-verbose-regression",
         "workflow-pattern-search-bytes-verbose-regression-digits",
         "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
+        "workflow-pattern-match-str-pos-keyword",
         "workflow-pattern-fullmatch-str-verbose-regression",
         "workflow-pattern-fullmatch-str-verbose-regression-alpha",
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
         "workflow-pattern-fullmatch-bytes-verbose-regression",
         "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
+        "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-findall-str-window-keyword",
+        "workflow-pattern-finditer-bytes-window-keyword",
     } <= {case.case_id for case in PATTERN_CASES}
 
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
@@ -2429,6 +2460,105 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         )
         assert case_pattern(fixture_case) == direct_pattern
         assert tuple(fixture_case.args) == tuple(direct_args)
+        assert fixture_case.kwargs == direct_case.kwargs
+        assert fixture_case.flags == 0
+
+
+def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
+) -> None:
+    def kwargs_signature(
+        kwargs: dict[str, object],
+    ) -> tuple[tuple[str, str, str], ...]:
+        return tuple(
+            (name, type(value).__name__, repr(value))
+            for name, value in sorted(kwargs.items())
+        )
+
+    def direct_signature(
+        case: PatternKeywordCallCase,
+    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, str], ...], str]:
+        return (
+            case.helper,
+            case.pattern,
+            tuple(case.args),
+            kwargs_signature(case.kwargs),
+            "bytes" if isinstance(case.pattern, bytes) else "str",
+        )
+
+    direct_cases_by_signature = {
+        direct_signature(case): case for case in PATTERN_KEYWORD_CALL_CASES
+    }
+    selected_direct_cases = tuple(
+        direct_cases_by_signature[
+            (
+                case.helper,
+                case_pattern(case),
+                tuple(case.args),
+                kwargs_signature(case.kwargs),
+                case.text_model,
+            )
+        ]
+        for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
+    )
+
+    assert tuple(
+        case.case_id
+        for case in _published_pattern_keyword_pattern_cases_for_text_model("str")
+    ) == (
+        "workflow-pattern-search-str-pos-keyword",
+        "workflow-pattern-match-str-pos-keyword",
+        "workflow-pattern-findall-str-window-keyword",
+    )
+    assert tuple(
+        case.case_id
+        for case in _published_pattern_keyword_pattern_cases_for_text_model("bytes")
+    ) == (
+        "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-finditer-bytes-window-keyword",
+    )
+    assert tuple(
+        case.case_id for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
+    ) == (
+        "workflow-pattern-search-str-pos-keyword",
+        "workflow-pattern-match-str-pos-keyword",
+        "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-findall-str-window-keyword",
+        "workflow-pattern-finditer-bytes-window-keyword",
+    )
+    assert tuple(
+        case.case_id for case in selected_direct_cases
+    ) == (
+        "pattern-search-pos-keyword-str",
+        "pattern-match-pos-keyword-str",
+        "pattern-fullmatch-window-keyword-bytes",
+        "pattern-findall-window-keyword-str",
+        "pattern-finditer-window-keyword-bytes",
+    )
+    assert len(selected_direct_cases) == len(PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES)
+    assert Counter(case.helper for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES) == (
+        Counter(
+            {
+                "search": 1,
+                "match": 1,
+                "fullmatch": 1,
+                "findall": 1,
+                "finditer": 1,
+            }
+        )
+    )
+    assert tuple(
+        case.helper for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
+    ) == tuple(case.helper for case in selected_direct_cases)
+
+    for fixture_case, direct_case in zip(
+        PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES,
+        selected_direct_cases,
+    ):
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
+        )
+        assert case_pattern(fixture_case) == direct_case.pattern
+        assert tuple(fixture_case.args) == direct_case.args
         assert fixture_case.kwargs == direct_case.kwargs
         assert fixture_case.flags == 0
 

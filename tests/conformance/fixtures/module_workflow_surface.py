@@ -421,6 +421,98 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-search-str-pos-keyword",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "args": ["zabcabc"],
+      "kwargs": {
+        "pos": 2
+      },
+      "categories": ["workflow", "search", "literal", "keyword", "pos", "str"],
+      "notes": [
+        "Publishes the representative bound Pattern.search pos= keyword workflow without widening into bool or __index__ variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-match-str-pos-keyword",
+      "operation": "pattern_call",
+      "family": "bound_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "args": ["zabcabc"],
+      "kwargs": {
+        "pos": 1
+      },
+      "categories": ["workflow", "match", "literal", "keyword", "pos", "str"],
+      "notes": [
+        "Publishes the representative bound Pattern.match pos= keyword workflow without widening into bool or __index__ variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-fullmatch-bytes-window-keyword",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabc"
+        }
+      ],
+      "kwargs": {
+        "pos": 1,
+        "endpos": 4
+      },
+      "categories": ["workflow", "fullmatch", "literal", "keyword", "window", "bytes"],
+      "notes": [
+        "Publishes the representative bound Pattern.fullmatch pos=/endpos= keyword workflow on bytes payloads without widening into bool or __index__ variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-findall-str-window-keyword",
+      "operation": "pattern_call",
+      "family": "bound_findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "args": ["zabcabcz"],
+      "kwargs": {
+        "pos": 1,
+        "endpos": 7
+      },
+      "categories": ["workflow", "findall", "literal", "keyword", "window", "str"],
+      "notes": [
+        "Publishes the representative bound Pattern.findall pos=/endpos= keyword workflow without widening into bool or __index__ variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-finditer-bytes-window-keyword",
+      "operation": "pattern_call",
+      "family": "bound_finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcz"
+        }
+      ],
+      "kwargs": {
+        "pos": 1,
+        "endpos": 7
+      },
+      "categories": ["workflow", "finditer", "literal", "keyword", "window", "bytes"],
+      "notes": [
+        "Publishes the representative bound Pattern.finditer pos=/endpos= keyword workflow on bytes payloads without widening into bool or __index__ variants."
+      ]
+    },
+    {
       "id": "workflow-cache-hit-str",
       "operation": "cache_workflow",
       "family": "cache_workflow",
