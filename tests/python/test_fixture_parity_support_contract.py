@@ -35,6 +35,7 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
+from tests.conftest import duplicate_items
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -229,10 +230,6 @@ def _declared_correctness_fixture_selectors() -> dict[str, str]:
         for name, value in vars(correctness).items()
         if name.endswith("_FIXTURE_SELECTOR") and isinstance(value, str)
     }
-
-
-def _duplicate_items(counter: Counter[str]) -> list[str]:
-    return sorted(item for item, count in counter.items() if count > 1)
 
 
 def _assert_json_literal_safe(value: object) -> None:
@@ -919,9 +916,9 @@ def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> N
     assert tuple(manifest.path.name for manifest in manifests) == tuple(
         path.name for path in DEFAULT_FIXTURE_PATHS
     )
-    assert _duplicate_items(Counter(manifest.manifest_id for manifest in manifests)) == []
-    assert _duplicate_items(Counter(manifest.suite_id for manifest in manifests)) == []
-    assert _duplicate_items(Counter(case.case_id for case in cases)) == []
+    assert duplicate_items(Counter(manifest.manifest_id for manifest in manifests)) == []
+    assert duplicate_items(Counter(manifest.suite_id for manifest in manifests)) == []
+    assert duplicate_items(Counter(case.case_id for case in cases)) == []
 
     cases_by_manifest = Counter(case.manifest_id for case in cases)
     manifest_ids = {manifest.manifest_id for manifest in manifests}

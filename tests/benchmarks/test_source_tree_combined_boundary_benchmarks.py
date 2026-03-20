@@ -38,7 +38,7 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.conftest import REPO_ROOT, run_harness_scorecard
+from tests.conftest import REPO_ROOT, duplicate_items, run_harness_scorecard
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -5229,10 +5229,6 @@ def _synthetic_workload(
     return SimpleNamespace(workload_id=workload_id, signature=signature, include=include)
 
 
-def _duplicate_items(counter: Counter[str]) -> list[str]:
-    return sorted(item for item, count in counter.items() if count > 1)
-
-
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
     return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
 
@@ -6984,8 +6980,8 @@ def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_
     manifest_ids = [manifest.manifest_id for manifest in manifests]
     workloads = [workload for manifest in manifests for workload in manifest.workloads]
 
-    assert _duplicate_items(Counter(manifest_ids)) == []
-    assert _duplicate_items(Counter(workload.workload_id for workload in workloads)) == []
+    assert duplicate_items(Counter(manifest_ids)) == []
+    assert duplicate_items(Counter(workload.workload_id for workload in workloads)) == []
 
     workloads_by_manifest = Counter(workload.manifest_id for workload in workloads)
     published_manifest_ids = set(manifest_ids)

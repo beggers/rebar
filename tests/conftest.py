@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Iterable
 import json
 import pathlib
@@ -14,6 +15,10 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
+
+
+def duplicate_items(counter: Counter[str]) -> list[str]:
+    return sorted(item for item, count in counter.items() if count > 1)
 
 
 def run_harness_cli(
