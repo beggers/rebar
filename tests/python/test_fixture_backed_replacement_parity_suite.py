@@ -242,6 +242,44 @@ DIRECT_WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abcabc", 0, id="repeated-matches"),
     pytest.param("abc", r"\g<0>x", "abcabc", 1, id="count-one"),
 ]
+_LITERAL_REPLACEMENT_MATRIX_PATTERNS = ("a", "ab", "ba")
+_LITERAL_REPLACEMENT_MATRIX_REPLACEMENTS = ("", "x", "zz")
+_LITERAL_REPLACEMENT_MATRIX_STRINGS = (
+    "",
+    "a",
+    "aa",
+    "aba",
+    "abba",
+    "baab",
+    "ababab",
+)
+_LITERAL_REPLACEMENT_MATRIX_COUNTS = (0, 1, 2, -1)
+_LITERAL_REPLACEMENT_HELPERS = ("sub", "subn")
+
+
+def _literal_replacement_matrix_payloads(
+    text_model: str,
+) -> tuple[tuple[TextValue, ...], tuple[TextValue, ...], tuple[TextValue, ...]]:
+    if text_model == "bytes":
+        return (
+            tuple(
+                pattern.encode("ascii")
+                for pattern in _LITERAL_REPLACEMENT_MATRIX_PATTERNS
+            ),
+            tuple(
+                replacement.encode("ascii")
+                for replacement in _LITERAL_REPLACEMENT_MATRIX_REPLACEMENTS
+            ),
+            tuple(
+                string.encode("ascii")
+                for string in _LITERAL_REPLACEMENT_MATRIX_STRINGS
+            ),
+        )
+    return (
+        _LITERAL_REPLACEMENT_MATRIX_PATTERNS,
+        _LITERAL_REPLACEMENT_MATRIX_REPLACEMENTS,
+        _LITERAL_REPLACEMENT_MATRIX_STRINGS,
+    )
 
 
 @dataclass(frozen=True)
@@ -2290,6 +2328,8 @@ def test_no_match_text_filters_candidates_by_case_text_model() -> None:
 
     assert _no_match_text(surface, str_case) == "zzzz"
     assert _no_match_text(surface, bytes_case) == b"zzzz"
+
+
 def _assert_module_replacement_parity(
     pattern: TextValue,
     replacement: TextValue,
@@ -2335,6 +2375,28 @@ def _assert_pattern_replacement_parity(
     )
 
 
+def _assert_literal_replacement_result_matches_cpython(
+    *,
+    backend_name: str,
+    context: str,
+    helper: str,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+    count: int,
+    observed: ReplacementOutcome,
+    expected: ReplacementOutcome,
+) -> None:
+    try:
+        assert type(observed) is type(expected)
+        assert observed == expected
+    except AssertionError as exc:
+        raise AssertionError(
+            f"{backend_name} {context} {helper} mismatch for pattern={pattern!r}, "
+            f"replacement={replacement!r}, string={string!r}, count={count}"
+        ) from exc
+
+
 @pytest.mark.parametrize(
     ("pattern", "replacement", "string", "count"),
     DIRECT_LITERAL_MODULE_REPLACEMENT_CASES,
@@ -2359,6 +2421,130 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     count: int,
 ) -> None:
     _assert_pattern_replacement_parity(pattern, replacement, string, count)
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_replacement_matrix_module_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, replacements, strings = _literal_replacement_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        for replacement in replacements:
+            for string in strings:
+                for count in _LITERAL_REPLACEMENT_MATRIX_COUNTS:
+                    for helper in _LITERAL_REPLACEMENT_HELPERS:
+                        _assert_literal_replacement_result_matches_cpython(
+                            backend_name=backend_name,
+                            context="module",
+                            helper=helper,
+                            pattern=pattern,
+                            replacement=replacement,
+                            string=string,
+                            count=count,
+                            observed=getattr(
+                                backend,
+                                helper,
+                            )(pattern, replacement, string, count=count),
+                            expected=getattr(
+                                re,
+                                helper,
+                            )(pattern, replacement, string, count=count),
+                        )
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_replacement_matrix_pattern_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, replacements, strings = _literal_replacement_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for replacement in replacements:
+            for string in strings:
+                for count in _LITERAL_REPLACEMENT_MATRIX_COUNTS:
+                    for helper in _LITERAL_REPLACEMENT_HELPERS:
+                        _assert_literal_replacement_result_matches_cpython(
+                            backend_name=backend_name,
+                            context="pattern",
+                            helper=helper,
+                            pattern=pattern,
+                            replacement=replacement,
+                            string=string,
+                            count=count,
+                            observed=getattr(
+                                observed_pattern,
+                                helper,
+                            )(replacement, string, count=count),
+                            expected=getattr(
+                                expected_pattern,
+                                helper,
+                            )(replacement, string, count=count),
+                        )
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_replacement_matrix_module_helpers_accept_compiled_patterns(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, replacements, strings = _literal_replacement_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for replacement in replacements:
+            for string in strings:
+                for count in _LITERAL_REPLACEMENT_MATRIX_COUNTS:
+                    for helper in _LITERAL_REPLACEMENT_HELPERS:
+                        _assert_literal_replacement_result_matches_cpython(
+                            backend_name=backend_name,
+                            context="compiled-pattern module",
+                            helper=helper,
+                            pattern=pattern,
+                            replacement=replacement,
+                            string=string,
+                            count=count,
+                            observed=getattr(
+                                backend,
+                                helper,
+                            )(observed_pattern, replacement, string, count=count),
+                            expected=getattr(
+                                re,
+                                helper,
+                            )(expected_pattern, replacement, string, count=count),
+                        )
 
 
 @pytest.mark.parametrize(
