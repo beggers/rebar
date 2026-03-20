@@ -1,8 +1,9 @@
 # RBR-0778: Collapse open-ended quantified-group bundle-spec sidecars onto owner manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached full-manifest `FixtureBundleSpec` layer from `tests/python/test_open_ended_quantified_group_parity_suite.py`; all seven `FIXTURE_BUNDLE_SPECS` entries currently mirror whole published manifests exactly, so the suite is maintaining duplicate manifest ids, pattern sets, operation/helper counts, and mixed text-model expectations even though the published owner manifests already provide that contract.
@@ -173,3 +174,8 @@ PY` passed (`ok`);
   - `ops/tasks/done/RBR-0772-collapse-literal-flag-bundle-spec-sidecar-onto-full-manifest-owner.md`
   - `ops/tasks/done/RBR-0774-collapse-grouped-capture-bundle-spec-sidecars-onto-full-manifest-owners.md`
   - `ops/tasks/done/RBR-0776-collapse-parser-matrix-bundle-spec-sidecars-onto-owner-manifests.md`
+
+## Completion Note
+- Replaced the open-ended quantified-group parity suite's detached `FixtureBundleSpec` table with a file-local owner-manifest loader built on `load_published_fixture_bundles(...)`, preserving the exact seven fixture paths, matching manifest ids, and existing bundle aliases.
+- Kept `FIXTURE_BUNDLES` as the single published-bundle source for the suite's selected-case ids, trace bundles, bytes follow-on routing, direct-test buckets, and bounded-pattern coverage while deriving expected patterns, operation/helper counts, and text-model contracts directly from owner rows.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py`, the acceptance owner-bundle probe (`ok`), and the negative grep proving `FIXTURE_BUNDLE_SPECS`, `FixtureBundleSpec(...)`, and `load_fixture_bundles(...)` are gone from the suite.

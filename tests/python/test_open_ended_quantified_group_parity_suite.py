@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from itertools import product
 import re
 
@@ -14,7 +14,6 @@ from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     BoundedPatternCase,
     FixtureBundle,
-    FixtureBundleSpec,
     NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -35,7 +34,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    load_fixture_bundles,
+    load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
@@ -67,153 +66,50 @@ class OpenEndedTraceCase:
     fullmatch_text: str | bytes
 
 
-FIXTURE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        "open_ended_quantified_group_alternation_workflows.py",
-        expected_manifest_id="open-ended-quantified-group-alternation-workflows",
-        expected_patterns=frozenset(
-            {
-                r"a(bc|de){1,}d",
-                r"a(?P<word>bc|de){1,}d",
-                rb"a(bc|de){1,}d",
-                rb"a(?P<word>bc|de){1,}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 20,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "open_ended_quantified_group_alternation_conditional_workflows.py",
-        expected_manifest_id="open-ended-quantified-group-alternation-conditional-workflows",
-        expected_patterns=frozenset(
-            {
-                r"a((bc|de){1,})?(?(1)d|e)",
-                r"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
-                rb"a((bc|de){1,})?(?(1)d|e)",
-                rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 12,
-                ("pattern_call", "fullmatch"): 10,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-        expected_manifest_id="open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-        expected_patterns=frozenset(
-            {
-                r"a((bc|b)c){1,}d",
-                r"a(?P<word>(bc|b)c){1,}d",
-                rb"a((bc|b)c){1,}d",
-                rb"a(?P<word>(bc|b)c){1,}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 10,
-                ("pattern_call", "fullmatch"): 10,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "broader_range_open_ended_quantified_group_alternation_workflows.py",
-        expected_manifest_id="broader-range-open-ended-quantified-group-alternation-workflows",
-        expected_patterns=frozenset(
-            {
-                r"a(bc|de){2,}d",
-                r"a(?P<word>bc|de){2,}d",
-                rb"a(bc|de){2,}d",
-                rb"a(?P<word>bc|de){2,}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 20,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
-        expected_manifest_id=(
-            "broader-range-open-ended-quantified-group-alternation-conditional-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((bc|de){2,})?(?(1)d|e)",
-                r"a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
-                rb"a((bc|de){2,})?(?(1)d|e)",
-                rb"a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 12,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-        expected_manifest_id=(
-            "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows"
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((bc|b)c){2,}d",
-                r"a(?P<word>(bc|b)c){2,}d",
-                rb"a((bc|b)c){2,}d",
-                rb"a(?P<word>(bc|b)c){2,}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 12,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "nested_open_ended_quantified_group_alternation_workflows.py",
-        expected_manifest_id="nested-open-ended-quantified-group-alternation-workflows",
-        expected_patterns=frozenset(
-            {
-                r"a((bc|de){1,})d",
-                r"a(?P<outer>(bc|de){1,})d",
-                rb"a((bc|de){1,})d",
-                rb"a(?P<outer>(bc|de){1,})d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 16,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
+OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES = (
+    "open_ended_quantified_group_alternation_workflows.py",
+    "open_ended_quantified_group_alternation_conditional_workflows.py",
+    "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+    "broader_range_open_ended_quantified_group_alternation_workflows.py",
+    "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+    "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+    "nested_open_ended_quantified_group_alternation_workflows.py",
 )
-FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+OPEN_ENDED_QUANTIFIED_GROUP_MANIFEST_IDS = (
+    "open-ended-quantified-group-alternation-workflows",
+    "open-ended-quantified-group-alternation-conditional-workflows",
+    "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
+    "broader-range-open-ended-quantified-group-alternation-workflows",
+    "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
+    "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
+    "nested-open-ended-quantified-group-alternation-workflows",
+)
+
+
+def _load_open_ended_quantified_group_fixture_bundles() -> tuple[FixtureBundle, ...]:
+    bundles = load_published_fixture_bundles(
+        tuple(
+            CORRECTNESS_FIXTURES_ROOT / fixture_name
+            for fixture_name in OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES
+        ),
+        pattern_extractor=case_pattern,
+    )
+    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
+    if loaded_fixture_names != OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES:
+        raise AssertionError(
+            "open-ended quantified group owner manifests changed fixture path order: "
+            f"{loaded_fixture_names}"
+        )
+    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
+    if loaded_manifest_ids != OPEN_ENDED_QUANTIFIED_GROUP_MANIFEST_IDS:
+        raise AssertionError(
+            "open-ended quantified group owner manifests changed manifest ids: "
+            f"{loaded_manifest_ids}"
+        )
+    return bundles
+
+
+FIXTURE_BUNDLES = _load_open_ended_quantified_group_fixture_bundles()
 OPEN_ENDED_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "open-ended-quantified-group-alternation-workflows",
