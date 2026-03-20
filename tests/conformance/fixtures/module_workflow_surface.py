@@ -526,6 +526,43 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-fullmatch-flags-keyword-str",
+      "operation": "module_call",
+      "family": "module_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "args": ["Abc"],
+      "kwargs": {
+        "flags": 2
+      },
+      "categories": ["workflow", "flag", "ignorecase", "literal", "fullmatch", "str"],
+      "notes": [
+        "Publishes the adjacent raw module-level fullmatch() flags= keyword workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-split-maxsplit-keyword-bytes",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczabc"
+        }
+      ],
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "categories": ["workflow", "split", "literal", "bytes", "maxsplit"],
+      "notes": [
+        "Publishes the adjacent raw module-level split() maxsplit= keyword workflow on bytes payloads without widening into the remaining module keyword helper ladder."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",

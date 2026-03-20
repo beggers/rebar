@@ -1,8 +1,9 @@
 # RBR-0763: Publish the module-workflow module keyword fullmatch/split pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next adjacent module keyword-argument pair, so the shared owner path keeps widening through the already-landed direct parity anchors before the remaining index-like keyword variants, replacement count keywords, keyword error cases, pattern keyword rows, or another owner family reopen the queue.
@@ -55,3 +56,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_argument_calls_match_cpython and (module-fullmatch-flags-keyword-str or module-split-maxsplit-keyword-bytes)'` passed in this run (`4 passed, 655 deselected`);
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the first module keyword `search()` / `match()` pair but not this adjacent `fullmatch()` / `split()` pair, leaving these two rows as the next bounded publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Published `workflow-module-fullmatch-flags-keyword-str` and `workflow-module-split-maxsplit-keyword-bytes` on the existing `module-workflow-surface` manifest, keeping both rows pinned to the existing `MODULE_KEYWORD_CALL_CASES` anchors on the shared parity owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the canonical owner bundle now asserts `56` published module-workflow rows, a `37`/`19` `str`/`bytes` split, a `23`-row `module_call` surface, and the expanded `search`/`match`/`fullmatch`/`split` helper breakdown while mapping the published keyword rows back to `module-fullmatch-flags-keyword-str` and `module-split-maxsplit-keyword-bytes`.
+- Updated the representative `module-workflow-surface` sample set in `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `1426` total / `1426` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `56`/`56`/`0`, `module.workflow.str` at `37`/`37`/`0`, `module.workflow.bytes` at `19`/`19`/`0`, and `module.workflow.module_call` at `23`/`23`/`0`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`683 passed, 1 skipped, 1933 subtests passed in 35.01s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0763-module-workflow-module-keyword-fullmatch-split-pair.py` (`56` executed / `56` passed), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1426` executed / `1426` passed).

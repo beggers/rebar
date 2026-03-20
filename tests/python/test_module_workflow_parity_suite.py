@@ -235,6 +235,8 @@ PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
     in {
         "workflow-module-search-flags-keyword-str",
         "workflow-module-match-flags-keyword-bytes",
+        "workflow-module-fullmatch-flags-keyword-str",
+        "workflow-module-split-maxsplit-keyword-bytes",
     }
 )
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
@@ -2056,6 +2058,24 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 56
+    assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
+        {"str": 37, "bytes": 19}
+    )
+    assert len(MODULE_CALL_CASES) == 23
+    assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
+        {
+            "search": 5,
+            "match": 4,
+            "fullmatch": 4,
+            "split": 2,
+            "findall": 1,
+            "finditer": 1,
+            "sub": 2,
+            "subn": 2,
+            "escape": 2,
+        }
+    )
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
@@ -2363,24 +2383,37 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
     assert tuple(
         case.case_id
         for case in _published_module_keyword_module_helper_cases_for_text_model("str")
-    ) == ("workflow-module-search-flags-keyword-str",)
+    ) == (
+        "workflow-module-search-flags-keyword-str",
+        "workflow-module-fullmatch-flags-keyword-str",
+    )
     assert tuple(
         case.case_id
         for case in _published_module_keyword_module_helper_cases_for_text_model("bytes")
-    ) == ("workflow-module-match-flags-keyword-bytes",)
+    ) == (
+        "workflow-module-match-flags-keyword-bytes",
+        "workflow-module-split-maxsplit-keyword-bytes",
+    )
     assert tuple(
         case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
     ) == (
         "workflow-module-search-flags-keyword-str",
         "workflow-module-match-flags-keyword-bytes",
+        "workflow-module-fullmatch-flags-keyword-str",
+        "workflow-module-split-maxsplit-keyword-bytes",
     )
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == (
         "module-search-flags-keyword-str",
         "module-match-flags-keyword-bytes",
+        "module-fullmatch-flags-keyword-str",
+        "module-split-maxsplit-keyword-bytes",
     )
     assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES)
+    assert Counter(case.helper for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES) == (
+        Counter({"search": 1, "match": 1, "fullmatch": 1, "split": 1})
+    )
     assert tuple(
         case.helper for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
     ) == tuple(case.helper for case in selected_direct_cases)
