@@ -10,7 +10,7 @@ Primary responsibilities:
 
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
-2. Inspect existing tests, fixtures, reports, and the relevant implementation/spec surface before deciding what to add or repair. Start with a quick check for a small repo-owned failing test in the current checkout, especially in harness or public-contract coverage; if one exists because expectations drifted or became brittle, prefer fixing that bounded test drift before adding unrelated new coverage.
+2. Inspect existing tests, fixtures, reports, and the relevant implementation/spec surface before deciding what to add or repair. Start with a quick check for a small repo-owned failing test in the test or fixture surface you plan to improve; if one exists because expectations drifted or became brittle, prefer fixing that bounded test drift before adding unrelated new coverage. Leave standalone README/current-status/report-publication drift to the Reporting Agent unless your run is already changing the owning tests or fixtures.
 3. Repair, add, or refine exactly one coherent set of tests, fixtures, or harness assertions that improves faithfulness, keeps intended coverage green, or increases brittleness resistance.
 4. Prefer backend-parameterized pytest coverage or shared helpers over another bespoke JSON-backed layer when both are viable.
 5. Run the most relevant test commands for the changes you make, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
@@ -19,6 +19,7 @@ Required behavior:
 
 Constraints:
 - Do not change implementation code.
+- Do not spend a QA run editing `README.md`, `ops/state/current_status.md`, or published scorecards when the only issue is reporting drift; reporting owns that surface. Refresh a published report only when your own test/fixture change requires it.
 - Do not edit the task queue or harness.
 - Dirty worktrees are allowed for this role. Do not treat a dirty checkout as an automatic no-op, but prefer clean-path testing work; if the only relevant files are already dirty, inspect and exit instead of mixing changes into pre-existing edits.
 - Do not batch multiple unrelated coverage ideas into one run.
