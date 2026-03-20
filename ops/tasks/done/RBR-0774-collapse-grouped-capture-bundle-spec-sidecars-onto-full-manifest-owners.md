@@ -1,8 +1,9 @@
 # RBR-0774: Collapse grouped-capture bundle-spec sidecars onto full-manifest owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached full-manifest `FixtureBundleSpec` layer from `tests/python/test_grouped_capture_parity_suite.py`; all eight `SELECTED_CASE_BUNDLE_SPECS` entries currently mirror whole published manifests exactly, so the suite is maintaining duplicate manifest ids, case-id frontiers, pattern sets, operation/helper counts, and text-model expectations even though the published owner manifests already provide that contract.
@@ -181,3 +182,8 @@ for bundle in bundles:
 print('ok')
 PY` passed (`ok`); and
   - `bash -lc "rg -n '^(SELECTED_CASE_BUNDLE_SPECS) =|FixtureBundleSpec\\(|load_fixture_bundles\\(' tests/python/test_grouped_capture_parity_suite.py"` currently reports the eight redundant `FixtureBundleSpec` lines plus the single `load_fixture_bundles(...)` call, so the negative grep in Acceptance fails exactly on this cleanup boundary.
+
+## Completion Note
+- Replaced the detached `SELECTED_CASE_BUNDLE_SPECS` table with a direct `load_published_fixture_bundles(...)` call over the eight grouped-capture owner manifests in the required order, using `pattern_extractor=str_case_pattern`.
+- Left the grouped-capture case buckets, ordered frontier helpers, and `published_fixture_bundle_by_manifest_id(...)` owner lookups unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py`, the manifest-order/bundle-contract Python probe from Acceptance, and the negative grep proving the sidecar symbols are gone.

@@ -7,10 +7,9 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    FixtureBundleSpec,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -21,7 +20,7 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     invoke_bounded_pattern_case,
-    load_fixture_bundles,
+    load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
     workflow_result_with_cpython_parity,
@@ -144,147 +143,19 @@ class BoundedPatternCase:
     bounds: tuple[int, ...]
 
 
-SELECTED_CASE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        fixture_name="grouped_match_workflows.py",
-        expected_manifest_id="grouped-match-workflows",
-        selected_case_ids=GROUPED_MATCH_TRACKED_CASE_IDS,
-        expected_patterns=frozenset({r"(abc)", r"(ab)(c)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_call", "search"): 1,
-                ("module_call", "fullmatch"): 2,
-                ("pattern_call", "search"): 1,
-                ("pattern_call", "match"): 1,
-                ("pattern_call", "fullmatch"): 1,
-            }
-        ),
+FIXTURE_BUNDLES = load_published_fixture_bundles(
+    (
+        CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "named_group_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "grouped_segment_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "grouped_alternation_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "optional_group_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "optional_group_alternation_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "nested_group_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "nested_group_alternation_workflows.py",
     ),
-    FixtureBundleSpec(
-        fixture_name="named_group_workflows.py",
-        expected_manifest_id="named-group-workflows",
-        selected_case_ids=NAMED_GROUP_CASE_IDS,
-        expected_patterns=frozenset({r"(?P<word>abc)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        fixture_name="grouped_segment_workflows.py",
-        expected_manifest_id="grouped-segment-workflows",
-        selected_case_ids=GROUPED_SEGMENT_CASE_IDS,
-        expected_patterns=frozenset(
-            {
-                r"a(b)c",
-                GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN,
-                r"a(?P<word>b)c",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 3,
-                ("pattern_call", "fullmatch"): 2,
-                ("pattern_call", "search"): 1,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        fixture_name="grouped_alternation_workflows.py",
-        expected_manifest_id="grouped-alternation-workflows",
-        selected_case_ids=GROUPED_ALTERNATION_CASE_IDS,
-        expected_patterns=frozenset(
-            {
-                r"a(b|c)d",
-                r"a(?P<word>b|c)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        fixture_name="optional_group_workflows.py",
-        expected_manifest_id="optional-group-workflows",
-        selected_case_ids=OPTIONAL_GROUP_CASE_IDS,
-        expected_patterns=frozenset(
-            {
-                r"a(b)?d",
-                r"a(?P<word>b)?d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 6,
-                ("pattern_call", "fullmatch"): 6,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        fixture_name="optional_group_alternation_workflows.py",
-        expected_manifest_id="optional-group-alternation-workflows",
-        selected_case_ids=OPTIONAL_GROUP_ALTERNATION_CASE_IDS,
-        expected_patterns=frozenset(
-            {
-                r"a(b|c)?d",
-                r"a(?P<word>b|c)?d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        fixture_name="nested_group_workflows.py",
-        expected_manifest_id="nested-group-workflows",
-        selected_case_ids=NESTED_GROUP_CASE_IDS,
-        expected_patterns=frozenset(
-            {
-                r"a((b))d",
-                r"a(?P<outer>(?P<inner>b))d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        fixture_name="nested_group_alternation_workflows.py",
-        expected_manifest_id="nested-group-alternation-workflows",
-        selected_case_ids=NESTED_GROUP_ALTERNATION_CASE_IDS,
-        expected_patterns=frozenset(
-            {
-                r"a((b|c))d",
-                r"a(?P<outer>(?P<inner>b|c))d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
+    pattern_extractor=str_case_pattern,
 )
-FIXTURE_BUNDLES = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
 GROUPED_MATCH_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "grouped-match-workflows",
@@ -774,6 +645,29 @@ def test_grouped_segment_leading_capture_groups_match_cpython(
     assert observed.groups() == expected.groups() == ("ab",)
 
 
+def test_fixture_bundles_load_expected_published_owner_order() -> None:
+    assert tuple(bundle.manifest.path.name for bundle in FIXTURE_BUNDLES) == (
+        "grouped_match_workflows.py",
+        "named_group_workflows.py",
+        "grouped_segment_workflows.py",
+        "grouped_alternation_workflows.py",
+        "optional_group_workflows.py",
+        "optional_group_alternation_workflows.py",
+        "nested_group_workflows.py",
+        "nested_group_alternation_workflows.py",
+    )
+    assert tuple(bundle.manifest.manifest_id for bundle in FIXTURE_BUNDLES) == (
+        "grouped-match-workflows",
+        "named-group-workflows",
+        "grouped-segment-workflows",
+        "grouped-alternation-workflows",
+        "optional-group-workflows",
+        "optional-group-alternation-workflows",
+        "nested-group-workflows",
+        "nested-group-alternation-workflows",
+    )
+
+
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -781,6 +675,10 @@ def test_grouped_segment_leading_capture_groups_match_cpython(
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
     assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert tuple(case.case_id for case in bundle.cases) == tuple(
+        case.case_id for case in bundle.manifest.cases
+    )
+    assert bundle.expected_text_models == frozenset({"str"})
     assert {case.text_model for case in bundle.cases} == {"str"}
 
 
