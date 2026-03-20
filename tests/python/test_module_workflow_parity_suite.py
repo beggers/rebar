@@ -199,6 +199,8 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-module-search-str-bounded-wildcard-ignorecase",
     "workflow-module-match-str-bounded-wildcard-miss",
     "workflow-module-fullmatch-str-bounded-wildcard",
+    "workflow-module-search-flags-keyword-str",
+    "workflow-module-match-flags-keyword-bytes",
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
     "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
@@ -242,8 +244,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "finditer"): 1,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
-        ("module_call", "search"): 4,
-        ("module_call", "match"): 3,
+        ("module_call", "search"): 5,
+        ("module_call", "match"): 4,
         ("module_call", "fullmatch"): 3,
         ("module_call", "split"): 1,
         ("module_call", "findall"): 1,
@@ -328,6 +330,15 @@ PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
     and case_pattern(case) == "a.c"
     and case.helper in {"search", "match", "fullmatch"}
 )
+PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
+    case
+    for case in MODULE_CALL_CASES
+    if case.case_id
+    in {
+        "workflow-module-search-flags-keyword-str",
+        "workflow-module-match-flags-keyword-bytes",
+    }
+)
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
@@ -341,6 +352,16 @@ def _published_compiled_pattern_module_helper_cases_for_text_model(
     return tuple(
         case
         for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+        if case.text_model == text_model
+    )
+
+
+def _published_module_keyword_module_helper_cases_for_text_model(
+    text_model: str,
+) -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
         if case.text_model == text_model
     )
 
@@ -2118,6 +2139,9 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             "bounded-wildcard-module-helper": frozenset(
                 case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
             ),
+            "module-keyword-helper": frozenset(
+                case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+            ),
             "compiled-module-helper": frozenset(
                 case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
             ),
@@ -2406,6 +2430,76 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
         assert case_pattern(fixture_case) == direct_case.pattern
         assert tuple(fixture_case.args) == (direct_case.string,)
         assert fixture_case.flags == direct_case.flags
+
+
+def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases(
+) -> None:
+    def direct_signature(
+        case: ModuleKeywordCallCase,
+    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, object], ...], str]:
+        pattern, *args = case.args
+        return (
+            case.helper,
+            pattern,
+            tuple(args),
+            tuple(sorted(case.kwargs.items())),
+            "bytes" if isinstance(pattern, bytes) else "str",
+        )
+
+    direct_cases_by_signature = {
+        direct_signature(case): case for case in MODULE_KEYWORD_CALL_CASES
+    }
+    selected_direct_cases = tuple(
+        direct_cases_by_signature[
+            (
+                case.helper,
+                case_pattern(case),
+                tuple(case.args),
+                tuple(sorted(case.kwargs.items())),
+                case.text_model,
+            )
+        ]
+        for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+    )
+
+    assert tuple(
+        case.case_id
+        for case in _published_module_keyword_module_helper_cases_for_text_model("str")
+    ) == ("workflow-module-search-flags-keyword-str",)
+    assert tuple(
+        case.case_id
+        for case in _published_module_keyword_module_helper_cases_for_text_model("bytes")
+    ) == ("workflow-module-match-flags-keyword-bytes",)
+    assert tuple(
+        case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+    ) == (
+        "workflow-module-search-flags-keyword-str",
+        "workflow-module-match-flags-keyword-bytes",
+    )
+    assert tuple(
+        case.case_id for case in selected_direct_cases
+    ) == (
+        "module-search-flags-keyword-str",
+        "module-match-flags-keyword-bytes",
+    )
+    assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES)
+    assert tuple(
+        case.helper for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+    ) == tuple(case.helper for case in selected_direct_cases)
+
+    for fixture_case, direct_case in zip(
+        PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES,
+        selected_direct_cases,
+    ):
+        direct_pattern, *direct_args = direct_case.args
+        assert fixture_case.use_compiled_pattern is False
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_pattern, bytes) else "str"
+        )
+        assert case_pattern(fixture_case) == direct_pattern
+        assert tuple(fixture_case.args) == tuple(direct_args)
+        assert fixture_case.kwargs == direct_case.kwargs
+        assert fixture_case.flags == 0
 
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(

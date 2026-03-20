@@ -1,6 +1,6 @@
 # RBR-0761: Publish the module-workflow module keyword flags pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -55,3 +55,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_argument_calls_match_cpython and (module-search-flags-keyword-str or module-match-flags-keyword-bytes)'` passed in this run (`4 passed, 654 deselected`);
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the bounded wildcard, compiled-pattern helper, replacement-helper mismatch, and `escape()` module-call rows but not the adjacent module keyword `flags=` pair, leaving this pair as the next bounded publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- Completed 2026-03-20 by publishing `workflow-module-search-flags-keyword-str` and `workflow-module-match-flags-keyword-bytes` on the existing `module-workflow-surface` manifest, keeping both rows pinned to the existing `MODULE_KEYWORD_CALL_CASES` anchors on the shared parity owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the canonical fixture inventory now carries `54` module-workflow rows, the `module_call` helper breakdown now expects `5` `search` rows and `4` `match` rows, and the owner-path module-keyword alignment check maps the published rows back to `module-search-flags-keyword-str` and `module-match-flags-keyword-bytes`.
+- Updated the representative `module-workflow-surface` sample set in `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `1424` total / `1424` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `54`/`54`/`0`, `module.workflow.str` at `36`/`36`/`0`, `module.workflow.bytes` at `18`/`18`/`0`, and `module.workflow.module_call` at `21`/`21`/`0`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0761-module-workflow-module-keyword-flags-pair.py` (`54` executed / `54` passed), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1424` executed / `1424` passed), and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (passed; the runner truncated the footer twice, and an XML-backed rerun confirmed `2606` tests with `0` failures, `0` errors, and `1` skipped case).

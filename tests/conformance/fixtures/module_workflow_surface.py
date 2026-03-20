@@ -489,6 +489,43 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-search-flags-keyword-str",
+      "operation": "module_call",
+      "family": "module_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "args": ["zAbc"],
+      "kwargs": {
+        "flags": 2
+      },
+      "categories": ["workflow", "flag", "ignorecase", "literal", "search", "str"],
+      "notes": [
+        "Publishes the first raw module-level search() flags= keyword workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-match-flags-keyword-bytes",
+      "operation": "module_call",
+      "family": "module_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "Abc"
+        }
+      ],
+      "kwargs": {
+        "flags": 2
+      },
+      "categories": ["workflow", "flag", "ignorecase", "literal", "match", "bytes"],
+      "notes": [
+        "Publishes the first raw module-level match() flags= keyword workflow on bytes payloads without widening into the remaining module keyword helper ladder."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
