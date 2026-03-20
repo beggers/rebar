@@ -494,6 +494,21 @@ def _public_surface_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
         "pattern-object-call": frozenset(case.case_id for case in PATTERN_CALL_CASES),
     }
 
+
+def _module_workflow_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
+    return {
+        "compile": frozenset(case.case_id for case in COMPILE_CASES),
+        "pattern": frozenset(case.case_id for case in PATTERN_CASES),
+        "cache": frozenset(case.case_id for case in CACHE_CASES),
+        "purge": frozenset(case.case_id for case in PURGE_CASES),
+        "compiled-module-helper": frozenset(
+            case.case_id
+            for case in PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
+        ),
+        "escape": frozenset(case.case_id for case in ESCAPE_CASES),
+    }
+
+
 EXPLICIT_ESCAPE_STR_CASES = (
     ("", ""),
     ("abc_123", "abc_123"),
@@ -510,17 +525,6 @@ EXPLICIT_ESCAPE_BYTES_CASES = (
     (b" \t\n\r\x0b\x0c", b"\\ \\\t\\\n\\\r\\\x0b\\\x0c"),
     (b"a-b", b"a\\-b"),
 )
-MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "compile": frozenset(case.case_id for case in COMPILE_CASES),
-    "pattern": frozenset(case.case_id for case in PATTERN_CASES),
-    "cache": frozenset(case.case_id for case in CACHE_CASES),
-    "purge": frozenset(case.case_id for case in PURGE_CASES),
-    "compiled-module-helper": frozenset(
-        case.case_id
-        for case in PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ),
-    "escape": frozenset(case.case_id for case in ESCAPE_CASES),
-}
 MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
@@ -1945,7 +1949,7 @@ def test_module_workflow_parity_suite_tracks_published_case_frontier() -> None:
 
 def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS,
+        _module_workflow_direct_test_case_id_buckets(),
         selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
         coverage_label="module workflow direct-test case-id buckets",
     )

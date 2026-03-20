@@ -1,8 +1,9 @@
 # RBR-0735: Collapse module-workflow direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS` registry from `tests/python/test_module_workflow_parity_suite.py` so the module-workflow parity owner derives direct-test bucket coverage from its canonical case owners instead of maintaining a mirrored top-level map.
@@ -84,3 +85,7 @@ PY`
   - the derived-bucket probe in Acceptance already passes in the current checkout (`ok`); and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because `MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS` is still defined once and read once in this file.
 - This simplification stays on the same bounded post-JSON parity-harness cleanup track as `RBR-0732`, but targets the remaining module-workflow owner map that still mirrors canonical case ownership inside the same suite.
+- 2026-03-20 completion:
+  - Removed `MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS` from `tests/python/test_module_workflow_parity_suite.py`.
+  - Added a tiny file-local helper that derives the module-workflow direct-test bucket map from `COMPILE_CASES`, `PATTERN_CASES`, `CACHE_CASES`, `PURGE_CASES`, `PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES`, and `ESCAPE_CASES`, preserving the existing bucket ordering and membership.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`586 passed, 1 skipped in 0.65s`), the derived-bucket probe from the task (`ok`), and the `rg` absence check for `MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS` (no matches).
