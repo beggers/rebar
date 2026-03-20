@@ -341,10 +341,6 @@ VERBOSE_BYTES_SEARCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
 VERBOSE_BYTES_FULLMATCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
     "workflow-pattern-fullmatch-bytes-verbose-regression"
 ]
-MATCH_BEHAVIOR_CASES = tuple(MATCH_BEHAVIOR_BUNDLE.cases)
-MATCH_BEHAVIOR_DIRECT_TEST_CASE_IDS = frozenset(
-    case.case_id for case in MATCH_BEHAVIOR_CASES
-)
 
 # Keep the public-surface coverage on the module workflow owner file.
 PUBLIC_API_CASE_IDS = (
@@ -2550,7 +2546,11 @@ def test_match_behavior_parity_suite_tracks_published_case_frontier() -> None:
 
 def test_match_behavior_direct_test_bucket_covers_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        {"module-call": MATCH_BEHAVIOR_DIRECT_TEST_CASE_IDS},
+        {
+            "module-call": frozenset(
+                case.case_id for case in MATCH_BEHAVIOR_BUNDLE.cases
+            )
+        },
         selected_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
         coverage_label="match behavior direct-test case-id bucket",
     )
@@ -2693,7 +2693,11 @@ def test_regex_backend_fixture_propagates_unsupported_backend_skips() -> None:
         python_conftest.regex_backend.__wrapped__(request)
 
 
-@pytest.mark.parametrize("case", MATCH_BEHAVIOR_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    MATCH_BEHAVIOR_BUNDLE.cases,
+    ids=lambda case: case.case_id,
+)
 def test_match_behavior_module_calls_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
