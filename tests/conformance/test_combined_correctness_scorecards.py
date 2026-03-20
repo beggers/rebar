@@ -120,6 +120,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
             "workflow-module-split-str-compiled-pattern",
             "workflow-module-findall-bytes-compiled-pattern",
+            "workflow-module-finditer-str-compiled-pattern",
             "workflow-cache-hit-str",
             "workflow-purge-reset-str",
             "workflow-pattern-search-str",

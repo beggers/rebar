@@ -630,6 +630,19 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-finditer-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "use_compiled_pattern": True,
+      "args": ["zabcabc"],
+      "categories": ["workflow", "finditer", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the first literal str module-level finditer() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-escape-str",
       "operation": "module_call",
       "family": "escape_workflow",

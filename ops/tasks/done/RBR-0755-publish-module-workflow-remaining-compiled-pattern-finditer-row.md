@@ -1,6 +1,6 @@
 # RBR-0755: Publish the module-workflow remaining compiled-pattern `finditer()` row
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -53,3 +53,8 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled_patterns and finditer or literal_collection_matrix_module_helpers_accept_compiled_patterns'` passed in this run (`10 passed, 645 deselected`); and
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the compiled-pattern module-level `split()` and `findall()` collection helpers but not the adjacent compiled-pattern `finditer()` row, leaving this as the next bounded catch-up slice on the same owner path.
 - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on currently survives after the likely same-cycle drain, so this one-task refill does not need a tracked state-prose change.
+
+## Completion
+- 2026-03-20: Added `workflow-module-finditer-str-compiled-pattern` to `tests/conformance/fixtures/module_workflow_surface.py`, extended the shared owner-path expectations in `tests/python/test_module_workflow_parity_suite.py`, and refreshed the combined scorecard representative-case list in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0755-module-workflow-remaining-compiled-pattern-finditer-row.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, and a post-publication `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`.
+- The tracked published scorecard changed in `reports/correctness/latest.py`: combined totals are now `1418` total / `1418` passed / `0` unimplemented across `114` manifests, `module.workflow` is `48` / `48` / `0`, `module.workflow.str` is `33` / `33` / `0`, and `module.workflow.module_call` is `15` / `15` / `0`.
