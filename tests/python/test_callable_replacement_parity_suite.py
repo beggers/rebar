@@ -46,7 +46,6 @@ class CallableManifestSpec:
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_text_models: frozenset[str]
     expected_near_miss_patterns: frozenset[str | bytes]
-    has_near_miss_matrix: bool
     pending_rebar_case_ids: frozenset[str] = frozenset()
 
 
@@ -122,7 +121,6 @@ CALLABLE_MANIFEST_SPECS = (
                 r"a(?P<outer>(?P<inner>b|c)+)d",
             }
         ),
-        has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -160,7 +158,6 @@ CALLABLE_MANIFEST_SPECS = (
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
-        has_near_miss_matrix=False,
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -198,7 +195,6 @@ CALLABLE_MANIFEST_SPECS = (
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
-        has_near_miss_matrix=False,
     ),
     CallableManifestSpec(
         manifest_id="conditional-group-exists-callable-replacement-workflows",
@@ -228,7 +224,6 @@ CALLABLE_MANIFEST_SPECS = (
                 r"a(?P<word>b)?c(?(word)d|e)",
             }
         ),
-        has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -266,7 +261,6 @@ CALLABLE_MANIFEST_SPECS = (
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
-        has_near_miss_matrix=False,
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -304,7 +298,6 @@ CALLABLE_MANIFEST_SPECS = (
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
-        has_near_miss_matrix=False,
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -348,7 +341,6 @@ CALLABLE_MANIFEST_SPECS = (
                 rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
             }
         ),
-        has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -390,7 +382,6 @@ CALLABLE_MANIFEST_SPECS = (
                 rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
             }
         ),
-        has_near_miss_matrix=True,
     ),
 )
 CALLABLE_MANIFEST_SPECS_BY_ID = {
@@ -814,9 +805,6 @@ CALLABLE_NEAR_MISS_CASE_SPECS = (
 CALLABLE_NEAR_MISS_CASES = tuple(
     pytest.param(case, id=case.id) for case in CALLABLE_NEAR_MISS_CASE_SPECS
 )
-CALLABLE_NEAR_MISS_MANIFEST_IDS = frozenset(
-    case.manifest_id for case in CALLABLE_NEAR_MISS_CASE_SPECS
-)
 
 
 class CallbackExplosion(RuntimeError):
@@ -1147,27 +1135,36 @@ CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS = (
     "broader-range",
     "open-ended",
 )
-PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS = frozenset(
-    {
-        "nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "quantified-nested-group-alternation-callable-replacement-workflows",
-        "quantified-nested-group-callable-replacement-workflows",
-    }
-)
+
+
+def _manifest_matches_return_type_error_frontier(manifest_id: str) -> bool:
+    return any(
+        keyword in manifest_id
+        for keyword in CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS
+    )
+
+
+def _pattern_return_type_error_expected_manifest_ids() -> frozenset[str]:
+    spec_manifest_ids = frozenset(
+        spec.manifest_id
+        for spec in CALLABLE_MANIFEST_SPECS
+        if _manifest_matches_return_type_error_frontier(spec.manifest_id)
+    )
+    default_manifest_ids = frozenset(
+        bundle.manifest.manifest_id
+        for bundle in FIXTURE_BUNDLES
+        if bundle.manifest.manifest_id not in CALLABLE_MANIFEST_SPECS_BY_ID
+        and _manifest_matches_return_type_error_frontier(
+            bundle.manifest.manifest_id
+        )
+    )
+    return spec_manifest_ids | default_manifest_ids
+
+
 PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     case
     for case in PATTERN_CASES
-    if any(
-        keyword in case.manifest_id
-        for keyword in CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS
-    )
+    if _manifest_matches_return_type_error_frontier(case.manifest_id)
 )
 
 
@@ -2011,11 +2008,15 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     assert {
         case.case_id for case in bundle.cases if _is_pending_rebar_callable_case(case)
     } == manifest_spec.pending_rebar_case_ids
-    assert _near_miss_patterns_for_manifest(manifest_spec.manifest_id) == (
-        manifest_spec.expected_near_miss_patterns
+    observed_near_miss_patterns = _near_miss_patterns_for_manifest(
+        manifest_spec.manifest_id
     )
-    assert manifest_spec.has_near_miss_matrix is (
-        manifest_spec.manifest_id in CALLABLE_NEAR_MISS_MANIFEST_IDS
+    assert observed_near_miss_patterns == manifest_spec.expected_near_miss_patterns
+    assert any(
+        near_miss_case.manifest_id == manifest_spec.manifest_id
+        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+    ) is bool(
+        manifest_spec.expected_near_miss_patterns
     )
 
 
@@ -2106,7 +2107,7 @@ def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_c
     }
     assert {
         case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_CASES
-    } == PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS
+    } == _pattern_return_type_error_expected_manifest_ids()
 
 
 def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:

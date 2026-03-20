@@ -1,6 +1,6 @@
 # RBR-0795: Collapse callable replacement manifest sidecars onto canonical manifest specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -52,3 +52,4 @@ Created: 2026-03-20
   - `ops/tasks/done/RBR-0782-collapse-remaining-owner-manifest-loader-wrappers-onto-canonical-bundle-loads.md`
   - `ops/tasks/done/RBR-0789-collapse-replacement-contract-bundle-spec-sidecars-onto-canonical-owner-bundle-loads.md`
   - `ops/tasks/done/RBR-0793-delete-dead-spec-based-fixture-bundle-loader-plumbing.md`
+- 2026-03-20: Removed the `CallableManifestSpec.has_near_miss_matrix` field plus the `CALLABLE_NEAR_MISS_MANIFEST_IDS` and `PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS` sidecars from `tests/python/test_callable_replacement_parity_suite.py`, replaced them with derived near-miss and return-type-error frontier helpers driven by `CALLABLE_MANIFEST_SPECS`, `CALLABLE_NEAR_MISS_CASE_SPECS`, and the live published callable bundles, and preserved the existing callable fixture, pending-bytes, and parity verification surface. Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py` (`2747 passed in 2.13s`) and `bash -lc "! rg -n 'has_near_miss_matrix|CALLABLE_NEAR_MISS_MANIFEST_IDS|PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS' tests/python/test_callable_replacement_parity_suite.py"` (passed with no matches).
