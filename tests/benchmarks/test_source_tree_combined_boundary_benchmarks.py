@@ -33,6 +33,7 @@ from rebar_harness.benchmarks import (
     run_internal_workload_probe,
     select_benchmark_manifest_paths,
     select_workloads,
+    workload_from_payload,
     workload_to_payload,
 )
 from rebar_harness.correctness import published_fixture_manifests
@@ -7525,6 +7526,96 @@ def test_standard_benchmark_manifest_rejects_missing_and_non_dict_manifest_value
         manifest_path = _write_test_manifest(tmp_path, filename, source)
         with pytest.raises(ValueError, match=error_pattern):
             load_manifest(manifest_path)
+
+
+@pytest.mark.parametrize(
+    ("invalid_expected_exception", "error_pattern"),
+    (
+        pytest.param(
+            ["TypeError"],
+            "benchmark workload expected_exception must be an object",
+            id="non-object",
+        ),
+        pytest.param(
+            {"message_substring": "NoneType"},
+            r"benchmark workload expected_exception requires a `type`",
+            id="missing-type",
+        ),
+        pytest.param(
+            {"type": "TypeError", "detail": "extra"},
+            re.escape(
+                "benchmark workload expected_exception contains unsupported keys: "
+                "['detail']"
+            ),
+            id="unsupported-key",
+        ),
+        pytest.param(
+            {"type": "TypeError", "message_substring": ("NoneType",)},
+            "unsupported workload value",
+            id="unsupported-nested-value",
+        ),
+    ),
+)
+def test_standard_benchmark_expected_exception_validation_matches_manifest_and_payload_entry_points(
+    tmp_path: pathlib.Path,
+    invalid_expected_exception: object,
+    error_pattern: str,
+) -> None:
+    manifest_source = f"""
+    MANIFEST = {{
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-invalid-expected-exception-contract",
+        "workloads": [
+            {{
+                "id": "module-sub-invalid-expected-exception-contract",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "expected_exception": {invalid_expected_exception!r},
+            }},
+        ],
+    }}
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_invalid_expected_exception_contract.py",
+        manifest_source,
+    )
+
+    with pytest.raises(ValueError, match=error_pattern):
+        load_manifest(manifest_path)
+
+    with pytest.raises(ValueError, match=error_pattern):
+        workload_from_payload(
+            {
+                "manifest_id": "python-benchmark-invalid-expected-exception-contract",
+                "workload_id": "module-sub-invalid-expected-exception-contract",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "haystack": "abc",
+                "replacement": "x",
+                "expected_exception": invalid_expected_exception,
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            }
+        )
 
 
 def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(
