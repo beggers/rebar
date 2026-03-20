@@ -1,6 +1,6 @@
 # RBR-0757: Publish the module-workflow compiled-pattern replacement helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -55,3 +55,8 @@ Created: 2026-03-20
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the compiled-pattern literal and bounded-wildcard match helpers, the bytes verbose regression pair, and the compiled-pattern collection helpers, but not the remaining adjacent `sub()` / `subn()` rows, leaving this pair as the next bounded publication on the same owner path; and
   - no blocked feature task exists to reopen first.
 - `ops/state/backlog.md` already honestly says that no ready feature follow-on currently survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Completed 2026-03-20 by publishing `workflow-module-sub-str-compiled-pattern` and `workflow-module-subn-bytes-compiled-pattern` on the existing `module-workflow-surface` manifest, extending the shared owner-path inventory and helper counts in `tests/python/test_module_workflow_parity_suite.py`, and adding both rows to the representative `module-workflow-surface` scorecard sample set.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `1420` total / `1420` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `50`/`50`/`0`, `module.workflow.str` at `34`/`34`/`0`, `module.workflow.bytes` at `16`/`16`/`0`, and `module.workflow.module_call` at `17`/`17`/`0`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0757-module-workflow-compiled-pattern-replacement-helpers.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

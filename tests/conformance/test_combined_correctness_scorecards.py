@@ -121,6 +121,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-split-str-compiled-pattern",
             "workflow-module-findall-bytes-compiled-pattern",
             "workflow-module-finditer-str-compiled-pattern",
+            "workflow-module-sub-str-compiled-pattern",
+            "workflow-module-subn-bytes-compiled-pattern",
             "workflow-cache-hit-str",
             "workflow-purge-reset-str",
             "workflow-pattern-search-str",

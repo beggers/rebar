@@ -208,6 +208,8 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-module-split-str-compiled-pattern",
     "workflow-module-findall-bytes-compiled-pattern",
     "workflow-module-finditer-str-compiled-pattern",
+    "workflow-module-sub-str-compiled-pattern",
+    "workflow-module-subn-bytes-compiled-pattern",
     "workflow-escape-str",
     "workflow-escape-bytes",
 )
@@ -243,6 +245,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("module_call", "split"): 1,
         ("module_call", "findall"): 1,
         ("module_call", "finditer"): 1,
+        ("module_call", "sub"): 1,
+        ("module_call", "subn"): 1,
         ("module_call", "escape"): 2,
     }
 )
@@ -335,6 +339,8 @@ PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
     "workflow-module-split-str-compiled-pattern",
     "workflow-module-findall-bytes-compiled-pattern",
     "workflow-module-finditer-str-compiled-pattern",
+    "workflow-module-sub-str-compiled-pattern",
+    "workflow-module-subn-bytes-compiled-pattern",
 )
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
@@ -2498,6 +2504,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
         "workflow-module-split-str-compiled-pattern",
         "workflow-module-finditer-str-compiled-pattern",
+        "workflow-module-sub-str-compiled-pattern",
     )
     assert tuple(
         case.case_id
@@ -2506,6 +2513,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-search-bytes-verbose-regression-compiled-pattern",
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
         "workflow-module-findall-bytes-compiled-pattern",
+        "workflow-module-subn-bytes-compiled-pattern",
     )
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
@@ -2523,6 +2531,8 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-split-str-maxsplit",
         "compiled-pattern-findall-bytes",
         "compiled-pattern-finditer-str",
+        "compiled-pattern-sub-str-count",
+        "compiled-pattern-subn-bytes-count",
     )
     assert tuple(
         case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES

@@ -643,6 +643,45 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "use_compiled_pattern": True,
+      "args": ["x", "zabcabc", 1],
+      "categories": ["workflow", "sub", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the first literal str module-level sub() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabc"
+        },
+        1
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the first bytes module-level subn() helper workflow that accepts a compiled literal pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-escape-str",
       "operation": "module_call",
       "family": "escape_workflow",
