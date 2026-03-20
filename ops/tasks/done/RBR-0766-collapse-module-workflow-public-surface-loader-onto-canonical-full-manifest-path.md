@@ -1,8 +1,9 @@
 # RBR-0766: Collapse module-workflow public-surface loader onto canonical full-manifest path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining bespoke public-surface full-manifest loader from `tests/python/test_module_workflow_parity_suite.py`; `_load_public_surface_bundle(...)` currently reimplements manifest loading and `FixtureBundle` construction for three full public-surface owners even though the suite already has a shared `load_published_fixture_bundles(...)` path for exact full-manifest bundles.
@@ -112,3 +113,9 @@ PY` reported the existing tail through `RBR-0765`, no reserved missing tail ids,
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`677 passed, 1 skipped in 0.53s`);
   - the task-local public-surface bundle probe from Acceptance passed (`ok`);
   - `bash -lc "! rg -n '^(def _load_public_surface_bundle)|load_fixture_manifest\\(' tests/python/test_module_workflow_parity_suite.py"` currently fails exactly on this cleanup because the bespoke helper and direct manifest load still exist.
+
+## Completion
+- 2026-03-20: Removed the bespoke `_load_public_surface_bundle(...)` path and the direct `load_fixture_manifest(...)` import/call from `tests/python/test_module_workflow_parity_suite.py`.
+- Routed the three public-surface owners through `load_published_fixture_bundles(...)`, using a tiny file-local case-id fallback only during that call because some public-surface rows have no pattern payload, then reapplied the file-local case-id contract on the returned bundles so `PUBLIC_API_BUNDLE`, `EXPORTED_SYMBOL_BUNDLE`, and `PATTERN_OBJECT_BUNDLE` still resolve through `published_fixture_bundle_by_manifest_id(...)`.
+- Preserved the public-surface-specific contract derived from loaded rows: ordered case ids still match manifest order, `expected_patterns`/`expected_operation_helper_counts`/`expected_case_ids` still derive from `bundle.cases`, and `PATTERN_OBJECT_BUNDLE.expected_text_models` stays `frozenset({"bytes", "str"})`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`677 passed, 1 skipped in 0.77s`), the task-local public-surface bundle probe from Acceptance (`ok`), and `bash -lc "! rg -n '^(def _load_public_surface_bundle)|load_fixture_manifest\\(' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches).

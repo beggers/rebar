@@ -22,13 +22,13 @@ from rebar_harness import benchmarks
 from rebar_harness.correctness import (
     CORRECTNESS_FIXTURES_ROOT,
     FixtureCase,
-    load_fixture_manifest,
     normalize_exported_symbol_metadata,
     normalize_exported_symbol_value,
     normalize_pattern_object_metadata,
 )
 from tests.conftest import PYTHON_SOURCE
 from tests.python import conftest as python_conftest
+from tests.python import fixture_parity_support
 from tests.python.conftest import _unsupported_backend_skip_reason
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -315,30 +315,68 @@ def _published_bounded_wildcard_pattern_collection_cases() -> tuple[FixtureCase,
     )
 
 
-def _load_public_surface_bundle(
-    fixture_name: str,
-    expected_manifest_id: str,
+def _public_surface_contract_bundle(
+    bundle: FixtureBundle,
     *,
     expected_text_models: frozenset[str] | None = None,
 ) -> FixtureBundle:
-    manifest = load_fixture_manifest(CORRECTNESS_FIXTURES_ROOT / fixture_name)
-    if manifest.manifest_id != expected_manifest_id:
-        raise ValueError(
-            f"{fixture_name} expected_manifest_id {expected_manifest_id!r} "
-            f"does not match loaded manifest_id {manifest.manifest_id!r}"
-        )
-
-    cases = tuple(manifest.cases)
-    expected_case_ids = frozenset(case.case_id for case in cases)
+    cases = bundle.cases
     return FixtureBundle(
-        manifest=manifest,
+        manifest=bundle.manifest,
         cases=cases,
         expected_patterns=frozenset(case.case_id for case in cases),
         expected_operation_helper_counts=Counter(
             (case.operation, case.helper) for case in cases
         ),
-        expected_case_ids=expected_case_ids,
+        expected_case_ids=frozenset(case.case_id for case in cases),
         expected_text_models=expected_text_models,
+    )
+
+
+def _public_surface_loader_token(case: FixtureCase) -> str | bytes:
+    if case.pattern is None and not case.args:
+        return case.case_id
+    return case_pattern(case)
+
+
+def _published_public_surface_bundles() -> tuple[FixtureBundle, ...]:
+    # Reuse the shared full-manifest loader even for owner rows without pattern payloads,
+    # then reapply this file's case-id-based contract on the returned bundles.
+    original_case_pattern = fixture_parity_support.case_pattern
+    fixture_parity_support.case_pattern = _public_surface_loader_token
+    try:
+        bundles = load_published_fixture_bundles(
+            (
+                CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
+                CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
+                CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
+            )
+        )
+    finally:
+        fixture_parity_support.case_pattern = original_case_pattern
+    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
+    expected_manifest_ids = (
+        "public-api-surface",
+        "exported-symbol-surface",
+        "pattern-object-surface",
+    )
+    if loaded_manifest_ids != expected_manifest_ids:
+        raise ValueError(
+            "public surface owner bundle manifest ids drifted: "
+            f"expected {expected_manifest_ids}, got {loaded_manifest_ids}"
+        )
+
+    expected_text_models_by_manifest_id = {
+        "pattern-object-surface": frozenset({"bytes", "str"})
+    }
+    return tuple(
+        _public_surface_contract_bundle(
+            bundle,
+            expected_text_models=expected_text_models_by_manifest_id.get(
+                bundle.manifest.manifest_id
+            ),
+        )
+        for bundle in bundles
     )
 
 
@@ -396,21 +434,7 @@ NON_INSTANTIABLE_EXPORTS = (
         id="Match",
     ),
 )
-PUBLIC_SURFACE_BUNDLES = (
-    _load_public_surface_bundle(
-        "public_api_surface.py",
-        "public-api-surface",
-    ),
-    _load_public_surface_bundle(
-        "exported_symbol_surface.py",
-        "exported-symbol-surface",
-    ),
-    _load_public_surface_bundle(
-        "pattern_object_surface.py",
-        "pattern-object-surface",
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-)
+PUBLIC_SURFACE_BUNDLES = _published_public_surface_bundles()
 PUBLIC_API_BUNDLE = published_fixture_bundle_by_manifest_id(
     PUBLIC_SURFACE_BUNDLES,
     "public-api-surface",
