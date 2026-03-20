@@ -420,6 +420,41 @@ def published_fixture_bundle_by_manifest_id(
     return matching_bundles[0]
 
 
+def ordered_cases_from_owner_bundle(
+    bundle: FixtureBundle,
+    case_ids: tuple[str, ...],
+    *,
+    error_label: str,
+) -> tuple[FixtureCase, ...]:
+    duplicate_requested_case_ids = _duplicate_string_ids(case_ids)
+    if duplicate_requested_case_ids:
+        raise AssertionError(
+            f"{error_label} contain duplicate requested case ids: "
+            f"{duplicate_requested_case_ids}"
+        )
+
+    published_cases = tuple(bundle.manifest.cases)
+    duplicate_published_case_ids = _duplicate_string_ids(
+        tuple(case.case_id for case in published_cases)
+    )
+    if duplicate_published_case_ids:
+        raise AssertionError(
+            f"{error_label} owner manifest contains duplicate case ids: "
+            f"{duplicate_published_case_ids}"
+        )
+
+    case_by_id = {case.case_id: case for case in published_cases}
+    missing_case_ids = tuple(
+        case_id for case_id in case_ids if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise AssertionError(
+            f"{error_label} are missing published fixture rows: {missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in case_ids)
+
+
 def assert_fixture_bundle_contract(
     bundle: FixtureBundle,
     *,

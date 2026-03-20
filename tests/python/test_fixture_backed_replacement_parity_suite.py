@@ -37,6 +37,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_published_fixture_bundles,
+    ordered_cases_from_owner_bundle,
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
@@ -978,53 +979,6 @@ def _cases_for_manifest_ids(
         if case.manifest_id == manifest_id
     )
 
-
-def _ordered_cases_from_owner_bundle(
-    bundle: FixtureBundle,
-    case_ids: tuple[str, ...],
-    *,
-    error_label: str,
-) -> tuple[FixtureCase, ...]:
-    duplicate_requested_case_ids = tuple(
-        case_id for case_id, count in Counter(case_ids).items() if count > 1
-    )
-    if duplicate_requested_case_ids:
-        raise AssertionError(
-            f"{error_label} contain duplicate requested case ids: "
-            f"{duplicate_requested_case_ids}"
-        )
-
-    selected_case_ids = frozenset(case_ids)
-    case_by_id: dict[str, FixtureCase] = {}
-    duplicate_case_ids: set[str] = set()
-
-    for case in bundle.manifest.cases:
-        if case.case_id not in selected_case_ids:
-            continue
-        if case.case_id in case_by_id:
-            duplicate_case_ids.add(case.case_id)
-            continue
-        case_by_id[case.case_id] = case
-
-    ordered_duplicate_case_ids = tuple(
-        case_id for case_id in case_ids if case_id in duplicate_case_ids
-    )
-    if ordered_duplicate_case_ids:
-        raise AssertionError(
-            f"{error_label} contain duplicate case ids: {ordered_duplicate_case_ids}"
-        )
-
-    missing_case_ids = tuple(
-        case_id for case_id in case_ids if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise AssertionError(
-            f"{error_label} are missing published fixture rows: {missing_case_ids}"
-        )
-
-    return tuple(case_by_id[case_id] for case_id in case_ids)
-
-
 def _selected_owner_bundle(
     bundle: FixtureBundle,
     case_ids: tuple[str, ...],
@@ -1032,7 +986,7 @@ def _selected_owner_bundle(
     pattern_extractor: Callable[[FixtureCase], TextValue],
     error_label: str,
 ) -> FixtureBundle:
-    selected_cases = _ordered_cases_from_owner_bundle(
+    selected_cases = ordered_cases_from_owner_bundle(
         bundle,
         case_ids,
         error_label=error_label,

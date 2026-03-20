@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections import Counter
 import re
 from unittest import mock
 import warnings
@@ -19,6 +18,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     load_published_fixture_bundles,
+    ordered_cases_from_owner_bundle,
     published_fixture_bundle_by_manifest_id,
 )
 
@@ -55,48 +55,6 @@ EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = (
     "conditional-group-exists-assertion-negative-lookahead-error-str",
 )
 
-
-def _ordered_cases_from_owner_bundle(
-    owner_bundle: FixtureBundle,
-    ordered_case_ids: tuple[str, ...],
-    *,
-    error_label: str,
-) -> tuple[FixtureCase, ...]:
-    duplicate_requested_case_ids = tuple(
-        case_id
-        for case_id, count in Counter(ordered_case_ids).items()
-        if count > 1
-    )
-    if duplicate_requested_case_ids:
-        raise AssertionError(
-            f"{error_label} contain duplicate requested case ids: "
-            f"{duplicate_requested_case_ids}"
-        )
-
-    published_cases = tuple(owner_bundle.manifest.cases)
-    duplicate_published_case_ids = tuple(
-        case_id
-        for case_id, count in Counter(case.case_id for case in published_cases).items()
-        if count > 1
-    )
-    if duplicate_published_case_ids:
-        raise AssertionError(
-            f"{error_label} owner manifest contains duplicate case ids: "
-            f"{duplicate_published_case_ids}"
-        )
-
-    case_by_id = {case.case_id: case for case in published_cases}
-    missing_case_ids = tuple(
-        case_id for case_id in ordered_case_ids if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise AssertionError(
-            f"{error_label} are missing published fixture rows: {missing_case_ids}"
-        )
-
-    return tuple(case_by_id[case_id] for case_id in ordered_case_ids)
-
-
 OWNER_FIXTURE_BUNDLES = load_published_fixture_bundles(
     (
         PARSER_MATRIX_FIXTURE_PATH,
@@ -113,12 +71,12 @@ CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE = (
         "conditional-group-exists-assertion-diagnostics",
     )
 )
-TARGET_CASES = _ordered_cases_from_owner_bundle(
+TARGET_CASES = ordered_cases_from_owner_bundle(
     PARSER_MATRIX_OWNER_BUNDLE,
     EXPECTED_CASE_IDS,
     error_label="parser matrix selected case ids",
 )
-CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = _ordered_cases_from_owner_bundle(
+CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = ordered_cases_from_owner_bundle(
     CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE,
     EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
     error_label="conditional assertion diagnostic selected case ids",
