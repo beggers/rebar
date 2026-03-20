@@ -1668,21 +1668,6 @@ DISCOVERED_NO_MATCH_CASE_PARAMS = tuple(
     for surface in REPLACEMENT_SURFACES
     for case in surface.discovered_no_match_cases
 )
-SUPPLEMENTAL_NO_MATCH_CASE_PARAMS = tuple(
-    pytest.param(case, id=case.id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.spec.supplemental_no_match_cases
-)
-SUPPLEMENTAL_REPEATED_CASE_PARAMS = tuple(
-    pytest.param(case, id=case.id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.spec.supplemental_repeated_cases
-)
-SUPPLEMENTAL_NEGATIVE_COUNT_CASE_PARAMS = tuple(
-    pytest.param(case, id=case.id) for case in SUPPLEMENTAL_NEGATIVE_COUNT_CASES
-)
-
-
 def _is_pending_bytes_follow_on_case(
     surface: LoadedReplacementSurface,
     case: FixtureCase,
@@ -2389,7 +2374,14 @@ def test_discovered_no_match_paths_leave_input_unchanged(
     assert observed == expected == expected_result
 
 
-@pytest.mark.parametrize("case", SUPPLEMENTAL_NO_MATCH_CASE_PARAMS)
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for surface in REPLACEMENT_SURFACES
+        for case in surface.spec.supplemental_no_match_cases
+    ),
+)
 def test_supplemental_no_match_paths_match_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalReplacementCase,
@@ -2410,7 +2402,14 @@ def test_supplemental_no_match_paths_match_cpython(
     assert observed == expected == expected_result
 
 
-@pytest.mark.parametrize("case", SUPPLEMENTAL_REPEATED_CASE_PARAMS)
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for surface in REPLACEMENT_SURFACES
+        for case in surface.spec.supplemental_repeated_cases
+    ),
+)
 def test_repeated_replacement_paths_match_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalReplacementCase,
@@ -2426,7 +2425,10 @@ def test_repeated_replacement_paths_match_cpython(
     assert observed == expected == case.expected_result
 
 
-@pytest.mark.parametrize("case", SUPPLEMENTAL_NEGATIVE_COUNT_CASE_PARAMS)
+@pytest.mark.parametrize(
+    "case",
+    tuple(pytest.param(case, id=case.id) for case in SUPPLEMENTAL_NEGATIVE_COUNT_CASES),
+)
 def test_negative_replacement_counts_short_circuit_like_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalReplacementCase,
