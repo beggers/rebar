@@ -1,8 +1,9 @@
 # RBR-0737: Collapse legacy published-scorecard sidecar cleanup onto exact-path rejection
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the obsolete "auto-delete `latest.json` sidecar" plumbing from the published scorecard path while preserving the one behavior that still matters: explicit writes to the retired published paths `reports/correctness/latest.json` and `reports/benchmarks/latest.json` must keep failing with the current guidance toward the tracked `.py` publications or a non-tracked scratch `.json` path.
@@ -80,3 +81,9 @@ PY`
   - the temp publish probe in Acceptance currently fails exactly on this cleanup because `ScorecardReportDescriptor.write(...)` still deletes `latest.json`; and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because the helper and refresh-time sidecar variables still exist.
 - `RBR-0325` retired the tracked correctness `latest.json` publication path and `RBR-0650` moved the surviving `scorecard_io` contract onto `tests/python/test_ops_harness.py`; with both tracked and live JSON counts now at zero, the remaining auto-delete/auto-refresh sidecar path is obsolete compatibility plumbing rather than an active publication lane.
+
+## Completion
+- 2026-03-20: Removed the dedicated `retired_published_scorecard_sidecar_path(...)` helper from `python/rebar_harness/scorecard_io.py`, kept exact retired-path rejection by comparing against `published_path.with_suffix(".json")`, and stopped `ScorecardReportDescriptor.write(...)` from deleting a sibling `latest.json` when publishing the tracked `.py` scorecard.
+- Simplified `scripts/rebar_ops.py` so `published_correctness_report_needs_refresh(...)` no longer treats `reports/correctness/latest.json` as refresh drift and `refresh_published_correctness_scorecard(...)` no longer unlinks or special-cases that sidecar before deciding whether regeneration is needed.
+- Updated `tests/python/test_ops_harness.py` to inline retired-path computation with `.with_suffix(".json")`, keep the CLI exact-path rejection and scratch `.json` acceptance coverage, and replace the sidecar-deletion assertions with checks that publishing to the tracked `.py` path and refreshing an already-current correctness scorecard both leave a stray sibling `latest.json` untouched.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_ops_harness.py -k 'legacy_tracked_json_path or scorecard_report_descriptor or refresh_published_correctness_scorecard'` (`8 passed, 37 deselected in 2.13s`), the task’s temp publish probe (`ok`), and `bash -lc "! rg -n 'retired_published_scorecard_sidecar_path|removed_legacy_report|retired_sidecar_path\\.unlink|retired_sidecar_path\\.exists' python/rebar_harness/scorecard_io.py scripts/rebar_ops.py tests/python/test_ops_harness.py"` (no matches).

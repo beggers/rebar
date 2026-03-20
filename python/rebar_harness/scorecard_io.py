@@ -224,14 +224,8 @@ def _display_scorecard_path(path: pathlib.Path) -> str:
     return pathlib.PurePosixPath(*path.parts[reports_root_index:]).as_posix()
 
 
-def retired_published_scorecard_sidecar_path(
-    published_path: pathlib.Path | str,
-) -> pathlib.Path:
-    return pathlib.Path(published_path).with_suffix(".json")
-
-
 def _retired_published_scorecard_path_error(published_path: pathlib.Path) -> str:
-    retired_path = retired_published_scorecard_sidecar_path(published_path)
+    retired_path = published_path.with_suffix(".json")
     return (
         f"{_display_scorecard_path(retired_path)} is a retired legacy published "
         "scorecard path; use "
@@ -256,9 +250,7 @@ class ScorecardReportDescriptor:
 
     def validate_path(self, report_path: pathlib.Path | str) -> pathlib.Path:
         resolved_path = _resolve_report_path(report_path)
-        retired_path = _resolve_report_path(
-            retired_published_scorecard_sidecar_path(self.published_path)
-        )
+        retired_path = _resolve_report_path(self.published_path.with_suffix(".json"))
         if resolved_path == retired_path:
             raise ValueError(
                 _retired_published_scorecard_path_error(self.published_path)
@@ -289,12 +281,6 @@ class ScorecardReportDescriptor:
             report_attribute=self.report_attribute,
             scorecard_kind=self.scorecard_kind,
         )
-        published_path = _resolve_report_path(self.published_path)
-        if resolved_report_path == published_path:
-            retired_path = _resolve_report_path(
-                retired_published_scorecard_sidecar_path(self.published_path)
-            )
-            retired_path.unlink(missing_ok=True)
 
 
 def build_scorecard_report_descriptor(

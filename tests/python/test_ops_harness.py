@@ -37,13 +37,9 @@ COMPILE_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 )
 CORRECTNESS_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
-LEGACY_CORRECTNESS_REPORT_PATH = scorecard_io.retired_published_scorecard_sidecar_path(
-    CORRECTNESS_REPORT_PATH
-)
+LEGACY_CORRECTNESS_REPORT_PATH = CORRECTNESS_REPORT_PATH.with_suffix(".json")
 BENCHMARK_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
-LEGACY_BENCHMARK_REPORT_PATH = scorecard_io.retired_published_scorecard_sidecar_path(
-    BENCHMARK_REPORT_PATH
-)
+LEGACY_BENCHMARK_REPORT_PATH = BENCHMARK_REPORT_PATH.with_suffix(".json")
 
 class OpsHarnessTest(unittest.TestCase):
     def test_dispatch_policies_match_the_current_specialist_mix(self) -> None:
@@ -1228,7 +1224,7 @@ class ReadmeReportingTest(unittest.TestCase):
                 f"unsupported correctness scorecard extension '.txt' for {unsupported_output_path}",
             )
 
-    def test_scorecard_report_descriptor_resolves_optional_paths_and_rejects_retired_sidecar(
+    def test_scorecard_report_descriptor_resolves_optional_paths_and_rejects_retired_path(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1236,9 +1232,7 @@ class ReadmeReportingTest(unittest.TestCase):
             reports_root = temp_path / "reports" / "correctness"
             reports_root.mkdir(parents=True)
             published_path = reports_root / "latest.py"
-            retired_sidecar_path = scorecard_io.retired_published_scorecard_sidecar_path(
-                published_path
-            )
+            legacy_report_path = published_path.with_suffix(".json")
             descriptor = scorecard_io.build_scorecard_report_descriptor(
                 published_path=published_path,
                 scorecard_kind="correctness",
@@ -1273,7 +1267,7 @@ class ReadmeReportingTest(unittest.TestCase):
                     descriptor.validate_path(pathlib.Path("reports/correctness/latest.py")),
                     published_path.resolve(),
                 )
-            self.assertEqual(retired_sidecar_path, reports_root / "latest.json")
+            self.assertEqual(legacy_report_path, reports_root / "latest.json")
 
     def test_scorecard_report_descriptor_accepts_non_retired_json_scratch_paths(
         self,
@@ -1304,7 +1298,7 @@ class ReadmeReportingTest(unittest.TestCase):
                     nested_scratch_path.resolve(),
                 )
 
-    def test_scorecard_report_descriptor_writes_reports_and_only_cleans_up_published_sidecar(
+    def test_scorecard_report_descriptor_writes_reports_without_touching_legacy_json_sibling(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1312,9 +1306,7 @@ class ReadmeReportingTest(unittest.TestCase):
             reports_root = temp_path / "reports" / "correctness"
             reports_root.mkdir(parents=True)
             published_path = reports_root / "latest.py"
-            retired_sidecar_path = scorecard_io.retired_published_scorecard_sidecar_path(
-                published_path
-            )
+            legacy_report_path = published_path.with_suffix(".json")
             scratch_path = temp_path / "scratch-scorecard.json"
             descriptor = scorecard_io.build_scorecard_report_descriptor(
                 published_path=published_path,
@@ -1325,17 +1317,26 @@ class ReadmeReportingTest(unittest.TestCase):
                 "totals": {"cases": 2, "passed": 2},
             }
 
-            retired_sidecar_path.write_text("{}\n", encoding="utf-8")
+            legacy_payload = "{}\n"
+            legacy_report_path.write_text(legacy_payload, encoding="utf-8")
             descriptor.write(scorecard, scratch_path.resolve())
 
             self.assertTrue(scratch_path.is_file())
             self.assertEqual(descriptor.load(scratch_path), scorecard)
-            self.assertTrue(retired_sidecar_path.is_file())
+            self.assertTrue(legacy_report_path.is_file())
+            self.assertEqual(
+                legacy_report_path.read_text(encoding="utf-8"),
+                legacy_payload,
+            )
 
             descriptor.write(scorecard, published_path.resolve())
 
             self.assertEqual(descriptor.load(published_path), scorecard)
-            self.assertFalse(retired_sidecar_path.exists())
+            self.assertTrue(legacy_report_path.exists())
+            self.assertEqual(
+                legacy_report_path.read_text(encoding="utf-8"),
+                legacy_payload,
+            )
 
     def test_scorecard_report_descriptor_preserves_non_retired_json_siblings_when_publishing(
         self,
@@ -1345,9 +1346,7 @@ class ReadmeReportingTest(unittest.TestCase):
             reports_root = temp_path / "reports" / "correctness"
             reports_root.mkdir(parents=True)
             published_path = reports_root / "latest.py"
-            retired_sidecar_path = scorecard_io.retired_published_scorecard_sidecar_path(
-                published_path
-            )
+            legacy_report_path = published_path.with_suffix(".json")
             scratch_sibling_path = reports_root / "latest.scratch.json"
             descriptor = scorecard_io.build_scorecard_report_descriptor(
                 published_path=published_path,
@@ -1358,7 +1357,7 @@ class ReadmeReportingTest(unittest.TestCase):
                 "totals": {"cases": 2, "passed": 2},
             }
 
-            retired_sidecar_path.write_text("{}\n", encoding="utf-8")
+            legacy_report_path.write_text("{}\n", encoding="utf-8")
             scratch_sibling_path.write_text(
                 json.dumps({"scratch": True}, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
@@ -1367,41 +1366,42 @@ class ReadmeReportingTest(unittest.TestCase):
             descriptor.write(scorecard, published_path.resolve())
 
             self.assertEqual(descriptor.load(published_path), scorecard)
-            self.assertFalse(retired_sidecar_path.exists())
+            self.assertTrue(legacy_report_path.exists())
             self.assertTrue(scratch_sibling_path.is_file())
             self.assertEqual(
                 json.loads(scratch_sibling_path.read_text(encoding="utf-8")),
                 {"scratch": True},
             )
 
-    def test_refresh_published_correctness_scorecard_deletes_legacy_json_sidecar(self) -> None:
+    def test_refresh_published_correctness_scorecard_ignores_legacy_json_sidecar_when_current(
+        self,
+    ) -> None:
         rebar_ops = load_rebar_ops_module()
         original_payload = CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8")
 
         try:
+            correctness_harness = rebar_ops.load_correctness_harness_module()
+            legacy_payload = json.dumps({"legacy": True}, indent=2, sort_keys=True) + "\n"
             LEGACY_CORRECTNESS_REPORT_PATH.write_text(
-                json.dumps({"legacy": True}, indent=2, sort_keys=True) + "\n",
+                legacy_payload,
                 encoding="utf-8",
+            )
+
+            self.assertFalse(
+                rebar_ops.published_correctness_report_needs_refresh(correctness_harness)
             )
 
             refreshed = rebar_ops.refresh_published_correctness_scorecard()
 
-            self.assertIsInstance(refreshed, dict)
-            self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
-
-            repaired_payload = correctness.SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
-            correctness_harness = rebar_ops.load_correctness_harness_module()
-            expected_manifest_ids = [
-                manifest.manifest_id
-                for manifest in correctness_harness.published_fixture_manifests()
-            ]
+            self.assertIsNone(refreshed)
+            self.assertTrue(LEGACY_CORRECTNESS_REPORT_PATH.exists())
             self.assertEqual(
-                repaired_payload["fixtures"]["manifest_count"],
-                len(expected_manifest_ids),
+                LEGACY_CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8"),
+                legacy_payload,
             )
             self.assertEqual(
-                repaired_payload["fixtures"]["manifest_ids"],
-                expected_manifest_ids,
+                CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8"),
+                original_payload,
             )
         finally:
             CORRECTNESS_REPORT_PATH.write_text(original_payload, encoding="utf-8")
