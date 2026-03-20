@@ -671,6 +671,28 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-maxsplit-indexlike-bytes",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcabc"
+        }
+      ],
+      "kwargs": {
+        "maxsplit": _INDEX_TWO
+      },
+      "categories": ["workflow", "split", "literal", "bytes", "maxsplit"],
+      "notes": [
+        "Publishes the remaining raw module-level split() maxsplit=__index__ keyword workflow on bytes payloads already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-sub-count-keyword-str",
       "operation": "module_call",
       "family": "module_sub_workflow",

@@ -1,6 +1,6 @@
 # RBR-0769: Publish the module-workflow module `split(maxsplit=__index__)` singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -54,3 +54,8 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_argument_calls_match_cpython and module-split-maxsplit-indexlike-bytes'` passed in this run (`2 passed, 676 deselected`);
   - the current owner path already publishes the adjacent `workflow-module-split-maxsplit-keyword-bytes`, `workflow-module-sub-count-keyword-str`, `workflow-module-sub-count-indexlike-str`, `workflow-module-subn-count-keyword-bytes`, and `workflow-module-subn-count-indexlike-bytes` rows, leaving this singleton as the next bounded publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added `workflow-module-split-maxsplit-indexlike-bytes` to the existing `module-workflow-surface` manifest, extended the shared owner-path parity assertions to publish the direct anchor `module-split-maxsplit-indexlike-bytes`, and regenerated `reports/correctness/latest.py`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`702 passed, 1 skipped, 1943 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0769-module-workflow-module-split-maxsplit-indexlike-singleton.py` (`66/66`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Published scorecard now reads `1436` total / `1436` passed / `0` unimplemented across `114` manifests; `module.workflow` is `66/66/0`, `module.workflow.str` remains `42/42/0`, `module.workflow.bytes` is `24/24/0`, and `module.workflow.module_call` is `28/28/0`.

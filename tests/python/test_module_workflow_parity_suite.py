@@ -236,6 +236,7 @@ PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
         "workflow-module-match-flags-keyword-bytes",
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-split-maxsplit-keyword-bytes",
+        "workflow-module-split-maxsplit-indexlike-bytes",
         "workflow-module-sub-count-keyword-str",
         "workflow-module-sub-count-indexlike-str",
         "workflow-module-subn-count-keyword-bytes",
@@ -2131,21 +2132,21 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 65
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 66
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 42, "bytes": 23}
+        {"str": 42, "bytes": 24}
     )
     assert len(PATTERN_CASES) == 26
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {"search": 10, "match": 3, "fullmatch": 9, "findall": 2, "finditer": 2}
     )
-    assert len(MODULE_CALL_CASES) == 27
+    assert len(MODULE_CALL_CASES) == 28
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "search": 5,
             "match": 4,
             "fullmatch": 4,
-            "split": 2,
+            "split": 3,
             "findall": 1,
             "finditer": 1,
             "sub": 4,
@@ -2483,6 +2484,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
     ) == (
         "workflow-module-match-flags-keyword-bytes",
         "workflow-module-split-maxsplit-keyword-bytes",
+        "workflow-module-split-maxsplit-indexlike-bytes",
         "workflow-module-subn-count-keyword-bytes",
         "workflow-module-subn-count-indexlike-bytes",
     )
@@ -2493,6 +2495,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-match-flags-keyword-bytes",
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-split-maxsplit-keyword-bytes",
+        "workflow-module-split-maxsplit-indexlike-bytes",
         "workflow-module-sub-count-keyword-str",
         "workflow-module-sub-count-indexlike-str",
         "workflow-module-subn-count-keyword-bytes",
@@ -2505,6 +2508,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "module-match-flags-keyword-bytes",
         "module-fullmatch-flags-keyword-str",
         "module-split-maxsplit-keyword-bytes",
+        "module-split-maxsplit-indexlike-bytes",
         "module-sub-count-keyword-str",
         "module-sub-count-indexlike-str",
         "module-subn-count-keyword-bytes",
@@ -2517,7 +2521,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
                 "search": 1,
                 "match": 1,
                 "fullmatch": 1,
-                "split": 1,
+                "split": 2,
                 "sub": 2,
                 "subn": 2,
             }

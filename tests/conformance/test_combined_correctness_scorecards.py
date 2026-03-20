@@ -120,6 +120,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-match-flags-keyword-bytes",
             "workflow-module-fullmatch-flags-keyword-str",
             "workflow-module-split-maxsplit-keyword-bytes",
+            "workflow-module-split-maxsplit-indexlike-bytes",
             "workflow-module-sub-count-keyword-str",
             "workflow-module-sub-count-indexlike-str",
             "workflow-module-subn-count-keyword-bytes",
