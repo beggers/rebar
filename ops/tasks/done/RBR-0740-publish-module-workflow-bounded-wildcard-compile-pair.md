@@ -1,6 +1,6 @@
 # RBR-0740: Publish the module-workflow bounded wildcard compile pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -52,3 +52,9 @@ Created: 2026-03-20
   - direct runtime probes in this run confirmed that `rebar.compile("a.c")` and `rebar.compile("a.c", rebar.IGNORECASE)` match CPython on `.pattern`, `.flags`, `.groups`, and `.groupindex`;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes no `a.c` rows at all, leaving this compile pair as the next bounded Rust-backed publication slice on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- Added `workflow-compile-str-bounded-wildcard` and `workflow-compile-str-bounded-wildcard-ignorecase` to `tests/conformance/fixtures/module_workflow_surface.py` and kept them aligned to the shared `BOUNDED_WILDCARD_COMPILE_CASES` owner-path anchors in `tests/python/test_module_workflow_parity_suite.py`.
+- Updated the shared module-workflow fixture inventories and compile-only selection so the owner path now publishes 35 rows total with 9 compile rows, and extended the combined scorecard representative-case list so both bounded-wildcard compile rows are sampled from the tracked report.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0740-module-workflow-bounded-wildcard-compile-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Tracked `reports/correctness/latest.py` now publishes 1405 total / 1405 passed / 0 unimplemented across 114 manifests; `module.workflow` is 35 / 35 / 0, `module.workflow.str` is 20 / 20 / 0, and `module.workflow.compile` is 9 / 9 / 0.

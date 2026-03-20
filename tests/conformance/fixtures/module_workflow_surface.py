@@ -29,6 +29,27 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-compile-str-bounded-wildcard",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "a.c",
+      "categories": ["workflow", "compile", "wildcard", "bounded", "str"],
+      "notes": [
+        "Publishes the exact bounded wildcard default compile workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-compile-str-bounded-wildcard-ignorecase",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "a.c",
+      "flags": 2,
+      "categories": ["workflow", "compile", "wildcard", "bounded", "ignorecase", "str"],
+      "notes": [
+        "Publishes the exact bounded wildcard IGNORECASE compile workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-compile-str-verbose-regression",
       "operation": "compile",
       "family": "compile_workflow",

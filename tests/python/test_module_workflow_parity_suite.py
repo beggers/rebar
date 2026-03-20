@@ -155,9 +155,14 @@ _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
 
 MODULE_WORKFLOW_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "module_workflow_surface.py"
 MATCH_BEHAVIOR_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "match_behavior_smoke.py"
+MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS = (
+    "workflow-compile-str-bounded-wildcard",
+    "workflow-compile-str-bounded-wildcard-ignorecase",
+)
 MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
+    *MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS,
     "workflow-compile-str-verbose-regression",
     "workflow-compile-str-multiline-regression",
     "workflow-compile-bytes-verbose-regression",
@@ -194,6 +199,7 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
     {
         "abc",
         "^abc$",
+        "a.c",
         "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
         b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
         b"abc",
@@ -207,7 +213,7 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 )
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
-        ("compile", None): 7,
+        ("compile", None): 9,
         ("pattern_call", "search"): 7,
         ("pattern_call", "match"): 1,
         ("pattern_call", "fullmatch"): 7,
@@ -558,6 +564,7 @@ EXPLICIT_ESCAPE_BYTES_CASES = (
 MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
+    *MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS,
     VERBOSE_COMPILE_CASE_ID,
     MULTILINE_COMPILE_CASE_ID,
     VERBOSE_BYTES_COMPILE_CASE_ID,
@@ -2190,9 +2197,19 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
     } <= {case.case_id for case in PATTERN_CASES}
 
+    compile_cases_by_id = {case.case_id: case for case in COMPILE_CASES}
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
     pattern_cases_by_id = {case.case_id: case for case in PATTERN_CASES}
     verbose_bytes_pattern = case_pattern(VERBOSE_BYTES_COMPILE_CASE)
+
+    for fixture_case_id, direct_case in zip(
+        MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS,
+        BOUNDED_WILDCARD_COMPILE_CASES,
+    ):
+        fixture_case = compile_cases_by_id[fixture_case_id]
+        assert fixture_case.text_model == "str"
+        assert case_pattern(fixture_case) == direct_case.pattern
+        assert fixture_case.flags == direct_case.flags
 
     assert pattern_cases_by_id["workflow-pattern-search-str-verbose-regression-digits"].helper == (
         verbose_cases_by_id["search-multiline-middle-line-digits"].helper

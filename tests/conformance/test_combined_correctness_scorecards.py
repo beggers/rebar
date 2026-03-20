@@ -84,6 +84,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
     "module-workflow-surface": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
             "workflow-compile-str-anchored-literal",
+            "workflow-compile-str-bounded-wildcard",
+            "workflow-compile-str-bounded-wildcard-ignorecase",
             "workflow-compile-str-verbose-regression",
             "workflow-compile-str-multiline-regression",
             "workflow-compile-bytes-verbose-regression",
