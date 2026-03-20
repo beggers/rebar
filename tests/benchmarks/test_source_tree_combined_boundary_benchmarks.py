@@ -21,7 +21,6 @@ from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     BenchmarkManifest,
-    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
     Workload,
     build_callable,
@@ -52,21 +51,6 @@ from tests.python.fixture_parity_support import (
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
-BENCHMARK_SELECTOR_EXPECTATION_TABLE = (
-    (
-        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
-        (
-            "pattern_boundary.py",
-            "collection_replacement_boundary.py",
-            "literal_flag_boundary.py",
-        ),
-        "built-native-smoke",
-    ),
-)
-BENCHMARK_SELECTOR_EXPECTATIONS = tuple(
-    pytest.param(selector, expected_filenames, id=selector_id)
-    for selector, expected_filenames, selector_id in BENCHMARK_SELECTOR_EXPECTATION_TABLE
-)
 
 
 def _declared_benchmark_manifest_selectors() -> dict[str, str]:
@@ -6923,21 +6907,34 @@ def test_default_benchmark_published_full_suite_selector_covers_tracked_manifest
 
 
 @pytest.mark.parametrize(
-    ("selector", "expected_filenames"),
-    BENCHMARK_SELECTOR_EXPECTATIONS,
+    "selector",
+    tuple(
+        selector
+        for selector in _declared_benchmark_manifest_selectors().values()
+        if selector != PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+    ),
+    ids=lambda selector: selector,
 )
-def test_shared_benchmark_manifest_selectors_resolve_expected_published_paths(
+def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants(
     selector: str,
-    expected_filenames: tuple[str, ...],
 ) -> None:
     published_manifest_paths = select_benchmark_manifest_paths(
         PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     )
     selected_paths = select_benchmark_manifest_paths(selector)
+    selected_path_set = set(selected_paths)
+    expected_ordered_subset = tuple(
+        path for path in published_manifest_paths if path in selected_path_set
+    )
 
-    assert tuple(path.name for path in selected_paths) == expected_filenames
-    assert set(selected_paths).issubset(set(published_manifest_paths))
-    assert all(path.is_relative_to(BENCHMARK_WORKLOADS_ROOT) for path in selected_paths)
+    assert selected_paths
+    assert len(selected_paths) == len(selected_path_set)
+    assert selected_paths == expected_ordered_subset
+    for path in selected_paths:
+        assert path.is_relative_to(BENCHMARK_WORKLOADS_ROOT)
+        assert path.is_file()
+        assert path.suffix == ".py"
+        assert path in published_manifest_paths
 
 
 def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
@@ -6948,20 +6945,6 @@ def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
     assert set(declared_selectors.values()) == set(
         benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR
     )
-
-
-def test_benchmark_selector_expectation_table_covers_declared_nondefault_selectors() -> None:
-    declared_nondefault_selectors = set(_declared_benchmark_manifest_selectors().values())
-    declared_nondefault_selectors.remove(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
-    expected_selectors = tuple(
-        selector
-        for selector, _expected_filenames, _selector_id in BENCHMARK_SELECTOR_EXPECTATION_TABLE
-    )
-
-    assert PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR not in expected_selectors
-    assert len(expected_selectors) == len(set(expected_selectors))
-    assert set(expected_selectors) == declared_nondefault_selectors
-
 
 def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
     manifests = published_benchmark_manifests()

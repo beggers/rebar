@@ -1,6 +1,6 @@
 # RBR-0803: Collapse the benchmark selector expectation table onto live registry invariants
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -56,3 +56,10 @@ for selector, expected_filenames, _ in mod.BENCHMARK_SELECTOR_EXPECTATION_TABLE:
 print("ok")
 PY` currently passes (`ok`), showing the handwritten table is a direct mirror of live selector resolution rather than an independent contract source.
 - This is the benchmark-side follow-on to `RBR-0801`, which deleted the analogous correctness selector mirror; keeping the two selector contract owners aligned reduces one more piece of duplicated harness metadata without changing published behavior.
+
+## Completion
+- 2026-03-20: Removed `BENCHMARK_SELECTOR_EXPECTATION_TABLE` and `BENCHMARK_SELECTOR_EXPECTATIONS` from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, dropped the now-unused built-native selector import, and drove the shared selector parametrization directly from the declared `*_MANIFEST_SELECTOR` exports in `rebar_harness.benchmarks`.
+- 2026-03-20: Replaced the mirrored filename assertions with live registry contract checks that each declared nondefault selector resolves once, stays non-empty and duplicate-free, preserves published full-suite order, remains under `BENCHMARK_WORKLOADS_ROOT`, points at real `.py` manifest modules, and stays inside the published full-suite selector inventory.
+- 2026-03-20: Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'selector or published_full_suite_manifest_selector or built_native_smoke_manifest_selector'`
+  - `bash -lc "! rg -n '^(BENCHMARK_SELECTOR_EXPECTATION_TABLE|BENCHMARK_SELECTOR_EXPECTATIONS) =' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
