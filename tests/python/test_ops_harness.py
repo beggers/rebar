@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -881,6 +882,76 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertIsInstance(baseline["platform"], str)
         self.assertEqual(baseline["executable"], sys.executable)
         self.assertEqual(baseline["re_module"], "re")
+
+    def test_scorecard_materialize_descriptor_value_materializes_nested_bytes_payloads(
+        self,
+    ) -> None:
+        payload = {
+            1: "alpha",
+            "items": [
+                "beta",
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "gamma",
+                },
+                {"nested": "delta"},
+            ],
+        }
+
+        self.assertEqual(
+            scorecard_io.materialize_descriptor_value(payload, text_model="bytes"),
+            {
+                "1": b"alpha",
+                "items": [
+                    b"beta",
+                    b"gamma",
+                    {"nested": b"delta"},
+                ],
+            },
+        )
+
+    def test_scorecard_materialize_descriptor_value_builds_tagged_callable_helpers(
+        self,
+    ) -> None:
+        constant = scorecard_io.materialize_descriptor_value(
+            {
+                "type": "callable_constant",
+                "value": "CONST",
+            },
+            text_model="bytes",
+            callback_module_name="scorecard.contract",
+        )
+        match_group = scorecard_io.materialize_descriptor_value(
+            {
+                "type": "callable_match_group",
+                "group": "word",
+                "prefix": "<",
+                "suffix": ">",
+            },
+            text_model="bytes",
+            callback_module_name="scorecard.contract",
+        )
+
+        self.assertTrue(callable(constant))
+        self.assertEqual(constant.__module__, "scorecard.contract")
+        self.assertEqual(constant.__name__, "callable_constant")
+        self.assertEqual(constant.__qualname__, "callable_constant")
+        self.assertTrue(callable(match_group))
+        self.assertEqual(match_group.__module__, "scorecard.contract")
+        self.assertEqual(match_group.__name__, "callable_match_group")
+        self.assertEqual(match_group.__qualname__, "callable_match_group")
+
+        match = re.search(br"(?P<word>abc)", b"abc")
+        self.assertIsNotNone(match)
+        self.assertEqual(constant(match), b"CONST")
+        self.assertEqual(match_group(match), b"<abc>")
+
+    def test_scorecard_materialize_descriptor_value_rejects_unsupported_text_model(
+        self,
+    ) -> None:
+        with self.assertRaisesRegex(ValueError, r"unsupported text model 'utf-16'"):
+            scorecard_io.materialize_descriptor_value("abc", text_model="utf-16")
 
     def test_scorecard_format_python_module_round_trips_through_python_loader(
         self,
