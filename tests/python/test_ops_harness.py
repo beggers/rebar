@@ -80,6 +80,74 @@ class OpsHarnessTest(unittest.TestCase):
             ["architecture-implementation"],
         )
 
+    def test_enabled_agents_keep_single_supervisor_first_and_in_documented_order(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        config = rebar_ops.load_config()
+        agents = rebar_ops.load_agent_specs(config)
+
+        self.assertEqual(
+            tuple(agent.name for agent in agents),
+            (
+                "supervisor",
+                "architecture",
+                "architecture-implementation",
+                "feature-planning",
+                "feature-implementation",
+                "qa-testing",
+                "implementation-faithfulness",
+                "cleanup",
+                "reporting",
+            ),
+        )
+        self.assertEqual(
+            tuple(agent.cycle_order for agent in agents),
+            (0, 20, 22, 25, 35, 40, 50, 60, 70),
+        )
+        self.assertEqual(
+            [agent.name for agent in agents if agent.kind == "supervisor"],
+            ["supervisor"],
+        )
+
+    def test_load_agent_specs_requires_exactly_one_enabled_supervisor(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        config = rebar_ops.load_config()
+        load_python_dict_attribute = rebar_ops.load_python_dict_attribute
+
+        def mutate_specs(mode: str):
+            def side_effect(
+                spec_path: pathlib.Path,
+                *,
+                attribute: str,
+                label: str,
+            ) -> dict[str, object]:
+                raw = dict(
+                    load_python_dict_attribute(
+                        spec_path,
+                        attribute=attribute,
+                        label=label,
+                    )
+                )
+                if mode == "missing-enabled-supervisor" and spec_path.name == "supervisor.py":
+                    raw["enabled"] = False
+                if mode == "duplicate-enabled-supervisor" and spec_path.name == "architecture.py":
+                    raw["kind"] = "supervisor"
+                return raw
+
+            return side_effect
+
+        for mode in ("missing-enabled-supervisor", "duplicate-enabled-supervisor"):
+            with self.subTest(mode=mode):
+                with mock.patch.object(
+                    rebar_ops,
+                    "load_python_dict_attribute",
+                    side_effect=mutate_specs(mode),
+                ):
+                    with self.assertRaisesRegex(
+                        RuntimeError,
+                        re.escape("Exactly one enabled supervisor agent spec is required."),
+                    ):
+                        rebar_ops.load_agent_specs(config)
+
     def test_dirty_worktree_dispatch_is_limited_to_qa_and_cleanup(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
