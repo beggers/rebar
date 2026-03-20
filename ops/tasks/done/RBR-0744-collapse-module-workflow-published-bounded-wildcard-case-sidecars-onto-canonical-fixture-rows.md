@@ -1,8 +1,9 @@
 # RBR-0744: Collapse module-workflow published bounded-wildcard case sidecars onto canonical fixture rows
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `BOUNDED_WILDCARD_COMPILE_CASES` and `BOUNDED_WILDCARD_PATTERN_MATCH_CASES` tables from `tests/python/test_module_workflow_parity_suite.py` now that the exact same bounded-wildcard compile and bound-`Pattern` rows are already published in `tests/conformance/fixtures/module_workflow_surface.py`.
@@ -113,3 +114,7 @@ PY` reported the existing tail through `RBR-0743`, no reserved missing tail ids,
   - the canonical-row probe in Acceptance already passes in the current checkout (`ok`);
   - `rg -n 'BOUNDED_WILDCARD_COMPILE_CASES|BOUNDED_WILDCARD_PATTERN_MATCH_CASES' tests/python/test_module_workflow_parity_suite.py` currently shows one declaration block for each detached table plus their remaining owner-side reads in this file; and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because those mirrored tables still exist.
+- 2026-03-20 completion:
+  - Removed the detached `BOUNDED_WILDCARD_COMPILE_CASES` and `BOUNDED_WILDCARD_PATTERN_MATCH_CASES` tables from `tests/python/test_module_workflow_parity_suite.py`.
+  - Repointed the bounded-wildcard compile and bound-`Pattern` parity tests plus the bundle-contract assertion to fixture-backed rows selected from `COMPILE_CASES` and `PATTERN_CASES` via the existing `MODULE_WORKFLOW_BOUNDED_WILDCARD_*_CASE_IDS` tuples, preserving the published row order and payloads.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`653 passed, 1 skipped in 0.72s`), the canonical-row probe from the task (`ok`), and the final `rg` absence check for `BOUNDED_WILDCARD_COMPILE_CASES|BOUNDED_WILDCARD_PATTERN_MATCH_CASES` (no matches).

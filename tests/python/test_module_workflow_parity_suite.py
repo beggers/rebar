@@ -273,6 +273,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
 )
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
+COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
 NOFLAG_COMPILE_CASES = tuple(
     case for case in COMPILE_CASES if (case.flags or 0) == 0
 )
@@ -341,6 +342,20 @@ VERBOSE_BYTES_SEARCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
 VERBOSE_BYTES_FULLMATCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
     "workflow-pattern-fullmatch-bytes-verbose-regression"
 ]
+
+
+def _published_bounded_wildcard_compile_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        COMPILE_CASES_BY_ID[case_id]
+        for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS
+    )
+
+
+def _published_bounded_wildcard_pattern_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        PATTERN_CASES_BY_ID[case_id]
+        for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS
+    )
 
 # Keep the public-surface coverage on the module workflow owner file.
 PUBLIC_API_CASE_IDS = (
@@ -722,13 +737,6 @@ class CollectionTypeErrorCase:
     pattern: str | bytes
     string: str | bytes
     compiled: bool = False
-
-
-@dataclass(frozen=True)
-class BoundedWildcardCompileCase:
-    case_id: str
-    pattern: str
-    flags: int = 0
 
 
 @dataclass(frozen=True)
@@ -1215,53 +1223,6 @@ PATTERN_FINDITER_COLLECTION_CASES = tuple(
         "abc",
         "zabz",
         (1, 4),
-    ),
-)
-# Keep the detached bounded-wildcard workflow surface on the module workflow owner file.
-BOUNDED_WILDCARD_COMPILE_CASES = (
-    BoundedWildcardCompileCase(
-        case_id="bounded-wildcard-compile-default",
-        pattern="a.c",
-    ),
-    BoundedWildcardCompileCase(
-        case_id="bounded-wildcard-compile-ignorecase",
-        pattern="a.c",
-        flags=int(re.IGNORECASE),
-    ),
-)
-BOUNDED_WILDCARD_PATTERN_MATCH_CASES = (
-    BoundedWildcardPatternCase(
-        case_id="pattern-search-ignorecase-bounded-hit",
-        helper="search",
-        pattern="a.c",
-        flags=int(re.IGNORECASE),
-        string="zaBczz",
-        pos=1,
-        endpos=5,
-    ),
-    BoundedWildcardPatternCase(
-        case_id="pattern-match-bounded-hit",
-        helper="match",
-        pattern="a.c",
-        string="zabcaxc",
-        pos=1,
-        endpos=4,
-    ),
-    BoundedWildcardPatternCase(
-        case_id="pattern-fullmatch-bounded-hit",
-        helper="fullmatch",
-        pattern="a.c",
-        string="zaxcz",
-        pos=1,
-        endpos=4,
-    ),
-    BoundedWildcardPatternCase(
-        case_id="pattern-search-bounded-endpos-miss",
-        helper="search",
-        pattern="a.c",
-        string="zabc",
-        pos=1,
-        endpos=3,
     ),
 )
 BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES = (
@@ -2309,155 +2270,177 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
     } <= {case.case_id for case in PATTERN_CASES}
 
-    compile_cases_by_id = {case.case_id: case for case in COMPILE_CASES}
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
-    pattern_cases_by_id = {case.case_id: case for case in PATTERN_CASES}
     verbose_bytes_pattern = case_pattern(VERBOSE_BYTES_COMPILE_CASE)
+    bounded_wildcard_compile_cases = _published_bounded_wildcard_compile_cases()
+    bounded_wildcard_pattern_cases = _published_bounded_wildcard_pattern_cases()
 
-    for fixture_case_id, direct_case in zip(
-        MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS,
-        BOUNDED_WILDCARD_COMPILE_CASES,
-    ):
-        fixture_case = compile_cases_by_id[fixture_case_id]
-        assert fixture_case.text_model == "str"
-        assert case_pattern(fixture_case) == direct_case.pattern
-        assert fixture_case.flags == direct_case.flags
+    assert all(case.text_model == "str" for case in bounded_wildcard_compile_cases)
+    assert tuple(
+        (case.case_id, case_pattern(case), case.flags or 0)
+        for case in bounded_wildcard_compile_cases
+    ) == (
+        ("workflow-compile-str-bounded-wildcard", "a.c", 0),
+        ("workflow-compile-str-bounded-wildcard-ignorecase", "a.c", 2),
+    )
 
-    for fixture_case_id, direct_case in zip(
-        MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS,
-        BOUNDED_WILDCARD_PATTERN_MATCH_CASES[
-            : len(MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS)
-        ],
-    ):
-        fixture_case = pattern_cases_by_id[fixture_case_id]
-        expected_args: list[object] = [direct_case.string]
-        if direct_case.pos or direct_case.endpos is not None:
-            expected_args.append(direct_case.pos)
-            if direct_case.endpos is not None:
-                expected_args.append(direct_case.endpos)
+    assert all(case.text_model == "str" for case in bounded_wildcard_pattern_cases)
+    assert tuple(
+        (
+            case.case_id,
+            case.helper,
+            case_pattern(case),
+            tuple(case.args),
+            case.flags or 0,
+        )
+        for case in bounded_wildcard_pattern_cases
+    ) == (
+        (
+            "workflow-pattern-search-str-bounded-wildcard-ignorecase",
+            "search",
+            "a.c",
+            ("zaBczz", 1, 5),
+            2,
+        ),
+        (
+            "workflow-pattern-match-str-bounded-wildcard",
+            "match",
+            "a.c",
+            ("zabcaxc", 1, 4),
+            0,
+        ),
+        (
+            "workflow-pattern-fullmatch-str-bounded-wildcard",
+            "fullmatch",
+            "a.c",
+            ("zaxcz", 1, 4),
+            0,
+        ),
+        (
+            "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
+            "search",
+            "a.c",
+            ("zabc", 1, 3),
+            0,
+        ),
+    )
 
-        assert fixture_case.text_model == "str"
-        assert fixture_case.helper == direct_case.helper
-        assert case_pattern(fixture_case) == direct_case.pattern
-        assert fixture_case.flags == direct_case.flags
-        assert tuple(fixture_case.args) == tuple(expected_args)
-
-    assert pattern_cases_by_id["workflow-pattern-search-str-verbose-regression-digits"].helper == (
+    assert PATTERN_CASES_BY_ID["workflow-pattern-search-str-verbose-regression-digits"].helper == (
         verbose_cases_by_id["search-multiline-middle-line-digits"].helper
     )
-    assert pattern_cases_by_id["workflow-pattern-search-str-verbose-regression-digits"].args == [
+    assert PATTERN_CASES_BY_ID["workflow-pattern-search-str-verbose-regression-digits"].args == [
         verbose_cases_by_id["search-multiline-middle-line-digits"].text
     ]
-    assert pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression"].helper == (
+    assert PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression"].helper == (
         verbose_cases_by_id["search-multiline-middle-line-alpha"].helper
     )
     assert (
-        case_pattern(pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression"])
+        case_pattern(PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression"])
         == verbose_bytes_pattern
     )
     assert (
-        pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression"].flags
+        PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression"].flags
         == VERBOSE_BYTES_COMPILE_CASE.flags
     )
-    assert pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression"].args == [
+    assert PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression"].args == [
         verbose_cases_by_id["search-multiline-middle-line-alpha"].text.encode("latin-1")
     ]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-search-bytes-verbose-regression-digits"
     ].helper == verbose_cases_by_id["search-multiline-middle-line-digits"].helper
     assert (
         case_pattern(
-            pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression-digits"]
+            PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression-digits"]
         )
         == verbose_bytes_pattern
     )
     assert (
-        pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression-digits"].flags
+        PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression-digits"].flags
         == VERBOSE_BYTES_COMPILE_CASE.flags
     )
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-search-bytes-verbose-regression-digits"
     ].args == [verbose_cases_by_id["search-multiline-middle-line-digits"].text.encode("latin-1")]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-search-str-verbose-regression-too-many-digits"
     ].helper == verbose_cases_by_id["search-rejects-too-many-digits"].helper
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-search-str-verbose-regression-too-many-digits"
     ].args == [verbose_cases_by_id["search-rejects-too-many-digits"].text]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-search-bytes-verbose-regression-too-many-digits"
     ].helper == verbose_cases_by_id["search-rejects-too-many-digits"].helper
     assert (
         case_pattern(
-            pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression-too-many-digits"]
+            PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression-too-many-digits"]
         )
         == verbose_bytes_pattern
     )
     assert (
-        pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression-too-many-digits"].flags
+        PATTERN_CASES_BY_ID["workflow-pattern-search-bytes-verbose-regression-too-many-digits"].flags
         == VERBOSE_BYTES_COMPILE_CASE.flags
     )
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-search-bytes-verbose-regression-too-many-digits"
     ].args == [verbose_cases_by_id["search-rejects-too-many-digits"].text.encode("latin-1")]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-str-verbose-regression-alpha"
     ].helper == verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].helper
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-str-verbose-regression-alpha"
     ].args == [verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].text]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-bytes-verbose-regression"
     ].helper == verbose_cases_by_id["fullmatch-digits-without-literal-spaces"].helper
     assert (
-        case_pattern(pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression"])
+        case_pattern(PATTERN_CASES_BY_ID["workflow-pattern-fullmatch-bytes-verbose-regression"])
         == verbose_bytes_pattern
     )
     assert (
-        pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression"].flags
+        PATTERN_CASES_BY_ID["workflow-pattern-fullmatch-bytes-verbose-regression"].flags
         == VERBOSE_BYTES_COMPILE_CASE.flags
     )
-    assert pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression"].args == [
+    assert PATTERN_CASES_BY_ID["workflow-pattern-fullmatch-bytes-verbose-regression"].args == [
         verbose_cases_by_id["fullmatch-digits-without-literal-spaces"].text.encode("latin-1")
     ]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-bytes-verbose-regression-alpha"
     ].helper == verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].helper
     assert (
         case_pattern(
-            pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression-alpha"]
+            PATTERN_CASES_BY_ID["workflow-pattern-fullmatch-bytes-verbose-regression-alpha"]
         )
         == verbose_bytes_pattern
     )
     assert (
-        pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression-alpha"].flags
+        PATTERN_CASES_BY_ID["workflow-pattern-fullmatch-bytes-verbose-regression-alpha"].flags
         == VERBOSE_BYTES_COMPILE_CASE.flags
     )
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-bytes-verbose-regression-alpha"
     ].args == [verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].text.encode("latin-1")]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key"
     ].helper == verbose_cases_by_id["fullmatch-rejects-lowercase-key"].helper
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key"
     ].args == [verbose_cases_by_id["fullmatch-rejects-lowercase-key"].text]
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key"
     ].helper == verbose_cases_by_id["fullmatch-rejects-lowercase-key"].helper
     assert (
         case_pattern(
-            pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key"]
+            PATTERN_CASES_BY_ID["workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key"]
         )
         == verbose_bytes_pattern
     )
     assert (
-        pattern_cases_by_id[
+        PATTERN_CASES_BY_ID[
             "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key"
         ].flags
         == VERBOSE_BYTES_COMPILE_CASE.flags
     )
-    assert pattern_cases_by_id[
+    assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key"
     ].args == [verbose_cases_by_id["fullmatch-rejects-lowercase-key"].text.encode("latin-1")]
 
@@ -3951,15 +3934,20 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
 
 @pytest.mark.parametrize(
     "case",
-    BOUNDED_WILDCARD_COMPILE_CASES,
+    _published_bounded_wildcard_compile_cases(),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
-    case: BoundedWildcardCompileCase,
+    case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    compile_with_cpython_parity(backend_name, backend, case.pattern, case.flags)
+    compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case_pattern(case),
+        case.flags or 0,
+    )
 
 
 @pytest.mark.parametrize(
@@ -4035,23 +4023,24 @@ def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() ->
 
 @pytest.mark.parametrize(
     "case",
-    BOUNDED_WILDCARD_PATTERN_MATCH_CASES,
+    _published_bounded_wildcard_pattern_cases(),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_pattern_match_helpers_match_cpython(
     regex_backend: tuple[str, object],
-    case: BoundedWildcardPatternCase,
+    case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
+    assert case.helper is not None
     observed_pattern, expected_pattern = compile_with_cpython_parity(
         backend_name,
         backend,
-        case.pattern,
-        case.flags,
+        case_pattern(case),
+        case.flags or 0,
     )
 
-    observed = _call_bounded_wildcard_pattern_helper(observed_pattern, case)
-    expected = _call_bounded_wildcard_pattern_helper(expected_pattern, case)
+    observed = getattr(observed_pattern, case.helper)(*case.args)
+    expected = getattr(expected_pattern, case.helper)(*case.args)
 
     assert_match_result_parity(backend_name, observed, expected)
     if expected is not None:
