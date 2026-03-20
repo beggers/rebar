@@ -53,6 +53,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
     assert_pattern_fullmatch_case_parity,
+    assert_value_parity,
     assert_valid_match_group_access_parity,
     build_fixture_bundle,
     case_pattern,
@@ -3276,6 +3277,29 @@ def test_pattern_parity_helper_rejects_rebar_pattern_metadata_mismatches(
 
     with pytest.raises(AssertionError):
         assert_pattern_parity("rebar", observed, expected)
+
+
+def test_value_parity_accepts_nested_builtin_results() -> None:
+    assert_value_parity(
+        ("alpha", [b"beta", ("gamma", 3)]),
+        ("alpha", [b"beta", ("gamma", 3)]),
+    )
+
+
+def test_value_parity_rejects_equal_top_level_values_with_different_types() -> None:
+    with pytest.raises(AssertionError):
+        assert_value_parity(True, 1)
+
+
+def test_value_parity_rejects_equal_nested_values_with_different_types() -> None:
+    class _StringSubclass(str):
+        pass
+
+    with pytest.raises(AssertionError):
+        assert_value_parity(
+            (["alpha"], (True,)),
+            ([_StringSubclass("alpha")], (1,)),
+        )
 
 
 @pytest.mark.parametrize(

@@ -879,6 +879,21 @@ def assert_finditer_parity(
     assert next(expected_iter, None) is None
 
 
+def assert_value_parity(
+    observed: object,
+    expected: object,
+) -> None:
+    assert type(observed) is type(expected)
+
+    if isinstance(expected, (list, tuple)):
+        assert len(observed) == len(expected)
+        for observed_item, expected_item in zip(observed, expected):
+            assert_value_parity(observed_item, expected_item)
+        return
+
+    assert observed == expected
+
+
 def assert_match_convenience_api_parity(
     observed: object,
     expected: re.Match[str] | re.Match[bytes],

@@ -41,6 +41,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
     assert_placeholder_message_contains,
+    assert_value_parity,
     build_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
@@ -3873,7 +3874,7 @@ def test_module_helpers_accept_compiled_patterns_with_cpython_parity(
         assert_finditer_parity(backend_name, observed, expected, check_regs=True)
         return
 
-    assert observed == expected
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
@@ -4041,7 +4042,7 @@ def test_module_keyword_argument_calls_match_cpython(
         assert_match_convenience_api_parity(observed, expected)
         return
 
-    assert observed == expected
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize("case", PATTERN_KEYWORD_CALL_CASES, ids=lambda case: case.case_id)
@@ -4070,7 +4071,7 @@ def test_pattern_keyword_argument_calls_match_cpython(
         assert_finditer_parity(backend_name, observed, expected, check_regs=True)
         return
 
-    assert observed == expected
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize("case", MODULE_KEYWORD_ERROR_CASES, ids=lambda case: case.case_id)
@@ -4121,10 +4122,7 @@ def test_compiled_pattern_module_keyword_argument_calls_match_cpython(
         assert_pattern_parity(observed_backend_name, observed, expected)
         return
 
-    assert observed == expected, (
-        f"{observed_backend_name} compiled-pattern module keyword call mismatch for "
-        f"{case.case_id}"
-    )
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
@@ -4926,10 +4924,7 @@ def test_bounded_wildcard_module_collection_helpers_match_cpython(
             ) from exc
         return
 
-    assert observed == expected, (
-        f"{backend_name} {context} {case.helper} mismatch for "
-        f"pattern={case.pattern!r}, string={case.string!r}"
-    )
+    assert_value_parity(observed, expected)
 
 
 def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() -> None:
@@ -4997,7 +4992,7 @@ def test_bounded_wildcard_pattern_collection_helpers_match_cpython(
         assert_finditer_parity(backend_name, observed, expected)
         return
 
-    assert observed == expected
+    assert_value_parity(observed, expected)
 
 
 def test_recording_native_boundary_dispatch_helpers_record_calls_and_results() -> None:
@@ -5268,10 +5263,13 @@ def test_module_split_collection_helpers_match_cpython(
 ) -> None:
     _, backend = regex_backend
 
-    assert _call_module_collection_helper(
-        backend,
-        case,
-    ) == _call_module_collection_helper(re, case)
+    assert_value_parity(
+        _call_module_collection_helper(
+            backend,
+            case,
+        ),
+        _call_module_collection_helper(re, case),
+    )
 
 
 @pytest.mark.parametrize(
@@ -5291,10 +5289,13 @@ def test_pattern_split_collection_helpers_match_cpython(
         case.flags,
     )
 
-    assert _call_pattern_collection_helper(
-        observed_pattern,
-        case,
-    ) == _call_pattern_collection_helper(expected_pattern, case)
+    assert_value_parity(
+        _call_pattern_collection_helper(
+            observed_pattern,
+            case,
+        ),
+        _call_pattern_collection_helper(expected_pattern, case),
+    )
 
 
 @pytest.mark.parametrize(
@@ -5308,10 +5309,13 @@ def test_module_findall_collection_helpers_match_cpython(
 ) -> None:
     _, backend = regex_backend
 
-    assert _call_module_collection_helper(
-        backend,
-        case,
-    ) == _call_module_collection_helper(re, case)
+    assert_value_parity(
+        _call_module_collection_helper(
+            backend,
+            case,
+        ),
+        _call_module_collection_helper(re, case),
+    )
 
 
 @pytest.mark.parametrize(
@@ -5331,10 +5335,13 @@ def test_pattern_findall_collection_helpers_match_cpython(
         case.flags,
     )
 
-    assert _call_pattern_collection_helper(
-        observed_pattern,
-        case,
-    ) == _call_pattern_collection_helper(expected_pattern, case)
+    assert_value_parity(
+        _call_pattern_collection_helper(
+            observed_pattern,
+            case,
+        ),
+        _call_pattern_collection_helper(expected_pattern, case),
+    )
 
 
 @pytest.mark.parametrize(
