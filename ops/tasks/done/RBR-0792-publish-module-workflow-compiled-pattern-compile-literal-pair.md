@@ -1,6 +1,6 @@
 # RBR-0792: Publish the module-workflow compiled-pattern compile literal pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -68,3 +68,9 @@ Created: 2026-03-20
   - the current owner path already publishes the adjacent compiled-pattern helper, keyword, and helper-error rows, leaving this default compile literal pair as the smallest unpublished compiled-pattern neighbor on the same owner file;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added `workflow-module-compile-str-compiled-pattern` and `workflow-module-compile-bytes-compiled-pattern` to the existing `module-workflow-surface` fixture, kept them on the shared compiled-pattern owner path, and aligned the parity-suite direct-anchor assertions to `compiled-pattern-compile-str-literal` and `compiled-pattern-compile-bytes-literal`.
+- Updated the published owner-path expectations so `module-workflow-surface` now carries 107 cases with a `67`/`40` str/bytes split, 53 `module_call` rows, and 34 published compiled-pattern module-helper rows.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `1477` total / `1477` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `107`, `module.workflow.str` at `67`, `module.workflow.bytes` at `40`, `module.workflow.module_call` at `53`, and `module.workflow.pattern_call` unchanged at `42`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython tests/python/test_module_workflow_parity_suite.py::test_compile_rejects_nonzero_flags_for_compiled_patterns_like_cpython` (`30 passed in 0.41s`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`758 passed, 1 skipped, 1982 subtests passed in 35.81s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0792-module-workflow-compiled-pattern-compile-literal-pair.py` (`107/107`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1477/1477`).

@@ -2274,9 +2274,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 105
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 107
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 66, "bytes": 39}
+        {"str": 67, "bytes": 40}
     )
     assert len(PATTERN_CASES) == 42
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -2291,9 +2291,10 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 2,
         }
     )
-    assert len(MODULE_CALL_CASES) == 51
+    assert len(MODULE_CALL_CASES) == 53
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
+            "compile": 2,
             "search": 7,
             "match": 5,
             "fullmatch": 6,
@@ -2946,8 +2947,38 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
+    def direct_case_helper(
+        case: (
+            CompiledPatternCompileCase
+            | CompiledPatternModuleHelperCase
+            | CompiledPatternModuleKeywordCallCase
+            | CompiledPatternModuleKeywordErrorCase
+            | CompiledPatternModuleHelperErrorCase
+            | BoundedWildcardModuleCase
+        ),
+    ) -> str:
+        if isinstance(case, CompiledPatternCompileCase):
+            return "compile"
+        return case.helper
+
+    def direct_case_args(
+        case: (
+            CompiledPatternCompileCase
+            | CompiledPatternModuleHelperCase
+            | CompiledPatternModuleKeywordCallCase
+            | CompiledPatternModuleKeywordErrorCase
+            | CompiledPatternModuleHelperErrorCase
+            | BoundedWildcardModuleCase
+        ),
+    ) -> tuple[object, ...]:
+        if isinstance(case, CompiledPatternCompileCase):
+            return ()
+        return tuple(case.args) if hasattr(case, "args") else (case.string,)
+
     def direct_signature(
         case: (
+            CompiledPatternCompileCase
+            |
             CompiledPatternModuleHelperCase
             | CompiledPatternModuleKeywordCallCase
             | CompiledPatternModuleKeywordErrorCase
@@ -2963,9 +2994,9 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         tuple[tuple[str, str, object], ...],
     ]:
         return (
-            case.helper,
+            direct_case_helper(case),
             case.pattern,
-            tuple(case.args) if hasattr(case, "args") else (case.string,),
+            direct_case_args(case),
             getattr(case, "flags", 0),
             getattr(case, "compiled", True),
             _workflow_keyword_kwargs_signature(getattr(case, "kwargs", {})),
@@ -2974,6 +3005,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     direct_cases_by_signature = {
         direct_signature(case): case
         for case in (
+            *COMPILED_PATTERN_COMPILE_CASES,
             *COMPILED_PATTERN_MODULE_HELPER_CASES,
             *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
             *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
@@ -3002,6 +3034,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
             "str",
         )
     ) == (
+        "workflow-module-compile-str-compiled-pattern",
         "workflow-module-search-str-compiled-pattern",
         "workflow-module-search-str-compiled-pattern-on-bytes-string",
         "workflow-module-match-str-compiled-pattern",
@@ -3029,6 +3062,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
             "bytes",
         )
     ) == (
+        "workflow-module-compile-bytes-compiled-pattern",
         "workflow-module-match-bytes-compiled-pattern-on-str-string",
         "workflow-module-search-bytes-verbose-regression-compiled-pattern",
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
@@ -3043,13 +3077,15 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 32
+    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 34
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == (
+        "workflow-module-compile-str-compiled-pattern",
         "workflow-module-search-str-compiled-pattern",
         "workflow-module-search-str-compiled-pattern-on-bytes-string",
         "workflow-module-match-str-compiled-pattern",
+        "workflow-module-compile-bytes-compiled-pattern",
         "workflow-module-match-bytes-compiled-pattern-on-str-string",
         "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
         "workflow-module-match-str-bounded-wildcard-compiled-pattern",
@@ -3083,9 +3119,11 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == (
+        "compiled-pattern-compile-str-literal",
         "compiled-pattern-search-str",
         "compiled-pattern-search-str-on-bytes-string",
         "compiled-pattern-match-str",
+        "compiled-pattern-compile-bytes-literal",
         "compiled-pattern-match-bytes-on-str-string",
         "compiled-module-search-ignorecase-bounded-hit",
         "compiled-module-match-bounded-hit",
@@ -3121,7 +3159,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     )
     assert tuple(
         case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ) == tuple(case.helper for case in selected_direct_cases)
+    ) == tuple(direct_case_helper(case) for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(
         PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
@@ -3129,9 +3167,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     ):
         assert fixture_case.use_compiled_pattern is True
         direct_pattern = direct_case.pattern
-        direct_args = tuple(direct_case.args) if hasattr(direct_case, "args") else (
-            direct_case.string,
-        )
+        direct_args = direct_case_args(direct_case)
         assert fixture_case.text_model == (
             "bytes" if isinstance(direct_pattern, bytes) else "str"
         )

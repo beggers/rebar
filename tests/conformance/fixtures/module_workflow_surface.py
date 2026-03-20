@@ -1164,6 +1164,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "helper": "compile",
+      "use_compiled_pattern": True,
+      "categories": ["workflow", "compile", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the exact literal str module-level compile() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
@@ -1207,6 +1219,19 @@ MANIFEST = {
       "categories": ["workflow", "match", "literal", "str", "compiled-pattern"],
       "notes": [
         "Publishes the first literal str module-level match() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-compile-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "categories": ["workflow", "compile", "literal", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the exact literal bytes module-level compile() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
       ]
     },
     {
