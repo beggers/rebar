@@ -1218,6 +1218,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": 0
+      },
+      "categories": ["workflow", "compile", "named-group", "str", "compiled-pattern", "flags", "int-zero"],
+      "notes": [
+        "Publishes the compiled-pattern module-level named-group compile() explicit integer-zero flag singleton on the shared owner path without broadening into the default, bool-false, or NOFLAG spellings."
+      ]
+    },
+    {
       "id": "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
       "operation": "module_call",
       "family": "compile_workflow",

@@ -1,6 +1,6 @@
 # RBR-0802: Publish the module-workflow compiled-pattern compile explicit-int-zero named-group singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -64,3 +64,8 @@ Created: 2026-03-20
   - `flags=re.NOFLAG` is still not the next task because the current owner-path signature normalizes `RegexFlag(0)` to the same integer-zero keyword signature this task would publish, while this named-group integer-zero singleton remains the next distinct unpublished row on the current boundary;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` plus the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added the single published `module_call` row `workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group` to `tests/conformance/fixtures/module_workflow_surface.py`, aligned the shared owner-path direct case `compiled-pattern-compile-flags-int-zero-str-named-group` plus bundle/count assertions in `tests/python/test_module_workflow_parity_suite.py`, and extended the tracked representative-case list in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `1484` total / `1484` passed / `0` unimplemented overall, with `module.workflow` at `114` / `114`, `module.workflow.str` at `72` / `72`, `module.workflow.bytes` at `42` / `42`, `module.workflow.module_call` at `60` / `60`, and `module.workflow.pattern_call` unchanged at `42` / `42`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython tests/python/test_module_workflow_parity_suite.py::test_compiled_pattern_module_keyword_argument_calls_match_cpython` (`54 passed`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`792 passed, 1 skipped, 2007 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0802-module-workflow-compiled-pattern-compile-int-zero-named-group-singleton.py` (`114/114`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1484/1484`).
