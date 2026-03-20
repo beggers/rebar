@@ -175,15 +175,6 @@ GROUPED_REPLACEMENT_TEMPLATE_CONTRACT_MANIFEST_IDS = frozenset(
     }
 )
 GROUPED_REPLACEMENT_COLLECTION_PATTERNS = frozenset({"abc", "(abc)"})
-GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS = Counter(
-    {("module_call", "sub"): len(GROUPED_REPLACEMENT_COLLECTION_CASE_IDS)}
-)
-NESTED_GROUP_ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
-    {
-        ("module_call", "sub"): 2,
-        ("pattern_call", "subn"): 2,
-    }
-)
 GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS = Counter(
     {
         ("module_call", "sub", "numbered"): 1,
