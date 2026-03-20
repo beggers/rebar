@@ -322,26 +322,6 @@ PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
     for case in MODULE_CALL_CASES
     if case.case_id in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS
 )
-PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
-    "workflow-module-search-str-compiled-pattern",
-    "workflow-module-match-str-compiled-pattern",
-    "workflow-module-split-str-compiled-pattern",
-)
-PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
-    case
-    for case in MODULE_CALL_CASES
-    if case.case_id in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
-)
-PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
-    "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-    "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-    "workflow-module-findall-bytes-compiled-pattern",
-)
-PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
-    case
-    for case in MODULE_CALL_CASES
-    if case.case_id in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
-)
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
@@ -358,6 +338,18 @@ PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     for case in MODULE_CALL_CASES
     if case.case_id in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
 )
+
+
+def _published_compiled_pattern_module_helper_cases_for_text_model(
+    text_model: str,
+) -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+        if case.text_model == text_model
+    )
+
+
 ESCAPE_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
@@ -2493,11 +2485,24 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     )
 
     assert tuple(
-        case.case_id for case in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ) == PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+        case.case_id
+        for case in _published_compiled_pattern_module_helper_cases_for_text_model("str")
+    ) == (
+        "workflow-module-search-str-compiled-pattern",
+        "workflow-module-match-str-compiled-pattern",
+        "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+        "workflow-module-match-str-bounded-wildcard-compiled-pattern",
+        "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
+        "workflow-module-split-str-compiled-pattern",
+    )
     assert tuple(
-        case.case_id for case in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ) == PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+        case.case_id
+        for case in _published_compiled_pattern_module_helper_cases_for_text_model("bytes")
+    ) == (
+        "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+        "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+        "workflow-module-findall-bytes-compiled-pattern",
+    )
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS

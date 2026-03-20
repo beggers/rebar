@@ -1,8 +1,9 @@
 # RBR-0754: Collapse module-workflow compiled-pattern text-model subset sidecars onto canonical published slice
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `str` and `bytes` subset tables from `tests/python/test_module_workflow_parity_suite.py` now that the same rows already exist inside the canonical published compiled-pattern module-helper slice.
@@ -117,3 +118,9 @@ PY` reported the existing tail through `RBR-0753`, no reserved missing tail ids,
   - `bash -lc "! rg -n 'PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS|PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES|PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS|PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES' tests/python/test_module_workflow_parity_suite.py"` currently fails exactly on this cleanup because those mirrored subset tables still exist.
 - Baseline verification is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`654 passed, 1 skipped in 0.50s`).
+
+## Completion
+- 2026-03-20: Removed `PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS`, `PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES`, `PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS`, and `PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES` from `tests/python/test_module_workflow_parity_suite.py`.
+- Added a tiny `_published_compiled_pattern_module_helper_cases_for_text_model(...)` selector that derives the `str` and `bytes` subsets directly from `PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES`, preserving the existing canonical published order without another mirrored owner table.
+- Reworked `test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases` to assert the derived `str` and `bytes` case-id groupings directly from the canonical combined published slice while leaving the existing direct-case alignment and payload checks unchanged.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`654 passed, 1 skipped in 0.71s`), the task-local canonical subset probe from Acceptance (`ok`), and `bash -lc "! rg -n 'PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS|PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES|PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS|PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches).
