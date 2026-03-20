@@ -1520,6 +1520,13 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     ModuleKeywordCallCase(
+        case_id="module-split-maxsplit-bool-false-bytes",
+        helper="split",
+        args=(b"abc", b"abcabc"),
+        kwargs={"maxsplit": False},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
         case_id="module-sub-count-keyword-str",
         helper="sub",
         args=("abc", "x", "abcabc"),
@@ -1534,6 +1541,13 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     ModuleKeywordCallCase(
+        case_id="module-sub-count-bool-true-str",
+        helper="sub",
+        args=("abc", "x", "abcabc"),
+        kwargs={"count": True},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
         case_id="module-subn-count-keyword-bytes",
         helper="subn",
         args=(b"abc", b"x", b"abcabc"),
@@ -1545,6 +1559,13 @@ MODULE_KEYWORD_CALL_CASES = (
         helper="subn",
         args=(b"abc", b"x", b"abcabcabc"),
         kwargs={"count": _INDEX_TWO},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
+        case_id="module-subn-count-bool-false-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abcabc"),
+        kwargs={"count": False},
         result_kind="value",
     ),
 )
@@ -1686,6 +1707,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-split-maxsplit-bool-true-str",
+        helper="split",
+        pattern="abc",
+        args=("zabczabc",),
+        kwargs={"maxsplit": True},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-sub-count-keyword-bytes",
         helper="sub",
         pattern=b"abc",
@@ -1702,6 +1731,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-sub-count-bool-false-bytes",
+        helper="sub",
+        pattern=b"abc",
+        args=(b"x", b"abcabc"),
+        kwargs={"count": False},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-subn-count-keyword-str",
         helper="subn",
         pattern="abc",
@@ -1715,6 +1752,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         pattern="abc",
         args=("x", "abcabcabc"),
         kwargs={"count": _INDEX_TWO},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
+        case_id="pattern-subn-count-bool-true-str",
+        helper="subn",
+        pattern="abc",
+        args=("x", "abcabc"),
+        kwargs={"count": True},
         result_kind="value",
     ),
 )
@@ -1766,6 +1811,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         kwargs={"maxsplit": _INDEX_TWO},
     ),
     CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-split-maxsplit-bool-false-bytes",
+        helper="split",
+        pattern=b"abc",
+        args=(b"abcabc",),
+        kwargs={"maxsplit": False},
+    ),
+    CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-sub-count-keyword-str",
         helper="sub",
         pattern="abc",
@@ -1780,6 +1832,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         kwargs={"count": _INDEX_TWO},
     ),
     CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-sub-count-bool-true-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abcabc"),
+        kwargs={"count": True},
+    ),
+    CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-subn-count-keyword-bytes",
         helper="subn",
         pattern=b"abc",
@@ -1792,6 +1851,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         pattern="abc",
         args=("x", "abcabcabc"),
         kwargs={"count": _INDEX_TWO},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-subn-count-bool-false-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abcabc"),
+        kwargs={"count": False},
     ),
 )
 COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
