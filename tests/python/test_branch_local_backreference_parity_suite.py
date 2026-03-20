@@ -10,7 +10,6 @@ import pytest
 from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    FixtureBundleSpec,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -24,7 +23,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
-    load_fixture_bundles,
+    load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
@@ -117,445 +116,76 @@ SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS = (
 )
 
 
-FIXTURE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        "named_backreference_workflows.py",
-        expected_manifest_id="named-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "named-backreference-compile-metadata-str",
-                "named-backreference-module-search-str",
-                "named-backreference-pattern-search-str",
-            }
-        ),
-        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "numbered_backreference_workflows.py",
-        expected_manifest_id="numbered-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "numbered-backreference-compile-metadata-str",
-                "numbered-backreference-module-search-str",
-                "numbered-backreference-pattern-search-str",
-                "numbered-backreference-segment-module-search-str",
-                "numbered-backreference-prefix-pattern-search-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"(ab)\1",
-                r"(ab)x\1",
-                r"x(ab)\1",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 2,
-                ("pattern_call", "search"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "branch_local_backreference_workflows.py",
-        expected_manifest_id="branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "branch-local-numbered-backreference-compile-metadata-str",
-                "branch-local-numbered-backreference-module-search-str",
-                "branch-local-numbered-backreference-pattern-fullmatch-str",
-                "branch-local-named-backreference-compile-metadata-str",
-                "branch-local-named-backreference-module-search-str",
-                "branch-local-named-backreference-pattern-fullmatch-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b)|c)\2d",
-                r"a(?P<outer>(?P<inner>b)|c)(?P=inner)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "quantified_branch_local_backreference_workflows.py",
-        expected_manifest_id="quantified-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-branch-local-numbered-backreference-compile-metadata-str",
-                "quantified-branch-local-numbered-backreference-module-search-lower-bound-str",
-                "quantified-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-str",
-                "quantified-branch-local-numbered-backreference-pattern-fullmatch-absent-branch-str",
-                "quantified-branch-local-named-backreference-compile-metadata-str",
-                "quantified-branch-local-named-backreference-module-search-lower-bound-str",
-                "quantified-branch-local-named-backreference-pattern-fullmatch-second-iteration-str",
-                "quantified-branch-local-named-backreference-pattern-fullmatch-absent-branch-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b)+|c)\2d",
-                r"a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 4,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "optional_group_alternation_branch_local_backreference_workflows.py",
-        expected_manifest_id="optional-group-alternation-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "optional-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
-                "optional-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
-                "optional-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
-                "optional-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-absent-group-str",
-                "optional-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
-                "optional-group-alternation-branch-local-named-backreference-compile-metadata-str",
-                "optional-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
-                "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
-                "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-absent-group-str",
-                "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c)\2)?d",
-                r"a(?P<outer>(?P<inner>b|c)(?P=inner))?d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 6,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "conditional_group_exists_branch_local_backreference_workflows.py",
-        expected_manifest_id="conditional-group-exists-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "conditional-group-exists-branch-local-numbered-backreference-compile-metadata-str",
-                "conditional-group-exists-branch-local-numbered-backreference-module-search-present-str",
-                "conditional-group-exists-branch-local-numbered-backreference-pattern-fullmatch-absent-str",
-                "conditional-group-exists-branch-local-named-backreference-compile-metadata-str",
-                "conditional-group-exists-branch-local-named-backreference-module-search-present-str",
-                "conditional-group-exists-branch-local-named-backreference-pattern-fullmatch-absent-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b)|c)\2(?(2)d|e)",
-                r"a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "nested_group_alternation_branch_local_backreference_workflows.py",
-        expected_manifest_id="nested-group-alternation-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
-                "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
-                "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
-                "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
-                "nested-group-alternation-branch-local-named-backreference-compile-metadata-str",
-                "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
-                "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
-                "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c))\2d",
-                r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 4,
-            }
-        ),
-    ),
-    FixtureBundleSpec(
-        "quantified_alternation_branch_local_backreference_workflows.py",
-        expected_manifest_id="quantified-alternation-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-alternation-branch-local-numbered-backreference-compile-metadata-str",
-                "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
-                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
-                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-str",
-                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
-                "quantified-alternation-branch-local-named-backreference-compile-metadata-str",
-                "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
-                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-c-branch-str",
-                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
-                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
-                "quantified-alternation-branch-local-numbered-backreference-compile-metadata-bytes",
-                "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-bytes",
-                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-bytes",
-                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-bytes",
-                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-bytes",
-                "quantified-alternation-branch-local-named-backreference-compile-metadata-bytes",
-                "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-bytes",
-                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-c-branch-bytes",
-                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-bytes",
-                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c)\2){1,2}d",
-                r"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
-                rb"a((b|c)\2){1,2}d",
-                rb"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
-        expected_manifest_id="quantified-nested-group-alternation-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-b-branch-str",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
-                "quantified-nested-group-alternation-branch-local-named-backreference-compile-metadata-str",
-                "quantified-nested-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
-                "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-str",
-                "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-str",
-                "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-compile-metadata-bytes",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-bytes",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-bytes",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-b-branch-bytes",
-                "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-bytes",
-                "quantified-nested-group-alternation-branch-local-named-backreference-compile-metadata-bytes",
-                "quantified-nested-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-bytes",
-                "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-bytes",
-                "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-bytes",
-                "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c)+)\2d",
-                r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
-                rb"a((b|c)+)\2d",
-                rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
-        expected_manifest_id="nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-c-branch-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-b-branch-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-fourth-repetition-mixed-branches-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-missing-replay-lower-bound-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-overflow-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-compile-metadata-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-b-branch-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-upper-bound-all-c-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-missing-replay-mixed-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-overflow-str",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-c-branch-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-b-branch-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-fourth-repetition-mixed-branches-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-missing-replay-lower-bound-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-overflow-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-compile-metadata-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-b-branch-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-upper-bound-all-c-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-missing-replay-mixed-bytes",
-                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-overflow-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c){1,4})\2d",
-                r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
-                rb"a((b|c){1,4})\2d",
-                rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 16,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
-        expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-fourth-repetition-mixed-branches-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-one-repetition-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-compile-metadata-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-third-repetition-mixed-branches-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-one-repetition-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-fourth-repetition-mixed-branches-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-one-repetition-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-compile-metadata-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-third-repetition-mixed-branches-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-one-repetition-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c){2,})\2d",
-                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-                rb"a((b|c){2,})\2d",
-                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
-        expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
-        expected_case_ids=frozenset(
-            {
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-mixed-branches-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-no-match-missing-conditional-d-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-compile-metadata-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-module-search-lower-bound-c-branch-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-lower-bound-b-branch-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-str",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-mixed-branches-workflow-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-no-match-missing-conditional-d-workflow-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-compile-metadata-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-module-search-lower-bound-c-branch-workflow-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-lower-bound-b-branch-workflow-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-bytes",
-                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                r"a((b|c){2,})\2(?(2)d|e)",
-                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-                rb"a((b|c){2,})\2(?(2)d|e)",
-                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
+BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES = (
+    "named_backreference_workflows.py",
+    "numbered_backreference_workflows.py",
+    "branch_local_backreference_workflows.py",
+    "quantified_branch_local_backreference_workflows.py",
+    "optional_group_alternation_branch_local_backreference_workflows.py",
+    "conditional_group_exists_branch_local_backreference_workflows.py",
+    "nested_group_alternation_branch_local_backreference_workflows.py",
+    "quantified_alternation_branch_local_backreference_workflows.py",
+    "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
 )
-
+BRANCH_LOCAL_BACKREFERENCE_MANIFEST_IDS = (
+    "named-backreference-workflows",
+    "numbered-backreference-workflows",
+    "branch-local-backreference-workflows",
+    "quantified-branch-local-backreference-workflows",
+    "optional-group-alternation-branch-local-backreference-workflows",
+    "conditional-group-exists-branch-local-backreference-workflows",
+    "nested-group-alternation-branch-local-backreference-workflows",
+    "quantified-alternation-branch-local-backreference-workflows",
+    "quantified-nested-group-alternation-branch-local-backreference-workflows",
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
+)
 WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES = (
     "named_backreference_workflows.py",
     "numbered_backreference_workflows.py",
 )
 
 
-def _whole_manifest_backreference_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
-    specs = tuple(
-        spec
-        for spec in FIXTURE_BUNDLE_SPECS
-        if spec.fixture_name in WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES
+def _load_branch_local_backreference_fixture_bundles() -> tuple[FixtureBundle, ...]:
+    bundles = load_published_fixture_bundles(
+        tuple(
+            CORRECTNESS_FIXTURES_ROOT / fixture_name
+            for fixture_name in BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES
+        ),
+        pattern_extractor=case_pattern,
     )
-    assert tuple(spec.fixture_name for spec in specs) == (
-        WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES
-    )
-    return specs
+    loaded_fixture_names = tuple(bundle.manifest.path.name for bundle in bundles)
+    if loaded_fixture_names != BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES:
+        raise AssertionError(
+            "branch-local backreference owner manifests changed fixture path "
+            f"order: {loaded_fixture_names}"
+        )
+    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
+    if loaded_manifest_ids != BRANCH_LOCAL_BACKREFERENCE_MANIFEST_IDS:
+        raise AssertionError(
+            "branch-local backreference owner manifests changed manifest ids: "
+            f"{loaded_manifest_ids}"
+        )
+    return bundles
 
 
-FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = _load_branch_local_backreference_fixture_bundles()
+NAMED_BACKREFERENCE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "named-backreference-workflows",
+)
+NUMBERED_BACKREFERENCE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "numbered-backreference-workflows",
+)
+WHOLE_MANIFEST_BACKREFERENCE_BUNDLES = (
+    NAMED_BACKREFERENCE_BUNDLE,
+    NUMBERED_BACKREFERENCE_BUNDLE,
+)
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
     published_fixture_bundle_by_manifest_id(
         FIXTURE_BUNDLES,
@@ -1528,19 +1158,19 @@ def test_direct_bytes_pattern_bounds_cases_stay_anchored_to_supported_bytes_patt
     } == SUPPORTED_DIRECT_BYTES_PATTERNS
 
 
-def test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validation() -> None:
-    bundles = load_fixture_bundles(_whole_manifest_backreference_bundle_specs())
+def test_whole_manifest_backreference_bundles_load_in_declared_order_with_bundle_validation(
+) -> None:
+    bundles = WHOLE_MANIFEST_BACKREFERENCE_BUNDLES
 
     assert tuple(bundle.manifest.path.name for bundle in bundles) == (
-        "named_backreference_workflows.py",
-        "numbered_backreference_workflows.py",
+        WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES
     )
     for bundle in bundles:
         assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 def test_fixture_case_operation_selection_preserves_published_row_order() -> None:
-    bundles = load_fixture_bundles(_whole_manifest_backreference_bundle_specs())
+    bundles = WHOLE_MANIFEST_BACKREFERENCE_BUNDLES
 
     assert tuple(
         case.case_id for case in fixture_cases_for_operation(bundles, "pattern_call")
