@@ -2334,19 +2334,6 @@ def _source_tree_manifest_records() -> dict[str, BenchmarkManifest]:
     }
 
 
-def _source_tree_manifest_record(manifest_id: str) -> BenchmarkManifest:
-    try:
-        return _source_tree_manifest_records()[manifest_id]
-    except KeyError as exc:
-        raise AssertionError(f"unknown benchmark manifest id {manifest_id!r}") from exc
-
-
-def _source_tree_manifests_for_ids(
-    manifest_ids: Iterable[str],
-) -> list[BenchmarkManifest]:
-    return [_source_tree_manifest_record(manifest_id) for manifest_id in manifest_ids]
-
-
 def relative_manifest_path(path: pathlib.Path) -> str:
     return str(path.relative_to(REPO_ROOT))
 
@@ -2652,7 +2639,15 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
 
     case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
     manifest_ids = case_definition.manifest_ids
-    manifests = _source_tree_manifests_for_ids(manifest_ids)
+    manifest_records = _source_tree_manifest_records()
+    manifests: list[BenchmarkManifest] = []
+    for manifest_id in manifest_ids:
+        try:
+            manifests.append(manifest_records[manifest_id])
+        except KeyError as exc:
+            raise AssertionError(
+                f"unknown benchmark manifest id {manifest_id!r}"
+            ) from exc
     selected_workloads = select_workloads(
         _flatten_manifest_workloads(manifests),
         smoke_only=case_definition.selection_mode == "smoke",
