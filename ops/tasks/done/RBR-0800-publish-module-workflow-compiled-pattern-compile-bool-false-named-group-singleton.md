@@ -1,6 +1,6 @@
 # RBR-0800: Publish the module-workflow compiled-pattern compile explicit-bool-false named-group singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -63,3 +63,12 @@ Created: 2026-03-20
   - `flags=re.NOFLAG` is still not the next task because the current owner-path selector normalizes `RegexFlag(0)` to the already published integer-zero keyword signature, while this named-group bool-false singleton remains a distinct unpublished row on the same boundary;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` should continue to say that no ready feature follow-on survives after the likely same-cycle drain, because this run seeds exactly one current task and no queued successor behind it.
+
+## Completion
+- 2026-03-20: Added the single `workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group` fixture row on the existing `module-workflow-surface` owner path, aligned the parity-suite direct-case and bundle-contract expectations, and extended the combined scorecard representative-case table with the new compiled-pattern named-group bool-false row.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_workflow_keyword_kwargs_signature_distinguishes_bool_int_and_indexlike tests/python/test_module_workflow_parity_suite.py::test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython tests/python/test_module_workflow_parity_suite.py::test_compiled_pattern_module_keyword_argument_calls_match_cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0800-module-workflow-compiled-pattern-compile-bool-false-named-group-singleton.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Published tracked correctness report now shows `1483` total / `1483` passed / `0` unimplemented across `114` manifests; `module.workflow` is `113/113/0`, `module.workflow.str` is `71/71/0`, `module.workflow.bytes` remains `42/42/0`, `module.workflow.module_call` is `59/59/0`, and `module.workflow.pattern_call` remains `42/42/0`.
