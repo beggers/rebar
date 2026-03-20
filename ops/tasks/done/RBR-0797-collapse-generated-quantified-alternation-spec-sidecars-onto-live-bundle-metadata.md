@@ -1,6 +1,6 @@
 # RBR-0797: Collapse generated quantified alternation spec sidecars onto live bundle metadata
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -61,3 +61,4 @@ PY` currently passes (`ok`), showing both sidecars are still live and are duplic
   - `ops/tasks/done/RBR-0791-collapse-grouped-replacement-surface-bundle-spec-sidecars-onto-canonical-owner-bundle-loads.md`
   - `ops/tasks/done/RBR-0793-delete-dead-spec-based-fixture-bundle-loader-plumbing.md`
   - `ops/tasks/done/RBR-0795-collapse-callable-replacement-manifest-sidecars-onto-canonical-manifest-specs.md`
+- 2026-03-20: Removed `GeneratedQuantifiedAlternationParitySpec.fixture_name` and `.expected_candidate_count` from `tests/python/test_quantified_alternation_parity_suite.py`, updated the generated-manifest anchoring test to derive the three published fixture paths from the live `FixtureBundle` metadata and to derive candidate-count expectations from the existing generated candidate-text helper/table, and kept the generated parity spec registries, bounded cases, direct-bytes follow-ons, and published-bundle frontier checks intact. Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` (`778 passed in 1.08s`) and `bash -lc "! rg -n 'fixture_name: str|expected_candidate_count: int|fixture_name=|expected_candidate_count=|spec\\.fixture_name|spec\\.expected_candidate_count' tests/python/test_quantified_alternation_parity_suite.py"` (passed with no matches).

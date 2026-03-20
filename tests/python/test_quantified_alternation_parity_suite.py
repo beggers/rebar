@@ -64,12 +64,10 @@ class QuantifiedAlternationDirectBytesFollowOnSpec:
 @dataclass(frozen=True)
 class GeneratedQuantifiedAlternationParitySpec:
     bundle: FixtureBundle
-    fixture_name: str
     expected_compile_case_ids: tuple[str, ...]
     expected_patterns: frozenset[str | bytes]
     expected_text_models: frozenset[str]
     candidate_lengths: range
-    expected_candidate_count: int
     failure_prefix: str
 
 
@@ -141,7 +139,6 @@ BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
 GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
     GeneratedQuantifiedAlternationParitySpec(
         bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
-        fixture_name="quantified_alternation_workflows.py",
         expected_compile_case_ids=(
             "quantified-alternation-numbered-compile-metadata-str",
             "quantified-alternation-named-compile-metadata-str",
@@ -158,12 +155,10 @@ GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
         ),
         expected_text_models=STR_AND_BYTES_TEXT_MODELS,
         candidate_lengths=range(4),
-        expected_candidate_count=160,
         failure_prefix="bounded quantified alternation generated parity drifted",
     ),
     GeneratedQuantifiedAlternationParitySpec(
         bundle=QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
-        fixture_name="quantified_alternation_broader_range_workflows.py",
         expected_compile_case_ids=(
             "quantified-alternation-broader-range-numbered-compile-metadata-str",
             "quantified-alternation-broader-range-named-compile-metadata-str",
@@ -180,12 +175,10 @@ GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
         ),
         expected_text_models=STR_AND_BYTES_TEXT_MODELS,
         candidate_lengths=range(5),
-        expected_candidate_count=484,
         failure_prefix="broader-range quantified alternation generated parity drifted",
     ),
     GeneratedQuantifiedAlternationParitySpec(
         bundle=BACKTRACKING_HEAVY_BUNDLE,
-        fixture_name="quantified_alternation_backtracking_heavy_workflows.py",
         expected_compile_case_ids=(
             "quantified-alternation-backtracking-heavy-numbered-compile-metadata-str",
             "quantified-alternation-backtracking-heavy-named-compile-metadata-str",
@@ -202,7 +195,6 @@ GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
         ),
         expected_text_models=STR_AND_BYTES_TEXT_MODELS,
         candidate_lengths=range(5),
-        expected_candidate_count=484,
         failure_prefix=(
             "backtracking-heavy quantified alternation generated parity drifted"
         ),
@@ -719,18 +711,29 @@ def test_generated_quantified_alternation_compile_cases_stay_anchored_to_publish
     spec: GeneratedQuantifiedAlternationParitySpec,
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+    candidate_texts = GENERATED_STR_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+        spec.bundle.expected_manifest_id
+    ]
 
-    assert spec.bundle.manifest.path == CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
+    assert tuple(
+        generated_spec.bundle.manifest.path
+        for generated_spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
+    ) == (
+        QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE.manifest.path,
+        QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE.manifest.path,
+        BACKTRACKING_HEAVY_BUNDLE.manifest.path,
+    )
+    assert spec.bundle.manifest.path == published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        spec.bundle.expected_manifest_id,
+    ).manifest.path
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == spec.expected_text_models
-    assert (
-        len(
-            GENERATED_STR_CANDIDATE_TEXTS_BY_MANIFEST_ID[
-                spec.bundle.expected_manifest_id
-            ]
+    assert len(candidate_texts) == len(
+        _build_generated_quantified_alternation_candidate_texts(
+            spec.candidate_lengths
         )
-        == spec.expected_candidate_count
     )
 
 
