@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1407 cases across 114 manifests, with all 1407 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives behind the active Rust-backed bounded-wildcard publication slice.
+- No ready feature follow-on currently survives behind the active Rust-backed bounded-wildcard remaining pattern-helper publication slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1407 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No ready feature follow-on currently survives behind the active Rust-backed bounded-wildcard publication slice.
+- No ready feature follow-on currently survives behind the active Rust-backed bounded-wildcard remaining pattern-helper publication slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
