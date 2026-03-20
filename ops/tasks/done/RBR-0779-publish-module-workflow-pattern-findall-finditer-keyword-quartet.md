@@ -1,6 +1,6 @@
 # RBR-0779: Publish the module-workflow `Pattern.findall` / `Pattern.finditer` keyword quartet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -92,3 +92,12 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed the four new workflow ids are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - the current owner path already publishes the adjacent `Pattern.findall(pos=..., endpos=...)` and `Pattern.finditer(pos=..., endpos=...)` representative rows, leaving this bool-plus-`__index__` quartet as the smallest unpublished neighbor on the same owner file; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added the four adjacent `module-workflow-surface` pattern-keyword rows on the existing owner path: `workflow-pattern-findall-str-window-indexlike`, `workflow-pattern-findall-str-bool-window-keyword`, `workflow-pattern-finditer-bytes-window-indexlike`, and `workflow-pattern-finditer-bytes-bool-window-keyword`.
+- Updated the shared parity-suite publication counts and alignment assertions to `81` owner-path cases, `52` `str` rows, `29` `bytes` rows, and `36` published `pattern_call` rows while keeping `module_call` at `33`.
+- Regenerated the tracked published correctness scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `1451` total / `1451` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `81/81/0`, `module.workflow.str` at `52/52/0`, `module.workflow.bytes` at `29/29/0`, `module.workflow.pattern_call` at `36/36/0`, and `module.workflow.module_call` unchanged at `33/33/0`. The tracked report includes the new representative case `workflow-pattern-findall-str-window-indexlike`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0779-module-workflow-pattern-findall-finditer-keyword-quartet.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

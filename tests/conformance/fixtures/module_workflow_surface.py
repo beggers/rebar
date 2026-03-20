@@ -14,6 +14,7 @@ class _IndexLike:
 _INDEX_ONE = _IndexLike(1)
 _INDEX_TWO = _IndexLike(2)
 _INDEX_FOUR = _IndexLike(4)
+_INDEX_SEVEN = _IndexLike(7)
 
 
 MANIFEST = {
@@ -620,6 +621,38 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-findall-str-window-indexlike",
+      "operation": "pattern_call",
+      "family": "bound_findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "args": ["zabcabcabcz"],
+      "kwargs": {
+        "pos": _INDEX_ONE,
+        "endpos": _INDEX_SEVEN
+      },
+      "categories": ["workflow", "findall", "literal", "keyword", "window", "indexlike", "str"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.findall pos=/endpos= __index__ workflow without widening into the remaining Pattern.findall keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-findall-str-bool-window-keyword",
+      "operation": "pattern_call",
+      "family": "bound_findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "args": ["zabcabcz"],
+      "kwargs": {
+        "pos": True,
+        "endpos": 7
+      },
+      "categories": ["workflow", "findall", "literal", "keyword", "window", "bool", "str"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.findall bool pos=/endpos= keyword workflow without widening into Pattern.split or replacement keyword rows."
+      ]
+    },
+    {
       "id": "workflow-pattern-finditer-bytes-window-keyword",
       "operation": "pattern_call",
       "family": "bound_finditer_workflow",
@@ -640,6 +673,52 @@ MANIFEST = {
       "categories": ["workflow", "finditer", "literal", "keyword", "window", "bytes"],
       "notes": [
         "Publishes the representative bound Pattern.finditer pos=/endpos= keyword workflow on bytes payloads without widening into bool or __index__ variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-finditer-bytes-window-indexlike",
+      "operation": "pattern_call",
+      "family": "bound_finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcabcz"
+        }
+      ],
+      "kwargs": {
+        "pos": _INDEX_ONE,
+        "endpos": _INDEX_SEVEN
+      },
+      "categories": ["workflow", "finditer", "literal", "keyword", "window", "indexlike", "bytes"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.finditer pos=/endpos= __index__ workflow on bytes payloads without widening into the remaining Pattern.finditer keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-finditer-bytes-bool-window-keyword",
+      "operation": "pattern_call",
+      "family": "bound_finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcz"
+        }
+      ],
+      "kwargs": {
+        "pos": True,
+        "endpos": 7
+      },
+      "categories": ["workflow", "finditer", "literal", "keyword", "window", "bool", "bytes"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.finditer bool pos=/endpos= keyword workflow on bytes payloads without widening into Pattern.split or replacement keyword rows."
       ]
     },
     {
