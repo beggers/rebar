@@ -1,8 +1,9 @@
 # RBR-0789: Collapse replacement contract bundle-spec sidecars onto canonical owner-bundle loads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining full-manifest `FixtureBundleSpec(...)` sidecars from the replacement parity suite's contract tests in `tests/python/test_fixture_backed_replacement_parity_suite.py`. Those blocks currently restate fixture path, manifest id, expected patterns, operation/helper counts, and text-model expectations even though the same published owner manifests already load cleanly through `load_published_fixture_bundles(...)`.
@@ -110,3 +111,8 @@ PY`
   - `ops/tasks/done/RBR-0713-collapse-grouped-replacement-manifest-id-sidecars-onto-surface-spec.md`
   - `ops/tasks/done/RBR-0785-collapse-conditional-replacement-bundle-spec-sidecars-onto-canonical-selector-bundles.md`
   - `ops/tasks/done/RBR-0787-collapse-open-ended-replacement-bundle-spec-sidecars-onto-canonical-selector-bundles.md`
+
+## Completion Note
+- Rebuilt the three one-manifest replacement contract checks through canonical owner-bundle loads by switching them from mirrored single-entry `bundle_specs` sidecars to `selector_fixture_paths` over the existing published bundle paths.
+- Rebuilt `test_sorted_compile_patterns_supports_mixed_text_models` through `load_published_fixture_bundles(...)` on the canonical `open_ended_quantified_group_alternation_workflows.py` owner fixture path and kept the mixed `str`/`bytes` ordering assertion unchanged.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`1152 passed in 0.89s`), the owner-bundle acceptance probe (`ok`), and the structural probe confirming those four test blocks no longer contain `FixtureBundleSpec(` or `load_fixture_bundles(` (`ok`).

@@ -12,6 +12,7 @@ import rebar
 
 from rebar_harness.correctness import (
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
+    CORRECTNESS_FIXTURES_ROOT,
     CpythonReAdapter,
     FixtureCase,
     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
@@ -1796,25 +1797,9 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-pending-bytes-contract",
-            bundle_specs=(
-                FixtureBundleSpec(
-                    fixture_name=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.manifest.path.name
-                    ),
-                    expected_manifest_id=manifest_id,
-                    expected_patterns=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_patterns
-                    ),
-                    expected_operation_helper_counts=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_operation_helper_counts
-                    ),
-                    expected_case_ids=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_case_ids
-                    ),
-                    expected_text_models=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_text_models
-                    ),
-                ),
+            bundle_specs=(),
+            selector_fixture_paths=(
+                BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.manifest.path,
             ),
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),
@@ -1877,23 +1862,9 @@ def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> No
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="mixed-replacement-pending-bytes-contract",
-            bundle_specs=(
-                FixtureBundleSpec(
-                    fixture_name=MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.manifest.path.name,
-                    expected_manifest_id=manifest_id,
-                    expected_patterns=(
-                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_patterns
-                    ),
-                    expected_operation_helper_counts=(
-                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_operation_helper_counts
-                    ),
-                    expected_case_ids=(
-                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_case_ids
-                    ),
-                    expected_text_models=(
-                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_text_models
-                    ),
-                ),
+            bundle_specs=(),
+            selector_fixture_paths=(
+                MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.manifest.path,
             ),
             pattern_extractor=case_pattern,
             match_group_access_manifest_ids=(manifest_id,),
@@ -1955,25 +1926,9 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-mixed-contract",
-            bundle_specs=(
-                FixtureBundleSpec(
-                    fixture_name=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.manifest.path.name
-                    ),
-                    expected_manifest_id=manifest_id,
-                    expected_patterns=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_patterns
-                    ),
-                    expected_operation_helper_counts=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_operation_helper_counts
-                    ),
-                    expected_case_ids=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_case_ids
-                    ),
-                    expected_text_models=(
-                        BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.expected_text_models
-                    ),
-                ),
+            bundle_specs=(),
+            selector_fixture_paths=(
+                BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.manifest.path,
             ),
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),
@@ -2241,29 +2196,12 @@ def test_negative_replacement_counts_short_circuit_like_cpython(
 
 
 def test_sorted_compile_patterns_supports_mixed_text_models() -> None:
-    (bundle,) = load_fixture_bundles(
+    (bundle,) = load_published_fixture_bundles(
         (
-            FixtureBundleSpec(
-                fixture_name="open_ended_quantified_group_alternation_workflows.py",
-                expected_manifest_id="open-ended-quantified-group-alternation-workflows",
-                expected_patterns=frozenset(
-                    {
-                        r"a(bc|de){1,}d",
-                        r"a(?P<word>bc|de){1,}d",
-                        rb"a(bc|de){1,}d",
-                        rb"a(?P<word>bc|de){1,}d",
-                    }
-                ),
-                expected_operation_helper_counts=Counter(
-                    {
-                        ("compile", None): 4,
-                        ("module_call", "search"): 8,
-                        ("pattern_call", "fullmatch"): 20,
-                    }
-                ),
-                expected_text_models=frozenset({"bytes", "str"}),
-            ),
-        )
+            CORRECTNESS_FIXTURES_ROOT
+            / "open_ended_quantified_group_alternation_workflows.py",
+        ),
+        pattern_extractor=case_pattern,
     )
 
     assert _sorted_compile_patterns(
