@@ -746,6 +746,16 @@ class BoundedWildcardPatternCase:
     endpos: int | None = None
 
 
+@dataclass(frozen=True)
+class BoundedWildcardModuleCase:
+    case_id: str
+    helper: str
+    pattern: str
+    string: str
+    flags: int = 0
+    compiled: bool = False
+
+
 def _module_collection_case_from_fixture(case: FixtureCase) -> CollectionModuleCase:
     assert case.operation == "module_call"
     assert case.helper is not None
@@ -910,6 +920,33 @@ def _call_bounded_wildcard_pattern_helper(
         if case.endpos is not None:
             args.append(case.endpos)
     return getattr(pattern, case.helper)(*args)
+
+
+def _evaluate_bounded_wildcard_module_case(
+    regex_backend: tuple[str, object],
+    case: BoundedWildcardModuleCase,
+) -> tuple[str, object, object]:
+    backend_name, backend = regex_backend
+    if case.compiled:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern,
+            case.flags,
+        )
+        observed = getattr(backend, case.helper)(observed_pattern, case.string)
+        expected = getattr(re, case.helper)(expected_pattern, case.string)
+        return backend_name, observed, expected
+
+    call_args: tuple[object, ...]
+    if case.flags:
+        call_args = (case.pattern, case.string, case.flags)
+    else:
+        call_args = (case.pattern, case.string)
+
+    observed = getattr(backend, case.helper)(*call_args)
+    expected = getattr(re, case.helper)(*call_args)
+    return backend_name, observed, expected
 
 
 class _BoundedWildcardFakeNativeBoundary(RecordingNativeBoundary):
@@ -1247,6 +1284,77 @@ BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES = (
         string="zabcaxcx",
         pos=1,
         endpos=7,
+    ),
+)
+BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
+    BoundedWildcardModuleCase(
+        case_id="module-search-ignorecase-bounded-hit",
+        helper="search",
+        pattern="a.c",
+        string="ABC",
+        flags=int(re.IGNORECASE),
+    ),
+    BoundedWildcardModuleCase(
+        case_id="module-match-bounded-miss",
+        helper="match",
+        pattern="a.c",
+        string="zabc",
+    ),
+    BoundedWildcardModuleCase(
+        case_id="module-fullmatch-bounded-hit",
+        helper="fullmatch",
+        pattern="a.c",
+        string="abc",
+    ),
+    BoundedWildcardModuleCase(
+        case_id="compiled-module-search-ignorecase-bounded-hit",
+        helper="search",
+        pattern="a.c",
+        string="ABC",
+        flags=int(re.IGNORECASE),
+        compiled=True,
+    ),
+    BoundedWildcardModuleCase(
+        case_id="compiled-module-match-bounded-hit",
+        helper="match",
+        pattern="a.c",
+        string="abc",
+        compiled=True,
+    ),
+    BoundedWildcardModuleCase(
+        case_id="compiled-module-fullmatch-bounded-hit",
+        helper="fullmatch",
+        pattern="a.c",
+        string="abc",
+        compiled=True,
+    ),
+)
+BOUNDED_WILDCARD_MODULE_COLLECTION_CASES = (
+    BoundedWildcardModuleCase(
+        case_id="module-findall-bounded-default",
+        helper="findall",
+        pattern="a.c",
+        string="zabcaxcz",
+    ),
+    BoundedWildcardModuleCase(
+        case_id="module-finditer-bounded-default",
+        helper="finditer",
+        pattern="a.c",
+        string="zabcaxcx",
+    ),
+    BoundedWildcardModuleCase(
+        case_id="compiled-module-findall-bounded-default",
+        helper="findall",
+        pattern="a.c",
+        string="zabcaxcz",
+        compiled=True,
+    ),
+    BoundedWildcardModuleCase(
+        case_id="compiled-module-finditer-bounded-default",
+        helper="finditer",
+        pattern="a.c",
+        string="zabcaxcx",
+        compiled=True,
     ),
 )
 COLLECTION_TYPE_ERROR_CASES = (
@@ -3850,21 +3958,60 @@ def test_bounded_wildcard_compile_metadata_matches_cpython(
     compile_with_cpython_parity(backend_name, backend, case.pattern, case.flags)
 
 
-def test_rebar_bounded_wildcard_direct_workflow_matches_cpython() -> None:
-    assert rebar.findall("a.c", "abc") == re.findall("a.c", "abc")
+@pytest.mark.parametrize(
+    "case",
+    BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_module_match_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedWildcardModuleCase,
+) -> None:
+    backend_name, observed, expected = _evaluate_bounded_wildcard_module_case(
+        regex_backend,
+        case,
+    )
 
-    observed = rebar.search("a.c", "ABC", rebar.IGNORECASE)
-    expected = re.search("a.c", "ABC", re.IGNORECASE)
+    _assert_literal_match_helper_result_matches_cpython(
+        backend_name=backend_name,
+        context="compiled-pattern module" if case.compiled else "module",
+        helper=case.helper,
+        pattern=case.pattern,
+        string=case.string,
+        observed=observed,
+        expected=expected,
+    )
 
-    assert expected is not None
-    assert observed is not None
-    assert type(observed) is rebar.Match
-    assert observed.group(0) == expected.group(0)
-    assert observed.span() == expected.span()
 
-    compiled = rebar.compile("a.c")
-    assert compiled is rebar.compile("a.c")
-    assert compiled.findall("zabcaxc") == ["abc", "axc"]
+@pytest.mark.parametrize(
+    "case",
+    BOUNDED_WILDCARD_MODULE_COLLECTION_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_module_collection_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedWildcardModuleCase,
+) -> None:
+    backend_name, observed, expected = _evaluate_bounded_wildcard_module_case(
+        regex_backend,
+        case,
+    )
+    context = "compiled-pattern module" if case.compiled else "module"
+
+    if case.helper == "finditer":
+        try:
+            assert_finditer_parity(backend_name, observed, expected)
+        except AssertionError as exc:
+            raise AssertionError(
+                f"{backend_name} {context} {case.helper} mismatch for "
+                f"pattern={case.pattern!r}, string={case.string!r}"
+            ) from exc
+        return
+
+    assert observed == expected, (
+        f"{backend_name} {context} {case.helper} mismatch for "
+        f"pattern={case.pattern!r}, string={case.string!r}"
+    )
 
 
 def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() -> None:
