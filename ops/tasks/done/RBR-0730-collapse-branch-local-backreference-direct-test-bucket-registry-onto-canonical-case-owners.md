@@ -1,8 +1,9 @@
 # RBR-0730: Collapse branch-local-backreference direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS` registry from `tests/python/test_branch_local_backreference_parity_suite.py` so the shared branch-local-backreference parity owner derives direct-test bucket coverage from its canonical shared case owners plus the existing direct bytes follow-on specs instead of maintaining a mirrored top-level map.
@@ -107,3 +108,7 @@ PY` reported the existing tail through `RBR-0729`, no reserved missing tail ids,
 - This simplification stays on the same bounded post-JSON parity-harness cleanup track as the recent architecture work:
   - `ops/tasks/done/RBR-0721-collapse-quantified-alternation-direct-test-bucket-registry-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0723-collapse-wider-ranged-repeat-direct-test-bucket-registry-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0727-collapse-open-ended-direct-test-bucket-sidecar-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0728-collapse-grouped-capture-direct-test-bucket-registry-onto-canonical-case-owners.md`, and `ops/tasks/done/RBR-0729-collapse-parser-matrix-direct-test-bucket-registry-onto-canonical-case-owners.md` already removed the same style of detached direct-test owner layer from adjacent parity suites; and
   - `BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS` is the same style of mirrored owner data, but here the canonical sources are the shared branch-local compile/module/pattern case owners plus the direct bytes follow-on specs that already live in this file.
+- 2026-03-20 completion:
+  - Removed `BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS` from `tests/python/test_branch_local_backreference_parity_suite.py`.
+  - Added a tiny file-local helper that derives the direct-test bucket map from `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, `DIRECT_BYTES_FOLLOW_ON_SPECS`, and `_direct_bytes_follow_on_bucket_label()`, preserving the existing bucket ordering and membership.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`561 passed in 0.84s`), the derived-bucket probe from the task (`ok`), and the `rg` absence check for `BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS` (no matches).

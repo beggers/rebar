@@ -957,17 +957,21 @@ WORKFLOW_CASES = tuple(
 BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS = tuple(
     case.case_id for case in PUBLISHED_CASES
 )
-BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-    "shared-module": frozenset(case.case_id for case in MODULE_CASES),
-    "shared-pattern": frozenset(case.case_id for case in PATTERN_CASES),
-    **{
-        _direct_bytes_follow_on_bucket_label(spec.bundle): frozenset(
-            case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
-        )
-        for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
-    },
-}
+
+
+def _branch_local_backreference_direct_test_case_id_buckets(
+) -> dict[str, frozenset[str]]:
+    return {
+        "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+        "shared-module": frozenset(case.case_id for case in MODULE_CASES),
+        "shared-pattern": frozenset(case.case_id for case in PATTERN_CASES),
+        **{
+            _direct_bytes_follow_on_bucket_label(spec.bundle): frozenset(
+                case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
+            )
+            for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+        },
+    }
 
 
 MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
@@ -1584,7 +1588,7 @@ def test_branch_local_backreference_parity_suite_tracks_published_case_frontier(
 def test_branch_local_backreference_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS,
+        _branch_local_backreference_direct_test_case_id_buckets(),
         selected_case_ids=BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS,
         coverage_label="branch-local-backreference direct-test case-id buckets",
     )
@@ -1609,6 +1613,7 @@ def test_branch_local_backreference_mixed_text_model_manifests_keep_explicit_dir
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: BranchLocalBytesFollowOnSpec,
 ) -> None:
+    direct_test_case_id_buckets = _branch_local_backreference_direct_test_case_id_buckets()
     bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         spec.bundle,
         compile_cases=COMPILE_CASES,
@@ -1624,7 +1629,7 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
         if case.text_model == "bytes"
     )
 
-    assert BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS[
+    assert direct_test_case_id_buckets[
         _direct_bytes_follow_on_bucket_label(spec.bundle)
     ] == frozenset(case.case_id for case in bundle_bytes_cases)
     assert len(spec.cases) == 2
