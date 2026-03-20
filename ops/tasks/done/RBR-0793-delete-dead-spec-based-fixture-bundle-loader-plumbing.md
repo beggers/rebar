@@ -1,6 +1,6 @@
 # RBR-0793: Delete dead spec-based fixture bundle loader plumbing
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -56,3 +56,4 @@ PY` currently passes (`ok`), showing the dead layer is still present and making 
   - `ops/tasks/done/RBR-0782-collapse-remaining-owner-manifest-loader-wrappers-onto-canonical-bundle-loads.md`
   - `ops/tasks/done/RBR-0789-collapse-replacement-contract-bundle-spec-sidecars-onto-canonical-owner-bundle-loads.md`
   - `ops/tasks/done/RBR-0791-collapse-grouped-replacement-surface-bundle-spec-sidecars-onto-canonical-owner-bundle-loads.md`
+- 2026-03-20: Removed `FixtureBundleSpec` and `load_fixture_bundles(...)` from `tests/python/fixture_parity_support.py`, retargeted the contract suite onto canonical `load_published_fixture_bundles(...)` loads plus a file-local selected-row `build_fixture_bundle(...)` helper, and preserved the bundle-contract coverage for full-manifest derivation, selected-row ordering, expected case ids, expected text models, duplicate-case rejection, and manifest-id derivation. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`252 passed in 0.40s`) and `bash -lc "! rg -n 'FixtureBundleSpec|load_fixture_bundles\\(' tests/python/fixture_parity_support.py tests/python/test_fixture_parity_support_contract.py"` (passed with no matches).

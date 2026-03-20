@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass, fields, replace
+from collections.abc import Callable
+from dataclasses import fields, replace
 import json
 import pathlib
 import re
@@ -39,7 +40,6 @@ from tests.conftest import duplicate_items
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    FixtureBundleSpec,
     assert_bounded_pattern_case_match_parity,
     assert_bounded_pattern_case_no_match_parity,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -61,7 +61,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
-    load_fixture_bundles,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
@@ -415,83 +414,89 @@ def _write_bundle_loader_contract_duplicate_fixture_module(
     )
 
 
-def _bundle_loader_contract_str_spec() -> FixtureBundleSpec:
-    return FixtureBundleSpec(
-        BUNDLE_LOADER_CONTRACT_STR_FILENAME,
-        expected_manifest_id=BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
-        expected_case_ids=frozenset(
-            {
-                "bundle-loader-contract-compile-str",
-                "bundle-loader-contract-module-search-str",
-                "bundle-loader-contract-pattern-search-str",
-            }
-        ),
-        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
-            }
-        ),
+def _duplicate_string_ids(ids: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(duplicate_items(Counter(ids)))
+
+
+def _load_published_fixture_bundle(
+    fixture_path: pathlib.Path,
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes] = case_pattern,
+) -> FixtureBundle:
+    (bundle,) = fixture_parity_support.load_published_fixture_bundles(
+        (fixture_path,),
+        pattern_extractor=pattern_extractor,
     )
+    return bundle
 
 
-def _bundle_loader_contract_mixed_spec() -> FixtureBundleSpec:
-    return FixtureBundleSpec(
-        BUNDLE_LOADER_CONTRACT_MIXED_FILENAME,
-        expected_manifest_id=BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID,
-        expected_patterns=frozenset({r"a(bc|de){1,}d", rb"a(bc|de){1,}d"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 1,
-                ("pattern_call", "fullmatch"): 1,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
+def _build_selected_fixture_bundle(
+    fixture_path: pathlib.Path,
+    *,
+    selected_case_ids: tuple[str, ...] | None = None,
+    pattern_extractor: Callable[[FixtureCase], str | bytes],
+    expected_case_ids: frozenset[str] | None = None,
+    expected_text_models: frozenset[str] | None = None,
+) -> FixtureBundle:
+    manifest = load_fixture_manifest(fixture_path)
+    loaded_cases = tuple(manifest.cases)
+    duplicate_loaded_case_ids = _duplicate_string_ids(
+        tuple(case.case_id for case in loaded_cases)
     )
+    if duplicate_loaded_case_ids:
+        raise ValueError(
+            f"{fixture_path.name} contains duplicate fixture case ids: "
+            f"{duplicate_loaded_case_ids}"
+        )
 
+    bundle_cases = loaded_cases
+    if selected_case_ids is not None:
+        if not selected_case_ids:
+            raise ValueError(f"{fixture_path.name} selected_case_ids must not be empty")
 
-def _bundle_loader_contract_duplicate_spec() -> FixtureBundleSpec:
-    return FixtureBundleSpec(
-        BUNDLE_LOADER_CONTRACT_DUPLICATE_FILENAME,
-        expected_manifest_id=BUNDLE_LOADER_CONTRACT_DUPLICATE_MANIFEST_ID,
-        expected_patterns=frozenset({"abc"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-            }
-        ),
+        duplicate_case_ids = _duplicate_string_ids(selected_case_ids)
+        if duplicate_case_ids:
+            raise ValueError(
+                f"{fixture_path.name} selected_case_ids contains duplicate ids: "
+                f"{duplicate_case_ids}"
+            )
+
+        case_by_id = {case.case_id: case for case in loaded_cases}
+        missing_case_ids = tuple(
+            case_id for case_id in selected_case_ids if case_id not in case_by_id
+        )
+        if missing_case_ids:
+            raise ValueError(
+                f"{fixture_path.name} is missing expected fixture rows: {missing_case_ids}"
+            )
+
+        bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
+        if expected_case_ids is None:
+            expected_case_ids = frozenset(selected_case_ids)
+
+    return build_fixture_bundle(
+        manifest,
+        bundle_cases,
+        pattern_extractor=pattern_extractor,
+        expected_case_ids=expected_case_ids,
+        expected_text_models=expected_text_models,
     )
-
-
-def _load_fixture_bundles_from_root(
-    root: pathlib.Path,
-    specs: tuple[FixtureBundleSpec, ...],
-) -> tuple[FixtureBundle, ...]:
-    with pytest.MonkeyPatch.context() as monkeypatch:
-        monkeypatch.setattr(fixture_parity_support, "CORRECTNESS_FIXTURES_ROOT", root)
-        return load_fixture_bundles(specs)
 
 
 def _load_bundle_loader_contract_str_bundle(tmp_path: pathlib.Path) -> FixtureBundle:
-    _write_bundle_loader_contract_fixture_modules(tmp_path)
-    (bundle,) = _load_fixture_bundles_from_root(
-        tmp_path,
-        (_bundle_loader_contract_str_spec(),),
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    return _load_published_fixture_bundle(
+        str_path,
+        pattern_extractor=str_case_pattern,
     )
-    return bundle
 
 
 def _load_bundle_loader_contract_mixed_bundle(tmp_path: pathlib.Path) -> FixtureBundle:
-    _write_bundle_loader_contract_fixture_modules(tmp_path)
-    (bundle,) = _load_fixture_bundles_from_root(
-        tmp_path,
-        (_bundle_loader_contract_mixed_spec(),),
+    _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    return _load_published_fixture_bundle(
+        mixed_path,
+        pattern_extractor=case_pattern,
     )
-    return bundle
 
 
 def test_build_fixture_bundle_derives_patterns_and_operation_counts_from_cases(
@@ -2165,12 +2170,8 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    str_bundle, mixed_bundle = _load_fixture_bundles_from_root(
-        tmp_path,
-        (
-            _bundle_loader_contract_str_spec(),
-            _bundle_loader_contract_mixed_spec(),
-        ),
+    str_bundle, mixed_bundle = fixture_parity_support.load_published_fixture_bundles(
+        (str_path, mixed_path)
     )
 
     assert tuple(bundle.manifest.path.name for bundle in (str_bundle, mixed_bundle)) == (
@@ -2190,19 +2191,28 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
     )
 
 
-def test_whole_manifest_bundle_contract_supports_expected_case_ids_and_fixture_path_validation(
+def test_selected_fixture_bundle_contract_supports_expected_case_ids_and_fixture_path_validation(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    spec = _bundle_loader_contract_str_spec()
-    (bundle,) = _load_fixture_bundles_from_root(tmp_path, (spec,))
+    selected_case_ids = (
+        "bundle-loader-contract-compile-str",
+        "bundle-loader-contract-module-search-str",
+        "bundle-loader-contract-pattern-search-str",
+    )
+    bundle = _build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=selected_case_ids,
+        pattern_extractor=str_case_pattern,
+    )
 
     assert bundle.manifest.path == str_path
-    assert bundle.expected_case_ids is not None
+    assert bundle.expected_case_ids == frozenset(selected_case_ids)
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=str_case_pattern,
         expected_fixture_path=str_path,
+        expected_ordered_case_ids=selected_case_ids,
     )
 
 
@@ -2210,10 +2220,10 @@ def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_fi
     tmp_path: pathlib.Path,
 ) -> None:
     field_names = {field.name for field in fields(FixtureBundle)}
-    _write_bundle_loader_contract_fixture_modules(tmp_path)
-    (bundle,) = _load_fixture_bundles_from_root(
-        tmp_path,
-        (_bundle_loader_contract_str_spec(),),
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    bundle = _load_published_fixture_bundle(
+        str_path,
+        pattern_extractor=str_case_pattern,
     )
 
     assert "expected_manifest_id" not in field_names
@@ -2721,12 +2731,8 @@ def test_assert_fixture_bundle_contract_rejects_contract_drift(
     drift_kind: str,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    str_bundle, mixed_bundle = _load_fixture_bundles_from_root(
-        tmp_path,
-        (
-            _bundle_loader_contract_str_spec(),
-            _bundle_loader_contract_mixed_spec(),
-        ),
+    str_bundle, mixed_bundle = fixture_parity_support.load_published_fixture_bundles(
+        (str_path, mixed_path)
     )
 
     bundle: FixtureBundle
@@ -2827,27 +2833,7 @@ def test_assert_fixture_bundle_contract_rejects_duplicate_case_ids(
         )
 
 
-def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id(
-    tmp_path: pathlib.Path,
-) -> None:
-    _write_bundle_loader_contract_fixture_modules(tmp_path)
-    spec = _bundle_loader_contract_str_spec()
-
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            f"{BUNDLE_LOADER_CONTRACT_STR_FILENAME} expected_manifest_id "
-            "'wrong-manifest-id' does not match loaded manifest_id "
-            f"'{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}'"
-        ),
-    ):
-        _load_fixture_bundles_from_root(
-            tmp_path,
-            (replace(spec, expected_manifest_id="wrong-manifest-id"),),
-        )
-
-
-def test_load_fixture_bundles_selected_case_ids_preserve_requested_order(
+def test_selected_fixture_bundle_preserves_requested_order(
     tmp_path: pathlib.Path,
 ) -> None:
     selected_case_ids = (
@@ -2855,22 +2841,10 @@ def test_load_fixture_bundles_selected_case_ids_preserve_requested_order(
         "bundle-loader-contract-pattern-search-str",
     )
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    spec = _bundle_loader_contract_str_spec()
-    (bundle,) = _load_fixture_bundles_from_root(
-        tmp_path,
-        (
-            replace(
-                spec,
-                selected_case_ids=selected_case_ids,
-                expected_case_ids=None,
-                expected_operation_helper_counts=Counter(
-                    {
-                        ("compile", None): 1,
-                        ("pattern_call", "search"): 1,
-                    }
-                ),
-            ),
-        ),
+    bundle = _build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=selected_case_ids,
+        pattern_extractor=str_case_pattern,
     )
     compile_cases = fixture_cases_for_operation((bundle,), "compile")
     pattern_cases = fixture_cases_for_operation((bundle,), "pattern_call")
@@ -2892,7 +2866,7 @@ def test_load_fixture_bundles_selected_case_ids_preserve_requested_order(
     )
 
 
-def test_load_fixture_bundles_selected_mixed_text_case_ids_preserve_requested_order_and_text_models(
+def test_selected_mixed_text_fixture_bundle_preserves_requested_order_and_text_models(
     tmp_path: pathlib.Path,
 ) -> None:
     selected_case_ids = (
@@ -2900,22 +2874,11 @@ def test_load_fixture_bundles_selected_mixed_text_case_ids_preserve_requested_or
         "bundle-loader-contract-mixed-module-search-str",
     )
     _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    spec = _bundle_loader_contract_mixed_spec()
-    (bundle,) = _load_fixture_bundles_from_root(
-        tmp_path,
-        (
-            replace(
-                spec,
-                selected_case_ids=selected_case_ids,
-                expected_case_ids=None,
-                expected_operation_helper_counts=Counter(
-                    {
-                        ("pattern_call", "fullmatch"): 1,
-                        ("module_call", "search"): 1,
-                    }
-                ),
-            ),
-        ),
+    bundle = _build_selected_fixture_bundle(
+        mixed_path,
+        selected_case_ids=selected_case_ids,
+        pattern_extractor=case_pattern,
+        expected_text_models=frozenset({"bytes", "str"}),
     )
 
     assert bundle.expected_case_ids == frozenset(selected_case_ids)
@@ -2938,39 +2901,23 @@ def test_load_fixture_bundles_selected_mixed_text_case_ids_preserve_requested_or
 def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
     tmp_path: pathlib.Path,
 ) -> None:
-    _write_bundle_loader_contract_fixture_modules(tmp_path)
-    mixed_spec = replace(
-        _bundle_loader_contract_mixed_spec(),
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    mixed_bundle = _build_selected_fixture_bundle(
+        mixed_path,
         selected_case_ids=(
             "bundle-loader-contract-mixed-compile-bytes",
             "bundle-loader-contract-mixed-module-search-str",
             "bundle-loader-contract-mixed-compile-str",
         ),
-        expected_case_ids=None,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 1,
-            }
-        ),
+        pattern_extractor=case_pattern,
     )
-    str_spec = replace(
-        _bundle_loader_contract_str_spec(),
+    str_bundle = _build_selected_fixture_bundle(
+        str_path,
         selected_case_ids=(
             "bundle-loader-contract-pattern-search-str",
             "bundle-loader-contract-compile-str",
         ),
-        expected_case_ids=None,
-        expected_operation_helper_counts=Counter(
-            {
-                ("pattern_call", "search"): 1,
-                ("compile", None): 1,
-            }
-        ),
-    )
-    mixed_bundle, str_bundle = _load_fixture_bundles_from_root(
-        tmp_path,
-        (mixed_spec, str_spec),
+        pattern_extractor=str_case_pattern,
     )
 
     assert tuple(
@@ -2992,14 +2939,13 @@ def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
     assert fixture_cases_for_operation((mixed_bundle, str_bundle), "cache_workflow") == ()
 
 
-def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation(
+def test_load_published_fixture_bundles_full_manifest_sets_str_text_model_expectation(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    spec = _bundle_loader_contract_str_spec()
-    (bundle,) = _load_fixture_bundles_from_root(
-        tmp_path,
-        (replace(spec, expected_case_ids=None),),
+    bundle = _load_published_fixture_bundle(
+        str_path,
+        pattern_extractor=str_case_pattern,
     )
 
     assert bundle.expected_case_ids is None
@@ -3164,24 +3110,18 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_uncovered_
         ),
     ),
 )
-def test_load_fixture_bundles_rejects_invalid_selected_case_ids(
+def test_selected_fixture_bundle_rejects_invalid_selected_case_ids(
     tmp_path: pathlib.Path,
     selected_case_ids: tuple[str, ...],
     error_message: str,
 ) -> None:
-    _write_bundle_loader_contract_fixture_modules(tmp_path)
-    spec = _bundle_loader_contract_str_spec()
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
 
     with pytest.raises(ValueError, match=re.escape(error_message)):
-        _load_fixture_bundles_from_root(
-            tmp_path,
-            (
-                replace(
-                    spec,
-                    selected_case_ids=selected_case_ids,
-                    expected_case_ids=None,
-                ),
-            ),
+        _build_selected_fixture_bundle(
+            str_path,
+            selected_case_ids=selected_case_ids,
+            pattern_extractor=str_case_pattern,
         )
 
 
@@ -3195,18 +3135,11 @@ def test_load_fixture_bundles_rejects_invalid_selected_case_ids(
         ),
     ),
 )
-def test_load_fixture_bundles_rejects_duplicate_fixture_case_ids(
+def test_selected_fixture_bundle_rejects_duplicate_fixture_case_ids(
     tmp_path: pathlib.Path,
     selected_case_ids: tuple[str, ...] | None,
 ) -> None:
-    _write_bundle_loader_contract_duplicate_fixture_module(tmp_path)
-    spec = _bundle_loader_contract_duplicate_spec()
-    if selected_case_ids is not None:
-        spec = replace(
-            spec,
-            selected_case_ids=selected_case_ids,
-            expected_case_ids=None,
-        )
+    fixture_path = _write_bundle_loader_contract_duplicate_fixture_module(tmp_path)
 
     with pytest.raises(
         ValueError,
@@ -3215,7 +3148,11 @@ def test_load_fixture_bundles_rejects_duplicate_fixture_case_ids(
             f"('{BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID}',)"
         ),
     ):
-        _load_fixture_bundles_from_root(tmp_path, (spec,))
+        _build_selected_fixture_bundle(
+            fixture_path,
+            selected_case_ids=selected_case_ids,
+            pattern_extractor=str_case_pattern,
+        )
 
 
 @pytest.mark.parametrize(

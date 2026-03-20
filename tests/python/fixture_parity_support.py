@@ -8,7 +8,6 @@ import re
 
 import rebar
 from rebar_harness.correctness import (
-    CORRECTNESS_FIXTURES_ROOT,
     FixtureCase,
     FixtureManifest,
     load_fixture_manifest,
@@ -173,17 +172,6 @@ class FixtureBundle:
         return self.manifest.manifest_id
 
 
-@dataclass(frozen=True)
-class FixtureBundleSpec:
-    fixture_name: str
-    expected_manifest_id: str
-    expected_patterns: frozenset[str | bytes]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-    selected_case_ids: tuple[str, ...] | None = None
-    expected_case_ids: frozenset[str] | None = None
-    expected_text_models: frozenset[str] | None = None
-
-
 def build_fixture_bundle(
     manifest: FixtureManifest,
     cases: tuple[FixtureCase, ...],
@@ -212,82 +200,6 @@ def build_fixture_bundle(
         expected_case_ids=expected_case_ids,
         expected_text_models=expected_text_models,
     )
-
-
-def load_fixture_bundles(
-    specs: Iterable[FixtureBundleSpec],
-) -> tuple[FixtureBundle, ...]:
-    bundles: list[FixtureBundle] = []
-    for spec in specs:
-        manifest = load_fixture_manifest(
-            CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
-        )
-        loaded_cases = tuple(manifest.cases)
-        duplicate_loaded_case_ids = _duplicate_string_ids(
-            tuple(case.case_id for case in loaded_cases)
-        )
-        if duplicate_loaded_case_ids:
-            raise ValueError(
-                f"{spec.fixture_name} contains duplicate fixture case ids: "
-                f"{duplicate_loaded_case_ids}"
-            )
-        if spec.selected_case_ids is None:
-            bundle_cases = loaded_cases
-        else:
-            if not spec.selected_case_ids:
-                raise ValueError(
-                    f"{spec.fixture_name} selected_case_ids must not be empty"
-                )
-            duplicate_case_ids = tuple(
-                case_id
-                for case_id, count in Counter(spec.selected_case_ids).items()
-                if count > 1
-            )
-            if duplicate_case_ids:
-                raise ValueError(
-                    f"{spec.fixture_name} selected_case_ids contains duplicate ids: "
-                    f"{duplicate_case_ids}"
-                )
-            case_by_id = {case.case_id: case for case in loaded_cases}
-            missing_case_ids = tuple(
-                case_id
-                for case_id in spec.selected_case_ids
-                if case_id not in case_by_id
-            )
-            if missing_case_ids:
-                raise ValueError(
-                    f"{spec.fixture_name} is missing expected fixture rows: {missing_case_ids}"
-                )
-            bundle_cases = tuple(
-                case_by_id[case_id] for case_id in spec.selected_case_ids
-            )
-
-        if manifest.manifest_id != spec.expected_manifest_id:
-            raise ValueError(
-                f"{manifest.path.name} expected_manifest_id "
-                f"{spec.expected_manifest_id!r} does not match loaded manifest_id "
-                f"{manifest.manifest_id!r}"
-            )
-
-        bundle_text_models = spec.expected_text_models
-        if bundle_text_models is None and spec.selected_case_ids is None:
-            bundle_text_models = frozenset({"str"})
-
-        bundle_case_ids = spec.expected_case_ids
-        if bundle_case_ids is None and spec.selected_case_ids is not None:
-            bundle_case_ids = frozenset(spec.selected_case_ids)
-
-        bundles.append(
-            build_fixture_bundle(
-                manifest,
-                bundle_cases,
-                expected_patterns=spec.expected_patterns,
-                expected_operation_helper_counts=spec.expected_operation_helper_counts,
-                expected_case_ids=bundle_case_ids,
-                expected_text_models=bundle_text_models,
-            )
-        )
-    return tuple(bundles)
 
 
 def case_pattern(case: FixtureCase) -> str | bytes:
