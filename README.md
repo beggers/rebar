@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1391 cases across 114 manifests, with all 1391 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
 | Current milestone | No ready feature follow-on currently survives. |
-| Work queue | `0` ready, `0` in progress, `726` done, `0` blocked |
+| Work queue | `0` ready, `0` in progress, `727` done, `1` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No ready feature follow-on currently survives.
+- Unblock the module-workflow bytes verbose compiled-pattern helper pair by landing compiled-pattern bytes `search()` / `fullmatch()` execution for that slice.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice covers 1391 cases across 114 manifests, all passing inside a still-bounded frontier; the benchmark publication is caught up on the same source-tree-shim surface, and the ready queue is currently empty.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice covers 1391 cases across 114 manifests, all passing inside a still-bounded frontier; the benchmark publication is caught up on the same source-tree-shim surface, and the next surviving module-workflow follow-on is blocked on missing compiled-pattern bytes execution.
 
 The clearest benchmark signal worth trusting is still the tiny parser compile-proxy slice, where the 8 parser workloads are 2.7992x faster on median than CPython. The broader 766-workload module-facing publication still runs through the source-tree shim and sits at 0.0792x median, so today it is methodology and coverage signal rather than a general speed claim.
 
