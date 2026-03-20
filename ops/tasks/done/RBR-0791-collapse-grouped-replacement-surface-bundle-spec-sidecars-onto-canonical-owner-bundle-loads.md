@@ -1,6 +1,6 @@
 # RBR-0791: Collapse grouped replacement surface bundle-spec sidecars onto canonical owner-bundle loads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -96,3 +96,4 @@ PY`
   - `ops/tasks/done/RBR-0785-collapse-conditional-replacement-bundle-spec-sidecars-onto-canonical-selector-bundles.md`
   - `ops/tasks/done/RBR-0787-collapse-open-ended-replacement-bundle-spec-sidecars-onto-canonical-selector-bundles.md`
   - `ops/tasks/done/RBR-0789-collapse-replacement-contract-bundle-spec-sidecars-onto-canonical-owner-bundle-loads.md`
+- 2026-03-20: Rebuilt the grouped replacement surface from canonical owner-bundle loads via `selector_fixture_paths`, trimmed the collection owner bundle locally to the selected frontier, removed the `bundle_specs` / `FixtureBundleSpec` / `load_fixture_bundles(...)` path, and updated grouped-surface contract checks to use explicit manifest and case-id constants. Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/python/test_fixture_parity_support_contract.py` (`1405 passed in 1.17s`), the owner-bundle acceptance probe (`ok`), and the structural probe confirming the target file no longer contains `FixtureBundleSpec`, `load_fixture_bundles(`, or `bundle_specs` (`ok`).
