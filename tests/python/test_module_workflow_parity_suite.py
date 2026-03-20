@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from array import array
 from collections.abc import Callable
 from collections import Counter
 from dataclasses import dataclass
@@ -1880,6 +1881,22 @@ ESCAPE_COMPATIBLE_INPUT_CASES = (
         case_id="memoryview",
         input_factory=lambda: memoryview(b"a-b.c"),
     ),
+    EscapeCompatibleInputCase(
+        case_id="memoryview-bytearray",
+        input_factory=lambda: memoryview(bytearray(b"a-b.c")),
+    ),
+    EscapeCompatibleInputCase(
+        case_id="memoryview-contiguous-slice",
+        input_factory=lambda: memoryview(b"0a-b.c1")[1:-1],
+    ),
+    EscapeCompatibleInputCase(
+        case_id="array-B",
+        input_factory=lambda: array("B", b"a-b.c"),
+    ),
+    EscapeCompatibleInputCase(
+        case_id="array-b",
+        input_factory=lambda: array("b", b"a-b.c"),
+    ),
 )
 ESCAPE_INVALID_INPUT_CASES = (
     EscapeInvalidInputCase(
@@ -1901,6 +1918,10 @@ ESCAPE_INVALID_INPUT_CASES = (
     EscapeInvalidInputCase(
         case_id="dict",
         input_factory=lambda: {"pattern": "a-b.c"},
+    ),
+    EscapeInvalidInputCase(
+        case_id="memoryview-noncontiguous-slice",
+        input_factory=lambda: memoryview(b"0a-b.c1")[1:-1:2],
     ),
 )
 SUPPLEMENTAL_BYTES_CASES = (
