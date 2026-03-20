@@ -670,20 +670,17 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
 WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS = tuple(
     case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
 )
-
-
-def _wider_ranged_repeat_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
-    return {
-        "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-        "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
-        "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
-        **{
-            f"{spec.id}-bytes-follow-on": frozenset(
-                case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
-            )
-            for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
-        },
-    }
+WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+    "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
+    "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
+    **{
+        f"{spec.id}-bytes-follow-on": frozenset(
+            case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
+        )
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    },
+}
 
 
 def _build_backtracking_trace_cases(
@@ -903,7 +900,7 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
 def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _wider_ranged_repeat_direct_test_case_id_buckets(),
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS,
         selected_case_ids=WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS,
         coverage_label=(
             "wider-ranged-repeat quantified group direct-test case-id buckets"

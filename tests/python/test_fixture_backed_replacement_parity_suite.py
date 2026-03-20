@@ -1720,15 +1720,6 @@ def _expected_uncovered_replacement_case_ids(
     )
 
 
-def _replacement_direct_test_case_id_buckets(
-    surface: LoadedReplacementSurface,
-) -> dict[str, frozenset[str]]:
-    return {
-        "module": frozenset(case.case_id for case in surface.module_cases),
-        "pattern": frozenset(case.case_id for case in surface.pattern_cases),
-    }
-
-
 @pytest.mark.parametrize("surface", SELECTOR_SURFACE_PARAMS)
 def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     surface: LoadedReplacementSurface,
@@ -1915,7 +1906,10 @@ def test_replacement_direct_test_buckets_cover_selected_frontier(
     surface: LoadedReplacementSurface,
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _replacement_direct_test_case_id_buckets(surface),
+        {
+            "module": frozenset(case.case_id for case in surface.module_cases),
+            "pattern": frozenset(case.case_id for case in surface.pattern_cases),
+        },
         selected_case_ids=_expected_selected_replacement_case_ids(surface),
         coverage_label=f"{surface.spec.id} replacement direct-test case-id buckets",
     )
