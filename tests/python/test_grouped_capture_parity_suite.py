@@ -143,6 +143,14 @@ class BoundedPatternCase:
     bounds: tuple[int, ...]
 
 
+@dataclass(frozen=True)
+class OptionalGroupExpandCase:
+    id: str
+    case_id: str
+    template: str
+    expected_expansion: str
+
+
 FIXTURE_BUNDLES = load_published_fixture_bundles(
     (
         CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py",
@@ -255,6 +263,32 @@ PATTERN_CASES = tuple(
 )
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 assert len(CASES_BY_ID) == len(PUBLISHED_CASES)
+OPTIONAL_GROUP_ABSENT_EXPAND_CASES = (
+    OptionalGroupExpandCase(
+        id="numbered-module-search-absent",
+        case_id="systematic-optional-group-numbered-module-search-absent-str",
+        template=r"<\g<0>|\1>",
+        expected_expansion="<ad|>",
+    ),
+    OptionalGroupExpandCase(
+        id="numbered-pattern-fullmatch-absent",
+        case_id="systematic-optional-group-numbered-pattern-fullmatch-absent-str",
+        template=r"<\g<0>|\1>",
+        expected_expansion="<ad|>",
+    ),
+    OptionalGroupExpandCase(
+        id="named-module-search-absent",
+        case_id="systematic-optional-group-named-module-search-absent-str",
+        template=r"<\g<0>|\g<word>>",
+        expected_expansion="<ad|>",
+    ),
+    OptionalGroupExpandCase(
+        id="named-pattern-fullmatch-absent",
+        case_id="systematic-optional-group-named-pattern-fullmatch-absent-str",
+        template=r"<\g<0>|\g<word>>",
+        expected_expansion="<ad|>",
+    ),
+)
 SUPPLEMENTAL_MISS_CASES = (
     SupplementalMissCase(
         id="numbered-two-capture-fullmatch",
@@ -930,6 +964,33 @@ def test_invalid_match_group_access_errors_match_cpython(
     assert expected is not None
     assert_match_parity(backend_name, observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPTIONAL_GROUP_ABSENT_EXPAND_CASES,
+    ids=lambda case: case.id,
+)
+def test_optional_group_absent_match_expand_preserves_whole_match_and_clears_group_reference(
+    regex_backend: tuple[str, object],
+    case: OptionalGroupExpandCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        CASES_BY_ID[case.case_id],
+    )
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+    observed_expansion = observed.expand(case.template)
+    expected_expansion = expected.expand(case.template)
+
+    assert type(observed_expansion) is type(expected_expansion)
+    assert observed_expansion == expected_expansion == case.expected_expansion
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
