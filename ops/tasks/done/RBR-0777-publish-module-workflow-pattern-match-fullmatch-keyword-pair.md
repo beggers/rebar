@@ -1,6 +1,6 @@
 # RBR-0777: Publish the module-workflow `Pattern.match` / `Pattern.fullmatch` keyword pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -81,3 +81,10 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed both `workflow-pattern-match-str-bool-pos-keyword` and `workflow-pattern-fullmatch-bytes-window-indexlike` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - the current owner path already publishes the adjacent `Pattern.match(pos=...)` and `Pattern.fullmatch(pos=..., endpos=...)` representative rows, leaving this bool-plus-`__index__` pair as the smallest unpublished neighbor on the same owner file; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- 2026-03-20: Published `workflow-pattern-match-str-bool-pos-keyword` and `workflow-pattern-fullmatch-bytes-window-indexlike` on the shared `module_workflow_surface` path, updated the owner-path parity and scorecard representative assertions, and republished `reports/correctness/latest.py` to `1447` total / `1447` passed / `0` unimplemented with `module.workflow` at `77` total / `77` passed.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0777-module-workflow-pattern-match-fullmatch-keyword-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

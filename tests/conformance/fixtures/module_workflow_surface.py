@@ -11,6 +11,7 @@ class _IndexLike:
         return f"IndexLike({self.value})"
 
 
+_INDEX_ONE = _IndexLike(1)
 _INDEX_TWO = _IndexLike(2)
 _INDEX_FOUR = _IndexLike(4)
 
@@ -542,6 +543,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-match-str-bool-pos-keyword",
+      "operation": "pattern_call",
+      "family": "bound_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "args": ["zabcabc"],
+      "kwargs": {
+        "pos": True
+      },
+      "categories": ["workflow", "match", "literal", "keyword", "pos", "bool", "str"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.match pos= bool workflow without widening into the remaining Pattern.match keyword rows."
+      ]
+    },
+    {
       "id": "workflow-pattern-fullmatch-bytes-window-keyword",
       "operation": "pattern_call",
       "family": "bound_fullmatch_workflow",
@@ -562,6 +578,29 @@ MANIFEST = {
       "categories": ["workflow", "fullmatch", "literal", "keyword", "window", "bytes"],
       "notes": [
         "Publishes the representative bound Pattern.fullmatch pos=/endpos= keyword workflow on bytes payloads without widening into bool or __index__ variants."
+      ]
+    },
+    {
+      "id": "workflow-pattern-fullmatch-bytes-window-indexlike",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabc"
+        }
+      ],
+      "kwargs": {
+        "pos": _INDEX_ONE,
+        "endpos": _INDEX_FOUR
+      },
+      "categories": ["workflow", "fullmatch", "literal", "keyword", "window", "indexlike", "bytes"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.fullmatch pos=/endpos= __index__ workflow on bytes payloads without widening into the remaining Pattern.fullmatch keyword rows."
       ]
     },
     {

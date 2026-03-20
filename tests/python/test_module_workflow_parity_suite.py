@@ -289,7 +289,9 @@ PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
         "workflow-pattern-search-str-pos-indexlike",
         "workflow-pattern-search-bytes-endpos-indexlike",
         "workflow-pattern-match-str-pos-keyword",
+        "workflow-pattern-match-str-bool-pos-keyword",
         "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-fullmatch-bytes-window-indexlike",
         "workflow-pattern-findall-str-window-keyword",
         "workflow-pattern-finditer-bytes-window-keyword",
     }
@@ -2265,13 +2267,13 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 75
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 77
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 49, "bytes": 26}
+        {"str": 50, "bytes": 27}
     )
-    assert len(PATTERN_CASES) == 30
+    assert len(PATTERN_CASES) == 32
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
-        {"search": 14, "match": 3, "fullmatch": 9, "findall": 2, "finditer": 2}
+        {"search": 14, "match": 4, "fullmatch": 10, "findall": 2, "finditer": 2}
     )
     assert len(MODULE_CALL_CASES) == 33
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
@@ -2314,6 +2316,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-search-bytes-verbose-regression-digits",
         "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
         "workflow-pattern-match-str-pos-keyword",
+        "workflow-pattern-match-str-bool-pos-keyword",
         "workflow-pattern-fullmatch-str-verbose-regression",
         "workflow-pattern-fullmatch-str-verbose-regression-alpha",
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
@@ -2321,6 +2324,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
         "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-fullmatch-bytes-window-indexlike",
         "workflow-pattern-findall-str-window-keyword",
         "workflow-pattern-finditer-bytes-window-keyword",
     } <= {case.case_id for case in PATTERN_CASES}
@@ -2818,6 +2822,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-search-str-bool-endpos-keyword",
         "workflow-pattern-search-str-pos-indexlike",
         "workflow-pattern-match-str-pos-keyword",
+        "workflow-pattern-match-str-bool-pos-keyword",
         "workflow-pattern-findall-str-window-keyword",
     )
     assert tuple(
@@ -2830,6 +2835,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-search-bytes-endpos-keyword",
         "workflow-pattern-search-bytes-endpos-indexlike",
         "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-fullmatch-bytes-window-indexlike",
         "workflow-pattern-finditer-bytes-window-keyword",
     )
     assert tuple(
@@ -2841,7 +2847,9 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-search-str-pos-indexlike",
         "workflow-pattern-search-bytes-endpos-indexlike",
         "workflow-pattern-match-str-pos-keyword",
+        "workflow-pattern-match-str-bool-pos-keyword",
         "workflow-pattern-fullmatch-bytes-window-keyword",
+        "workflow-pattern-fullmatch-bytes-window-indexlike",
         "workflow-pattern-findall-str-window-keyword",
         "workflow-pattern-finditer-bytes-window-keyword",
     )
@@ -2854,7 +2862,9 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "pattern-search-pos-indexlike-str",
         "pattern-search-endpos-indexlike-bytes",
         "pattern-match-pos-keyword-str",
+        "pattern-match-bool-pos-keyword-str",
         "pattern-fullmatch-window-keyword-bytes",
+        "pattern-fullmatch-window-indexlike-bytes",
         "pattern-findall-window-keyword-str",
         "pattern-finditer-window-keyword-bytes",
     )
@@ -2863,8 +2873,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         Counter(
             {
                 "search": 5,
-                "match": 1,
-                "fullmatch": 1,
+                "match": 2,
+                "fullmatch": 2,
                 "findall": 1,
                 "finditer": 1,
             }
