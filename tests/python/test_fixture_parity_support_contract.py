@@ -14,23 +14,11 @@ import pytest
 import rebar
 from rebar_harness import correctness
 from rebar_harness.correctness import (
-    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
-    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
-    BOUNDED_WILDCARD_FIXTURE_SELECTOR,
-    CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
-    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     CORRECTNESS_FIXTURES_ROOT,
     DEFAULT_FIXTURE_PATHS,
     FixtureCase,
     FixtureManifest,
-    GROUPED_CAPTURE_FIXTURE_SELECTOR,
-    LITERAL_FLAG_FIXTURE_SELECTOR,
-    OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
     PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR,
-    QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
-    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
-    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     load_fixture_manifest,
     load_fixture_manifests,
     published_fixture_manifests,
@@ -79,169 +67,22 @@ class _NonCachingStdlibBackend:
         return re.compile(pattern, flags)
 
 
-SELECTOR_EXPECTATION_TABLE = (
-    (
-        COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-        (
-            "exact_repeat_quantified_group_workflows.py",
-            "ranged_repeat_quantified_group_workflows.py",
-        ),
-        "counted-repeat",
-    ),
-    (
-        QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
-        (
-            "exact_repeat_quantified_group_alternation_workflows.py",
-            "literal_alternation_workflows.py",
-            "quantified_alternation_backtracking_heavy_workflows.py",
-            "quantified_alternation_broader_range_workflows.py",
-            "quantified_alternation_conditional_workflows.py",
-            "quantified_alternation_nested_branch_workflows.py",
-            "quantified_alternation_open_ended_workflows.py",
-            "quantified_alternation_workflows.py",
-            "quantified_nested_group_alternation_workflows.py",
-        ),
-        "quantified-alternation",
-    ),
-    (
-        BOUNDED_WILDCARD_FIXTURE_SELECTOR,
-        (
-            "collection_replacement_workflows.py",
-            "literal_flag_workflows.py",
-        ),
-        "bounded-wildcard",
-    ),
-    (
-        SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
-        (
-            "named_backreference_workflows.py",
-            "numbered_backreference_workflows.py",
-        ),
-        "simple-backreference",
-    ),
-    (
-        GROUPED_CAPTURE_FIXTURE_SELECTOR,
-        (
-            "grouped_alternation_workflows.py",
-            "grouped_match_workflows.py",
-            "grouped_segment_workflows.py",
-            "named_group_workflows.py",
-            "nested_group_alternation_workflows.py",
-            "nested_group_workflows.py",
-            "optional_group_alternation_workflows.py",
-            "optional_group_workflows.py",
-        ),
-        "grouped-capture",
-    ),
-    (
-        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-        (
-            "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-            "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-            "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-            "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-            "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-            "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-            "wider_ranged_repeat_quantified_group_workflows.py",
-        ),
-        "wider-ranged-repeat",
-    ),
-    (
-        BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
-        (
-            "branch_local_backreference_workflows.py",
-            "conditional_group_exists_branch_local_backreference_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
-            "nested_group_alternation_branch_local_backreference_workflows.py",
-            "optional_group_alternation_branch_local_backreference_workflows.py",
-            "quantified_alternation_branch_local_backreference_workflows.py",
-            "quantified_branch_local_backreference_workflows.py",
-            "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
-        ),
-        "branch-local-backreference",
-    ),
-    (
-        LITERAL_FLAG_FIXTURE_SELECTOR,
-        ("literal_flag_workflows.py",),
-        "literal-flag",
-    ),
-    (
-        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
-        (
-            "conditional_group_exists_callable_replacement_workflows.py",
-            "grouped_alternation_callable_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
-            "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_group_alternation_callable_replacement_workflows.py",
-            "nested_group_callable_replacement_workflows.py",
-            "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "quantified_nested_group_alternation_callable_replacement_workflows.py",
-            "quantified_nested_group_callable_replacement_workflows.py",
-        ),
-        "callable-replacement",
-    ),
-    (
-        OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
-        (
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-            "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-        ),
-        "open-ended-replacement-template",
-    ),
-    (
-        OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-        (
-            "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-            "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
-            "broader_range_open_ended_quantified_group_alternation_workflows.py",
-            "nested_open_ended_quantified_group_alternation_workflows.py",
-            "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-            "open_ended_quantified_group_alternation_conditional_workflows.py",
-            "open_ended_quantified_group_alternation_workflows.py",
-        ),
-        "open-ended-quantified-group",
-    ),
-    (
-        CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
-        (
-            "conditional_group_exists_alternation_replacement_workflows.py",
-            "conditional_group_exists_empty_else_replacement_workflows.py",
-            "conditional_group_exists_empty_yes_else_replacement_workflows.py",
-            "conditional_group_exists_fully_empty_replacement_workflows.py",
-            "conditional_group_exists_nested_replacement_workflows.py",
-            "conditional_group_exists_no_else_replacement_workflows.py",
-            "conditional_group_exists_quantified_alternation_replacement_workflows.py",
-            "conditional_group_exists_quantified_replacement_workflows.py",
-            "conditional_group_exists_replacement_template_workflows.py",
-            "conditional_group_exists_replacement_workflows.py",
-        ),
-        "conditional-replacement",
-    ),
-)
-SELECTOR_EXPECTATIONS = tuple(
-    pytest.param(selector, expected_filenames, id=selector_id)
-    for selector, expected_filenames, selector_id in SELECTOR_EXPECTATION_TABLE
-)
-
-
 def _declared_correctness_fixture_selectors() -> dict[str, str]:
     return {
         name: value
         for name, value in vars(correctness).items()
         if name.endswith("_FIXTURE_SELECTOR") and isinstance(value, str)
     }
+
+
+def _declared_nondefault_correctness_fixture_selectors() -> tuple[str, ...]:
+    return tuple(
+        sorted(
+            selector
+            for selector in _declared_correctness_fixture_selectors().values()
+            if selector != PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+        )
+    )
 
 
 def _assert_json_literal_safe(value: object) -> None:
@@ -763,19 +604,36 @@ def _capture_expand_error(match: object, template: object) -> BaseException:
     raise AssertionError("expected match.expand() to raise")
 
 
-@pytest.mark.parametrize(("selector", "expected_filenames"), SELECTOR_EXPECTATIONS)
-def test_shared_correctness_fixture_selectors_resolve_expected_published_paths(
+@pytest.mark.parametrize(
+    "selector",
+    _declared_nondefault_correctness_fixture_selectors(),
+)
+def test_shared_correctness_fixture_selectors_resolve_published_paths(
     selector: str,
-    expected_filenames: tuple[str, ...],
 ) -> None:
     published_full_suite_paths = select_correctness_fixture_paths(
         PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
     )
+    published_full_suite_path_set = set(published_full_suite_paths)
     selected_paths = select_correctness_fixture_paths(selector)
+    selected_path_set = set(selected_paths)
+    published_selected_paths = tuple(
+        path for path in published_full_suite_paths if path in selected_path_set
+    )
 
-    assert tuple(path.name for path in selected_paths) == expected_filenames
-    assert set(selected_paths).issubset(set(published_full_suite_paths))
-    assert all(path.is_relative_to(CORRECTNESS_FIXTURES_ROOT) for path in selected_paths)
+    assert selected_paths
+    assert len(selected_paths) == len(selected_path_set)
+    assert selected_path_set.issubset(published_full_suite_path_set)
+    assert published_selected_paths
+    assert selected_paths == tuple(
+        sorted(published_selected_paths, key=lambda path: path.name)
+    )
+
+    for path in selected_paths:
+        assert path.is_relative_to(CORRECTNESS_FIXTURES_ROOT)
+        assert path.is_file()
+        assert path.suffix == ".py"
+        assert path in published_full_suite_path_set
 
 
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
@@ -793,12 +651,10 @@ def test_declared_correctness_fixture_selectors_match_registry_keys() -> None:
     )
 
 
-def test_selector_expectation_table_covers_declared_nondefault_selectors() -> None:
+def test_declared_nondefault_correctness_fixture_selectors_are_parametrized_once() -> None:
     declared_nondefault_selectors = set(_declared_correctness_fixture_selectors().values())
     declared_nondefault_selectors.remove(PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR)
-    expected_selectors = tuple(
-        selector for selector, _expected_filenames, _selector_id in SELECTOR_EXPECTATION_TABLE
-    )
+    expected_selectors = _declared_nondefault_correctness_fixture_selectors()
 
     assert PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR not in expected_selectors
     assert len(expected_selectors) == len(set(expected_selectors))

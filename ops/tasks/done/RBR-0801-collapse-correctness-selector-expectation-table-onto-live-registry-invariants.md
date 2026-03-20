@@ -1,6 +1,6 @@
 # RBR-0801: Collapse the correctness selector expectation table onto live registry invariants
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -54,3 +54,10 @@ for selector, expected_filenames, _ in mod.SELECTOR_EXPECTATION_TABLE:
 print("ok")
 PY` currently passes (`ok`), showing the handwritten table is a direct mirror of live selector resolution rather than an independent contract source.
 - This follows the same post-JSON simplification direction as the recent parity-harness sidecar removals, but keeps scope tighter than the remaining benchmark-selector duplication by deleting the largest live filename mirror first.
+
+## Completion
+- 2026-03-20: Removed `SELECTOR_EXPECTATION_TABLE` and `SELECTOR_EXPECTATIONS` from `tests/python/test_fixture_parity_support_contract.py`, trimmed the now-unused selector imports, and drove the selector parametrization directly from the declared `*_FIXTURE_SELECTOR` exports in `rebar_harness.correctness`.
+- 2026-03-20: Replaced the mirrored filename assertions with live registry contract checks that each declared nondefault selector resolves once, stays non-empty and duplicate-free, remains under `CORRECTNESS_FIXTURES_ROOT`, points at real `.py` fixture modules, and matches the live sorted published-subset contract already produced by `select_correctness_fixture_paths(...)`.
+- 2026-03-20: Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'selector or published_full_suite_fixture_selector'`
+  - `bash -lc "! rg -n '^(SELECTOR_EXPECTATION_TABLE|SELECTOR_EXPECTATIONS) =' tests/python/test_fixture_parity_support_contract.py"`
