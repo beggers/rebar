@@ -1442,6 +1442,257 @@ def test_workflow_result_with_cpython_parity_accepts_representative_cases(
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(
+            replace(
+                SYNTHETIC_MODULE_PATTERN_CASE,
+                case_id="synthetic-module-pattern-str-no-match",
+                source_args=[SYNTHETIC_CASE_PATTERN, "zzzzz"],
+                args=[SYNTHETIC_CASE_PATTERN, "zzzzz"],
+            ),
+            id="module-str",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+                case_id="synthetic-module-compiled-pattern-str-no-match",
+                source_args=["zzzzz"],
+                args=["zzzzz"],
+            ),
+            id="compiled-module-str",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_MODULE_BYTES_SEARCH_CASE,
+                case_id="synthetic-module-pattern-bytes-no-match",
+                source_args=[b"abc", b"zzzzz"],
+                args=[b"abc", b"zzzzz"],
+            ),
+            id="module-bytes",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE,
+                case_id="synthetic-module-compiled-pattern-bytes-no-match",
+                source_args=[b"zzzzz"],
+                args=[b"zzzzz"],
+            ),
+            id="compiled-module-bytes",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_FULLMATCH_PATTERN_CASE,
+                case_id="synthetic-pattern-fullmatch-str-no-match",
+                source_args=["abcx"],
+                args=["abcx"],
+            ),
+            id="pattern-str",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE,
+                case_id="synthetic-pattern-fullmatch-bytes-no-match",
+                source_args=[b"abcx"],
+                args=[b"abcx"],
+            ),
+            id="pattern-bytes",
+        ),
+    ),
+)
+def test_workflow_result_with_cpython_parity_accepts_shared_no_match_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert observed is None
+    assert expected is None
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="module-str"),
+        pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="module-bytes"),
+    ),
+)
+def test_workflow_result_with_cpython_parity_skips_compile_for_raw_module_calls(
+    monkeypatch: pytest.MonkeyPatch,
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    def unexpected_compile(*args: object, **kwargs: object) -> tuple[object, object]:
+        raise AssertionError("raw module helper should not compile through parity helper")
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "compile_with_cpython_parity",
+        unexpected_compile,
+    )
+
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+
+@pytest.mark.parametrize(
+    ("case", "expected_pattern_payload"),
+    (
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+            SYNTHETIC_CASE_PATTERN,
+            id="compiled-module-str",
+        ),
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE,
+            b"abc",
+            id="compiled-module-bytes",
+        ),
+    ),
+)
+def test_workflow_result_with_cpython_parity_routes_compiled_module_cases_through_module_call_args(
+    monkeypatch: pytest.MonkeyPatch,
+    case: FixtureCase,
+    expected_pattern_payload: str | bytes,
+) -> None:
+    compile_calls: list[tuple[str, object, str | bytes, int]] = []
+    observed_pattern = object()
+    expected_pattern = object()
+
+    def fake_compile(
+        backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+    ) -> tuple[object, object]:
+        compile_calls.append((backend_name, backend, pattern, flags))
+        return observed_pattern, expected_pattern
+
+    class RecordingSearchTarget:
+        def __init__(self, result: object) -> None:
+            self.calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+            self._result = result
+
+        def search(self, *args: object, **kwargs: object) -> object:
+            self.calls.append((args, dict(kwargs)))
+            return self._result
+
+    fake_backend = RecordingSearchTarget("observed-result")
+    fake_re = RecordingSearchTarget("expected-result")
+    backend_name = "synthetic-backend"
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "compile_with_cpython_parity",
+        fake_compile,
+    )
+    monkeypatch.setattr(fixture_parity_support, "re", fake_re)
+
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        fake_backend,
+        case,
+    )
+
+    assert compile_calls == [
+        (backend_name, fake_backend, expected_pattern_payload, 0),
+    ]
+    assert fake_backend.calls == [
+        (tuple(case.module_call_args(observed_pattern)), dict(case.kwargs)),
+    ]
+    assert fake_re.calls == [
+        (tuple(case.module_call_args(expected_pattern)), dict(case.kwargs)),
+    ]
+    assert observed == "observed-result"
+    assert expected == "expected-result"
+
+
+@pytest.mark.parametrize(
+    ("case", "expected_pattern_payload"),
+    (
+        pytest.param(
+            SYNTHETIC_FULLMATCH_PATTERN_CASE,
+            SYNTHETIC_CASE_PATTERN,
+            id="pattern-str",
+        ),
+        pytest.param(
+            SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE,
+            b"abc",
+            id="pattern-bytes",
+        ),
+    ),
+)
+def test_workflow_result_with_cpython_parity_routes_pattern_calls_through_compiled_patterns(
+    monkeypatch: pytest.MonkeyPatch,
+    case: FixtureCase,
+    expected_pattern_payload: str | bytes,
+) -> None:
+    compile_calls: list[tuple[str, object, str | bytes, int]] = []
+
+    class RecordingPattern:
+        def __init__(self, result: object) -> None:
+            self.calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+            self._result = result
+
+        def fullmatch(self, *args: object, **kwargs: object) -> object:
+            self.calls.append((args, dict(kwargs)))
+            return self._result
+
+    observed_pattern = RecordingPattern("observed-result")
+    expected_pattern = RecordingPattern("expected-result")
+    fake_backend = object()
+    backend_name = "synthetic-backend"
+
+    def fake_compile(
+        compile_backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+    ) -> tuple[RecordingPattern, RecordingPattern]:
+        compile_calls.append((compile_backend_name, backend, pattern, flags))
+        return observed_pattern, expected_pattern
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "compile_with_cpython_parity",
+        fake_compile,
+    )
+
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        fake_backend,
+        case,
+    )
+
+    assert compile_calls == [
+        (backend_name, fake_backend, expected_pattern_payload, 0),
+    ]
+    assert observed_pattern.calls == [
+        (tuple(case.args), dict(case.kwargs)),
+    ]
+    assert expected_pattern.calls == [
+        (tuple(case.args), dict(case.kwargs)),
+    ]
+    assert observed == "observed-result"
+    assert expected == "expected-result"
+
+
 def test_workflow_result_with_cpython_parity_rejects_helperless_cases(
     regex_backend: tuple[str, object],
 ) -> None:
