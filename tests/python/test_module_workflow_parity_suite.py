@@ -274,6 +274,8 @@ PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES = tuple(
         "workflow-module-search-duplicate-flags-keyword",
         "workflow-module-split-duplicate-maxsplit-keyword",
         "workflow-module-sub-duplicate-count-keyword",
+        "workflow-module-fullmatch-unexpected-keyword",
+        "workflow-module-sub-unexpected-keyword",
     }
 )
 PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
@@ -2143,24 +2145,24 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 69
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 71
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 45, "bytes": 24}
+        {"str": 47, "bytes": 24}
     )
     assert len(PATTERN_CASES) == 26
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {"search": 10, "match": 3, "fullmatch": 9, "findall": 2, "finditer": 2}
     )
-    assert len(MODULE_CALL_CASES) == 31
+    assert len(MODULE_CALL_CASES) == 33
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "search": 6,
             "match": 4,
-            "fullmatch": 4,
+            "fullmatch": 5,
             "split": 4,
             "findall": 1,
             "finditer": 1,
-            "sub": 5,
+            "sub": 6,
             "subn": 4,
             "escape": 2,
         }
@@ -2595,6 +2597,8 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "workflow-module-search-duplicate-flags-keyword",
         "workflow-module-split-duplicate-maxsplit-keyword",
         "workflow-module-sub-duplicate-count-keyword",
+        "workflow-module-fullmatch-unexpected-keyword",
+        "workflow-module-sub-unexpected-keyword",
     )
     assert tuple(
         case.case_id for case in _fixture_cases_for_text_model(
@@ -2608,6 +2612,8 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "module-search-duplicate-flags-keyword",
         "module-split-duplicate-maxsplit-keyword",
         "module-sub-duplicate-count-keyword",
+        "module-fullmatch-unexpected-keyword",
+        "module-sub-unexpected-keyword",
     )
     assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES)
     assert Counter(
@@ -2616,7 +2622,8 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         {
             "search": 1,
             "split": 1,
-            "sub": 1,
+            "sub": 2,
+            "fullmatch": 1,
         }
     )
     assert tuple(

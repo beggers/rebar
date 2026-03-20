@@ -1,8 +1,9 @@
 # RBR-0773: Publish the module-workflow module unexpected-keyword error pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the remaining raw module keyword-error pair, publishing the exact unexpected-keyword rejections for `fullmatch(missing=...)` and `sub(missing=...)` before pattern keyword bool/indexlike rows or another owner family reopens the queue.
@@ -61,3 +62,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_argument_errors_match_cpython and (module-fullmatch-unexpected-keyword or module-sub-unexpected-keyword)'` passed in this run (`4 passed, 675 deselected`);
   - the current owner path already publishes the adjacent duplicate-keyword trio, leaving this unexpected-keyword pair as the smallest unpublished slice on the same owner file; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added `workflow-module-fullmatch-unexpected-keyword` and `workflow-module-sub-unexpected-keyword` to `tests/conformance/fixtures/module_workflow_surface.py` as raw `module_call` `str` rows with `include_pattern_arg == True`, preserving the exact `MODULE_KEYWORD_ERROR_CASES` anchors for `fullmatch(missing=...)` and `sub(missing=...)` without widening into pattern keyword rows, bytes siblings, or another manifest.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared `module-workflow-surface` owner path now expects `71` published rows, a `47`/`24` `str`/`bytes` split, and `33` published `module_call` rows, while the canonical `module-keyword-error` slice now contains five rows in order: the existing duplicate-keyword trio followed by `workflow-module-fullmatch-unexpected-keyword` and `workflow-module-sub-unexpected-keyword`, mapped back to the matching direct parity anchors in that same order.
+- Extended `tests/conformance/test_combined_correctness_scorecards.py` so the tracked scorecard representative case inventory includes the newly published unexpected-keyword slice, then republished `reports/correctness/latest.py`. Reading the tracked artifact shows `1441` total / `1441` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `71/71/0`, `module.workflow.str` at `47/47/0`, `module.workflow.bytes` unchanged at `24/24/0`, and `module.workflow.module_call` at `33/33/0`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0773-module-workflow-module-unexpected-keyword-error-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

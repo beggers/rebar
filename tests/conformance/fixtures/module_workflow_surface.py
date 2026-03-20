@@ -825,6 +825,38 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-fullmatch-unexpected-keyword",
+      "operation": "module_call",
+      "family": "module_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "include_pattern_arg": True,
+      "args": ["abc"],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "fullmatch", "literal", "str", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level fullmatch() unexpected keyword rejection already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-unexpected-keyword",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "include_pattern_arg": True,
+      "args": ["x", "abc"],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level sub() unexpected keyword rejection already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
