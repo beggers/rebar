@@ -1177,6 +1177,26 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-search-str-compiled-pattern-on-bytes-string",
+      "operation": "module_call",
+      "family": "module_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "text_model": "str",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "categories": ["workflow", "search", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern search() wrong-text-model TypeError on the shared module-workflow owner path without widening into other helper mismatches."
+      ]
+    },
+    {
       "id": "workflow-module-match-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_match_workflow",
@@ -1187,6 +1207,20 @@ MANIFEST = {
       "categories": ["workflow", "match", "literal", "str", "compiled-pattern"],
       "notes": [
         "Publishes the first literal str module-level match() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-match-bytes-compiled-pattern-on-str-string",
+      "operation": "module_call",
+      "family": "module_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": ["abc"],
+      "categories": ["workflow", "match", "literal", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern match() wrong-text-model TypeError on the shared module-workflow owner path without widening into other helper mismatches."
       ]
     },
     {
@@ -1227,6 +1261,26 @@ MANIFEST = {
       "categories": ["workflow", "fullmatch", "wildcard", "bounded", "str", "compiled-pattern"],
       "notes": [
         "Publishes the exact compiled-pattern module-level fullmatch() workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
+      "operation": "module_call",
+      "family": "module_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "text_model": "str",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "categories": ["workflow", "fullmatch", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern fullmatch() wrong-text-model TypeError on the shared module-workflow owner path without widening into other helper mismatches."
       ]
     },
     {
@@ -1363,6 +1417,27 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-str-compiled-pattern-on-bytes-string",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "str",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        },
+        1
+      ],
+      "categories": ["workflow", "split", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern split() wrong-text-model TypeError on the shared module-workflow owner path without widening into other helper mismatches."
+      ]
+    },
+    {
       "id": "workflow-module-findall-bytes-compiled-pattern",
       "operation": "module_call",
       "family": "module_findall_workflow",
@@ -1383,6 +1458,20 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-findall-bytes-compiled-pattern-on-str-string",
+      "operation": "module_call",
+      "family": "module_findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": ["zabczz"],
+      "categories": ["workflow", "findall", "literal", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern findall() wrong-text-model TypeError on the shared module-workflow owner path without widening into other helper mismatches."
+      ]
+    },
+    {
       "id": "workflow-module-finditer-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_finditer_workflow",
@@ -1393,6 +1482,26 @@ MANIFEST = {
       "categories": ["workflow", "finditer", "literal", "str", "compiled-pattern"],
       "notes": [
         "Publishes the first literal str module-level finditer() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-finditer-str-compiled-pattern-on-bytes-string",
+      "operation": "module_call",
+      "family": "module_finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "text_model": "str",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        }
+      ],
+      "categories": ["workflow", "finditer", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern finditer() wrong-text-model TypeError on the shared module-workflow owner path without widening into other helper mismatches."
       ]
     },
     {

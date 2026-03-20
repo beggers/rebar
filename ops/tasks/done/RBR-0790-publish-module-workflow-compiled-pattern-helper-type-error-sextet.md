@@ -1,6 +1,6 @@
 # RBR-0790: Publish the module-workflow compiled-pattern helper type-error sextet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -82,3 +82,12 @@ Created: 2026-03-20
   - the current owner path already publishes the adjacent compiled-pattern `sub` / `subn` wrong-text-model rows, leaving this search/match/fullmatch/split/findall/finditer sextet as the smallest unpublished neighbor on the same owner file;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion Notes
+- 2026-03-20: Published the six compiled-pattern mixed text-model helper TypeError rows on `tests/conformance/fixtures/module_workflow_surface.py`, extended the shared owner-path parity assertions to the 32-row compiled-pattern publication order, and refreshed the combined representative-case list in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Republished `reports/correctness/latest.py`; the tracked artifact now reports `1475` total / `1475` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `105/105/0`, `module.workflow.str` at `66/66/0`, `module.workflow.bytes` at `39/39/0`, `module.workflow.module_call` at `51/51/0`, and `module.workflow.pattern_call` unchanged at `42/42/0`. The tracked report includes the new representative row `workflow-module-search-str-compiled-pattern-on-bytes-string`.
+- Verification passed:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_module_helpers_preserve_compiled_pattern_type_errors_like_cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0790-module-workflow-compiled-pattern-helper-type-error-sextet.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
