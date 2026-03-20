@@ -165,6 +165,26 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "prefix\nENV_VAR = 12345\nsuffix"
+        }
+      ],
+      "categories": ["workflow", "search", "verbose", "multiline", "regression", "bytes", "miss"],
+      "notes": [
+        "Publishes the remaining miss-path bytes bound Pattern.search verbose regression workflow anchored to the shared verbose compile family."
+      ]
+    },
+    {
       "id": "workflow-pattern-fullmatch-str-verbose-regression",
       "operation": "pattern_call",
       "family": "bound_fullmatch_workflow",
@@ -241,6 +261,26 @@ MANIFEST = {
       "categories": ["workflow", "fullmatch", "verbose", "multiline", "regression", "bytes"],
       "notes": [
         "Publishes the remaining positive bytes bound Pattern.fullmatch verbose regression workflow anchored to the shared verbose compile family."
+      ]
+    },
+    {
+      "id": "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "env_var = 123"
+        }
+      ],
+      "categories": ["workflow", "fullmatch", "verbose", "multiline", "regression", "bytes", "miss"],
+      "notes": [
+        "Publishes the remaining miss-path bytes bound Pattern.fullmatch verbose regression workflow anchored to the shared verbose compile family."
       ]
     },
     {

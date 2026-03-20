@@ -1,6 +1,6 @@
 # RBR-0733: Publish the module-workflow bytes verbose miss-path helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -57,3 +57,9 @@ Created: 2026-03-20
   - `tests/python/test_module_workflow_parity_suite.py` already defines the shared six-case `VERBOSE_COMPILE_WORKFLOW_CASES`, pins the published bytes rows to the positive direct cases, and therefore leaves `search-rejects-too-many-digits` plus `fullmatch-rejects-lowercase-key` as the next bounded bytes pair on the same owner path;
   - a direct runtime probe in this run confirmed that `rebar.compile(b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $", re.MULTILINE | re.VERBOSE)` already matches CPython for all six bytes verbose helper cases, including both miss-path rows returning `None`; and
   - `reports/correctness/latest.py` currently reports `1395` total / `1395` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `25` / `25` / `0`, `module.workflow.bytes` at `10` / `10` / `0`, and `module.workflow.pattern_call` at `13` / `13` / `0`, so this slice extends the tracked frontier through adjacent owner-path publication rather than a new family.
+
+## Completion
+- 2026-03-20: Added `workflow-pattern-search-bytes-verbose-regression-too-many-digits` and `workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key` to `tests/conformance/fixtures/module_workflow_surface.py`, keeping the existing verbose regression pattern, `flags == 72`, `text_model == "bytes"`, and only the two miss-path compiled-pattern helper rows requested by this task.
+- Updated `tests/python/test_module_workflow_parity_suite.py` on the shared owner path so the published `module-workflow-surface` bundle now expects `27` rows instead of `25`, the `pattern_call` helper mix is `7` `search` / `1` `match` / `7` `fullmatch`, and the new bytes miss rows are pinned back to `VERBOSE_COMPILE_WORKFLOW_CASES` with their payloads encoded through the existing bytes compile anchor.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated the tracked `reports/correctness/latest.py` publication. The tracked artifact now reads `1397` total / `1397` passed / `0` `unimplemented` across `114` manifests overall, with `module.workflow` at `27` / `27` / `0`, `module.workflow.bytes` at `12` / `12` / `0`, and `module.workflow.pattern_call` at `15` / `15` / `0`; both new bytes verbose miss rows are present in the tracked report.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0733-module-workflow-bytes-verbose-miss-paths.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `27` total / `27` passed / `0` `unimplemented`.
