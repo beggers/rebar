@@ -1,8 +1,9 @@
 # RBR-0727: Collapse open-ended direct-test bucket sidecar onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` registry from `tests/python/test_open_ended_quantified_group_parity_suite.py` so the open-ended parity owner derives direct-test bucket coverage from its canonical shared case buckets plus the existing direct-bytes follow-on surfaces instead of maintaining a mirrored top-level map.
@@ -110,3 +111,7 @@ PY` reported the existing tail through `RBR-0726`, no reserved missing tail ids,
 - This simplification stays on the same bounded open-ended parity-harness cleanup track as the most recent architecture work:
   - `ops/tasks/done/RBR-0725-collapse-open-ended-generic-bucket-routing-sidecars-onto-canonical-follow-on-ownership.md` intentionally left `OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` untouched while removing the stale generic-bucket routing sidecars from this same owner file; and
   - `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` already own the shared buckets, bytes-follow-on ordering, and bundle-to-bucket routing needed to derive the seven direct-test buckets without a second owner layer.
+- 2026-03-20 completion:
+  - Removed `OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` from `tests/python/test_open_ended_quantified_group_parity_suite.py`.
+  - Added a tiny file-local helper that derives the direct-test bucket map from `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES`, preserving the existing shared-bucket and bytes-follow-on ordering.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3923 passed in 2.68s`), the derived-bucket probe from the task (`ok`), and the `rg` absence check for `OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` (no matches).

@@ -490,17 +490,22 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
 )
-OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-    "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
-    "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
-    **{
-        f"{spec.follow_on_id}-bytes-follow-on": frozenset(
-            case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
-        )
-        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
-    },
-}
+
+
+def _open_ended_quantified_group_direct_test_case_id_buckets(
+) -> dict[str, frozenset[str]]:
+    return {
+        "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+        "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
+        "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
+        **{
+            f"{spec.follow_on_id}-bytes-follow-on": frozenset(
+                case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
+            )
+            for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        },
+    }
+
 
 def _compile_case_prefix(case: FixtureCase) -> str:
     for suffix in ("-compile-metadata-str", "-compile-metadata-bytes"):
@@ -867,7 +872,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS,
+        _open_ended_quantified_group_direct_test_case_id_buckets(),
         selected_case_ids=OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS,
         coverage_label="open-ended quantified group direct-test case-id buckets",
     )
