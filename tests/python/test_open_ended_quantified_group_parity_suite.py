@@ -4,7 +4,6 @@ from collections import Counter
 from dataclasses import dataclass, replace
 from itertools import product
 import re
-from types import SimpleNamespace
 
 import pytest
 
@@ -22,7 +21,6 @@ from tests.python.fixture_parity_support import (
     SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
-    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing,
     assert_bounded_pattern_case_match_parity,
     assert_bounded_pattern_case_no_match_parity,
     assert_fixture_bundle_contract,
@@ -37,7 +35,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
-    load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
@@ -1124,441 +1121,26 @@ def test_open_ended_direct_bytes_follow_on_case_surfaces_keep_expected_manifest_
 
 def test_open_ended_direct_bytes_follow_on_case_surfaces_resolve_to_expected_published_mixed_fixtures(
 ) -> None:
-    fixture_paths = tuple(
-        spec.bundle.manifest.path for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
-    )
-    bundles = load_published_fixture_bundles(fixture_paths)
-
-    assert tuple(bundle.manifest.manifest_id for bundle in bundles) == tuple(
-        spec.bundle.manifest.manifest_id for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
-    )
-    assert tuple(path.name for path in fixture_paths) == (
+    assert tuple(
+        spec.bundle.manifest.path.name for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    ) == (
         "broader_range_open_ended_quantified_group_alternation_workflows.py",
         "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
         "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
     )
-    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
-        bundles,
-        direct_bytes_follow_on_bundles=bundles,
-        coverage_label="fixture parity support contract",
+    assert all(
+        {case.text_model for case in spec.bundle.cases} == {"bytes", "str"}
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     )
-
-
-@pytest.mark.parametrize(
-    "spec",
-    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=lambda spec: spec.follow_on_id,
-)
-def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
-    spec: BytesCaseSurfaceSpec,
-) -> None:
-    compile_cases, module_cases, pattern_cases = (
-        partition_direct_bytes_follow_on_case_buckets((spec.bundle,), (spec.bundle,))
-    )
-
-    bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        spec.bundle,
-        compile_cases=compile_cases,
-        module_cases=module_cases,
-        pattern_cases=pattern_cases,
-    )
-
-    assert len(bundle_str_cases) == len(bundle_bytes_cases) == len(spec.bundle.cases) // 2
-    assert {case.text_model for case in bundle_str_cases} == {"str"}
-    assert {case.text_model for case in bundle_bytes_cases} == {"bytes"}
-    assert Counter((case.operation, case.helper) for case in bundle_str_cases) == Counter(
-        (case.operation, case.helper) for case in bundle_bytes_cases
-    )
-    assert {case.case_id for case in bundle_bytes_cases} == {
-        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
-    }
-
-
-def test_assert_direct_bytes_follow_on_bundle_routing_rejects_bytes_left_in_generic_bucket(
-) -> None:
-    fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    (bundle,) = load_published_fixture_bundles((fixture_path,))
-    compile_cases = fixture_cases_for_operation((bundle,), "compile")
-    module_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "module_call")
-        if case.text_model == "str"
-    )
-    pattern_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "pattern_call")
-        if case.text_model == "str"
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "quantified-alternation-open-ended-workflows direct bytes follow-on routing "
-            "drifted; compile bucket unexpectedly includes bytes case ids "
-        ),
-    ):
-        assert_direct_bytes_follow_on_bundle_routing(
-            bundle,
-            compile_cases=compile_cases,
-            module_cases=module_cases,
-            pattern_cases=pattern_cases,
-        )
-
-
-@pytest.mark.parametrize(
-    "operation",
-    (
-        pytest.param("compile", id="compile"),
-        pytest.param("module_call", id="module-call"),
-        pytest.param("pattern_call", id="pattern-call"),
-    ),
-)
-def test_assert_direct_bytes_follow_on_bundle_routing_rejects_unexpected_str_rows(
-    operation: str,
-) -> None:
-    fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    (bundle,) = load_published_fixture_bundles((fixture_path,))
-    cases_by_operation = {
-        bucket_operation: tuple(
-            case
-            for case in fixture_cases_for_operation((bundle,), bucket_operation)
-            if case.text_model == "str"
-        )
-        for bucket_operation in ("compile", "module_call", "pattern_call")
-    }
-    assert cases_by_operation[operation]
-
-    unexpected_case_id = f"unexpected-{operation}-str-case-id"
-    cases_by_operation[operation] = (
-        *cases_by_operation[operation],
-        replace(cases_by_operation[operation][0], case_id=unexpected_case_id),
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "quantified-alternation-open-ended-workflows direct bytes follow-on routing "
-            f"drifted; {operation} bucket str case ids drifted; missing case ids: (); "
-            f"unexpected case ids: ('{unexpected_case_id}',)"
-        ),
-    ):
-        assert_direct_bytes_follow_on_bundle_routing(
-            bundle,
-            compile_cases=cases_by_operation["compile"],
-            module_cases=cases_by_operation["module_call"],
-            pattern_cases=cases_by_operation["pattern_call"],
-        )
-
-
-def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows() -> None:
-    fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    (bundle,) = load_published_fixture_bundles((fixture_path,))
-    compile_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "compile")
-        if case.text_model == "str"
-    )[1:]
-    module_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "module_call")
-        if case.text_model == "str"
-    )
-    pattern_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "pattern_call")
-        if case.text_model == "str"
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "quantified-alternation-open-ended-workflows direct bytes follow-on routing "
-            "drifted; compile bucket str case ids drifted; missing case ids: "
-        ),
-    ):
-        assert_direct_bytes_follow_on_bundle_routing(
-            bundle,
-            compile_cases=compile_cases,
-            module_cases=module_cases,
-            pattern_cases=pattern_cases,
-        )
-
-
-def test_assert_direct_bytes_follow_on_bundle_routing_rejects_str_only_manifest_bundle(
-) -> None:
-    fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
-    (bundle,) = load_published_fixture_bundles((fixture_path,))
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "grouped-match-workflows direct bytes follow-on routing requires both "
-            "str and bytes rows"
-        ),
-    ):
-        assert_direct_bytes_follow_on_bundle_routing(
-            bundle,
-            compile_cases=fixture_cases_for_operation((bundle,), "compile"),
-            module_cases=fixture_cases_for_operation((bundle,), "module_call"),
-            pattern_cases=fixture_cases_for_operation((bundle,), "pattern_call"),
-        )
-
-
-def test_mixed_text_model_manifest_helper_accepts_exact_direct_follow_on_coverage(
-) -> None:
-    mixed_fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    str_only_fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
-    mixed_bundle, str_only_bundle = load_published_fixture_bundles(
-        (mixed_fixture_path, str_only_fixture_path)
-    )
-
-    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
-        (mixed_bundle, str_only_bundle),
-        direct_bytes_follow_on_bundles=(mixed_bundle,),
-        coverage_label="fixture parity support contract",
-    )
-
-
-def test_mixed_text_model_manifest_helper_reports_missing_direct_follow_on_bundle(
-) -> None:
-    mixed_fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    str_only_fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
-    mixed_bundle, str_only_bundle = load_published_fixture_bundles(
-        (mixed_fixture_path, str_only_fixture_path)
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "fixture parity support contract direct bytes follow-on manifest routing "
-            "drifted; missing mixed manifests: "
-            "('quantified-alternation-open-ended-workflows',); "
-            "unexpected direct manifests: ()"
-        ),
-    ):
-        assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
-            (mixed_bundle, str_only_bundle),
-            direct_bytes_follow_on_bundles=(),
-            coverage_label="fixture parity support contract",
-        )
-
-
-def test_mixed_text_model_manifest_helper_reports_unexpected_direct_follow_on_bundle(
-) -> None:
-    mixed_fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    str_only_fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
-    mixed_bundle, str_only_bundle = load_published_fixture_bundles(
-        (mixed_fixture_path, str_only_fixture_path)
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "fixture parity support contract direct bytes follow-on manifest routing "
-            "drifted; missing mixed manifests: "
-            "('quantified-alternation-open-ended-workflows',); "
-            "unexpected direct manifests: ('grouped-match-workflows',)"
-        ),
-    ):
-        assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
-            (mixed_bundle, str_only_bundle),
-            direct_bytes_follow_on_bundles=(str_only_bundle,),
-            coverage_label="fixture parity support contract",
-        )
-
-
-def test_mixed_text_model_manifest_helper_reports_direct_follow_on_order_drift(
-) -> None:
-    first_mixed_fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    second_mixed_fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT
-        / "broader_range_open_ended_quantified_group_alternation_workflows.py"
-    )
-    first_bundle, second_bundle = load_published_fixture_bundles(
-        (first_mixed_fixture_path, second_mixed_fixture_path)
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "fixture parity support contract direct bytes follow-on manifest order "
-            "drifted; expected "
-            "('quantified-alternation-open-ended-workflows', "
-            "'broader-range-open-ended-quantified-group-alternation-workflows'), "
-            "got ('broader-range-open-ended-quantified-group-alternation-workflows', "
-            "'quantified-alternation-open-ended-workflows')"
-        ),
-    ):
-        assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
-            (first_bundle, second_bundle),
-            direct_bytes_follow_on_bundles=(second_bundle, first_bundle),
-            coverage_label="fixture parity support contract",
-        )
-
-
-@pytest.mark.parametrize(
-    "spec",
-    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=lambda spec: spec.follow_on_id,
-)
-def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_bytes_rows(
-    spec: BytesCaseSurfaceSpec,
-) -> None:
-    compile_cases, module_cases, pattern_cases = (
-        partition_direct_bytes_follow_on_case_buckets((spec.bundle,), (spec.bundle,))
-    )
-
-    for operation, bucket_cases in (
-        ("compile", compile_cases),
-        ("module_call", module_cases),
-        ("pattern_call", pattern_cases),
-    ):
-        original_cases = fixture_cases_for_operation((spec.bundle,), operation)
-        expected_case_ids = tuple(
-            case.case_id for case in original_cases if case.text_model == "str"
-        )
-        assert {case.text_model for case in original_cases} == {"bytes", "str"}
-        assert {case.text_model for case in bucket_cases} == {"str"}
-        assert tuple(case.case_id for case in bucket_cases) == expected_case_ids
-
-
-def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes_rows(
-) -> None:
-    follow_on_fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    preserved_fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT
-        / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
-    )
-    follow_on_bundle, preserved_bundle = load_published_fixture_bundles(
-        (follow_on_fixture_path, preserved_fixture_path)
-    )
-
-    compile_cases, module_cases, pattern_cases = (
-        partition_direct_bytes_follow_on_case_buckets(
-            (follow_on_bundle, preserved_bundle),
-            (follow_on_bundle,),
-        )
-    )
-
-    for operation, bucket_cases in (
-        ("compile", compile_cases),
-        ("module_call", module_cases),
-        ("pattern_call", pattern_cases),
-    ):
-        expected_case_ids = tuple(
-            case.case_id
-            for case in fixture_cases_for_operation(
-                (follow_on_bundle, preserved_bundle),
-                operation,
-            )
-            if case.text_model != "bytes"
-            or case.manifest_id != follow_on_bundle.manifest.manifest_id
-        )
-        bucket_case_ids = {case.case_id for case in bucket_cases}
-        assert tuple(case.case_id for case in bucket_cases) == expected_case_ids
-        assert {
-            case.case_id
-            for case in preserved_bundle.cases
-            if case.operation == operation and case.text_model == "bytes"
-        }.issubset(bucket_case_ids)
-        assert {
-            case.case_id
-            for case in follow_on_bundle.cases
-            if case.operation == operation and case.text_model == "bytes"
-        }.isdisjoint(bucket_case_ids)
-
-
-def test_published_bytes_texts_by_pattern_separates_search_and_fullmatch_rows(
-) -> None:
-    fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
-    )
-    (bundle,) = load_published_fixture_bundles((fixture_path,))
-    compile_cases, module_cases, pattern_cases = (
-        partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
-    )
-    _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        bundle,
-        compile_cases=compile_cases,
-        module_cases=module_cases,
-        pattern_cases=pattern_cases,
-    )
-
-    assert published_bytes_texts_by_pattern(bundle_bytes_cases) == (
+    assert all(
         {
-            rb"a(b|c){1,}d": frozenset({b"zzabdzz", b"zzacdzz"}),
-            rb"a(?P<word>b|c){1,}d": frozenset({b"zzabdzz", b"zzacdzz"}),
-        },
-        {
-            rb"a(b|c){1,}d": frozenset(
-                {b"abcd", b"abccd", b"abcbcd", b"ad", b"abed"}
-            ),
-            rb"a(?P<word>b|c){1,}d": frozenset(
-                {b"abcd", b"abccd", b"abcbcd", b"ad", b"abed"}
-            ),
-        },
-    )
-
-
-def test_published_bytes_texts_by_pattern_deduplicates_texts_and_handles_compiled_module_rows(
-) -> None:
-    compile_case = SimpleNamespace(
-        operation="compile",
-        pattern="placeholder",
-        args=(),
-        pattern_payload=lambda: b"ignored-by-compile",
-    )
-    module_case = SimpleNamespace(
-        operation="module_call",
-        pattern="placeholder",
-        args=(b"shared-pattern", b"shared-text"),
-        pattern_payload=lambda: b"shared-pattern",
-        use_compiled_pattern=False,
-    )
-    compiled_module_case = SimpleNamespace(
-        operation="module_call",
-        pattern="placeholder",
-        args=(b"compiled-text",),
-        pattern_payload=lambda: b"shared-pattern",
-        use_compiled_pattern=True,
-    )
-    pattern_case = SimpleNamespace(
-        operation="pattern_call",
-        pattern="placeholder",
-        args=(b"fullmatch-text",),
-        pattern_payload=lambda: b"shared-pattern",
-    )
-
-    assert published_bytes_texts_by_pattern(
-        (
-            compile_case,
-            module_case,
-            module_case,
-            compiled_module_case,
-            compiled_module_case,
-            pattern_case,
-            pattern_case,
-        )
-    ) == (
-        {b"shared-pattern": frozenset({b"shared-text", b"compiled-text"})},
-        {b"shared-pattern": frozenset({b"fullmatch-text"})},
+            case.operation
+            for case in spec.bundle.cases
+            if case.text_model == "bytes"
+        }
+        == {"compile", "module_call", "pattern_call"}
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     )
 
 

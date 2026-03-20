@@ -1,8 +1,9 @@
 # RBR-0750: Collapse direct-bytes helper contract tests onto fixture support owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the generic direct-bytes follow-on helper contract coverage from `tests/python/test_open_ended_quantified_group_parity_suite.py` so that file keeps only open-ended-owner assertions, while the shared helper contracts live under the canonical support-contract owner in `tests/python/test_fixture_parity_support_contract.py`.
@@ -89,3 +90,9 @@ PY` reported the existing tail through `RBR-0749`, no reserved missing tail ids,
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_fixture_parity_support_contract.py` passed (`4131 passed in 2.84s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py -k 'direct_bytes_follow_on_bundle_routing or partition_direct_bytes_follow_on_case_buckets or mixed_text_model_manifest_helper or published_bytes_texts_by_pattern or direct_bytes_follow_on_case_surfaces_resolve_to_expected_published_mixed_fixtures'` passed (`22 passed, 3901 deselected in 0.23s`); and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because those generic helper-contract tests still live in the open-ended parity owner.
+
+## Completion
+- 2026-03-20: Removed the thirteen generic direct-bytes helper-contract tests from `tests/python/test_open_ended_quantified_group_parity_suite.py` and dropped its shared-contract-only imports of `load_published_fixture_bundles` and `assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing`.
+- Kept the open-ended owner focused on owner-local surface checks by rewriting its remaining mixed-text-model assertion to read `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` and the already-loaded `spec.bundle` data directly.
+- Moved the shared success and drift/error-path coverage for `assert_direct_bytes_follow_on_bundle_routing(...)`, `assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(...)`, `partition_direct_bytes_follow_on_case_buckets(...)`, and `published_bytes_texts_by_pattern(...)` into `tests/python/test_fixture_parity_support_contract.py` using canonical fixture paths under `CORRECTNESS_FIXTURES_ROOT` plus the existing synthetic row checks for deduplication and compiled-module handling.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_fixture_parity_support_contract.py` (`4125 passed in 2.96s`) and `bash -lc "! rg -n \"def test_assert_direct_bytes_follow_on_bundle_routing_|def test_mixed_text_model_manifest_helper_|def test_partition_direct_bytes_follow_on_case_buckets_|def test_published_bytes_texts_by_pattern_\" tests/python/test_open_ended_quantified_group_parity_suite.py"`.
