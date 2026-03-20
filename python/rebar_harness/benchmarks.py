@@ -1059,18 +1059,13 @@ def build_family_summary(workloads: list[dict[str, Any]], family: str) -> dict[s
         "notes": family_notes(family, family_workloads),
     }
 
-
-def _manifest_record_by_id(manifests: list[BenchmarkManifest]) -> dict[str, BenchmarkManifest]:
-    return {manifest.manifest_id: manifest for manifest in manifests}
-
-
 def build_manifest_summaries(
     *,
     manifests: list[BenchmarkManifest],
     workloads: list[dict[str, Any]],
     selection_mode: str,
 ) -> dict[str, dict[str, Any]]:
-    manifest_map = _manifest_record_by_id(manifests)
+    manifest_map = {manifest.manifest_id: manifest for manifest in manifests}
     summaries: dict[str, dict[str, Any]] = {}
 
     for manifest_id, manifest in manifest_map.items():
