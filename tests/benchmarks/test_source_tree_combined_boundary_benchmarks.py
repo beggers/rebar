@@ -7081,6 +7081,50 @@ def test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavaila
     assert implementation["native_wheel"] is None
 
 
+def test_run_benchmarks_rejects_smoke_only_selection_without_smoke_workloads(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-no-smoke-selection-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "compile-nonsmoke-contract",
+                "bucket": "compile",
+                "family": "parser",
+                "operation": "compile",
+                "pattern": "abc",
+                "notes": [
+                    "Keeps the manifest valid while intentionally omitting any smoke-tagged workloads."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_no_smoke_selection_contract.py",
+        manifest_source,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="no smoke-tagged workloads matched the selected benchmark manifests",
+    ):
+        benchmarks.run_benchmarks(
+            manifest_paths=[manifest_path],
+            report_path=None,
+            smoke_only=True,
+        )
+
+
 @pytest.mark.skipif(
     MATURIN is None,
     reason="built-native benchmark provenance smoke requires a maturin executable on PATH",
@@ -8386,6 +8430,61 @@ def test_standard_benchmark_manifest_measures_expected_exception_workloads(
     )
     assert implementation_probe["status"] == "measured"
     assert implementation_probe["median_ns"] > 0
+
+
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailable(
+    tmp_path: pathlib.Path,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-unsupported-operation-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "module-finditer-unsupported-operation-contract",
+                "bucket": "module-finditer",
+                "family": "module",
+                "operation": "module.finditer",
+                "pattern": "abc",
+                "haystack": "abcabc",
+                "notes": [
+                    "Ensures the internal benchmark probe reports unsupported workload operations as unavailable diagnostics instead of crashing."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_unsupported_operation_contract.py",
+        manifest_source,
+    )
+    (workload,) = load_manifest(manifest_path).workloads
+
+    assert run_internal_workload_probe(
+        workload_payload=json.dumps(workload_to_payload(workload), sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    ) == {
+        "adapter": adapter_name,
+        "status": "unavailable",
+        "reason": "ValueError: unsupported benchmark operation 'module.finditer'",
+    }
 
 
 def test_standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads(
