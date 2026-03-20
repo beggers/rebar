@@ -2899,6 +2899,12 @@ class _WarningModuleCallFailureModule:
         raise NotImplementedError("module helper todo")
 
 
+class _WarningModuleCallExceptionModule:
+    def search(self, pattern: str, string: str) -> object:
+        warnings.warn("module helper warning", RuntimeWarning)
+        raise TypeError("module helper failure")
+
+
 class _WarningCompileFailureModule:
     def __init__(self, *, message: str) -> None:
         self._message = message
@@ -2909,6 +2915,29 @@ class _WarningCompileFailureModule:
 
     def purge(self) -> None:
         return None
+
+
+class _WarningCompileExceptionModule:
+    def __init__(self, *, message: str) -> None:
+        self._message = message
+
+    def compile(self, pattern: str, flags: int = 0) -> object:
+        warnings.warn("compile warning", FutureWarning)
+        raise TypeError(self._message)
+
+    def purge(self) -> None:
+        return None
+
+
+class _WarningPatternCallFailurePattern:
+    def search(self, string: str) -> object:
+        warnings.warn("pattern helper warning", UserWarning)
+        raise ValueError("pattern helper failure")
+
+
+class _WarningPatternCallFailureModule:
+    def compile(self, pattern: str, flags: int = 0) -> object:
+        return _WarningPatternCallFailurePattern()
 
 
 PARSER_MANIFEST = _fixture_manifest(
@@ -3075,6 +3104,44 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                     },
                 )
 
+    def test_adapter_module_call_preserves_warning_payloads_for_generic_exceptions(
+        self,
+    ) -> None:
+        case = _adapter_contract_case(
+            case_id="adapter-module-call-exception-contract",
+            operation="module_call",
+            helper="search",
+            args=["abc", "zzabczz"],
+        )
+
+        for adapter_cls in (CpythonReAdapter, RebarAdapter):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                adapter = adapter_cls()
+                adapter.module = _WarningModuleCallExceptionModule()
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "module_call")
+                self.assertEqual(observation["outcome"], "exception")
+                self.assertEqual(
+                    observation["warnings"],
+                    [
+                        {
+                            "category": "RuntimeWarning",
+                            "message": "module helper warning",
+                        }
+                    ],
+                )
+                self.assertIsNone(observation["result"])
+                self.assertEqual(
+                    observation["exception"],
+                    {
+                        "type": "TypeError",
+                        "message": "module helper failure",
+                    },
+                )
+
     def test_adapter_compile_observation_preserves_warning_payloads_and_notimplemented_mapping(
         self,
     ) -> None:
@@ -3153,6 +3220,82 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                     {
                         "type": "NotImplementedError",
                         "message": "cache helper todo",
+                    },
+                )
+
+    def test_adapter_cache_workflow_preserves_warning_payloads_for_generic_exceptions(
+        self,
+    ) -> None:
+        case = _adapter_contract_case(
+            case_id="adapter-cache-workflow-exception-contract",
+            operation="cache_workflow",
+        )
+
+        for adapter_cls in (CpythonReAdapter, RebarAdapter):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                adapter = adapter_cls()
+                adapter.module = _WarningCompileExceptionModule(
+                    message="cache helper failure"
+                )
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "cache_workflow")
+                self.assertEqual(observation["outcome"], "exception")
+                self.assertEqual(
+                    observation["warnings"],
+                    [
+                        {
+                            "category": "FutureWarning",
+                            "message": "compile warning",
+                        }
+                    ],
+                )
+                self.assertIsNone(observation["result"])
+                self.assertEqual(
+                    observation["exception"],
+                    {
+                        "type": "TypeError",
+                        "message": "cache helper failure",
+                    },
+                )
+
+    def test_adapter_pattern_call_preserves_warning_payloads_for_generic_exceptions(
+        self,
+    ) -> None:
+        case = _adapter_contract_case(
+            case_id="adapter-pattern-call-exception-contract",
+            operation="pattern_call",
+            helper="search",
+            args=["zzabczz"],
+        )
+
+        for adapter_cls in (CpythonReAdapter, RebarAdapter):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                adapter = adapter_cls()
+                adapter.module = _WarningPatternCallFailureModule()
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "pattern_call")
+                self.assertEqual(observation["outcome"], "exception")
+                self.assertEqual(
+                    observation["warnings"],
+                    [
+                        {
+                            "category": "UserWarning",
+                            "message": "pattern helper warning",
+                        }
+                    ],
+                )
+                self.assertIsNone(observation["result"])
+                self.assertEqual(
+                    observation["exception"],
+                    {
+                        "type": "ValueError",
+                        "message": "pattern helper failure",
                     },
                 )
 
