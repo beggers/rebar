@@ -64,6 +64,7 @@ class QuantifiedAlternationBytesCaseExpectation:
 
 @dataclass(frozen=True)
 class QuantifiedAlternationDirectBytesFollowOnSpec:
+    follow_on_id: str
     bundle: FixtureBundle
     cases: tuple[SupplementalCase, ...]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
@@ -712,6 +713,7 @@ QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES = (
 )
 DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        follow_on_id="bounded",
         bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -751,6 +753,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        follow_on_id="broader-range",
         bundle=QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -790,6 +793,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        follow_on_id="conditional",
         bundle=QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -829,6 +833,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        follow_on_id="open-ended",
         bundle=QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -868,6 +873,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        follow_on_id="nested-branch",
         bundle=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -907,6 +913,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        follow_on_id="backtracking-heavy",
         bundle=BACKTRACKING_HEAVY_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -954,18 +961,6 @@ def _flatten_direct_bytes_follow_on_surfaces() -> tuple[SupplementalCase, ...]:
     )
 
 
-def _direct_bytes_follow_on_surface_id(bundle: FixtureBundle) -> str:
-    manifest_id = bundle.manifest.manifest_id.removesuffix("-workflows")
-    if manifest_id == "quantified-alternation":
-        return "bounded"
-    prefix = "quantified-alternation-"
-    if not manifest_id.startswith(prefix):
-        raise AssertionError(
-            f"unexpected quantified alternation follow-on manifest {manifest_id!r}"
-        )
-    return manifest_id.removeprefix(prefix)
-
-
 # Keep the shared manifest contract honest, but route the published bytes slice
 # through one explicit follow-on anchor so the generic shared buckets stay
 # focused on the currently supported `str` cases.
@@ -984,7 +979,7 @@ def _quantified_alternation_direct_test_case_id_buckets() -> dict[str, frozenset
         "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
         "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
         **{
-            f"{_direct_bytes_follow_on_surface_id(spec.bundle)}-bytes-follow-on": frozenset(
+            f"{spec.follow_on_id}-bytes-follow-on": frozenset(
                 case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
             )
             for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
@@ -1328,12 +1323,9 @@ def test_quantified_alternation_direct_test_case_id_buckets_cover_selected_front
     )
 
 
-def test_direct_bytes_follow_on_surface_ids_stay_manifest_derived() -> None:
+def test_direct_bytes_follow_on_case_surfaces_keep_expected_ids() -> None:
     assert tuple(
-        (
-            _direct_bytes_follow_on_surface_id(spec.bundle),
-            spec.bundle.manifest.manifest_id,
-        )
+        (spec.follow_on_id, spec.bundle.manifest.manifest_id)
         for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     ) == (
         ("bounded", "quantified-alternation-workflows"),
@@ -1348,7 +1340,7 @@ def test_direct_bytes_follow_on_surface_ids_stay_manifest_derived() -> None:
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=lambda spec: _direct_bytes_follow_on_surface_id(spec.bundle),
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: QuantifiedAlternationDirectBytesFollowOnSpec,
@@ -1371,7 +1363,7 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=lambda spec: _direct_bytes_follow_on_surface_id(spec.bundle),
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: QuantifiedAlternationDirectBytesFollowOnSpec,
