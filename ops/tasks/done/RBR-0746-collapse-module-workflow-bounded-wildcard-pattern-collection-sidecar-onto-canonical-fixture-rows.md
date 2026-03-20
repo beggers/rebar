@@ -1,8 +1,9 @@
 # RBR-0746: Collapse module-workflow bounded-wildcard pattern-collection sidecar onto canonical fixture rows
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES` table from `tests/python/test_module_workflow_parity_suite.py` now that the exact same bounded-wildcard bound-`Pattern` collection rows are already published in `tests/conformance/fixtures/module_workflow_surface.py`.
@@ -90,8 +91,13 @@ PY` reported the existing tail through `RBR-0745`, no reserved missing tail ids,
 - This cleanup is newly unblocked by the landed bounded-wildcard publication work on the same owner path:
   - `RBR-0745` published `workflow-pattern-findall-str-bounded-wildcard` and `workflow-pattern-finditer-str-bounded-wildcard` onto `tests/conformance/fixtures/module_workflow_surface.py`; and
   - the exact collection-row probe in Acceptance already passes in the current checkout (`ok`), so the remaining local pattern-collection table is now a redundant owner-local mirror.
-- The duplicated owner layer is concrete and bounded in the current checkout:
-  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` currently passes (`653 passed, 1 skipped in 0.51s`);
-  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard and pattern_collection_helpers'` currently passes (`4 passed, 650 deselected in 0.10s`);
-  - the canonical-row probe in Acceptance already passes in the current checkout (`ok`); and
-  - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because `BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES`, `BoundedWildcardPatternCase`, and `_call_bounded_wildcard_pattern_helper` still exist.
+- The duplicated owner layer was concrete and bounded when this task was created:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`653 passed, 1 skipped in 0.51s`);
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard and pattern_collection_helpers'` passed (`4 passed, 650 deselected in 0.10s`);
+  - the canonical-row probe in Acceptance already passed (`ok`); and
+  - the final `rg` absence check in Acceptance failed exactly on this cleanup because `BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES`, `BoundedWildcardPatternCase`, and `_call_bounded_wildcard_pattern_helper` still existed.
+
+## Completion
+- 2026-03-20: Removed the local `BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES` sidecar plus the now-unused `BoundedWildcardPatternCase` dataclass and `_call_bounded_wildcard_pattern_helper` helper from `tests/python/test_module_workflow_parity_suite.py`.
+- Rewired `test_bounded_wildcard_pattern_collection_helpers_match_cpython` to parametrize over canonical `FixtureCase` rows derived from `MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS` and `PATTERN_CASES_BY_ID`, keeping the published row order and payloads at `workflow-pattern-findall-str-bounded-wildcard` then `workflow-pattern-finditer-str-bounded-wildcard`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`, the task-local canonical-row probe from Acceptance (`ok`), and `bash -lc "! rg -n 'BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES|BoundedWildcardPatternCase|_call_bounded_wildcard_pattern_helper' tests/python/test_module_workflow_parity_suite.py"`.

@@ -374,6 +374,14 @@ def _published_bounded_wildcard_pattern_match_cases() -> tuple[FixtureCase, ...]
         if case.helper in {"search", "match", "fullmatch"}
     )
 
+
+def _published_bounded_wildcard_pattern_collection_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in _published_bounded_wildcard_pattern_cases()
+        if case.helper in {"findall", "finditer"}
+    )
+
 # Keep the public-surface coverage on the module workflow owner file.
 PUBLIC_API_CASE_IDS = (
     "helper-compile-present",
@@ -726,17 +734,6 @@ class CollectionTypeErrorCase:
 
 
 @dataclass(frozen=True)
-class BoundedWildcardPatternCase:
-    case_id: str
-    helper: str
-    pattern: str
-    string: str
-    flags: int = 0
-    pos: int = 0
-    endpos: int | None = None
-
-
-@dataclass(frozen=True)
 class BoundedWildcardModuleCase:
     case_id: str
     helper: str
@@ -898,18 +895,6 @@ def _assert_literal_match_helper_result_matches_cpython(
             f"{backend_name} {context} {helper} mismatch for "
             f"pattern={pattern!r}, string={string!r}{window_suffix}"
         ) from exc
-
-
-def _call_bounded_wildcard_pattern_helper(
-    pattern: object,
-    case: BoundedWildcardPatternCase,
-) -> object:
-    args: list[object] = [case.string]
-    if case.pos or case.endpos is not None:
-        args.append(case.pos)
-        if case.endpos is not None:
-            args.append(case.endpos)
-    return getattr(pattern, case.helper)(*args)
 
 
 def _evaluate_bounded_wildcard_module_case(
@@ -1209,24 +1194,6 @@ PATTERN_FINDITER_COLLECTION_CASES = tuple(
         "abc",
         "zabz",
         (1, 4),
-    ),
-)
-BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES = (
-    BoundedWildcardPatternCase(
-        case_id="pattern-findall-bounded-default",
-        helper="findall",
-        pattern="a.c",
-        string="zabcaxcz",
-        pos=1,
-        endpos=7,
-    ),
-    BoundedWildcardPatternCase(
-        case_id="pattern-finditer-bounded-default",
-        helper="finditer",
-        pattern="a.c",
-        string="zabcaxcx",
-        pos=1,
-        endpos=7,
     ),
 )
 BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
@@ -4062,23 +4029,23 @@ def test_bounded_wildcard_pattern_match_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES,
+    _published_bounded_wildcard_pattern_collection_cases(),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_pattern_collection_helpers_match_cpython(
     regex_backend: tuple[str, object],
-    case: BoundedWildcardPatternCase,
+    case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern, expected_pattern = compile_with_cpython_parity(
         backend_name,
         backend,
-        case.pattern,
-        case.flags,
+        case_pattern(case),
+        case.flags or 0,
     )
 
-    observed = _call_bounded_wildcard_pattern_helper(observed_pattern, case)
-    expected = _call_bounded_wildcard_pattern_helper(expected_pattern, case)
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
     if case.helper == "finditer":
         assert_finditer_parity(backend_name, observed, expected)
