@@ -175,10 +175,6 @@ def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
 
 
-def _fixture_case_ids(cases: tuple[FixtureCase, ...]) -> tuple[str, ...]:
-    return tuple(case.case_id for case in cases)
-
-
 def _fixture_cases_for_helpers(
     bundle: FixtureBundle,
     helpers: frozenset[str],
@@ -1004,13 +1000,6 @@ _REPLACEMENT_FRONTIER_HELPERS = frozenset({"sub", "subn"})
 PUBLISHED_COLLECTION_FIXTURE_CASES = _fixture_cases_for_helpers(
     COLLECTION_REPLACEMENT_BUNDLE,
     _COLLECTION_FRONTIER_HELPERS,
-)
-PUBLISHED_COLLECTION_CASE_IDS = _fixture_case_ids(PUBLISHED_COLLECTION_FIXTURE_CASES)
-PUBLISHED_REPLACEMENT_CASE_IDS = _fixture_case_ids(
-    _fixture_cases_for_helpers(
-        COLLECTION_REPLACEMENT_BUNDLE,
-        _REPLACEMENT_FRONTIER_HELPERS,
-    )
 )
 PUBLISHED_COLLECTION_MODULE_CASES = tuple(
     _module_collection_case_from_fixture(case)
@@ -4832,8 +4821,16 @@ def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() ->
 def test_literal_collection_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         COLLECTION_REPLACEMENT_BUNDLE,
-        selected_case_ids=PUBLISHED_COLLECTION_CASE_IDS,
-        expected_uncovered_case_ids=PUBLISHED_REPLACEMENT_CASE_IDS,
+        selected_case_ids=tuple(
+            case.case_id for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+        ),
+        expected_uncovered_case_ids=tuple(
+            case.case_id
+            for case in _fixture_cases_for_helpers(
+                COLLECTION_REPLACEMENT_BUNDLE,
+                _REPLACEMENT_FRONTIER_HELPERS,
+            )
+        ),
     )
 
 
@@ -4871,7 +4868,9 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
                 if case.helper == "finditer"
             ),
         },
-        selected_case_ids=PUBLISHED_COLLECTION_CASE_IDS,
+        selected_case_ids=tuple(
+            case.case_id for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+        ),
         coverage_label="literal collection direct-test case-id buckets",
     )
 
