@@ -603,6 +603,14 @@ class CollectionTypeErrorCase:
 
 
 @dataclass(frozen=True)
+class BoundPatternTypeErrorCase:
+    case_id: str
+    helper: str
+    pattern: str | bytes
+    args: tuple[object, ...]
+
+
+@dataclass(frozen=True)
 class BoundedWildcardModuleCase:
     case_id: str
     helper: str
@@ -677,6 +685,13 @@ def _invoke_collection_helper(
     if case.helper == "finditer":
         return list(result)
     return result
+
+
+def _invoke_bound_pattern_helper(
+    pattern: object,
+    case: BoundPatternTypeErrorCase,
+) -> object:
+    return getattr(pattern, case.helper)(*case.args)
 
 
 _LITERAL_COLLECTION_MATRIX_ALPHABET = "ab"
@@ -1162,6 +1177,44 @@ COLLECTION_TYPE_ERROR_CASES = (
         pattern=b"abc",
         string="abc",
         compiled=True,
+    ),
+)
+BOUND_PATTERN_TYPE_ERROR_CASES = (
+    BoundPatternTypeErrorCase(
+        case_id="pattern-search-str-pattern-on-bytes-string",
+        helper="search",
+        pattern="abc",
+        args=(b"abc",),
+    ),
+    BoundPatternTypeErrorCase(
+        case_id="pattern-match-bytes-pattern-on-str-string",
+        helper="match",
+        pattern=b"abc",
+        args=("abc",),
+    ),
+    BoundPatternTypeErrorCase(
+        case_id="pattern-fullmatch-str-pattern-on-bytes-string",
+        helper="fullmatch",
+        pattern="abc",
+        args=(b"abc",),
+    ),
+    BoundPatternTypeErrorCase(
+        case_id="pattern-split-str-pattern-on-bytes-string",
+        helper="split",
+        pattern="abc",
+        args=(b"zabczz",),
+    ),
+    BoundPatternTypeErrorCase(
+        case_id="pattern-sub-str-pattern-on-bytes-string",
+        helper="sub",
+        pattern="abc",
+        args=("x", b"zabczz"),
+    ),
+    BoundPatternTypeErrorCase(
+        case_id="pattern-subn-bytes-pattern-on-str-string",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", "zabczz"),
     ),
 )
 COLLECTION_UNSUPPORTED_CASES = (
@@ -4983,6 +5036,35 @@ def test_collection_helper_type_errors_match_cpython(
         _invoke_collection_helper(backend, case)
 
     assert str(observed_error.value) == str(expected_error.value)
+
+
+@pytest.mark.parametrize(
+    "case",
+    BOUND_PATTERN_TYPE_ERROR_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_bound_pattern_helper_type_errors_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundPatternTypeErrorCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
+
+    observed_error = _capture_error(
+        lambda: _invoke_bound_pattern_helper(observed_pattern, case)
+    )
+    expected_error = _capture_error(
+        lambda: _invoke_bound_pattern_helper(expected_pattern, case)
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
 
 
 @pytest.mark.parametrize(("operation", "message"), COLLECTION_UNSUPPORTED_CASES)
