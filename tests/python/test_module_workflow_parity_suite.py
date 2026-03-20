@@ -539,6 +539,30 @@ EXPLICIT_ESCAPE_BYTES_CASES = (
     (b" \t\n\r\x0b\x0c", b"\\ \\\t\\\n\\\r\\\x0b\\\x0c"),
     (b"a-b", b"a\\-b"),
 )
+ESCAPE_DIFFERENTIAL_STR_CORPUS = tuple(chr(codepoint) for codepoint in range(128)) + (
+    "cafe",
+    "café",
+    "Straße",
+    "😀",
+    "😀+?",
+    "a\x00b",
+    "line1\nline2",
+    "tab\tspace ",
+    "[a-z]{2,4}",
+    r"\0foo",
+    "é-😀[]",
+)
+ESCAPE_DIFFERENTIAL_BYTES_CORPUS = tuple(
+    bytes([value]) for value in range(256)
+) + (
+    b"\x00foo",
+    b"[a-z]{2,4}",
+    b"foo\\bar",
+    bytes(range(16)),
+    bytes(range(240, 256)),
+    b" \t\n\r\x0b\x0c",
+    b"\xff-\x80[]",
+)
 
 
 @dataclass(frozen=True)
@@ -3952,6 +3976,32 @@ def test_escape_accepts_cpython_compatible_input_shapes(
 
     assert type(observed) is type(expected)
     assert observed == expected
+
+
+def test_escape_matches_cpython_across_deterministic_str_corpus(
+    regex_backend: tuple[str, object],
+) -> None:
+    _, backend = regex_backend
+
+    for raw in ESCAPE_DIFFERENTIAL_STR_CORPUS:
+        observed = backend.escape(raw)
+        expected = re.escape(raw)
+
+        assert type(observed) is type(expected)
+        assert observed == expected, repr(raw)
+
+
+def test_escape_matches_cpython_across_deterministic_bytes_corpus(
+    regex_backend: tuple[str, object],
+) -> None:
+    _, backend = regex_backend
+
+    for raw in ESCAPE_DIFFERENTIAL_BYTES_CORPUS:
+        observed = backend.escape(raw)
+        expected = re.escape(raw)
+
+        assert type(observed) is type(expected)
+        assert observed == expected, repr(raw)
 
 
 @pytest.mark.parametrize(
