@@ -320,12 +320,18 @@ def _fixture_cases_for_text_model(
     )
 
 
-def _module_keyword_kwargs_signature(
+def _workflow_keyword_kwargs_signature(
     kwargs: dict[str, object],
 ) -> tuple[tuple[str, str, object], ...]:
     signature: list[tuple[str, str, object]] = []
     for name, value in sorted(kwargs.items()):
-        if hasattr(value, "__index__") and not isinstance(value, bool):
+        if isinstance(value, bool):
+            signature.append((name, "bool", value))
+            continue
+        if isinstance(value, int):
+            signature.append((name, "int", int(value)))
+            continue
+        if hasattr(value, "__index__"):
             signature.append((name, "indexlike", int(value.__index__())))
             continue
         signature.append((name, type(value).__name__, repr(value)))
@@ -2625,7 +2631,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
             case.helper,
             pattern,
             tuple(args),
-            _module_keyword_kwargs_signature(case.kwargs),
+            _workflow_keyword_kwargs_signature(case.kwargs),
             "bytes" if isinstance(pattern, bytes) else "str",
         )
 
@@ -2638,7 +2644,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
                 case.helper,
                 case_pattern(case),
                 tuple(case.args),
-                _module_keyword_kwargs_signature(case.kwargs),
+                _workflow_keyword_kwargs_signature(case.kwargs),
                 case.text_model,
             )
         ]
@@ -2724,9 +2730,9 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         )
         assert case_pattern(fixture_case) == direct_pattern
         assert tuple(fixture_case.args) == tuple(direct_args)
-        assert _module_keyword_kwargs_signature(
+        assert _workflow_keyword_kwargs_signature(
             fixture_case.kwargs
-        ) == _module_keyword_kwargs_signature(direct_case.kwargs)
+        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
         assert fixture_case.flags == 0
 
 
@@ -2740,7 +2746,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
             case.helper,
             pattern,
             tuple(args),
-            _module_keyword_kwargs_signature(case.kwargs),
+            _workflow_keyword_kwargs_signature(case.kwargs),
             "bytes" if isinstance(pattern, bytes) else "str",
         )
 
@@ -2753,7 +2759,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
                 case.helper,
                 case_pattern(case),
                 tuple(case.args),
-                _module_keyword_kwargs_signature(case.kwargs),
+                _workflow_keyword_kwargs_signature(case.kwargs),
                 case.text_model,
             )
         ]
@@ -2809,30 +2815,22 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         assert fixture_case.text_model == "str"
         assert case_pattern(fixture_case) == direct_pattern
         assert tuple(fixture_case.args) == tuple(direct_args)
-        assert _module_keyword_kwargs_signature(
+        assert _workflow_keyword_kwargs_signature(
             fixture_case.kwargs
-        ) == _module_keyword_kwargs_signature(direct_case.kwargs)
+        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
         assert fixture_case.flags == 0
 
 
 def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
 ) -> None:
-    def kwargs_signature(
-        kwargs: dict[str, object],
-    ) -> tuple[tuple[str, str, str], ...]:
-        return tuple(
-            (name, type(value).__name__, repr(value))
-            for name, value in sorted(kwargs.items())
-        )
-
     def direct_signature(
         case: PatternKeywordCallCase,
-    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, str], ...], str]:
+    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
         return (
             case.helper,
             case.pattern,
             tuple(case.args),
-            kwargs_signature(case.kwargs),
+            _workflow_keyword_kwargs_signature(case.kwargs),
             "bytes" if isinstance(case.pattern, bytes) else "str",
         )
 
@@ -2845,7 +2843,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
                 case.helper,
                 case_pattern(case),
                 tuple(case.args),
-                kwargs_signature(case.kwargs),
+                _workflow_keyword_kwargs_signature(case.kwargs),
                 case.text_model,
             )
         ]
@@ -2953,7 +2951,9 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         )
         assert case_pattern(fixture_case) == direct_case.pattern
         assert tuple(fixture_case.args) == direct_case.args
-        assert kwargs_signature(fixture_case.kwargs) == kwargs_signature(direct_case.kwargs)
+        assert _workflow_keyword_kwargs_signature(
+            fixture_case.kwargs
+        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
         assert fixture_case.flags == 0
 
 
@@ -3223,6 +3223,41 @@ def test_unsupported_backend_skip_reason_rejects_multiple_param_sources() -> Non
         match="multiple parametrized values declare unsupported_backends",
     ):
         _unsupported_backend_skip_reason(request, "rebar")
+
+
+def test_workflow_keyword_kwargs_signature_distinguishes_bool_int_and_indexlike() -> None:
+    assert _workflow_keyword_kwargs_signature(
+        {
+            "bool_value": True,
+            "index_value": _INDEX_ONE,
+            "int_value": 1,
+        }
+    ) == (
+        ("bool_value", "bool", True),
+        ("index_value", "indexlike", 1),
+        ("int_value", "int", 1),
+    )
+    assert _workflow_keyword_kwargs_signature({"pos": 1}) != (
+        _workflow_keyword_kwargs_signature({"pos": _INDEX_ONE})
+    )
+
+
+def test_workflow_keyword_kwargs_signature_normalizes_indexlike_carriers_by_value() -> None:
+    class _AlternateIndexLike:
+        __slots__ = ("value",)
+
+        def __init__(self, value: int) -> None:
+            self.value = value
+
+        def __index__(self) -> int:
+            return self.value
+
+        def __repr__(self) -> str:
+            return f"AlternateIndexLike({self.value})"
+
+    assert _workflow_keyword_kwargs_signature({"endpos": _INDEX_FOUR}) == (
+        _workflow_keyword_kwargs_signature({"endpos": _AlternateIndexLike(4)})
+    )
 
 
 def test_purge_regex_caches_calls_both_backends_before_and_after_test(
