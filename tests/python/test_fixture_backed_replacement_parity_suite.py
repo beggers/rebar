@@ -14,6 +14,7 @@ from rebar_harness.correctness import (
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
     CpythonReAdapter,
     FixtureCase,
+    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
     RebarAdapter,
     evaluate_case,
     select_correctness_fixture_paths,
@@ -84,6 +85,11 @@ NO_MATCH_TEXT_CANDIDATES = (
 )
 CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS = select_correctness_fixture_paths(
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR
+)
+OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS = (
+    select_correctness_fixture_paths(
+        OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR
+    )
 )
 GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID = "grouped-replacement-template"
 GROUPED_TEMPLATE_CALLABLE_CASE_ID = "module-sub-callable-str"
@@ -1319,6 +1325,9 @@ REPLACEMENT_SURFACE_SPECS = (
             "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
             NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows",
+        ),
+        selector_fixture_paths=(
+            OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS
         ),
         supplemental_no_match_cases=OPEN_ENDED_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=OPEN_ENDED_SUPPLEMENTAL_REPEATED_CASES,
