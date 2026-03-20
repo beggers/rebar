@@ -300,6 +300,10 @@ PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
         "workflow-pattern-finditer-bytes-bool-window-keyword",
         "workflow-pattern-split-str-maxsplit-keyword",
         "workflow-pattern-split-str-maxsplit-indexlike",
+        "workflow-pattern-sub-count-keyword-bytes",
+        "workflow-pattern-sub-count-indexlike-bytes",
+        "workflow-pattern-subn-count-keyword-str",
+        "workflow-pattern-subn-count-indexlike-str",
     }
 )
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
@@ -2303,11 +2307,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 83
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 87
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 54, "bytes": 29}
+        {"str": 56, "bytes": 31}
     )
-    assert len(PATTERN_CASES) == 38
+    assert len(PATTERN_CASES) == 42
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 14,
@@ -2316,6 +2320,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "findall": 4,
             "finditer": 4,
             "split": 2,
+            "sub": 2,
+            "subn": 2,
         }
     )
     assert len(MODULE_CALL_CASES) == 33
@@ -2867,6 +2873,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-findall-str-bool-window-keyword",
         "workflow-pattern-split-str-maxsplit-keyword",
         "workflow-pattern-split-str-maxsplit-indexlike",
+        "workflow-pattern-subn-count-keyword-str",
+        "workflow-pattern-subn-count-indexlike-str",
     )
     assert tuple(
         case.case_id
@@ -2882,6 +2890,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-finditer-bytes-window-keyword",
         "workflow-pattern-finditer-bytes-window-indexlike",
         "workflow-pattern-finditer-bytes-bool-window-keyword",
+        "workflow-pattern-sub-count-keyword-bytes",
+        "workflow-pattern-sub-count-indexlike-bytes",
     )
     assert tuple(
         case.case_id for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
@@ -2903,6 +2913,10 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-finditer-bytes-bool-window-keyword",
         "workflow-pattern-split-str-maxsplit-keyword",
         "workflow-pattern-split-str-maxsplit-indexlike",
+        "workflow-pattern-sub-count-keyword-bytes",
+        "workflow-pattern-sub-count-indexlike-bytes",
+        "workflow-pattern-subn-count-keyword-str",
+        "workflow-pattern-subn-count-indexlike-str",
     )
     assert tuple(
         case.case_id for case in selected_direct_cases
@@ -2924,6 +2938,10 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "pattern-finditer-bool-window-keyword-bytes",
         "pattern-split-maxsplit-keyword-str",
         "pattern-split-maxsplit-indexlike-str",
+        "pattern-sub-count-keyword-bytes",
+        "pattern-sub-count-indexlike-bytes",
+        "pattern-subn-count-keyword-str",
+        "pattern-subn-count-indexlike-str",
     )
     assert len(selected_direct_cases) == len(PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES)
     assert Counter(case.helper for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES) == (
@@ -2935,6 +2953,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
                 "findall": 3,
                 "finditer": 3,
                 "split": 2,
+                "sub": 2,
+                "subn": 2,
             }
         )
     )

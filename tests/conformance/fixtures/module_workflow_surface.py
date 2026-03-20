@@ -752,6 +752,90 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-sub-count-keyword-bytes",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "bytes"],
+      "notes": [
+        "Publishes the representative bound Pattern.sub count= keyword workflow on bytes payloads without widening into __index__ or Pattern.subn keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-sub-count-indexlike-bytes",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabcabc"
+        }
+      ],
+      "kwargs": {
+        "count": _INDEX_TWO
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "indexlike", "bytes"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.sub count=__index__ workflow on bytes payloads without widening into the remaining Pattern replacement keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-count-keyword-str",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "str"],
+      "notes": [
+        "Publishes the representative bound Pattern.subn count= keyword workflow on str payloads without widening into __index__ neighbors beyond this quartet."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-count-indexlike-str",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "abcabcabc"],
+      "kwargs": {
+        "count": _INDEX_TWO
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "indexlike", "str"],
+      "notes": [
+        "Publishes the adjacent bound Pattern.subn count=__index__ workflow on str payloads without widening into compiled-pattern module keyword rows."
+      ]
+    },
+    {
       "id": "workflow-cache-hit-str",
       "operation": "cache_workflow",
       "family": "cache_workflow",

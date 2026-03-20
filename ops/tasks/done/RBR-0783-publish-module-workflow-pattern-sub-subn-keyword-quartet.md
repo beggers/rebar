@@ -1,6 +1,6 @@
 # RBR-0783: Publish the module-workflow `Pattern.sub` / `Pattern.subn` keyword quartet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -105,3 +105,8 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed the four new workflow ids are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - the current owner path already publishes the adjacent `Pattern.split(maxsplit=...)` keyword pair, leaving this `Pattern.sub` / `Pattern.subn` quartet as the smallest unpublished neighbor on the same owner file; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added the four published `Pattern.sub` / `Pattern.subn` keyword rows on the existing `module_workflow_surface.py` owner path and extended the shared parity assertions to cover the resulting 87-row / 42-pattern-call frontier.
+- Regenerated `reports/correctness/latest.py`; the tracked combined scorecard now reads `1457` total / `1457` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `87/87`, `module.workflow.str` at `56/56`, `module.workflow.bytes` at `31/31`, `module.workflow.pattern_call` at `42/42`, and `module.workflow.module_call` unchanged at `33/33`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0783-module-workflow-pattern-sub-subn-keyword-quartet.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
