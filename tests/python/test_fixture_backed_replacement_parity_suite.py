@@ -160,11 +160,6 @@ GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     rb"a((b|c){1,4})\2d",
     rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
 )
-OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_BUNDLE_MANIFEST_IDS = (
-    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
-    NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
-    NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID,
-)
 DIRECT_LITERAL_MODULE_REPLACEMENT_CASES = [
     pytest.param("abc", "x", "zzz", 0, id="str-no-match"),
     pytest.param("abc", "x", "zabczz", 0, id="str-single-match"),
@@ -889,26 +884,6 @@ def _cases_for_manifest_ids(
     )
 
 
-def _bundles_in_manifest_order(
-    bundles: tuple[FixtureBundle, ...],
-    manifest_ids: tuple[str, ...],
-) -> tuple[FixtureBundle, ...]:
-    loaded_manifest_ids = frozenset(
-        bundle.expected_manifest_id for bundle in bundles
-    )
-    expected_manifest_ids = frozenset(manifest_ids)
-    if loaded_manifest_ids != expected_manifest_ids:
-        raise ValueError(
-            "bundle manifest ids drifted: "
-            f"{tuple(sorted(loaded_manifest_ids))!r} != "
-            f"{tuple(sorted(expected_manifest_ids))!r}"
-        )
-    return tuple(
-        published_fixture_bundle_by_manifest_id(bundles, manifest_id)
-        for manifest_id in manifest_ids
-    )
-
-
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     bundles = (
         load_fixture_bundles(spec.bundle_specs)
@@ -919,9 +894,19 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
         )
     )
     if spec.id == OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID:
-        bundles = _bundles_in_manifest_order(
-            bundles,
-            OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_BUNDLE_MANIFEST_IDS,
+        loaded_manifest_ids = frozenset(
+            bundle.expected_manifest_id for bundle in bundles
+        )
+        expected_manifest_ids = frozenset(spec.template_expand_manifest_ids)
+        if loaded_manifest_ids != expected_manifest_ids:
+            raise ValueError(
+                "bundle manifest ids drifted: "
+                f"{tuple(sorted(loaded_manifest_ids))!r} != "
+                f"{tuple(sorted(expected_manifest_ids))!r}"
+            )
+        bundles = tuple(
+            published_fixture_bundle_by_manifest_id(bundles, manifest_id)
+            for manifest_id in spec.template_expand_manifest_ids
         )
     published_replacement_cases = tuple(
         case for bundle in bundles for case in bundle.cases
