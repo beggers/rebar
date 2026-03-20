@@ -71,7 +71,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID = (
     "nested-broader-range-open-ended-quantified-group-alternation-"
     "branch-local-backreference-conditional-replacement-workflows"
 )
-KNOWN_UNCOVERED_PUBLISHED_FIXTURE_FILENAMES: tuple[str, ...] = ()
 NO_MATCH_TEXT_CANDIDATES = (
     "zzz",
     "",
@@ -1584,9 +1583,6 @@ REPLACEMENT_SURFACE_SPECS = (
             "conditional-group-exists-replacement-template-workflows",
         ),
         selector_fixture_paths=CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS,
-        known_uncovered_published_fixture_filenames=(
-            KNOWN_UNCOVERED_PUBLISHED_FIXTURE_FILENAMES
-        ),
         discover_no_match_on_all_replacement_cases=True,
         no_match_text_candidates=NO_MATCH_TEXT_CANDIDATES,
         supplemental_repeated_cases=CONDITIONAL_SUPPLEMENTAL_REPEATED_CASES,
@@ -1685,31 +1681,6 @@ SUPPLEMENTAL_REPEATED_CASE_PARAMS = tuple(
 SUPPLEMENTAL_NEGATIVE_COUNT_CASE_PARAMS = tuple(
     pytest.param(case, id=case.id) for case in SUPPLEMENTAL_NEGATIVE_COUNT_CASES
 )
-PENDING_REBAR_REPLACEMENT_CASE_IDS = frozenset(
-    case.case_id
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.replacement_cases
-    if "rebar" in _replacement_parity_case(case).unsupported_backends
-)
-PENDING_REBAR_REPLACEMENT_MANIFEST_IDS = frozenset(
-    case.manifest_id
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.replacement_cases
-    if "rebar" in _replacement_parity_case(case).unsupported_backends
-)
-
-
-def _live_unimplemented_replacement_cases() -> tuple[FixtureCase, ...]:
-    cpython_adapter = CpythonReAdapter()
-    rebar_adapter = RebarAdapter()
-
-    return tuple(
-        case
-        for surface in REPLACEMENT_SURFACES
-        for case in surface.replacement_cases
-        if evaluate_case(case, cpython_adapter, rebar_adapter)["comparison"]
-        == "unimplemented"
-    )
 
 
 def _is_pending_bytes_follow_on_case(
@@ -1950,15 +1921,18 @@ def test_replacement_direct_test_buckets_cover_selected_frontier(
     )
 
 
-def test_pending_rebar_replacement_frontier_matches_live_unimplemented_cases() -> None:
-    live_unimplemented_cases = _live_unimplemented_replacement_cases()
+def test_replacement_frontier_has_no_live_unimplemented_cases() -> None:
+    cpython_adapter = CpythonReAdapter()
+    rebar_adapter = RebarAdapter()
+    live_unimplemented_case_ids = tuple(
+        case.case_id
+        for surface in REPLACEMENT_SURFACES
+        for case in surface.replacement_cases
+        if evaluate_case(case, cpython_adapter, rebar_adapter)["comparison"]
+        == "unimplemented"
+    )
 
-    assert {case.case_id for case in live_unimplemented_cases} == (
-        PENDING_REBAR_REPLACEMENT_CASE_IDS
-    ) == frozenset()
-    assert {case.manifest_id for case in live_unimplemented_cases} == (
-        PENDING_REBAR_REPLACEMENT_MANIFEST_IDS
-    ) == frozenset()
+    assert live_unimplemented_case_ids == ()
 
 
 def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surface(
