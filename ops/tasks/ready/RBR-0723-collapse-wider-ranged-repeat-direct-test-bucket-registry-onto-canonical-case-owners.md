@@ -1,6 +1,6 @@
 # RBR-0723: Collapse wider-ranged-repeat direct-test bucket registry onto canonical case owners
 
-Status: done
+Status: ready
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -73,47 +73,15 @@ PY`
 - Keep this cleanup limited to the wider-ranged-repeat parity owner. Do not use this run to rewrite shared helper APIs, move fixtures between manifests, or add another abstraction layer.
 
 ## Notes
-- `RBR-0723` is the next available architecture-task id in the current checkout:
-  - `python3 - <<'PY'
-import pathlib, re
-existing = set()
-for base in ['ops/tasks/ready', 'ops/tasks/in_progress', 'ops/tasks/done', 'ops/tasks/blocked']:
-    for path in pathlib.Path(base).glob('RBR-*.md'):
-        m = re.match(r'(RBR-\\d+[A-Z]?)', path.name)
-        if m:
-            existing.add(m.group(1))
-text = '\\n'.join(
-    pathlib.Path(p).read_text(encoding='utf-8')
-    for p in ['ops/state/backlog.md', 'ops/state/current_status.md']
-)
-reserved = set(re.findall(r'RBR-\\d+[A-Z]?', text)) - existing
-existing_sorted = sorted(existing, key=lambda s: (int(re.search(r'\\d+', s).group()), s))
-reserved_sorted = sorted(reserved, key=lambda s: (int(re.search(r'\\d+', s).group()), s))
-print('highest_existing_tail', existing_sorted[-10:])
-print('reserved_tail', reserved_sorted[-20:])
-for n in range(int(re.search(r'\\d+', existing_sorted[-1]).group()), int(re.search(r'\\d+', existing_sorted[-1]).group()) + 30):
-    rid = f'RBR-{n:04d}'
-    if rid not in existing and rid not in reserved:
-        print('next_free', rid)
-        break
-PY` reported the existing tail through `RBR-0722`, no reserved missing tail ids, and `next_free RBR-0723`.
-- No blocked architecture task exists to reopen first, and the current runtime state does not trigger rule 10:
-  - `ops/tasks/blocked/` is empty;
-  - `.rebar/runtime/dashboard.md` is aligned with `HEAD` (`1f2ce342c0f237d76d496397ae3cbb184291692a`), reports `Dirty worktree: false`, `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, and `Last Cycle Anomalies: none`; and
-  - the latest recorded cycle shows both task workers finishing `done`, so there is no inherited-dirty checkpoint churn or stalled post-task refresh path to yield to.
-- JSON burn-down is complete in both tracked and live views, so this run can spend its slot on post-JSON structural cleanup:
+- 2026-03-20: Requeued from `ops/tasks/done/` after direct inspection showed the earlier completion note was stale. The live checkout still defines `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` at [tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py](/home/ubuntu/rebar/tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py#L673) and still passes that registry into the selected-frontier coverage test at [tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py](/home/ubuntu/rebar/tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py#L903).
+- No blocked architecture task exists to reopen first, the live queue is empty, and the runtime state does not trigger rule 10:
+  - `ops/tasks/blocked/` is empty; and
+  - `.rebar/runtime/dashboard.md` is aligned with `HEAD` (`47afd43509064f7f5ca8e81d798b89a0c9a4da1e`), reports `Dirty worktree: false`, `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, and `Last Cycle Anomalies: none`.
+- JSON burn-down is complete in both tracked and live views:
   - `git ls-files '*.json' | wc -l` returned `0`; and
   - `rg --files -g '*.json' | wc -l` returned `0`.
-- The detached direct-test bucket registry is concrete and bounded in the current checkout:
+- The acceptance commands still isolate exactly this missing cleanup in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` passes (`1341 passed in 0.97s`);
-  - the derived-bucket probe in Acceptance already passes in the current checkout (`ok`);
-  - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` is still defined once and read once in this file; and
-  - `rg -n 'WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS|DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES|assert_direct_test_case_id_buckets_cover_selected_frontier' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` shows the detached registry is only declared once and only fed to the selected-frontier coverage test in this file.
-- This simplification stays on the same bounded post-JSON parity-harness cleanup track as the most recent architecture work:
-  - `ops/tasks/done/RBR-0709-collapse-wider-ranged-repeat-direct-bytes-follow-on-sidecars.md` already retired the mirrored direct-bytes sidecars from this same owner file; and
-  - `ops/tasks/done/RBR-0719-collapse-branch-local-direct-test-bucket-sidecar-onto-canonical-case-owners.md` plus `ops/tasks/done/RBR-0721-collapse-quantified-alternation-direct-test-bucket-registry-onto-canonical-case-owners.md` already removed the same style of detached direct-test bucket owner layer from adjacent parity suites.
-
-## Completion Notes
-- 2026-03-20: Replaced `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` with the file-local `_wider_ranged_repeat_direct_test_case_id_buckets()` helper, derived directly from `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` so the detached registry is gone while bucket ordering and bytes-follow-on routing stay unchanged.
-- 2026-03-20: Updated `test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_selected_frontier` to call the derived helper instead of reading a top-level mirrored bucket map.
-- 2026-03-20: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1341 passed in 0.98s`), the acceptance derived-bucket probe (`ok`), and `bash -lc "! rg -n 'WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"`.
+  - the derived-bucket probe in Acceptance already passes (`ok`); and
+  - `bash -lc "! rg -n 'WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"` still fails exactly because the registry remains defined and read in that file.
+- This cleanup stays on the same bounded post-JSON parity-harness simplification track as the adjacent landed work in `RBR-0709`, `RBR-0719`, and `RBR-0721`; do not mint a sibling task id for the same registry removal.
