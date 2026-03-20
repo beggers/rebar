@@ -1,8 +1,9 @@
 # RBR-0785: Collapse conditional replacement bundle-spec sidecars onto canonical selector bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the ten whole-manifest `FixtureBundleSpec(...)` entries from the `conditional-group-exists-replacement` surface in `tests/python/test_fixture_backed_replacement_parity_suite.py`; that block currently duplicates manifest ownership, case ordering, expected pattern sets, operation/helper counts, and str-only text-model expectations that the shared published-bundle loader can already derive from the owner manifests.
@@ -111,3 +112,8 @@ PY`
   - `ops/tasks/done/RBR-0778-collapse-open-ended-quantified-group-bundle-spec-sidecars-onto-owner-manifests.md`
   - `ops/tasks/done/RBR-0780-collapse-quantified-alternation-bundle-spec-sidecars-onto-owner-manifests.md`
   - `ops/tasks/done/RBR-0782-collapse-remaining-owner-manifest-loader-wrappers-onto-canonical-bundle-loads.md`
+
+## Completion Note
+- Removed the conditional replacement surface's ten mirrored full-manifest `FixtureBundleSpec(...)` sidecars, leaving `CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS` as the only ownership list for that surface.
+- Updated `_load_surface()` to fall back to `load_published_fixture_bundles(...)` when a surface does not declare bundle specs, so the conditional replacement bundles now derive manifest ids, case ordering, expected patterns, operation/helper counts, and `{"str"}` text-model contracts directly from the published owner manifests while keeping the downstream surface partitions and supplemental coverage unchanged.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`1152 passed in 0.89s`), the owner-bundle acceptance probe (`ok`), and the structural probe proving the `conditional-group-exists-replacement` block no longer contains `FixtureBundleSpec(` (`ok`).
