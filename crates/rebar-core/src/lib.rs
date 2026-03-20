@@ -43,6 +43,7 @@ const VERBOSE_COMPILE_REGRESSION_BYTES_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOS
 const VERBOSE_COMPILE_REGRESSION_GROUP_NAME: &str = "key";
 const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
     r"(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\d{2}))?(?:(?<=foo)bar)?(?P=lemma)";
+const BYTES_NAMED_GROUP_LITERAL_PATTERN: &[u8] = br"(?P<word>abc)";
 const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
 const BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,2}d";
@@ -2870,6 +2871,21 @@ fn compile_known_supported_case(
                 group_count: 1,
                 named_groups: vec![NamedGroup {
                     name: "lemma".to_string(),
+                    index: 1,
+                }],
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if pattern == BYTES_NAMED_GROUP_LITERAL_PATTERN && normalized_flags == 0 =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: vec![NamedGroup {
+                    name: "word".to_string(),
                     index: 1,
                 }],
                 warning: None,

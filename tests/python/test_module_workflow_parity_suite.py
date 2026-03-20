@@ -1472,6 +1472,10 @@ COMPILED_PATTERN_COMPILE_CASES = (
         case_id="compiled-pattern-compile-str-named-group",
         pattern=r"(?P<word>abc)",
     ),
+    CompiledPatternCompileCase(
+        case_id="compiled-pattern-compile-bytes-named-group",
+        pattern=rb"(?P<word>abc)",
+    ),
 )
 MODULE_KEYWORD_CALL_CASES = (
     ModuleKeywordCallCase(

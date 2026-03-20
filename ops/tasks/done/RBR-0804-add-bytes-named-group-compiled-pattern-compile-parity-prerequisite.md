@@ -1,6 +1,6 @@
 # RBR-0804: Add bytes named-group compiled-pattern compile parity prerequisite
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -50,3 +50,12 @@ Created: 2026-03-20
   - the tracked status history already records the supervisor direction to keep new compatibility work behind the Rust/native boundary instead of deepening Python-only shim behavior;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` plus the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need additional backlog/current-status edits.
+
+## Completion
+- 2026-03-20: Added the bounded native compile classification for `rb"(?P<word>abc)"` in `crates/rebar-core/src/lib.rs`, so `rebar.compile(rb"(?P<word>abc)")` now returns a compiled `Pattern` with `flags == 0`, `groups == 1`, and `groupindex == {"word": 1}` through the existing CPython boundary.
+- 2026-03-20: Extended `COMPILED_PATTERN_COMPILE_CASES` in `tests/python/test_module_workflow_parity_suite.py` by exactly one direct case, `compiled-pattern-compile-bytes-named-group`, and kept it on the shared zero-flag and nonzero-flag compiled-pattern parametrizations.
+- 2026-03-20: No published correctness fixture, combined scorecard, or benchmark artifact changed in this scoped prerequisite run; `reports/correctness/latest.py` was not regenerated.
+- 2026-03-20: Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython tests/python/test_module_workflow_parity_suite.py::test_compile_rejects_nonzero_flags_for_compiled_patterns_like_cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`
