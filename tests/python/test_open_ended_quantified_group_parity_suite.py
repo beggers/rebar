@@ -12,6 +12,7 @@ from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    BoundedPatternCase,
     FixtureBundle,
     FixtureBundleSpec,
     NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -64,15 +65,6 @@ class OpenEndedTraceCase:
     pattern: str | bytes
     search_text: str | bytes
     fullmatch_text: str | bytes
-
-
-@dataclass(frozen=True)
-class BoundedPatternCase:
-    id: str
-    pattern: str | bytes
-    helper: str
-    string: str | bytes
-    bounds: tuple[int, int]
 
 
 FIXTURE_BUNDLE_SPECS = (

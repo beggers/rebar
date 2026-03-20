@@ -9,6 +9,7 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    BoundedPatternCase,
     FixtureBundle,
     FixtureBundleSpec,
     SupplementalCase,
@@ -63,15 +64,6 @@ class BacktrackingTraceCase:
     pattern: str
     search_text: str
     fullmatch_text: str
-
-
-@dataclass(frozen=True)
-class BoundedPatternCase:
-    id: str
-    pattern: str | bytes
-    helper: str
-    string: str | bytes
-    bounds: tuple[int, int]
 
 FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(

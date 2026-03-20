@@ -151,6 +151,15 @@ class RecordingNativeBoundary:
 
 
 @dataclass(frozen=True)
+class BoundedPatternCase:
+    id: str
+    pattern: str | bytes
+    helper: str
+    string: str | bytes
+    bounds: tuple[int, int]
+
+
+@dataclass(frozen=True)
 class FixtureBundle:
     manifest: FixtureManifest
     cases: tuple[FixtureCase, ...]
