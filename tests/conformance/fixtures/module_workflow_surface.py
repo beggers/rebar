@@ -144,6 +144,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-findall-str-bounded-wildcard",
+      "operation": "pattern_call",
+      "family": "bound_findall_workflow",
+      "pattern": "a.c",
+      "helper": "findall",
+      "args": ["zabcaxcz", 1, 7],
+      "categories": ["workflow", "findall", "wildcard", "bounded", "str"],
+      "notes": [
+        "Publishes the exact bound Pattern.findall workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-finditer-str-bounded-wildcard",
+      "operation": "pattern_call",
+      "family": "bound_finditer_workflow",
+      "pattern": "a.c",
+      "helper": "finditer",
+      "args": ["zabcaxcx", 1, 7],
+      "categories": ["workflow", "finditer", "wildcard", "bounded", "str"],
+      "notes": [
+        "Publishes the exact bound Pattern.finditer workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
       "id": "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
       "operation": "pattern_call",
       "family": "bound_search_workflow",

@@ -1,8 +1,9 @@
 # RBR-0745: Publish the module-workflow bounded wildcard pattern collection pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the `module-workflow-surface` correctness frontier with the next exact bounded-wildcard bound-`Pattern` collection-helper pair, so the existing owner path keeps publishing already-landed Rust-backed `a.c` behavior before returning to module-helper or compiled-pattern helper catch-up.
@@ -52,3 +53,9 @@ Created: 2026-03-20
   - direct runtime probes in this run confirmed that `rebar.compile("a.c").findall("zabcaxcz", 1, 7)` and `list(rebar.compile("a.c").finditer("zabcaxcx", 1, 7))` already match CPython on result payloads and spans;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard and collection_helpers'` passed in this run; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added `workflow-pattern-findall-str-bounded-wildcard` and `workflow-pattern-finditer-str-bounded-wildcard` to `tests/conformance/fixtures/module_workflow_surface.py`, pinned to the existing `pattern-findall-bounded-default` and `pattern-finditer-bounded-default` anchors on the shared `BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES` owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared `module-workflow-surface` expectations now publish `41` rows total, with `pattern_call` helper counts of `search == 9`, `match == 2`, `fullmatch == 8`, `findall == 1`, and `finditer == 1`, while keeping the same compile, cache, purge, module-call, and escape buckets. The match-only compiled-pattern parity parametrizations were narrowed to match helpers so the new collection rows stay on the existing dedicated collection-helper coverage.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated `reports/correctness/latest.py`. Reading the tracked report artifact shows `1411` total / `1411` passed / `0` `unimplemented` across `114` manifests, with `module-workflow-surface` at `41` / `41` / `0`, `module.workflow` at `41` / `41` / `0`, `module.workflow.str` at `26` / `26` / `0`, and `module.workflow.pattern_call` at `21` / `21` / `0`; both new bounded-wildcard bound-`Pattern` collection rows are present in the tracked scorecard with `comparison == "pass"`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0745-module-workflow-bounded-wildcard-pattern-collection-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `41` total / `41` passed / `0` `unimplemented`.

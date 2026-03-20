@@ -163,6 +163,8 @@ MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS = (
     "workflow-pattern-search-str-bounded-wildcard-ignorecase",
     "workflow-pattern-match-str-bounded-wildcard",
     "workflow-pattern-fullmatch-str-bounded-wildcard",
+    "workflow-pattern-findall-str-bounded-wildcard",
+    "workflow-pattern-finditer-str-bounded-wildcard",
     "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
 )
 MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
@@ -224,6 +226,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "search"): 9,
         ("pattern_call", "match"): 2,
         ("pattern_call", "fullmatch"): 8,
+        ("pattern_call", "findall"): 1,
+        ("pattern_call", "finditer"): 1,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
         ("module_call", "search"): 2,
@@ -294,6 +298,11 @@ MULTILINE_BYTES_COMPILE_CASE_ID = "workflow-compile-bytes-multiline-regression"
     case for case in COMPILE_CASES if case.case_id == MULTILINE_BYTES_COMPILE_CASE_ID
 )
 PATTERN_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "pattern_call")
+MATCH_HELPER_PATTERN_CASES = tuple(
+    case
+    for case in PATTERN_CASES
+    if case.helper in {"search", "match", "fullmatch"}
+)
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
@@ -355,6 +364,14 @@ def _published_bounded_wildcard_pattern_cases() -> tuple[FixtureCase, ...]:
     return tuple(
         PATTERN_CASES_BY_ID[case_id]
         for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS
+    )
+
+
+def _published_bounded_wildcard_pattern_match_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in _published_bounded_wildcard_pattern_cases()
+        if case.helper in {"search", "match", "fullmatch"}
     )
 
 # Keep the public-surface coverage on the module workflow owner file.
@@ -2317,6 +2334,20 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             0,
         ),
         (
+            "workflow-pattern-findall-str-bounded-wildcard",
+            "findall",
+            "a.c",
+            ("zabcaxcz", 1, 7),
+            0,
+        ),
+        (
+            "workflow-pattern-finditer-str-bounded-wildcard",
+            "finditer",
+            "a.c",
+            ("zabcaxcx", 1, 7),
+            0,
+        ),
+        (
             "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
             "search",
             "a.c",
@@ -2928,7 +2959,11 @@ def test_verbose_compile_purge_workflow_contract_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    MATCH_HELPER_PATTERN_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_compiled_pattern_workflows_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -4023,7 +4058,7 @@ def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() ->
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_pattern_cases(),
+    _published_bounded_wildcard_pattern_match_cases(),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_pattern_match_helpers_match_cpython(
