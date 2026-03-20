@@ -1,8 +1,9 @@
 # RBR-0764: Collapse module-workflow compile-only sidecars onto canonical compile partition
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining compile-only selection sidecars from `tests/python/test_module_workflow_parity_suite.py`; `MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS`, `MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS`, and `MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS` currently mirror the already-loaded `COMPILE_CASES` partition exactly, and `test_module_workflow_surface_compile_case_selection_preserves_row_order` re-loads the same `module_workflow_surface.py` rows through a one-off `FixtureBundleSpec(...)`.
@@ -115,3 +116,9 @@ PY` reported the existing tail through `RBR-0763`, no reserved missing tail ids,
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`665 passed, 1 skipped in 0.52s`);
   - the task-local compile-partition probe from Acceptance passed (`ok`);
   - `bash -lc "! rg -n '^(MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS|MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS|MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS) =' tests/python/test_module_workflow_parity_suite.py"` currently fails exactly on this cleanup because those three sidecars still exist.
+
+## Completion
+- 2026-03-20: Removed `MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS`, `MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS`, and `MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS` from `tests/python/test_module_workflow_parity_suite.py`.
+- Reworked `test_module_workflow_surface_compile_case_selection_preserves_row_order` to derive the compile-only contract directly from `COMPILE_CASES` and `MODULE_WORKFLOW_BUNDLE.manifest.cases` instead of re-loading a compile-only `FixtureBundleSpec(...)`.
+- Kept the remaining subset selectors unchanged, including `MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS`, `MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS`, `COLLECTION_TARGET_FIXTURE_CASE_IDS`, and `COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`665 passed, 1 skipped in 0.75s`), the task-local compile-partition probe from Acceptance (`ok`), and `bash -lc "! rg -n '^(MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS|MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS|MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS) =' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches).

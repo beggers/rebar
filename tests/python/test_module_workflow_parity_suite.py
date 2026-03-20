@@ -458,24 +458,6 @@ EXPLICIT_ESCAPE_BYTES_CASES = (
     (b" \t\n\r\x0b\x0c", b"\\ \\\t\\\n\\\r\\\x0b\\\x0c"),
     (b"a-b", b"a\\-b"),
 )
-MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS = (
-    "workflow-compile-str-literal",
-    "workflow-compile-str-anchored-literal",
-    *MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS,
-    VERBOSE_COMPILE_CASE_ID,
-    MULTILINE_COMPILE_CASE_ID,
-    VERBOSE_BYTES_COMPILE_CASE_ID,
-    MULTILINE_BYTES_COMPILE_CASE_ID,
-    "workflow-compile-bytes-literal",
-)
-MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS = frozenset(
-    case_pattern(case)
-    for case in COMPILE_CASES
-    if case.case_id in MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS
-)
-MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS = Counter(
-    {("compile", None): len(MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS)}
-)
 
 
 @dataclass(frozen=True)
@@ -2685,28 +2667,32 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
 
 
 def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:
-    (bundle,) = load_fixture_bundles(
-        (
-            FixtureBundleSpec(
-                fixture_name=MODULE_WORKFLOW_FIXTURE_PATH.name,
-                expected_manifest_id="module-workflow-surface",
-                selected_case_ids=MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS,
-                expected_patterns=MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS,
-                expected_operation_helper_counts=MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS,
-                expected_text_models=frozenset({"bytes", "str"}),
-            ),
-        )
+    manifest_compile_cases = tuple(
+        case
+        for case in MODULE_WORKFLOW_BUNDLE.manifest.cases
+        if case.operation == "compile"
     )
+    expected_compile_case_ids = tuple(case.case_id for case in COMPILE_CASES)
+    expected_compile_patterns = frozenset(case_pattern(case) for case in COMPILE_CASES)
+    expected_operation_helper_counts = Counter(
+        (case.operation, case.helper) for case in COMPILE_CASES
+    )
+    expected_text_models = frozenset(case.text_model for case in COMPILE_CASES)
 
-    assert_fixture_bundle_contract(
-        bundle,
-        pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
-        expected_ordered_case_ids=MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS,
+    assert tuple(case.case_id for case in manifest_compile_cases) == expected_compile_case_ids
+    assert (
+        frozenset(case_pattern(case) for case in manifest_compile_cases)
+        == expected_compile_patterns
     )
-    assert tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), "compile")
-    ) == MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS
+    assert (
+        Counter((case.operation, case.helper) for case in manifest_compile_cases)
+        == expected_operation_helper_counts
+    )
+    assert expected_operation_helper_counts == Counter(
+        {("compile", None): len(COMPILE_CASES)}
+    )
+    assert frozenset(case.text_model for case in manifest_compile_cases) == expected_text_models
+    assert expected_text_models == frozenset({"bytes", "str"})
 
 
 def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> None:
