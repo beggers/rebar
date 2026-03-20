@@ -34,8 +34,6 @@ GROUPED_MATCH_TRACKED_CASE_IDS = (
     "grouped-module-fullmatch-two-capture-gap-str",
     "grouped-pattern-fullmatch-two-capture-gap-str",
 )
-GROUPED_MATCH_BUNDLE_CASE_IDS = GROUPED_MATCH_TRACKED_CASE_IDS
-GROUPED_MATCH_UNCOVERED_CASE_IDS = ()
 NAMED_GROUP_CASE_IDS = (
     "named-group-compile-metadata-str",
     "named-group-module-search-metadata-str",
@@ -150,7 +148,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         fixture_name="grouped_match_workflows.py",
         expected_manifest_id="grouped-match-workflows",
-        selected_case_ids=GROUPED_MATCH_BUNDLE_CASE_IDS,
+        selected_case_ids=GROUPED_MATCH_TRACKED_CASE_IDS,
         expected_patterns=frozenset({r"(abc)", r"(ab)(c)"}),
         expected_operation_helper_counts=Counter(
             {
@@ -377,13 +375,12 @@ def _ordered_manifest_cases_from_bundles(
 
 
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-DIRECT_PARITY_CASES = PUBLISHED_CASES
-COMPILE_CASES = _compile_cases(DIRECT_PARITY_CASES)
+COMPILE_CASES = _compile_cases(PUBLISHED_CASES)
 MODULE_CASES = tuple(
-    case for case in DIRECT_PARITY_CASES if case.operation == "module_call"
+    case for case in PUBLISHED_CASES if case.operation == "module_call"
 )
 PATTERN_CASES = tuple(
-    case for case in DIRECT_PARITY_CASES if case.operation == "pattern_call"
+    case for case in PUBLISHED_CASES if case.operation == "pattern_call"
 )
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 assert len(CASES_BY_ID) == len(PUBLISHED_CASES)
@@ -637,10 +634,7 @@ def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[
     )
 
     selected_case_ids = GROUPED_MATCH_TRACKED_CASE_IDS[-2:]
-    uncovered_case_ids = (
-        *GROUPED_MATCH_TRACKED_CASE_IDS[:-2],
-        *GROUPED_MATCH_UNCOVERED_CASE_IDS,
-    )
+    uncovered_case_ids = GROUPED_MATCH_TRACKED_CASE_IDS[:-2]
 
     assert tuple(case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.manifest.cases) == (
         *uncovered_case_ids,
@@ -792,17 +786,9 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -
 
 def test_grouped_capture_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
-        manifest_id = bundle.expected_manifest_id
-        if manifest_id == "grouped-match-workflows":
-            selected_case_ids = GROUPED_MATCH_TRACKED_CASE_IDS
-            expected_uncovered_case_ids = GROUPED_MATCH_UNCOVERED_CASE_IDS
-        else:
-            selected_case_ids = tuple(case.case_id for case in bundle.cases)
-            expected_uncovered_case_ids = ()
         assert_fixture_bundle_tracks_published_case_frontier(
             bundle,
-            selected_case_ids=selected_case_ids,
-            expected_uncovered_case_ids=expected_uncovered_case_ids,
+            selected_case_ids=tuple(case.case_id for case in bundle.cases),
         )
 
 
