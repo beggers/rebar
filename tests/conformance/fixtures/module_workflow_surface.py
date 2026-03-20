@@ -107,6 +107,31 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-search-str-bounded-wildcard-ignorecase",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "a.c",
+      "flags": 2,
+      "helper": "search",
+      "args": ["zaBczz", 1, 5],
+      "categories": ["workflow", "search", "wildcard", "bounded", "ignorecase", "str"],
+      "notes": [
+        "Publishes the exact bound Pattern.search IGNORECASE workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-match-str-bounded-wildcard",
+      "operation": "pattern_call",
+      "family": "bound_match_workflow",
+      "pattern": "a.c",
+      "helper": "match",
+      "args": ["zabcaxc", 1, 4],
+      "categories": ["workflow", "match", "wildcard", "bounded", "str"],
+      "notes": [
+        "Publishes the exact bound Pattern.match workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
       "id": "workflow-pattern-search-str-verbose-regression",
       "operation": "pattern_call",
       "family": "bound_search_workflow",

@@ -159,6 +159,10 @@ MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS = (
     "workflow-compile-str-bounded-wildcard",
     "workflow-compile-str-bounded-wildcard-ignorecase",
 )
+MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS = (
+    "workflow-pattern-search-str-bounded-wildcard-ignorecase",
+    "workflow-pattern-match-str-bounded-wildcard",
+)
 MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
@@ -168,6 +172,7 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-bytes-verbose-regression",
     "workflow-compile-bytes-multiline-regression",
     "workflow-compile-bytes-literal",
+    *MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS,
     "workflow-pattern-search-str-verbose-regression",
     "workflow-pattern-search-str-verbose-regression-digits",
     "workflow-pattern-search-str-verbose-regression-too-many-digits",
@@ -214,8 +219,8 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 9,
-        ("pattern_call", "search"): 7,
-        ("pattern_call", "match"): 1,
+        ("pattern_call", "search"): 8,
+        ("pattern_call", "match"): 2,
         ("pattern_call", "fullmatch"): 7,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
@@ -2183,6 +2188,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         MULTILINE_BYTES_COMPILE_CASE_ID,
     } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
     assert {
+        *MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS,
         "workflow-pattern-search-str-verbose-regression",
         "workflow-pattern-search-str-verbose-regression-digits",
         "workflow-pattern-search-str-verbose-regression-too-many-digits",
@@ -2210,6 +2216,25 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         assert fixture_case.text_model == "str"
         assert case_pattern(fixture_case) == direct_case.pattern
         assert fixture_case.flags == direct_case.flags
+
+    for fixture_case_id, direct_case in zip(
+        MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS,
+        BOUNDED_WILDCARD_PATTERN_MATCH_CASES[
+            : len(MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS)
+        ],
+    ):
+        fixture_case = pattern_cases_by_id[fixture_case_id]
+        expected_args: list[object] = [direct_case.string]
+        if direct_case.pos or direct_case.endpos is not None:
+            expected_args.append(direct_case.pos)
+            if direct_case.endpos is not None:
+                expected_args.append(direct_case.endpos)
+
+        assert fixture_case.text_model == "str"
+        assert fixture_case.helper == direct_case.helper
+        assert case_pattern(fixture_case) == direct_case.pattern
+        assert fixture_case.flags == direct_case.flags
+        assert tuple(fixture_case.args) == tuple(expected_args)
 
     assert pattern_cases_by_id["workflow-pattern-search-str-verbose-regression-digits"].helper == (
         verbose_cases_by_id["search-multiline-middle-line-digits"].helper

@@ -86,6 +86,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-compile-str-anchored-literal",
             "workflow-compile-str-bounded-wildcard",
             "workflow-compile-str-bounded-wildcard-ignorecase",
+            "workflow-pattern-search-str-bounded-wildcard-ignorecase",
+            "workflow-pattern-match-str-bounded-wildcard",
             "workflow-compile-str-verbose-regression",
             "workflow-compile-str-multiline-regression",
             "workflow-compile-bytes-verbose-regression",

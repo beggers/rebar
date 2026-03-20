@@ -1,6 +1,6 @@
 # RBR-0428: Publish the module-workflow bounded wildcard pattern-helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -52,3 +52,9 @@ Created: 2026-03-20
   - a targeted parity run in this run passed for the bounded-wildcard direct tests and helper parametrizations: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard and (compile_metadata or pattern_match_helpers or pattern_collection_helpers or direct_workflow)'`;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes only the bounded-wildcard compile pair for `a.c`, plus no bounded-wildcard `pattern_call` rows at all, leaving this bound-helper pair as the next bounded adjacent publication on the same owner path; and
   - `ops/state/backlog.md` and `ops/state/current_status.md` already honestly say that no ready feature follow-on survives behind the active bounded-wildcard publication slice, so no tracked state prose needed refresh for this one-task refill.
+
+## Completion
+- Added `workflow-pattern-search-str-bounded-wildcard-ignorecase` and `workflow-pattern-match-str-bounded-wildcard` to `tests/conformance/fixtures/module_workflow_surface.py` and kept them aligned to the shared `BOUNDED_WILDCARD_PATTERN_MATCH_CASES` owner-path anchors in `tests/python/test_module_workflow_parity_suite.py`.
+- Updated the shared module-workflow fixture inventories and helper-count expectations so the owner path now publishes 37 rows total with 8 bound `search` rows, 2 bound `match` rows, and 7 bound `fullmatch` rows, and extended the combined scorecard representative-case list so both bounded-wildcard helper rows are sampled from the tracked report.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0428-module-workflow-bounded-wildcard-pattern-helper-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Tracked `reports/correctness/latest.py` now publishes 1407 total / 1407 passed / 0 unimplemented across 114 manifests; `module.workflow` is 37 / 37 / 0 and `module.workflow.str` is 22 / 22 / 0.
