@@ -3702,6 +3702,52 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
 class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
     maxDiff = None
 
+    def _assert_mixed_text_manifests_cover_both_representative_text_models(
+        self,
+        *,
+        suite_id: str,
+        expectation_table: object,
+    ) -> None:
+        manifests_by_id = {
+            manifest.manifest_id: manifest
+            for manifest in correctness.published_fixture_manifests()
+        }
+        mixed_text_manifest_ids: list[str] = []
+
+        for manifest_id, manifest_expectation in expectation_table.items():
+            manifest = manifests_by_id[manifest_id]
+            published_text_models = {case.text_model for case in manifest.cases}
+            if published_text_models != {"bytes", "str"}:
+                continue
+
+            mixed_text_manifest_ids.append(manifest_id)
+            representative_case_id_set = frozenset(
+                manifest_expectation.representative_case_ids
+            )
+            representative_text_models = {
+                case.text_model
+                for case in manifest.cases
+                if case.case_id in representative_case_id_set
+            }
+
+            with self.subTest(suite_id=suite_id, manifest_id=manifest_id):
+                self.assertEqual(
+                    representative_text_models,
+                    published_text_models,
+                    msg=(
+                        f"{suite_id} mixed-text manifest {manifest_id!r} "
+                        "representative cases should cover both text models; "
+                        f"expected {tuple(sorted(published_text_models))}, "
+                        f"got {tuple(sorted(representative_text_models))}"
+                    ),
+                )
+
+        self.assertNotEqual(
+            mixed_text_manifest_ids,
+            [],
+            msg=f"{suite_id} should retain at least one mixed-text manifest",
+        )
+
     def _assert_mixed_text_manifests_mirror_representative_bytes_rows(
         self,
         *,
@@ -3862,6 +3908,14 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 suite_id=suite_id,
                 expectation_table=expectation_table,
             )
+
+    def test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models(
+        self,
+    ) -> None:
+        self._assert_mixed_text_manifests_cover_both_representative_text_models(
+            suite_id="combined",
+            expectation_table=COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+        )
 
 
 if __name__ == "__main__":
