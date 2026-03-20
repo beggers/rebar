@@ -27,6 +27,7 @@ from tests.python.fixture_parity_support import (
     invoke_bounded_pattern_case,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
+    published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
     record_generated_match_failure,
     str_case_pattern,
@@ -1479,36 +1480,6 @@ def _assert_direct_bytes_follow_on_case_backend_gating(
     assert case.unsupported_backend_reason == expected_unsupported_backend_reason
 
 
-def _published_bytes_follow_on_texts_by_pattern(
-    bundle_bytes_cases: tuple[FixtureCase, ...],
-) -> tuple[dict[bytes, frozenset[bytes]], dict[bytes, frozenset[bytes]]]:
-    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
-    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
-
-    for case in bundle_bytes_cases:
-        pattern = case_pattern(case)
-        assert isinstance(pattern, bytes)
-        if case.operation == "module_call":
-            text = case.args[1]
-            assert isinstance(text, bytes)
-            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
-        elif case.operation == "pattern_call":
-            text = case.args[0]
-            assert isinstance(text, bytes)
-            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
-
-    return (
-        {
-            pattern: frozenset(texts)
-            for pattern, texts in published_module_texts_by_pattern.items()
-        },
-        {
-            pattern: frozenset(texts)
-            for pattern, texts in published_fullmatch_texts_by_pattern.items()
-        },
-    )
-
-
 def test_match_group_access_rows_remain_on_shared_backreference_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
@@ -1694,7 +1665,7 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     (
         published_module_texts_by_pattern,
         published_fullmatch_texts_by_pattern,
-    ) = _published_bytes_follow_on_texts_by_pattern(bundle_bytes_cases)
+    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
     assert (
         published_module_texts_by_pattern
         == spec.expected_module_search_texts_by_pattern
