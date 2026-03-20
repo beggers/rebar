@@ -184,6 +184,14 @@ def load_fixture_bundles(
             CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
         )
         loaded_cases = tuple(manifest.cases)
+        duplicate_loaded_case_ids = _duplicate_string_ids(
+            tuple(case.case_id for case in loaded_cases)
+        )
+        if duplicate_loaded_case_ids:
+            raise ValueError(
+                f"{spec.fixture_name} contains duplicate fixture case ids: "
+                f"{duplicate_loaded_case_ids}"
+            )
         if spec.selected_case_ids is None:
             bundle_cases = loaded_cases
         else:
@@ -476,6 +484,11 @@ def assert_fixture_bundle_contract(
     if expected_fixture_path is not None:
         assert bundle.manifest.path == expected_fixture_path
     assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    duplicate_case_ids = _duplicate_string_ids(tuple(case.case_id for case in bundle.cases))
+    assert not duplicate_case_ids, (
+        f"{bundle.expected_manifest_id} bundle contains duplicate case ids: "
+        f"{duplicate_case_ids}"
+    )
     if bundle.expected_case_ids is None:
         assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
     else:

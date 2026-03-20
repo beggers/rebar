@@ -285,6 +285,9 @@ BUNDLE_LOADER_CONTRACT_STR_FILENAME = "bundle_loader_contract_str.py"
 BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID = "bundle-loader-contract-str"
 BUNDLE_LOADER_CONTRACT_MIXED_FILENAME = "bundle_loader_contract_mixed.py"
 BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID = "bundle-loader-contract-mixed"
+BUNDLE_LOADER_CONTRACT_DUPLICATE_FILENAME = "bundle_loader_contract_duplicate.py"
+BUNDLE_LOADER_CONTRACT_DUPLICATE_MANIFEST_ID = "bundle-loader-contract-duplicate"
+BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID = "bundle-loader-contract-duplicate-case"
 
 
 def _write_bundle_loader_contract_fixture_modules(
@@ -367,6 +370,38 @@ def _write_bundle_loader_contract_fixture_modules(
     return str_path, mixed_path
 
 
+def _write_bundle_loader_contract_duplicate_fixture_module(
+    tmp_path: pathlib.Path,
+) -> pathlib.Path:
+    return _write_fixture_module(
+        tmp_path,
+        BUNDLE_LOADER_CONTRACT_DUPLICATE_FILENAME,
+        f"""
+        MANIFEST = {{
+            "schema_version": 1,
+            "manifest_id": "{BUNDLE_LOADER_CONTRACT_DUPLICATE_MANIFEST_ID}",
+            "layer": "module_workflow",
+            "suite_id": "bundle.loader.contract.duplicate",
+            "cases": [
+                {{
+                    "id": "{BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID}",
+                    "operation": "compile",
+                    "pattern": "abc",
+                    "text_model": "str",
+                }},
+                {{
+                    "id": "{BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID}",
+                    "operation": "module_call",
+                    "helper": "search",
+                    "pattern": "abc",
+                    "text_model": "str",
+                }},
+            ],
+        }}
+        """,
+    )
+
+
 def _bundle_loader_contract_str_spec() -> FixtureBundleSpec:
     return FixtureBundleSpec(
         BUNDLE_LOADER_CONTRACT_STR_FILENAME,
@@ -402,6 +437,20 @@ def _bundle_loader_contract_mixed_spec() -> FixtureBundleSpec:
             }
         ),
         expected_text_models=frozenset({"bytes", "str"}),
+    )
+
+
+def _bundle_loader_contract_duplicate_spec() -> FixtureBundleSpec:
+    return FixtureBundleSpec(
+        BUNDLE_LOADER_CONTRACT_DUPLICATE_FILENAME,
+        expected_manifest_id=BUNDLE_LOADER_CONTRACT_DUPLICATE_MANIFEST_ID,
+        expected_patterns=frozenset({"abc"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+            }
+        ),
     )
 
 
@@ -2677,6 +2726,36 @@ def test_assert_fixture_bundle_contract_rejects_contract_drift(
         )
 
 
+def test_assert_fixture_bundle_contract_rejects_duplicate_case_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
+    duplicate_case = str_bundle.cases[0]
+    duplicate_bundle = FixtureBundle(
+        manifest=str_bundle.manifest,
+        cases=(duplicate_case, duplicate_case),
+        expected_patterns=frozenset({str_case_pattern(duplicate_case)}),
+        expected_operation_helper_counts=Counter(
+            {(duplicate_case.operation, duplicate_case.helper): 2}
+        ),
+        expected_text_models=frozenset({duplicate_case.text_model}),
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            f"{duplicate_bundle.expected_manifest_id} bundle contains duplicate case ids: "
+            f"('{duplicate_case.case_id}',)"
+        ),
+    ):
+        assert_fixture_bundle_contract(
+            duplicate_bundle,
+            pattern_extractor=str_case_pattern,
+            expected_fixture_path=str_bundle.manifest.path,
+            expected_ordered_case_ids=(duplicate_case.case_id, duplicate_case.case_id),
+        )
+
+
 def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -3033,6 +3112,39 @@ def test_load_fixture_bundles_rejects_invalid_selected_case_ids(
                 ),
             ),
         )
+
+
+@pytest.mark.parametrize(
+    "selected_case_ids",
+    (
+        pytest.param(None, id="whole-manifest"),
+        pytest.param(
+            (BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID,),
+            id="selected-subset",
+        ),
+    ),
+)
+def test_load_fixture_bundles_rejects_duplicate_fixture_case_ids(
+    tmp_path: pathlib.Path,
+    selected_case_ids: tuple[str, ...] | None,
+) -> None:
+    _write_bundle_loader_contract_duplicate_fixture_module(tmp_path)
+    spec = _bundle_loader_contract_duplicate_spec()
+    if selected_case_ids is not None:
+        spec = replace(
+            spec,
+            selected_case_ids=selected_case_ids,
+            expected_case_ids=None,
+        )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"{BUNDLE_LOADER_CONTRACT_DUPLICATE_FILENAME} contains duplicate fixture case ids: "
+            f"('{BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID}',)"
+        ),
+    ):
+        _load_fixture_bundles_from_root(tmp_path, (spec,))
 
 
 @pytest.mark.parametrize(
