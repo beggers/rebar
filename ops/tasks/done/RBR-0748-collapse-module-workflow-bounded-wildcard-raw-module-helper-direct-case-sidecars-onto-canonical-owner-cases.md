@@ -1,8 +1,9 @@
 # RBR-0748: Collapse module-workflow bounded-wildcard raw module-helper direct-case sidecars onto canonical owner cases
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS` and `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES` tables from `tests/python/test_module_workflow_parity_suite.py` now that the same bounded-wildcard raw module-helper slice is already published in `tests/conformance/fixtures/module_workflow_surface.py` and still owned locally by `BOUNDED_WILDCARD_MODULE_MATCH_CASES`.
@@ -111,3 +112,8 @@ PY` reported the existing tail through `RBR-0747`, no reserved missing tail ids,
   - the direct-vs-fixture probe in Acceptance already passed in the current checkout (`ok`);
   - `rg -n 'PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS|PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES' tests/python/test_module_workflow_parity_suite.py` currently shows one declaration block plus the remaining alignment-test reads in this file; and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because those mirrored direct-case sidecars still exist.
+
+## Completion
+- 2026-03-20: Removed `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS` and `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES` from `tests/python/test_module_workflow_parity_suite.py`.
+- Reworked `test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_from_direct_cases` to select the matching owner-local raw helper cases directly from `BOUNDED_WILDCARD_MODULE_MATCH_CASES` using signatures derived from `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES`, preserving the existing `search` then `match` alignment and payloads without another mirrored sidecar block.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`, the task-local direct-vs-fixture probe from Acceptance (`ok`), and `bash -lc "! rg -n 'PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS|PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES' tests/python/test_module_workflow_parity_suite.py"`.

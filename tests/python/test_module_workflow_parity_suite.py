@@ -1250,15 +1250,6 @@ BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
         compiled=True,
     ),
 )
-PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS = (
-    "module-search-ignorecase-bounded-hit",
-    "module-match-bounded-miss",
-)
-PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES = tuple(
-    case
-    for case in BOUNDED_WILDCARD_MODULE_MATCH_CASES
-    if case.case_id in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS
-)
 BOUNDED_WILDCARD_MODULE_COLLECTION_CASES = (
     BoundedWildcardModuleCase(
         case_id="module-findall-bounded-default",
@@ -2446,23 +2437,44 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
 
 def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_from_direct_cases(
 ) -> None:
+    published_case_signatures = frozenset(
+        (
+            case.helper,
+            case_pattern(case),
+            tuple(case.args),
+            case.flags,
+            case.use_compiled_pattern,
+        )
+        for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+    )
+    selected_direct_cases = tuple(
+        case
+        for case in BOUNDED_WILDCARD_MODULE_MATCH_CASES
+        if (
+            case.helper,
+            case.pattern,
+            (case.string,),
+            case.flags,
+            case.compiled,
+        )
+        in published_case_signatures
+    )
+
     assert tuple(
         case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
     ) == PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS
-    assert tuple(
-        case.case_id
-        for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES
-    ) == PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS
+    assert len(selected_direct_cases) == len(
+        PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+    )
     assert tuple(
         case.helper for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
-    ) == tuple(
-        case.helper for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES
-    )
+    ) == tuple(case.helper for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(
         PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES,
-        PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES,
+        selected_direct_cases,
     ):
+        assert direct_case.compiled is False
         assert fixture_case.use_compiled_pattern is False
         assert fixture_case.text_model == "str"
         assert case_pattern(fixture_case) == direct_case.pattern
