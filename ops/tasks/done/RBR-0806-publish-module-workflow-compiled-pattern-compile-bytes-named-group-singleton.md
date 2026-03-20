@@ -1,6 +1,6 @@
 # RBR-0806: Publish the module-workflow compiled-pattern compile bytes named-group singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -64,3 +64,8 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed `workflow-module-compile-bytes-compiled-pattern-named-group` is still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` plus the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need additional backlog/current-status edits.
+
+## Completion
+- Added the single published `module_call` row `workflow-module-compile-bytes-compiled-pattern-named-group` to `tests/conformance/fixtures/module_workflow_surface.py`, aligned the shared owner-path direct-case order and bundle/count assertions in `tests/python/test_module_workflow_parity_suite.py`, and extended the tracked representative-case list in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `1485` total / `1485` passed / `0` unimplemented overall, with `module.workflow` at `115` / `115`, `module.workflow.str` unchanged at `72` / `72`, `module.workflow.bytes` at `43` / `43`, `module.workflow.module_call` at `61` / `61`, and `module.workflow.pattern_call` unchanged at `42` / `42`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython tests/python/test_module_workflow_parity_suite.py::test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases` (`33 passed`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`802 passed, 1 skipped, 2008 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0806-module-workflow-compiled-pattern-compile-bytes-named-group-singleton.py` (`115/115`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1485/1485`).

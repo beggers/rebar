@@ -1339,6 +1339,19 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-bytes-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "categories": ["workflow", "compile", "named-group", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent bytes named-group module-level compile() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-match-bytes-compiled-pattern-on-str-string",
       "operation": "module_call",
       "family": "module_match_workflow",
