@@ -267,7 +267,6 @@ OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS = tuple(
 class BytesCaseSurfaceSpec:
     bundle: FixtureBundle
     cases: tuple[SupplementalCase, ...]
-    routes_through_generic_case_buckets: bool
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
@@ -278,7 +277,6 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=OPEN_ENDED_ALTERNATION_BUNDLE,
         cases=OPEN_ENDED_ALTERNATION_BYTES_CASES,
-        routes_through_generic_case_buckets=True,
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -306,7 +304,6 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=OPEN_ENDED_CONDITIONAL_BUNDLE,
         cases=OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-        routes_through_generic_case_buckets=True,
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -334,7 +331,6 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
         cases=BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-        routes_through_generic_case_buckets=False,
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -363,7 +359,6 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
         cases=OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-        routes_through_generic_case_buckets=False,
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -397,7 +392,6 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
         cases=BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-        routes_through_generic_case_buckets=False,
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -426,7 +420,6 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
         cases=BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-        routes_through_generic_case_buckets=False,
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -462,7 +455,6 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
         cases=NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-        routes_through_generic_case_buckets=True,
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -509,15 +501,6 @@ OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS = {
         for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     },
 }
-OPEN_ENDED_GENERIC_BUCKET_BYTES_CASE_SURFACES = tuple(
-    spec
-    for spec in OPEN_ENDED_BYTES_CASE_SURFACES
-    if spec.bundle.manifest.manifest_id
-    in {
-        "open-ended-quantified-group-alternation-workflows",
-        "open-ended-quantified-group-alternation-conditional-workflows",
-    }
-)
 
 def _compile_case_prefix(case: FixtureCase) -> str:
     for suffix in ("-compile-metadata-str", "-compile-metadata-bytes"):
@@ -914,7 +897,7 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
         for follow_on_spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     )
 
-    assert spec.routes_through_generic_case_buckets == (
+    assert (spec.follow_on_id is None) == (
         spec.bundle.manifest.manifest_id not in direct_manifest_ids
     )
     assert len(spec.cases) == 2
@@ -960,7 +943,7 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
 
 @pytest.mark.parametrize(
     "spec",
-    OPEN_ENDED_GENERIC_BUCKET_BYTES_CASE_SURFACES,
+    tuple(spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is None),
     ids=lambda spec: spec.bundle.manifest.manifest_id,
 )
 def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
@@ -971,7 +954,7 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
         case for case in spec.bundle.cases if case.text_model == "bytes"
     )
 
-    assert spec.routes_through_generic_case_buckets is True
+    assert spec.follow_on_id is None
     assert {
         case.case_id
         for case in COMPILE_CASES

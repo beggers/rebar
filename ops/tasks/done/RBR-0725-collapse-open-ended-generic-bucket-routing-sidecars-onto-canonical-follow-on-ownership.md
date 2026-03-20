@@ -1,8 +1,9 @@
 # RBR-0725: Collapse open-ended generic-bucket routing sidecars onto canonical follow-on ownership
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the duplicated generic-bucket routing metadata from `tests/python/test_open_ended_quantified_group_parity_suite.py` so the open-ended parity owner derives generic-vs-follow-on bytes routing directly from the canonical `follow_on_id` / `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` split instead of maintaining a stale boolean field plus a detached manifest-id sidecar.
@@ -129,3 +130,7 @@ PY` reported the existing tail through `RBR-0724`, no reserved missing tail ids,
 - This simplification follows the already-landed open-ended architecture direction instead of opening a new lane:
   - `ops/tasks/done/RBR-0608-collapse-open-ended-quantified-group-bytes-routing-and-parity-ladders-onto-one-table.md` already pinned the canonical routing split as three generic-bucket manifests plus four direct follow-on manifests on this owner suite; and
   - the current `OPEN_ENDED_GENERIC_BUCKET_BYTES_CASE_SURFACES` sidecar has drifted below that canonical split by omitting the nested-open-ended manifest even though the live generic buckets still include its bytes rows.
+- 2026-03-20 completion:
+  - Removed the mirrored `routes_through_generic_case_buckets` field and deleted `OPEN_ENDED_GENERIC_BUCKET_BYTES_CASE_SURFACES` from `tests/python/test_open_ended_quantified_group_parity_suite.py`.
+  - Derived the generic-bucket parametrization and routing assertion directly from `follow_on_id` / `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES`, preserving the existing direct follow-on order and restoring the nested open-ended manifest to the generic collect-only surface.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3923 passed in 2.72s`), the inline manifest-order probe (`ok`), the collect-only generic-bucket probe (`ok`), and the `rg` absence check for the deleted sidecars (no matches).
