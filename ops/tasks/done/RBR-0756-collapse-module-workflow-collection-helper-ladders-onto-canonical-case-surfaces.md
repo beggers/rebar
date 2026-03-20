@@ -1,6 +1,6 @@
 # RBR-0756: Collapse module-workflow collection-helper ladders onto canonical case surfaces
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -143,3 +143,7 @@ PY` reported the existing tail through `RBR-0755`, no reserved missing tail ids,
   - `bash -lc "! rg -n '^(MODULE|PATTERN)_(SPLIT|FINDALL|FINDITER)_COLLECTION_CASES =' tests/python/test_module_workflow_parity_suite.py"` currently fails exactly on this cleanup because those six ladders are still present.
 - Baseline verification is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`657 passed, 1 skipped in 0.50s`).
+
+## Completion
+- Completed 2026-03-20 by collapsing the six helper-specific split/findall/finditer ladders into `MODULE_COLLECTION_CASES` and `PATTERN_COLLECTION_CASES`, then deriving the six parametrized tests from helper-filtered views of those canonical surfaces.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`, the acceptance import/assertion probe for helper-filtered case ordering, and `bash -lc "! rg -n '^(MODULE|PATTERN)_(SPLIT|FINDALL|FINDITER)_COLLECTION_CASES =' tests/python/test_module_workflow_parity_suite.py"`.

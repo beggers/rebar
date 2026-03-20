@@ -1105,9 +1105,8 @@ PUBLISHED_COLLECTION_PATTERN_CASES = tuple(
     for case in COLLECTION_FIXTURE_BUNDLE.cases
     if case.operation == "pattern_call"
 )
-MODULE_SPLIT_COLLECTION_CASES = tuple(
-    case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "split"
-) + (
+MODULE_COLLECTION_CASES = (
+    *(case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "split"),
     CollectionModuleCase(
         "module-split-str-maxsplit-one",
         "split",
@@ -1129,10 +1128,20 @@ MODULE_SPLIT_COLLECTION_CASES = tuple(
         b"zzabczzabc",
         (1,),
     ),
+    *(case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "findall"),
+    CollectionModuleCase("module-findall-str-repeated", "findall", "abc", "abcabc"),
+    CollectionModuleCase("module-findall-str-no-match", "findall", "abc", "zzz"),
+    *(case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "finditer"),
+    CollectionModuleCase("module-finditer-str-no-match", "finditer", "abc", "zzz"),
+    CollectionModuleCase(
+        "module-finditer-bytes-repeated",
+        "finditer",
+        b"abc",
+        b"zabcabc",
+    ),
 )
-PATTERN_SPLIT_COLLECTION_CASES = tuple(
-    case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "split"
-) + (
+PATTERN_COLLECTION_CASES = (
+    *(case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "split"),
     CollectionPatternCase("pattern-split-str-no-match", "split", "abc", "zzz"),
     CollectionPatternCase("pattern-split-str-repeated", "split", "abc", "abcabc"),
     CollectionPatternCase(
@@ -1149,16 +1158,7 @@ PATTERN_SPLIT_COLLECTION_CASES = tuple(
         "abcabc",
         (-1,),
     ),
-)
-MODULE_FINDALL_COLLECTION_CASES = tuple(
-    case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "findall"
-) + (
-    CollectionModuleCase("module-findall-str-repeated", "findall", "abc", "abcabc"),
-    CollectionModuleCase("module-findall-str-no-match", "findall", "abc", "zzz"),
-)
-PATTERN_FINDALL_COLLECTION_CASES = tuple(
-    case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "findall"
-) + (
+    *(case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "findall"),
     CollectionPatternCase(
         "pattern-findall-str-bounded",
         "findall",
@@ -1180,21 +1180,7 @@ PATTERN_FINDALL_COLLECTION_CASES = tuple(
         b"zabcabcz",
         (1, 7),
     ),
-)
-MODULE_FINDITER_COLLECTION_CASES = tuple(
-    case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "finditer"
-) + (
-    CollectionModuleCase("module-finditer-str-no-match", "finditer", "abc", "zzz"),
-    CollectionModuleCase(
-        "module-finditer-bytes-repeated",
-        "finditer",
-        b"abc",
-        b"zabcabc",
-    ),
-)
-PATTERN_FINDITER_COLLECTION_CASES = tuple(
-    case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "finditer"
-) + (
+    *(case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "finditer"),
     CollectionPatternCase(
         "pattern-finditer-str-bounded",
         "finditer",
@@ -1210,6 +1196,20 @@ PATTERN_FINDITER_COLLECTION_CASES = tuple(
         (1, 4),
     ),
 )
+
+
+def _module_collection_cases_for_helper(
+    helper: str,
+) -> tuple[CollectionModuleCase, ...]:
+    return tuple(case for case in MODULE_COLLECTION_CASES if case.helper == helper)
+
+
+def _pattern_collection_cases_for_helper(
+    helper: str,
+) -> tuple[CollectionPatternCase, ...]:
+    return tuple(case for case in PATTERN_COLLECTION_CASES if case.helper == helper)
+
+
 BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
     BoundedWildcardModuleCase(
         case_id="module-search-ignorecase-bounded-hit",
@@ -4396,7 +4396,7 @@ def test_module_and_pattern_placeholders_still_surface_for_unsupported_native_re
 
 @pytest.mark.parametrize(
     "case",
-    MODULE_SPLIT_COLLECTION_CASES,
+    _module_collection_cases_for_helper("split"),
     ids=lambda case: case.case_id,
 )
 def test_module_split_collection_helpers_match_cpython(
@@ -4413,7 +4413,7 @@ def test_module_split_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    PATTERN_SPLIT_COLLECTION_CASES,
+    _pattern_collection_cases_for_helper("split"),
     ids=lambda case: case.case_id,
 )
 def test_pattern_split_collection_helpers_match_cpython(
@@ -4436,7 +4436,7 @@ def test_pattern_split_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    MODULE_FINDALL_COLLECTION_CASES,
+    _module_collection_cases_for_helper("findall"),
     ids=lambda case: case.case_id,
 )
 def test_module_findall_collection_helpers_match_cpython(
@@ -4453,7 +4453,7 @@ def test_module_findall_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    PATTERN_FINDALL_COLLECTION_CASES,
+    _pattern_collection_cases_for_helper("findall"),
     ids=lambda case: case.case_id,
 )
 def test_pattern_findall_collection_helpers_match_cpython(
@@ -4476,7 +4476,7 @@ def test_pattern_findall_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    MODULE_FINDITER_COLLECTION_CASES,
+    _module_collection_cases_for_helper("finditer"),
     ids=lambda case: case.case_id,
 )
 def test_module_finditer_collection_helpers_match_cpython(
@@ -4495,7 +4495,7 @@ def test_module_finditer_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    PATTERN_FINDITER_COLLECTION_CASES,
+    _pattern_collection_cases_for_helper("finditer"),
     ids=lambda case: case.case_id,
 )
 def test_pattern_finditer_collection_helpers_match_cpython(
