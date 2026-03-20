@@ -1,8 +1,9 @@
 # RBR-0776: Collapse parser-matrix bundle-spec sidecars onto owner manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining selected-case `FixtureBundleSpec` sidecar layer from `tests/python/test_parser_matrix_parity_suite.py`; the suite still hand-declares `SELECTED_CASE_BUNDLE_SPECS` plus `load_fixture_bundles(...)` even though both published fixture anchors can be loaded through the canonical full-manifest owner path and the selected parser frontier can be derived from those owner rows.
@@ -135,3 +136,8 @@ PY` reported the existing tail through `RBR-0775`, no reserved missing tail ids,
   - `ops/tasks/done/RBR-0772-collapse-literal-flag-bundle-spec-sidecar-onto-full-manifest-owner.md`, and
   - `ops/tasks/done/RBR-0774-collapse-grouped-capture-bundle-spec-sidecars-onto-full-manifest-owners.md`
   already removed the same style of detached selected-case or full-manifest sidecar layer from neighboring parity owners.
+
+## Completion Note
+- Replaced the parser-matrix suite's detached `FixtureBundleSpec` sidecar load with a canonical `load_published_fixture_bundles(...)` owner-manifest load for `parser_matrix.py` and `conditional_group_exists_assertion_diagnostics.py`.
+- Added file-local helpers that derive the selected parser and conditional diagnostic case tuples plus their fixture-bundle contract metadata directly from the loaded owner rows, while keeping `EXPECTED_CASE_IDS`, `KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS`, and the existing direct-test buckets unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py`, the owner-bundle probe from Acceptance (`ok`), and the negative grep proving `SELECTED_CASE_BUNDLE_SPECS`, `FixtureBundleSpec(...)`, and `load_fixture_bundles(...)` are gone from the suite.

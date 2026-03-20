@@ -10,14 +10,15 @@ import pytest
 import rebar
 from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
-    FixtureBundleSpec,
+    FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_fixture_bundles,
+    load_published_fixture_bundles,
+    published_fixture_bundle_by_manifest_id,
 )
 
 
@@ -45,28 +46,6 @@ KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS = (
     "str-literal-success",
     "bytes-literal-success",
 )
-EXPECTED_PARSER_MATRIX_PATTERNS = frozenset(
-    {
-        "[A-Z_][a-z0-9_]+",
-        "a*+",
-        "(?>ab|a)b",
-        "(?<=ab)c",
-        "(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)",
-        "(?<=a+)b",
-        "[[a]",
-        "*abc",
-        "a(?i)b",
-        "(?u:a)",
-        "(?L:a)",
-        b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}",
-        b"(?u:a)",
-        b"(?L:a)",
-        b"\\u1234",
-    }
-)
-EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS = Counter(
-    {("compile", None): len(EXPECTED_CASE_IDS)}
-)
 CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH = (
     CORRECTNESS_FIXTURES_ROOT / "conditional_group_exists_assertion_diagnostics.py"
 )
@@ -74,55 +53,105 @@ EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = (
     "conditional-group-exists-assertion-positive-lookahead-error-str",
     "conditional-group-exists-assertion-negative-lookahead-error-str",
 )
-EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS = frozenset(
-    {
-        "a(?(?=b)b|c)d",
-        "a(?(?!b)b|c)d",
-    }
-)
-EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_OPERATION_HELPER_COUNTS = Counter(
-    {("compile", None): len(EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS)}
-)
-SELECTED_CASE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        "parser_matrix.py",
-        expected_manifest_id="parser-matrix",
-        selected_case_ids=EXPECTED_CASE_IDS,
-        expected_patterns=EXPECTED_PARSER_MATRIX_PATTERNS,
-        expected_operation_helper_counts=(
-            EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS
+
+
+def _ordered_cases_from_owner_bundle(
+    owner_bundle: FixtureBundle,
+    ordered_case_ids: tuple[str, ...],
+    *,
+    error_label: str,
+) -> tuple[FixtureCase, ...]:
+    duplicate_requested_case_ids = tuple(
+        case_id
+        for case_id, count in Counter(ordered_case_ids).items()
+        if count > 1
+    )
+    if duplicate_requested_case_ids:
+        raise AssertionError(
+            f"{error_label} contain duplicate requested case ids: "
+            f"{duplicate_requested_case_ids}"
+        )
+
+    published_cases = tuple(owner_bundle.manifest.cases)
+    duplicate_published_case_ids = tuple(
+        case_id
+        for case_id, count in Counter(case.case_id for case in published_cases).items()
+        if count > 1
+    )
+    if duplicate_published_case_ids:
+        raise AssertionError(
+            f"{error_label} owner manifest contains duplicate case ids: "
+            f"{duplicate_published_case_ids}"
+        )
+
+    case_by_id = {case.case_id: case for case in published_cases}
+    missing_case_ids = tuple(
+        case_id for case_id in ordered_case_ids if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise AssertionError(
+            f"{error_label} are missing published fixture rows: {missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in ordered_case_ids)
+
+
+def _selected_fixture_bundle(
+    owner_bundle: FixtureBundle,
+    selected_cases: tuple[FixtureCase, ...],
+) -> FixtureBundle:
+    return FixtureBundle(
+        manifest=owner_bundle.manifest,
+        cases=selected_cases,
+        expected_patterns=frozenset(case_pattern(case) for case in selected_cases),
+        expected_operation_helper_counts=Counter(
+            (case.operation, case.helper) for case in selected_cases
         ),
-        expected_text_models=frozenset({"str", "bytes"}),
-    ),
-    FixtureBundleSpec(
-        "conditional_group_exists_assertion_diagnostics.py",
-        expected_manifest_id="conditional-group-exists-assertion-diagnostics",
-        selected_case_ids=EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
-        expected_patterns=EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS,
-        expected_operation_helper_counts=(
-            EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_OPERATION_HELPER_COUNTS
+        expected_case_ids=frozenset(case.case_id for case in selected_cases),
+        expected_text_models=frozenset(
+            case.text_model or "str" for case in selected_cases
         ),
-        expected_text_models=frozenset({"str"}),
-    ),
+    )
+
+
+OWNER_FIXTURE_BUNDLES = load_published_fixture_bundles(
+    (
+        PARSER_MATRIX_FIXTURE_PATH,
+        CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH,
+    )
 )
-(
-    PARSER_MATRIX_FIXTURE_BUNDLE,
-    CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE,
-) = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+PARSER_MATRIX_OWNER_BUNDLE = published_fixture_bundle_by_manifest_id(
+    OWNER_FIXTURE_BUNDLES,
+    "parser-matrix",
+)
+CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        OWNER_FIXTURE_BUNDLES,
+        "conditional-group-exists-assertion-diagnostics",
+    )
+)
+TARGET_CASES = _ordered_cases_from_owner_bundle(
+    PARSER_MATRIX_OWNER_BUNDLE,
+    EXPECTED_CASE_IDS,
+    error_label="parser matrix selected case ids",
+)
+CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = _ordered_cases_from_owner_bundle(
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE,
+    EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
+    error_label="conditional assertion diagnostic selected case ids",
+)
+PARSER_MATRIX_FIXTURE_BUNDLE = _selected_fixture_bundle(
+    PARSER_MATRIX_OWNER_BUNDLE,
+    TARGET_CASES,
+)
+CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE = _selected_fixture_bundle(
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE,
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES,
+)
 PARSER_MATRIX_CASES_BY_ID = {
     case.case_id: case for case in PARSER_MATRIX_FIXTURE_BUNDLE.cases
 }
-CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES_BY_ID = {
-    case.case_id: case
-    for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE.cases
-}
-TARGET_CASES = tuple(
-    PARSER_MATRIX_CASES_BY_ID[case_id] for case_id in EXPECTED_CASE_IDS
-)
-CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
-    CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES_BY_ID[case_id]
-    for case_id in EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
-)
+
 
 def _case_ids(cases: tuple[FixtureCase, ...]) -> frozenset[str]:
     return frozenset(case.case_id for case in cases)
