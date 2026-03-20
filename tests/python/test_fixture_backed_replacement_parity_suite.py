@@ -156,24 +156,6 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_CASE_IDS = (
     "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-bytes",
     "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
 )
-GROUPED_REPLACEMENT_EXPECTED_MANIFEST_IDS = (
-    GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
-    GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
-    GROUPED_REPLACEMENT_GROUPED_ALTERNATION_MANIFEST_ID,
-    GROUPED_REPLACEMENT_NESTED_GROUP_MANIFEST_ID,
-    GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
-    GROUPED_REPLACEMENT_QUANTIFIED_NESTED_GROUP_MANIFEST_ID,
-    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
-)
-GROUPED_REPLACEMENT_TEMPLATE_CONTRACT_MANIFEST_IDS = frozenset(
-    {
-        GROUPED_REPLACEMENT_GROUPED_ALTERNATION_MANIFEST_ID,
-        GROUPED_REPLACEMENT_NESTED_GROUP_MANIFEST_ID,
-        GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
-        GROUPED_REPLACEMENT_QUANTIFIED_NESTED_GROUP_MANIFEST_ID,
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
-    }
-)
 GROUPED_REPLACEMENT_COLLECTION_PATTERNS = frozenset({"abc", "(abc)"})
 GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS = Counter(
     {
@@ -1013,9 +995,35 @@ def _grouped_replacement_template_bundles(
         else bundle
         for bundle in bundles
     )
-    return tuple(
-        published_fixture_bundle_by_manifest_id(adjusted_bundles, manifest_id)
-        for manifest_id in GROUPED_REPLACEMENT_EXPECTED_MANIFEST_IDS
+    return (
+        published_fixture_bundle_by_manifest_id(
+            adjusted_bundles,
+            GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
+        ),
+        published_fixture_bundle_by_manifest_id(
+            adjusted_bundles,
+            GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
+        ),
+        published_fixture_bundle_by_manifest_id(
+            adjusted_bundles,
+            GROUPED_REPLACEMENT_GROUPED_ALTERNATION_MANIFEST_ID,
+        ),
+        published_fixture_bundle_by_manifest_id(
+            adjusted_bundles,
+            GROUPED_REPLACEMENT_NESTED_GROUP_MANIFEST_ID,
+        ),
+        published_fixture_bundle_by_manifest_id(
+            adjusted_bundles,
+            GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
+        ),
+        published_fixture_bundle_by_manifest_id(
+            adjusted_bundles,
+            GROUPED_REPLACEMENT_QUANTIFIED_NESTED_GROUP_MANIFEST_ID,
+        ),
+        published_fixture_bundle_by_manifest_id(
+            adjusted_bundles,
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
+        ),
     )
 
 
@@ -1322,6 +1330,13 @@ def _replacement_surface_by_id(surface_id: str) -> LoadedReplacementSurface:
     raise AssertionError(f"unknown replacement surface {surface_id!r}")
 
 
+def _grouped_replacement_contract_bundles(
+    surface: LoadedReplacementSurface,
+) -> tuple[FixtureBundle, ...]:
+    assert surface.spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
+    return surface.bundles[2:]
+
+
 GROUPED_REPLACEMENT_TEMPLATE_SURFACE = _replacement_surface_by_id(
     GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
 )
@@ -1469,8 +1484,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
     if (
         surface.spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
-        and bundle.expected_manifest_id
-        in GROUPED_REPLACEMENT_TEMPLATE_CONTRACT_MANIFEST_IDS
+        and bundle in _grouped_replacement_contract_bundles(surface)
     ):
         _assert_grouped_replacement_fixture_bundle_contract(bundle)
 
@@ -1478,8 +1492,24 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() -> None:
     surface = GROUPED_REPLACEMENT_TEMPLATE_SURFACE
 
-    assert tuple(bundle.expected_manifest_id for bundle in surface.bundles) == tuple(
-        GROUPED_REPLACEMENT_EXPECTED_MANIFEST_IDS
+    assert tuple(bundle.expected_manifest_id for bundle in surface.bundles) == (
+        GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
+        GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
+        GROUPED_REPLACEMENT_GROUPED_ALTERNATION_MANIFEST_ID,
+        GROUPED_REPLACEMENT_NESTED_GROUP_MANIFEST_ID,
+        GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
+        GROUPED_REPLACEMENT_QUANTIFIED_NESTED_GROUP_MANIFEST_ID,
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
+    )
+    assert tuple(
+        bundle.expected_manifest_id
+        for bundle in _grouped_replacement_contract_bundles(surface)
+    ) == (
+        GROUPED_REPLACEMENT_GROUPED_ALTERNATION_MANIFEST_ID,
+        GROUPED_REPLACEMENT_NESTED_GROUP_MANIFEST_ID,
+        GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
+        GROUPED_REPLACEMENT_QUANTIFIED_NESTED_GROUP_MANIFEST_ID,
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
     )
 
     grouped_template_bundle = surface.bundles[0]

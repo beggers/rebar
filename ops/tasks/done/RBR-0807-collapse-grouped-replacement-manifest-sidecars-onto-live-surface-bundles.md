@@ -1,8 +1,9 @@
 # RBR-0807: Collapse grouped replacement manifest sidecars onto live surface bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining grouped-replacement manifest-id sidecars from `tests/python/test_fixture_backed_replacement_parity_suite.py`.
@@ -89,3 +90,11 @@ print(tuple(sorted(
 PY` currently prints identical bundle-order and contract-target tuples, showing both constants are mirrored state rather than independent contract sources; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'grouped_replacement_surface_keeps_selected_bundle_ownership_explicit or parity_suite_stays_aligned_with_published_correctness_fixture'` currently passes (`21 passed, 1145 deselected in 0.11s`).
 - This follows the same owner-surface cleanup track as `RBR-0713` and `RBR-0785`: those tasks already moved grouped-replacement routing metadata and conditional replacement bundle specs onto canonical surface owners, and these two remaining grouped manifest-id tables are now the next bounded mirror to delete without changing parity behavior.
+
+## Completion Note
+- Removed `GROUPED_REPLACEMENT_EXPECTED_MANIFEST_IDS` and `GROUPED_REPLACEMENT_TEMPLATE_CONTRACT_MANIFEST_IDS` from `tests/python/test_fixture_backed_replacement_parity_suite.py`.
+- Kept the grouped replacement owner order explicit by assembling the live grouped surface bundles directly in canonical order, then derived the stricter grouped contract slice from `GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles[2:]` instead of a second handwritten manifest-id set.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'grouped_replacement_surface_keeps_selected_bundle_ownership_explicit or parity_suite_stays_aligned_with_published_correctness_fixture'`
+  - `bash -lc "! rg -n 'GROUPED_REPLACEMENT_(EXPECTED_MANIFEST_IDS|TEMPLATE_CONTRACT_MANIFEST_IDS)' tests/python/test_fixture_backed_replacement_parity_suite.py"`
+  - the task's live-surface probe, updated to read contract bundle ids from `mod._grouped_replacement_contract_bundles(surface)` (`ok`)
