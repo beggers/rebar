@@ -1,8 +1,9 @@
 # RBR-0741: Collapse quantified-alternation direct-bytes follow-on case sidecar onto canonical surface specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `DIRECT_BYTES_FOLLOW_ON_CASES` tuple from `tests/python/test_quantified_alternation_parity_suite.py` so `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` becomes the sole canonical owner of direct-bytes follow-on case ordering and payload routing inside the quantified-alternation parity owner.
@@ -102,3 +103,7 @@ PY` reported the existing tail through `RBR-0740`, no reserved missing tail ids,
   - `rg -n 'DIRECT_BYTES_FOLLOW_ON_CASES' tests/python/test_quantified_alternation_parity_suite.py` shows one declaration plus the seven target parametrizations in this file; and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because the mirrored tuple still exists.
 - This stays on the same bounded post-JSON parity-harness cleanup track as `RBR-0703`, `RBR-0711`, `RBR-0721`, and `RBR-0739`: those tasks already removed adjacent direct-bytes and direct-test sidecars from this owner path or its sibling suites, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` already carries the case payloads and ordering needed to delete this remaining flattened tuple without changing behavior.
+- 2026-03-20 completion:
+  - Removed `DIRECT_BYTES_FOLLOW_ON_CASES` from `tests/python/test_quantified_alternation_parity_suite.py`.
+  - Added a tiny file-local helper that flattens `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` for the seven direct-bytes follow-on parametrizations, preserving the existing canonical case order and payload routing.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` (`778 passed in 1.09s`), the canonical-order probe from the task (`ok`), and the `rg` absence check for `DIRECT_BYTES_FOLLOW_ON_CASES` (no matches).
