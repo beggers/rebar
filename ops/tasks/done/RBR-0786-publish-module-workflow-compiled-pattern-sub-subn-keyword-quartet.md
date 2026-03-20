@@ -1,8 +1,9 @@
 # RBR-0786: Publish the module-workflow compiled-pattern `sub` / `subn` keyword quartet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next adjacent compiled-pattern module keyword quartet, publishing the exact `rebar.sub(compiled_pattern, ..., count=1)`, `rebar.sub(compiled_pattern, ..., count=__index__)`, `rebar.subn(compiled_pattern, ..., count=1)`, and `rebar.subn(compiled_pattern, ..., count=__index__)` workflows for the existing `"abc"` and `b"abc"` anchors before compiled-pattern keyword-error rows, benchmark catch-up, or another owner family reopens the queue.
@@ -105,3 +106,13 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed the four new workflow ids are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - the current owner path already publishes the adjacent compiled-pattern `split(maxsplit=...)` keyword pair and the plain compiled-pattern `sub` / `subn` helper rows, leaving this `sub` / `subn` keyword quartet as the smallest unpublished neighbor on the same owner file; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added the four adjacent compiled-pattern module-call rows on the existing `module-workflow-surface` owner path: `workflow-module-sub-count-keyword-str-compiled-pattern`, `workflow-module-sub-count-indexlike-bytes-compiled-pattern`, `workflow-module-subn-count-keyword-bytes-compiled-pattern`, and `workflow-module-subn-count-indexlike-str-compiled-pattern`.
+- Updated the shared parity-suite publication contract to `93` owner-path rows with a `59`/`34` `str`/`bytes` split, `39` published `module_call` rows, `8` `sub` rows, `6` `subn` rows, and a `20`-row compiled-pattern module publication sequence while keeping `pattern_call` at `42`.
+- Extended the shared compiled-pattern publication alignment and representative scorecard coverage to include the four direct anchors `compiled-pattern-sub-count-keyword-str`, `compiled-pattern-sub-count-indexlike-bytes`, `compiled-pattern-subn-count-keyword-bytes`, and `compiled-pattern-subn-count-indexlike-str` without adding a detached compiled-pattern keyword publication path.
+- Regenerated the tracked published correctness scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `1463` total / `1463` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `93/93/0`, `module.workflow.str` at `59/59/0`, `module.workflow.bytes` at `34/34/0`, `module.workflow.module_call` at `39/39/0`, and `module.workflow.pattern_call` unchanged at `42/42/0`. The tracked report includes all four new compiled-pattern `sub` / `subn` keyword rows.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0786-module-workflow-compiled-pattern-sub-subn-keyword-quartet.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

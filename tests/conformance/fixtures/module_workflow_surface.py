@@ -1370,6 +1370,50 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-count-keyword-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "use_compiled_pattern": True,
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level sub() count= keyword workflow on str payloads without widening into compiled-pattern keyword-error rows."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabcabc"
+        }
+      ],
+      "kwargs": {
+        "count": _INDEX_TWO
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "indexlike", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level sub() count=__index__ keyword workflow on bytes payloads without widening into compiled-pattern keyword-error rows."
+      ]
+    },
+    {
       "id": "workflow-module-sub-str-compiled-pattern-on-bytes-string",
       "operation": "module_call",
       "family": "module_sub_workflow",
@@ -1415,6 +1459,50 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "compiled-pattern"],
       "notes": [
         "Publishes the first bytes module-level subn() helper workflow that accepts a compiled literal pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-keyword-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level subn() count= keyword workflow on bytes payloads without widening into compiled-pattern keyword-error rows."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-indexlike-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "use_compiled_pattern": True,
+      "args": ["x", "abcabcabc"],
+      "kwargs": {
+        "count": _INDEX_TWO
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "indexlike", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level subn() count=__index__ keyword workflow on str payloads without widening into compiled-pattern keyword-error rows."
       ]
     },
     {
