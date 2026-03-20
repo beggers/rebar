@@ -1,8 +1,9 @@
 # RBR-0723: Collapse wider-ranged-repeat direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` registry from `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` so the wider-ranged-repeat parity owner derives direct-test bucket coverage from its canonical shared case buckets plus the existing direct-bytes follow-on specs instead of maintaining a mirrored top-level map.
@@ -85,3 +86,7 @@ PY`
   - the derived-bucket probe in Acceptance already passes (`ok`); and
   - `bash -lc "! rg -n 'WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"` still fails exactly because the registry remains defined and read in that file.
 - This cleanup stays on the same bounded post-JSON parity-harness simplification track as the adjacent landed work in `RBR-0709`, `RBR-0719`, and `RBR-0721`; do not mint a sibling task id for the same registry removal.
+- 2026-03-20 completion:
+  - Removed `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` from `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`.
+  - Added a tiny file-local helper that derives the direct-test bucket map from `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES`, preserving the existing shared-bucket and bytes-follow-on ordering.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1341 passed in 0.98s`), the derived-bucket probe from the task (`ok`), and the `rg` absence check for `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` (no matches).
