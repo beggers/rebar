@@ -184,6 +184,36 @@ class FixtureBundleSpec:
     expected_text_models: frozenset[str] | None = None
 
 
+def _build_fixture_bundle(
+    manifest: FixtureManifest,
+    cases: tuple[FixtureCase, ...],
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes] | None = None,
+    expected_patterns: frozenset[str | bytes] | None = None,
+    expected_operation_helper_counts: Counter[tuple[str, str | None]] | None = None,
+    expected_case_ids: frozenset[str] | None = None,
+    expected_text_models: frozenset[str] | None = None,
+) -> FixtureBundle:
+    if expected_patterns is None:
+        if pattern_extractor is None:
+            raise ValueError(
+                "pattern_extractor is required when expected_patterns is not provided"
+            )
+        expected_patterns = frozenset(pattern_extractor(case) for case in cases)
+    if expected_operation_helper_counts is None:
+        expected_operation_helper_counts = Counter(
+            (case.operation, case.helper) for case in cases
+        )
+    return FixtureBundle(
+        manifest=manifest,
+        cases=cases,
+        expected_patterns=expected_patterns,
+        expected_operation_helper_counts=expected_operation_helper_counts,
+        expected_case_ids=expected_case_ids,
+        expected_text_models=expected_text_models,
+    )
+
+
 def load_fixture_bundles(
     specs: Iterable[FixtureBundleSpec],
 ) -> tuple[FixtureBundle, ...]:
@@ -248,9 +278,9 @@ def load_fixture_bundles(
             bundle_case_ids = frozenset(spec.selected_case_ids)
 
         bundles.append(
-            FixtureBundle(
-                manifest=manifest,
-                cases=bundle_cases,
+            _build_fixture_bundle(
+                manifest,
+                bundle_cases,
                 expected_patterns=spec.expected_patterns,
                 expected_operation_helper_counts=spec.expected_operation_helper_counts,
                 expected_case_ids=bundle_case_ids,
@@ -446,15 +476,10 @@ def load_published_fixture_bundles(
         manifest = load_fixture_manifest(path)
         loaded_cases = tuple(manifest.cases)
         bundles.append(
-            FixtureBundle(
-                manifest=manifest,
-                cases=loaded_cases,
-                expected_patterns=frozenset(
-                    pattern_extractor(case) for case in loaded_cases
-                ),
-                expected_operation_helper_counts=Counter(
-                    (case.operation, case.helper) for case in loaded_cases
-                ),
+            _build_fixture_bundle(
+                manifest,
+                loaded_cases,
+                pattern_extractor=pattern_extractor,
                 expected_text_models=frozenset(
                     case.text_model or "str" for case in loaded_cases
                 ),
