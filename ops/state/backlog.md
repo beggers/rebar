@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives.
+`RBR-0412` is the active frontier: publish the module-workflow bytes verbose compiled-pattern helper pair on the existing correctness owner path.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives.
+1. `RBR-0412`: Publish the module-workflow bytes verbose compiled-pattern helper pair in `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

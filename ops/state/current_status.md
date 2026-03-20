@@ -1,6 +1,6 @@
 # Current Status
 
-Updated: 2026-03-19
+Updated: 2026-03-20
 
 ## Phase
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1391 cases across 114 manifests, with all 1391 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- Unblock the module-workflow bytes verbose compiled-pattern helper pair by landing compiled-pattern bytes `search()` / `fullmatch()` execution for that slice.
+- Publish the module-workflow bytes verbose compiled-pattern helper pair now that the bounded bytes `Pattern.search()` / `Pattern.fullmatch()` execution prerequisite has landed.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1391 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Unblock the module-workflow bytes verbose compiled-pattern helper pair by landing compiled-pattern bytes `search()` / `fullmatch()` execution for that slice.
+- Publish the module-workflow bytes verbose compiled-pattern helper pair on the existing module-workflow correctness path now that the bounded bytes `Pattern.search()` / `Pattern.fullmatch()` prerequisite has landed.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

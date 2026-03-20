@@ -1,6 +1,6 @@
 # RBR-0412: Publish the module-workflow bytes verbose pattern-helper pair
 
-Status: blocked
+Status: ready
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -65,3 +65,11 @@ Created: 2026-03-20
 - A direct runtime probe against the current checkout confirms the blocker without any fixture edits: compiling `b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"` with `MULTILINE | VERBOSE` succeeds, but both `compiled.search(b"prefix\\nENV_VAR=ABCD\\nsuffix")` and `compiled.fullmatch(b"ENV_VAR = 123")` still raise the same placeholder `NotImplementedError`.
 - The exploratory fixture/test edits were reverted, `reports/correctness/latest.py` was not republished, and the checkout was returned to green by rerunning the required published gate.
 - Follow-up needed: land bytes verbose compiled-pattern execution support for this anchored regression pair before retrying the publication-only manifest/report task.
+
+## Queue Update
+- 2026-03-20 feature-planning: `ops/tasks/done/RBR-0417-land-module-workflow-bytes-verbose-pattern-execution.md` landed the only documented prerequisite for this slice, and the target publication work is still missing on the current checkout.
+- Fresh verification on the reopened frontier stayed green on the pre-publication surface:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`558 passed, 1 skipped`);
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0412-module-workflow-bytes-verbose-helpers.py` (`21` executed / `21` passed); and
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1391` executed / `1391` passed / `0` `unimplemented`).
+- `rg -n "workflow-pattern-search-bytes-verbose-regression|workflow-pattern-fullmatch-bytes-verbose-regression" tests/conformance/fixtures/module_workflow_surface.py tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` still finds no published bytes verbose helper rows, so this exact task returns to `ready` without scope changes.
