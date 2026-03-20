@@ -1,8 +1,9 @@
 # RBR-0728: Collapse grouped-capture direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `GROUPED_CAPTURE_DIRECT_TEST_CASE_ID_BUCKETS` registry from `tests/python/test_grouped_capture_parity_suite.py` so the grouped-capture parity owner derives direct-test bucket coverage from its canonical tracked case-id tuples instead of maintaining a mirrored top-level map.
@@ -104,3 +105,7 @@ PY` reported the existing tail through `RBR-0727`, no reserved missing tail ids,
 - This simplification stays on the same bounded post-JSON parity-harness cleanup track as the recent architecture work:
   - `ops/tasks/done/RBR-0721-collapse-quantified-alternation-direct-test-bucket-registry-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0723-collapse-wider-ranged-repeat-direct-test-bucket-registry-onto-canonical-case-owners.md`, and `ops/tasks/done/RBR-0727-collapse-open-ended-direct-test-bucket-sidecar-onto-canonical-case-owners.md` already removed adjacent detached bucket-owner layers from other parity suites; and
   - `GROUPED_CAPTURE_DIRECT_TEST_CASE_ID_BUCKETS` is the same style of mirrored owner data, but here the canonical sources are the tracked grouped-capture family tuples rather than direct-bytes follow-on specs.
+- 2026-03-20 completion:
+  - Removed `GROUPED_CAPTURE_DIRECT_TEST_CASE_ID_BUCKETS` from `tests/python/test_grouped_capture_parity_suite.py`.
+  - Added a tiny file-local helper that derives the direct-test bucket map from the eight canonical grouped-capture case-id tuple owners, preserving the existing bucket ordering and membership.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` (`427 passed in 0.34s`), the derived-bucket probe from the task (`ok`), and the `rg` absence check for `GROUPED_CAPTURE_DIRECT_TEST_CASE_ID_BUCKETS` (no matches).

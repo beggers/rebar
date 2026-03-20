@@ -118,16 +118,6 @@ GROUPED_CAPTURE_TRACKED_CASE_IDS = (
     *NESTED_GROUP_CASE_IDS,
     *NESTED_GROUP_ALTERNATION_CASE_IDS,
 )
-GROUPED_CAPTURE_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "grouped-match": frozenset(GROUPED_MATCH_TRACKED_CASE_IDS),
-    "named-group": frozenset(NAMED_GROUP_CASE_IDS),
-    "grouped-segment": frozenset(GROUPED_SEGMENT_CASE_IDS),
-    "grouped-alternation": frozenset(GROUPED_ALTERNATION_CASE_IDS),
-    "optional-group": frozenset(OPTIONAL_GROUP_CASE_IDS),
-    "optional-group-alternation": frozenset(OPTIONAL_GROUP_ALTERNATION_CASE_IDS),
-    "nested-group": frozenset(NESTED_GROUP_CASE_IDS),
-    "nested-group-alternation": frozenset(NESTED_GROUP_ALTERNATION_CASE_IDS),
-}
 
 
 @dataclass(frozen=True)
@@ -304,6 +294,19 @@ GROUPED_SEGMENT_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "grouped-segment-workflows",
 )
+
+
+def _grouped_capture_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
+    return {
+        "grouped-match": frozenset(GROUPED_MATCH_TRACKED_CASE_IDS),
+        "named-group": frozenset(NAMED_GROUP_CASE_IDS),
+        "grouped-segment": frozenset(GROUPED_SEGMENT_CASE_IDS),
+        "grouped-alternation": frozenset(GROUPED_ALTERNATION_CASE_IDS),
+        "optional-group": frozenset(OPTIONAL_GROUP_CASE_IDS),
+        "optional-group-alternation": frozenset(OPTIONAL_GROUP_ALTERNATION_CASE_IDS),
+        "nested-group": frozenset(NESTED_GROUP_CASE_IDS),
+        "nested-group-alternation": frozenset(NESTED_GROUP_ALTERNATION_CASE_IDS),
+    }
 
 
 def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
@@ -859,7 +862,7 @@ def test_published_case_frontier_helper_reports_uncovered_order_drift() -> None:
 
 def test_grouped_capture_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        GROUPED_CAPTURE_DIRECT_TEST_CASE_ID_BUCKETS,
+        _grouped_capture_direct_test_case_id_buckets(),
         selected_case_ids=GROUPED_CAPTURE_TRACKED_CASE_IDS,
         coverage_label="grouped capture direct-test case-id buckets",
     )
