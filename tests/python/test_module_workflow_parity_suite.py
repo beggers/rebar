@@ -549,37 +549,6 @@ PUBLIC_SURFACE_SELECTED_CASE_IDS = (
 )
 
 
-def _public_surface_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
-    return {
-        "public-helper-presence": frozenset(case.case_id for case in PUBLIC_HELPER_CASES),
-        "public-module-call": frozenset(case.case_id for case in PUBLIC_MODULE_CALL_CASES),
-        "exported-symbol-metadata": frozenset(
-            case.case_id for case in EXPORTED_METADATA_CASES
-        ),
-        "exported-symbol-value": frozenset(case.case_id for case in EXPORTED_VALUE_CASES),
-        "exported-constructor-guard": frozenset(
-            case.case_id for case in EXPORTED_CONSTRUCTOR_GUARD_CASES
-        ),
-        "pattern-object-metadata": frozenset(
-            case.case_id for case in PATTERN_METADATA_CASES
-        ),
-        "pattern-object-call": frozenset(case.case_id for case in PATTERN_CALL_CASES),
-    }
-
-
-def _module_workflow_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
-    return {
-        "compile": frozenset(case.case_id for case in COMPILE_CASES),
-        "pattern": frozenset(case.case_id for case in PATTERN_CASES),
-        "cache": frozenset(case.case_id for case in CACHE_CASES),
-        "purge": frozenset(case.case_id for case in PURGE_CASES),
-        "compiled-module-helper": frozenset(
-            case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
-        ),
-        "escape": frozenset(case.case_id for case in ESCAPE_CASES),
-    }
-
-
 EXPLICIT_ESCAPE_STR_CASES = (
     ("", ""),
     ("abc_123", "abc_123"),
@@ -2246,7 +2215,16 @@ def test_module_workflow_parity_suite_tracks_published_case_frontier() -> None:
 
 def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _module_workflow_direct_test_case_id_buckets(),
+        {
+            "compile": frozenset(case.case_id for case in COMPILE_CASES),
+            "pattern": frozenset(case.case_id for case in PATTERN_CASES),
+            "cache": frozenset(case.case_id for case in CACHE_CASES),
+            "purge": frozenset(case.case_id for case in PURGE_CASES),
+            "compiled-module-helper": frozenset(
+                case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+            ),
+            "escape": frozenset(case.case_id for case in ESCAPE_CASES),
+        },
         selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
         coverage_label="module workflow direct-test case-id buckets",
     )
@@ -4774,7 +4752,29 @@ def test_public_surface_parity_suite_tracks_published_case_frontier() -> None:
 
 def test_public_surface_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _public_surface_direct_test_case_id_buckets(),
+        {
+            "public-helper-presence": frozenset(
+                case.case_id for case in PUBLIC_HELPER_CASES
+            ),
+            "public-module-call": frozenset(
+                case.case_id for case in PUBLIC_MODULE_CALL_CASES
+            ),
+            "exported-symbol-metadata": frozenset(
+                case.case_id for case in EXPORTED_METADATA_CASES
+            ),
+            "exported-symbol-value": frozenset(
+                case.case_id for case in EXPORTED_VALUE_CASES
+            ),
+            "exported-constructor-guard": frozenset(
+                case.case_id for case in EXPORTED_CONSTRUCTOR_GUARD_CASES
+            ),
+            "pattern-object-metadata": frozenset(
+                case.case_id for case in PATTERN_METADATA_CASES
+            ),
+            "pattern-object-call": frozenset(
+                case.case_id for case in PATTERN_CALL_CASES
+            ),
+        },
         selected_case_ids=PUBLIC_SURFACE_SELECTED_CASE_IDS,
         coverage_label="public surface direct-test case-id buckets",
     )
