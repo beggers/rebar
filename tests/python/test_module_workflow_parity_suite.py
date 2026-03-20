@@ -286,7 +286,7 @@ MATCH_BEHAVIOR_DIRECT_TEST_CASE_IDS = frozenset(
     case.case_id for case in MATCH_BEHAVIOR_CASES
 )
 
-# Keep the detached public-surface coverage on the module workflow owner file.
+# Keep the public-surface coverage on the module workflow owner file.
 PUBLIC_API_CASE_IDS = (
     "helper-compile-present",
     "helper-search-present",
@@ -454,22 +454,29 @@ PATTERN_METADATA_CASES = fixture_cases_for_operation(
     "pattern_metadata",
 )
 PATTERN_CALL_CASES = fixture_cases_for_operation((PATTERN_OBJECT_BUNDLE,), "pattern_call")
-PUBLIC_SURFACE_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "public-helper-presence": frozenset(case.case_id for case in PUBLIC_HELPER_CASES),
-    "public-module-call": frozenset(case.case_id for case in PUBLIC_MODULE_CALL_CASES),
-    "exported-symbol-metadata": frozenset(case.case_id for case in EXPORTED_METADATA_CASES),
-    "exported-symbol-value": frozenset(case.case_id for case in EXPORTED_VALUE_CASES),
-    "exported-constructor-guard": frozenset(
-        case.case_id for case in EXPORTED_CONSTRUCTOR_GUARD_CASES
-    ),
-    "pattern-object-metadata": frozenset(case.case_id for case in PATTERN_METADATA_CASES),
-    "pattern-object-call": frozenset(case.case_id for case in PATTERN_CALL_CASES),
-}
 PUBLIC_SURFACE_SELECTED_CASE_IDS = (
     *PUBLIC_API_CASE_IDS,
     *EXPORTED_SYMBOL_CASE_IDS,
     *PATTERN_OBJECT_CASE_IDS,
 )
+
+
+def _public_surface_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
+    return {
+        "public-helper-presence": frozenset(case.case_id for case in PUBLIC_HELPER_CASES),
+        "public-module-call": frozenset(case.case_id for case in PUBLIC_MODULE_CALL_CASES),
+        "exported-symbol-metadata": frozenset(
+            case.case_id for case in EXPORTED_METADATA_CASES
+        ),
+        "exported-symbol-value": frozenset(case.case_id for case in EXPORTED_VALUE_CASES),
+        "exported-constructor-guard": frozenset(
+            case.case_id for case in EXPORTED_CONSTRUCTOR_GUARD_CASES
+        ),
+        "pattern-object-metadata": frozenset(
+            case.case_id for case in PATTERN_METADATA_CASES
+        ),
+        "pattern-object-call": frozenset(case.case_id for case in PATTERN_CALL_CASES),
+    }
 
 EXPLICIT_ESCAPE_STR_CASES = (
     ("", ""),
@@ -4138,7 +4145,7 @@ def test_public_surface_parity_suite_tracks_published_case_frontier() -> None:
 
 def test_public_surface_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        PUBLIC_SURFACE_DIRECT_TEST_CASE_ID_BUCKETS,
+        _public_surface_direct_test_case_id_buckets(),
         selected_case_ids=PUBLIC_SURFACE_SELECTED_CASE_IDS,
         coverage_label="public surface direct-test case-id buckets",
     )

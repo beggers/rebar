@@ -1,8 +1,9 @@
 # RBR-0732: Collapse public-surface direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `PUBLIC_SURFACE_DIRECT_TEST_CASE_ID_BUCKETS` registry from `tests/python/test_module_workflow_parity_suite.py` so the public-surface parity owner derives direct-test bucket coverage from its canonical case owners instead of maintaining a mirrored top-level map.
@@ -108,3 +109,7 @@ PY` reported the existing tail through `RBR-0731`, no reserved missing tail ids,
 - This simplification stays on the same bounded post-JSON parity-harness cleanup track as the recent architecture work:
   - `ops/tasks/done/RBR-0727-collapse-open-ended-direct-test-bucket-sidecar-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0728-collapse-grouped-capture-direct-test-bucket-registry-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0729-collapse-parser-matrix-direct-test-bucket-registry-onto-canonical-case-owners.md`, and `ops/tasks/done/RBR-0730-collapse-branch-local-backreference-direct-test-bucket-registry-onto-canonical-case-owners.md` already removed the same style of detached direct-test owner layer from adjacent parity suites; and
   - `PUBLIC_SURFACE_DIRECT_TEST_CASE_ID_BUCKETS` is the same style of mirrored owner data, but here the canonical sources are the existing public-surface case-owner tuples that already live in this file.
+- 2026-03-20 completion:
+  - Removed `PUBLIC_SURFACE_DIRECT_TEST_CASE_ID_BUCKETS` from `tests/python/test_module_workflow_parity_suite.py`.
+  - Added a tiny file-local helper that derives the direct-test bucket map from `PUBLIC_HELPER_CASES`, `PUBLIC_MODULE_CALL_CASES`, `EXPORTED_METADATA_CASES`, `EXPORTED_VALUE_CASES`, `EXPORTED_CONSTRUCTOR_GUARD_CASES`, `PATTERN_METADATA_CASES`, and `PATTERN_CALL_CASES`, preserving the existing bucket ordering and membership.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`581 passed, 1 skipped in 0.64s`), the derived-bucket probe from the task (`ok`), and the `rg` absence check for `PUBLIC_SURFACE_DIRECT_TEST_CASE_ID_BUCKETS` (no matches).
