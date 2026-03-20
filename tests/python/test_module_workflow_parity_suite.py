@@ -4137,6 +4137,84 @@ def test_bounded_wildcard_pattern_collection_helpers_match_cpython(
     assert observed == expected
 
 
+def test_recording_native_boundary_dispatch_helpers_record_calls_and_results() -> None:
+    boundary = _ModuleWorkflowFakeNativeBoundary(
+        str_compile_flags=0,
+        bytes_compile_flags=0,
+    )
+
+    assert boundary.boundary_compile("abc", 4) == ("compiled", 4, True)
+    assert boundary.boundary_literal_match("abc", 4, "search", "zabc", 1, None) == (
+        "matched",
+        1,
+        3,
+        (1, 4),
+    )
+    assert boundary.boundary_literal_split(b"abc", 2, b"zabc", 1) == (
+        "supported",
+        [b"native-bytes-split"],
+    )
+    assert boundary.boundary_literal_findall("abc", 0, "zabc", 0, 4) == (
+        "supported",
+        ["native-findall"],
+    )
+    assert boundary.boundary_literal_finditer(b"abc", 0, b"zabc", 2, None) == (
+        "supported",
+        1,
+        6,
+        [(2, 5)],
+    )
+    assert boundary.boundary_literal_subn("abc", 0, "x", "zabc", 3) == (
+        "supported",
+        "native-subn",
+        9,
+    )
+    assert boundary.boundary_escape(b"a-b") == b"native:a-b"
+
+    assert boundary.calls == [
+        ("compile", "abc", 4),
+        ("match", "abc", 4, "search", "zabc", 1, None),
+        ("split", b"abc", 2, b"zabc", 1),
+        ("findall", "abc", 0, "zabc", 0, 4),
+        ("finditer", b"abc", 0, b"zabc", 2, None),
+        ("subn", "abc", 0, "x", "zabc", 3),
+        ("escape", b"a-b"),
+    ]
+
+
+def test_recording_native_boundary_placeholder_helpers_follow_selected_message_source(
+) -> None:
+    boundary = RecordingNativeBoundary()
+
+    with pytest.raises(NotImplementedError) as helper_raised:
+        boundary.scaffold_raise("search")
+    with pytest.raises(NotImplementedError) as pattern_raised:
+        boundary.scaffold_pattern_raise("finditer")
+
+    assert helper_raised.value.args == (rebar._placeholder_message("search"),)
+    assert pattern_raised.value.args == (
+        rebar._pattern_placeholder_message("finditer"),
+    )
+
+    native_boundary = RecordingNativeBoundary(native_placeholder_messages=True)
+    with pytest.raises(NotImplementedError, match="native helper placeholder search"):
+        native_boundary.scaffold_raise("search")
+    with pytest.raises(NotImplementedError, match="native pattern placeholder finditer"):
+        native_boundary.scaffold_pattern_raise("finditer")
+
+    native_boundary.scaffold_purge()
+    assert native_boundary.calls == [("purge",)]
+
+
+def test_recording_native_boundary_missing_handlers_raise_clear_assertions() -> None:
+    boundary = RecordingNativeBoundary()
+
+    with pytest.raises(AssertionError, match="unexpected compile call"):
+        boundary.boundary_compile("abc", 0)
+
+    assert boundary.calls == [("compile", "abc", 0)]
+
+
 def test_fake_native_boundary_handles_bounded_wildcard_wrappers(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
