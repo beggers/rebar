@@ -1,6 +1,6 @@
 # RBR-0731: Publish the remaining positive module-workflow bytes verbose helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -57,3 +57,9 @@ Created: 2026-03-20
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes only `workflow-pattern-search-bytes-verbose-regression` and `workflow-pattern-fullmatch-bytes-verbose-regression` for the bytes verbose helper surface, leaving the direct positive digits/alpha companions unpublished on the same manifest;
   - `tests/python/test_module_workflow_parity_suite.py` already defines the shared six-case `VERBOSE_COMPILE_WORKFLOW_CASES`, pins the published bytes rows to `search-multiline-middle-line-alpha` and `fullmatch-digits-without-literal-spaces`, and therefore leaves `search-multiline-middle-line-digits` plus `fullmatch-alpha-with-extra-whitespace` as the next bounded positive bytes pair on the same owner path; and
   - `reports/correctness/latest.py` currently reports `1393` total / `1393` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `23` / `23` / `0`, `module.workflow.bytes` at `8` / `8` / `0`, and `module.workflow.pattern_call` at `11` / `11` / `0`, so this slice extends the tracked frontier through adjacent owner-path publication rather than a new family.
+
+## Completion
+- 2026-03-20: Added `workflow-pattern-search-bytes-verbose-regression-digits` and `workflow-pattern-fullmatch-bytes-verbose-regression-alpha` to `tests/conformance/fixtures/module_workflow_surface.py`, keeping the existing verbose regression pattern, `flags == 72`, `text_model == "bytes"`, and only the two positive compiled-pattern helper rows requested by this task.
+- Updated `tests/python/test_module_workflow_parity_suite.py` on the shared owner path so the published `module-workflow-surface` bundle now expects `25` rows instead of `23`, the `pattern_call` helper mix is `6` `search` / `1` `match` / `6` `fullmatch`, and the new bytes rows are pinned back to `VERBOSE_COMPILE_WORKFLOW_CASES` with their payloads encoded through the existing bytes compile anchor.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated the tracked `reports/correctness/latest.py` publication. The tracked artifact now reads `1395` total / `1395` passed / `0` `unimplemented` across `114` manifests overall, with `module.workflow` at `25` / `25` / `0`, `module.workflow.bytes` at `10` / `10` / `0`, and `module.workflow.pattern_call` at `13` / `13` / `0`; both new bytes verbose helper rows are present in the tracked report.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0731-module-workflow-remaining-positive-bytes-verbose-helpers.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `25` total / `25` passed / `0` `unimplemented`.

@@ -167,10 +167,12 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-pattern-search-str-verbose-regression-digits",
     "workflow-pattern-search-str-verbose-regression-too-many-digits",
     "workflow-pattern-search-bytes-verbose-regression",
+    "workflow-pattern-search-bytes-verbose-regression-digits",
     "workflow-pattern-fullmatch-str-verbose-regression",
     "workflow-pattern-fullmatch-str-verbose-regression-alpha",
     "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
     "workflow-pattern-fullmatch-bytes-verbose-regression",
+    "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
     "workflow-pattern-search-str",
     "workflow-pattern-match-str",
     "workflow-pattern-fullmatch-bytes",
@@ -198,9 +200,9 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 7,
-        ("pattern_call", "search"): 5,
+        ("pattern_call", "search"): 6,
         ("pattern_call", "match"): 1,
-        ("pattern_call", "fullmatch"): 5,
+        ("pattern_call", "fullmatch"): 6,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
         ("module_call", "escape"): 2,
@@ -1978,10 +1980,12 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-search-str-verbose-regression-digits",
         "workflow-pattern-search-str-verbose-regression-too-many-digits",
         "workflow-pattern-search-bytes-verbose-regression",
+        "workflow-pattern-search-bytes-verbose-regression-digits",
         "workflow-pattern-fullmatch-str-verbose-regression",
         "workflow-pattern-fullmatch-str-verbose-regression-alpha",
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
         "workflow-pattern-fullmatch-bytes-verbose-regression",
+        "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
     } <= {case.case_id for case in PATTERN_CASES}
 
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
@@ -2009,6 +2013,22 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         verbose_cases_by_id["search-multiline-middle-line-alpha"].text.encode("latin-1")
     ]
     assert pattern_cases_by_id[
+        "workflow-pattern-search-bytes-verbose-regression-digits"
+    ].helper == verbose_cases_by_id["search-multiline-middle-line-digits"].helper
+    assert (
+        case_pattern(
+            pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression-digits"]
+        )
+        == verbose_bytes_pattern
+    )
+    assert (
+        pattern_cases_by_id["workflow-pattern-search-bytes-verbose-regression-digits"].flags
+        == VERBOSE_BYTES_COMPILE_CASE.flags
+    )
+    assert pattern_cases_by_id[
+        "workflow-pattern-search-bytes-verbose-regression-digits"
+    ].args == [verbose_cases_by_id["search-multiline-middle-line-digits"].text.encode("latin-1")]
+    assert pattern_cases_by_id[
         "workflow-pattern-search-str-verbose-regression-too-many-digits"
     ].helper == verbose_cases_by_id["search-rejects-too-many-digits"].helper
     assert pattern_cases_by_id[
@@ -2034,6 +2054,22 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
     assert pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression"].args == [
         verbose_cases_by_id["fullmatch-digits-without-literal-spaces"].text.encode("latin-1")
     ]
+    assert pattern_cases_by_id[
+        "workflow-pattern-fullmatch-bytes-verbose-regression-alpha"
+    ].helper == verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].helper
+    assert (
+        case_pattern(
+            pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression-alpha"]
+        )
+        == verbose_bytes_pattern
+    )
+    assert (
+        pattern_cases_by_id["workflow-pattern-fullmatch-bytes-verbose-regression-alpha"].flags
+        == VERBOSE_BYTES_COMPILE_CASE.flags
+    )
+    assert pattern_cases_by_id[
+        "workflow-pattern-fullmatch-bytes-verbose-regression-alpha"
+    ].args == [verbose_cases_by_id["fullmatch-alpha-with-extra-whitespace"].text.encode("latin-1")]
     assert pattern_cases_by_id[
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key"
     ].helper == verbose_cases_by_id["fullmatch-rejects-lowercase-key"].helper
