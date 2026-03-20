@@ -653,6 +653,27 @@ class _EscapeBytesSubclass(bytes):
     pass
 
 
+class _IndexLike:
+    """Minimal __index__ carrier for keyword-argument parity coverage."""
+
+    __slots__ = ("value",)
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __index__(self) -> int:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"IndexLike({self.value})"
+
+
+_INDEX_ONE = _IndexLike(1)
+_INDEX_TWO = _IndexLike(2)
+_INDEX_FOUR = _IndexLike(4)
+_INDEX_SEVEN = _IndexLike(7)
+
+
 @dataclass(frozen=True)
 class EscapeCompatibleInputCase:
     case_id: str
@@ -1525,6 +1546,13 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     ModuleKeywordCallCase(
+        case_id="module-split-maxsplit-indexlike-bytes",
+        helper="split",
+        args=(b"abc", b"zabcabcabc"),
+        kwargs={"maxsplit": _INDEX_TWO},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
         case_id="module-sub-count-keyword-str",
         helper="sub",
         args=("abc", "x", "abcabc"),
@@ -1532,10 +1560,24 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     ModuleKeywordCallCase(
+        case_id="module-sub-count-indexlike-str",
+        helper="sub",
+        args=("abc", "x", "abcabcabc"),
+        kwargs={"count": _INDEX_TWO},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
         case_id="module-subn-count-keyword-bytes",
         helper="subn",
         args=(b"abc", b"x", b"abcabc"),
         kwargs={"count": 1},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
+        case_id="module-subn-count-indexlike-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abcabcabc"),
+        kwargs={"count": _INDEX_TWO},
         result_kind="value",
     ),
 )
@@ -1565,6 +1607,22 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="match",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-search-pos-indexlike-str",
+        helper="search",
+        pattern="abc",
+        args=("zabcabc",),
+        kwargs={"pos": _INDEX_TWO},
+        result_kind="match",
+    ),
+    PatternKeywordCallCase(
+        case_id="pattern-search-endpos-indexlike-bytes",
+        helper="search",
+        pattern=b"abc",
+        args=(b"zabcabc",),
+        kwargs={"endpos": _INDEX_FOUR},
+        result_kind="match",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-match-pos-keyword-str",
         helper="match",
         pattern="abc",
@@ -1589,11 +1647,27 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="match",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-fullmatch-window-indexlike-bytes",
+        helper="fullmatch",
+        pattern=b"abc",
+        args=(b"zabc",),
+        kwargs={"pos": _INDEX_ONE, "endpos": _INDEX_FOUR},
+        result_kind="match",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-findall-window-keyword-str",
         helper="findall",
         pattern="abc",
         args=("zabcabcz",),
         kwargs={"pos": 1, "endpos": 7},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
+        case_id="pattern-findall-window-indexlike-str",
+        helper="findall",
+        pattern="abc",
+        args=("zabcabcabcz",),
+        kwargs={"pos": _INDEX_ONE, "endpos": _INDEX_SEVEN},
         result_kind="value",
     ),
     PatternKeywordCallCase(
@@ -1613,6 +1687,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="iter",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-finditer-window-indexlike-bytes",
+        helper="finditer",
+        pattern=b"abc",
+        args=(b"zabcabcabcz",),
+        kwargs={"pos": _INDEX_ONE, "endpos": _INDEX_SEVEN},
+        result_kind="iter",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-finditer-bool-window-keyword-bytes",
         helper="finditer",
         pattern=b"abc",
@@ -1629,6 +1711,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-split-maxsplit-indexlike-str",
+        helper="split",
+        pattern="abc",
+        args=("zabcabcabc",),
+        kwargs={"maxsplit": _INDEX_TWO},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-sub-count-keyword-bytes",
         helper="sub",
         pattern=b"abc",
@@ -1637,11 +1727,27 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-sub-count-indexlike-bytes",
+        helper="sub",
+        pattern=b"abc",
+        args=(b"x", b"abcabcabc"),
+        kwargs={"count": _INDEX_TWO},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-subn-count-keyword-str",
         helper="subn",
         pattern="abc",
         args=("x", "abcabc"),
         kwargs={"count": 1},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
+        case_id="pattern-subn-count-indexlike-str",
+        helper="subn",
+        pattern="abc",
+        args=("x", "abcabcabc"),
+        kwargs={"count": _INDEX_TWO},
         result_kind="value",
     ),
 )
