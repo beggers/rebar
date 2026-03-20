@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice covers 1417 cases across 114 manifests, all passing inside a still-bounded frontier; the benchmark publication is caught up on the same source-tree-shim surface, and the queue is drained with no ready feature follow-on currently surviving.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice is fully green but still intentionally bounded, and the benchmark publication is caught up on that same source-tree-shim surface rather than supporting a broad native-path speed claim.
 
 The clearest benchmark signal worth trusting is still the tiny parser compile-proxy slice, where the 8 parser workloads are 2.7992x faster on median than CPython. The broader 766-workload module-facing publication still runs through the source-tree shim and sits at 0.0792x median, so today it is methodology and coverage signal rather than a general speed claim.
 
