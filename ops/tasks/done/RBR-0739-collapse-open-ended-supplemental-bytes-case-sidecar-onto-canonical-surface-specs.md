@@ -1,8 +1,9 @@
 # RBR-0739: Collapse open-ended supplemental-bytes case sidecar onto canonical surface specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `OPEN_ENDED_SUPPLEMENTAL_BYTES_CASES` tuple from `tests/python/test_open_ended_quantified_group_parity_suite.py` so `OPEN_ENDED_BYTES_CASE_SURFACES` becomes the sole canonical owner of supplemental bytes-case ordering and case payload routing inside the open-ended parity owner.
@@ -78,3 +79,7 @@ PY`
   - the canonical-order import probe in Acceptance already passes in the current checkout (`ok`); and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because the mirrored tuple still exists.
 - This stays on the same bounded open-ended parity-harness cleanup track as `RBR-0725` and `RBR-0727`: those tasks removed generic-bucket and direct-test bucket sidecars from the same owner file, and `OPEN_ENDED_BYTES_CASE_SURFACES` already carries the case payloads and ordering needed to delete this remaining flattened tuple without changing behavior.
+- 2026-03-20 completion:
+  - Removed `OPEN_ENDED_SUPPLEMENTAL_BYTES_CASES` from `tests/python/test_open_ended_quantified_group_parity_suite.py`.
+  - Added a tiny file-local helper that flattens `OPEN_ENDED_BYTES_CASE_SURFACES` for the seven supplemental bytes parametrizations, preserving the existing canonical case order and payload routing.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3923 passed in 2.81s`), the canonical-order probe from the task (`ok`), and the `rg` absence check for `OPEN_ENDED_SUPPLEMENTAL_BYTES_CASES` (no matches).
