@@ -594,6 +594,26 @@ class ModuleKeywordErrorCase:
 
 
 @dataclass(frozen=True)
+class CompiledPatternModuleKeywordCallCase:
+    case_id: str
+    helper: str
+    pattern: str | bytes
+    args: tuple[object, ...]
+    kwargs: dict[str, object]
+    flags: int = 0
+
+
+@dataclass(frozen=True)
+class CompiledPatternModuleKeywordErrorCase:
+    case_id: str
+    helper: str
+    pattern: str | bytes
+    args: tuple[object, ...]
+    kwargs: dict[str, object]
+    flags: int = 0
+
+
+@dataclass(frozen=True)
 class SupplementalMatchBehaviorCase:
     case_id: str
     helper: str
@@ -1747,6 +1767,94 @@ MODULE_KEYWORD_ERROR_CASES = (
         kwargs={"missing": 1},
     ),
 )
+COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-split-maxsplit-keyword-str",
+        helper="split",
+        pattern="abc",
+        args=("zabczabc",),
+        kwargs={"maxsplit": 1},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-split-maxsplit-indexlike-bytes",
+        helper="split",
+        pattern=b"abc",
+        args=(b"zabcabcabc",),
+        kwargs={"maxsplit": _INDEX_TWO},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-sub-count-keyword-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abcabc"),
+        kwargs={"count": 1},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-sub-count-indexlike-bytes",
+        helper="sub",
+        pattern=b"abc",
+        args=(b"x", b"abcabcabc"),
+        kwargs={"count": _INDEX_TWO},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-subn-count-keyword-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abcabc"),
+        kwargs={"count": 1},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-subn-count-indexlike-str",
+        helper="subn",
+        pattern="abc",
+        args=("x", "abcabcabc"),
+        kwargs={"count": _INDEX_TWO},
+    ),
+)
+COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
+    CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-split-duplicate-maxsplit-keyword-str",
+        helper="split",
+        pattern="abc",
+        args=("abc", 1),
+        kwargs={"maxsplit": 1},
+    ),
+    CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-sub-duplicate-count-keyword-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abc", 1),
+        kwargs={"count": 1},
+    ),
+    CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-subn-duplicate-count-keyword-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abc", 1),
+        kwargs={"count": 1},
+    ),
+    CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-split-unexpected-keyword-bytes",
+        helper="split",
+        pattern=b"abc",
+        args=(b"abc",),
+        kwargs={"missing": 1},
+    ),
+    CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-sub-unexpected-keyword-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abc"),
+        kwargs={"missing": 1},
+    ),
+    CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-subn-unexpected-keyword-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abc"),
+        kwargs={"missing": 1},
+    ),
+)
 # Exercise CPython-supported input shapes that are easy to miss when escape()
 # only appears to support plain str and bytes inputs.
 ESCAPE_COMPATIBLE_INPUT_CASES = (
@@ -1949,6 +2057,14 @@ def _call_module_helper_with_flag_mode(
 
 def _call_module_keyword_case(regex_api: object, case: ModuleKeywordCallCase) -> object:
     return getattr(regex_api, case.helper)(*case.args, **case.kwargs)
+
+
+def _call_compiled_pattern_module_keyword_case(
+    regex_api: object,
+    case: CompiledPatternModuleKeywordCallCase | CompiledPatternModuleKeywordErrorCase,
+) -> object:
+    compiled_pattern = _compile_compiled_pattern_case(regex_api, case.pattern, case.flags)
+    return getattr(regex_api, case.helper)(compiled_pattern, *case.args, **case.kwargs)
 
 
 def _call_pattern_keyword_case(pattern: object, case: PatternKeywordCallCase) -> object:
@@ -3651,6 +3767,47 @@ def test_module_keyword_argument_errors_match_cpython(
     )
     expected_error = _capture_error(
         lambda: getattr(re, case.helper)(*case.args, **case.kwargs)
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_compiled_pattern_module_keyword_argument_calls_match_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternModuleKeywordCallCase,
+) -> None:
+    observed_backend_name, observed_backend = regex_backend
+    observed = _call_compiled_pattern_module_keyword_case(observed_backend, case)
+    expected = _call_compiled_pattern_module_keyword_case(re, case)
+
+    assert observed == expected, (
+        f"{observed_backend_name} compiled-pattern module keyword call mismatch for "
+        f"{case.case_id}"
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_compiled_pattern_module_keyword_argument_errors_match_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternModuleKeywordErrorCase,
+) -> None:
+    _, backend = regex_backend
+
+    observed_error = _capture_error(
+        lambda: _call_compiled_pattern_module_keyword_case(backend, case)
+    )
+    expected_error = _capture_error(
+        lambda: _call_compiled_pattern_module_keyword_case(re, case)
     )
 
     assert type(observed_error) is type(expected_error)
