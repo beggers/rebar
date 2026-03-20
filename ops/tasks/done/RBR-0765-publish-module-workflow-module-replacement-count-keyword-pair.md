@@ -1,8 +1,9 @@
 # RBR-0765: Publish the module-workflow module replacement count keyword pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next adjacent raw module keyword-argument pair, so the shared owner path lands the plain module-level replacement `count=` workflows before the remaining index-like keyword variants, module keyword error rows, or another owner family reopens the queue.
@@ -55,3 +56,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_argument_calls_match_cpython and (module-sub-count-keyword-str or module-subn-count-keyword-bytes)'` passed in this run (`4 passed, 662 deselected`);
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the earlier module keyword `flags=` and `maxsplit=` rows but not this adjacent plain replacement `count=` pair, leaving these two rows as the next bounded publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Published `workflow-module-sub-count-keyword-str` and `workflow-module-subn-count-keyword-bytes` on the existing `module-workflow-surface` manifest, keeping both rows pinned to the existing `MODULE_KEYWORD_CALL_CASES` anchors on the shared parity owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the canonical owner bundle now asserts `63` published module-workflow rows, a `41`/`22` `str`/`bytes` split, a `25`-row `module_call` surface, and the widened module keyword helper breakdown while mapping the published keyword rows back to `module-sub-count-keyword-str` and `module-subn-count-keyword-bytes`.
+- Updated the representative `module-workflow-surface` sample set in `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `1433` total / `1433` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `63`/`63`/`0`, `module.workflow.str` at `41`/`41`/`0`, `module.workflow.bytes` at `22`/`22`/`0`, and `module.workflow.module_call` at `25`/`25`/`0`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`690 passed, 1 skipped, 1940 subtests passed in 35.33s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0765-module-workflow-module-replacement-count-keyword-pair.py` (`63` executed / `63` passed), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1433` executed / `1433` passed).

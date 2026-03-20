@@ -655,6 +655,48 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-count-keyword-str",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "count"],
+      "notes": [
+        "Publishes the adjacent raw module-level sub() count= keyword workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-keyword-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "count"],
+      "notes": [
+        "Publishes the adjacent raw module-level subn() count= keyword workflow on bytes payloads without widening into the remaining module keyword helper ladder."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
