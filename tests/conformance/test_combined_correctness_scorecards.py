@@ -8,6 +8,7 @@ import re
 import subprocess
 from typing import Any
 import unittest
+from unittest import mock
 import warnings
 
 from rebar_harness import correctness
@@ -3896,6 +3897,10 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
 class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
     maxDiff = None
 
+    def _clear_tracked_report_freshness_caches(self) -> None:
+        _tracked_report_freshness_manifest_ids.cache_clear()
+        _tracked_report_freshness_manifests.cache_clear()
+
     def _assert_mixed_text_manifests_cover_both_representative_text_models(
         self,
         *,
@@ -4022,6 +4027,102 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 self.assertNotEqual(expected_target_manifest_ids, ())
 
         self.assertEqual(len(suite_ids), len(set(suite_ids)))
+
+    def test_tracked_report_freshness_helpers_follow_registry_and_fixture_order(
+        self,
+    ) -> None:
+        expected_manifest_ids: list[str] = []
+        seen_manifest_ids: set[str] = set()
+
+        for suite in tracked_correctness_scorecard_suites():
+            for manifest_id, expectation in suite.expectation_table.items():
+                if not expectation.tracked_report_freshness_sample:
+                    continue
+                self.assertNotIn(
+                    manifest_id,
+                    seen_manifest_ids,
+                    msg=(
+                        "tracked report freshness helpers should not reuse manifest ids "
+                        f"across suites, but {manifest_id!r} appeared twice"
+                    ),
+                )
+                seen_manifest_ids.add(manifest_id)
+                expected_manifest_ids.append(manifest_id)
+
+        self.assertNotEqual(expected_manifest_ids, [])
+        self.assertEqual(
+            _tracked_report_freshness_manifest_ids(),
+            tuple(expected_manifest_ids),
+        )
+        self.assertEqual(
+            tuple(
+                manifest.manifest_id
+                for manifest in _tracked_report_freshness_manifests()
+            ),
+            tuple(
+                manifest.manifest_id
+                for manifest in published_fixture_manifests()
+                if manifest.manifest_id in seen_manifest_ids
+            ),
+        )
+
+    def test_tracked_report_freshness_manifest_ids_reject_duplicate_manifest_owner(
+        self,
+    ) -> None:
+        tracked_report_manifest_id = next(
+            manifest_id
+            for suite in tracked_correctness_scorecard_suites()
+            for manifest_id, expectation in suite.expectation_table.items()
+            if expectation.tracked_report_freshness_sample
+        )
+        duplicate_suite = CorrectnessScorecardSuiteDefinition(
+            suite_id="duplicate-tracked-report-freshness-owner",
+            expectation_label="duplicate tracked report freshness owner",
+            expectation_table={
+                tracked_report_manifest_id: CorrectnessScorecardManifestExpectation(
+                    representative_case_ids=("placeholder-case-id",),
+                    tracked_report_freshness_sample=True,
+                ),
+            },
+        )
+
+        self._clear_tracked_report_freshness_caches()
+        self.addCleanup(self._clear_tracked_report_freshness_caches)
+
+        with mock.patch(
+            f"{__name__}.CORRECTNESS_SCORECARD_SUITE_REGISTRY",
+            tracked_correctness_scorecard_suites() + (duplicate_suite,),
+        ):
+            with self.assertRaisesRegex(
+                AssertionError,
+                re.escape(
+                    "duplicate tracked report freshness manifest owner for "
+                    f"{tracked_report_manifest_id!r}"
+                ),
+            ):
+                _tracked_report_freshness_manifest_ids()
+
+    def test_tracked_report_freshness_manifests_reject_missing_published_manifest(
+        self,
+    ) -> None:
+        missing_manifest_id = "missing-tracked-report-freshness-manifest"
+
+        self._clear_tracked_report_freshness_caches()
+        self.addCleanup(self._clear_tracked_report_freshness_caches)
+
+        with mock.patch(
+            f"{__name__}._tracked_report_freshness_manifest_ids",
+            return_value=(missing_manifest_id,),
+        ):
+            with self.assertRaisesRegex(
+                AssertionError,
+                re.escape(
+                    "tracked report freshness sample manifests drifted from "
+                    "published_fixture_manifests(): missing "
+                    f"['{missing_manifest_id}']"
+                ),
+            ):
+                _tracked_report_freshness_manifests()
 
     def test_unknown_suite_id_raises_clear_error(self) -> None:
         with self.assertRaisesRegex(
