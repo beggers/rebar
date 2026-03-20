@@ -1191,6 +1191,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-bool-false-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "helper": "compile",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": False
+      },
+      "categories": ["workflow", "compile", "literal", "str", "compiled-pattern", "flags", "bool-false"],
+      "notes": [
+        "Publishes the explicit bool-false compiled-pattern module-level compile() keyword neighbor on the shared module-workflow owner path without broadening into integer-zero or NOFLAG spellings."
+      ]
+    },
+    {
       "id": "workflow-module-compile-str-compiled-pattern-named-group",
       "operation": "module_call",
       "family": "compile_workflow",
@@ -1275,6 +1290,22 @@ MANIFEST = {
       "categories": ["workflow", "compile", "literal", "bytes", "compiled-pattern", "flags", "int-zero"],
       "notes": [
         "Publishes the bytes explicit integer-zero compiled-pattern module-level compile() keyword neighbor on the shared module-workflow owner path without broadening into False or NOFLAG spellings."
+      ]
+    },
+    {
+      "id": "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": False
+      },
+      "categories": ["workflow", "compile", "literal", "bytes", "compiled-pattern", "flags", "bool-false"],
+      "notes": [
+        "Publishes the bytes explicit bool-false compiled-pattern module-level compile() keyword neighbor on the shared module-workflow owner path without broadening into integer-zero or NOFLAG spellings."
       ]
     },
     {

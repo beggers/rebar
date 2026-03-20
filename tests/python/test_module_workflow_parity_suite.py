@@ -1804,11 +1804,25 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         kwargs={"flags": 0},
     ),
     CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-compile-flags-bool-false-str",
+        helper="compile",
+        pattern="abc",
+        args=(),
+        kwargs={"flags": False},
+    ),
+    CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-compile-flags-int-zero-bytes",
         helper="compile",
         pattern=b"abc",
         args=(),
         kwargs={"flags": 0},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-compile-flags-bool-false-bytes",
+        helper="compile",
+        pattern=b"abc",
+        args=(),
+        kwargs={"flags": False},
     ),
     CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-split-maxsplit-keyword-str",
@@ -2344,9 +2358,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 110
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 112
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 69, "bytes": 41}
+        {"str": 70, "bytes": 42}
     )
     assert len(PATTERN_CASES) == 42
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -2361,10 +2375,10 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 2,
         }
     )
-    assert len(MODULE_CALL_CASES) == 56
+    assert len(MODULE_CALL_CASES) == 58
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
-            "compile": 5,
+            "compile": 7,
             "search": 7,
             "match": 5,
             "fullmatch": 6,
@@ -3106,6 +3120,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     ) == (
         "workflow-module-compile-str-compiled-pattern",
         "workflow-module-compile-flags-int-zero-str-compiled-pattern",
+        "workflow-module-compile-flags-bool-false-str-compiled-pattern",
         "workflow-module-compile-str-compiled-pattern-named-group",
         "workflow-module-search-str-compiled-pattern",
         "workflow-module-search-str-compiled-pattern-on-bytes-string",
@@ -3136,6 +3151,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     ) == (
         "workflow-module-compile-bytes-compiled-pattern",
         "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
+        "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
         "workflow-module-match-bytes-compiled-pattern-on-str-string",
         "workflow-module-search-bytes-verbose-regression-compiled-pattern",
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
@@ -3150,18 +3166,20 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 37
+    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 39
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == (
         "workflow-module-compile-str-compiled-pattern",
         "workflow-module-compile-flags-int-zero-str-compiled-pattern",
+        "workflow-module-compile-flags-bool-false-str-compiled-pattern",
         "workflow-module-compile-str-compiled-pattern-named-group",
         "workflow-module-search-str-compiled-pattern",
         "workflow-module-search-str-compiled-pattern-on-bytes-string",
         "workflow-module-match-str-compiled-pattern",
         "workflow-module-compile-bytes-compiled-pattern",
         "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
+        "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
         "workflow-module-match-bytes-compiled-pattern-on-str-string",
         "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
         "workflow-module-match-str-bounded-wildcard-compiled-pattern",
@@ -3197,12 +3215,14 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     ) == (
         "compiled-pattern-compile-str-literal",
         "compiled-pattern-compile-flags-int-zero-str",
+        "compiled-pattern-compile-flags-bool-false-str",
         "compiled-pattern-compile-str-named-group",
         "compiled-pattern-search-str",
         "compiled-pattern-search-str-on-bytes-string",
         "compiled-pattern-match-str",
         "compiled-pattern-compile-bytes-literal",
         "compiled-pattern-compile-flags-int-zero-bytes",
+        "compiled-pattern-compile-flags-bool-false-bytes",
         "compiled-pattern-match-bytes-on-str-string",
         "compiled-module-search-ignorecase-bounded-hit",
         "compiled-module-match-bounded-hit",
