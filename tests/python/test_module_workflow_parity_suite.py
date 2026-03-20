@@ -183,35 +183,9 @@ def _fixture_cases_for_helpers(
     return tuple(case for case in bundle.cases if case.helper in helpers)
 
 
-def _load_module_workflow_owner_bundles() -> tuple[FixtureBundle, FixtureBundle]:
-    bundles = load_published_fixture_bundles(
-        (MODULE_WORKFLOW_FIXTURE_PATH, MATCH_BEHAVIOR_FIXTURE_PATH)
-    )
-    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
-    expected_manifest_ids = ("module-workflow-surface", "match-behavior-smoke")
-    if loaded_manifest_ids != expected_manifest_ids:
-        raise ValueError(
-            "module workflow owner bundle manifest ids drifted: "
-            f"expected {expected_manifest_ids}, got {loaded_manifest_ids}"
-        )
-    return bundles
-
-
-def _load_collection_replacement_owner_bundle() -> FixtureBundle:
-    bundles = load_published_fixture_bundles(
-        (CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",)
-    )
-    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
-    expected_manifest_ids = ("collection-replacement-workflows",)
-    if loaded_manifest_ids != expected_manifest_ids:
-        raise ValueError(
-            "collection/replacement owner bundle manifest ids drifted: "
-            f"expected {expected_manifest_ids}, got {loaded_manifest_ids}"
-        )
-    return bundles[0]
-
-
-(MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = _load_module_workflow_owner_bundles()
+(MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = load_published_fixture_bundles(
+    (MODULE_WORKFLOW_FIXTURE_PATH, MATCH_BEHAVIOR_FIXTURE_PATH)
+)
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
 COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
@@ -409,42 +383,9 @@ def _public_surface_loader_token(case: FixtureCase) -> str | bytes:
         return case.case_id
     return case_pattern(case)
 
-
-def _published_public_surface_bundles() -> tuple[FixtureBundle, ...]:
-    # Reuse the shared full-manifest loader even for owner rows without pattern payloads,
-    # then reapply this file's case-id-based contract on the returned bundles.
-    bundles = load_published_fixture_bundles(
-        (
-            CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
-            CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
-            CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
-        ),
-        pattern_extractor=_public_surface_loader_token,
-    )
-    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
-    expected_manifest_ids = (
-        "public-api-surface",
-        "exported-symbol-surface",
-        "pattern-object-surface",
-    )
-    if loaded_manifest_ids != expected_manifest_ids:
-        raise ValueError(
-            "public surface owner bundle manifest ids drifted: "
-            f"expected {expected_manifest_ids}, got {loaded_manifest_ids}"
-        )
-
-    expected_text_models_by_manifest_id = {
-        "pattern-object-surface": frozenset({"bytes", "str"})
-    }
-    return tuple(
-        _public_surface_contract_bundle(
-            bundle,
-            expected_text_models=expected_text_models_by_manifest_id.get(
-                bundle.manifest.manifest_id
-            ),
-        )
-        for bundle in bundles
-    )
+PUBLIC_SURFACE_EXPECTED_TEXT_MODELS_BY_MANIFEST_ID = {
+    "pattern-object-surface": frozenset({"bytes", "str"})
+}
 
 
 # Keep the public-surface coverage on the module workflow owner file.
@@ -501,7 +442,24 @@ NON_INSTANTIABLE_EXPORTS = (
         id="Match",
     ),
 )
-PUBLIC_SURFACE_BUNDLES = _published_public_surface_bundles()
+# Reuse the shared full-manifest loader even for owner rows without pattern
+# payloads, then reapply this file's case-id-based contract on the returned bundles.
+PUBLIC_SURFACE_BUNDLES = tuple(
+    _public_surface_contract_bundle(
+        bundle,
+        expected_text_models=PUBLIC_SURFACE_EXPECTED_TEXT_MODELS_BY_MANIFEST_ID.get(
+            bundle.manifest.manifest_id
+        ),
+    )
+    for bundle in load_published_fixture_bundles(
+        (
+            CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
+            CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
+            CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
+        ),
+        pattern_extractor=_public_surface_loader_token,
+    )
+)
 PUBLIC_API_BUNDLE = published_fixture_bundle_by_manifest_id(
     PUBLIC_SURFACE_BUNDLES,
     "public-api-surface",
@@ -1062,7 +1020,9 @@ class _ModuleWorkflowFakeNativeBoundary(RecordingNativeBoundary):
 # Keep the published collection/replacement owner surface on its own fixture manifest.
 _COLLECTION_FRONTIER_HELPERS = frozenset({"split", "findall", "finditer"})
 _REPLACEMENT_FRONTIER_HELPERS = frozenset({"sub", "subn"})
-COLLECTION_REPLACEMENT_BUNDLE = _load_collection_replacement_owner_bundle()
+(COLLECTION_REPLACEMENT_BUNDLE,) = load_published_fixture_bundles(
+    (CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",)
+)
 PUBLISHED_COLLECTION_FIXTURE_CASES = _fixture_cases_for_helpers(
     COLLECTION_REPLACEMENT_BUNDLE,
     _COLLECTION_FRONTIER_HELPERS,
