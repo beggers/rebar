@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Callable
 from dataclasses import dataclass
 import re
 import textwrap
@@ -62,14 +61,6 @@ class CallableNearMissCase:
 
 
 TextValue = str | bytes
-
-
-def _bundle_patterns(
-    bundle: FixtureBundle,
-    *,
-    pattern_extractor: Callable[[FixtureCase], str | bytes],
-) -> frozenset[str | bytes]:
-    return frozenset(pattern_extractor(case) for case in bundle.cases)
 
 
 CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS = Counter(
@@ -1517,7 +1508,7 @@ def test_callable_replacement_fixture_shape_contract(
     bundle: FixtureBundle,
 ) -> None:
     manifest_spec = CALLABLE_MANIFEST_SPECS_BY_ID.get(bundle.manifest.manifest_id)
-    compile_patterns = _bundle_patterns(bundle, pattern_extractor=case_pattern)
+    compile_patterns = bundle.expected_patterns
     expected_text_models = (
         manifest_spec.expected_text_models
         if manifest_spec is not None
@@ -1538,9 +1529,9 @@ def test_callable_replacement_fixture_shape_contract(
         expected_operation_helper_counts
     )
     if manifest_spec is not None:
-        assert compile_patterns == manifest_spec.expected_compile_patterns
+        assert bundle.expected_patterns == manifest_spec.expected_compile_patterns
     else:
-        assert len(compile_patterns) == 2
+        assert len(bundle.expected_patterns) == 2
 
     has_named_pattern = False
     has_numbered_pattern = False
@@ -1998,9 +1989,7 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     assert bundle.manifest.manifest_id == manifest_spec.manifest_id
     assert len(bundle.cases) == len(manifest_spec.expected_case_ids)
     assert {case.case_id for case in bundle.cases} == manifest_spec.expected_case_ids
-    assert _bundle_patterns(bundle, pattern_extractor=case_pattern) == (
-        manifest_spec.expected_compile_patterns
-    )
+    assert bundle.expected_patterns == manifest_spec.expected_compile_patterns
     assert {case.text_model for case in bundle.cases} == manifest_spec.expected_text_models
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         manifest_spec.expected_operation_helper_counts
