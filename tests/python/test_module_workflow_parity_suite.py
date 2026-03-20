@@ -978,38 +978,6 @@ PUBLISHED_COLLECTION_PATTERN_CASES = tuple(
     for case in COLLECTION_FIXTURE_BUNDLE.cases
     if case.operation == "pattern_call"
 )
-LITERAL_COLLECTION_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "module-split": frozenset(
-        case.case_id
-        for case in PUBLISHED_COLLECTION_MODULE_CASES
-        if case.helper == "split"
-    ),
-    "pattern-split": frozenset(
-        case.case_id
-        for case in PUBLISHED_COLLECTION_PATTERN_CASES
-        if case.helper == "split"
-    ),
-    "module-findall": frozenset(
-        case.case_id
-        for case in PUBLISHED_COLLECTION_MODULE_CASES
-        if case.helper == "findall"
-    ),
-    "pattern-findall": frozenset(
-        case.case_id
-        for case in PUBLISHED_COLLECTION_PATTERN_CASES
-        if case.helper == "findall"
-    ),
-    "module-finditer": frozenset(
-        case.case_id
-        for case in PUBLISHED_COLLECTION_MODULE_CASES
-        if case.helper == "finditer"
-    ),
-    "pattern-finditer": frozenset(
-        case.case_id
-        for case in PUBLISHED_COLLECTION_PATTERN_CASES
-        if case.helper == "finditer"
-    ),
-}
 MODULE_SPLIT_COLLECTION_CASES = tuple(
     case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "split"
 ) + (
@@ -3564,7 +3532,38 @@ def test_literal_collection_suite_tracks_published_case_frontier() -> None:
 
 def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        LITERAL_COLLECTION_DIRECT_TEST_CASE_ID_BUCKETS,
+        {
+            "module-split": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_MODULE_CASES
+                if case.helper == "split"
+            ),
+            "pattern-split": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_PATTERN_CASES
+                if case.helper == "split"
+            ),
+            "module-findall": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_MODULE_CASES
+                if case.helper == "findall"
+            ),
+            "pattern-findall": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_PATTERN_CASES
+                if case.helper == "findall"
+            ),
+            "module-finditer": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_MODULE_CASES
+                if case.helper == "finditer"
+            ),
+            "pattern-finditer": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_PATTERN_CASES
+                if case.helper == "finditer"
+            ),
+        },
         selected_case_ids=COLLECTION_TARGET_FIXTURE_CASE_IDS,
         coverage_label="literal collection direct-test case-id buckets",
     )
