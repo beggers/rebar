@@ -350,6 +350,141 @@ Verified with `python -m unittest`.
             self.assertTrue((task_root / "in_progress" / "A-architecture.md").exists())
             self.assertTrue(feature_task.exists())
 
+    def test_reroute_misplaced_user_asks_moves_queue_entries_into_supervisor_owned_dirs(
+        self,
+    ) -> None:
+        rebar_ops = load_rebar_ops_module()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = pathlib.Path(temp_dir)
+            task_root = repo_root / "ops" / "tasks"
+            user_ask_root = repo_root / "ops" / "user_asks"
+            for status in ("ready", "in_progress", "done", "blocked"):
+                (task_root / status).mkdir(parents=True, exist_ok=True)
+            for status in ("inbox", "done"):
+                (user_ask_root / status).mkdir(parents=True, exist_ok=True)
+
+            routed_files = {
+                ("ready", "USER-ASK-1.md"): "needs supervisor intake\n",
+                ("in_progress", "USER-ASK-2.md"): "still a supervisor ask\n",
+                ("done", "USER-ASK-3.md"): "already handled\n",
+                ("blocked", "USER-ASK-4.md"): "blocked user ask\n",
+            }
+            for (status, name), content in routed_files.items():
+                (task_root / status / name).write_text(content, encoding="utf-8")
+
+            ordinary_task = task_root / "ready" / "RBR-0001.md"
+            ordinary_task.write_text("# Task\n\nStatus: ready\n", encoding="utf-8")
+
+            with mock.patch.object(rebar_ops, "REPO_ROOT", repo_root), mock.patch.object(
+                rebar_ops,
+                "TASK_ROOT",
+                task_root,
+            ), mock.patch.object(rebar_ops, "USER_ASK_ROOT", user_ask_root):
+                actions = rebar_ops.reroute_misplaced_user_asks()
+
+            self.assertTrue(ordinary_task.exists())
+            self.assertFalse((task_root / "ready" / "USER-ASK-1.md").exists())
+            self.assertFalse((task_root / "in_progress" / "USER-ASK-2.md").exists())
+            self.assertFalse((task_root / "done" / "USER-ASK-3.md").exists())
+            self.assertFalse((task_root / "blocked" / "USER-ASK-4.md").exists())
+
+            inbox_paths = (
+                user_ask_root / "inbox" / "USER-ASK-1.md",
+                user_ask_root / "inbox" / "USER-ASK-2.md",
+            )
+            done_paths = (
+                user_ask_root / "done" / "USER-ASK-3.md",
+                user_ask_root / "done" / "USER-ASK-4.md",
+            )
+            for path, expected_content in zip(
+                (*inbox_paths, *done_paths),
+                routed_files.values(),
+                strict=True,
+            ):
+                self.assertTrue(path.exists())
+                self.assertEqual(path.read_text(encoding="utf-8"), expected_content)
+
+            self.assertEqual(
+                actions,
+                [
+                    {
+                        "task_name": "USER-ASK-1.md",
+                        "action": "rerouted_misplaced_user_ask",
+                        "severity": "warning",
+                        "final_status": "inbox",
+                        "path": "ops/user_asks/inbox/USER-ASK-1.md",
+                    },
+                    {
+                        "task_name": "USER-ASK-2.md",
+                        "action": "rerouted_misplaced_user_ask",
+                        "severity": "warning",
+                        "final_status": "inbox",
+                        "path": "ops/user_asks/inbox/USER-ASK-2.md",
+                    },
+                    {
+                        "task_name": "USER-ASK-3.md",
+                        "action": "rerouted_misplaced_user_ask",
+                        "severity": "warning",
+                        "final_status": "done",
+                        "path": "ops/user_asks/done/USER-ASK-3.md",
+                    },
+                    {
+                        "task_name": "USER-ASK-4.md",
+                        "action": "rerouted_misplaced_user_ask",
+                        "severity": "warning",
+                        "final_status": "done",
+                        "path": "ops/user_asks/done/USER-ASK-4.md",
+                    },
+                ],
+            )
+
+    def test_reroute_misplaced_user_asks_deduplicates_existing_destination_names(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = pathlib.Path(temp_dir)
+            task_root = repo_root / "ops" / "tasks"
+            user_ask_root = repo_root / "ops" / "user_asks"
+            for status in ("ready", "in_progress", "done", "blocked"):
+                (task_root / status).mkdir(parents=True, exist_ok=True)
+            for status in ("inbox", "done"):
+                (user_ask_root / status).mkdir(parents=True, exist_ok=True)
+
+            incoming = task_root / "ready" / "USER-ASK-7.md"
+            incoming.write_text("fresh inbox note\n", encoding="utf-8")
+            for existing_name in (
+                "USER-ASK-7.md",
+                "USER-ASK-7.md.from-ready",
+                "USER-ASK-7.md.from-ready-2",
+            ):
+                (user_ask_root / "inbox" / existing_name).write_text(
+                    f"{existing_name}\n",
+                    encoding="utf-8",
+                )
+
+            with mock.patch.object(rebar_ops, "REPO_ROOT", repo_root), mock.patch.object(
+                rebar_ops,
+                "TASK_ROOT",
+                task_root,
+            ), mock.patch.object(rebar_ops, "USER_ASK_ROOT", user_ask_root):
+                actions = rebar_ops.reroute_misplaced_user_asks()
+
+            expected_path = user_ask_root / "inbox" / "USER-ASK-7.md.from-ready-3"
+            self.assertFalse(incoming.exists())
+            self.assertTrue(expected_path.exists())
+            self.assertEqual(expected_path.read_text(encoding="utf-8"), "fresh inbox note\n")
+            self.assertEqual(
+                actions,
+                [
+                    {
+                        "task_name": "USER-ASK-7.md",
+                        "action": "rerouted_misplaced_user_ask",
+                        "severity": "warning",
+                        "final_status": "inbox",
+                        "path": "ops/user_asks/inbox/USER-ASK-7.md.from-ready-3",
+                    }
+                ],
+            )
+
     def test_maybe_commit_agent_changes_uses_agent_named_subject_and_detailed_body(self) -> None:
         rebar_ops = load_rebar_ops_module()
         with tempfile.TemporaryDirectory() as temp_dir:
