@@ -10,6 +10,7 @@ import pytest
 
 from rebar_harness.correctness import (
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
+    CORRECTNESS_FIXTURES_ROOT,
     CpythonReAdapter,
     FixtureCase,
     RebarAdapter,
@@ -21,7 +22,6 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    FixtureBundleSpec,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -29,7 +29,6 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     case_replacement_argument,
     case_text_argument,
-    load_fixture_bundles,
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
@@ -1089,17 +1088,9 @@ def _pending_rebar_bytes_patterns() -> frozenset[bytes]:
         if _is_pending_rebar_callable_case(case) and case.text_model == "bytes"
     )
 
-COLLECTION_REPLACEMENT_BUNDLE, = load_fixture_bundles(
-    (
-        FixtureBundleSpec(
-            COLLECTION_REPLACEMENT_FIXTURE_NAME,
-            expected_manifest_id="collection-replacement-workflows",
-            selected_case_ids=("module-sub-callable-str",),
-            expected_patterns=frozenset({"abc"}),
-            expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
-            expected_text_models=frozenset({"str"}),
-        ),
-    )
+COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID = "module-sub-callable-str"
+COLLECTION_REPLACEMENT_OWNER_BUNDLE, = load_published_fixture_bundles(
+    (CORRECTNESS_FIXTURES_ROOT / COLLECTION_REPLACEMENT_FIXTURE_NAME,)
 )
 FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
 PUBLISHED_CALLABLE_CASES = tuple(
@@ -1173,7 +1164,17 @@ PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
 
 
 def _literal_callable_case() -> FixtureCase:
-    return COLLECTION_REPLACEMENT_BUNDLE.cases[0]
+    matches = tuple(
+        case
+        for case in COLLECTION_REPLACEMENT_OWNER_BUNDLE.cases
+        if case.case_id == COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID
+    )
+    if len(matches) != 1:
+        raise AssertionError(
+            "collection replacement owner bundle drifted from the literal callable "
+            f"case {COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID!r}: {matches!r}"
+        )
+    return matches[0]
 
 
 def _source_callable_replacement(case: FixtureCase) -> dict[str, object]:
@@ -1956,9 +1957,19 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     case = _literal_callable_case()
     source_replacement = _source_callable_replacement(case)
 
-    assert COLLECTION_REPLACEMENT_BUNDLE.manifest.manifest_id == (
+    assert COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.path == (
+        CORRECTNESS_FIXTURES_ROOT / COLLECTION_REPLACEMENT_FIXTURE_NAME
+    )
+    assert COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.manifest_id == (
         "collection-replacement-workflows"
     )
+    assert tuple(
+        fixture_case.case_id for fixture_case in COLLECTION_REPLACEMENT_OWNER_BUNDLE.cases
+    ) == tuple(
+        fixture_case.case_id
+        for fixture_case in COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.cases
+    )
+    assert case.case_id == COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID
     assert case.operation == "module_call"
     assert case.helper == "sub"
     assert _literal_callable_pattern() == "abc"
