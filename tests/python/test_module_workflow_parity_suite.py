@@ -195,6 +195,8 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-cache-hit-str",
     "workflow-cache-hit-bytes",
     "workflow-purge-reset-str",
+    "workflow-module-search-str-bounded-wildcard-ignorecase",
+    "workflow-module-match-str-bounded-wildcard-miss",
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
@@ -230,8 +232,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "finditer"): 1,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
-        ("module_call", "search"): 2,
-        ("module_call", "match"): 1,
+        ("module_call", "search"): 3,
+        ("module_call", "match"): 2,
         ("module_call", "fullmatch"): 1,
         ("module_call", "split"): 1,
         ("module_call", "findall"): 1,
@@ -306,6 +308,15 @@ MATCH_HELPER_PATTERN_CASES = tuple(
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
+PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS = (
+    "workflow-module-search-str-bounded-wildcard-ignorecase",
+    "workflow-module-match-str-bounded-wildcard-miss",
+)
+PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
+    case
+    for case in MODULE_CALL_CASES
+    if case.case_id in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS
+)
 PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
@@ -1238,6 +1249,15 @@ BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
         string="abc",
         compiled=True,
     ),
+)
+PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS = (
+    "module-search-ignorecase-bounded-hit",
+    "module-match-bounded-miss",
+)
+PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES = tuple(
+    case
+    for case in BOUNDED_WILDCARD_MODULE_MATCH_CASES
+    if case.case_id in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS
 )
 BOUNDED_WILDCARD_MODULE_COLLECTION_CASES = (
     BoundedWildcardModuleCase(
@@ -2187,6 +2207,9 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             "pattern": frozenset(case.case_id for case in PATTERN_CASES),
             "cache": frozenset(case.case_id for case in CACHE_CASES),
             "purge": frozenset(case.case_id for case in PURGE_CASES),
+            "bounded-wildcard-module-helper": frozenset(
+                case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+            ),
             "compiled-module-helper": frozenset(
                 case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
             ),
@@ -2419,6 +2442,32 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
     assert PATTERN_CASES_BY_ID[
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key"
     ].args == [verbose_cases_by_id["fullmatch-rejects-lowercase-key"].text.encode("latin-1")]
+
+
+def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_from_direct_cases(
+) -> None:
+    assert tuple(
+        case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+    ) == PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS
+    assert tuple(
+        case.case_id
+        for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES
+    ) == PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASE_IDS
+    assert tuple(
+        case.helper for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+    ) == tuple(
+        case.helper for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES
+    )
+
+    for fixture_case, direct_case in zip(
+        PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES,
+        PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_DIRECT_CASES,
+    ):
+        assert fixture_case.use_compiled_pattern is False
+        assert fixture_case.text_model == "str"
+        assert case_pattern(fixture_case) == direct_case.pattern
+        assert tuple(fixture_case.args) == (direct_case.string,)
+        assert fixture_case.flags == direct_case.flags
 
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(

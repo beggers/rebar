@@ -1,8 +1,9 @@
 # RBR-0747: Publish the module-workflow bounded wildcard module-helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the `module-workflow-surface` correctness frontier with the first bounded-wildcard raw module-helper pair, so the existing owner path starts publishing adjacent `module_call` behavior for already-landed Rust-backed `a.c` support before returning to compiled-pattern wildcard helpers or broader collection-helper catch-up.
@@ -53,3 +54,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard and module and not collection and not placeholder'` passed in this run;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes bounded-wildcard compile and bound-`Pattern` rows but no bounded-wildcard raw `module_call` rows, leaving this pair as the next bounded adjacent publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added `workflow-module-search-str-bounded-wildcard-ignorecase` and `workflow-module-match-str-bounded-wildcard-miss` to `tests/conformance/fixtures/module_workflow_surface.py`, pinned to the existing `module-search-ignorecase-bounded-hit` and `module-match-bounded-miss` anchors on the shared `BOUNDED_WILDCARD_MODULE_MATCH_CASES` owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared `module-workflow-surface` expectations now publish `43` rows total, with `module_call` helper counts of `search == 3`, `match == 2`, `fullmatch == 1`, `split == 1`, `findall == 1`, and `escape == 2`. The parity suite now keeps the raw bounded-wildcard module-helper pair on its own direct-test bucket and asserts that the published fixture rows stay aligned with the exact shared direct anchors.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated `reports/correctness/latest.py`. Reading the tracked report artifact shows `1413` total / `1413` passed / `0` `unimplemented` across `114` manifests, with `module-workflow-surface` at `43` / `43` / `0`, `module.workflow` at `43` / `43` / `0`, `module.workflow.str` at `28` / `28` / `0`, and `module.workflow.module_call` at `10` / `10` / `0`; both new bounded-wildcard raw module-helper rows are present in the tracked scorecard with `comparison == "pass"`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0747-module-workflow-bounded-wildcard-module-helpers.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `43` total / `43` passed / `0` `unimplemented`.

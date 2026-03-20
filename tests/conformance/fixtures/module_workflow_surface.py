@@ -452,6 +452,31 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-search-str-bounded-wildcard-ignorecase",
+      "operation": "module_call",
+      "family": "module_search_workflow",
+      "pattern": "a.c",
+      "flags": 2,
+      "helper": "search",
+      "args": ["ABC"],
+      "categories": ["workflow", "search", "wildcard", "bounded", "ignorecase", "str"],
+      "notes": [
+        "Publishes the exact raw module-level search() IGNORECASE workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-match-str-bounded-wildcard-miss",
+      "operation": "module_call",
+      "family": "module_match_workflow",
+      "pattern": "a.c",
+      "helper": "match",
+      "args": ["zabc"],
+      "categories": ["workflow", "match", "wildcard", "bounded", "str", "miss"],
+      "notes": [
+        "Publishes the exact raw module-level match() miss workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
