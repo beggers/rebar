@@ -522,14 +522,12 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
 )
 
 
-def _flatten_direct_bytes_follow_on_specs(
-) -> tuple[BranchLocalBackreferenceBytesFollowOnCase, ...]:
-    return tuple(case for spec in DIRECT_BYTES_FOLLOW_ON_SPECS for case in spec.cases)
-
-
+DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
+    case for spec in DIRECT_BYTES_FOLLOW_ON_SPECS for case in spec.cases
+)
 SUPPORTED_DIRECT_BYTES_PATTERNS = frozenset(
     case.pattern
-    for case in _flatten_direct_bytes_follow_on_specs()
+    for case in DIRECT_BYTES_FOLLOW_ON_CASES
     if not case.unsupported_backends
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
@@ -1368,7 +1366,7 @@ def test_published_workflows_match_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _flatten_direct_bytes_follow_on_specs(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1379,7 +1377,7 @@ def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _flatten_direct_bytes_follow_on_specs(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_module_search_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1397,7 +1395,7 @@ def test_direct_bytes_follow_on_module_search_matches_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _flatten_direct_bytes_follow_on_specs(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1415,7 +1413,7 @@ def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpyt
 
 
 @pytest.mark.parametrize(
-    "case", _flatten_direct_bytes_follow_on_specs(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1434,7 +1432,7 @@ def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython
 
 
 @pytest.mark.parametrize(
-    "case", _flatten_direct_bytes_follow_on_specs(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1465,7 +1463,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _flatten_direct_bytes_follow_on_specs(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1488,7 +1486,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_
 
 
 @pytest.mark.parametrize(
-    "case", _flatten_direct_bytes_follow_on_specs(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
