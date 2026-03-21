@@ -1352,6 +1352,22 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": 0
+      },
+      "categories": ["workflow", "compile", "named-group", "bytes", "compiled-pattern", "flags", "int-zero"],
+      "notes": [
+        "Publishes the bytes named-group explicit integer-zero compiled-pattern module-level compile() keyword singleton on the shared module-workflow owner path without broadening into the default, False, or NOFLAG spellings."
+      ]
+    },
+    {
       "id": "workflow-module-match-bytes-compiled-pattern-on-str-string",
       "operation": "module_call",
       "family": "module_match_workflow",
