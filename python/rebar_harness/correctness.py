@@ -44,6 +44,7 @@ CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR = "conditional-group-exists"
 CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR = (
     "conditional-group-exists-replacement"
 )
+COLLECTION_REPLACEMENT_FIXTURE_SELECTOR = "collection-replacement"
 GROUPED_REPLACEMENT_FIXTURE_SELECTOR = "grouped-replacement"
 GROUPED_CAPTURE_FIXTURE_SELECTOR = "grouped-capture"
 WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = (
@@ -260,6 +261,9 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "conditional_group_exists_quantified_replacement_workflows.py",
             "conditional_group_exists_replacement_workflows.py",
             "conditional_group_exists_replacement_template_workflows.py",
+        ),
+        COLLECTION_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "collection_replacement_workflows.py",
         ),
         GROUPED_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "collection_replacement_workflows.py",

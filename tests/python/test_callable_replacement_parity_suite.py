@@ -9,7 +9,7 @@ import pytest
 
 from rebar_harness.correctness import (
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
-    CORRECTNESS_FIXTURES_ROOT,
+    COLLECTION_REPLACEMENT_FIXTURE_SELECTOR,
     CpythonReAdapter,
     FixtureCase,
     RebarAdapter,
@@ -33,9 +33,6 @@ from tests.python.fixture_parity_support import (
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
-
-
-COLLECTION_REPLACEMENT_FIXTURE_NAME = "collection_replacement_workflows.py"
 
 @dataclass(frozen=True)
 class CallableManifestSpec:
@@ -1005,6 +1002,9 @@ def assert_pattern_callable_replacement_return_type_error_parity(
 CALLABLE_FIXTURE_PATHS = select_correctness_fixture_paths(
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
 )
+COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
+    COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
+)
 LITERAL_CALLABLE_PARITY_VARIANTS = (
     pytest.param("sub", 0, False, id="literal-module-sub-replace-all"),
     pytest.param("subn", 1, False, id="literal-module-subn-first-match-only"),
@@ -1070,7 +1070,7 @@ def _pending_rebar_bytes_patterns() -> frozenset[bytes]:
 
 COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID = "module-sub-callable-str"
 COLLECTION_REPLACEMENT_OWNER_BUNDLE, = load_published_fixture_bundles(
-    (CORRECTNESS_FIXTURES_ROOT / COLLECTION_REPLACEMENT_FIXTURE_NAME,)
+    COLLECTION_REPLACEMENT_FIXTURE_PATHS
 )
 FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
 PUBLISHED_CALLABLE_CASES = tuple(
@@ -1952,10 +1952,9 @@ def test_fixture_manifest_loader_materializes_bytes_callables_without_aliasing_d
 def test_literal_callable_case_stays_aligned_with_published_collection_fixture() -> None:
     case = _literal_callable_case()
     source_replacement = _source_callable_replacement(case)
+    (expected_fixture_path,) = COLLECTION_REPLACEMENT_FIXTURE_PATHS
 
-    assert COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.path == (
-        CORRECTNESS_FIXTURES_ROOT / COLLECTION_REPLACEMENT_FIXTURE_NAME
-    )
+    assert COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.path == expected_fixture_path
     assert COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.manifest_id == (
         "collection-replacement-workflows"
     )

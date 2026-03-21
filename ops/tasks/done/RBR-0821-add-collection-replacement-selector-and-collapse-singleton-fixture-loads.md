@@ -1,8 +1,9 @@
 # RBR-0821: Add a collection-replacement selector and collapse singleton fixture loads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Delete the remaining handwritten `collection_replacement_workflows.py` singleton fixture loads from the Python parity suites.
@@ -89,3 +90,8 @@ PY` currently fails with `ImportError` because that selector does not exist yet,
   - `ops/tasks/done/RBR-0815-add-conditional-group-exists-selector-and-collapse-suite-sidecar.md`
   - `ops/tasks/done/RBR-0817-collapse-grouped-capture-fixture-sidecar-onto-owner-ordered-selector.md`
   - `ops/tasks/done/RBR-0819-add-grouped-replacement-selector-and-collapse-suite-sidecar.md`
+
+## Completion
+- Added `COLLECTION_REPLACEMENT_FIXTURE_SELECTOR = "collection-replacement"` to `python/rebar_harness/correctness.py`, registered it in `_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR`, and updated the shared selector expectation table in `tests/python/test_fixture_parity_support_contract.py` so the harness contract covers the new registry entry.
+- Switched `tests/python/test_callable_replacement_parity_suite.py` and `tests/python/test_module_workflow_parity_suite.py` to load the collection owner manifest through `select_correctness_fixture_paths(COLLECTION_REPLACEMENT_FIXTURE_SELECTOR)` instead of suite-local `CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py"` loads, while preserving the existing manifest id and published row-order assertions.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py` (`2747 passed`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`804 passed, 1 skipped`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`283 passed`), the required `rg` absence check (no matches), and the selector-path probe from Acceptance (`ok`).

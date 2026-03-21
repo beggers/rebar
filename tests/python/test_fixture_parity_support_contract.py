@@ -120,6 +120,9 @@ _SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS = {
         "quantified_nested_group_alternation_callable_replacement_workflows.py",
         "quantified_nested_group_callable_replacement_workflows.py",
     ),
+    correctness.COLLECTION_REPLACEMENT_FIXTURE_SELECTOR: (
+        "collection_replacement_workflows.py",
+    ),
     correctness.CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR: (
         "optional_group_conditional_workflows.py",
         "conditional_group_exists_workflows.py",

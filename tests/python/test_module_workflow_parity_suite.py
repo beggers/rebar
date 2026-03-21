@@ -21,11 +21,13 @@ import pytest
 import rebar
 from rebar_harness import benchmarks
 from rebar_harness.correctness import (
+    COLLECTION_REPLACEMENT_FIXTURE_SELECTOR,
     CORRECTNESS_FIXTURES_ROOT,
     FixtureCase,
     normalize_exported_symbol_metadata,
     normalize_exported_symbol_value,
     normalize_pattern_object_metadata,
+    select_correctness_fixture_paths,
 )
 from tests.conftest import PYTHON_SOURCE
 from tests.python import conftest as python_conftest
@@ -993,8 +995,11 @@ class _ModuleWorkflowFakeNativeBoundary(RecordingNativeBoundary):
 # Keep the published collection/replacement owner surface on its own fixture manifest.
 _COLLECTION_FRONTIER_HELPERS = frozenset({"split", "findall", "finditer"})
 _REPLACEMENT_FRONTIER_HELPERS = frozenset({"sub", "subn"})
+COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
+    COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
+)
 (COLLECTION_REPLACEMENT_BUNDLE,) = load_published_fixture_bundles(
-    (CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",)
+    COLLECTION_REPLACEMENT_FIXTURE_PATHS
 )
 PUBLISHED_COLLECTION_FIXTURE_CASES = _fixture_cases_for_helpers(
     COLLECTION_REPLACEMENT_BUNDLE,
@@ -5016,12 +5021,12 @@ def test_source_package_escape_preserves_explicit_bytes_cases(
 
 
 def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() -> None:
+    (expected_fixture_path,) = COLLECTION_REPLACEMENT_FIXTURE_PATHS
+
     assert_fixture_bundle_contract(
         COLLECTION_REPLACEMENT_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=(
-            CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py"
-        ),
+        expected_fixture_path=expected_fixture_path,
         expected_ordered_case_ids=_published_case_ids(COLLECTION_REPLACEMENT_BUNDLE),
     )
 
