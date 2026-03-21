@@ -15,7 +15,8 @@ Required behavior:
 6. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
 7. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.
 8. When a task claims a tracked-file deletion or a reduced JSON/blob count, verify the final state before you say it landed. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem check the task names (for example `rg --files -g '*.json'`) must reflect the claimed reduction after your last regeneration command.
-9. When verification uses pytest or other repo-local Python tooling, prefer `./.venv/bin/python` when it exists instead of bare `python3` so the command runs inside the repo environment.
+9. When a task adds or retunes a shared fixture selector, benchmark selector, or similar harness-owned registry, update the owning support-contract tests or expectation tables in the same run and verify them with the relevant pytest target.
+10. When verification uses pytest or other repo-local Python tooling, prefer `./.venv/bin/python` when it exists instead of bare `python3` so the command runs inside the repo environment.
 
 Constraints:
 - Do not add or remove product features.
@@ -23,7 +24,7 @@ Constraints:
 - Prefer preserving behavior while making the implementation and harness easier to read, split, and reason about.
 - When a task touches harness code, prefer ordinary Python tests, pytest helpers, and readable workload definitions over new bespoke fixture formats or custom data plumbing.
 - When a task touches the Rust implementation or Python boundary, prefer deletion, consolidation, and clearer ownership boundaries over new wrappers or abstractions.
-- Do not widen the scope beyond the single claimed task except for small adjacent changes required to finish it cleanly.
+- Do not widen the scope beyond the single claimed task except for small adjacent changes required to finish it cleanly. Shared contract tests or expectation tables that validate a selector or registry you touched count as in-scope adjacent work.
 - Do not run `git add`, `git commit`, `git push`, or other staging/commit commands; the harness owns version-control state and per-agent commits.
 - If you discover follow-up architecture work, note it in the task file so the Architecture Agent can queue it explicitly.
 - Do not treat prior runtime logs, stale queue state, or historical sandbox failures as proof that the current run cannot write.
