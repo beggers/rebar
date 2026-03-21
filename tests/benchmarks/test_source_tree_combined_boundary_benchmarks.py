@@ -13973,6 +13973,125 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
         )
 
 
+@pytest.mark.parametrize(
+    (
+        "manifest_id",
+        "operation",
+        "cache_mode",
+        "error_pattern",
+    ),
+    (
+        pytest.param(
+            "collection-replacement-boundary",
+            "pattern.search",
+            "warm",
+            (
+                re.escape(
+                    "benchmark compiled-pattern module-helper workloads currently "
+                    "only support"
+                )
+                + r".*"
+                + re.escape("; got 'pattern.search'")
+            ),
+            id="operation-scope",
+        ),
+        pytest.param(
+            "collection-replacement-boundary",
+            "module.findall",
+            "cold",
+            re.escape(
+                "benchmark compiled-pattern module-helper workloads currently require "
+                "`cache_mode` to be `warm` or `purged` so timed callbacks exclude "
+                "pattern compilation"
+            ),
+            id="collection-replacement-cache-mode",
+        ),
+        pytest.param(
+            "module-boundary",
+            "module.search",
+            "cold",
+            re.escape(
+                "benchmark compiled-pattern module-helper workloads currently require "
+                "`cache_mode` to be `warm` or `purged` so timed callbacks exclude "
+                "pattern compilation"
+            ),
+            id="module-boundary-cache-mode",
+        ),
+    ),
+)
+def test_standard_benchmark_compiled_pattern_validation_matches_manifest_and_payload_entry_points(
+    tmp_path: pathlib.Path,
+    manifest_id: str,
+    operation: str,
+    cache_mode: str,
+    error_pattern: str,
+) -> None:
+    family = operation.split(".", 1)[0]
+    bucket = operation.replace(".", "-")
+
+    manifest_source = f"""
+    MANIFEST = {{
+        "schema_version": 1,
+        "manifest_id": {manifest_id!r},
+        "workloads": [
+            {{
+                "id": "compiled-pattern-invalid-workload-contract",
+                "bucket": {bucket!r},
+                "family": {family!r},
+                "operation": {operation!r},
+                "pattern": "abc",
+                "haystack": "abc",
+                "expected_exception": None,
+                "flags": 0,
+                "use_compiled_pattern": True,
+                "count": 0,
+                "maxsplit": 0,
+                "text_model": "str",
+                "cache_mode": {cache_mode!r},
+                "timing_scope": "module-helper-call",
+            }},
+        ],
+    }}
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_invalid_compiled_pattern_contract.py",
+        manifest_source,
+    )
+
+    with pytest.raises(ValueError, match=error_pattern):
+        load_manifest(manifest_path)
+
+    with pytest.raises(ValueError, match=error_pattern):
+        workload_from_payload(
+            {
+                "manifest_id": manifest_id,
+                "workload_id": "compiled-pattern-invalid-workload-contract",
+                "bucket": bucket,
+                "family": family,
+                "operation": operation,
+                "pattern": "abc",
+                "haystack": "abc",
+                "expected_exception": None,
+                "flags": 0,
+                "use_compiled_pattern": True,
+                "count": 0,
+                "maxsplit": 0,
+                "text_model": "str",
+                "cache_mode": cache_mode,
+                "timing_scope": "module-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            }
+        )
+
+
 def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(
     tmp_path: pathlib.Path,
 ) -> None:
