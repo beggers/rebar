@@ -7,7 +7,12 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
+    FixtureCase,
+    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     BoundedPatternCase,
     FixtureBundle,
@@ -55,24 +60,10 @@ class BacktrackingTraceCase:
     search_text: str
     fullmatch_text: str
 
-WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES = (
-    "exact_repeat_quantified_group_workflows.py",
-    "ranged_repeat_quantified_group_workflows.py",
-    "wider_ranged_repeat_quantified_group_workflows.py",
-    "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
-    "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-    "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-)
 FIXTURE_BUNDLES = load_published_fixture_bundles(
-    tuple(
-        CORRECTNESS_FIXTURES_ROOT / fixture_name
-        for fixture_name in WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_NAMES
+    select_correctness_fixture_paths(COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR)
+    + select_correctness_fixture_paths(
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR
     ),
     pattern_extractor=case_pattern,
 )
