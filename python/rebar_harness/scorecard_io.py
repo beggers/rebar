@@ -207,21 +207,6 @@ def load_scorecard_report(
     )
 
 
-def _display_scorecard_path(path: pathlib.Path) -> str:
-    try:
-        reports_root_index = path.parts.index("reports")
-    except ValueError:
-        return path.as_posix()
-    return pathlib.PurePosixPath(*path.parts[reports_root_index:]).as_posix()
-
-
-def _resolve_report_path(report_path: pathlib.Path | str) -> pathlib.Path:
-    expanded = pathlib.Path(report_path).expanduser()
-    if not expanded.is_absolute():
-        expanded = pathlib.Path.cwd() / expanded
-    return expanded.resolve()
-
-
 @dataclass(frozen=True, slots=True)
 class ScorecardReportDescriptor:
     published_path: pathlib.Path
@@ -230,13 +215,34 @@ class ScorecardReportDescriptor:
     module_name_prefix: str
 
     def validate_path(self, report_path: pathlib.Path | str) -> pathlib.Path:
-        resolved_path = _resolve_report_path(report_path)
-        retired_path = _resolve_report_path(self.published_path.with_suffix(".json"))
+        resolved_path = pathlib.Path(report_path).expanduser()
+        if not resolved_path.is_absolute():
+            resolved_path = pathlib.Path.cwd() / resolved_path
+        resolved_path = resolved_path.resolve()
+
+        retired_path = self.published_path.with_suffix(".json").expanduser()
+        if not retired_path.is_absolute():
+            retired_path = pathlib.Path.cwd() / retired_path
+        retired_path = retired_path.resolve()
         if resolved_path == retired_path:
+            retired_display_path = retired_path.as_posix()
+            if "reports" in retired_path.parts:
+                reports_root_index = retired_path.parts.index("reports")
+                retired_display_path = pathlib.PurePosixPath(
+                    *retired_path.parts[reports_root_index:]
+                ).as_posix()
+
+            published_display_path = self.published_path.as_posix()
+            if "reports" in self.published_path.parts:
+                reports_root_index = self.published_path.parts.index("reports")
+                published_display_path = pathlib.PurePosixPath(
+                    *self.published_path.parts[reports_root_index:]
+                ).as_posix()
+
             raise ValueError(
-                f"{_display_scorecard_path(retired_path)} is a retired legacy "
+                f"{retired_display_path} is a retired legacy "
                 "published scorecard path; use "
-                f"{_display_scorecard_path(self.published_path)} for the tracked "
+                f"{published_display_path} for the tracked "
                 "published scorecard or a non-tracked temporary .json path for "
                 "scratch output."
             )
