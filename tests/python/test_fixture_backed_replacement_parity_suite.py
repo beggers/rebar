@@ -905,80 +905,6 @@ def _cases_for_manifest_ids(
         if case.manifest_id == manifest_id
     )
 
-def _selected_owner_bundle(
-    bundle: FixtureBundle,
-    case_ids: tuple[str, ...],
-    *,
-    pattern_extractor: Callable[[FixtureCase], TextValue],
-    error_label: str,
-) -> FixtureBundle:
-    selected_cases = ordered_cases_from_owner_bundle(
-        bundle,
-        case_ids,
-        error_label=error_label,
-    )
-    return build_fixture_bundle(
-        bundle.manifest,
-        selected_cases,
-        pattern_extractor=pattern_extractor,
-        expected_case_ids=frozenset(case_ids),
-        expected_text_models=frozenset(
-            case.text_model or "str" for case in selected_cases
-        ),
-    )
-
-
-def _grouped_replacement_template_bundles(
-    bundles: tuple[FixtureBundle, ...],
-    *,
-    pattern_extractor: Callable[[FixtureCase], TextValue],
-) -> tuple[FixtureBundle, ...]:
-    collection_bundle = _selected_owner_bundle(
-        published_fixture_bundle_by_manifest_id(
-            bundles,
-            GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
-        ),
-        GROUPED_REPLACEMENT_COLLECTION_CASE_IDS,
-        pattern_extractor=pattern_extractor,
-        error_label="grouped replacement collection case ids",
-    )
-    adjusted_bundles = tuple(
-        collection_bundle
-        if bundle.expected_manifest_id == GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID
-        else bundle
-        for bundle in bundles
-    )
-    return (
-        published_fixture_bundle_by_manifest_id(
-            adjusted_bundles,
-            GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
-        ),
-        published_fixture_bundle_by_manifest_id(
-            adjusted_bundles,
-            GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
-        ),
-        published_fixture_bundle_by_manifest_id(
-            adjusted_bundles,
-            GROUPED_REPLACEMENT_GROUPED_ALTERNATION_MANIFEST_ID,
-        ),
-        published_fixture_bundle_by_manifest_id(
-            adjusted_bundles,
-            GROUPED_REPLACEMENT_NESTED_GROUP_MANIFEST_ID,
-        ),
-        published_fixture_bundle_by_manifest_id(
-            adjusted_bundles,
-            GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
-        ),
-        published_fixture_bundle_by_manifest_id(
-            adjusted_bundles,
-            GROUPED_REPLACEMENT_QUANTIFIED_NESTED_GROUP_MANIFEST_ID,
-        ),
-        published_fixture_bundle_by_manifest_id(
-            adjusted_bundles,
-            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
-        ),
-    )
-
 
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     if spec.fixture_selector is None:
@@ -988,9 +914,44 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
         pattern_extractor=spec.pattern_extractor,
     )
     if spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID:
-        bundles = _grouped_replacement_template_bundles(
+        collection_bundle = published_fixture_bundle_by_manifest_id(
             bundles,
+            GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
+        )
+        collection_cases = ordered_cases_from_owner_bundle(
+            collection_bundle,
+            GROUPED_REPLACEMENT_COLLECTION_CASE_IDS,
+            error_label="grouped replacement collection case ids",
+        )
+        adjusted_collection_bundle = build_fixture_bundle(
+            collection_bundle.manifest,
+            collection_cases,
             pattern_extractor=spec.pattern_extractor,
+            expected_case_ids=frozenset(GROUPED_REPLACEMENT_COLLECTION_CASE_IDS),
+            expected_text_models=frozenset(
+                case.text_model or "str" for case in collection_cases
+            ),
+        )
+        adjusted_bundles = tuple(
+            adjusted_collection_bundle
+            if (
+                bundle.expected_manifest_id
+                == GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID
+            )
+            else bundle
+            for bundle in bundles
+        )
+        bundles = tuple(
+            published_fixture_bundle_by_manifest_id(adjusted_bundles, manifest_id)
+            for manifest_id in (
+                GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
+                GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
+                GROUPED_REPLACEMENT_GROUPED_ALTERNATION_MANIFEST_ID,
+                GROUPED_REPLACEMENT_NESTED_GROUP_MANIFEST_ID,
+                GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
+                GROUPED_REPLACEMENT_QUANTIFIED_NESTED_GROUP_MANIFEST_ID,
+                NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
+            )
         )
     if spec.id == OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID:
         loaded_manifest_ids = frozenset(
