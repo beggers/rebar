@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0828` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the raw module positional `__index__` trio up on the shared Python-path `collection_replacement_boundary.py` benchmark surface.
+`RBR-0830` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the precompiled `Pattern` positional `__index__` split/sub/subn trio up on the shared Python-path `collection_replacement_boundary.py` benchmark surface.
 
 ## Ordered Work
-1. `RBR-0828` catches the raw module positional `__index__` trio up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0830` catches the precompiled `Pattern` positional `__index__` split/sub/subn trio up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
