@@ -1,8 +1,9 @@
 # RBR-0835: Collapse branch-local direct-bytes follow-on case sidecar onto canonical specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the detached `DIRECT_BYTES_FOLLOW_ON_CASES` tuple from `tests/python/test_branch_local_backreference_parity_suite.py` so `DIRECT_BYTES_FOLLOW_ON_SPECS` becomes the sole canonical owner of direct-bytes follow-on case ordering and payload routing inside the branch-local backreference parity owner.
@@ -97,3 +98,8 @@ PY` returned `RBR-0835` with an empty reserved tail.
   - `rg -n 'DIRECT_BYTES_FOLLOW_ON_CASES' tests/python/test_branch_local_backreference_parity_suite.py` shows one declaration plus the seven target parametrizations in this file; and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because the mirrored tuple still exists.
 - This stays on the same bounded post-JSON parity-harness cleanup track as `RBR-0707`, `RBR-0719`, `RBR-0741`, and `RBR-0742`: those tasks already removed adjacent branch-local bundle-label and direct-test sidecars plus the equivalent direct-bytes case sidecars from sibling suites, and `DIRECT_BYTES_FOLLOW_ON_SPECS` already carries the case payloads and ordering needed to delete this remaining flattened tuple without changing behavior.
+
+## Completion Notes
+- 2026-03-21: Removed `DIRECT_BYTES_FOLLOW_ON_CASES` from `tests/python/test_branch_local_backreference_parity_suite.py`.
+- 2026-03-21: Added a tiny file-local helper that flattens `DIRECT_BYTES_FOLLOW_ON_SPECS` for `SUPPORTED_DIRECT_BYTES_PATTERNS` and the seven direct-bytes follow-on parametrizations while preserving the existing canonical case order.
+- 2026-03-21: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`561 passed in 0.83s`), the canonical-order import probe from the task (`ok`), and `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_CASES' tests/python/test_branch_local_backreference_parity_suite.py"` (no matches).
