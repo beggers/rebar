@@ -314,6 +314,42 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-on-bytes-string-purged-str-compiled-pattern",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "zabczz",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "maxsplit": 1,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "literal",
+        "compiled-pattern",
+        "wrong-text-model",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Purged module.split helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on bytes haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-split-duplicate-maxsplit-keyword-purged-str",
       "bucket": "module-split",
       "family": "module",
@@ -785,6 +821,43 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-on-bytes-string-warm-str-compiled-pattern",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "count": 1,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "compiled-pattern",
+        "wrong-text-model",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on bytes haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-duplicate-count-keyword-warm-str",
       "bucket": "module-sub",
       "family": "module",
@@ -1189,6 +1262,43 @@ MANIFEST = {
       ],
       "notes": [
         "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument bool count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-on-str-string-purged-bytes-compiled-pattern",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "count": 1,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a bytes pattern on a string-like object"
+      },
+      "text_model": "bytes",
+      "haystack_text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "compiled-pattern",
+        "wrong-text-model",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on str haystacks on the shared collection/replacement benchmark surface."
       ]
     },
     {

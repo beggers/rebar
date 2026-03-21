@@ -1,6 +1,6 @@
 # RBR-0858: Catch up the compiled-pattern module wrong-text-model collection/replacement benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -66,3 +66,8 @@ Created: 2026-03-21
   - direct runtime probes in this run showed CPython and `rebar` already agree on the exact bounded `TypeError` payloads for `split(re.compile("abc"), b"zabczz", 1)`, `sub(re.compile("abc"), "x", b"zabczz", 1)`, and `subn(re.compile(b"abc"), b"x", "zabczz", 1)`, so no Rust or Python regex-behavior prerequisite is missing;
   - the current benchmark workload schema routes `haystack` through the workload-wide `text_model`, which leaves these mixed-text compiled-pattern helper rows unexpressible on the published benchmark surface today even though the runtime behavior already exists; and
   - `reports/benchmarks/latest.py` currently reports `822` total / `822` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 814` and `REPORT["manifests"]["collection-replacement-boundary"]` at `43` selected / `43` measured / `0` known gaps because `RBR-0856` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0856` state.
+- 2026-03-21 completion: added bounded `haystack_text_model` override support to `python/rebar_harness/benchmarks.py` for compiled-pattern `module.split` / `module.sub` / `module.subn` rows on `collection-replacement-boundary`, published the exact three mixed-text `TypeError` workloads on `benchmarks/workloads/collection_replacement_boundary.py`, extended the shared source-tree benchmark contract coverage in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and republished `reports/benchmarks/latest.py` at `834` total / `834` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 826` and `collection-replacement-boundary` at `55` selected / `55` measured / `0` known gaps.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0858-compiled-pattern-wrong-text-model.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

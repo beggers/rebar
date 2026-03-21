@@ -119,6 +119,7 @@ class Workload:
     endpos: Any | None
     kwargs: dict[str, Any]
     text_model: str
+    haystack_text_model: str | None
     cache_mode: str
     timing_scope: str
     warmup_iterations: int
@@ -163,6 +164,10 @@ class Workload:
             operation=operation,
             expected_exception=expected_exception,
         )
+        text_model = str(raw_workload.get("text_model", "str"))
+        haystack_text_model = normalize_haystack_text_model(
+            raw_workload.get("haystack_text_model")
+        )
         use_compiled_pattern = bool(
             raw_workload.get(
                 "use_compiled_pattern",
@@ -180,6 +185,14 @@ class Workload:
             operation=operation,
             use_compiled_pattern=use_compiled_pattern,
             cache_mode=cache_mode,
+        )
+        validate_haystack_text_model_override(
+            manifest_id=manifest_id,
+            operation=operation,
+            use_compiled_pattern=use_compiled_pattern,
+            text_model=text_model,
+            haystack_text_model=haystack_text_model,
+            expected_exception=expected_exception,
         )
         return cls(
             manifest_id=manifest_id,
@@ -208,7 +221,8 @@ class Workload:
             pos=pos,
             endpos=endpos,
             kwargs=kwargs,
-            text_model=str(raw_workload.get("text_model", "str")),
+            text_model=text_model,
+            haystack_text_model=haystack_text_model,
             cache_mode=cache_mode,
             timing_scope=str(raw_workload.get("timing_scope", "compile-path-proxy")),
             warmup_iterations=int(
@@ -227,12 +241,13 @@ class Workload:
             smoke=bool(raw_workload.get("smoke", False) or "smoke" in categories),
         )
 
-    def _encode_text(self, value: str) -> str | bytes:
-        if self.text_model == "str":
+    def _encode_text(self, value: str, *, text_model: str | None = None) -> str | bytes:
+        resolved_text_model = self.text_model if text_model is None else text_model
+        if resolved_text_model == "str":
             return value
-        if self.text_model == "bytes":
+        if resolved_text_model == "bytes":
             return value.encode("utf-8")
-        raise ValueError(f"unsupported text model {self.text_model!r}")
+        raise ValueError(f"unsupported text model {resolved_text_model!r}")
 
     def pattern_payload(self) -> str | bytes:
         return self._encode_text(self.pattern)
@@ -240,7 +255,10 @@ class Workload:
     def haystack_payload(self) -> str | bytes:
         if self.haystack is None:
             raise ValueError(f"workload {self.workload_id!r} requires a haystack payload")
-        return self._encode_text(self.haystack)
+        return self._encode_text(
+            self.haystack,
+            text_model=self.haystack_text_model or self.text_model,
+        )
 
     def replacement_payload(self) -> Any:
         if self.replacement is None:
@@ -579,6 +597,56 @@ def validate_compiled_pattern_workload(
         )
 
 
+def normalize_haystack_text_model(value: Any) -> str | None:
+    if value is None:
+        return None
+
+    normalized = str(value)
+    if normalized not in {"str", "bytes"}:
+        raise ValueError(
+            "benchmark workload haystack_text_model must be `str` or `bytes`; "
+            f"got {normalized!r}"
+        )
+    return normalized
+
+
+def validate_haystack_text_model_override(
+    *,
+    manifest_id: str,
+    operation: str,
+    use_compiled_pattern: bool,
+    text_model: str,
+    haystack_text_model: str | None,
+    expected_exception: dict[str, Any] | None,
+) -> None:
+    if haystack_text_model is None:
+        return
+
+    if manifest_id != "collection-replacement-boundary":
+        raise ValueError(
+            "benchmark workload haystack_text_model is only supported on the "
+            "`collection-replacement-boundary` manifest"
+        )
+
+    if operation not in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS or not use_compiled_pattern:
+        raise ValueError(
+            "benchmark workload haystack_text_model currently only supports "
+            "compiled-pattern module.split/module.sub/module.subn workloads"
+        )
+
+    if haystack_text_model == text_model:
+        raise ValueError(
+            "benchmark workload haystack_text_model must differ from the "
+            "workload text_model"
+        )
+
+    if expected_exception is None or expected_exception.get("type") != "TypeError":
+        raise ValueError(
+            "benchmark workload haystack_text_model currently only supports "
+            "timed TypeError rows"
+        )
+
+
 def materialize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     normalized = normalize_numeric_workload_argument(value, field_name=field_name)
     return materialize_descriptor_value(normalized)
@@ -685,6 +753,8 @@ def workload_to_payload(workload: Workload) -> dict[str, Any]:
         payload["kwargs"] = dict(workload.kwargs)
     if workload.use_compiled_pattern:
         payload["use_compiled_pattern"] = True
+    if workload.haystack_text_model is not None:
+        payload["haystack_text_model"] = workload.haystack_text_model
     return payload
 
 
@@ -720,6 +790,8 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         raw_workload["kwargs"] = payload["kwargs"]
     if payload.get("use_compiled_pattern", False):
         raw_workload["use_compiled_pattern"] = True
+    if payload.get("haystack_text_model") is not None:
+        raw_workload["haystack_text_model"] = payload["haystack_text_model"]
     return Workload.from_dict(
         manifest_id=str(payload["manifest_id"]),
         raw_workload=raw_workload,
@@ -1515,6 +1587,8 @@ def evaluate_workload(
         result["endpos"] = workload.endpos
     if workload.kwargs:
         result["kwargs"] = dict(workload.kwargs)
+    if workload.haystack_text_model is not None:
+        result["haystack_text_model"] = workload.haystack_text_model
     return result
 
 
