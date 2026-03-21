@@ -40,15 +40,6 @@ class BoundedPatternCase:
 
 
 @dataclass(frozen=True)
-class OptionalGroupConditionalBranchCase:
-    id: str
-    pattern_case_id: str
-    helper: str
-    string: str
-    bounds: tuple[int, int]
-
-
-@dataclass(frozen=True)
 class SupplementalModuleFullmatchCase:
     id: str
     pattern: str
@@ -327,9 +318,9 @@ OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASE_SPECS = (
 
 
 def _build_optional_group_conditional_branch_cases() -> (
-    tuple[OptionalGroupConditionalBranchCase, ...]
+    tuple[BoundedPatternCase, ...]
 ):
-    cases: list[OptionalGroupConditionalBranchCase] = []
+    cases: list[BoundedPatternCase] = []
     for case_prefix, pattern_case_id in (
         (
             "optional-group-conditional",
@@ -344,7 +335,7 @@ def _build_optional_group_conditional_branch_cases() -> (
             OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASE_SPECS
         ):
             cases.append(
-                OptionalGroupConditionalBranchCase(
+                BoundedPatternCase(
                     id=f"{case_prefix}-{scenario_suffix}",
                     pattern_case_id=pattern_case_id,
                     helper=helper,
@@ -869,7 +860,7 @@ def test_nested_and_alternation_pattern_fullmatch_matches_cpython(
 )
 def test_optional_group_conditional_branch_selection_matches_cpython(
     regex_backend: tuple[str, object],
-    case: OptionalGroupConditionalBranchCase,
+    case: BoundedPatternCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern, expected_pattern = compile_with_cpython_parity(
