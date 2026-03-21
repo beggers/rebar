@@ -3389,13 +3389,38 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
         )
-        self.assertEqual(workload_count, 22)
+        self.assertEqual(workload_count, 24)
         self.assertEqual(
             expected_measured_workload_ids,
             (
                 "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
                 "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
                 "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
+            ),
+        )
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "module-boundary",
+            expected_measured_workload_ids,
+            workload_count,
+            expected_total_workload_count=workload_count,
+        )
+
+    def test_module_boundary_manifest_keeps_verbose_bytes_compiled_pattern_success_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("module-boundary")
+        workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+        )
+        self.assertEqual(workload_count, 24)
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
             ),
         )
         self._assert_zero_gap_manifest_workloads_measured(
@@ -4782,11 +4807,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 845,
-                "module_workloads": 837,
+                "measured_workloads": 847,
+                "module_workloads": 839,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 845,
+                "total_workloads": 847,
             },
         )
 
@@ -6488,6 +6513,19 @@ def _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
     )
 
 
+def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.expected_exception is None
+        and workload.pattern == _VERBOSE_REGRESSION_PATTERN
+        and workload.flags == _VERBOSE_REGRESSION_FLAGS
+        and workload.text_model == "bytes"
+    )
+
+
 def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
     workload: Any,
 ) -> bool:
@@ -7533,6 +7571,25 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             },
         ),
         include_workload=_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+        correctness_case_signature=_module_workflow_compiled_pattern_correctness_case_signature,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-verbose-bytes-success",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern": (
+                    "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+                ),
+                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern": (
+                    "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
         correctness_case_signature=_module_workflow_compiled_pattern_correctness_case_signature,
         workload_signature=_module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,

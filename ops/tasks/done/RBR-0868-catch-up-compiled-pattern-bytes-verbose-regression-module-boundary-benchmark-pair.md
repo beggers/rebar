@@ -1,6 +1,6 @@
 # RBR-0868: Catch up the compiled-pattern bytes verbose-regression module boundary benchmark pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -60,3 +60,11 @@ Created: 2026-03-21
   - direct runtime probes in this run showed CPython and `rebar` already agree on the bounded matched-result payloads for `search(rebar.compile(b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $", re.VERBOSE | re.MULTILINE), b"prefix\\nENV_VAR=ABCD\\nsuffix")` and `fullmatch(rebar.compile(b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $", re.VERBOSE | re.MULTILINE), b"ENV_VAR = 123")`, so no Rust or Python regex-behavior prerequisite is missing;
   - `benchmarks/workloads/module_boundary.py` currently publishes no compiled-pattern bytes verbose-regression rows, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently carries no compiled-pattern bytes verbose-regression anchor-contract definition on that owner path; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0866` state of `845` total / `845` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 837` and `REPORT["manifests"]["module-boundary"]` at `22` selected / `22` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Added the two compiled-pattern-first-argument bytes verbose-regression success workloads to `benchmarks/workloads/module_boundary.py`, extended the shared source-tree benchmark contract expectations for the bounded bytes verbose pair, and regenerated `reports/benchmarks/latest.py`.
+- Published benchmark report check from the tracked artifact now shows `REPORT["summary"] == {"total_workloads": 847, "measured_workloads": 847, "known_gap_count": 0, "module_workloads": 839, "parser_workloads": 8, "regression_workloads": 8}` and `REPORT["manifests"]["module-boundary"] == {"selected_workload_count": 24, "measured_workloads": 24, "known_gap_count": 0}` with both new workload ids marked `status == "measured"`.
+- Verification passed with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0868-compiled-pattern-bytes-verbose-regression-module-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

@@ -180,6 +180,39 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "prefix\nENV_VAR=ABCD\nsuffix",
+      "flags": 72,
+      "use_compiled_pattern": True,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "search",
+        "verbose",
+        "multiline",
+        "bytes",
+        "warm-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path that keeps the bounded compiled-pattern-first-argument verbose-regression success row on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-search-flags-keyword-warm-str",
       "bucket": "module-search",
       "family": "module",
@@ -509,6 +542,40 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache module.fullmatch helper path that keeps the bounded compiled-pattern-first-argument single-dot success row on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
+      "bucket": "module-fullmatch",
+      "family": "module",
+      "operation": "module.fullmatch",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "ENV_VAR = 123",
+      "flags": 72,
+      "use_compiled_pattern": True,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "fullmatch",
+        "verbose",
+        "multiline",
+        "bytes",
+        "purged-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-fullmatch",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "compiled-pattern-first-argument",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes module.fullmatch helper path that keeps the bounded compiled-pattern-first-argument verbose-regression success row on the shared module-boundary surface."
       ]
     },
     {
