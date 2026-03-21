@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache, partial
 import pathlib
 import re
@@ -2992,6 +2992,30 @@ class _WarningModuleCallExceptionModule:
         raise TypeError("module helper failure")
 
 
+class _CompiledPatternModuleCallModule:
+    def __init__(self) -> None:
+        self.calls: list[tuple[object, ...]] = []
+        self.compiled_pattern = object()
+
+    def compile(self, pattern: str, flags: int = 0) -> object:
+        self.calls.append(("compile", pattern, flags))
+        return self.compiled_pattern
+
+    def search(self, pattern: object, string: str) -> object:
+        self.calls.append(("search", pattern, string))
+        return {
+            "used_compiled_pattern": pattern is self.compiled_pattern,
+            "string": string,
+        }
+
+
+class _WarningCompiledPatternModuleCallExceptionModule(_CompiledPatternModuleCallModule):
+    def search(self, pattern: object, string: str) -> object:
+        self.calls.append(("search", pattern, string))
+        warnings.warn("compiled module helper warning", RuntimeWarning)
+        raise TypeError("compiled module helper failure")
+
+
 class _WarningCompileFailureModule:
     def __init__(self, *, message: str) -> None:
         self._message = message
@@ -3226,6 +3250,96 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                     {
                         "type": "TypeError",
                         "message": "module helper failure",
+                    },
+                )
+
+    def test_adapter_module_call_compiled_pattern_rows_compile_before_helper_dispatch(
+        self,
+    ) -> None:
+        case = replace(
+            _adapter_contract_case(
+                case_id="adapter-module-call-compiled-pattern-contract",
+                operation="module_call",
+                helper="search",
+                args=["zzabczz"],
+            ),
+            use_compiled_pattern=True,
+        )
+
+        for adapter_cls in (CpythonReAdapter, RebarAdapter):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                adapter = adapter_cls()
+                module = _CompiledPatternModuleCallModule()
+                adapter.module = module
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(
+                    module.calls,
+                    [
+                        ("compile", "abc", 0),
+                        ("search", module.compiled_pattern, "zzabczz"),
+                    ],
+                )
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "module_call")
+                self.assertEqual(observation["outcome"], "success")
+                self.assertEqual(observation["warnings"], [])
+                self.assertEqual(
+                    observation["result"],
+                    {
+                        "used_compiled_pattern": True,
+                        "string": "zzabczz",
+                    },
+                )
+                self.assertIsNone(observation["exception"])
+
+    def test_adapter_module_call_compiled_pattern_rows_preserve_exception_payloads(
+        self,
+    ) -> None:
+        case = replace(
+            _adapter_contract_case(
+                case_id="adapter-module-call-compiled-pattern-exception-contract",
+                operation="module_call",
+                helper="search",
+                args=["zzabczz"],
+            ),
+            use_compiled_pattern=True,
+        )
+
+        for adapter_cls in (CpythonReAdapter, RebarAdapter):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                adapter = adapter_cls()
+                module = _WarningCompiledPatternModuleCallExceptionModule()
+                adapter.module = module
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(
+                    module.calls,
+                    [
+                        ("compile", "abc", 0),
+                        ("search", module.compiled_pattern, "zzabczz"),
+                    ],
+                )
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "module_call")
+                self.assertEqual(observation["outcome"], "exception")
+                self.assertEqual(
+                    observation["warnings"],
+                    [
+                        {
+                            "category": "RuntimeWarning",
+                            "message": "compiled module helper warning",
+                        }
+                    ],
+                )
+                self.assertIsNone(observation["result"])
+                self.assertEqual(
+                    observation["exception"],
+                    {
+                        "type": "TypeError",
+                        "message": "compiled module helper failure",
                     },
                 )
 
