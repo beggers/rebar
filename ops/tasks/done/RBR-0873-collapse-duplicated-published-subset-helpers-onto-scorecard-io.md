@@ -1,6 +1,6 @@
 # RBR-0873: Collapse duplicated published-subset helpers onto scorecard_io
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -60,3 +60,10 @@ Created: 2026-03-21
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'correctness_fixture_selector or published_subset_selector or declared_correctness_fixture_selectors or published_full_suite_fixture_selector'` currently passes (`26 passed, 269 deselected in 0.10s`);
   - `bash -lc "! rg -n '^def _published_(benchmark_manifest_subset|fixture_subset)\\(' python/rebar_harness/benchmarks.py python/rebar_harness/correctness.py"` currently fails exactly on this cleanup because both duplicated helper definitions still exist; and
   - `python/rebar_harness/scorecard_io.py` is already the shared utility home for cross-harness report/config plumbing, so promoting this last repeated ordered-subset helper there reduces code without adding a third selector-specific owner.
+
+## Completion Note
+- 2026-03-21: Added `ordered_published_subset_filenames(...)` to `python/rebar_harness/scorecard_io.py`, rewired `python/rebar_harness/benchmarks.py` and every nondefault selector row in `python/rebar_harness/correctness.py` through that shared helper, and deleted the duplicated local published-subset helper bodies while preserving the benchmark- and correctness-specific missing-filename prefixes via module-owned constants.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'benchmark_manifest_selector or published_full_suite_selector or declared_benchmark_manifest_selectors'` (`4 passed, 424 deselected`)
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'correctness_fixture_selector or published_subset_selector or declared_correctness_fixture_selectors or published_full_suite_fixture_selector'` (`26 passed, 270 deselected`)
+  - `bash -lc "! rg -n '^def _published_(benchmark_manifest_subset|fixture_subset)\\(' python/rebar_harness/benchmarks.py python/rebar_harness/correctness.py"` (passed with no matches)

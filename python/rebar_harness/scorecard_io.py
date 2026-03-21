@@ -7,7 +7,7 @@ import platform
 import pprint
 import sys
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterable, Sequence
 
 
 def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
@@ -27,6 +27,26 @@ def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
         "executable": sys.executable,
         "re_module": "re",
     }
+
+
+def ordered_published_subset_filenames(
+    published_filenames: Sequence[str],
+    selected_filenames: Iterable[str],
+    *,
+    missing_filename_error_prefix: str,
+) -> tuple[str, ...]:
+    """Return a selected filename subset in the published full-suite order."""
+
+    expected_filenames = frozenset(selected_filenames)
+    ordered_subset = tuple(
+        filename for filename in published_filenames if filename in expected_filenames
+    )
+    missing_filenames = expected_filenames - set(ordered_subset)
+    if missing_filenames:
+        raise ValueError(
+            f"{missing_filename_error_prefix}{sorted(missing_filenames)}"
+        )
+    return ordered_subset
 
 
 class _IndexLike:

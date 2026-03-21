@@ -26,6 +26,7 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
+from rebar_harness.scorecard_io import ordered_published_subset_filenames
 from tests.conftest import duplicate_items
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
@@ -663,6 +664,24 @@ def test_canonical_published_subset_selectors_keep_explicit_membership_contract(
     assert tuple(path.name for path in select_correctness_fixture_paths(selector)) == (
         expected_filenames
     )
+
+
+def test_correctness_selector_subset_helper_keeps_fixture_specific_missing_filename_error() -> None:
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "unknown published correctness fixture filename(s): ['missing_fixture.py']"
+        ),
+    ):
+        ordered_published_subset_filenames(
+            correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
+                PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+            ],
+            ("missing_fixture.py",),
+            missing_filename_error_prefix=(
+                correctness._PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX
+            ),
+        )
 
 
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:

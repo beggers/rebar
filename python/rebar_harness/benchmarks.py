@@ -30,6 +30,7 @@ from rebar_harness.scorecard_io import (
     build_scorecard_report_descriptor,
     load_python_dict_attribute,
     materialize_descriptor_value,
+    ordered_published_subset_filenames,
 )
 
 
@@ -79,34 +80,26 @@ _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
     ),
 }
 
-
-def _published_benchmark_manifest_subset(
-    *manifest_filenames: str,
-) -> tuple[str, ...]:
-    published_manifest_filenames = _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[
-        PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
-    ]
-    expected_filenames = frozenset(manifest_filenames)
-    selected_filenames = tuple(
-        filename
-        for filename in published_manifest_filenames
-        if filename in expected_filenames
-    )
-    missing_filenames = expected_filenames - set(selected_filenames)
-    if missing_filenames:
-        raise ValueError(
-            "unknown published benchmark manifest filename(s): "
-            f"{sorted(missing_filenames)}"
-        )
-    return selected_filenames
+_PUBLISHED_BENCHMARK_MANIFEST_FILENAMES = _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[
+    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+]
+_PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX = (
+    "unknown published benchmark manifest filename(s): "
+)
 
 
 _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR.update(
     {
-        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: _published_benchmark_manifest_subset(
-            "pattern_boundary.py",
-            "collection_replacement_boundary.py",
-            "literal_flag_boundary.py",
+        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: ordered_published_subset_filenames(
+            _PUBLISHED_BENCHMARK_MANIFEST_FILENAMES,
+            (
+                "pattern_boundary.py",
+                "collection_replacement_boundary.py",
+                "literal_flag_boundary.py",
+            ),
+            missing_filename_error_prefix=(
+                _PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX
+            ),
         ),
     }
 )

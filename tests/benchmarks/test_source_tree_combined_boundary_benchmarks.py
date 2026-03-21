@@ -36,7 +36,10 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.correctness import published_fixture_manifests
-from rebar_harness.scorecard_io import build_cpython_baseline
+from rebar_harness.scorecard_io import (
+    build_cpython_baseline,
+    ordered_published_subset_filenames,
+)
 from tests.conftest import REPO_ROOT, duplicate_items, run_harness_scorecard
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -8596,6 +8599,24 @@ def test_canonical_benchmark_manifest_subset_selectors_keep_membership_contract(
     assert tuple(path.name for path in select_benchmark_manifest_paths(selector)) == (
         expected_filenames
     )
+
+
+def test_benchmark_selector_subset_helper_keeps_benchmark_specific_missing_filename_error() -> None:
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "unknown published benchmark manifest filename(s): ['missing_boundary.py']"
+        ),
+    ):
+        ordered_published_subset_filenames(
+            benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[
+                PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+            ],
+            ("missing_boundary.py",),
+            missing_filename_error_prefix=(
+                benchmarks._PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX
+            ),
+        )
 
 
 def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
