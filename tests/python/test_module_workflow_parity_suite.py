@@ -1766,6 +1766,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="match",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-match-window-indexlike-bytes",
+        helper="match",
+        pattern=b"abc",
+        args=(b"zabc",),
+        kwargs={"pos": _INDEX_ONE, "endpos": _INDEX_FOUR},
+        result_kind="match",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-fullmatch-window-keyword-bytes",
         helper="fullmatch",
         pattern=b"abc",
@@ -1918,6 +1926,13 @@ PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
         result_kind="match",
     ),
     PatternPositionalIndexLikeCallCase(
+        case_id="pattern-match-window-indexlike-positional-bytes",
+        helper="match",
+        pattern=b"abc",
+        args=(b"zabc", _INDEX_ONE, _INDEX_FOUR),
+        result_kind="match",
+    ),
+    PatternPositionalIndexLikeCallCase(
         case_id="pattern-fullmatch-window-indexlike-positional-bytes",
         helper="fullmatch",
         pattern=b"abc",
@@ -1961,9 +1976,11 @@ PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
     ),
 )
 PATTERN_DUAL_INDEXLIKE_WINDOW_CASE_IDS = (
+    "pattern-match-window-indexlike-bytes",
     "pattern-fullmatch-window-indexlike-bytes",
     "pattern-findall-window-indexlike-str",
     "pattern-finditer-window-indexlike-bytes",
+    "pattern-match-window-indexlike-positional-bytes",
     "pattern-fullmatch-window-indexlike-positional-bytes",
     "pattern-findall-window-indexlike-positional-str",
     "pattern-finditer-window-indexlike-positional-bytes",
@@ -3769,6 +3786,14 @@ def test_pattern_positional_indexlike_direct_cases_remain_balanced_for_follow_on
             0,
         ),
         (
+            "pattern-match-window-indexlike-positional-bytes",
+            "match",
+            b"abc",
+            (("bytes", b"zabc"), ("indexlike", 1), ("indexlike", 4)),
+            "match",
+            0,
+        ),
+        (
             "pattern-fullmatch-window-indexlike-positional-bytes",
             "fullmatch",
             b"abc",
@@ -3820,10 +3845,11 @@ def test_pattern_positional_indexlike_direct_cases_remain_balanced_for_follow_on
     assert Counter(
         "bytes" if isinstance(case.pattern, bytes) else "str"
         for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
-    ) == Counter({"str": 4, "bytes": 4})
+    ) == Counter({"bytes": 5, "str": 4})
     assert Counter(case.helper for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES) == Counter(
         {
             "search": 2,
+            "match": 1,
             "fullmatch": 1,
             "findall": 1,
             "finditer": 1,
@@ -3834,7 +3860,7 @@ def test_pattern_positional_indexlike_direct_cases_remain_balanced_for_follow_on
     )
     assert Counter(
         case.result_kind for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
-    ) == Counter({"match": 3, "value": 4, "iter": 1})
+    ) == Counter({"match": 4, "value": 4, "iter": 1})
     assert all(
         any(kind == "indexlike" for kind, _ in _workflow_positional_args_signature(case.args))
         for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
