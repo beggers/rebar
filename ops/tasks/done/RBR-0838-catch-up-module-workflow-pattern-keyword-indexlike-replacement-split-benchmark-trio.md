@@ -1,6 +1,6 @@
 # RBR-0838: Catch up the module-workflow `Pattern` keyword `__index__` replacement/split benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -65,3 +65,11 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` does not yet publish these exact keyword `__index__` carriers on the precompiled helper path in the current checkout because `RBR-0836` still needs to land first, so the acceptance counts above are intentionally written against the immediate post-`RBR-0836` state;
   - `benchmarks/workloads/collection_replacement_boundary.py` already owns the adjacent precompiled `Pattern` collection/replacement surface, so this slice can stay on the existing manifest path instead of inventing another benchmark family; and
   - `reports/benchmarks/latest.py` currently reports `790` total / `790` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 782` and `REPORT["manifests"]["collection-replacement-boundary"]` at `16` selected / `16` measured / `0` known gaps because `RBR-0836` is still ready in this run.
+
+## Completion
+- 2026-03-21: Added the three precompiled `Pattern.split()` / `Pattern.sub()` / `Pattern.subn()` keyword `__index__` workloads to the shared `collection_replacement_boundary.py` manifest, updated the shared source-tree benchmark expectation suite to anchor them to `workflow-pattern-split-str-maxsplit-indexlike`, `workflow-pattern-sub-count-indexlike-bytes`, and `workflow-pattern-subn-count-indexlike-str`, and republished `reports/benchmarks/latest.py` at `796` total / `796` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 788` and `REPORT["manifests"]["collection-replacement-boundary"]` at `22` selected / `22` measured / `0` known gaps.
+- 2026-03-21: No `python/rebar_harness/benchmarks.py` code change was required in this run because the existing keyword-argument descriptor path already preserved keyword `indexlike` carriers until helper invocation and materialized them at call time.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0838-collection-replacement-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
