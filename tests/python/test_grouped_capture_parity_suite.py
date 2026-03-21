@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Iterable
 from dataclasses import dataclass
 import re
 
@@ -13,7 +12,6 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -29,6 +27,7 @@ from tests.python.fixture_parity_support import (
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
+from tests.conftest import duplicate_string_ids
 GROUPED_MATCH_TRACKED_CASE_IDS = (
     "grouped-module-search-single-capture-str",
     "grouped-module-fullmatch-single-capture-str",
@@ -198,54 +197,6 @@ def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
             case_id = source_case.case_id
         compile_cases.append(CompileCase(id=case_id, pattern=pattern, flags=flags))
     return tuple(compile_cases)
-
-
-def _ordered_manifest_cases_from_bundles(
-    bundles: Iterable[FixtureBundle],
-    case_ids: Iterable[str],
-    *,
-    error_label: str,
-) -> tuple[FixtureCase, ...]:
-    ordered_case_ids = tuple(case_ids)
-    duplicate_requested_case_ids = tuple(
-        case_id for case_id, count in Counter(ordered_case_ids).items() if count > 1
-    )
-    if duplicate_requested_case_ids:
-        raise AssertionError(
-            f"{error_label} contain duplicate requested case ids: "
-            f"{duplicate_requested_case_ids}"
-        )
-    selected_case_ids = frozenset(ordered_case_ids)
-    case_by_id: dict[str, FixtureCase] = {}
-    duplicate_case_ids: set[str] = set()
-
-    for bundle in bundles:
-        for case in bundle.manifest.cases:
-            case_id = case.case_id
-            if case_id not in selected_case_ids:
-                continue
-            if case_id in case_by_id:
-                duplicate_case_ids.add(case_id)
-                continue
-            case_by_id[case_id] = case
-
-    ordered_duplicate_case_ids = tuple(
-        case_id for case_id in ordered_case_ids if case_id in duplicate_case_ids
-    )
-    if ordered_duplicate_case_ids:
-        raise AssertionError(
-            f"{error_label} contain duplicate case ids: {ordered_duplicate_case_ids}"
-        )
-
-    missing_case_ids = tuple(
-        case_id for case_id in ordered_case_ids if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise AssertionError(
-            f"{error_label} are missing case ids: {missing_case_ids}"
-        )
-
-    return tuple(case_by_id[case_id] for case_id in ordered_case_ids)
 
 
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
@@ -497,15 +448,13 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
     ),
 )
 
-MATCH_GROUP_ACCESS_CASES = _ordered_manifest_cases_from_bundles(
-    FIXTURE_BUNDLES,
-    MATCH_GROUP_ACCESS_CASE_IDS,
-    error_label="grouped capture match-group-access rows",
+assert not duplicate_string_ids(MATCH_GROUP_ACCESS_CASE_IDS)
+assert not duplicate_string_ids(GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER)
+MATCH_GROUP_ACCESS_CASES = tuple(
+    CASES_BY_ID[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS
 )
-GROUPED_SEGMENT_LEADING_CAPTURE_CASES = _ordered_manifest_cases_from_bundles(
-    FIXTURE_BUNDLES,
-    GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER,
-    error_label="grouped-segment leading-capture rows",
+GROUPED_SEGMENT_LEADING_CAPTURE_CASES = tuple(
+    CASES_BY_ID[case_id] for case_id in GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER
 )
 
 
@@ -579,75 +528,6 @@ def test_pattern_bounds_cases_stay_anchored_to_grouped_capture_patterns() -> Non
 def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
-
-
-def test_ordered_manifest_cases_from_bundles_cover_manifest_order_and_unselected_rows() -> None:
-    selected_case_ids = (
-        "grouped-pattern-search-single-capture-str",
-        GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER[0],
-        "grouped-module-search-single-capture-str",
-    )
-    selected_cases = _ordered_manifest_cases_from_bundles(
-        FIXTURE_BUNDLES,
-        selected_case_ids,
-        error_label="fixture parity support contract rows",
-    )
-
-    expected_cases_by_id: dict[str, FixtureCase] = {}
-    for bundle in FIXTURE_BUNDLES:
-        for case in bundle.manifest.cases:
-            if case.case_id in selected_case_ids:
-                expected_cases_by_id[case.case_id] = case
-
-    assert tuple(case.case_id for case in selected_cases) == selected_case_ids
-    for case in selected_cases:
-        expected = expected_cases_by_id[case.case_id]
-        assert case.operation == expected.operation
-        assert case.helper == expected.helper
-        assert case.args == expected.args
-        assert case.kwargs == expected.kwargs
-
-
-def test_ordered_manifest_cases_from_bundles_rejects_duplicate_case_ids() -> None:
-    with pytest.raises(
-        AssertionError,
-        match="fixture parity support contract rows contain duplicate case ids",
-    ):
-        _ordered_manifest_cases_from_bundles(
-            (GROUPED_MATCH_FIXTURE_BUNDLE, GROUPED_MATCH_FIXTURE_BUNDLE),
-            ("grouped-module-search-single-capture-str",),
-            error_label="fixture parity support contract rows",
-        )
-
-
-def test_ordered_manifest_cases_from_bundles_rejects_duplicate_requested_case_ids(
-) -> None:
-    with pytest.raises(
-        AssertionError,
-        match=(
-            "fixture parity support contract rows contain duplicate requested case ids"
-        ),
-    ):
-        _ordered_manifest_cases_from_bundles(
-            (GROUPED_MATCH_FIXTURE_BUNDLE,),
-            (
-                "grouped-module-search-single-capture-str",
-                "grouped-module-search-single-capture-str",
-            ),
-            error_label="fixture parity support contract rows",
-        )
-
-
-def test_ordered_manifest_cases_from_bundles_rejects_missing_case_ids() -> None:
-    with pytest.raises(
-        AssertionError,
-        match="fixture parity support contract rows are missing case ids",
-    ):
-        _ordered_manifest_cases_from_bundles(
-            (GROUPED_MATCH_FIXTURE_BUNDLE,),
-            ("missing-case-id",),
-            error_label="fixture parity support contract rows",
-        )
 
 
 @pytest.mark.parametrize(
