@@ -1857,6 +1857,240 @@ def test_optional_match_case_parity_runs_baseline_match_parity_before_optional_c
     assert all(kwargs == {} for _, kwargs in helper_calls[1:])
 
 
+def test_optional_match_case_parity_returns_early_for_shared_no_match(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    helper_calls: list[str] = []
+
+    def _unexpected_helper(*args: object, **kwargs: object) -> None:
+        helper_calls.append("unexpected")
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_parity",
+        _unexpected_helper,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        _unexpected_helper,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        _unexpected_helper,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        _unexpected_helper,
+    )
+
+    fixture_parity_support._assert_optional_match_case_parity(
+        "stub-backend",
+        None,
+        None,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+    assert helper_calls == []
+
+
+def test_evaluate_fixture_case_optional_match_keeps_raw_module_calls_on_module_helper_surface(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+    expected_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+    def _unexpected_compile(*args: object, **kwargs: object) -> object:
+        raise AssertionError("compile_with_cpython_parity should not run")
+
+    class _RecordingBackend:
+        def search(self, *args: object, **kwargs: object) -> re.Match[str] | None:
+            observed_calls.append((args, dict(kwargs)))
+            return re.search(*args, **kwargs)
+
+    def _expected_search(*args: object, **kwargs: object) -> re.Match[str] | None:
+        expected_calls.append((args, dict(kwargs)))
+        return re.search(*args, **kwargs)
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "compile_with_cpython_parity",
+        _unexpected_compile,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "re",
+        SimpleNamespace(search=_expected_search),
+    )
+
+    backend_name, observed, expected = fixture_parity_support._evaluate_fixture_case_optional_match(
+        ("stub-backend", _RecordingBackend()),
+        SYNTHETIC_MODULE_PATTERN_CASE,
+        expected_helper="search",
+        compile_pattern=False,
+    )
+
+    expected_args = tuple(SYNTHETIC_MODULE_PATTERN_CASE.module_call_args())
+    assert backend_name == "stub-backend"
+    assert observed_calls == [(expected_args, {})]
+    assert expected_calls == [(expected_args, {})]
+    assert_match_result_parity(
+        "stub-backend",
+        observed,
+        expected,
+        check_regs=True,
+    )
+
+
+def test_evaluate_fixture_case_optional_match_routes_compiled_module_calls_through_compiled_pattern_argument(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    compile_calls: list[tuple[object, ...]] = []
+    observed_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+    expected_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+    observed_pattern = object()
+    expected_pattern = re.compile(SYNTHETIC_CASE_PATTERN)
+
+    def _compile(
+        backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+        *,
+        check_cache_identity: bool = True,
+    ) -> tuple[object, re.Pattern[str]]:
+        compile_calls.append(
+            (backend_name, backend, pattern, flags, check_cache_identity)
+        )
+        return observed_pattern, expected_pattern
+
+    class _RecordingBackend:
+        def search(self, *args: object, **kwargs: object) -> re.Match[str] | None:
+            observed_calls.append((args, dict(kwargs)))
+            assert args[0] is observed_pattern
+            return re.search(SYNTHETIC_CASE_PATTERN, args[1], **kwargs)
+
+    def _expected_search(*args: object, **kwargs: object) -> re.Match[str] | None:
+        expected_calls.append((args, dict(kwargs)))
+        return re.search(*args, **kwargs)
+
+    monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "re",
+        SimpleNamespace(search=_expected_search),
+    )
+
+    backend = _RecordingBackend()
+    backend_name, observed, expected = fixture_parity_support._evaluate_fixture_case_optional_match(
+        ("stub-backend", backend),
+        SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+        expected_helper="search",
+        compile_pattern=False,
+    )
+
+    assert backend_name == "stub-backend"
+    assert compile_calls == [
+        ("stub-backend", backend, SYNTHETIC_CASE_PATTERN, 0, True)
+    ]
+    assert observed_calls == [
+        (
+            tuple(
+                SYNTHETIC_COMPILED_MODULE_PATTERN_CASE.module_call_args(
+                    observed_pattern
+                )
+            ),
+            {},
+        )
+    ]
+    assert expected_calls == [
+        (
+            tuple(
+                SYNTHETIC_COMPILED_MODULE_PATTERN_CASE.module_call_args(
+                    expected_pattern
+                )
+            ),
+            {},
+        )
+    ]
+    assert_match_result_parity(
+        "stub-backend",
+        observed,
+        expected,
+        check_regs=True,
+    )
+
+
+def test_evaluate_fixture_case_optional_match_routes_pattern_calls_through_compiled_patterns(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    compile_calls: list[tuple[object, ...]] = []
+    observed_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+    expected_pattern = re.compile(SYNTHETIC_CASE_PATTERN)
+
+    def _observed_fullmatch(
+        *args: object,
+        **kwargs: object,
+    ) -> re.Match[str] | None:
+        observed_calls.append((args, dict(kwargs)))
+        return re.fullmatch(SYNTHETIC_CASE_PATTERN, *args, **kwargs)
+
+    def _compile(
+        backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+        *,
+        check_cache_identity: bool = True,
+    ) -> tuple[object, re.Pattern[str]]:
+        compile_calls.append(
+            (backend_name, backend, pattern, flags, check_cache_identity)
+        )
+        return SimpleNamespace(fullmatch=_observed_fullmatch), expected_pattern
+
+    monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
+
+    backend = object()
+    backend_name, observed, expected = fixture_parity_support._evaluate_fixture_case_optional_match(
+        ("stub-backend", backend),
+        SYNTHETIC_FULLMATCH_PATTERN_CASE,
+        expected_helper="fullmatch",
+        compile_pattern=True,
+    )
+
+    assert backend_name == "stub-backend"
+    assert compile_calls == [
+        (
+            "stub-backend",
+            backend,
+            case_pattern(SYNTHETIC_FULLMATCH_PATTERN_CASE),
+            0,
+            True,
+        )
+    ]
+    assert observed_calls == [(tuple(SYNTHETIC_FULLMATCH_PATTERN_CASE.args), {})]
+    assert_match_result_parity(
+        "stub-backend",
+        observed,
+        expected,
+        check_regs=True,
+    )
+
+
+def test_evaluate_fixture_case_optional_match_rejects_helper_drift() -> None:
+    with pytest.raises(AssertionError):
+        fixture_parity_support._evaluate_fixture_case_optional_match(
+            ("stub-backend", object()),
+            SYNTHETIC_FULLMATCH_PATTERN_CASE,
+            expected_helper="search",
+            compile_pattern=True,
+        )
+
+
 @pytest.mark.parametrize(
     "case",
     (
@@ -2043,6 +2277,61 @@ def test_pattern_fullmatch_case_parity_helper_rejects_non_fullmatch_cases(
             regex_backend,
             replace(SYNTHETIC_FULLMATCH_PATTERN_CASE, helper="search"),
         )
+
+
+def test_evaluate_bounded_pattern_case_compiles_then_dispatches_observed_and_expected_patterns(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    compile_calls: list[tuple[object, ...]] = []
+    dispatched_patterns: list[tuple[object, object]] = []
+    observed_pattern = object()
+    expected_pattern = object()
+    observed_match = object()
+    expected_match = object()
+    case = SimpleNamespace(
+        pattern="abc",
+        helper="search",
+        string="zzabczz",
+        bounds=(0, 7),
+    )
+
+    def _compile(
+        backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+        *,
+        check_cache_identity: bool = True,
+    ) -> tuple[object, object]:
+        compile_calls.append(
+            (backend_name, backend, pattern, flags, check_cache_identity)
+        )
+        return observed_pattern, expected_pattern
+
+    def _invoke(compiled_pattern: object, routed_case: object) -> object:
+        dispatched_patterns.append((compiled_pattern, routed_case))
+        if compiled_pattern is observed_pattern:
+            return observed_match
+        assert compiled_pattern is expected_pattern
+        return expected_match
+
+    monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "invoke_bounded_pattern_case",
+        _invoke,
+    )
+
+    backend = object()
+    assert fixture_parity_support._evaluate_bounded_pattern_case(
+        ("stub-backend", backend),
+        case,
+    ) == ("stub-backend", observed_match, expected_match)
+    assert compile_calls == [("stub-backend", backend, "abc", 0, True)]
+    assert dispatched_patterns == [
+        (observed_pattern, case),
+        (expected_pattern, case),
+    ]
 
 
 @pytest.mark.parametrize(
