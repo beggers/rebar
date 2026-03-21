@@ -9370,6 +9370,57 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
                 ],
             },
             {
+                "id": "module-split-maxsplit-bool-keyword-contract-str",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "kwargs": {
+                    "maxsplit": True,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.split bool maxsplit= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-sub-count-bool-keyword-contract-bytes",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "count": False,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.sub bool count= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-count-bool-keyword-contract-str",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "kwargs": {
+                    "count": True,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn bool count= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "module-split-maxsplit-indexlike-keyword-purged-bytes",
                 "bucket": "module-split",
                 "family": "module",
@@ -9434,6 +9485,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         split_workload,
         sub_workload,
         subn_workload,
+        split_bool_workload,
+        sub_bool_workload,
+        subn_bool_workload,
         split_indexlike_workload,
         sub_indexlike_workload,
         subn_indexlike_workload,
@@ -9460,6 +9514,48 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
     assert round_tripped_subn.keyword_arguments() == {"count": 1}
     assert run_benchmark_workload_with_cpython(round_tripped_subn) == (
         b"xabc",
+        1,
+    )
+
+    assert split_bool_workload.kwargs == {"maxsplit": True}
+    assert type(split_bool_workload.kwargs["maxsplit"]) is bool
+    round_tripped_split_bool = workload_from_payload(
+        workload_to_payload(split_bool_workload)
+    )
+    assert round_tripped_split_bool.kwargs == {"maxsplit": True}
+    assert type(round_tripped_split_bool.kwargs["maxsplit"]) is bool
+    materialized_split_bool_kwargs = round_tripped_split_bool.keyword_arguments()
+    assert materialized_split_bool_kwargs == {"maxsplit": True}
+    assert materialized_split_bool_kwargs["maxsplit"] is True
+    assert run_benchmark_workload_with_cpython(round_tripped_split_bool) == [
+        "z",
+        "abc",
+    ]
+
+    assert sub_bool_workload.kwargs == {"count": False}
+    assert type(sub_bool_workload.kwargs["count"]) is bool
+    round_tripped_sub_bool = workload_from_payload(
+        workload_to_payload(sub_bool_workload)
+    )
+    assert round_tripped_sub_bool.kwargs == {"count": False}
+    assert type(round_tripped_sub_bool.kwargs["count"]) is bool
+    materialized_sub_bool_kwargs = round_tripped_sub_bool.keyword_arguments()
+    assert materialized_sub_bool_kwargs == {"count": False}
+    assert materialized_sub_bool_kwargs["count"] is False
+    assert run_benchmark_workload_with_cpython(round_tripped_sub_bool) == b"xx"
+
+    assert subn_bool_workload.kwargs == {"count": True}
+    assert type(subn_bool_workload.kwargs["count"]) is bool
+    round_tripped_subn_bool = workload_from_payload(
+        workload_to_payload(subn_bool_workload)
+    )
+    assert round_tripped_subn_bool.kwargs == {"count": True}
+    assert type(round_tripped_subn_bool.kwargs["count"]) is bool
+    materialized_subn_bool_kwargs = round_tripped_subn_bool.keyword_arguments()
+    assert materialized_subn_bool_kwargs == {"count": True}
+    assert materialized_subn_bool_kwargs["count"] is True
+    assert run_benchmark_workload_with_cpython(round_tripped_subn_bool) == (
+        "xabc",
         1,
     )
 
@@ -9719,6 +9815,36 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             (b"xxabc", 2),
             ["kwargs.count"],
             id="module-subn-count-indexlike",
+        ),
+        pytest.param(
+            "module.split",
+            "zabcabc",
+            {"maxsplit": True},
+            None,
+            "str",
+            ["z", "abc"],
+            ["kwargs.maxsplit"],
+            id="module-split-maxsplit-bool",
+        ),
+        pytest.param(
+            "module.sub",
+            "abcabc",
+            {"count": False},
+            "x",
+            "bytes",
+            b"xx",
+            ["kwargs.count"],
+            id="module-sub-count-bool",
+        ),
+        pytest.param(
+            "module.subn",
+            "abcabc",
+            {"count": True},
+            "x",
+            "str",
+            ("xabc", 1),
+            ["kwargs.count"],
+            id="module-subn-count-bool",
         ),
     ),
 )
