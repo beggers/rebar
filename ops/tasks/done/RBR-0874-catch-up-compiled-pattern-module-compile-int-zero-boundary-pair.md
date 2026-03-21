@@ -1,6 +1,6 @@
 # RBR-0874: Catch up the compiled-pattern module-compile explicit integer-zero boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -60,3 +60,9 @@ Created: 2026-03-21
   - a direct runtime probe in this run confirmed CPython and `rebar` already agree on the bounded helper behavior for `compile(re.compile("abc"), flags=0)` and `compile(re.compile(b"abc"), flags=0)`, so no Rust or Python regex-behavior prerequisite is missing for this pair;
   - `benchmarks/workloads/module_boundary.py` and `reports/benchmarks/latest.py` currently publish no compiled-pattern explicit integer-zero `module.compile` rows on that owner route; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0872` state of `854` total / `854` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 846` and `REPORT["manifests"]["module-boundary"]` at `26` selected / `26` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Extended `python/rebar_harness/benchmarks.py` so the shared `module-boundary` owner path accepts only the bounded compiled-pattern-first-argument `module.compile(..., flags=0)` keyword carrier, keeps the first compiled pattern outside the timed callback, and materializes the `flags=0` kwarg inside the timed helper call without reopening bool-false, nonzero-flag, or non-literal neighbors.
+- Added `module-compile-flags-int-zero-warm-str-compiled-pattern` and `module-compile-flags-int-zero-purged-bytes-compiled-pattern` to `benchmarks/workloads/module_boundary.py`, and extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the matching shared anchor/probe/materialization contract plus the updated module-boundary and combined-summary expectations.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0874-compiled-pattern-module-compile-int-zero-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- Confirmed from the tracked `reports/benchmarks/latest.py` diff in this run that `REPORT["manifests"]["module-boundary"]` is now `28` selected / `28` measured / `0` known gaps, that both new workload ids publish `status == "measured"`, and that the combined summary is now `856` total / `856` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 848` and `REPORT["summary"]["regression_workloads"] == 8`.

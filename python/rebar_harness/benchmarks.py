@@ -176,6 +176,12 @@ class Workload:
                 field_name="endpos",
             )
         )
+        use_compiled_pattern = bool(
+            raw_workload.get(
+                "use_compiled_pattern",
+                defaults.get("use_compiled_pattern", False),
+            )
+        )
         expected_exception = normalize_expected_exception(
             raw_workload.get("expected_exception")
         )
@@ -183,16 +189,11 @@ class Workload:
             raw_workload.get("kwargs"),
             operation=operation,
             expected_exception=expected_exception,
+            use_compiled_pattern=use_compiled_pattern,
         )
         text_model = str(raw_workload.get("text_model", "str"))
         haystack_text_model = normalize_haystack_text_model(
             raw_workload.get("haystack_text_model")
-        )
-        use_compiled_pattern = bool(
-            raw_workload.get(
-                "use_compiled_pattern",
-                defaults.get("use_compiled_pattern", False),
-            )
         )
         cache_mode = str(raw_workload.get("cache_mode", "cold"))
         validate_helper_keyword_argument_carriers(
@@ -483,6 +484,7 @@ _PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
     "pattern.search, pattern.match, pattern.fullmatch, pattern.findall, "
     "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
 )
+_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_FIELDS = frozenset({"flags"})
 _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     "module.search": frozenset({"flags"}),
     "module.match": frozenset({"flags"}),
@@ -541,6 +543,7 @@ def normalize_keyword_workload_arguments(
     *,
     operation: str,
     expected_exception: dict[str, Any] | None = None,
+    use_compiled_pattern: bool = False,
 ) -> dict[str, Any]:
     if value is None:
         return {}
@@ -549,7 +552,10 @@ def normalize_keyword_workload_arguments(
     if not isinstance(normalized, dict):
         raise ValueError("benchmark workload kwargs must be an object")
 
-    allowed_keys = _HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
+    if operation == "module.compile" and use_compiled_pattern:
+        allowed_keys = _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_FIELDS
+    else:
+        allowed_keys = _HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
     if allowed_keys is None:
         raise ValueError(
             "benchmark workload kwargs are only supported for "
@@ -648,11 +654,15 @@ def validate_compiled_pattern_workload(
                 "module.compile workloads are only supported on the "
                 "`module-boundary` manifest"
             )
-        if kwargs:
+        if kwargs and (
+            set(kwargs) != _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_FIELDS
+            or type(kwargs.get("flags")) is not int
+            or kwargs["flags"] != 0
+        ):
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "positional helper calls"
+                "the bounded `flags=0` keyword carrier"
             )
         if haystack_text_model is not None or expected_exception is not None:
             raise ValueError(
@@ -1026,9 +1036,15 @@ def import_callable(module_name: str, workload: Workload) -> Any:
 
 def compile_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
+    uses_keyword_arguments = bool(workload.kwargs)
 
     if workload.operation not in {"compile", "module.compile"}:
         raise ValueError(f"unsupported compile workload operation {workload.operation!r}")
+
+    def keyword_call_kwargs() -> dict[str, Any]:
+        if not uses_keyword_arguments:
+            return {}
+        return workload.keyword_arguments()
 
     if workload.use_compiled_pattern:
         if workload.operation != "module.compile":
@@ -1038,10 +1054,15 @@ def compile_callable(module: Any, workload: Workload) -> Any:
             )
         compiled_pattern = module.compile(pattern, workload.flags)
 
+        def invoke_compiled_pattern() -> object:
+            if uses_keyword_arguments:
+                return module.compile(compiled_pattern, **keyword_call_kwargs())
+            return module.compile(compiled_pattern, workload.flags)
+
         if workload.cache_mode == "warm":
 
             def run_once() -> object:
-                return module.compile(compiled_pattern, workload.flags)
+                return invoke_compiled_pattern()
 
             return run_once
 
@@ -1050,7 +1071,7 @@ def compile_callable(module: Any, workload: Workload) -> Any:
                 module.purge()
 
             def run_once() -> object:
-                return module.compile(compiled_pattern, workload.flags)
+                return invoke_compiled_pattern()
 
             return run_once
 
