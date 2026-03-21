@@ -513,9 +513,6 @@ _SHARED_WORKFLOW_CASE_IDS = frozenset(
 WORKFLOW_CASES = tuple(
     case for case in PUBLISHED_CASES if case.case_id in _SHARED_WORKFLOW_CASE_IDS
 )
-BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS = tuple(
-    case.case_id for case in PUBLISHED_CASES
-)
 
 
 MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
@@ -1167,7 +1164,9 @@ def test_branch_local_backreference_direct_test_case_id_buckets_cover_selected_f
                 for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
             ),
         ),
-        selected_case_ids=BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS,
+        selected_case_ids=tuple(
+            case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
+        ),
         coverage_label="branch-local-backreference direct-test case-id buckets",
     )
 
