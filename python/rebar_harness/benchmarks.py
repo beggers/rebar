@@ -423,6 +423,9 @@ _PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
     "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
 )
 _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
+    "module.search": frozenset({"flags"}),
+    "module.match": frozenset({"flags"}),
+    "module.fullmatch": frozenset({"flags"}),
     "module.split": frozenset({"maxsplit"}),
     "module.sub": frozenset({"count"}),
     "module.subn": frozenset({"count"}),
@@ -437,7 +440,8 @@ _HELPER_KEYWORD_FIELDS_BY_OPERATION = {
 _HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
     "pattern.search, pattern.match, pattern.fullmatch, pattern.findall, "
     "pattern.finditer, pattern.split, pattern.sub, pattern.subn, "
-    "module.split, module.sub, and module.subn"
+    "module.search, module.match, module.fullmatch, module.split, "
+    "module.sub, and module.subn"
 )
 
 
@@ -814,10 +818,43 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                 f"{_HELPER_KEYWORD_OPERATIONS_DESCRIPTION}"
             )
         if workload.operation == "module.search":
+            if uses_keyword_arguments:
+                if workload.flags != 0:
+                    raise ValueError(
+                        "benchmark workload module.search keyword flags carriers "
+                        "currently require `flags == 0`"
+                    )
+                return module.search(
+                    pattern,
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return module.search(pattern, haystack, workload.flags)
         if workload.operation == "module.match":
+            if uses_keyword_arguments:
+                if workload.flags != 0:
+                    raise ValueError(
+                        "benchmark workload module.match keyword flags carriers "
+                        "currently require `flags == 0`"
+                    )
+                return module.match(
+                    pattern,
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return module.match(pattern, haystack, workload.flags)
         if workload.operation == "module.fullmatch":
+            if uses_keyword_arguments:
+                if workload.flags != 0:
+                    raise ValueError(
+                        "benchmark workload module.fullmatch keyword flags carriers "
+                        "currently require `flags == 0`"
+                    )
+                return module.fullmatch(
+                    pattern,
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return module.fullmatch(pattern, haystack, workload.flags)
         if workload.operation == "module.split":
             if uses_keyword_arguments:

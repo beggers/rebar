@@ -546,6 +546,9 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS = {
             "module-compile-literal-warm",
             "module-compile-literal-purged",
             "module-search-grouped-literal-cold-hit",
+            "module-search-flags-keyword-warm-str",
+            "module-match-flags-keyword-purged-bytes",
+            "module-fullmatch-flags-keyword-warm-str",
             "module-findall-single-dot-warm-str",
             "module-sub-template-warm-str",
             "pattern-subn-grouped-template-warm-str",
@@ -756,6 +759,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
             "import-module-cold",
             "module-search-grouped-literal-cold-hit",
             "module-search-literal-warm-hit",
+            "module-search-flags-keyword-warm-str",
+            "module-match-flags-keyword-purged-bytes",
+            "module-fullmatch-flags-keyword-warm-str",
             "module-search-bytes-cold-miss",
         ),
     ),
@@ -4645,11 +4651,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 808,
-                "module_workloads": 800,
+                "measured_workloads": 811,
+                "module_workloads": 803,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 808,
+                "total_workloads": 811,
             },
         )
 
@@ -5288,6 +5294,9 @@ COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile
 REGRESSION_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
 )
+MODULE_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
+)
 PATTERN_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py"
 )
@@ -5766,12 +5775,12 @@ def run_correctness_case_with_cpython(case: Any) -> object:
         compiled_pattern = None
         if case.use_compiled_pattern:
             compiled_pattern = re.compile(case.pattern_payload(), case.flags or 0)
-        if (
-            not case.use_compiled_pattern
-            and case.helper in {"split", "sub", "subn"}
-            and case.kwargs
-            and not case.include_pattern_arg
-        ):
+        if not case.use_compiled_pattern and not case.include_pattern_arg:
+            if case.pattern is None:
+                return getattr(re, case.helper)(
+                    *case.args,
+                    **case.kwargs,
+                )
             return getattr(re, case.helper)(
                 case.pattern_payload(),
                 *case.args,
@@ -6104,6 +6113,54 @@ def _collection_replacement_keyword_workload_signature(
 
 def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
     return workload.workload_id in COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS
+
+
+MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS = frozenset(
+    {
+        "module-search-flags-keyword-warm-str",
+        "module-match-flags-keyword-purged-bytes",
+        "module-fullmatch-flags-keyword-warm-str",
+    }
+)
+
+
+def _module_workflow_keyword_flags_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or not case.kwargs:
+        return None
+    if case.use_compiled_pattern or case.helper not in {"search", "match", "fullmatch"}:
+        return None
+    return (
+        f"module.{case.helper}",
+        case_pattern(case),
+        freeze_signature_value(list(case.args)),
+        _module_workflow_keyword_kwargs_signature(case.kwargs),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _module_workflow_keyword_flags_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if workload.workload_id not in MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS:
+        raise AssertionError(
+            "unexpected module-workflow keyword flags workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value([workload.haystack_payload()]),
+        _module_workflow_keyword_kwargs_signature(workload.kwargs),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_module_workflow_keyword_flags_workload(workload: Any) -> bool:
+    return workload.workload_id in MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS
 
 
 PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS = frozenset(
@@ -6875,6 +6932,28 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             _collection_replacement_keyword_correctness_case_signature
         ),
         workload_signature=_collection_replacement_keyword_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-keyword-flags",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-flags-keyword-warm-str": (
+                    "workflow-module-search-flags-keyword-str",
+                ),
+                "module-match-flags-keyword-purged-bytes": (
+                    "workflow-module-match-flags-keyword-bytes",
+                ),
+                "module-fullmatch-flags-keyword-warm-str": (
+                    "workflow-module-fullmatch-flags-keyword-str",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_keyword_flags_workload,
+        correctness_case_signature=_module_workflow_keyword_flags_correctness_case_signature,
+        workload_signature=_module_workflow_keyword_flags_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -8759,15 +8838,27 @@ def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descript
             id="unsupported-module-key",
         ),
         pytest.param(
-            {"flags": 1},
+            {"count": 1},
             "module.search",
+            None,
+            None,
+            re.escape(
+                "benchmark workload kwargs for module.search only supports the "
+                "`flags` key; got unsupported keys ['count']"
+            ),
+            id="unsupported-module-search-key",
+        ),
+        pytest.param(
+            {"flags": 1},
+            "module.findall",
             None,
             None,
             re.escape(
                 "benchmark workload kwargs are only supported for pattern.search, "
                 "pattern.match, pattern.fullmatch, pattern.findall, "
                 "pattern.finditer, pattern.split, pattern.sub, pattern.subn, "
-                "module.split, module.sub, and module.subn"
+                "module.search, module.match, module.fullmatch, module.split, "
+                "module.sub, and module.subn"
             ),
             id="unsupported-operation",
         ),
@@ -9921,6 +10012,98 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
 
         assert observed_field_names == expected_field_names
         assert observed_result == expected_result
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    ("operation", "haystack", "text_model"),
+    (
+        pytest.param(
+            "module.search",
+            "zAbc",
+            "str",
+            id="module-search-flags-keyword",
+        ),
+        pytest.param(
+            "module.match",
+            "Abc",
+            "bytes",
+            id="module-match-flags-keyword",
+        ),
+        pytest.param(
+            "module.fullmatch",
+            "Abc",
+            "str",
+            id="module-fullmatch-flags-keyword",
+        ),
+    ),
+)
+def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
+    monkeypatch,
+    operation: str,
+    haystack: str,
+    text_model: str,
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-module-workflow-keyword-flags-contract",
+            "workload_id": f"{operation}-keyword-flags-materialization-contract",
+            "bucket": operation.replace("module.", "module-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "flags": 0,
+            "count": 0,
+            "maxsplit": 0,
+            "kwargs": {"flags": 2},
+            "text_model": text_model,
+            "cache_mode": "purged",
+            "timing_scope": "module-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    helper_name = operation.removeprefix("module.")
+    expected_result = getattr(re, helper_name)(
+        workload.pattern_payload(),
+        workload.haystack_payload(),
+        flags=re.IGNORECASE,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        observed_result = callback()
+
+        assert observed_field_names == ["kwargs.flags"]
+        assert_match_result_parity(
+            "stdlib",
+            observed_result,
+            expected_result,
+            check_regs=True,
+        )
     finally:
         re.purge()
 

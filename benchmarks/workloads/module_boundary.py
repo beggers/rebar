@@ -121,6 +121,36 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-search-flags-keyword-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "abc",
+      "haystack": "zAbc",
+      "kwargs": {
+        "flags": 2
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "search",
+        "literal",
+        "warm-cache",
+        "keyword",
+        "flags",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-search",
+        "literal-text",
+        "keyword-flags"
+      ],
+      "notes": [
+        "Warm module.search helper path that keeps the bounded flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-search-grouped-literal-cold-hit",
       "bucket": "module-search",
       "family": "module",
@@ -168,6 +198,67 @@ MANIFEST = {
       ],
       "notes": [
         "Warm match helper path over a tiny prefix-match haystack."
+      ]
+    },
+    {
+      "id": "module-match-flags-keyword-purged-bytes",
+      "bucket": "module-match",
+      "family": "module",
+      "operation": "module.match",
+      "pattern": "abc",
+      "haystack": "Abc",
+      "kwargs": {
+        "flags": 2
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "match",
+        "bytes",
+        "purged-cache",
+        "keyword",
+        "flags",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-match",
+        "pattern-text-model",
+        "keyword-flags",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes module.match helper path that keeps the bounded flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-fullmatch-flags-keyword-warm-str",
+      "bucket": "module-fullmatch",
+      "family": "module",
+      "operation": "module.fullmatch",
+      "pattern": "abc",
+      "haystack": "Abc",
+      "kwargs": {
+        "flags": 2
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "fullmatch",
+        "literal",
+        "warm-cache",
+        "keyword",
+        "flags",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-fullmatch",
+        "literal-text",
+        "keyword-flags"
+      ],
+      "notes": [
+        "Warm module.fullmatch helper path that keeps the bounded flags= keyword carrier on the shared module-boundary surface."
       ]
     },
     {

@@ -1,6 +1,6 @@
 # RBR-0848: Catch up the module-workflow module `flags=` keyword benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -64,3 +64,14 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` currently limits raw-module keyword benchmark execution to `split()` / `sub()` / `subn()`, so the existing benchmark path still does not expose the adjacent raw-module `flags=` keyword trio even though the runtime behavior is already live;
   - `benchmarks/workloads/module_boundary.py` currently publishes the baseline module-boundary search/match/fullmatch rows but not the adjacent raw-module `flags=` keyword trio, so this follow-on stays on the existing manifest instead of inventing another benchmark family; and
   - `reports/benchmarks/latest.py` currently reports `805` total / `805` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 797` and `REPORT["manifests"]["module-boundary"]` at `8` selected / `8` measured / `0` known gaps because `RBR-0846` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0846` state.
+
+## Completion
+- Extended `python/rebar_harness/benchmarks.py` so raw-module `module.search`, `module.match`, and `module.fullmatch` workloads may carry `kwargs={"flags": ...}` and dispatch through the real keyword helper path without falling back to positional `flags`.
+- Added the three bounded raw-module `flags=` keyword workloads to `benchmarks/workloads/module_boundary.py` and anchored them on the shared benchmark contract path in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Added focused benchmark-suite coverage that keeps those workload ids pinned to the published correctness case ids `workflow-module-search-flags-keyword-str`, `workflow-module-match-flags-keyword-bytes`, and `workflow-module-fullmatch-flags-keyword-str`, plus a callback-time materialization check for `kwargs.flags`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0848-module-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Republished `reports/benchmarks/latest.py`; the tracked report now shows `811` total workloads, `811` measured workloads, `0` known gaps, `803` module workloads overall, and `REPORT["manifests"]["module-boundary"]` at `11` selected / `11` measured / `0` known gaps across the existing shared manifest.
+- Published correctness scorecard unchanged.
