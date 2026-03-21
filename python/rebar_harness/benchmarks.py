@@ -154,9 +154,13 @@ class Workload:
                 field_name="endpos",
             )
         )
+        expected_exception = normalize_expected_exception(
+            raw_workload.get("expected_exception")
+        )
         kwargs = normalize_keyword_workload_arguments(
             raw_workload.get("kwargs"),
             operation=operation,
+            expected_exception=expected_exception,
         )
         validate_helper_keyword_argument_carriers(
             operation=operation,
@@ -177,9 +181,7 @@ class Workload:
                 else str(raw_workload.get("haystack"))
             ),
             replacement=normalize_workload_value(raw_workload.get("replacement")),
-            expected_exception=normalize_expected_exception(
-                raw_workload.get("expected_exception")
-            ),
+            expected_exception=expected_exception,
             flags=int(raw_workload.get("flags", 0)),
             count=normalize_numeric_workload_argument(
                 raw_workload.get("count", 0),
@@ -433,6 +435,9 @@ _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
 _MODULE_HELPER_KEYWORD_OPERATIONS = frozenset(
     _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION
 )
+_MODULE_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS = frozenset(
+    {"module.fullmatch"}
+)
 _HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     **_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION,
     **_MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION,
@@ -449,6 +454,7 @@ def normalize_keyword_workload_arguments(
     value: Any,
     *,
     operation: str,
+    expected_exception: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if value is None:
         return {}
@@ -470,6 +476,18 @@ def normalize_keyword_workload_arguments(
         if key not in allowed_keys
     )
     if unknown_keys:
+        if (
+            expected_exception is not None
+            and operation
+            in _MODULE_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS
+        ):
+            return {
+                key: normalize_numeric_workload_argument(
+                    normalized[key],
+                    field_name=f"kwargs.{key}",
+                )
+                for key in sorted(normalized)
+            }
         allowed_key_description = ", ".join(f"`{key}`" for key in sorted(allowed_keys))
         if len(allowed_keys) > 1:
             allowed_key_description = allowed_key_description.replace(
@@ -517,6 +535,19 @@ def validate_helper_keyword_argument_carriers(
 def materialize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     normalized = normalize_numeric_workload_argument(value, field_name=field_name)
     return materialize_descriptor_value(normalized)
+
+
+def _expects_duplicate_module_search_flags_error(workload: Workload) -> bool:
+    expected_exception = workload.expected_exception
+    if workload.operation != "module.search" or expected_exception is None:
+        return False
+    if expected_exception.get("type") != "TypeError":
+        return False
+    message_substring = expected_exception.get("message_substring")
+    return (
+        isinstance(message_substring, str)
+        and "multiple values for argument 'flags'" in message_substring
+    )
 
 
 def normalize_expected_exception(value: Any) -> dict[str, Any] | None:
@@ -793,10 +824,20 @@ def helper_callable(module: Any, workload: Workload) -> Any:
             )
         if workload.operation == "module.search":
             if uses_keyword_arguments:
-                if workload.flags != 0:
+                if (
+                    workload.flags != 0
+                    and not _expects_duplicate_module_search_flags_error(workload)
+                ):
                     raise ValueError(
                         "benchmark workload module.search keyword flags carriers "
                         "currently require `flags == 0`"
+                    )
+                if _expects_duplicate_module_search_flags_error(workload):
+                    return module.search(
+                        pattern,
+                        haystack,
+                        workload.flags,
+                        **keyword_call_kwargs(),
                     )
                 return module.search(
                     pattern,

@@ -1,6 +1,6 @@
 # RBR-0850: Catch up the module-workflow module keyword error benchmark pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -61,3 +61,12 @@ Created: 2026-03-21
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_module_keyword_argument_errors_match_cpython` passed in this run (`10 passed in 0.11s`), and a direct runtime probe in this run showed CPython and `rebar` already agree on the exact bounded `TypeError` messages for `search("abc", "abc", 0, flags=0)` and `fullmatch("abc", "abc", missing=1)`, so this remains a benchmark/publication task rather than a missing runtime-implementation prerequisite;
   - `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` currently stop short of these two raw-module keyword-error rows in the current checkout, even though the shared benchmark harness already supports measured `expected_exception` workloads on other manifests; and
   - `reports/benchmarks/latest.py` currently reports `808` total / `808` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 800` and `REPORT["manifests"]["module-boundary"]` at `8` selected / `8` measured / `0` known gaps because `RBR-0848` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0848` state.
+
+## Completion
+- Landed the shared-helper harness changes needed to preserve the real duplicate `flags` call boundary on `module.search()` and to allow the bounded `module.fullmatch()` unexpected-keyword workload through to the timed `TypeError` callback path without opening other module-helper keyword families.
+- Added `module-search-duplicate-flags-keyword-warm-str` and `module-fullmatch-unexpected-keyword-purged-str` to `benchmarks/workloads/module_boundary.py`, kept them anchored to `workflow-module-search-duplicate-flags-keyword` and `workflow-module-fullmatch-unexpected-keyword`, and refreshed the shared source-tree benchmark expectations plus focused callback tests in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Regenerated the tracked benchmark publication. `reports/benchmarks/latest.py` now reports `813` total / `813` measured / `0` known gaps overall, `805` module workloads, and `REPORT["manifests"]["module-boundary"]` at `13` selected / `13` measured / `0` known gaps with both new workload ids present as measured rows.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0850-module-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

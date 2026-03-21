@@ -151,6 +151,42 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-search-duplicate-flags-keyword-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "multiple values for argument 'flags'"
+      },
+      "flags": 0,
+      "kwargs": {
+        "flags": 0
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "search",
+        "literal",
+        "warm-cache",
+        "keyword",
+        "flags",
+        "duplicate-keyword",
+        "exception"
+      ],
+      "syntax_features": [
+        "module-search",
+        "literal-text",
+        "keyword-flags"
+      ],
+      "notes": [
+        "Warm module.search helper path that keeps the raw positional-plus-keyword flags= duplicate TypeError on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-search-grouped-literal-cold-hit",
       "bucket": "module-search",
       "family": "module",
@@ -259,6 +295,42 @@ MANIFEST = {
       ],
       "notes": [
         "Warm module.fullmatch helper path that keeps the bounded flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-fullmatch-unexpected-keyword-purged-str",
+      "bucket": "module-fullmatch",
+      "family": "module",
+      "operation": "module.fullmatch",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "flags": 0,
+      "kwargs": {
+        "missing": 1
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "fullmatch",
+        "literal",
+        "purged-cache",
+        "keyword",
+        "unexpected-keyword",
+        "exception"
+      ],
+      "syntax_features": [
+        "module-fullmatch",
+        "literal-text",
+        "keyword-errors",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache module.fullmatch helper path that keeps the raw unexpected keyword TypeError on the shared module-boundary surface."
       ]
     },
     {
