@@ -27,6 +27,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    flatten_supplemental_case_groups,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
@@ -364,12 +365,9 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         cases=QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES,
     ),
 )
-
-
-def _flatten_direct_bytes_follow_on_surfaces() -> tuple[SupplementalCase, ...]:
-    return tuple(
-        case for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES for case in spec.cases
-    )
+DIRECT_BYTES_FOLLOW_ON_CASES = flatten_supplemental_case_groups(
+    spec.cases for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+)
 
 
 # Keep the shared manifest contract honest, but route the published bytes slice
@@ -1208,7 +1206,7 @@ def test_supplemental_no_match_paths_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _flatten_direct_bytes_follow_on_surfaces(),
+    DIRECT_BYTES_FOLLOW_ON_CASES,
     ids=lambda case: case.id,
 )
 def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
@@ -1221,7 +1219,7 @@ def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _flatten_direct_bytes_follow_on_surfaces(),
+    DIRECT_BYTES_FOLLOW_ON_CASES,
     ids=lambda case: case.id,
 )
 def test_direct_bytes_follow_on_module_search_matches_cpython(
@@ -1241,7 +1239,7 @@ def test_direct_bytes_follow_on_module_search_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _flatten_direct_bytes_follow_on_surfaces(),
+    DIRECT_BYTES_FOLLOW_ON_CASES,
     ids=lambda case: case.id,
 )
 def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpython(
@@ -1261,7 +1259,7 @@ def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpyt
 
 @pytest.mark.parametrize(
     "case",
-    _flatten_direct_bytes_follow_on_surfaces(),
+    DIRECT_BYTES_FOLLOW_ON_CASES,
     ids=lambda case: case.id,
 )
 def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython(
@@ -1282,7 +1280,7 @@ def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython
 
 @pytest.mark.parametrize(
     "case",
-    _flatten_direct_bytes_follow_on_surfaces(),
+    DIRECT_BYTES_FOLLOW_ON_CASES,
     ids=lambda case: case.id,
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
@@ -1315,7 +1313,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _flatten_direct_bytes_follow_on_surfaces(),
+    DIRECT_BYTES_FOLLOW_ON_CASES,
     ids=lambda case: case.id,
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_cpython(
@@ -1340,7 +1338,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_
 
 @pytest.mark.parametrize(
     "case",
-    _flatten_direct_bytes_follow_on_surfaces(),
+    DIRECT_BYTES_FOLLOW_ON_CASES,
     ids=lambda case: case.id,
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython(
