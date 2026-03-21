@@ -3568,6 +3568,107 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         assert fixture_case.flags == 0
 
 
+def test_pattern_positional_indexlike_direct_cases_remain_balanced_for_follow_on() -> None:
+    assert tuple(
+        (
+            case.case_id,
+            case.helper,
+            case.pattern,
+            _workflow_positional_args_signature(case.args),
+            case.result_kind,
+            case.flags,
+        )
+        for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
+    ) == (
+        (
+            "pattern-search-pos-indexlike-positional-str",
+            "search",
+            "abc",
+            (("str", "zabcabc"), ("indexlike", 2)),
+            "match",
+            0,
+        ),
+        (
+            "pattern-search-endpos-indexlike-positional-bytes",
+            "search",
+            b"abc",
+            (("bytes", b"zabcabc"), ("int", 0), ("indexlike", 4)),
+            "match",
+            0,
+        ),
+        (
+            "pattern-fullmatch-window-indexlike-positional-bytes",
+            "fullmatch",
+            b"abc",
+            (("bytes", b"zabc"), ("indexlike", 1), ("indexlike", 4)),
+            "match",
+            0,
+        ),
+        (
+            "pattern-findall-window-indexlike-positional-str",
+            "findall",
+            "abc",
+            (("str", "zabcabcabcz"), ("indexlike", 1), ("indexlike", 7)),
+            "value",
+            0,
+        ),
+        (
+            "pattern-finditer-window-indexlike-positional-bytes",
+            "finditer",
+            b"abc",
+            (("bytes", b"zabcabcabcz"), ("indexlike", 1), ("indexlike", 7)),
+            "iter",
+            0,
+        ),
+        (
+            "pattern-split-maxsplit-indexlike-positional-str",
+            "split",
+            "abc",
+            (("str", "zabcabcabc"), ("indexlike", 2)),
+            "value",
+            0,
+        ),
+        (
+            "pattern-sub-count-indexlike-positional-bytes",
+            "sub",
+            b"abc",
+            (("bytes", b"x"), ("bytes", b"abcabcabc"), ("indexlike", 2)),
+            "value",
+            0,
+        ),
+        (
+            "pattern-subn-count-indexlike-positional-str",
+            "subn",
+            "abc",
+            (("str", "x"), ("str", "abcabcabc"), ("indexlike", 2)),
+            "value",
+            0,
+        ),
+    )
+    assert Counter(
+        "bytes" if isinstance(case.pattern, bytes) else "str"
+        for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
+    ) == Counter({"str": 4, "bytes": 4})
+    assert Counter(case.helper for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES) == Counter(
+        {
+            "search": 2,
+            "fullmatch": 1,
+            "findall": 1,
+            "finditer": 1,
+            "split": 1,
+            "sub": 1,
+            "subn": 1,
+        }
+    )
+    assert Counter(
+        case.result_kind for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
+    ) == Counter({"match": 3, "value": 4, "iter": 1})
+    assert all(
+        any(kind == "indexlike" for kind, _ in _workflow_positional_args_signature(case.args))
+        for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
+    )
+
+
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
     def direct_case_helper(
