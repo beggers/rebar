@@ -34,18 +34,10 @@ from tests.python.fixture_parity_support import (
     published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
     record_generated_match_failure,
+    SupplementalMissCase,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
-
-
-@dataclass(frozen=True)
-class SupplementalMissCase:
-    id: str
-    target: str
-    pattern: str
-    helper: str
-    text: str
 
 
 @dataclass(frozen=True)

@@ -235,6 +235,15 @@ class SupplementalCase:
     unsupported_backend_reason: str | None = None
 
 
+@dataclass(frozen=True)
+class SupplementalMissCase:
+    id: str
+    target: str
+    pattern: str
+    helper: str
+    text: str
+
+
 OPEN_ENDED_ALTERNATION_BYTES_CASES = (
     SupplementalCase(
         id="open-ended-grouped-alternation-numbered-bytes",
