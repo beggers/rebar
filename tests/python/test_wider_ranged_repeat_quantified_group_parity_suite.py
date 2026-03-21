@@ -337,10 +337,6 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
 )
-WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS = tuple(
-    case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
-)
-
 
 def _build_backtracking_trace_cases(
     *,
@@ -570,7 +566,9 @@ def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_
                 for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
             ),
         ),
-        selected_case_ids=WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS,
+        selected_case_ids=tuple(
+            case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
+        ),
         coverage_label=(
             "wider-ranged-repeat quantified group direct-test case-id buckets"
         ),

@@ -376,10 +376,6 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
 )
-QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS = tuple(
-    case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
-)
-
 
 MATCH_GROUP_ACCESS_CASES = tuple(
     case for case in (*MODULE_CASES, *PATTERN_CASES) if "no-match" not in case.case_id
@@ -733,7 +729,9 @@ def test_quantified_alternation_direct_test_case_id_buckets_cover_selected_front
                 for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
             ),
         ),
-        selected_case_ids=QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS,
+        selected_case_ids=tuple(
+            case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
+        ),
         coverage_label="quantified alternation direct-test case-id buckets",
     )
 

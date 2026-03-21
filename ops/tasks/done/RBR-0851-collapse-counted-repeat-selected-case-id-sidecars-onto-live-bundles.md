@@ -1,8 +1,9 @@
 ## RBR-0851: Collapse counted-repeat selected case-id sidecars onto live bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the counted-repeat parity suites' remaining full-suite selected-case-id sidecars from `tests/python/test_quantified_alternation_parity_suite.py` and `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` so the loaded fixture bundles become the sole canonical source for those selected frontier ids.
@@ -111,3 +112,8 @@ PY`
 - This is a direct post-JSON simplification follow-on rather than a new harness direction:
   - both parity suites already load the owning fixture bundles and partition their direct-bytes follow-on rows from those live bundle objects; and
   - the remaining selected-case-id tuples are now just detached mirrors of the bundle rows used only by the direct-test frontier coverage assertions.
+
+## Completion
+- 2026-03-21: Removed the detached `QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS` and `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS` mirrors from the two counted-repeat parity suites.
+- Rewired `test_quantified_alternation_direct_test_case_id_buckets_cover_selected_frontier()` and `test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_selected_frontier()` to derive `selected_case_ids` directly from `FIXTURE_BUNDLES`, preserving the existing shared bucket labels, direct-bytes follow-on ids, and case-bucket partitioning unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`2119 passed in 2.05s`), `bash -lc "! rg -n '^(QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS|WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS) =' tests/python/test_quantified_alternation_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"` (passes with no matches), and the task-local bundle-derived acceptance probe from this task (`ok`).
