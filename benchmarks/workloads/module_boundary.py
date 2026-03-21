@@ -149,6 +149,37 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a.c",
+      "haystack": "ABC",
+      "flags": 2,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "search",
+        "wildcard",
+        "bounded",
+        "ignorecase",
+        "warm-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-search",
+        "wildcard-single-dot",
+        "compiled-pattern-first-argument",
+        "ignorecase-flag"
+      ],
+      "notes": [
+        "Warm module.search helper path that keeps the bounded compiled-pattern-first-argument IGNORECASE single-dot success row on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-search-flags-keyword-warm-str",
       "bucket": "module-search",
       "family": "module",
@@ -327,6 +358,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
+      "bucket": "module-match",
+      "family": "module",
+      "operation": "module.match",
+      "pattern": "a.c",
+      "haystack": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "match",
+        "wildcard",
+        "bounded",
+        "warm-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-match",
+        "wildcard-single-dot",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.match helper path that keeps the bounded compiled-pattern-first-argument single-dot success row on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-match-flags-keyword-purged-bytes",
       "bucket": "module-match",
       "family": "module",
@@ -419,6 +479,36 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache module.fullmatch helper path that keeps the bounded compiled-pattern-first-argument success row on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
+      "bucket": "module-fullmatch",
+      "family": "module",
+      "operation": "module.fullmatch",
+      "pattern": "a.c",
+      "haystack": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "fullmatch",
+        "wildcard",
+        "bounded",
+        "purged-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-fullmatch",
+        "wildcard-single-dot",
+        "compiled-pattern-first-argument",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache module.fullmatch helper path that keeps the bounded compiled-pattern-first-argument single-dot success row on the shared module-boundary surface."
       ]
     },
     {

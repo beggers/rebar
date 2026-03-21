@@ -1,6 +1,6 @@
 # RBR-0866: Catch up the compiled-pattern bounded wildcard module boundary benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -62,3 +62,12 @@ Created: 2026-03-21
   - a direct runtime probe in this run showed CPython and `rebar` already agree on the bounded matched-result payloads for `search(rebar.compile("a.c", re.IGNORECASE), "ABC")`, `match(rebar.compile("a.c"), "abc")`, and `fullmatch(rebar.compile("a.c"), "abc")`, so no Rust or Python regex-behavior prerequisite is missing;
   - `benchmarks/workloads/module_boundary.py` currently publishes no compiled-pattern bounded-wildcard rows, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently carries no compiled-pattern bounded-wildcard anchor-contract definition on that owner path; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0864` state of `842` total / `842` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 834` and `REPORT["manifests"]["module-boundary"]` at `19` selected / `19` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Added the three compiled-pattern-first-argument bounded-wildcard success workloads on `benchmarks/workloads/module_boundary.py`, extended the shared source-tree contract coverage for manifest loading / anchor pinning / internal probes / precompiled callback timing, and regenerated `reports/benchmarks/latest.py` to publish the new module-boundary rows.
+- Published benchmark report check from the tracked artifact now shows `REPORT["summary"] == {"total_workloads": 845, "measured_workloads": 845, "known_gap_count": 0, "module_workloads": 837, "parser_workloads": 8, "regression_workloads": 8}` and `REPORT["manifests"]["module-boundary"] == {"selected_workload_count": 22, "measured_workloads": 22, "known_gap_count": 0}` with all three new workload ids marked `status == "measured"`.
+- Adjacent harness fix: `python/rebar_harness/benchmarks.py` now avoids replaying nonzero helper flags into precompiled `module.search()` / `module.match()` / `module.fullmatch()` benchmark callbacks, so the compiled-pattern IGNORECASE search row executes with CPython-compatible helper arguments while still keeping compilation outside the timed callback.
+- Verification passed with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0866-compiled-pattern-bounded-wildcard-module-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

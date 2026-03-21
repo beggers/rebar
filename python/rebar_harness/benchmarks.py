@@ -1026,6 +1026,7 @@ def helper_callable(module: Any, workload: Workload) -> Any:
         pattern_argument = (
             compiled_pattern if uses_compiled_pattern else pattern
         )
+        helper_flags = 0 if uses_compiled_pattern else workload.flags
         if (
             uses_keyword_arguments
             and workload.operation not in _MODULE_HELPER_KEYWORD_OPERATIONS
@@ -1056,7 +1057,7 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                     haystack,
                     **keyword_call_kwargs(),
                 )
-            return module.search(pattern_argument, haystack, workload.flags)
+            return module.search(pattern_argument, haystack, helper_flags)
         if workload.operation == "module.match":
             if uses_keyword_arguments:
                 if workload.flags != 0:
@@ -1069,7 +1070,7 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                     haystack,
                     **keyword_call_kwargs(),
                 )
-            return module.match(pattern_argument, haystack, workload.flags)
+            return module.match(pattern_argument, haystack, helper_flags)
         if workload.operation == "module.fullmatch":
             if uses_keyword_arguments:
                 if workload.flags != 0:
@@ -1082,7 +1083,7 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                     haystack,
                     **keyword_call_kwargs(),
                 )
-            return module.fullmatch(pattern_argument, haystack, workload.flags)
+            return module.fullmatch(pattern_argument, haystack, helper_flags)
         if workload.operation == "module.split":
             if uses_keyword_arguments:
                 if workload.flags != 0 and not uses_compiled_pattern:
