@@ -3233,6 +3233,19 @@ def test_value_parity_accepts_nested_builtin_results() -> None:
     )
 
 
+def test_value_parity_accepts_nested_mapping_results_without_order_coupling() -> None:
+    assert_value_parity(
+        {
+            "beta": (b"gamma", {"delta": 3}),
+            "alpha": ["one", 2],
+        },
+        {
+            "alpha": ["one", 2],
+            "beta": (b"gamma", {"delta": 3}),
+        },
+    )
+
+
 def test_value_parity_rejects_equal_top_level_values_with_different_types() -> None:
     with pytest.raises(AssertionError):
         assert_value_parity(True, 1)
@@ -3247,6 +3260,16 @@ def test_value_parity_rejects_equal_nested_values_with_different_types() -> None
             (["alpha"], (True,)),
             ([_StringSubclass("alpha")], (1,)),
         )
+
+
+def test_value_parity_rejects_equal_mapping_values_with_different_types() -> None:
+    with pytest.raises(AssertionError):
+        assert_value_parity({"alpha": True}, {"alpha": 1})
+
+
+def test_value_parity_rejects_equal_mapping_keys_with_different_types() -> None:
+    with pytest.raises(AssertionError):
+        assert_value_parity({True: "alpha"}, {1: "alpha"})
 
 
 @pytest.mark.parametrize(

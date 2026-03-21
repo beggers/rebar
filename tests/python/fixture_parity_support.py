@@ -924,6 +924,29 @@ def assert_value_parity(
 ) -> None:
     assert type(observed) is type(expected)
 
+    if isinstance(expected, Mapping):
+        observed_items = list(observed.items())
+        assert len(observed_items) == len(expected)
+
+        for expected_key, expected_value in expected.items():
+            for index, (observed_key, observed_value) in enumerate(observed_items):
+                if type(observed_key) is not type(expected_key):
+                    continue
+                if observed_key != expected_key:
+                    continue
+                break
+            else:
+                raise AssertionError(
+                    f"missing mapping key parity for {expected_key!r}"
+                )
+
+            observed_items.pop(index)
+            assert_value_parity(observed_key, expected_key)
+            assert_value_parity(observed_value, expected_value)
+
+        assert not observed_items
+        return
+
     if isinstance(expected, (list, tuple)):
         assert len(observed) == len(expected)
         for observed_item, expected_item in zip(observed, expected):
