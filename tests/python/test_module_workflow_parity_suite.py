@@ -691,6 +691,27 @@ _INDEX_FOUR = _IndexLike(4)
 _INDEX_SEVEN = _IndexLike(7)
 
 
+class _RecordingIndexLike:
+    """Tracks __index__ usage for coercion-semantics parity checks."""
+
+    __slots__ = ("value", "calls", "_error")
+
+    def __init__(self, value: int = 1, *, error: Exception | None = None) -> None:
+        self.value = value
+        self.calls = 0
+        self._error = error
+
+    def __index__(self) -> int:
+        self.calls += 1
+        if self._error is not None:
+            raise self._error
+        return self.value
+
+
+class _IndexLikeBoomError(Exception):
+    pass
+
+
 @dataclass(frozen=True)
 class EscapeCompatibleInputCase:
     case_id: str
@@ -2119,6 +2140,10 @@ WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_CASES = (
             value,
         ),
     ),
+)
+WORKFLOW_INDEXLIKE_INVOCATION_CASES = (
+    *WORKFLOW_KEYWORD_NUMERIC_COERCION_CASES,
+    *WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_CASES,
 )
 MODULE_KEYWORD_ERROR_CASES = (
     ModuleKeywordErrorCase(
@@ -4952,6 +4977,58 @@ def test_pattern_positional_indexlike_argument_calls_match_cpython(
         return
 
     assert_value_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    WORKFLOW_INDEXLIKE_INVOCATION_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_workflow_indexlike_arguments_call___index___once(
+    regex_backend: tuple[str, object],
+    case: WorkflowNumericCoercionCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_value = _RecordingIndexLike()
+    expected_value = _RecordingIndexLike()
+
+    observed = case.call(backend, observed_value)
+    expected = case.call(re, expected_value)
+
+    _assert_workflow_numeric_coercion_result_parity(
+        backend_name,
+        observed,
+        expected,
+        result_kind=case.result_kind,
+    )
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
+
+
+@pytest.mark.parametrize(
+    "case",
+    WORKFLOW_INDEXLIKE_INVOCATION_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_workflow_indexlike_exceptions_propagate_unchanged(
+    regex_backend: tuple[str, object],
+    case: WorkflowNumericCoercionCase,
+) -> None:
+    _, backend = regex_backend
+    observed_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for {case.case_id}")
+    )
+    expected_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for {case.case_id}")
+    )
+
+    observed_error = _capture_error(lambda: case.call(backend, observed_value))
+    expected_error = _capture_error(lambda: case.call(re, expected_value))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
 
 
 @pytest.mark.parametrize(
