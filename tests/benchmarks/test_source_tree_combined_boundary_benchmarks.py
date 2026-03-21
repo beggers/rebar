@@ -3507,48 +3507,39 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("module-boundary")
         workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
+        cases = (
             (
-                "module-compile-flags-int-zero-warm-str-compiled-pattern",
-                "module-compile-flags-int-zero-purged-bytes-compiled-pattern",
+                "int-zero",
+                _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload,
+                (
+                    "module-compile-flags-int-zero-warm-str-compiled-pattern",
+                    "module-compile-flags-int-zero-purged-bytes-compiled-pattern",
+                ),
             ),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
+            (
+                "bool-false",
+                _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload,
+                (
+                    "module-compile-flags-bool-false-warm-str-compiled-pattern",
+                    "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
+                ),
+            ),
         )
 
-    def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_bool_false_keyword_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            (
-                "module-compile-flags-bool-false-warm-str-compiled-pattern",
-                "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
-            ),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
+        for group_id, include_workload, expected_workload_ids in cases:
+            with self.subTest(group_id=group_id):
+                measured_workload_ids = _manifest_workload_ids_matching(
+                    case.target_manifest,
+                    include_workload,
+                )
+                self.assertEqual(measured_workload_ids, expected_workload_ids)
+                self._assert_zero_gap_manifest_workloads_measured(
+                    case,
+                    "module-boundary",
+                    measured_workload_ids,
+                    workload_count,
+                    expected_total_workload_count=workload_count,
+                )
 
     def test_module_boundary_manifest_keeps_bounded_wildcard_compiled_pattern_success_rows_measured(
         self,
@@ -6745,118 +6736,131 @@ def _is_module_workflow_compiled_pattern_compile_literal_success_workload(
     )
 
 
-def _module_workflow_compiled_pattern_compile_int_zero_keyword_correctness_case_signature(
+_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE = (
+    ("flags", "int", 0),
+)
+_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE = (
+    ("flags", "bool", False),
+)
+
+
+def _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
     case: Any,
+    *,
+    keyword_signature: tuple[tuple[str, str, object], ...],
 ) -> tuple[Any, ...] | None:
     if case.operation != "module_call" or not case.use_compiled_pattern:
         return None
     if case.helper != "compile" or case.args:
         return None
-    if _module_workflow_keyword_kwargs_signature(case.kwargs) != (("flags", "int", 0),):
+    if _module_workflow_keyword_kwargs_signature(case.kwargs) != keyword_signature:
         return None
     case_text_model = case.text_model or "str"
     return (
         "module.compile",
         case_pattern(case),
         (),
-        _module_workflow_keyword_kwargs_signature(case.kwargs),
+        keyword_signature,
         case.use_compiled_pattern,
         case.flags or 0,
         case_text_model,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+    workload: Any,
+    *,
+    keyword_label: str,
+    keyword_signature: tuple[tuple[str, str, object], ...],
+) -> tuple[Any, ...]:
+    if not _is_module_workflow_compiled_pattern_compile_keyword_workload(
+        workload,
+        keyword_signature=keyword_signature,
+    ):
+        raise AssertionError(
+            "unexpected module-workflow compiled-pattern module.compile "
+            f"{keyword_label} keyword workload {workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        (),
+        keyword_signature,
+        workload.use_compiled_pattern,
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_module_workflow_compiled_pattern_compile_keyword_workload(
+    workload: Any,
+    *,
+    keyword_signature: tuple[tuple[str, str, object], ...],
+) -> bool:
+    return (
+        workload.use_compiled_pattern
+        and workload.operation == "module.compile"
+        and workload.expected_exception is None
+        and workload.pattern == "abc"
+        and workload.flags == 0
+        and _module_workflow_keyword_kwargs_signature(workload.kwargs)
+        == keyword_signature
+    )
+
+
+def _module_workflow_compiled_pattern_compile_int_zero_keyword_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+        case,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
     )
 
 
 def _module_workflow_compiled_pattern_compile_int_zero_keyword_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload(
-        workload
-    ):
-        raise AssertionError(
-            "unexpected module-workflow compiled-pattern module.compile "
-            f"int-zero keyword workload {workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        (),
-        _module_workflow_keyword_kwargs_signature(workload.kwargs),
-        workload.use_compiled_pattern,
-        workload.flags,
-        workload.text_model,
+    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+        workload,
+        keyword_label="int-zero",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
     )
 
 
 def _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload(
     workload: Any,
 ) -> bool:
-    return (
-        workload.use_compiled_pattern
-        and workload.operation == "module.compile"
-        and workload.expected_exception is None
-        and workload.pattern == "abc"
-        and workload.flags == 0
-        and _module_workflow_keyword_kwargs_signature(workload.kwargs)
-        == (("flags", "int", 0),)
+    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+        workload,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
     )
 
 
 def _module_workflow_compiled_pattern_compile_bool_false_keyword_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.operation != "module_call" or not case.use_compiled_pattern:
-        return None
-    if case.helper != "compile" or case.args:
-        return None
-    if (
-        _module_workflow_keyword_kwargs_signature(case.kwargs)
-        != (("flags", "bool", False),)
-    ):
-        return None
-    case_text_model = case.text_model or "str"
-    return (
-        "module.compile",
-        case_pattern(case),
-        (),
-        _module_workflow_keyword_kwargs_signature(case.kwargs),
-        case.use_compiled_pattern,
-        case.flags or 0,
-        case_text_model,
+    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+        case,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
     )
 
 
 def _module_workflow_compiled_pattern_compile_bool_false_keyword_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload(
-        workload
-    ):
-        raise AssertionError(
-            "unexpected module-workflow compiled-pattern module.compile "
-            f"bool-false keyword workload {workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        (),
-        _module_workflow_keyword_kwargs_signature(workload.kwargs),
-        workload.use_compiled_pattern,
-        workload.flags,
-        workload.text_model,
+    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+        workload,
+        keyword_label="bool-false",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
     )
 
 
 def _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload(
     workload: Any,
 ) -> bool:
-    return (
-        workload.use_compiled_pattern
-        and workload.operation == "module.compile"
-        and workload.expected_exception is None
-        and workload.pattern == "abc"
-        and workload.flags == 0
-        and _module_workflow_keyword_kwargs_signature(workload.kwargs)
-        == (("flags", "bool", False),)
+    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+        workload,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
     )
 
 
@@ -12769,13 +12773,30 @@ class CompiledPatternModuleCompileKeywordCase:
 @dataclass(frozen=True)
 class CompiledPatternModuleCompileKeywordCaseGroup:
     group_id: str
+    keyword_signature: tuple[tuple[str, str, object], ...]
     cases: tuple[CompiledPatternModuleCompileKeywordCase, ...]
     contract_filename: str
     anchor_contract_filename: str
     expected_anchor_pairs: tuple[tuple[str, str], ...]
-    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
-    workload_signature: Callable[[Any], tuple[Any, ...]]
-    include_workload: Callable[[Any], bool]
+
+    def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
+        return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+            case,
+            keyword_signature=self.keyword_signature,
+        )
+
+    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
+        return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+            workload,
+            keyword_label=self.group_id,
+            keyword_signature=self.keyword_signature,
+        )
+
+    def include_workload(self, workload: Any) -> bool:
+        return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+            workload,
+            keyword_signature=self.keyword_signature,
+        )
 
 
 COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES = (
@@ -12816,6 +12837,7 @@ COMPILED_PATTERN_MODULE_COMPILE_ALL_KEYWORD_CASES = (
 COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
     CompiledPatternModuleCompileKeywordCaseGroup(
         group_id="int-zero",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
         cases=COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES,
         contract_filename=(
             "python_benchmark_compiled_pattern_module_compile_keyword_contract.py"
@@ -12833,18 +12855,10 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
                 "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
             ),
         ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_int_zero_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_int_zero_keyword_workload_signature
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload
-        ),
     ),
     CompiledPatternModuleCompileKeywordCaseGroup(
         group_id="bool-false",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
         cases=COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES,
         contract_filename=(
             "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_contract.py"
@@ -12861,15 +12875,6 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
                 "module-compile-flags-bool-false-purged-bytes-compiled-pattern-contract",
                 "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
             ),
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_bool_false_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_bool_false_keyword_workload_signature
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload
         ),
     ),
 )
