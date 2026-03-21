@@ -1,8 +1,9 @@
 # RBR-0819: Add a grouped-replacement selector and collapse the suite sidecar
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Delete the grouped-replacement fixture path sidecar from `tests/python/test_fixture_backed_replacement_parity_suite.py`.
@@ -89,3 +90,8 @@ PY`
 - The architectural shape is already established on the adjacent replacement surfaces:
   - `tests/python/test_fixture_backed_replacement_parity_suite.py` already routes `CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR` and `OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR` through `select_correctness_fixture_paths(...)`; and
   - this grouped slice is the remaining local path mirror in that module, so adding one canonical selector keeps the replacement harness on a single fixture-selection path instead of carrying a bespoke third style.
+
+## Completion
+- Added `GROUPED_REPLACEMENT_FIXTURE_SELECTOR = "grouped-replacement"` to `python/rebar_harness/correctness.py` and registered it in `_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR` with the required seven-file grouped-replacement order.
+- Removed the grouped-replacement suite-local path sidecar from `tests/python/test_fixture_backed_replacement_parity_suite.py` and wired `GROUPED_REPLACEMENT_TEMPLATE_SURFACE` directly to `select_correctness_fixture_paths(GROUPED_REPLACEMENT_FIXTURE_SELECTOR)` while preserving the existing manifest ownership and bundle reordering logic.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`1166 passed`), the required `rg` guard (no matches), and the selector/bundle-order probe from the acceptance criteria (`ok`).

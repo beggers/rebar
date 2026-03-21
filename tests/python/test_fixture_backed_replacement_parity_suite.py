@@ -15,6 +15,7 @@ from rebar_harness.correctness import (
     CORRECTNESS_FIXTURES_ROOT,
     CpythonReAdapter,
     FixtureCase,
+    GROUPED_REPLACEMENT_FIXTURE_SELECTOR,
     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
     RebarAdapter,
     evaluate_case,
@@ -99,17 +100,6 @@ NO_MATCH_TEXT_CANDIDATES = (
 )
 CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS = select_correctness_fixture_paths(
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR
-)
-GROUPED_REPLACEMENT_SELECTOR_FIXTURE_PATHS = (
-    CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",
-    CORRECTNESS_FIXTURES_ROOT / "grouped_alternation_replacement_workflows.py",
-    CORRECTNESS_FIXTURES_ROOT / "named_group_replacement_workflows.py",
-    CORRECTNESS_FIXTURES_ROOT
-    / "nested_broader_range_wider_ranged_repeat_quantified_group_"
-    "alternation_branch_local_backreference_replacement_workflows.py",
-    CORRECTNESS_FIXTURES_ROOT / "nested_group_alternation_replacement_workflows.py",
-    CORRECTNESS_FIXTURES_ROOT / "nested_group_replacement_workflows.py",
-    CORRECTNESS_FIXTURES_ROOT / "quantified_nested_group_replacement_workflows.py",
 )
 OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS = (
     select_correctness_fixture_paths(
@@ -1263,7 +1253,9 @@ REPLACEMENT_SURFACE_SPECS = (
             GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
             NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
         ),
-        selector_fixture_paths=GROUPED_REPLACEMENT_SELECTOR_FIXTURE_PATHS,
+        selector_fixture_paths=select_correctness_fixture_paths(
+            GROUPED_REPLACEMENT_FIXTURE_SELECTOR
+        ),
         supplemental_no_match_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_REPEATED_CASES,
     ),
