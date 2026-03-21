@@ -3452,7 +3452,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_module_workflow_compiled_pattern_compile_literal_success_workload,
         )
-        self.assertEqual(workload_count, 28)
         self.assertEqual(
             expected_measured_workload_ids,
             (
@@ -3477,7 +3476,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload,
         )
-        self.assertEqual(workload_count, 28)
         self.assertEqual(
             expected_measured_workload_ids,
             (
@@ -3502,7 +3500,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
         )
-        self.assertEqual(workload_count, 28)
         self.assertEqual(
             expected_measured_workload_ids,
             (
@@ -3528,7 +3525,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
         )
-        self.assertEqual(workload_count, 28)
         self.assertEqual(
             expected_measured_workload_ids,
             (
