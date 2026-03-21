@@ -1,8 +1,9 @@
 # RBR-0820: Publish the module-workflow compiled-pattern fullmatch bytes singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next adjacent compiled-pattern module-helper singleton, publishing the exact bytes literal `rebar.fullmatch(compiled_pattern, b"abc")` workflow for the existing `b"abc"` anchor before the unpublished compiled-pattern bool-like keyword-call rows, benchmark catch-up, or another owner family reopens the queue.
@@ -63,3 +64,8 @@ Created: 2026-03-21
   - the unpublished compiled-pattern bool-like keyword-call rows remain out of scope here because `compiled-pattern-fullmatch-bytes` is the next smaller adjacent singleton already exercised on the shared owner path; and
   - no blocked feature task exists to reopen first.
 - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need additional backlog/current-status edits.
+
+## Completion
+- Added the single published `module_call` row `workflow-module-fullmatch-bytes-compiled-pattern` to `tests/conformance/fixtures/module_workflow_surface.py` and updated the shared owner-path counts, helper breakdown, and published-order assertions in `tests/python/test_module_workflow_parity_suite.py` so the compiled-pattern bytes `fullmatch()` singleton lands on the existing module-workflow surface without broadening the slice.
+- Extended the tracked representative-case list in `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked report now shows `1492` total / `1492` passed / `0` unimplemented overall across `114` manifests, with `module.workflow` at `122` / `122`, `module.workflow.str` unchanged at `74` / `74`, `module.workflow.bytes` at `48` / `48`, and `module.workflow.module_call` at `68` / `68`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-fullmatch-bytes and (test_module_helpers_accept_compiled_patterns_with_cpython_parity or test_compiled_pattern_workflows_match_cpython)'` (`16 passed, 789 deselected`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases tests/conformance/test_combined_correctness_scorecards.py` (`33 passed, 2015 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0820-module-workflow-compiled-pattern-fullmatch-bytes-singleton.py` (`122/122`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1492/1492`).

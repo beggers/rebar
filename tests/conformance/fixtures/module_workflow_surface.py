@@ -1446,6 +1446,26 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-fullmatch-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "categories": ["workflow", "fullmatch", "literal", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the exact bytes literal module-level fullmatch() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-match-bytes-compiled-pattern-on-str-string",
       "operation": "module_call",
       "family": "module_match_workflow",
