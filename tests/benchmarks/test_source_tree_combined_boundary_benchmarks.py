@@ -11410,6 +11410,13 @@ class CompiledPatternModuleBoundarySuccessCase:
     expected_callback_result: object
 
 
+_VERBOSE_REGRESSION_PATTERN = (
+    r"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $"
+)
+_VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
+_VERBOSE_REGRESSION_PATTERN_BYTES = _VERBOSE_REGRESSION_PATTERN.encode("latin-1")
+
+
 COMPILED_PATTERN_MODULE_BOUNDARY_LITERAL_SUCCESS_CASES = (
     CompiledPatternModuleBoundarySuccessCase(
         id="module-search-literal-warm-hit-str-compiled-pattern",
@@ -11478,9 +11485,34 @@ COMPILED_PATTERN_MODULE_BOUNDARY_BOUNDED_WILDCARD_SUCCESS_CASES = (
 )
 
 
+COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES = (
+    CompiledPatternModuleBoundarySuccessCase(
+        id="module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+        operation="module.search",
+        pattern=_VERBOSE_REGRESSION_PATTERN,
+        flags=_VERBOSE_REGRESSION_FLAGS,
+        cache_mode="warm",
+        haystack="prefix\nENV_VAR=ABCD\nsuffix",
+        text_model="bytes",
+        expected_callback_result="module-result",
+    ),
+    CompiledPatternModuleBoundarySuccessCase(
+        id="module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
+        operation="module.fullmatch",
+        pattern=_VERBOSE_REGRESSION_PATTERN,
+        flags=_VERBOSE_REGRESSION_FLAGS,
+        cache_mode="purged",
+        haystack="ENV_VAR = 123",
+        text_model="bytes",
+        expected_callback_result="module-result",
+    ),
+)
+
+
 COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES = (
     COMPILED_PATTERN_MODULE_BOUNDARY_LITERAL_SUCCESS_CASES
     + COMPILED_PATTERN_MODULE_BOUNDARY_BOUNDED_WILDCARD_SUCCESS_CASES
+    + COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES
 )
 
 
@@ -11607,6 +11639,74 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
         )
 
 
+def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest = {
+        "schema_version": 1,
+        "manifest_id": "module-boundary",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _compiled_pattern_module_boundary_success_manifest_payload(case)
+            for case in COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES
+        ],
+    }
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_compiled_pattern_module_boundary_verbose_bytes_contract.py",
+        f"MANIFEST = {manifest!r}\n",
+    )
+    expected_anchor_case_ids = _definition_anchor_expectations(
+        manifest_path,
+        {
+            "module-search-verbose-regression-warm-hit-bytes-compiled-pattern-contract": (
+                "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+            ),
+            "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern-contract": (
+                "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+            ),
+        },
+    )
+    anchor_case_ids = published_case_ids_by_signature(
+        _module_workflow_compiled_pattern_correctness_case_signature
+    )
+
+    assert anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        include_workload=_is_module_workflow_compiled_pattern_workload,
+    ) == expected_anchor_case_ids
+    assert unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        include_workload=_is_module_workflow_compiled_pattern_workload,
+    ) == ()
+    assert tuple(
+        (pair.workload_id, pair.case_id)
+        for pair in expected_anchored_workload_case_pairs(
+            manifest_path,
+            expected_anchor_case_ids=expected_anchor_case_ids,
+            include_workload=_is_module_workflow_compiled_pattern_workload,
+        )
+    ) == (
+        (
+            "module-search-verbose-regression-warm-hit-bytes-compiled-pattern-contract",
+            "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+        ),
+        (
+            "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern-contract",
+            "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+        ),
+    )
+
+
 @pytest.mark.parametrize(
     "case",
     tuple(
@@ -11684,6 +11784,21 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_s
             [("compile", "a.c", 0), ("purge",)],
             ("module.fullmatch", "abc", 0, {}),
             id="module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
+        ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[6],
+            [("compile", _VERBOSE_REGRESSION_PATTERN_BYTES, _VERBOSE_REGRESSION_FLAGS)],
+            ("module.search", b"prefix\nENV_VAR=ABCD\nsuffix", 0, {}),
+            id="module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+        ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[7],
+            [
+                ("compile", _VERBOSE_REGRESSION_PATTERN_BYTES, _VERBOSE_REGRESSION_FLAGS),
+                ("purge",),
+            ],
+            ("module.fullmatch", b"ENV_VAR = 123", 0, {}),
+            id="module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
         ),
     ),
 )
