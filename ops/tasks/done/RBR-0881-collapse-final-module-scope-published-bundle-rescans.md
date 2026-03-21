@@ -1,6 +1,6 @@
 # RBR-0881: Collapse final module-scope published-bundle rescans
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -49,3 +49,7 @@ Created: 2026-03-21
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py` currently passes (`1227 passed, 29 skipped`);
   - `bash -lc "rg -n '^[A-Z0-9_]+ = published_fixture_bundle_by_manifest_id\\($' tests/python/test_parser_matrix_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py"` currently reports exactly the two remaining module-scope rescan chains; and
   - the adjacent suites already use `published_fixture_bundles_by_manifest_id(...)`, so finishing these two owners removes the last module-scope top-level rescans without adding another owner module.
+
+## Completion
+- Replaced the parser-suite and replacement-suite module-scope `published_fixture_bundle_by_manifest_id(...)` rescan chains with one `published_fixture_bundles_by_manifest_id(...)` index per already-loaded bundle tuple, keeping the deeper in-test lookup calls unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py` (`1227 passed, 29 skipped`) and `bash -lc "! rg -n '^[A-Z0-9_]+ = published_fixture_bundle_by_manifest_id\\($' tests/python/test_parser_matrix_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py"`.
