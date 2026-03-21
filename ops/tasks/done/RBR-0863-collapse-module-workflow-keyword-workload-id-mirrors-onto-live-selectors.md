@@ -1,6 +1,6 @@
 # RBR-0863: Collapse module-workflow keyword workload-id mirrors onto live selectors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -104,3 +104,11 @@ PY`
 - This stays on the same post-JSON benchmark-harness simplification track as the adjacent mirror removals in the same owner file:
   - `RBR-0859` already collapsed the collection-replacement keyword and positional workload-id mirrors onto live selectors; and
   - `RBR-0861` already removed the remaining pattern-boundary window workload-id mirrors from the same benchmark owner.
+
+## Completion
+- Replaced the module-workflow keyword workload-id mirrors with live structural selectors in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Kept the shared keyword workload-signature path bounded to the same five `module-boundary` rows by deriving the flags and TypeError slices from operation, kwargs, exception metadata, and compiled-pattern state instead of top-level frozensets.
+- Verified with:
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module-workflow-keyword-flags or module-workflow-keyword-errors'`
+  - `bash -lc "! rg -n '^(MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS|MODULE_WORKFLOW_KEYWORD_ERROR_WORKLOAD_IDS|MODULE_WORKFLOW_KEYWORD_WORKLOAD_IDS) =' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the task-local selector-order probe from the acceptance criteria (`ok`)

@@ -6328,25 +6328,6 @@ def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
     )
 
 
-MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS = frozenset(
-    {
-        "module-search-flags-keyword-warm-str",
-        "module-match-flags-keyword-purged-bytes",
-        "module-fullmatch-flags-keyword-warm-str",
-    }
-)
-MODULE_WORKFLOW_KEYWORD_ERROR_WORKLOAD_IDS = frozenset(
-    {
-        "module-search-duplicate-flags-keyword-warm-str",
-        "module-fullmatch-unexpected-keyword-purged-str",
-    }
-)
-MODULE_WORKFLOW_KEYWORD_WORKLOAD_IDS = frozenset(
-    MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS
-    | MODULE_WORKFLOW_KEYWORD_ERROR_WORKLOAD_IDS
-)
-
-
 def _module_workflow_keyword_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -6367,7 +6348,10 @@ def _module_workflow_keyword_correctness_case_signature(
 def _module_workflow_keyword_workload_args(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if workload.workload_id not in MODULE_WORKFLOW_KEYWORD_WORKLOAD_IDS:
+    if not (
+        _is_module_workflow_keyword_flags_workload(workload)
+        or _is_module_workflow_keyword_error_workload(workload)
+    ):
         raise AssertionError(
             "unexpected module-workflow keyword workload "
             f"{workload.workload_id!r}"
@@ -6385,6 +6369,14 @@ def _module_workflow_keyword_workload_args(
 def _module_workflow_keyword_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
+    if not (
+        _is_module_workflow_keyword_flags_workload(workload)
+        or _is_module_workflow_keyword_error_workload(workload)
+    ):
+        raise AssertionError(
+            "unexpected module-workflow keyword workload "
+            f"{workload.workload_id!r}"
+        )
     return (
         workload.operation,
         workload.pattern_payload(),
@@ -6396,11 +6388,36 @@ def _module_workflow_keyword_workload_signature(
 
 
 def _is_module_workflow_keyword_flags_workload(workload: Any) -> bool:
-    return workload.workload_id in MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS
+    keyword_names = tuple(workload.kwargs)
+    return (
+        workload.operation in {"module.search", "module.match", "module.fullmatch"}
+        and bool(workload.kwargs)
+        and len(keyword_names) == 1
+        and keyword_names[0] == "flags"
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+    )
 
 
 def _is_module_workflow_keyword_error_workload(workload: Any) -> bool:
-    return workload.workload_id in MODULE_WORKFLOW_KEYWORD_ERROR_WORKLOAD_IDS
+    keyword_names = tuple(workload.kwargs)
+    expected_exception = workload.expected_exception
+    if (
+        workload.operation
+        not in {"module.search", "module.match", "module.fullmatch"}
+        or not workload.kwargs
+        or len(keyword_names) != 1
+        or expected_exception is None
+        or expected_exception.get("type") != "TypeError"
+        or workload.use_compiled_pattern
+    ):
+        return False
+    message = expected_exception.get("message_substring", "")
+    if keyword_names[0] == "flags":
+        return "multiple values for argument" in message
+    if keyword_names[0] == "missing":
+        return "unexpected keyword argument" in message
+    return False
 
 
 def _pattern_window_positional_indexlike_correctness_case_signature(
