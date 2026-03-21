@@ -109,36 +109,6 @@ GROUPED_REPLACEMENT_COLLECTION_CASE_IDS = (
     GROUPED_TEMPLATE_CALLABLE_CASE_ID,
     GROUPED_TEMPLATE_SELECTED_CASE_ID,
 )
-GROUPED_REPLACEMENT_NAMED_CASE_IDS = (
-    "module-sub-template-named-group-str",
-    "module-subn-template-named-group-str",
-    "pattern-sub-template-named-group-str",
-    "pattern-subn-template-named-group-str",
-)
-NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS = (
-    "module-sub-template-nested-group-alternation-numbered-outer-str",
-    "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
-    "module-sub-template-nested-group-alternation-numbered-wrapper-str",
-    "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
-)
-NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_CASE_IDS = (
-    "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
-    "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
-    "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
-    "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
-    "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
-    "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
-    "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-str",
-    "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
-    "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
-    "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
-    "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
-    "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
-    "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
-    "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
-    "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-bytes",
-    "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
-)
 GROUPED_REPLACEMENT_COLLECTION_PATTERNS = frozenset({"abc", "(abc)"})
 GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS = Counter(
     {
@@ -1516,8 +1486,16 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
         surface.bundles,
         GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
     )
-    assert tuple(case.case_id for case in named_bundle.cases) == (
-        GROUPED_REPLACEMENT_NAMED_CASE_IDS
+    named_case_ids = _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
+    )
+    assert tuple(case.case_id for case in named_bundle.cases) == named_case_ids
+    assert named_case_ids == (
+        "module-sub-template-named-group-str",
+        "module-subn-template-named-group-str",
+        "pattern-sub-template-named-group-str",
+        "pattern-subn-template-named-group-str",
     )
     for case in named_bundle.cases:
         assert case_replacement_argument(case) == r"<\g<word>>"
@@ -1529,8 +1507,18 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
         surface.bundles,
         GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
     )
+    nested_group_alternation_case_ids = _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
+    )
     assert tuple(case.case_id for case in nested_group_alternation_bundle.cases) == (
-        NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS
+        nested_group_alternation_case_ids
+    )
+    assert nested_group_alternation_case_ids == (
+        "module-sub-template-nested-group-alternation-numbered-outer-str",
+        "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
+        "module-sub-template-nested-group-alternation-numbered-wrapper-str",
+        "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
     )
     assert {
         case.case_id
@@ -1760,7 +1748,10 @@ def test_broader_range_wider_ranged_repeat_replacement_manifest_keeps_mixed_text
     ordered_bytes_case_ids = tuple(
         case.case_id for case in bundle.cases if case.text_model == "bytes"
     )
-    expected_selected_case_ids = NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_CASE_IDS
+    expected_selected_case_ids = _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=manifest_id,
+    )
     expected_module_case_ids = tuple(
         case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
     )

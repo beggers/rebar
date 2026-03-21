@@ -1,8 +1,9 @@
 # RBR-0857: Collapse replacement bundle case-id mirrors onto live owner bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the remaining replacement-suite case-id mirror tuples from `tests/python/test_fixture_backed_replacement_parity_suite.py` where the loaded owner bundles already carry the canonical ordered case set.
@@ -85,3 +86,8 @@ PY`
 - This stays on the same post-JSON parity-harness simplification track as the recent sidecar removals instead of opening another harness direction:
   - `RBR-0841` already collapsed replacement pytest-param sidecars onto live surfaces; and
   - this follow-on only removes the remaining named/nested/wider-ranged ordered case-id mirrors that duplicate live owner bundle order in the same replacement parity file.
+
+## Completion
+- 2026-03-21: Removed `GROUPED_REPLACEMENT_NAMED_CASE_IDS`, `NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS`, and `NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_CASE_IDS` from `tests/python/test_fixture_backed_replacement_parity_suite.py`.
+- Rewired the named-group, nested-group-alternation, and broader-range wider-ranged-repeat assertions to read ordered case ids from the live owner bundles or the existing `_expected_selected_replacement_case_ids(...)` helper without changing grouped collection ownership, wrapper-anchor assertions, or mixed-text frontier behavior.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`1166 passed in 0.93s`), `bash -lc "! rg -n '^(GROUPED_REPLACEMENT_NAMED_CASE_IDS|NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS|NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_CASE_IDS) =' tests/python/test_fixture_backed_replacement_parity_suite.py"` (passes with no matches), and the task-local import/order probe from Acceptance (`ok`).
