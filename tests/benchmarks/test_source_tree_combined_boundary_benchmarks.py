@@ -3344,14 +3344,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
-    def test_module_boundary_manifest_keeps_compiled_pattern_success_rows_measured(
+    def test_module_boundary_manifest_keeps_literal_compiled_pattern_success_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("module-boundary")
         workload_count = len(case.target_manifest.workloads)
         expected_measured_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
-            _is_module_workflow_compiled_pattern_success_workload,
+            _is_module_workflow_compiled_pattern_literal_success_workload,
         )
         self.assertEqual(
             expected_measured_workload_ids,
@@ -6428,13 +6428,14 @@ def _is_module_workflow_compiled_pattern_workload(workload: Any) -> bool:
     )
 
 
-def _is_module_workflow_compiled_pattern_success_workload(
+def _is_module_workflow_compiled_pattern_literal_success_workload(
     workload: Any,
 ) -> bool:
     return (
         _is_module_workflow_compiled_pattern_workload(workload)
         and getattr(workload, "haystack_text_model", None) is None
         and workload.expected_exception is None
+        and workload.pattern == "abc"
     )
 
 
@@ -7444,7 +7445,7 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         workload_signature=_module_workflow_keyword_workload_signature,
     ),
     StandardBenchmarkAnchorContractDefinition(
-        name="module-workflow-compiled-pattern-success",
+        name="module-workflow-compiled-pattern-literal-success",
         manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=_definition_anchor_expectations(
             MODULE_BOUNDARY_MANIFEST_PATH,
@@ -7460,7 +7461,7 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
             },
         ),
-        include_workload=_is_module_workflow_compiled_pattern_success_workload,
+        include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
         correctness_case_signature=_module_workflow_compiled_pattern_correctness_case_signature,
         workload_signature=_module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
