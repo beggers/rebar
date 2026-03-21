@@ -162,6 +162,15 @@ class BoundedPatternCase:
 
 
 @dataclass(frozen=True)
+class CaseIdBoundedPatternCase:
+    id: str
+    pattern_case_id: str
+    helper: str
+    string: str | bytes
+    bounds: tuple[int, int]
+
+
+@dataclass(frozen=True)
 class FixtureBundle:
     manifest: FixtureManifest
     cases: tuple[FixtureCase, ...]

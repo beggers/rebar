@@ -12,6 +12,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -53,15 +54,6 @@ class SupplementalMissCase:
     module_misses: tuple[str, ...]
     pattern_case_id: str
     pattern_misses: tuple[str, ...]
-
-
-@dataclass(frozen=True)
-class BoundedPatternCase:
-    id: str
-    pattern_case_id: str
-    helper: str
-    string: str
-    bounds: tuple[int, ...]
 
 
 @dataclass(frozen=True)

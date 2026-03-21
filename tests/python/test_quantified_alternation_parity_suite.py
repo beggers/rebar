@@ -13,6 +13,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
     SupplementalCase,
     WRAPPER_PAIRS,
@@ -75,17 +76,6 @@ class GeneratedQuantifiedAlternationParitySpec:
     expected_text_models: frozenset[str]
     candidate_lengths: range
     failure_prefix: str
-
-
-@dataclass(frozen=True)
-class BoundedPatternCase:
-    id: str
-    pattern_case_id: str
-    helper: str
-    string: str | bytes
-    bounds: tuple[int, int]
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
 
 
 HELPERS = ("search", "match", "fullmatch")
