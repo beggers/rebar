@@ -217,6 +217,74 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-flags-bool-false-warm-str-compiled-pattern",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": False
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "literal",
+        "warm-cache",
+        "compiled-pattern",
+        "keyword",
+        "flags",
+        "bool"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "keyword-flags"
+      ],
+      "notes": [
+        "Warm module.compile helper path that keeps the bounded compiled-pattern-first-argument explicit bool-false flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": False
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "literal",
+        "purged-cache",
+        "compiled-pattern",
+        "bytes",
+        "keyword",
+        "flags",
+        "bool"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "keyword-flags",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged module.compile helper path that keeps the bounded compiled-pattern-first-argument explicit bool-false flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-search-literal-warm-hit",
       "bucket": "module-search",
       "family": "module",

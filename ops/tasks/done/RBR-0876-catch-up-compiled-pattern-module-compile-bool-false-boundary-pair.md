@@ -1,6 +1,6 @@
 # RBR-0876: Catch up the compiled-pattern module-compile explicit bool-false boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -60,3 +60,13 @@ Created: 2026-03-21
   - a direct runtime probe in this run confirmed CPython and `rebar` already agree on the bounded helper behavior for `compile(rebar.compile("abc"), flags=False)` and `compile(rebar.compile(b"abc"), flags=False)`, so no Rust or Python regex-behavior prerequisite is missing for this pair;
   - `benchmarks/workloads/module_boundary.py` and `reports/benchmarks/latest.py` currently publish no compiled-pattern explicit bool-false `module.compile` rows on that owner route; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0874` state of `856` total / `856` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 848` and `REPORT["manifests"]["module-boundary"]` at `28` selected / `28` measured / `0` known gaps.
+
+## Completion
+- Added the bounded `module-compile-flags-bool-false-warm-str-compiled-pattern` and `module-compile-flags-bool-false-purged-bytes-compiled-pattern` rows on `benchmarks/workloads/module_boundary.py`, anchored to the existing `workflow-module-compile-flags-bool-false-{str,bytes}-compiled-pattern` correctness cases without widening into `NOFLAG`, rejection, or named-group neighbors.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with focused bool-false contract coverage for manifest round-tripping, correctness-anchor mapping, callback/precompile behavior, internal probe measurement, combined-slice coverage, and updated full-suite summary expectations.
+- Narrowly widened `python/rebar_harness/benchmarks.py` validation so compiled-pattern `module.compile` benchmark rows accept the bounded `flags=False` keyword carrier alongside the already-landed `flags=0` pair.
+- Regenerated the tracked benchmark publication in `reports/benchmarks/latest.py`; the published combined summary now reads `858` total / `858` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 850`, and `REPORT["manifests"]["module-boundary"]` now reads `30` selected / `30` measured / `0` known gaps.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0876-compiled-pattern-module-compile-bool-false-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

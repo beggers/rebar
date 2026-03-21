@@ -656,13 +656,16 @@ def validate_compiled_pattern_workload(
             )
         if kwargs and (
             set(kwargs) != _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_FIELDS
-            or type(kwargs.get("flags")) is not int
+            or (
+                type(kwargs.get("flags")) is not int
+                and type(kwargs.get("flags")) is not bool
+            )
             or kwargs["flags"] != 0
         ):
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `flags=0` keyword carrier"
+                "the bounded `flags=0` and `flags=False` keyword carriers"
             )
         if haystack_text_model is not None or expected_exception is not None:
             raise ValueError(
