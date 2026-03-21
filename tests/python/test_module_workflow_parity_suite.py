@@ -180,13 +180,6 @@ def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
 
 
-def _fixture_cases_for_helpers(
-    bundle: FixtureBundle,
-    helpers: frozenset[str],
-) -> tuple[FixtureCase, ...]:
-    return tuple(case for case in bundle.cases if case.helper in helpers)
-
-
 MODULE_WORKFLOW_SURFACE_BUNDLES = load_published_fixture_bundles(
     MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
 )
@@ -1084,50 +1077,41 @@ COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
 (COLLECTION_REPLACEMENT_BUNDLE,) = load_published_fixture_bundles(
     COLLECTION_REPLACEMENT_FIXTURE_PATHS
 )
-PUBLISHED_COLLECTION_FIXTURE_CASES = _fixture_cases_for_helpers(
-    COLLECTION_REPLACEMENT_BUNDLE,
-    _COLLECTION_FRONTIER_HELPERS,
+PUBLISHED_COLLECTION_FIXTURE_CASES = tuple(
+    case
+    for case in COLLECTION_REPLACEMENT_BUNDLE.cases
+    if case.helper in _COLLECTION_FRONTIER_HELPERS
 )
-
-
-def _published_collection_success_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in PUBLISHED_COLLECTION_FIXTURE_CASES
-        if not _is_collection_type_error_fixture_case(case)
-    )
-
-
-def _published_collection_type_error_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in PUBLISHED_COLLECTION_FIXTURE_CASES
-        if _is_collection_type_error_fixture_case(case)
-    )
-
-
-def _published_module_collection_cases_for_helper(
-    helper: str,
-) -> tuple[CollectionModuleCase, ...]:
-    return tuple(
+PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES = tuple(
+    case
+    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+    if not _is_collection_type_error_fixture_case(case)
+)
+PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES = tuple(
+    case
+    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+    if _is_collection_type_error_fixture_case(case)
+)
+PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER = {
+    helper: tuple(
         _module_collection_case_from_fixture(case)
-        for case in _published_collection_success_fixture_cases()
+        for case in PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES
         if case.operation == "module_call" and case.helper == helper
     )
-
-
-def _published_pattern_collection_cases_for_helper(
-    helper: str,
-) -> tuple[CollectionPatternCase, ...]:
-    return tuple(
+    for helper in ("split", "findall", "finditer")
+}
+PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER = {
+    helper: tuple(
         _pattern_collection_case_from_fixture(case)
-        for case in _published_collection_success_fixture_cases()
+        for case in PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES
         if case.operation == "pattern_call" and case.helper == helper
     )
+    for helper in ("split", "findall", "finditer")
+}
 
 
 MODULE_COLLECTION_CASES = (
-    *_published_module_collection_cases_for_helper("split"),
+    *PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER["split"],
     CollectionModuleCase(
         "module-split-str-maxsplit-one",
         "split",
@@ -1149,10 +1133,10 @@ MODULE_COLLECTION_CASES = (
         b"zzabczzabc",
         (1,),
     ),
-    *_published_module_collection_cases_for_helper("findall"),
+    *PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER["findall"],
     CollectionModuleCase("module-findall-str-repeated", "findall", "abc", "abcabc"),
     CollectionModuleCase("module-findall-str-no-match", "findall", "abc", "zzz"),
-    *_published_module_collection_cases_for_helper("finditer"),
+    *PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER["finditer"],
     CollectionModuleCase("module-finditer-str-no-match", "finditer", "abc", "zzz"),
     CollectionModuleCase(
         "module-finditer-bytes-repeated",
@@ -1162,7 +1146,7 @@ MODULE_COLLECTION_CASES = (
     ),
 )
 PATTERN_COLLECTION_CASES = (
-    *_published_pattern_collection_cases_for_helper("split"),
+    *PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER["split"],
     CollectionPatternCase("pattern-split-str-no-match", "split", "abc", "zzz"),
     CollectionPatternCase("pattern-split-str-repeated", "split", "abc", "abcabc"),
     CollectionPatternCase(
@@ -1179,7 +1163,7 @@ PATTERN_COLLECTION_CASES = (
         "abcabc",
         (-1,),
     ),
-    *_published_pattern_collection_cases_for_helper("findall"),
+    *PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER["findall"],
     CollectionPatternCase(
         "pattern-findall-str-bounded",
         "findall",
@@ -1201,7 +1185,7 @@ PATTERN_COLLECTION_CASES = (
         b"zabcabcz",
         (1, 7),
     ),
-    *_published_pattern_collection_cases_for_helper("finditer"),
+    *PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER["finditer"],
     CollectionPatternCase(
         "pattern-finditer-str-bounded",
         "finditer",
@@ -6130,10 +6114,8 @@ def test_literal_collection_suite_tracks_published_case_frontier() -> None:
         ),
         expected_uncovered_case_ids=tuple(
             case.case_id
-            for case in _fixture_cases_for_helpers(
-                COLLECTION_REPLACEMENT_BUNDLE,
-                _REPLACEMENT_FRONTIER_HELPERS,
-            )
+            for case in COLLECTION_REPLACEMENT_BUNDLE.cases
+            if case.helper in _REPLACEMENT_FRONTIER_HELPERS
         ),
     )
 
@@ -6142,37 +6124,36 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         {
             "module-split": frozenset(
-                case.case_id
-                for case in _published_module_collection_cases_for_helper("split")
+                case.case_id for case in PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER["split"]
             ),
             "pattern-split": frozenset(
                 case.case_id
-                for case in _published_pattern_collection_cases_for_helper("split")
+                for case in PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER["split"]
             ),
             "module-findall": frozenset(
                 case.case_id
-                for case in _published_module_collection_cases_for_helper("findall")
+                for case in PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER["findall"]
             ),
             "pattern-findall": frozenset(
                 case.case_id
-                for case in _published_pattern_collection_cases_for_helper("findall")
+                for case in PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER["findall"]
             ),
             "module-finditer": frozenset(
                 case.case_id
-                for case in _published_module_collection_cases_for_helper("finditer")
+                for case in PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER["finditer"]
             ),
             "pattern-finditer": frozenset(
                 case.case_id
-                for case in _published_pattern_collection_cases_for_helper("finditer")
+                for case in PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER["finditer"]
             ),
             "module-type-error": frozenset(
                 case.case_id
-                for case in _published_collection_type_error_fixture_cases()
+                for case in PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES
                 if case.operation == "module_call"
             ),
             "pattern-type-error": frozenset(
                 case.case_id
-                for case in _published_collection_type_error_fixture_cases()
+                for case in PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES
                 if case.operation == "pattern_call"
             ),
         },
@@ -7055,7 +7036,7 @@ def test_literal_match_matrix_pattern_helpers_match_cpython_with_windows(
 
 @pytest.mark.parametrize(
     "case",
-    _published_collection_type_error_fixture_cases(),
+    PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES,
     ids=lambda case: case.case_id,
 )
 def test_collection_helper_type_errors_match_cpython(
