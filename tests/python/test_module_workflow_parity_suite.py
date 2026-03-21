@@ -535,12 +535,29 @@ class ModuleKeywordCallCase:
 
 
 @dataclass(frozen=True)
+class ModulePositionalIndexLikeCallCase:
+    case_id: str
+    helper: str
+    args: tuple[object, ...]
+
+
+@dataclass(frozen=True)
 class PatternKeywordCallCase:
     case_id: str
     helper: str
     pattern: str | bytes
     args: tuple[object, ...]
     kwargs: dict[str, object]
+    result_kind: str
+    flags: int = 0
+
+
+@dataclass(frozen=True)
+class PatternPositionalIndexLikeCallCase:
+    case_id: str
+    helper: str
+    pattern: str | bytes
+    args: tuple[object, ...]
     result_kind: str
     flags: int = 0
 
@@ -1545,6 +1562,23 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
 )
+MODULE_POSITIONAL_INDEXLIKE_CALL_CASES = (
+    ModulePositionalIndexLikeCallCase(
+        case_id="module-split-maxsplit-indexlike-positional-bytes",
+        helper="split",
+        args=(b"abc", b"zabcabcabc", _INDEX_TWO),
+    ),
+    ModulePositionalIndexLikeCallCase(
+        case_id="module-sub-count-indexlike-positional-str",
+        helper="sub",
+        args=("abc", "x", "abcabcabc", _INDEX_TWO),
+    ),
+    ModulePositionalIndexLikeCallCase(
+        case_id="module-subn-count-indexlike-positional-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abcabcabc", _INDEX_TWO),
+    ),
+)
 PATTERN_KEYWORD_CALL_CASES = (
     PatternKeywordCallCase(
         case_id="pattern-search-pos-keyword-str",
@@ -1736,6 +1770,64 @@ PATTERN_KEYWORD_CALL_CASES = (
         pattern="abc",
         args=("x", "abcabc"),
         kwargs={"count": True},
+        result_kind="value",
+    ),
+)
+PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-search-pos-indexlike-positional-str",
+        helper="search",
+        pattern="abc",
+        args=("zabcabc", _INDEX_TWO),
+        result_kind="match",
+    ),
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-search-endpos-indexlike-positional-bytes",
+        helper="search",
+        pattern=b"abc",
+        args=(b"zabcabc", 0, _INDEX_FOUR),
+        result_kind="match",
+    ),
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-fullmatch-window-indexlike-positional-bytes",
+        helper="fullmatch",
+        pattern=b"abc",
+        args=(b"zabc", _INDEX_ONE, _INDEX_FOUR),
+        result_kind="match",
+    ),
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-findall-window-indexlike-positional-str",
+        helper="findall",
+        pattern="abc",
+        args=("zabcabcabcz", _INDEX_ONE, _INDEX_SEVEN),
+        result_kind="value",
+    ),
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-finditer-window-indexlike-positional-bytes",
+        helper="finditer",
+        pattern=b"abc",
+        args=(b"zabcabcabcz", _INDEX_ONE, _INDEX_SEVEN),
+        result_kind="iter",
+    ),
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-split-maxsplit-indexlike-positional-str",
+        helper="split",
+        pattern="abc",
+        args=("zabcabcabc", _INDEX_TWO),
+        result_kind="value",
+    ),
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-sub-count-indexlike-positional-bytes",
+        helper="sub",
+        pattern=b"abc",
+        args=(b"x", b"abcabcabc", _INDEX_TWO),
+        result_kind="value",
+    ),
+    PatternPositionalIndexLikeCallCase(
+        case_id="pattern-subn-count-indexlike-positional-str",
+        helper="subn",
+        pattern="abc",
+        args=("x", "abcabcabc", _INDEX_TWO),
         result_kind="value",
     ),
 )
@@ -2167,6 +2259,13 @@ def _call_module_keyword_case(regex_api: object, case: ModuleKeywordCallCase) ->
     return getattr(regex_api, case.helper)(*case.args, **case.kwargs)
 
 
+def _call_module_positional_indexlike_case(
+    regex_api: object,
+    case: ModulePositionalIndexLikeCallCase,
+) -> object:
+    return getattr(regex_api, case.helper)(*case.args)
+
+
 def _call_compiled_pattern_module_keyword_case(
     regex_api: object,
     case: CompiledPatternModuleKeywordCallCase | CompiledPatternModuleKeywordErrorCase,
@@ -2177,6 +2276,13 @@ def _call_compiled_pattern_module_keyword_case(
 
 def _call_pattern_keyword_case(pattern: object, case: PatternKeywordCallCase) -> object:
     return getattr(pattern, case.helper)(*case.args, **case.kwargs)
+
+
+def _call_pattern_positional_indexlike_case(
+    pattern: object,
+    case: PatternPositionalIndexLikeCallCase,
+) -> object:
+    return getattr(pattern, case.helper)(*case.args)
 
 
 def _capture_error(callback) -> BaseException:
@@ -4073,6 +4179,23 @@ def test_module_keyword_argument_calls_match_cpython(
     assert_value_parity(observed, expected)
 
 
+@pytest.mark.parametrize(
+    "case",
+    MODULE_POSITIONAL_INDEXLIKE_CALL_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_module_positional_indexlike_argument_calls_match_cpython(
+    regex_backend: tuple[str, object],
+    case: ModulePositionalIndexLikeCallCase,
+) -> None:
+    _, backend = regex_backend
+
+    assert_value_parity(
+        _call_module_positional_indexlike_case(backend, case),
+        _call_module_positional_indexlike_case(re, case),
+    )
+
+
 @pytest.mark.parametrize("case", PATTERN_KEYWORD_CALL_CASES, ids=lambda case: case.case_id)
 def test_pattern_keyword_argument_calls_match_cpython(
     regex_backend: tuple[str, object],
@@ -4088,6 +4211,39 @@ def test_pattern_keyword_argument_calls_match_cpython(
 
     observed = _call_pattern_keyword_case(observed_pattern, case)
     expected = _call_pattern_keyword_case(expected_pattern, case)
+
+    if case.result_kind == "match":
+        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+        return
+
+    if case.result_kind == "iter":
+        assert_finditer_parity(backend_name, observed, expected, check_regs=True)
+        return
+
+    assert_value_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_pattern_positional_indexlike_argument_calls_match_cpython(
+    regex_backend: tuple[str, object],
+    case: PatternPositionalIndexLikeCallCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
+
+    observed = _call_pattern_positional_indexlike_case(observed_pattern, case)
+    expected = _call_pattern_positional_indexlike_case(expected_pattern, case)
 
     if case.result_kind == "match":
         assert_match_result_parity(backend_name, observed, expected, check_regs=True)
