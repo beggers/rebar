@@ -1,6 +1,6 @@
 # RBR-0826: Publish the module-workflow `Pattern` positional `__index__` octet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -74,3 +74,15 @@ Created: 2026-03-21
   - direct publication probes in this run showed all eight target direct case ids are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, while the adjacent bound-`Pattern` keyword `__index__` rows are already published;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need additional backlog/current-status edits.
+
+## Completion
+- 2026-03-21: Added the eight bound-`Pattern` positional `__index__` rows to `tests/conformance/fixtures/module_workflow_surface.py`, keeping the existing owner path and matching the direct anchors in `PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES` for `search`, `fullmatch`, `findall`, `finditer`, `split`, `sub`, and `subn`.
+- 2026-03-21: Updated `tests/python/test_module_workflow_parity_suite.py` so the shared `module-workflow-surface` contract now expects `142` total rows, `83` `str` rows, `59` `bytes` rows, `77` `module_call` rows, `53` `pattern_call` rows, and the expanded pattern-helper breakdown; added the dedicated publication assertion that maps the eight fixture rows back to the exact direct positional `__index__` octet.
+- 2026-03-21: Refreshed `tests/conformance/test_combined_correctness_scorecards.py` and regenerated the tracked `reports/correctness/latest.py`. The tracked publication now reads `1512` total / `1512` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `142/142/0`, `module.workflow.str` at `83/83/0`, `module.workflow.bytes` at `59/59/0`, `module.workflow.module_call` unchanged at `77/77/0`, and `module.workflow.pattern_call` at `53/53/0`. The tracked report contains all eight new `workflow-pattern-*-indexlike-positional*` case ids as passing `module-workflow-surface` rows.
+- 2026-03-21: Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_pattern_positional_indexlike_argument_calls_match_cpython` (`16 passed in 0.45s`);
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases' tests/conformance/test_combined_correctness_scorecards.py` (`1 passed, 1071 deselected in 0.51s`);
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_module_workflow_direct_test_buckets_cover_selected_frontier tests/python/test_module_workflow_parity_suite.py::test_module_workflow_surface_bundle_contract_covers_regression_compile_cases` (`2 passed in 0.10s`);
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_scorecard_cases_preserve_fixture_prefix_and_representative_case_order tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models` (`2 passed, 147 subtests passed in 0.58s`);
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0826-module-workflow-pattern-positional-indexlike-octet.py` (`142/142`);
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1512/1512`).

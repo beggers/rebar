@@ -893,6 +893,142 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-search-str-pos-indexlike-positional",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "args": ["zabcabc", _INDEX_TWO],
+      "categories": ["workflow", "search", "literal", "pos", "str"],
+      "notes": [
+        "Publishes the bound Pattern.search positional __index__ workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-search-bytes-endpos-indexlike-positional",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabc"
+        },
+        0,
+        _INDEX_FOUR
+      ],
+      "categories": ["workflow", "search", "literal", "endpos", "bytes"],
+      "notes": [
+        "Publishes the bytes bound Pattern.search positional endpos __index__ workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabc"
+        },
+        _INDEX_ONE,
+        _INDEX_FOUR
+      ],
+      "categories": ["workflow", "fullmatch", "literal", "window", "bytes"],
+      "notes": [
+        "Publishes the bound Pattern.fullmatch positional pos/endpos __index__ workflow on bytes payloads already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-findall-str-window-indexlike-positional",
+      "operation": "pattern_call",
+      "family": "bound_findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "args": ["zabcabcabcz", _INDEX_ONE, _INDEX_SEVEN],
+      "categories": ["workflow", "findall", "literal", "window", "str"],
+      "notes": [
+        "Publishes the bound Pattern.findall positional pos/endpos __index__ workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-finditer-bytes-window-indexlike-positional",
+      "operation": "pattern_call",
+      "family": "bound_finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcabcz"
+        },
+        _INDEX_ONE,
+        _INDEX_SEVEN
+      ],
+      "categories": ["workflow", "finditer", "literal", "window", "bytes"],
+      "notes": [
+        "Publishes the bound Pattern.finditer positional pos/endpos __index__ workflow on bytes payloads already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-split-str-maxsplit-indexlike-positional",
+      "operation": "pattern_call",
+      "family": "bound_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": ["zabcabcabc", _INDEX_TWO],
+      "categories": ["workflow", "split", "literal", "maxsplit", "str"],
+      "notes": [
+        "Publishes the bound Pattern.split positional maxsplit __index__ workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-sub-count-indexlike-positional-bytes",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabcabc"
+        },
+        _INDEX_TWO
+      ],
+      "categories": ["workflow", "sub", "literal", "count", "bytes"],
+      "notes": [
+        "Publishes the bound Pattern.sub positional count __index__ workflow on bytes payloads already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-count-indexlike-positional-str",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "abcabcabc", _INDEX_TWO],
+      "categories": ["workflow", "subn", "literal", "count", "str"],
+      "notes": [
+        "Publishes the bound Pattern.subn positional count __index__ workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-cache-hit-str",
       "operation": "cache_workflow",
       "family": "cache_workflow",
