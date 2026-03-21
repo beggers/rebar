@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Iterable
+import importlib
 import json
 import pathlib
 import subprocess
@@ -44,8 +45,6 @@ def run_harness_scorecard(
     *,
     report_name: str,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    from rebar_harness import benchmarks, correctness
-
     with tempfile.TemporaryDirectory() as temp_dir:
         report_path = pathlib.Path(temp_dir) / report_name
         result = run_harness_cli(
@@ -56,13 +55,10 @@ def run_harness_scorecard(
         if report_path.suffix == ".json":
             scorecard = json.loads(report_path.read_text(encoding="utf-8"))
         else:
-            report_loaders = {
-                "rebar_harness.correctness": correctness.SCORECARD_REPORT.load,
-                "rebar_harness.benchmarks": benchmarks.SCORECARD_REPORT.load,
-            }
             try:
-                load_report = report_loaders[module_name]
-            except KeyError as exc:
+                module = importlib.import_module(module_name)
+                load_report = module.SCORECARD_REPORT.load
+            except (ImportError, AttributeError) as exc:
                 raise ValueError(
                     f"run_harness_scorecard cannot load a non-JSON report for {module_name!r}"
                 ) from exc
