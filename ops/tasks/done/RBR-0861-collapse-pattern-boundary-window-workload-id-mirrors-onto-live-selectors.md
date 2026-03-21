@@ -1,6 +1,6 @@
 # RBR-0861: Collapse pattern-boundary window workload-id mirrors onto live selectors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -88,3 +88,11 @@ PY`
 - This stays on the same post-JSON benchmark-harness simplification track as the recent mirror removals in the same owner file:
   - `RBR-0859` already collapsed the adjacent collection-replacement workload-id mirrors onto live selectors; and
   - this follow-on only removes the remaining pattern-boundary window mirrors without opening a new architecture lane.
+
+## Completion
+- Replaced the pattern-boundary positional-indexlike and keyword-window workload-id mirrors with live structural selectors in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Updated `test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured` to derive its ordered keyword and positional workload ids from the live manifest through the shared selectors.
+- Verified with:
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured or (pattern-window-positional-indexlike or pattern-window-keyword)'`
+  - `bash -lc "! rg -n '^(PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS|PATTERN_KEYWORD_WINDOW_CARRIER_WORKLOAD_IDS) =' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the task-local selector-order probe from the acceptance criteria (`ok`)

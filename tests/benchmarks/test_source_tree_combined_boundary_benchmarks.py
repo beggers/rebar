@@ -3331,21 +3331,38 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("pattern-boundary")
         self.assertEqual(len(case.target_manifest.workloads), 16)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "pattern-boundary",
+        keyword_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_pattern_keyword_window_workload,
+        )
+        positional_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_pattern_window_positional_indexlike_workload,
+        )
+        self.assertEqual(
+            keyword_workload_ids,
             (
                 "pattern-search-pos-keyword-warm-str",
                 "pattern-match-pos-keyword-purged-str",
                 "pattern-fullmatch-window-keyword-purged-bytes",
                 "pattern-findall-bool-window-keyword-warm-str",
                 "pattern-finditer-window-indexlike-purged-bytes",
+            ),
+        )
+        self.assertEqual(
+            positional_workload_ids,
+            (
                 "pattern-search-pos-indexlike-positional-warm-str",
                 "pattern-search-endpos-indexlike-positional-purged-bytes",
                 "pattern-fullmatch-window-indexlike-positional-purged-bytes",
                 "pattern-findall-window-indexlike-positional-warm-str",
                 "pattern-finditer-window-indexlike-positional-purged-bytes",
             ),
+        )
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "pattern-boundary",
+            keyword_workload_ids + positional_workload_ids,
             16,
             expected_total_workload_count=16,
         )
@@ -6376,17 +6393,6 @@ def _is_module_workflow_keyword_error_workload(workload: Any) -> bool:
     return workload.workload_id in MODULE_WORKFLOW_KEYWORD_ERROR_WORKLOAD_IDS
 
 
-PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS = frozenset(
-    {
-        "pattern-search-pos-indexlike-positional-warm-str",
-        "pattern-search-endpos-indexlike-positional-purged-bytes",
-        "pattern-fullmatch-window-indexlike-positional-purged-bytes",
-        "pattern-findall-window-indexlike-positional-warm-str",
-        "pattern-finditer-window-indexlike-positional-purged-bytes",
-    }
-)
-
-
 def _pattern_window_positional_indexlike_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -6429,7 +6435,7 @@ def _pattern_window_positional_indexlike_workload_args(
 def _pattern_window_positional_indexlike_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if workload.workload_id not in PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS:
+    if not _is_pattern_window_positional_indexlike_workload(workload):
         raise AssertionError(
             "unexpected pattern positional-indexlike workload "
             f"{workload.workload_id!r}"
@@ -6445,18 +6451,22 @@ def _pattern_window_positional_indexlike_workload_signature(
 
 
 def _is_pattern_window_positional_indexlike_workload(workload: Any) -> bool:
-    return workload.workload_id in PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS
-
-
-PATTERN_KEYWORD_WINDOW_CARRIER_WORKLOAD_IDS = frozenset(
-    {
-        "pattern-search-pos-keyword-warm-str",
-        "pattern-match-pos-keyword-purged-str",
-        "pattern-fullmatch-window-keyword-purged-bytes",
-        "pattern-findall-bool-window-keyword-warm-str",
-        "pattern-finditer-window-indexlike-purged-bytes",
-    }
-)
+    categories = set(workload.categories)
+    return (
+        workload.operation in {
+            "pattern.search",
+            "pattern.fullmatch",
+            "pattern.findall",
+            "pattern.finditer",
+        }
+        and workload.expected_exception is None
+        and not workload.kwargs
+        and {"positional-window", "indexlike"}.issubset(categories)
+        and (
+            _is_encoded_indexlike_payload(workload.pos)
+            or _is_encoded_indexlike_payload(workload.endpos)
+        )
+    )
 
 
 def _pattern_keyword_window_correctness_case_signature(
@@ -6479,7 +6489,7 @@ def _pattern_keyword_window_correctness_case_signature(
 def _pattern_keyword_window_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if workload.workload_id not in PATTERN_KEYWORD_WINDOW_CARRIER_WORKLOAD_IDS:
+    if not _is_pattern_keyword_window_workload(workload):
         raise AssertionError(
             "unexpected pattern keyword-window workload "
             f"{workload.workload_id!r}"
@@ -6495,7 +6505,22 @@ def _pattern_keyword_window_workload_signature(
 
 
 def _is_pattern_keyword_window_workload(workload: Any) -> bool:
-    return workload.workload_id in PATTERN_KEYWORD_WINDOW_CARRIER_WORKLOAD_IDS
+    categories = set(workload.categories)
+    return (
+        workload.operation in {
+            "pattern.search",
+            "pattern.match",
+            "pattern.fullmatch",
+            "pattern.findall",
+            "pattern.finditer",
+        }
+        and workload.expected_exception is None
+        and workload.pos is None
+        and workload.endpos is None
+        and bool(workload.kwargs)
+        and set(workload.kwargs).issubset({"pos", "endpos"})
+        and "keyword" in categories
+    )
 
 
 def _optional_group_correctness_case_signature(
