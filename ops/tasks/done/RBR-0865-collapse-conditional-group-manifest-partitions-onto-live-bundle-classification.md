@@ -1,6 +1,6 @@
 # RBR-0865: Collapse conditional-group manifest partitions onto live bundle classification
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -158,3 +158,11 @@ PY`
 - This stays off the active benchmark feature frontier:
   - the only ready feature task is `RBR-0864`, which is a `module_boundary.py` benchmark catch-up task; and
   - this cleanup stays confined to the conditional correctness parity owner instead of introducing another edit on the current benchmark-owner file path.
+
+## Completion
+- Replaced the conditional manifest-id and bundle partition mirrors in `tests/python/test_conditional_group_exists_parity_suite.py` with file-local manifest classification plus ordered live-bundle slices derived directly from `FIXTURE_BUNDLES`.
+- Kept the base, quantified, and nested-or-alternation bundle memberships and order unchanged, so the compile/module/pattern case partitions still resolve from the same ordered slices after the mirror removal.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py`
+  - `bash -lc "! rg -n '^(BASE_MANIFEST_IDS|QUANTIFIED_MANIFEST_IDS|NESTED_OR_ALTERNATION_MANIFEST_IDS|BASE_BUNDLES|QUANTIFIED_BUNDLES|NESTED_OR_ALTERNATION_BUNDLES) =' tests/python/test_conditional_group_exists_parity_suite.py"`
+  - the task-local bundle-order probe from the acceptance criteria (`ok`)

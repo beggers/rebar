@@ -78,70 +78,135 @@ QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest
     "conditional-group-exists-quantified-alternation-workflows",
 )
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
-BASE_MANIFEST_IDS = (
-    "optional-group-conditional-workflows",
-    "conditional-group-exists-workflows",
-    "conditional-group-exists-no-else-workflows",
-    "conditional-group-exists-empty-else-workflows",
-    "conditional-group-exists-empty-yes-else-workflows",
-    "conditional-group-exists-fully-empty-workflows",
+CONDITIONAL_VARIANT_ORDER = {
+    "plain": 0,
+    "no-else": 1,
+    "empty-else": 2,
+    "empty-yes-else": 3,
+    "fully-empty": 4,
+}
+NESTED_OR_ALTERNATION_GROUP_ORDER = {"nested": 0, "alternation": 1}
+
+
+def _conditional_manifest_variant(manifest_id: str) -> str:
+    if manifest_id == "optional-group-conditional-workflows":
+        return "plain"
+    for variant in ("empty-yes-else", "empty-else", "fully-empty", "no-else"):
+        if f"conditional-group-exists-{variant}-" in manifest_id:
+            return variant
+    return "plain"
+
+
+def _conditional_manifest_partition(manifest_id: str) -> str:
+    if manifest_id == "optional-group-conditional-workflows":
+        return "base"
+    if "-quantified-" in manifest_id:
+        return "quantified"
+    if "-nested-" in manifest_id:
+        return "nested"
+    if "-alternation-" in manifest_id:
+        return "alternation"
+    return "base"
+
+
+def _base_conditional_bundle_sort_key(bundle: FixtureBundle) -> tuple[int, int, str]:
+    manifest_id = bundle.expected_manifest_id
+    return (
+        0 if manifest_id == "optional-group-conditional-workflows" else 1,
+        CONDITIONAL_VARIANT_ORDER[_conditional_manifest_variant(manifest_id)],
+        manifest_id,
+    )
+
+
+def _quantified_conditional_bundle_sort_key(
+    bundle: FixtureBundle,
+) -> tuple[int, int, int, str]:
+    manifest_id = bundle.expected_manifest_id
+    return (
+        CONDITIONAL_VARIANT_ORDER[_conditional_manifest_variant(manifest_id)],
+        0 if manifest_id == "conditional-group-exists-quantified-workflows" else 1,
+        0
+        if manifest_id == "conditional-group-exists-quantified-alternation-workflows"
+        else 1,
+        manifest_id,
+    )
+
+
+def _nested_or_alternation_bundle_sort_key(
+    bundle: FixtureBundle,
+) -> tuple[int, int, str]:
+    manifest_id = bundle.expected_manifest_id
+    return (
+        NESTED_OR_ALTERNATION_GROUP_ORDER[
+            _conditional_manifest_partition(manifest_id)
+        ],
+        CONDITIONAL_VARIANT_ORDER[_conditional_manifest_variant(manifest_id)],
+        manifest_id,
+    )
+
+
+BASE_CONDITIONAL_BUNDLE_SLICE = tuple(
+    sorted(
+        (
+            bundle
+            for bundle in FIXTURE_BUNDLES
+            if _conditional_manifest_partition(bundle.expected_manifest_id) == "base"
+        ),
+        key=_base_conditional_bundle_sort_key,
+    )
 )
-QUANTIFIED_MANIFEST_IDS = (
-    "conditional-group-exists-quantified-workflows",
-    "conditional-group-exists-quantified-alternation-workflows",
-    "conditional-group-exists-no-else-quantified-workflows",
-    "conditional-group-exists-empty-else-quantified-workflows",
-    "conditional-group-exists-empty-yes-else-quantified-workflows",
-    "conditional-group-exists-fully-empty-quantified-workflows",
+QUANTIFIED_CONDITIONAL_BUNDLE_SLICE = tuple(
+    sorted(
+        (
+            bundle
+            for bundle in FIXTURE_BUNDLES
+            if _conditional_manifest_partition(bundle.expected_manifest_id)
+            == "quantified"
+        ),
+        key=_quantified_conditional_bundle_sort_key,
+    )
 )
-NESTED_OR_ALTERNATION_MANIFEST_IDS = (
-    "conditional-group-exists-nested-workflows",
-    "conditional-group-exists-no-else-nested-workflows",
-    "conditional-group-exists-empty-else-nested-workflows",
-    "conditional-group-exists-empty-yes-else-nested-workflows",
-    "conditional-group-exists-fully-empty-nested-workflows",
-    "conditional-group-exists-alternation-workflows",
-    "conditional-group-exists-no-else-alternation-workflows",
-    "conditional-group-exists-empty-else-alternation-workflows",
-    "conditional-group-exists-empty-yes-else-alternation-workflows",
-    "conditional-group-exists-fully-empty-alternation-workflows",
-)
-BASE_BUNDLES = tuple(
-    published_fixture_bundle_by_manifest_id(FIXTURE_BUNDLES, manifest_id)
-    for manifest_id in BASE_MANIFEST_IDS
-)
-QUANTIFIED_BUNDLES = tuple(
-    published_fixture_bundle_by_manifest_id(FIXTURE_BUNDLES, manifest_id)
-    for manifest_id in QUANTIFIED_MANIFEST_IDS
-)
-NESTED_OR_ALTERNATION_BUNDLES = tuple(
-    published_fixture_bundle_by_manifest_id(FIXTURE_BUNDLES, manifest_id)
-    for manifest_id in NESTED_OR_ALTERNATION_MANIFEST_IDS
+NESTED_OR_ALTERNATION_CONDITIONAL_BUNDLE_SLICE = tuple(
+    sorted(
+        (
+            bundle
+            for bundle in FIXTURE_BUNDLES
+            if _conditional_manifest_partition(bundle.expected_manifest_id)
+            in {"nested", "alternation"}
+        ),
+        key=_nested_or_alternation_bundle_sort_key,
+    )
 )
 CORE_CONDITIONAL_COMPILE_CASES = fixture_cases_for_operation(
-    BASE_BUNDLES + QUANTIFIED_BUNDLES,
+    BASE_CONDITIONAL_BUNDLE_SLICE + QUANTIFIED_CONDITIONAL_BUNDLE_SLICE,
     "compile",
 )
 NESTED_OR_ALTERNATION_COMPILE_CASES = fixture_cases_for_operation(
-    NESTED_OR_ALTERNATION_BUNDLES,
+    NESTED_OR_ALTERNATION_CONDITIONAL_BUNDLE_SLICE,
     "compile",
 )
-BASE_MODULE_CASES = fixture_cases_for_operation(BASE_BUNDLES, "module_call")
+BASE_MODULE_CASES = fixture_cases_for_operation(
+    BASE_CONDITIONAL_BUNDLE_SLICE,
+    "module_call",
+)
 QUANTIFIED_MODULE_CASES = fixture_cases_for_operation(
-    QUANTIFIED_BUNDLES,
+    QUANTIFIED_CONDITIONAL_BUNDLE_SLICE,
     "module_call",
 )
 NESTED_OR_ALTERNATION_MODULE_CASES = fixture_cases_for_operation(
-    NESTED_OR_ALTERNATION_BUNDLES,
+    NESTED_OR_ALTERNATION_CONDITIONAL_BUNDLE_SLICE,
     "module_call",
 )
-BASE_PATTERN_CASES = fixture_cases_for_operation(BASE_BUNDLES, "pattern_call")
+BASE_PATTERN_CASES = fixture_cases_for_operation(
+    BASE_CONDITIONAL_BUNDLE_SLICE,
+    "pattern_call",
+)
 QUANTIFIED_PATTERN_CASES = fixture_cases_for_operation(
-    QUANTIFIED_BUNDLES,
+    QUANTIFIED_CONDITIONAL_BUNDLE_SLICE,
     "pattern_call",
 )
 NESTED_OR_ALTERNATION_PATTERN_CASES = fixture_cases_for_operation(
-    NESTED_OR_ALTERNATION_BUNDLES,
+    NESTED_OR_ALTERNATION_CONDITIONAL_BUNDLE_SLICE,
     "pattern_call",
 )
 GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
