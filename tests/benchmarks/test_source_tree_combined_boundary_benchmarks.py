@@ -9354,6 +9354,58 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
                     "Ensures benchmark manifests keep module.subn count= keyword carriers unresolved until helper invocation."
                 ],
             },
+            {
+                "id": "module-split-maxsplit-indexlike-keyword-purged-bytes",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "zabcabcabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "maxsplit": {"type": "indexlike", "value": 2},
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.split keyword __index__ carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-sub-count-indexlike-keyword-warm-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "kwargs": {
+                    "count": {"type": "indexlike", "value": 2},
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.sub keyword __index__ carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-count-indexlike-keyword-purged-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "count": {"type": "indexlike", "value": 2},
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn keyword __index__ carriers unresolved until helper invocation."
+                ],
+            },
         ],
     }
     """
@@ -9367,6 +9419,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         split_workload,
         sub_workload,
         subn_workload,
+        split_indexlike_workload,
+        sub_indexlike_workload,
+        subn_indexlike_workload,
     ) = load_manifest(manifest_path).workloads
 
     assert split_workload.kwargs == {"maxsplit": 1}
@@ -9391,6 +9446,56 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
     assert run_benchmark_workload_with_cpython(round_tripped_subn) == (
         b"xabc",
         1,
+    )
+
+    assert split_indexlike_workload.kwargs == {
+        "maxsplit": {"type": "indexlike", "value": 2}
+    }
+    round_tripped_split_indexlike = workload_from_payload(
+        workload_to_payload(split_indexlike_workload)
+    )
+    assert round_tripped_split_indexlike.kwargs == {
+        "maxsplit": {"type": "indexlike", "value": 2}
+    }
+    materialized_split_indexlike_kwargs = (
+        round_tripped_split_indexlike.keyword_arguments()
+    )
+    assert materialized_split_indexlike_kwargs["maxsplit"].__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_split_indexlike) == [
+        b"z",
+        b"",
+        b"abc",
+    ]
+
+    assert sub_indexlike_workload.kwargs == {
+        "count": {"type": "indexlike", "value": 2}
+    }
+    round_tripped_sub_indexlike = workload_from_payload(
+        workload_to_payload(sub_indexlike_workload)
+    )
+    assert round_tripped_sub_indexlike.kwargs == {
+        "count": {"type": "indexlike", "value": 2}
+    }
+    materialized_sub_indexlike_kwargs = round_tripped_sub_indexlike.keyword_arguments()
+    assert materialized_sub_indexlike_kwargs["count"].__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_sub_indexlike) == "xxabc"
+
+    assert subn_indexlike_workload.kwargs == {
+        "count": {"type": "indexlike", "value": 2}
+    }
+    round_tripped_subn_indexlike = workload_from_payload(
+        workload_to_payload(subn_indexlike_workload)
+    )
+    assert round_tripped_subn_indexlike.kwargs == {
+        "count": {"type": "indexlike", "value": 2}
+    }
+    materialized_subn_indexlike_kwargs = (
+        round_tripped_subn_indexlike.keyword_arguments()
+    )
+    assert materialized_subn_indexlike_kwargs["count"].__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_subn_indexlike) == (
+        b"xxabc",
+        2,
     )
 
 
@@ -9569,6 +9674,36 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             (b"xabc", 1),
             ["kwargs.count"],
             id="module-subn-count-int",
+        ),
+        pytest.param(
+            "module.split",
+            "zabcabcabc",
+            {"maxsplit": {"type": "indexlike", "value": 2}},
+            None,
+            "bytes",
+            [b"z", b"", b"abc"],
+            ["kwargs.maxsplit"],
+            id="module-split-maxsplit-indexlike",
+        ),
+        pytest.param(
+            "module.sub",
+            "abcabcabc",
+            {"count": {"type": "indexlike", "value": 2}},
+            "x",
+            "str",
+            "xxabc",
+            ["kwargs.count"],
+            id="module-sub-count-indexlike",
+        ),
+        pytest.param(
+            "module.subn",
+            "abcabcabc",
+            {"count": {"type": "indexlike", "value": 2}},
+            "x",
+            "bytes",
+            (b"xxabc", 2),
+            ["kwargs.count"],
+            id="module-subn-count-indexlike",
         ),
     ),
 )
