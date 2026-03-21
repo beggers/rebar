@@ -7,7 +7,11 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
+    FixtureCase,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     SupplementalCase,
@@ -94,22 +98,8 @@ FAILURE_PREVIEW_LIMIT = 20
 STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
 
 
-QUANTIFIED_ALTERNATION_FIXTURE_NAMES = (
-    "literal_alternation_workflows.py",
-    "exact_repeat_quantified_group_alternation_workflows.py",
-    "quantified_alternation_workflows.py",
-    "quantified_nested_group_alternation_workflows.py",
-    "quantified_alternation_backtracking_heavy_workflows.py",
-    "quantified_alternation_broader_range_workflows.py",
-    "quantified_alternation_conditional_workflows.py",
-    "quantified_alternation_open_ended_workflows.py",
-    "quantified_alternation_nested_branch_workflows.py",
-)
 FIXTURE_BUNDLES = load_published_fixture_bundles(
-    tuple(
-        CORRECTNESS_FIXTURES_ROOT / fixture_name
-        for fixture_name in QUANTIFIED_ALTERNATION_FIXTURE_NAMES
-    ),
+    select_correctness_fixture_paths(QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR),
     pattern_extractor=case_pattern,
 )
 QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE = published_fixture_bundle_by_manifest_id(

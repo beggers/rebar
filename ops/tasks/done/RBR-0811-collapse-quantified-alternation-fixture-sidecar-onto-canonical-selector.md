@@ -1,6 +1,6 @@
 # RBR-0811: Collapse the quantified-alternation fixture sidecar onto the canonical selector
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -78,3 +78,4 @@ PY`
 - The selector currently returns a different raw path order than the local tuple, but this suite resolves its important anchors by manifest id:
   - the generated parity specs already assert against the six explicit bundle constants rather than the raw `FIXTURE_BUNDLES` tuple order; and
   - the direct-bytes follow-on coverage also keys off explicit manifest-id lookups, so this cleanup should stay limited to deleting the duplicated selector metadata instead of changing fixture contents or broadening test scope.
+- 2026-03-21: Replaced the local quantified-alternation filename sidecar in `tests/python/test_quantified_alternation_parity_suite.py` with `select_correctness_fixture_paths(QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR)`, kept the explicit manifest-id bundle anchors unchanged, and left the generated compile-parity plus direct-bytes follow-on coverage pinned to the same manifest ids as before. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` (`778 passed in 1.04s`), `bash -lc "! rg -n 'QUANTIFIED_ALTERNATION_FIXTURE_NAMES|CORRECTNESS_FIXTURES_ROOT / fixture_name' tests/python/test_quantified_alternation_parity_suite.py"` (passed with no matches), and the task's selector-path assertion snippet (`ok`).
