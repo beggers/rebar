@@ -1,6 +1,6 @@
 # RBR-0871: Promote the selected-fixture bundle helper and collapse the last subset rebuilds
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -56,3 +56,12 @@ Created: 2026-03-21
   - `bash -lc "! rg -n 'build_fixture_bundle\\(' tests/python/test_parser_matrix_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py"` currently fails exactly on the three remaining suite-local subset rebuilds;
   - `bash -lc "! rg -n '^def _build_selected_fixture_bundle\\(' tests/python/test_fixture_parity_support_contract.py"` currently fails exactly on the contract-only duplicate helper; and
   - `tests/python/test_fixture_parity_support_contract.py`, `tests/python/test_parser_matrix_parity_suite.py`, and `tests/python/test_fixture_backed_replacement_parity_suite.py` all already express the same ordered selected-row bundle contract, so promoting that path into `tests/python/fixture_parity_support.py` deletes duplication without reopening feature behavior.
+
+## Completion
+- Promoted `build_selected_fixture_bundle(...)` into `tests/python/fixture_parity_support.py` and routed `load_published_fixture_bundles(...)` through it so published full-manifest and selected-row bundles now share one validated construction path.
+- Removed the contract-local `_build_selected_fixture_bundle(...)` from `tests/python/test_fixture_parity_support_contract.py` and updated the contract cases to exercise the shared helper directly.
+- Replaced the remaining parser-matrix and grouped-replacement subset rebuilds with the shared helper while preserving the existing selected case ids, ordering, and text-model expectations.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_parser_matrix_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py`
+  - `bash -lc "! rg -n 'build_fixture_bundle\\(' tests/python/test_parser_matrix_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py"`
+  - `bash -lc "! rg -n '^def _build_selected_fixture_bundle\\(' tests/python/test_fixture_parity_support_contract.py"`

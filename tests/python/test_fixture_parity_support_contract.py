@@ -26,7 +26,7 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
-from tests.conftest import duplicate_items, duplicate_string_ids
+from tests.conftest import duplicate_items
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -46,6 +46,7 @@ from tests.python.fixture_parity_support import (
     assert_value_parity,
     assert_valid_match_group_access_parity,
     build_fixture_bundle,
+    build_selected_fixture_bundle,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
@@ -287,59 +288,6 @@ def _load_published_fixture_bundle(
         pattern_extractor=pattern_extractor,
     )
     return bundle
-
-
-def _build_selected_fixture_bundle(
-    fixture_path: pathlib.Path,
-    *,
-    selected_case_ids: tuple[str, ...] | None = None,
-    pattern_extractor: Callable[[FixtureCase], str | bytes],
-    expected_case_ids: frozenset[str] | None = None,
-    expected_text_models: frozenset[str] | None = None,
-) -> FixtureBundle:
-    manifest = load_fixture_manifest(fixture_path)
-    loaded_cases = tuple(manifest.cases)
-    duplicate_loaded_case_ids = duplicate_string_ids(
-        tuple(case.case_id for case in loaded_cases)
-    )
-    if duplicate_loaded_case_ids:
-        raise ValueError(
-            f"{fixture_path.name} contains duplicate fixture case ids: "
-            f"{duplicate_loaded_case_ids}"
-        )
-
-    bundle_cases = loaded_cases
-    if selected_case_ids is not None:
-        if not selected_case_ids:
-            raise ValueError(f"{fixture_path.name} selected_case_ids must not be empty")
-
-        duplicate_case_ids = duplicate_string_ids(selected_case_ids)
-        if duplicate_case_ids:
-            raise ValueError(
-                f"{fixture_path.name} selected_case_ids contains duplicate ids: "
-                f"{duplicate_case_ids}"
-            )
-
-        case_by_id = {case.case_id: case for case in loaded_cases}
-        missing_case_ids = tuple(
-            case_id for case_id in selected_case_ids if case_id not in case_by_id
-        )
-        if missing_case_ids:
-            raise ValueError(
-                f"{fixture_path.name} is missing expected fixture rows: {missing_case_ids}"
-            )
-
-        bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
-        if expected_case_ids is None:
-            expected_case_ids = frozenset(selected_case_ids)
-
-    return build_fixture_bundle(
-        manifest,
-        bundle_cases,
-        pattern_extractor=pattern_extractor,
-        expected_case_ids=expected_case_ids,
-        expected_text_models=expected_text_models,
-    )
 
 
 def _load_bundle_loader_contract_str_bundle(tmp_path: pathlib.Path) -> FixtureBundle:
@@ -2552,7 +2500,7 @@ def test_selected_fixture_bundle_contract_supports_expected_case_ids_and_fixture
         "bundle-loader-contract-module-search-str",
         "bundle-loader-contract-pattern-search-str",
     )
-    bundle = _build_selected_fixture_bundle(
+    bundle = build_selected_fixture_bundle(
         str_path,
         selected_case_ids=selected_case_ids,
         pattern_extractor=str_case_pattern,
@@ -3282,7 +3230,7 @@ def test_selected_fixture_bundle_preserves_requested_order(
         "bundle-loader-contract-pattern-search-str",
     )
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    bundle = _build_selected_fixture_bundle(
+    bundle = build_selected_fixture_bundle(
         str_path,
         selected_case_ids=selected_case_ids,
         pattern_extractor=str_case_pattern,
@@ -3315,7 +3263,7 @@ def test_selected_mixed_text_fixture_bundle_preserves_requested_order_and_text_m
         "bundle-loader-contract-mixed-module-search-str",
     )
     _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    bundle = _build_selected_fixture_bundle(
+    bundle = build_selected_fixture_bundle(
         mixed_path,
         selected_case_ids=selected_case_ids,
         pattern_extractor=case_pattern,
@@ -3343,7 +3291,7 @@ def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    mixed_bundle = _build_selected_fixture_bundle(
+    mixed_bundle = build_selected_fixture_bundle(
         mixed_path,
         selected_case_ids=(
             "bundle-loader-contract-mixed-compile-bytes",
@@ -3352,7 +3300,7 @@ def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
         ),
         pattern_extractor=case_pattern,
     )
-    str_bundle = _build_selected_fixture_bundle(
+    str_bundle = build_selected_fixture_bundle(
         str_path,
         selected_case_ids=(
             "bundle-loader-contract-pattern-search-str",
@@ -3559,7 +3507,7 @@ def test_selected_fixture_bundle_rejects_invalid_selected_case_ids(
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
 
     with pytest.raises(ValueError, match=re.escape(error_message)):
-        _build_selected_fixture_bundle(
+        build_selected_fixture_bundle(
             str_path,
             selected_case_ids=selected_case_ids,
             pattern_extractor=str_case_pattern,
@@ -3589,7 +3537,7 @@ def test_selected_fixture_bundle_rejects_duplicate_fixture_case_ids(
             f"('{BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID}',)"
         ),
     ):
-        _build_selected_fixture_bundle(
+        build_selected_fixture_bundle(
             fixture_path,
             selected_case_ids=selected_case_ids,
             pattern_extractor=str_case_pattern,

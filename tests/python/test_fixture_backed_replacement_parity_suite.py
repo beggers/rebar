@@ -32,7 +32,7 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_placeholder_message_contains,
     assert_valid_match_group_access_parity,
-    build_fixture_bundle,
+    build_selected_fixture_bundle,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
@@ -917,30 +917,17 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
             bundles,
             GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
         )
-        collection_case_by_id = {
-            case.case_id: case for case in collection_bundle.manifest.cases
-        }
-        missing_collection_case_ids = tuple(
-            case_id
-            for case_id in GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
-            if case_id not in collection_case_by_id
+        selected_collection_case_ids = frozenset(
+            GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
         )
-        if missing_collection_case_ids:
-            raise ValueError(
-                "grouped replacement collection case ids are missing published "
-                f"fixture rows: {missing_collection_case_ids}"
-            )
-        collection_cases = tuple(
-            collection_case_by_id[case_id]
-            for case_id in GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
-        )
-        adjusted_collection_bundle = build_fixture_bundle(
-            collection_bundle.manifest,
-            collection_cases,
+        adjusted_collection_bundle = build_selected_fixture_bundle(
+            collection_bundle.manifest.path,
+            selected_case_ids=GROUPED_REPLACEMENT_COLLECTION_CASE_IDS,
             pattern_extractor=spec.pattern_extractor,
-            expected_case_ids=frozenset(GROUPED_REPLACEMENT_COLLECTION_CASE_IDS),
             expected_text_models=frozenset(
-                case.text_model or "str" for case in collection_cases
+                case.text_model or "str"
+                for case in collection_bundle.cases
+                if case.case_id in selected_collection_case_ids
             ),
         )
         adjusted_bundles = tuple(

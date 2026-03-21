@@ -18,7 +18,7 @@ from tests.python.fixture_parity_support import (
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
     assert_pattern_parity,
-    build_fixture_bundle,
+    build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
     load_published_fixture_bundles,
@@ -57,18 +57,16 @@ CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
 CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = tuple(
     case.case_id for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES
 )
-PARSER_MATRIX_FIXTURE_BUNDLE = build_fixture_bundle(
-    PARSER_MATRIX_OWNER_BUNDLE.manifest,
-    TARGET_CASES,
+PARSER_MATRIX_FIXTURE_BUNDLE = build_selected_fixture_bundle(
+    PARSER_MATRIX_OWNER_BUNDLE.manifest.path,
+    selected_case_ids=PARSER_MATRIX_SELECTED_CASE_IDS,
     pattern_extractor=case_pattern,
-    expected_case_ids=frozenset(PARSER_MATRIX_SELECTED_CASE_IDS),
     expected_text_models=frozenset(case.text_model or "str" for case in TARGET_CASES),
 )
-CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE = build_fixture_bundle(
-    CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE.manifest,
-    CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES,
+CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE = build_selected_fixture_bundle(
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE.manifest.path,
+    selected_case_ids=CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
     pattern_extractor=case_pattern,
-    expected_case_ids=frozenset(CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS),
     expected_text_models=frozenset(
         case.text_model or "str"
         for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES

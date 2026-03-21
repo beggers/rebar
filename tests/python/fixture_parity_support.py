@@ -214,6 +214,67 @@ def build_fixture_bundle(
     )
 
 
+def build_selected_fixture_bundle(
+    fixture_path: pathlib.Path,
+    *,
+    selected_case_ids: tuple[str, ...] | None = None,
+    pattern_extractor: Callable[[FixtureCase], str | bytes] | None = None,
+    expected_case_ids: frozenset[str] | None = None,
+    expected_text_models: frozenset[str] | None = None,
+) -> FixtureBundle:
+    if pattern_extractor is None:
+        pattern_extractor = case_pattern
+
+    manifest = load_fixture_manifest(fixture_path)
+    loaded_cases = tuple(manifest.cases)
+    duplicate_loaded_case_ids = duplicate_string_ids(
+        tuple(case.case_id for case in loaded_cases)
+    )
+    if duplicate_loaded_case_ids:
+        raise ValueError(
+            f"{fixture_path.name} contains duplicate fixture case ids: "
+            f"{duplicate_loaded_case_ids}"
+        )
+
+    bundle_cases = loaded_cases
+    if selected_case_ids is not None:
+        if not selected_case_ids:
+            raise ValueError(f"{fixture_path.name} selected_case_ids must not be empty")
+
+        duplicate_case_ids = duplicate_string_ids(selected_case_ids)
+        if duplicate_case_ids:
+            raise ValueError(
+                f"{fixture_path.name} selected_case_ids contains duplicate ids: "
+                f"{duplicate_case_ids}"
+            )
+
+        case_by_id = {case.case_id: case for case in loaded_cases}
+        missing_case_ids = tuple(
+            case_id for case_id in selected_case_ids if case_id not in case_by_id
+        )
+        if missing_case_ids:
+            raise ValueError(
+                f"{fixture_path.name} is missing expected fixture rows: "
+                f"{missing_case_ids}"
+            )
+
+        bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
+        if expected_case_ids is None:
+            expected_case_ids = frozenset(selected_case_ids)
+    elif expected_text_models is None:
+        expected_text_models = frozenset(
+            case.text_model or "str" for case in loaded_cases
+        )
+
+    return build_fixture_bundle(
+        manifest,
+        bundle_cases,
+        pattern_extractor=pattern_extractor,
+        expected_case_ids=expected_case_ids,
+        expected_text_models=expected_text_models,
+    )
+
+
 def case_pattern(case: FixtureCase) -> str | bytes:
     pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
     assert isinstance(pattern, (str, bytes))
@@ -436,23 +497,13 @@ def load_published_fixture_bundles(
     *,
     pattern_extractor: Callable[[FixtureCase], str | bytes] = case_pattern,
 ) -> tuple[FixtureBundle, ...]:
-    bundles: list[FixtureBundle] = []
-
-    for path in fixture_paths:
-        manifest = load_fixture_manifest(path)
-        loaded_cases = tuple(manifest.cases)
-        bundles.append(
-            build_fixture_bundle(
-                manifest,
-                loaded_cases,
-                pattern_extractor=pattern_extractor,
-                expected_text_models=frozenset(
-                    case.text_model or "str" for case in loaded_cases
-                ),
-            )
+    return tuple(
+        build_selected_fixture_bundle(
+            path,
+            pattern_extractor=pattern_extractor,
         )
-
-    return tuple(bundles)
+        for path in fixture_paths
+    )
 
 
 def published_fixture_bundle_by_manifest_id(
