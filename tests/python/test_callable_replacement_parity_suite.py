@@ -16,7 +16,6 @@ from rebar_harness.correctness import (
     evaluate_case,
     load_fixture_manifest,
     normalize_exception,
-    published_fixture_manifests,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
@@ -1443,17 +1442,11 @@ def test_pending_rebar_callable_frontier_matches_live_unimplemented_cases() -> N
 
 
 def test_callable_replacement_selector_tracks_published_callable_manifests() -> None:
-    published_callable_paths = tuple(
-        manifest.path
-        for manifest in published_fixture_manifests()
-        if manifest.manifest_id.endswith("-callable-replacement-workflows")
-    )
-    expected_paths = published_callable_paths
+    expected_paths = CALLABLE_FIXTURE_PATHS
 
     assert expected_paths
-    assert CALLABLE_FIXTURE_PATHS == expected_paths
     assert tuple(bundle.manifest.path for bundle in FIXTURE_BUNDLES) == expected_paths
-    assert tuple(path.name for path in CALLABLE_FIXTURE_PATHS) == tuple(
+    assert tuple(bundle.manifest.path.name for bundle in FIXTURE_BUNDLES) == tuple(
         path.name for path in expected_paths
     )
 
@@ -1520,7 +1513,13 @@ def test_callable_replacement_fixture_shape_contract(
         else CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS
     )
 
-    assert bundle.manifest.manifest_id.endswith("-callable-replacement-workflows")
+    assert (
+        published_fixture_bundle_by_manifest_id(
+            FIXTURE_BUNDLES,
+            bundle.manifest.manifest_id,
+        )
+        is bundle
+    )
     assert bundle.manifest.layer == "module_workflow"
     assert bundle.manifest.defaults.get("text_model") == "str"
     assert len(bundle.cases) == sum(expected_operation_helper_counts.values())

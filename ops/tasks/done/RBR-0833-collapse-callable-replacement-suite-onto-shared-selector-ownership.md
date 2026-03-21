@@ -1,6 +1,6 @@
 # RBR-0833: Collapse the callable replacement suite onto shared selector ownership
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -51,3 +51,10 @@ Created: 2026-03-21
   - `ops/tasks/done/RBR-0827-collapse-reintroduced-correctness-selector-filename-mirror.md`
   - `ops/tasks/done/RBR-0829-collapse-helper-backed-correctness-selector-ordering-onto-published-subsets.md`
   - `ops/tasks/done/RBR-0831-normalize-last-manual-correctness-selectors-onto-published-order.md`
+
+## Completion
+- 2026-03-21: Removed the suite-local `published_fixture_manifests` import and deleted the suffix-filter rebuild from `test_callable_replacement_selector_tracks_published_callable_manifests()`, leaving `CALLABLE_FIXTURE_PATHS` as the callable selector path source of truth.
+- 2026-03-21: Replaced the callable fixture shape contract's manifest-id suffix check with a selector-backed lookup against the already loaded `FIXTURE_BUNDLES` inventory via `published_fixture_bundle_by_manifest_id(...)`.
+- 2026-03-21: Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py`
+  - `bash -lc "! rg -n 'published_fixture_manifests,|for manifest in published_fixture_manifests\\(|bundle\\.manifest\\.manifest_id\\.endswith\\(\\\"-callable-replacement-workflows\\\"\\)' tests/python/test_callable_replacement_parity_suite.py"`
