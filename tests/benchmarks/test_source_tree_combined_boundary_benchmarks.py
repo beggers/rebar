@@ -10599,6 +10599,353 @@ def test_run_internal_workload_probe_measures_module_helper_keyword_error_worklo
     assert probe["median_ns"] > 0
 
 
+@dataclass(frozen=True)
+class CompiledPatternModuleKeywordCarrierCase:
+    id: str
+    operation: str
+    cache_mode: str
+    haystack: str
+    kwargs_payload: dict[str, object]
+    replacement: object
+    text_model: str
+    expected_result: object
+    expected_field_names: tuple[str, ...]
+
+
+COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-split-maxsplit-keyword-str-compiled-pattern",
+        operation="module.split",
+        cache_mode="warm",
+        haystack="zabczabc",
+        kwargs_payload={"maxsplit": 1},
+        replacement=None,
+        text_model="str",
+        expected_result=["z", "zabc"],
+        expected_field_names=("kwargs.maxsplit",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-split-maxsplit-indexlike-bytes-compiled-pattern",
+        operation="module.split",
+        cache_mode="purged",
+        haystack="zabcabcabc",
+        kwargs_payload={"maxsplit": {"type": "indexlike", "value": 2}},
+        replacement=None,
+        text_model="bytes",
+        expected_result=[b"z", b"", b"abc"],
+        expected_field_names=("kwargs.maxsplit",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-split-maxsplit-bool-false-bytes-compiled-pattern",
+        operation="module.split",
+        cache_mode="purged",
+        haystack="abcabc",
+        kwargs_payload={"maxsplit": False},
+        replacement=None,
+        text_model="bytes",
+        expected_result=[b"", b"", b""],
+        expected_field_names=("kwargs.maxsplit",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-sub-count-keyword-str-compiled-pattern",
+        operation="module.sub",
+        cache_mode="warm",
+        haystack="abcabc",
+        kwargs_payload={"count": 1},
+        replacement="x",
+        text_model="str",
+        expected_result="xabc",
+        expected_field_names=("kwargs.count",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-sub-count-indexlike-bytes-compiled-pattern",
+        operation="module.sub",
+        cache_mode="purged",
+        haystack="abcabcabc",
+        kwargs_payload={"count": {"type": "indexlike", "value": 2}},
+        replacement="x",
+        text_model="bytes",
+        expected_result=b"xxabc",
+        expected_field_names=("kwargs.count",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-sub-count-bool-true-str-compiled-pattern",
+        operation="module.sub",
+        cache_mode="warm",
+        haystack="abcabc",
+        kwargs_payload={"count": True},
+        replacement="x",
+        text_model="str",
+        expected_result="xabc",
+        expected_field_names=("kwargs.count",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-subn-count-keyword-bytes-compiled-pattern",
+        operation="module.subn",
+        cache_mode="purged",
+        haystack="abcabc",
+        kwargs_payload={"count": 1},
+        replacement="x",
+        text_model="bytes",
+        expected_result=(b"xabc", 1),
+        expected_field_names=("kwargs.count",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-subn-count-indexlike-str-compiled-pattern",
+        operation="module.subn",
+        cache_mode="warm",
+        haystack="abcabcabc",
+        kwargs_payload={"count": {"type": "indexlike", "value": 2}},
+        replacement="x",
+        text_model="str",
+        expected_result=("xxabc", 2),
+        expected_field_names=("kwargs.count",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-subn-count-bool-false-bytes-compiled-pattern",
+        operation="module.subn",
+        cache_mode="purged",
+        haystack="abcabc",
+        kwargs_payload={"count": False},
+        replacement="x",
+        text_model="bytes",
+        expected_result=(b"xx", 2),
+        expected_field_names=("kwargs.count",),
+    ),
+)
+
+
+def _compiled_pattern_module_helper_keyword_manifest_payload(
+    case: CompiledPatternModuleKeywordCarrierCase,
+) -> dict[str, object]:
+    return {
+        "id": f"{case.id}-contract",
+        "bucket": case.operation.replace("module.", "module-"),
+        "family": "module",
+        "operation": case.operation,
+        "pattern": "abc",
+        "haystack": case.haystack,
+        "replacement": case.replacement,
+        "flags": 0,
+        "use_compiled_pattern": True,
+        "count": 0,
+        "maxsplit": 0,
+        "kwargs": case.kwargs_payload,
+        "text_model": case.text_model,
+        "cache_mode": case.cache_mode,
+        "timing_scope": "module-helper-call",
+        "notes": [
+            "Ensures benchmark manifests keep compiled-pattern-first-argument "
+            "collection/replacement keyword carriers unresolved until helper "
+            "invocation."
+        ],
+    }
+
+
+def _compiled_pattern_module_helper_keyword_workload(
+    case: CompiledPatternModuleKeywordCarrierCase,
+) -> Workload:
+    manifest_payload = _compiled_pattern_module_helper_keyword_manifest_payload(case)
+    return workload_from_payload(
+        {
+            "manifest_id": (
+                "python-benchmark-compiled-pattern-module-helper-keyword-contract"
+            ),
+            "workload_id": str(manifest_payload["id"]),
+            **{key: value for key, value in manifest_payload.items() if key != "id"},
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
+    case: CompiledPatternModuleKeywordCarrierCase,
+    payload: dict[str, object],
+    round_tripped: Workload,
+) -> None:
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload["kwargs"] == case.kwargs_payload
+    assert round_tripped.kwargs == case.kwargs_payload
+    for name, value in case.kwargs_payload.items():
+        if type(value) is bool:
+            assert type(round_tripped.kwargs[name]) is bool
+
+
+def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_rows_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest = {
+        "schema_version": 1,
+        "manifest_id": (
+            "python-benchmark-compiled-pattern-collection-replacement-keyword-contract"
+        ),
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _compiled_pattern_module_helper_keyword_manifest_payload(case)
+            for case in COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES
+        ],
+    }
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_compiled_pattern_collection_replacement_keyword_contract.py",
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workloads = load_manifest(manifest_path).workloads
+
+    assert [workload.use_compiled_pattern for workload in workloads] == [
+        True
+    ] * len(COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES)
+
+    for case, workload in zip(
+        COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES,
+        workloads,
+        strict=True,
+    ):
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
+            case,
+            payload,
+            round_tripped,
+        )
+        assert run_benchmark_workload_with_cpython(round_tripped) == case.expected_result
+
+
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for case in COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES
+    ),
+)
+def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time(
+    monkeypatch,
+    case: CompiledPatternModuleKeywordCarrierCase,
+) -> None:
+    workload = _compiled_pattern_module_helper_keyword_workload(case)
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        observed_result = callback()
+
+        assert observed_field_names == list(case.expected_field_names)
+        assert observed_result == case.expected_result
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for case in COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_workloads(
+    case: CompiledPatternModuleKeywordCarrierCase,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    workload = _compiled_pattern_module_helper_keyword_workload(case)
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
+        case,
+        payload,
+        round_tripped,
+    )
+
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
+@pytest.mark.parametrize(
+    ("case", "expected_build_calls", "expected_callback_call"),
+    (
+        pytest.param(
+            COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[0],
+            [("compile", "abc", 0)],
+            ("module.split", "zabczabc", 0, 0, {"maxsplit": 1}),
+            id="module-split-maxsplit-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[3],
+            [("compile", "abc", 0)],
+            ("module.sub", "x", "abcabc", 0, 0, {"count": 1}),
+            id="module-sub-count-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[6],
+            [("compile", b"abc", 0), ("purge",)],
+            ("module.subn", b"x", b"abcabc", 0, 0, {"count": 1}),
+            id="module-subn-count-keyword-bytes-compiled-pattern",
+        ),
+    ),
+)
+def test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argument_before_timing(
+    case: CompiledPatternModuleKeywordCarrierCase,
+    expected_build_calls: list[tuple[object, ...]],
+    expected_callback_call: tuple[object, ...],
+) -> None:
+    module = _RecordingBenchmarkModule()
+    callback = build_callable(
+        module,
+        "re",
+        _compiled_pattern_module_helper_keyword_workload(case),
+    )
+
+    assert module.calls == expected_build_calls
+    assert len(module.compiled_patterns) == 1
+    assert callback() in {"module-result", ("module-result", 0)}
+
+    compiled_pattern = module.compiled_patterns[0]
+    last_call = module.calls[-1]
+    assert last_call[0] == expected_callback_call[0]
+    assert last_call[1] is compiled_pattern
+    assert last_call[2:] == expected_callback_call[1:]
+
+
 def _compiled_pattern_module_helper_keyword_error_workload(
     *,
     operation: str,
