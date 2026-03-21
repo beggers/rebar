@@ -28,7 +28,6 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
-    flatten_supplemental_case_groups,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
@@ -363,8 +362,10 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
 
 
 def _direct_bytes_follow_on_cases() -> tuple[SupplementalCase, ...]:
-    return flatten_supplemental_case_groups(
-        spec.cases for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    return tuple(
+        case
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        for case in spec.cases
     )
 
 

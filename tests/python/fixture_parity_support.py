@@ -411,12 +411,6 @@ def direct_test_case_id_buckets_for_follow_on_bundles(
     }
 
 
-def flatten_supplemental_case_groups(
-    case_groups: Iterable[Iterable[SupplementalCase]],
-) -> tuple[SupplementalCase, ...]:
-    return tuple(case for case_group in case_groups for case in case_group)
-
-
 def load_published_fixture_bundles(
     fixture_paths: Iterable[pathlib.Path],
     *,
