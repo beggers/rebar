@@ -1265,6 +1265,7 @@ def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | No
             "- End your run with a concise final summary of what changed and what you verified.",
             "- If tracked files changed, the harness will commit them immediately after your run.",
             "- Generated commit subjects use the format `<agent-name>: <brief description>` and the body is derived from your final message plus the changed-file list.",
+            "- In your final summary, prefer plain absolute repo paths over markdown links when referencing files. Do not emit `file://` URLs, `//home/...` paths, escaped-slash paths, or placeholder anchors like `#...`.",
             "",
             "Leave durable state in tracked files under ops/ when it matters.",
         ]
