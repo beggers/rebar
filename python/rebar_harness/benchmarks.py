@@ -158,7 +158,7 @@ class Workload:
             raw_workload.get("kwargs"),
             operation=operation,
         )
-        validate_pattern_helper_keyword_argument_carriers(
+        validate_helper_keyword_argument_carriers(
             operation=operation,
             pos=pos,
             endpos=endpos,
@@ -437,6 +437,23 @@ _PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
     "pattern.search, pattern.match, pattern.fullmatch, pattern.findall, "
     "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
 )
+_MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
+    "module.split": frozenset({"maxsplit"}),
+    "module.sub": frozenset({"count"}),
+    "module.subn": frozenset({"count"}),
+}
+_MODULE_HELPER_KEYWORD_OPERATIONS = frozenset(
+    _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION
+)
+_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
+    **_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION,
+    **_MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION,
+}
+_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
+    "pattern.search, pattern.match, pattern.fullmatch, pattern.findall, "
+    "pattern.finditer, pattern.split, pattern.sub, pattern.subn, "
+    "module.split, module.sub, and module.subn"
+)
 
 
 def normalize_keyword_workload_arguments(
@@ -451,11 +468,11 @@ def normalize_keyword_workload_arguments(
     if not isinstance(normalized, dict):
         raise ValueError("benchmark workload kwargs must be an object")
 
-    allowed_keys = _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
+    allowed_keys = _HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
     if allowed_keys is None:
         raise ValueError(
             "benchmark workload kwargs are only supported for "
-            f"{_PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION}"
+            f"{_HELPER_KEYWORD_OPERATIONS_DESCRIPTION}"
         )
 
     unknown_keys = sorted(
@@ -487,7 +504,7 @@ def normalize_keyword_workload_arguments(
     }
 
 
-def validate_pattern_helper_keyword_argument_carriers(
+def validate_helper_keyword_argument_carriers(
     *,
     operation: str,
     pos: Any | None,
@@ -498,7 +515,7 @@ def validate_pattern_helper_keyword_argument_carriers(
         return
 
     if (
-        _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
+        _HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
         == _PATTERN_HELPER_WINDOW_KEYWORD_FIELDS
         and (pos is not None or endpos is not None)
     ):
@@ -614,7 +631,7 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         payload.get("kwargs"),
         operation=operation,
     )
-    validate_pattern_helper_keyword_argument_carriers(
+    validate_helper_keyword_argument_carriers(
         operation=operation,
         pos=pos,
         endpos=endpos,
@@ -797,8 +814,22 @@ def compile_callable(module: Any, workload: Workload) -> Any:
 def helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
     haystack = workload.haystack_payload()
+    uses_keyword_arguments = bool(workload.kwargs)
+
+    def keyword_call_kwargs() -> dict[str, Any]:
+        if not uses_keyword_arguments:
+            return {}
+        return workload.keyword_arguments()
 
     def invoke() -> object:
+        if (
+            uses_keyword_arguments
+            and workload.operation not in _MODULE_HELPER_KEYWORD_OPERATIONS
+        ):
+            raise ValueError(
+                "benchmark workload kwargs are only supported for "
+                f"{_HELPER_KEYWORD_OPERATIONS_DESCRIPTION}"
+            )
         if workload.operation == "module.search":
             return module.search(pattern, haystack, workload.flags)
         if workload.operation == "module.match":
@@ -806,6 +837,17 @@ def helper_callable(module: Any, workload: Workload) -> Any:
         if workload.operation == "module.fullmatch":
             return module.fullmatch(pattern, haystack, workload.flags)
         if workload.operation == "module.split":
+            if uses_keyword_arguments:
+                if workload.flags != 0:
+                    raise ValueError(
+                        "benchmark workload module.split keyword maxsplit carriers "
+                        "currently require `flags == 0`"
+                    )
+                return module.split(
+                    pattern,
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return module.split(
                 pattern,
                 haystack,
@@ -815,6 +857,18 @@ def helper_callable(module: Any, workload: Workload) -> Any:
         if workload.operation == "module.findall":
             return module.findall(pattern, haystack, workload.flags)
         if workload.operation == "module.sub":
+            if uses_keyword_arguments:
+                if workload.flags != 0:
+                    raise ValueError(
+                        "benchmark workload module.sub keyword count carriers "
+                        "currently require `flags == 0`"
+                    )
+                return module.sub(
+                    pattern,
+                    workload.replacement_payload(),
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return module.sub(
                 pattern,
                 workload.replacement_payload(),
@@ -823,6 +877,18 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                 workload.flags,
             )
         if workload.operation == "module.subn":
+            if uses_keyword_arguments:
+                if workload.flags != 0:
+                    raise ValueError(
+                        "benchmark workload module.subn keyword count carriers "
+                        "currently require `flags == 0`"
+                    )
+                return module.subn(
+                    pattern,
+                    workload.replacement_payload(),
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return module.subn(
                 pattern,
                 workload.replacement_payload(),

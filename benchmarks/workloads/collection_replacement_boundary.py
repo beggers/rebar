@@ -104,6 +104,38 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-maxsplit-keyword-purged-bytes",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "zabczabc",
+      "flags": 0,
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "bytes",
+        "maxsplit",
+        "keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "pattern-text-model",
+        "cache-purge",
+        "keyword-maxsplit"
+      ],
+      "notes": [
+        "Bytes module.split helper path that keeps the bounded maxsplit= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-findall-single-dot-warm-str",
       "bucket": "module-findall",
       "family": "module",
@@ -245,6 +277,38 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-count-keyword-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count": 1
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "count",
+        "keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "keyword-count"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-subn-count-indexlike-positional-purged-bytes",
       "bucket": "module-subn",
       "family": "module",
@@ -277,6 +341,39 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes module.subn helper path that keeps the bounded positional __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-count-keyword-purged-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count": 1
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "count",
+        "keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "cache-purge",
+        "keyword-count"
+      ],
+      "notes": [
+        "Bytes module.subn helper path that keeps the bounded count= keyword workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

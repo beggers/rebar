@@ -3224,7 +3224,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 25)
+        self.assertEqual(len(case.target_manifest.workloads), 28)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3236,15 +3236,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-sub-count-indexlike-positional-purged-bytes",
                 "pattern-subn-count-indexlike-positional-warm-str",
             ),
-            25,
-            expected_total_workload_count=25,
+            28,
+            expected_total_workload_count=28,
         )
 
     def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 25)
+        self.assertEqual(len(case.target_manifest.workloads), 28)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3259,8 +3259,25 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-subn-count-bool-keyword-warm-str",
                 "pattern-subn-count-indexlike-keyword-warm-str",
             ),
-            25,
-            expected_total_workload_count=25,
+            28,
+            expected_total_workload_count=28,
+        )
+
+    def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("collection-replacement-boundary")
+        self.assertEqual(len(case.target_manifest.workloads), 28)
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "collection-replacement-boundary",
+            (
+                "module-split-maxsplit-keyword-purged-bytes",
+                "module-sub-count-keyword-warm-str",
+                "module-subn-count-keyword-purged-bytes",
+            ),
+            28,
+            expected_total_workload_count=28,
         )
 
     def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(
@@ -4613,7 +4630,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             0,
         )
 
-    def test_published_full_suite_summary_reflects_pattern_keyword_carrier_benchmarks(
+    def test_published_full_suite_summary_reflects_collection_replacement_keyword_carrier_benchmarks(
         self,
     ) -> None:
         manifests = list(published_benchmark_manifests())
@@ -4622,11 +4639,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 799,
-                "module_workloads": 791,
+                "measured_workloads": 802,
+                "module_workloads": 794,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 799,
+                "total_workloads": 802,
             },
         )
 
@@ -5743,6 +5760,17 @@ def run_correctness_case_with_cpython(case: Any) -> object:
         compiled_pattern = None
         if case.use_compiled_pattern:
             compiled_pattern = re.compile(case.pattern_payload(), case.flags or 0)
+        if (
+            not case.use_compiled_pattern
+            and case.helper in {"split", "sub", "subn"}
+            and case.kwargs
+            and not case.include_pattern_arg
+        ):
+            return getattr(re, case.helper)(
+                case.pattern_payload(),
+                *case.args,
+                **case.kwargs,
+            )
         return getattr(re, case.helper)(
             *case.module_call_args(compiled_pattern),
             **case.kwargs,
@@ -5983,6 +6011,9 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
 
 COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
     {
+        "module-split-maxsplit-keyword-purged-bytes",
+        "module-sub-count-keyword-warm-str",
+        "module-subn-count-keyword-purged-bytes",
         "pattern-split-maxsplit-keyword-warm-str",
         "pattern-split-maxsplit-bool-keyword-warm-str",
         "pattern-split-maxsplit-indexlike-keyword-warm-str",
@@ -5999,12 +6030,17 @@ COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
 def _collection_replacement_keyword_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.operation != "pattern_call" or not case.kwargs:
+    if not case.kwargs:
         return None
     if case.helper not in {"split", "sub", "subn"}:
         return None
+    if case.operation == "module_call":
+        if case.use_compiled_pattern:
+            return None
+    elif case.operation != "pattern_call":
+        return None
     return (
-        f"pattern.{case.helper}",
+        f"{'module' if case.operation == 'module_call' else 'pattern'}.{case.helper}",
         case_pattern(case),
         freeze_signature_value(list(case.args)),
         _module_workflow_keyword_kwargs_signature(case.kwargs),
@@ -6016,9 +6052,14 @@ def _collection_replacement_keyword_correctness_case_signature(
 def _collection_replacement_keyword_workload_args(
     workload: Any,
 ) -> tuple[object, ...]:
-    if workload.operation == "pattern.split":
+    if workload.operation in {"module.split", "pattern.split"}:
         return (workload.haystack_payload(),)
-    if workload.operation in {"pattern.sub", "pattern.subn"}:
+    if workload.operation in {
+        "module.sub",
+        "module.subn",
+        "pattern.sub",
+        "pattern.subn",
+    }:
         return (
             workload.replacement_payload(),
             workload.haystack_payload(),
@@ -6756,11 +6797,20 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
-        name="collection-replacement-pattern-keyword",
+        name="collection-replacement-keyword",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
         expected_anchor_case_ids=_definition_anchor_expectations(
             COLLECTION_REPLACEMENT_MANIFEST_PATH,
             {
+                "module-split-maxsplit-keyword-purged-bytes": (
+                    "workflow-module-split-maxsplit-keyword-bytes",
+                ),
+                "module-sub-count-keyword-warm-str": (
+                    "workflow-module-sub-count-keyword-str",
+                ),
+                "module-subn-count-keyword-purged-bytes": (
+                    "workflow-module-subn-count-keyword-bytes",
+                ),
                 "pattern-split-maxsplit-keyword-warm-str": (
                     "workflow-pattern-split-str-maxsplit-keyword",
                 ),
@@ -8668,25 +8718,26 @@ def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descript
             id="non-object",
         ),
         pytest.param(
-            {"count": 1},
-            "pattern.search",
-            None,
-            None,
-            re.escape(
-                "benchmark workload kwargs for pattern.search only supports the "
-                "`endpos` and `pos` keys; got unsupported keys ['count']"
-            ),
-            id="unsupported-key",
-        ),
-        pytest.param(
             {"pos": 1},
             "module.split",
             None,
             None,
             re.escape(
+                "benchmark workload kwargs for module.split only supports the "
+                "`maxsplit` key; got unsupported keys ['pos']"
+            ),
+            id="unsupported-module-key",
+        ),
+        pytest.param(
+            {"flags": 1},
+            "module.search",
+            None,
+            None,
+            re.escape(
                 "benchmark workload kwargs are only supported for pattern.search, "
                 "pattern.match, pattern.fullmatch, pattern.findall, "
-                "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
+                "pattern.finditer, pattern.split, pattern.sub, pattern.subn, "
+                "module.split, module.sub, and module.subn"
             ),
             id="unsupported-operation",
         ),
@@ -8703,7 +8754,7 @@ def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descript
         ),
     ),
 )
-def test_standard_benchmark_pattern_keyword_kwargs_validation_matches_manifest_and_payload_entry_points(
+def test_standard_benchmark_keyword_kwargs_validation_matches_manifest_and_payload_entry_points(
     tmp_path: pathlib.Path,
     kwargs_payload: object,
     operation: str,
@@ -9238,6 +9289,111 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     ]
 
 
+def test_standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-module-collection-replacement-keyword-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            {
+                "id": "module-split-maxsplit-keyword-contract-bytes",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "zabczabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "maxsplit": 1,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.split maxsplit= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-sub-count-keyword-contract-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "kwargs": {
+                    "count": 1,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.sub count= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-count-keyword-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "count": 1,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn count= keyword carriers unresolved until helper invocation."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_module_collection_replacement_keyword_contract.py",
+        manifest_source,
+    )
+    (
+        split_workload,
+        sub_workload,
+        subn_workload,
+    ) = load_manifest(manifest_path).workloads
+
+    assert split_workload.kwargs == {"maxsplit": 1}
+    round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
+    assert round_tripped_split.kwargs == {"maxsplit": 1}
+    assert round_tripped_split.keyword_arguments() == {"maxsplit": 1}
+    assert run_benchmark_workload_with_cpython(round_tripped_split) == [
+        b"z",
+        b"zabc",
+    ]
+
+    assert sub_workload.kwargs == {"count": 1}
+    round_tripped_sub = workload_from_payload(workload_to_payload(sub_workload))
+    assert round_tripped_sub.kwargs == {"count": 1}
+    assert round_tripped_sub.keyword_arguments() == {"count": 1}
+    assert run_benchmark_workload_with_cpython(round_tripped_sub) == "xabc"
+
+    assert subn_workload.kwargs == {"count": 1}
+    round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
+    assert round_tripped_subn.kwargs == {"count": 1}
+    assert round_tripped_subn.keyword_arguments() == {"count": 1}
+    assert run_benchmark_workload_with_cpython(round_tripped_subn) == (
+        b"xabc",
+        1,
+    )
+
+
 @pytest.mark.parametrize(
     (
         "operation",
@@ -9338,6 +9494,111 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             "text_model": text_model,
             "cache_mode": "warm",
             "timing_scope": "pattern-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        observed_result = callback()
+
+        assert observed_field_names == expected_field_names
+        assert observed_result == expected_result
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "haystack",
+        "kwargs_payload",
+        "replacement",
+        "text_model",
+        "expected_result",
+        "expected_field_names",
+    ),
+    (
+        pytest.param(
+            "module.split",
+            "zabczabc",
+            {"maxsplit": 1},
+            None,
+            "bytes",
+            [b"z", b"zabc"],
+            ["kwargs.maxsplit"],
+            id="module-split-maxsplit-int",
+        ),
+        pytest.param(
+            "module.sub",
+            "abcabc",
+            {"count": 1},
+            "x",
+            "str",
+            "xabc",
+            ["kwargs.count"],
+            id="module-sub-count-int",
+        ),
+        pytest.param(
+            "module.subn",
+            "abcabc",
+            {"count": 1},
+            "x",
+            "bytes",
+            (b"xabc", 1),
+            ["kwargs.count"],
+            id="module-subn-count-int",
+        ),
+    ),
+)
+def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time(
+    monkeypatch,
+    operation: str,
+    haystack: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    text_model: str,
+    expected_result: object,
+    expected_field_names: list[str],
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-module-collection-replacement-keyword-contract",
+            "workload_id": f"{operation}-keyword-materialization-contract",
+            "bucket": operation.replace("module.", "module-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "flags": 0,
+            "count": 0,
+            "maxsplit": 0,
+            "kwargs": kwargs_payload,
+            "text_model": text_model,
+            "cache_mode": "purged",
+            "timing_scope": "module-helper-call",
             "warmup_iterations": 1,
             "sample_iterations": 1,
             "timed_samples": 1,

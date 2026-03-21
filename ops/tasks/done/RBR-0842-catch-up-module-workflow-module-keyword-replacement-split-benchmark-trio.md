@@ -1,6 +1,6 @@
 # RBR-0842: Catch up the module-workflow module keyword replacement/split benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -65,3 +65,8 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` currently times raw-module `split()` / `sub()` / `subn()` through positional `maxsplit` / `count` arguments only and does not yet expose the adjacent raw-module keyword carriers on the shared benchmark path, even though the runtime behavior is already live;
   - `benchmarks/workloads/collection_replacement_boundary.py` currently publishes the raw-module positional `__index__` trio and the precompiled `Pattern` keyword / `__index__` trio, but not the adjacent raw-module keyword trio, so this follow-on stays on the existing manifest instead of inventing another benchmark family; and
   - `reports/benchmarks/latest.py` currently reports `796` total / `796` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 788` and `REPORT["manifests"]["collection-replacement-boundary"]` at `22` selected / `22` measured / `0` known gaps because `RBR-0840` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0840` state.
+
+## Completion Notes
+- 2026-03-21: Routed raw-module `split()` / `sub()` / `subn()` keyword `maxsplit` / `count` carriers through the shared benchmark helper path without disturbing the existing positional or `Pattern.*` keyword carriers, and added the exact three bounded module-keyword workloads on `collection_replacement_boundary.py`.
+- 2026-03-21: Refreshed the shared benchmark owner-path assertions so the collection/replacement manifest now expects `28` selected / `28` measured / `0` known gaps and the published combined benchmark report now records `802` total / `802` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 794`.
+- 2026-03-21: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`220 passed, 3 skipped, 1369 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0842-collection-replacement-boundary.py` (`28` total / `28` measured / `0` known gaps), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (`802` total / `802` measured / `0` known gaps).
