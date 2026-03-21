@@ -1,6 +1,6 @@
 # RBR-0827: Collapse the reintroduced correctness selector filename mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -54,3 +54,11 @@ Created: 2026-03-21
 - This is a bounded follow-up to the earlier selector-table cleanup lineage, not a new feature:
   - `ops/tasks/done/RBR-0801-collapse-correctness-selector-expectation-table-onto-live-registry-invariants.md`
   - `ops/tasks/done/RBR-0803-collapse-benchmark-selector-expectation-table-onto-live-registry-invariants.md`
+
+## Completion
+- 2026-03-21: Removed `_SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS` and the mirror-coverage test from `tests/python/test_fixture_parity_support_contract.py`, keeping the selector contract on live `rebar_harness.correctness` registry data instead of a second handwritten filename table.
+- 2026-03-21: Rewrote `test_shared_correctness_fixture_selectors_resolve_published_paths()` to assert that each declared nondefault selector still resolves once through the live registry, remains non-empty and duplicate-free, stays within the published full-suite inventory, points at real `.py` fixture modules under `CORRECTNESS_FIXTURES_ROOT`, and still produces the expected published-order-normalized subset without maintaining a second filename mirror in the test file.
+- 2026-03-21: Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'selector or published_full_suite_fixture_selector'`
+  - `bash -lc "! rg -n '^_SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS =|expected_filenames = _SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS\\[selector\\]|tuple\\(sorted\\(_SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS\\)\\)' tests/python/test_fixture_parity_support_contract.py"`
+- Follow-up noted: several selector rows in `python/rebar_harness/correctness.py` still encode their own explicit path order rather than the published full-suite order, so a future architecture cleanup can normalize those live selector rows if the harness wants the correctness-side contract to match the benchmark-side direct ordered-subset invariant exactly.
