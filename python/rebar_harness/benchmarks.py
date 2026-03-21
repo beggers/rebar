@@ -116,6 +116,7 @@ class Workload:
     maxsplit: Any
     pos: Any | None
     endpos: Any | None
+    kwargs: dict[str, Any]
     text_model: str
     cache_mode: str
     timing_scope: str
@@ -136,12 +137,36 @@ class Workload:
         defaults: dict[str, Any],
     ) -> "Workload":
         categories = [str(category) for category in raw_workload.get("categories", [])]
+        operation = str(raw_workload["operation"])
+        pos = (
+            None
+            if raw_workload.get("pos") is None
+            else normalize_numeric_workload_argument(
+                raw_workload.get("pos"),
+                field_name="pos",
+            )
+        )
+        endpos = (
+            None
+            if raw_workload.get("endpos") is None
+            else normalize_numeric_workload_argument(
+                raw_workload.get("endpos"),
+                field_name="endpos",
+            )
+        )
+        kwargs = normalize_keyword_workload_arguments(raw_workload.get("kwargs"))
+        validate_pattern_helper_window_argument_carriers(
+            operation=operation,
+            pos=pos,
+            endpos=endpos,
+            kwargs=kwargs,
+        )
         return cls(
             manifest_id=manifest_id,
             workload_id=str(raw_workload["id"]),
             bucket=str(raw_workload.get("bucket", "unbucketed")),
             family=str(raw_workload.get("family", "parser")),
-            operation=str(raw_workload["operation"]),
+            operation=operation,
             pattern=str(raw_workload.get("pattern", "")),
             haystack=(
                 None
@@ -161,22 +186,9 @@ class Workload:
                 raw_workload.get("maxsplit", 0),
                 field_name="maxsplit",
             ),
-            pos=(
-                None
-                if raw_workload.get("pos") is None
-                else normalize_numeric_workload_argument(
-                    raw_workload.get("pos"),
-                    field_name="pos",
-                )
-            ),
-            endpos=(
-                None
-                if raw_workload.get("endpos") is None
-                else normalize_numeric_workload_argument(
-                    raw_workload.get("endpos"),
-                    field_name="endpos",
-                )
-            ),
+            pos=pos,
+            endpos=endpos,
+            kwargs=kwargs,
             text_model=str(raw_workload.get("text_model", "str")),
             cache_mode=str(raw_workload.get("cache_mode", "cold")),
             timing_scope=str(raw_workload.get("timing_scope", "compile-path-proxy")),
@@ -238,6 +250,15 @@ class Workload:
         if self.endpos is None:
             return None
         return materialize_numeric_workload_argument(self.endpos, field_name="endpos")
+
+    def keyword_arguments(self) -> dict[str, Any]:
+        return {
+            key: materialize_numeric_workload_argument(
+                value,
+                field_name=f"kwargs.{key}",
+            )
+            for key, value in self.kwargs.items()
+        }
 
 
 class _IndexLike:
@@ -387,6 +408,70 @@ def normalize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     }
 
 
+_PATTERN_HELPER_WINDOW_OPERATIONS = frozenset(
+    {
+        "pattern.search",
+        "pattern.match",
+        "pattern.fullmatch",
+        "pattern.findall",
+        "pattern.finditer",
+    }
+)
+_PATTERN_HELPER_WINDOW_KEYWORD_FIELDS = frozenset({"pos", "endpos"})
+
+
+def normalize_keyword_workload_arguments(value: Any) -> dict[str, Any]:
+    if value is None:
+        return {}
+
+    normalized = normalize_workload_value(value)
+    if not isinstance(normalized, dict):
+        raise ValueError("benchmark workload kwargs must be an object")
+
+    unknown_keys = sorted(
+        key
+        for key in normalized
+        if key not in _PATTERN_HELPER_WINDOW_KEYWORD_FIELDS
+    )
+    if unknown_keys:
+        raise ValueError(
+            "benchmark workload kwargs only supports the `pos` and `endpos` "
+            f"keys; got unsupported keys {unknown_keys!r}"
+        )
+
+    return {
+        key: normalize_numeric_workload_argument(
+            normalized[key],
+            field_name=f"kwargs.{key}",
+        )
+        for key in sorted(normalized)
+    }
+
+
+def validate_pattern_helper_window_argument_carriers(
+    *,
+    operation: str,
+    pos: Any | None,
+    endpos: Any | None,
+    kwargs: dict[str, Any],
+) -> None:
+    if not kwargs:
+        return
+
+    if operation not in _PATTERN_HELPER_WINDOW_OPERATIONS:
+        raise ValueError(
+            "benchmark workload kwargs are only supported for pattern.search, "
+            "pattern.match, pattern.fullmatch, pattern.findall, and "
+            "pattern.finditer"
+        )
+
+    if pos is not None or endpos is not None:
+        raise ValueError(
+            "benchmark workload cannot mix top-level pos/endpos fields with "
+            "keyword kwargs carriers"
+        )
+
+
 def materialize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     normalized = normalize_numeric_workload_argument(value, field_name=field_name)
     if isinstance(normalized, dict):
@@ -466,16 +551,42 @@ def workload_to_payload(workload: Workload) -> dict[str, Any]:
         payload["pos"] = workload.pos
     if workload.endpos is not None:
         payload["endpos"] = workload.endpos
+    if workload.kwargs:
+        payload["kwargs"] = dict(workload.kwargs)
     return payload
 
 
 def workload_from_payload(payload: dict[str, Any]) -> Workload:
+    operation = str(payload["operation"])
+    pos = (
+        None
+        if payload.get("pos") is None
+        else normalize_numeric_workload_argument(
+            payload.get("pos"),
+            field_name="pos",
+        )
+    )
+    endpos = (
+        None
+        if payload.get("endpos") is None
+        else normalize_numeric_workload_argument(
+            payload.get("endpos"),
+            field_name="endpos",
+        )
+    )
+    kwargs = normalize_keyword_workload_arguments(payload.get("kwargs"))
+    validate_pattern_helper_window_argument_carriers(
+        operation=operation,
+        pos=pos,
+        endpos=endpos,
+        kwargs=kwargs,
+    )
     return Workload(
         manifest_id=str(payload["manifest_id"]),
         workload_id=str(payload["workload_id"]),
         bucket=str(payload["bucket"]),
         family=str(payload["family"]),
-        operation=str(payload["operation"]),
+        operation=operation,
         pattern=str(payload.get("pattern", "")),
         haystack=None if payload.get("haystack") is None else str(payload["haystack"]),
         replacement=normalize_workload_value(payload.get("replacement")),
@@ -489,22 +600,9 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
             payload.get("maxsplit", 0),
             field_name="maxsplit",
         ),
-        pos=(
-            None
-            if payload.get("pos") is None
-            else normalize_numeric_workload_argument(
-                payload.get("pos"),
-                field_name="pos",
-            )
-        ),
-        endpos=(
-            None
-            if payload.get("endpos") is None
-            else normalize_numeric_workload_argument(
-                payload.get("endpos"),
-                field_name="endpos",
-            )
-        ),
+        pos=pos,
+        endpos=endpos,
+        kwargs=kwargs,
         text_model=str(payload["text_model"]),
         cache_mode=str(payload["cache_mode"]),
         timing_scope=str(payload["timing_scope"]),
@@ -733,37 +831,47 @@ def helper_callable(module: Any, workload: Workload) -> Any:
 def pattern_helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
     haystack = workload.haystack_payload()
+    uses_positional_window = workload.pos is not None or workload.endpos is not None
+    uses_keyword_window = bool(workload.kwargs)
 
     def compile_pattern() -> Any:
         return module.compile(pattern, workload.flags)
 
     def invoke(compiled: Any) -> object:
-        if workload.pos is not None or workload.endpos is not None:
-            if workload.operation not in {
-                "pattern.search",
-                "pattern.fullmatch",
-                "pattern.findall",
-                "pattern.finditer",
-            }:
+        if uses_positional_window or uses_keyword_window:
+            if workload.operation not in _PATTERN_HELPER_WINDOW_OPERATIONS:
                 raise ValueError(
                     "benchmark window arguments are only supported for "
-                    "pattern.search, pattern.fullmatch, pattern.findall, "
-                    "and pattern.finditer"
+                    "pattern.search, pattern.match, pattern.fullmatch, "
+                    "pattern.findall, and pattern.finditer"
                 )
 
         def window_call_args() -> tuple[Any, ...]:
             args: list[Any] = [haystack]
-            if workload.pos is not None or workload.endpos is not None:
+            if uses_positional_window:
                 args.append(workload.pos_argument())
             if workload.endpos is not None:
                 args.append(workload.endpos_argument())
             return tuple(args)
 
+        def window_call_kwargs() -> dict[str, Any]:
+            if not uses_keyword_window:
+                return {}
+            return workload.keyword_arguments()
+
         if workload.operation == "pattern.search":
+            if uses_keyword_window:
+                return compiled.search(haystack, **window_call_kwargs())
             return compiled.search(*window_call_args())
         if workload.operation == "pattern.match":
+            if uses_keyword_window:
+                return compiled.match(haystack, **window_call_kwargs())
+            if uses_positional_window:
+                return compiled.match(*window_call_args())
             return compiled.match(haystack)
         if workload.operation == "pattern.fullmatch":
+            if uses_keyword_window:
+                return compiled.fullmatch(haystack, **window_call_kwargs())
             return compiled.fullmatch(*window_call_args())
         if workload.operation == "pattern.split":
             return compiled.split(
@@ -771,8 +879,12 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
                 workload.maxsplit_argument(),
             )
         if workload.operation == "pattern.findall":
+            if uses_keyword_window:
+                return compiled.findall(haystack, **window_call_kwargs())
             return compiled.findall(*window_call_args())
         if workload.operation == "pattern.finditer":
+            if uses_keyword_window:
+                return list(compiled.finditer(haystack, **window_call_kwargs()))
             return list(compiled.finditer(*window_call_args()))
         if workload.operation == "pattern.sub":
             return compiled.sub(
@@ -1097,6 +1209,8 @@ def evaluate_workload(
         result["pos"] = workload.pos
     if workload.endpos is not None:
         result["endpos"] = workload.endpos
+    if workload.kwargs:
+        result["kwargs"] = dict(workload.kwargs)
     return result
 
 

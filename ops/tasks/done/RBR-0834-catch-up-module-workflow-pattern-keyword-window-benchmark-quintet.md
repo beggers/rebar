@@ -1,6 +1,6 @@
 # RBR-0834: Catch up the module-workflow `Pattern` keyword window benchmark quintet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -69,3 +69,9 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` currently invokes precompiled `Pattern.search()` / `match()` / `fullmatch()` / `finditer()` without any keyword arguments and the `Workload` schema still only carries `count` / `maxsplit`, so the existing benchmark path cannot yet publish these exact keyword `pos` / `endpos` carriers faithfully; `RBR-0832` also still needs to land before the shared helper path can benchmark `pattern.findall`;
   - `benchmarks/workloads/pattern_boundary.py` already owns the adjacent precompiled `Pattern` search/match/fullmatch/findall/finditer surface, so this slice can stay on the existing manifest path instead of inventing another benchmark family; and
   - `reports/benchmarks/latest.py` currently reports `780` total / `780` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 772` and `REPORT["manifests"]["pattern-boundary"]` at `6` selected / `6` measured / `0` known gaps because `RBR-0832` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0832` state.
+
+## Completion Note
+- Added bounded `kwargs` support for precompiled `Pattern` benchmark helpers so `pos` / `endpos` keyword carriers stay as raw descriptors until callback invocation, while preserving the existing positional window rows and count/maxsplit handling.
+- Landed the five requested `pattern_boundary.py` workloads, anchored them to the published module-workflow case ids on the shared source-tree benchmark contract, and expanded the zero-gap `pattern-boundary` manifest to `16` selected / `16` measured workloads.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `790` total workloads, `790` measured, `0` known gaps, and `782` module workloads across the same `30` manifests.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0834-pattern-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
