@@ -752,6 +752,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-split-str-maxsplit-bool-true",
+      "operation": "pattern_call",
+      "family": "bound_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": ["zabczabc"],
+      "kwargs": {
+        "maxsplit": True
+      },
+      "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "bool", "str"],
+      "notes": [
+        "Publishes the bounded Pattern.split maxsplit=True workflow alongside the adjacent replacement bool keyword rows."
+      ]
+    },
+    {
       "id": "workflow-pattern-sub-count-keyword-bytes",
       "operation": "pattern_call",
       "family": "bound_sub_workflow",
@@ -806,6 +821,33 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-sub-count-bool-false-bytes",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": False
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "bool", "bytes"],
+      "notes": [
+        "Publishes the bounded Pattern.sub count=False workflow on bytes payloads alongside the adjacent Pattern.subn bool keyword row."
+      ]
+    },
+    {
       "id": "workflow-pattern-subn-count-keyword-str",
       "operation": "pattern_call",
       "family": "bound_subn_workflow",
@@ -833,6 +875,21 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "keyword", "count", "indexlike", "str"],
       "notes": [
         "Publishes the adjacent bound Pattern.subn count=__index__ workflow on str payloads without widening into compiled-pattern module keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-count-bool-true-str",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": True
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "bool", "str"],
+      "notes": [
+        "Publishes the bounded Pattern.subn count=True workflow on str payloads alongside the adjacent Pattern.sub bool keyword row."
       ]
     },
     {
@@ -1000,6 +1057,28 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-maxsplit-bool-false-bytes",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "maxsplit": False
+      },
+      "categories": ["workflow", "split", "literal", "bytes", "maxsplit", "bool"],
+      "notes": [
+        "Publishes the bounded raw module-level split() maxsplit=False keyword workflow on bytes payloads alongside the adjacent raw module replacement bool rows."
+      ]
+    },
+    {
       "id": "workflow-module-sub-count-keyword-str",
       "operation": "module_call",
       "family": "module_sub_workflow",
@@ -1027,6 +1106,21 @@ MANIFEST = {
       "categories": ["workflow", "sub", "literal", "str", "count"],
       "notes": [
         "Publishes the adjacent raw module-level sub() count=__index__ keyword workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-count-bool-true-str",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": True
+      },
+      "categories": ["workflow", "sub", "literal", "str", "count", "bool"],
+      "notes": [
+        "Publishes the bounded raw module-level sub() count=True keyword workflow alongside the adjacent raw module bool-normalization rows."
       ]
     },
     {
@@ -1081,6 +1175,33 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "count"],
       "notes": [
         "Publishes the adjacent raw module-level subn() count=__index__ keyword workflow on bytes payloads without widening into the remaining module keyword helper ladder."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-bool-false-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": False
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "count", "bool"],
+      "notes": [
+        "Publishes the bounded raw module-level subn() count=False keyword workflow on bytes payloads alongside the adjacent raw module bool-normalization rows."
       ]
     },
     {
@@ -1653,7 +1774,7 @@ MANIFEST = {
       },
       "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "bool", "bytes", "compiled-pattern"],
       "notes": [
-        "Publishes the adjacent compiled-pattern module-level split() maxsplit=False keyword workflow on bytes payloads without widening into the unpublished compiled-pattern replacement keyword rows."
+        "Publishes the bounded compiled-pattern module-level split() maxsplit=False keyword workflow on bytes payloads alongside the adjacent compiled-pattern replacement bool rows."
       ]
     },
     {
@@ -1841,6 +1962,22 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-count-bool-true-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "use_compiled_pattern": True,
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": True
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "bool", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the bounded compiled-pattern module-level sub() count=True keyword workflow on str payloads alongside the adjacent compiled-pattern replacement bool rows."
+      ]
+    },
+    {
       "id": "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_sub_workflow",
@@ -1962,6 +2099,34 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "keyword", "count", "indexlike", "str", "compiled-pattern"],
       "notes": [
         "Publishes the adjacent compiled-pattern module-level subn() count=__index__ keyword workflow on str payloads without widening into compiled-pattern keyword-error rows."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": False
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "bool", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the bounded compiled-pattern module-level subn() count=False keyword workflow on bytes payloads alongside the adjacent compiled-pattern replacement bool rows."
       ]
     },
     {

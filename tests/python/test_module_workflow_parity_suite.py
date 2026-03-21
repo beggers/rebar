@@ -234,10 +234,13 @@ PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-split-maxsplit-keyword-bytes",
         "workflow-module-split-maxsplit-indexlike-bytes",
+        "workflow-module-split-maxsplit-bool-false-bytes",
         "workflow-module-sub-count-keyword-str",
         "workflow-module-sub-count-indexlike-str",
+        "workflow-module-sub-count-bool-true-str",
         "workflow-module-subn-count-keyword-bytes",
         "workflow-module-subn-count-indexlike-bytes",
+        "workflow-module-subn-count-bool-false-bytes",
     }
 )
 PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES = tuple(
@@ -274,10 +277,13 @@ PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
         "workflow-pattern-finditer-bytes-bool-window-keyword",
         "workflow-pattern-split-str-maxsplit-keyword",
         "workflow-pattern-split-str-maxsplit-indexlike",
+        "workflow-pattern-split-str-maxsplit-bool-true",
         "workflow-pattern-sub-count-keyword-bytes",
         "workflow-pattern-sub-count-indexlike-bytes",
+        "workflow-pattern-sub-count-bool-false-bytes",
         "workflow-pattern-subn-count-keyword-str",
         "workflow-pattern-subn-count-indexlike-str",
+        "workflow-pattern-subn-count-bool-true-str",
     }
 )
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
@@ -2501,11 +2507,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 123
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 131
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 74, "bytes": 49}
+        {"str": 78, "bytes": 53}
     )
-    assert len(PATTERN_CASES) == 42
+    assert len(PATTERN_CASES) == 45
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 14,
@@ -2513,23 +2519,23 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "fullmatch": 10,
             "findall": 4,
             "finditer": 4,
-            "split": 2,
-            "sub": 2,
-            "subn": 2,
+            "split": 3,
+            "sub": 3,
+            "subn": 3,
         }
     )
-    assert len(MODULE_CALL_CASES) == 69
+    assert len(MODULE_CALL_CASES) == 74
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 16,
             "search": 7,
             "match": 5,
             "fullmatch": 7,
-            "split": 10,
+            "split": 11,
             "findall": 2,
             "finditer": 2,
-            "sub": 10,
-            "subn": 8,
+            "sub": 12,
+            "subn": 10,
             "escape": 2,
         }
     )
@@ -2575,6 +2581,15 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-finditer-bytes-window-keyword",
         "workflow-pattern-finditer-bytes-window-indexlike",
         "workflow-pattern-finditer-bytes-bool-window-keyword",
+        "workflow-pattern-split-str-maxsplit-keyword",
+        "workflow-pattern-split-str-maxsplit-indexlike",
+        "workflow-pattern-split-str-maxsplit-bool-true",
+        "workflow-pattern-sub-count-keyword-bytes",
+        "workflow-pattern-sub-count-indexlike-bytes",
+        "workflow-pattern-sub-count-bool-false-bytes",
+        "workflow-pattern-subn-count-keyword-str",
+        "workflow-pattern-subn-count-indexlike-str",
+        "workflow-pattern-subn-count-bool-true-str",
     } <= {case.case_id for case in PATTERN_CASES}
 
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
@@ -2863,6 +2878,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-sub-count-keyword-str",
         "workflow-module-sub-count-indexlike-str",
+        "workflow-module-sub-count-bool-true-str",
     )
     assert tuple(
         case.case_id
@@ -2874,8 +2890,10 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-match-flags-keyword-bytes",
         "workflow-module-split-maxsplit-keyword-bytes",
         "workflow-module-split-maxsplit-indexlike-bytes",
+        "workflow-module-split-maxsplit-bool-false-bytes",
         "workflow-module-subn-count-keyword-bytes",
         "workflow-module-subn-count-indexlike-bytes",
+        "workflow-module-subn-count-bool-false-bytes",
     )
     assert tuple(
         case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
@@ -2885,10 +2903,13 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-split-maxsplit-keyword-bytes",
         "workflow-module-split-maxsplit-indexlike-bytes",
+        "workflow-module-split-maxsplit-bool-false-bytes",
         "workflow-module-sub-count-keyword-str",
         "workflow-module-sub-count-indexlike-str",
+        "workflow-module-sub-count-bool-true-str",
         "workflow-module-subn-count-keyword-bytes",
         "workflow-module-subn-count-indexlike-bytes",
+        "workflow-module-subn-count-bool-false-bytes",
     )
     assert tuple(
         case.case_id for case in selected_direct_cases
@@ -2898,10 +2919,13 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "module-fullmatch-flags-keyword-str",
         "module-split-maxsplit-keyword-bytes",
         "module-split-maxsplit-indexlike-bytes",
+        "module-split-maxsplit-bool-false-bytes",
         "module-sub-count-keyword-str",
         "module-sub-count-indexlike-str",
+        "module-sub-count-bool-true-str",
         "module-subn-count-keyword-bytes",
         "module-subn-count-indexlike-bytes",
+        "module-subn-count-bool-false-bytes",
     )
     assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES)
     assert Counter(case.helper for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES) == (
@@ -2910,9 +2934,9 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
                 "search": 1,
                 "match": 1,
                 "fullmatch": 1,
-                "split": 2,
-                "sub": 2,
-                "subn": 2,
+                "split": 3,
+                "sub": 3,
+                "subn": 3,
             }
         )
     )
@@ -3068,8 +3092,10 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-findall-str-bool-window-keyword",
         "workflow-pattern-split-str-maxsplit-keyword",
         "workflow-pattern-split-str-maxsplit-indexlike",
+        "workflow-pattern-split-str-maxsplit-bool-true",
         "workflow-pattern-subn-count-keyword-str",
         "workflow-pattern-subn-count-indexlike-str",
+        "workflow-pattern-subn-count-bool-true-str",
     )
     assert tuple(
         case.case_id
@@ -3087,6 +3113,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-finditer-bytes-bool-window-keyword",
         "workflow-pattern-sub-count-keyword-bytes",
         "workflow-pattern-sub-count-indexlike-bytes",
+        "workflow-pattern-sub-count-bool-false-bytes",
     )
     assert tuple(
         case.case_id for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
@@ -3108,10 +3135,13 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-finditer-bytes-bool-window-keyword",
         "workflow-pattern-split-str-maxsplit-keyword",
         "workflow-pattern-split-str-maxsplit-indexlike",
+        "workflow-pattern-split-str-maxsplit-bool-true",
         "workflow-pattern-sub-count-keyword-bytes",
         "workflow-pattern-sub-count-indexlike-bytes",
+        "workflow-pattern-sub-count-bool-false-bytes",
         "workflow-pattern-subn-count-keyword-str",
         "workflow-pattern-subn-count-indexlike-str",
+        "workflow-pattern-subn-count-bool-true-str",
     )
     assert tuple(
         case.case_id for case in selected_direct_cases
@@ -3133,10 +3163,13 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "pattern-finditer-bool-window-keyword-bytes",
         "pattern-split-maxsplit-keyword-str",
         "pattern-split-maxsplit-indexlike-str",
+        "pattern-split-maxsplit-bool-true-str",
         "pattern-sub-count-keyword-bytes",
         "pattern-sub-count-indexlike-bytes",
+        "pattern-sub-count-bool-false-bytes",
         "pattern-subn-count-keyword-str",
         "pattern-subn-count-indexlike-str",
+        "pattern-subn-count-bool-true-str",
     )
     assert len(selected_direct_cases) == len(PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES)
     assert Counter(case.helper for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES) == (
@@ -3147,9 +3180,9 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
                 "fullmatch": 2,
                 "findall": 3,
                 "finditer": 3,
-                "split": 2,
-                "sub": 2,
-                "subn": 2,
+                "split": 3,
+                "sub": 3,
+                "subn": 3,
             }
         )
     )
@@ -3284,6 +3317,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-finditer-str-compiled-pattern-on-bytes-string",
         "workflow-module-sub-str-compiled-pattern",
         "workflow-module-sub-count-keyword-str-compiled-pattern",
+        "workflow-module-sub-count-bool-true-str-compiled-pattern",
         "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
         "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern-on-bytes-string",
@@ -3316,11 +3350,12 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern",
         "workflow-module-subn-count-keyword-bytes-compiled-pattern",
+        "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
         "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 50
+    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 52
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == (
@@ -3365,12 +3400,14 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-sub-str-compiled-pattern",
         "workflow-module-sub-count-keyword-str-compiled-pattern",
         "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
+        "workflow-module-sub-count-bool-true-str-compiled-pattern",
         "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
         "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern-on-bytes-string",
         "workflow-module-subn-bytes-compiled-pattern",
         "workflow-module-subn-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-count-indexlike-str-compiled-pattern",
+        "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
         "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
@@ -3419,12 +3456,14 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-sub-str-count",
         "compiled-pattern-sub-count-keyword-str",
         "compiled-pattern-sub-count-indexlike-bytes",
+        "compiled-pattern-sub-count-bool-true-str",
         "compiled-pattern-sub-duplicate-count-keyword-str",
         "compiled-pattern-sub-unexpected-keyword-str",
         "compiled-pattern-sub-str-on-bytes-string",
         "compiled-pattern-subn-bytes-count",
         "compiled-pattern-subn-count-keyword-bytes",
         "compiled-pattern-subn-count-indexlike-str",
+        "compiled-pattern-subn-count-bool-false-bytes",
         "compiled-pattern-subn-duplicate-count-keyword-bytes",
         "compiled-pattern-subn-unexpected-keyword-bytes",
         "compiled-pattern-subn-bytes-on-str-string",
