@@ -10266,6 +10266,233 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
         re.purge()
 
 
+class _RecordingBenchmarkCompiledPattern:
+    def __init__(self, calls: list[tuple[object, ...]]) -> None:
+        self._calls = calls
+
+    def search(self, haystack: object, *args: object, **kwargs: object) -> object:
+        self._calls.append(("pattern.search", haystack, args, kwargs))
+        return "pattern-result"
+
+
+class _RecordingBenchmarkModule:
+    def __init__(
+        self,
+        *,
+        helper_exception: Exception | None = None,
+    ) -> None:
+        self.calls: list[tuple[object, ...]] = []
+        self._helper_exception = helper_exception
+
+    def purge(self) -> None:
+        self.calls.append(("purge",))
+
+    def compile(self, pattern: object, flags: int = 0) -> _RecordingBenchmarkCompiledPattern:
+        self.calls.append(("compile", pattern, flags))
+        return _RecordingBenchmarkCompiledPattern(self.calls)
+
+    def search(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+        **kwargs: object,
+    ) -> object:
+        self.calls.append(("module.search", pattern, haystack, flags, kwargs))
+        if self._helper_exception is not None:
+            raise self._helper_exception
+        return "module-result"
+
+
+def _module_search_cache_contract_workload(
+    *,
+    cache_mode: str,
+    expected_exception: dict[str, str] | None = None,
+) -> Workload:
+    return workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-module-helper-cache-contract",
+            "workload_id": f"module-search-{cache_mode}-cache-contract",
+            "bucket": "module-search",
+            "family": "module",
+            "operation": "module.search",
+            "pattern": "abc",
+            "haystack": "zabcabc",
+            "flags": 0,
+            "count": 0,
+            "maxsplit": 0,
+            "expected_exception": expected_exception,
+            "text_model": "str",
+            "cache_mode": cache_mode,
+            "timing_scope": "module-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _pattern_search_cache_contract_workload(*, cache_mode: str) -> Workload:
+    return workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-pattern-helper-cache-contract",
+            "workload_id": f"pattern-search-{cache_mode}-cache-contract",
+            "bucket": "pattern-search",
+            "family": "module",
+            "operation": "pattern.search",
+            "pattern": "abc",
+            "haystack": "zabcabc",
+            "flags": 0,
+            "count": 0,
+            "maxsplit": 0,
+            "text_model": "str",
+            "cache_mode": cache_mode,
+            "timing_scope": "pattern-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+@pytest.mark.parametrize(
+    ("cache_mode", "expected_build_calls", "expected_callback_calls"),
+    (
+        pytest.param(
+            "cold",
+            [],
+            [
+                ("purge",),
+                ("module.search", "abc", "zabcabc", 0, {}),
+            ],
+            id="cold",
+        ),
+        pytest.param(
+            "warm",
+            [
+                ("module.search", "abc", "zabcabc", 0, {}),
+            ],
+            [
+                ("module.search", "abc", "zabcabc", 0, {}),
+            ],
+            id="warm",
+        ),
+        pytest.param(
+            "purged",
+            [],
+            [
+                ("purge",),
+                ("module.search", "abc", "zabcabc", 0, {}),
+                ("purge",),
+            ],
+            id="purged",
+        ),
+    ),
+)
+def test_module_helper_cache_modes_preserve_expected_purge_and_warmup_order(
+    cache_mode: str,
+    expected_build_calls: list[tuple[object, ...]],
+    expected_callback_calls: list[tuple[object, ...]],
+) -> None:
+    module = _RecordingBenchmarkModule()
+    callback = build_callable(
+        module,
+        "re",
+        _module_search_cache_contract_workload(cache_mode=cache_mode),
+    )
+
+    assert module.calls == expected_build_calls
+    assert callback() == "module-result"
+    assert module.calls == [*expected_build_calls, *expected_callback_calls]
+
+
+def test_module_helper_warm_expected_exception_prewarms_compile_cache_without_invoking_helper(
+) -> None:
+    module = _RecordingBenchmarkModule(
+        helper_exception=TypeError("unexpected keyword argument 'missing'"),
+    )
+    callback = build_callable(
+        module,
+        "re",
+        _module_search_cache_contract_workload(
+            cache_mode="warm",
+            expected_exception={
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+        ),
+    )
+
+    assert module.calls == [("compile", "abc", 0)]
+    with pytest.raises(TypeError, match="unexpected keyword argument 'missing'"):
+        callback()
+    assert module.calls == [
+        ("compile", "abc", 0),
+        ("module.search", "abc", "zabcabc", 0, {}),
+    ]
+
+
+@pytest.mark.parametrize(
+    ("cache_mode", "expected_build_calls", "expected_callback_calls"),
+    (
+        pytest.param(
+            "cold",
+            [],
+            [
+                ("purge",),
+                ("compile", "abc", 0),
+                ("pattern.search", "zabcabc", (), {}),
+            ],
+            id="cold",
+        ),
+        pytest.param(
+            "warm",
+            [
+                ("compile", "abc", 0),
+            ],
+            [
+                ("pattern.search", "zabcabc", (), {}),
+            ],
+            id="warm",
+        ),
+        pytest.param(
+            "purged",
+            [
+                ("compile", "abc", 0),
+                ("purge",),
+            ],
+            [
+                ("pattern.search", "zabcabc", (), {}),
+            ],
+            id="purged",
+        ),
+    ),
+)
+def test_pattern_helper_cache_modes_preserve_expected_compile_and_purge_order(
+    cache_mode: str,
+    expected_build_calls: list[tuple[object, ...]],
+    expected_callback_calls: list[tuple[object, ...]],
+) -> None:
+    module = _RecordingBenchmarkModule()
+    callback = build_callable(
+        module,
+        "re",
+        _pattern_search_cache_contract_workload(cache_mode=cache_mode),
+    )
+
+    assert module.calls == expected_build_calls
+    assert callback() == "pattern-result"
+    assert module.calls == [*expected_build_calls, *expected_callback_calls]
+
+
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
     tmp_path: pathlib.Path,
 ) -> None:
