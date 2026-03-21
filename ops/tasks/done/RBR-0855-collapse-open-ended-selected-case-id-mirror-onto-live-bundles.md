@@ -1,8 +1,9 @@
 # RBR-0855: Collapse the open-ended selected case-id mirror onto live bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the remaining open-ended quantified-group selected-case-id mirror from `tests/python/test_open_ended_quantified_group_parity_suite.py` so the loaded `FIXTURE_BUNDLES` stay the sole canonical owner for the direct-frontier case set.
@@ -81,3 +82,9 @@ PY`
   - `RBR-0725` already collapsed the open-ended generic bucket-routing sidecars onto canonical follow-on ownership;
   - `RBR-0727` already collapsed the open-ended direct-test bucket sidecar onto canonical case owners; and
   - `RBR-0778` already collapsed open-ended bundle-spec sidecars onto owner manifests, leaving this selected-case mirror as the next small deletion on the same parity owner.
+
+## Completion
+- 2026-03-21: Removed the detached `OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS` mirror from `tests/python/test_open_ended_quantified_group_parity_suite.py`.
+- Rewired `test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_frontier()` to derive `selected_case_ids` directly from `FIXTURE_BUNDLES`, preserving the existing direct bucket labels and follow-on ordering.
+- Left `FIXTURE_BUNDLES`, `OPEN_ENDED_BYTES_CASE_SURFACES`, `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES`, direct-bytes routing, trace generation, and the bounded-pattern inventories otherwise unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3902 passed in 2.74s`), `bash -lc "! rg -n '^(OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS) =' tests/python/test_open_ended_quantified_group_parity_suite.py"` (passes with no matches), and the task-local direct-frontier import probe from Acceptance (`ok`).
