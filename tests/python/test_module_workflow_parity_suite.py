@@ -160,6 +160,8 @@ _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
 MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
     MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR
 )
+MODULE_WORKFLOW_MANIFEST_ID = "module-workflow-surface"
+MATCH_BEHAVIOR_MANIFEST_ID = "match-behavior-smoke"
 MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS = (
     "workflow-compile-str-bounded-wildcard",
     "workflow-compile-str-bounded-wildcard-ignorecase",
@@ -185,9 +187,22 @@ def _fixture_cases_for_helpers(
     return tuple(case for case in bundle.cases if case.helper in helpers)
 
 
-(MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = load_published_fixture_bundles(
+MODULE_WORKFLOW_SURFACE_BUNDLES = load_published_fixture_bundles(
     MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
 )
+assert {bundle.manifest.path for bundle in MODULE_WORKFLOW_SURFACE_BUNDLES} == set(
+    MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
+)
+MODULE_WORKFLOW_BUNDLE = published_fixture_bundle_by_manifest_id(
+    MODULE_WORKFLOW_SURFACE_BUNDLES,
+    MODULE_WORKFLOW_MANIFEST_ID,
+)
+MATCH_BEHAVIOR_BUNDLE = published_fixture_bundle_by_manifest_id(
+    MODULE_WORKFLOW_SURFACE_BUNDLES,
+    MATCH_BEHAVIOR_MANIFEST_ID,
+)
+MODULE_WORKFLOW_FIXTURE_PATH = MODULE_WORKFLOW_BUNDLE.manifest.path
+MATCH_BEHAVIOR_FIXTURE_PATH = MATCH_BEHAVIOR_BUNDLE.manifest.path
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
 COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
@@ -2799,7 +2814,7 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[0],
+        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
         expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
 
@@ -2843,7 +2858,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
 
 
 def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
-    assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[0]
+    assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
     assert (
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
@@ -2883,7 +2898,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[0],
+        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
         expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
     assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
@@ -4167,7 +4182,7 @@ def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> N
     assert_fixture_bundle_contract(
         MATCH_BEHAVIOR_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[1],
+        expected_fixture_path=MATCH_BEHAVIOR_FIXTURE_PATH,
         expected_ordered_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
     )
 

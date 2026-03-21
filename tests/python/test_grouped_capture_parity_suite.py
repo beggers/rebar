@@ -675,25 +675,18 @@ def test_grouped_segment_leading_capture_groups_match_cpython(
 
 
 def test_fixture_bundles_load_expected_published_owner_order() -> None:
-    assert tuple(bundle.manifest.path.name for bundle in FIXTURE_BUNDLES) == (
-        "grouped_match_workflows.py",
-        "named_group_workflows.py",
-        "grouped_segment_workflows.py",
-        "grouped_alternation_workflows.py",
-        "optional_group_workflows.py",
-        "optional_group_alternation_workflows.py",
-        "nested_group_workflows.py",
-        "nested_group_alternation_workflows.py",
+    assert tuple(bundle.manifest.path for bundle in FIXTURE_BUNDLES) == (
+        select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR)
     )
     assert tuple(bundle.manifest.manifest_id for bundle in FIXTURE_BUNDLES) == (
         "grouped-match-workflows",
         "named-group-workflows",
         "grouped-segment-workflows",
+        "nested-group-workflows",
+        "nested-group-alternation-workflows",
         "grouped-alternation-workflows",
         "optional-group-workflows",
         "optional-group-alternation-workflows",
-        "nested-group-workflows",
-        "nested-group-alternation-workflows",
     )
 
 

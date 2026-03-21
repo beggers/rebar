@@ -86,19 +86,6 @@ def _declared_nondefault_correctness_fixture_selectors() -> tuple[str, ...]:
     )
 
 
-def _helper_backed_published_order_selectors() -> tuple[str, ...]:
-    return (
-        correctness.QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
-        correctness.CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
-        correctness.GROUPED_REPLACEMENT_FIXTURE_SELECTOR,
-        correctness.WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-        correctness.BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
-        correctness.CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
-        correctness.OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
-        correctness.OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-    )
-
-
 def _assert_json_literal_safe(value: object) -> None:
     if value is None or isinstance(value, (bool, int, float, str)):
         return
@@ -657,55 +644,29 @@ def test_shared_correctness_fixture_selectors_resolve_published_paths(
     published_full_suite_paths = select_correctness_fixture_paths(
         PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
     )
-    published_full_suite_path_set = set(published_full_suite_paths)
     registry_filenames = correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[selector]
-    registry_filename_set = set(registry_filenames)
     resolved_paths = select_correctness_fixture_paths(selector)
-    resolved_path_set = set(resolved_paths)
-    selected_paths = tuple(
-        path for path in published_full_suite_paths if path.name in registry_filename_set
-    )
     expected_ordered_subset = tuple(
-        path for path in published_full_suite_paths if path in resolved_path_set
+        path
+        for path in published_full_suite_paths
+        if path.name in set(registry_filenames)
     )
 
     assert resolved_paths
-    assert len(resolved_paths) == len(resolved_path_set)
+    assert len(registry_filenames) == len(set(registry_filenames))
+    assert len(resolved_paths) == len(set(resolved_paths))
     assert resolved_paths == tuple(
         CORRECTNESS_FIXTURES_ROOT / filename for filename in registry_filenames
     )
-    assert selected_paths
-    assert len(selected_paths) == len(set(selected_paths))
-    assert len(selected_paths) == len(resolved_paths)
-    assert resolved_path_set.issubset(published_full_suite_path_set)
-    assert set(selected_paths) == resolved_path_set
-    assert selected_paths == expected_ordered_subset
+    assert expected_ordered_subset
+    assert len(expected_ordered_subset) == len(resolved_paths)
+    assert resolved_paths == expected_ordered_subset
 
     for path in resolved_paths:
         assert path.is_relative_to(CORRECTNESS_FIXTURES_ROOT)
         assert path.is_file()
         assert path.suffix == ".py"
-        assert path in published_full_suite_path_set
-
-
-@pytest.mark.parametrize("selector", _helper_backed_published_order_selectors())
-def test_helper_backed_correctness_fixture_selectors_preserve_published_subset_order(
-    selector: str,
-) -> None:
-    published_full_suite_paths = select_correctness_fixture_paths(
-        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-    )
-    registry_filename_set = set(
-        correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[selector]
-    )
-    resolved_paths = select_correctness_fixture_paths(selector)
-    expected_ordered_subset = tuple(
-        path
-        for path in published_full_suite_paths
-        if path.name in registry_filename_set
-    )
-
-    assert resolved_paths == expected_ordered_subset
+        assert path in published_full_suite_paths
 
 
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:

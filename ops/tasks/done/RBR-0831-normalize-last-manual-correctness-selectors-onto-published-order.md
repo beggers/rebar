@@ -1,6 +1,6 @@
 # RBR-0831: Normalize the last manual correctness selectors onto published order
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -89,3 +89,18 @@ PY`
   - the selector-order probe in Acceptance currently fails exactly on the remaining manual rows, starting with `conditional-group-exists`; and
   - `PYTHONPATH=python python3 - <<'PY' ... PY` over `_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR` reports only three remaining nondefault selector mismatches against canonical published order: `conditional-group-exists`, `module-workflow-surface`, and `grouped-capture`.
 - This task is the direct follow-up left in `ops/tasks/done/RBR-0829-collapse-helper-backed-correctness-selector-ordering-onto-published-subsets.md`: helper-backed selectors are normalized now, and these three manual rows are the remaining exceptions if the harness wants one global correctness-selector ordering rule.
+
+## Completion
+- 2026-03-21: Replaced the remaining manual selector rows for `conditional-group-exists`, `module-workflow-surface`, and `grouped-capture` with `_published_fixture_subset(...)` in `python/rebar_harness/correctness.py`, leaving `public-surface` and `parser-parity` unchanged.
+- 2026-03-21: Collapsed `tests/python/test_fixture_parity_support_contract.py` onto one global ordered-subset invariant for every declared nondefault correctness selector and deleted the helper-backed-only selector-order helper/test.
+- 2026-03-21: Refreshed the order-sensitive suites so they no longer depend on superseded local tuple positions:
+  - `tests/python/test_module_workflow_parity_suite.py` now resolves the `module-workflow-surface` and `match-behavior-smoke` bundles by manifest id after loading the selector paths.
+  - `tests/python/test_grouped_capture_parity_suite.py` now anchors bundle order to the published `grouped-capture` selector subset.
+  - `tests/python/test_conditional_group_exists_parity_suite.py` now builds its base, quantified, and nested-or-alternation families from explicit manifest-id partitions instead of slicing `FIXTURE_BUNDLES` by index.
+- 2026-03-21: Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py`
+  - `bash -lc "! rg -n '_helper_backed_published_order_selectors\\(|MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS\\[[01]\\]|FIXTURE_BUNDLES\\[:6\\]|FIXTURE_BUNDLES\\[6:12\\]|FIXTURE_BUNDLES\\[12:\\]' tests/python/test_fixture_parity_support_contract.py tests/python/test_module_workflow_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py"`
+  - the selector-order probe from the acceptance block (`ok`)

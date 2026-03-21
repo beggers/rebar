@@ -237,7 +237,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "named_backreference_workflows.py",
             "numbered_backreference_workflows.py",
         ),
-        CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR: (
+        CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR: _published_fixture_subset(
             "optional_group_conditional_workflows.py",
             "conditional_group_exists_workflows.py",
             "conditional_group_exists_no_else_workflows.py",
@@ -276,7 +276,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
         COLLECTION_REPLACEMENT_FIXTURE_SELECTOR: _published_fixture_subset(
             "collection_replacement_workflows.py",
         ),
-        MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR: (
+        MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR: _published_fixture_subset(
             "module_workflow_surface.py",
             "match_behavior_smoke.py",
         ),
@@ -294,7 +294,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "nested_group_replacement_workflows.py",
             "quantified_nested_group_replacement_workflows.py",
         ),
-        GROUPED_CAPTURE_FIXTURE_SELECTOR: (
+        GROUPED_CAPTURE_FIXTURE_SELECTOR: _published_fixture_subset(
             "grouped_match_workflows.py",
             "named_group_workflows.py",
             "grouped_segment_workflows.py",
