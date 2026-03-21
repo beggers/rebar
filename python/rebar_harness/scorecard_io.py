@@ -29,6 +29,19 @@ def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
     }
 
 
+class _IndexLike:
+    __slots__ = ("value",)
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __index__(self) -> int:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"IndexLike({self.value})"
+
+
 def _tag_descriptor_callable(
     callback: Any,
     *,
@@ -68,6 +81,11 @@ def materialize_descriptor_value(
         if value_type == "bytes":
             encoding = str(value.get("encoding", "latin-1"))
             return str(value["value"]).encode(encoding)
+        if value_type == "indexlike":
+            index_value = value.get("value")
+            if isinstance(index_value, bool) or not isinstance(index_value, int):
+                raise ValueError("indexlike descriptor requires an integer `value`")
+            return _IndexLike(index_value)
         if value_type == "callable_constant":
             constant_value = materialize_descriptor_value(
                 value.get("value"),

@@ -264,21 +264,6 @@ class Workload:
         }
 
 
-class _IndexLike:
-    """Small `__index__` carrier for JSON-safe benchmark argument descriptors."""
-
-    __slots__ = ("value",)
-
-    def __init__(self, value: int) -> None:
-        self.value = value
-
-    def __index__(self) -> int:
-        return self.value
-
-    def __repr__(self) -> str:
-        return f"IndexLike({self.value})"
-
-
 @dataclass(frozen=True, slots=True)
 class BenchmarkManifest:
     """Typed benchmark manifest metadata plus typed workload records."""
@@ -527,9 +512,7 @@ def validate_helper_keyword_argument_carriers(
 
 def materialize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     normalized = normalize_numeric_workload_argument(value, field_name=field_name)
-    if isinstance(normalized, dict):
-        return _IndexLike(normalized["value"])
-    return normalized
+    return materialize_descriptor_value(normalized)
 
 
 def normalize_expected_exception(value: Any) -> dict[str, Any] | None:

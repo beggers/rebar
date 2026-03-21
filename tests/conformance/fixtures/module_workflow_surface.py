@@ -1,20 +1,7 @@
-class _IndexLike:
-    __slots__ = ("value",)
-
-    def __init__(self, value: int) -> None:
-        self.value = value
-
-    def __index__(self) -> int:
-        return self.value
-
-    def __repr__(self) -> str:
-        return f"IndexLike({self.value})"
-
-
-_INDEX_ONE = _IndexLike(1)
-_INDEX_TWO = _IndexLike(2)
-_INDEX_FOUR = _IndexLike(4)
-_INDEX_SEVEN = _IndexLike(7)
+_INDEX_ONE = {"type": "indexlike", "value": 1}
+_INDEX_TWO = {"type": "indexlike", "value": 2}
+_INDEX_FOUR = {"type": "indexlike", "value": 4}
+_INDEX_SEVEN = {"type": "indexlike", "value": 7}
 
 
 MANIFEST = {

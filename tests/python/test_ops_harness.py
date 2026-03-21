@@ -977,6 +977,17 @@ class ReadmeReportingTest(unittest.TestCase):
             },
         )
 
+    def test_scorecard_materialize_descriptor_value_builds_indexlike_carriers(
+        self,
+    ) -> None:
+        value = scorecard_io.materialize_descriptor_value(
+            {"type": "indexlike", "value": 2}
+        )
+
+        self.assertEqual(type(value).__name__, "_IndexLike")
+        self.assertEqual(value.__index__(), 2)
+        self.assertEqual(repr(value), "IndexLike(2)")
+
     def test_scorecard_materialize_descriptor_value_builds_tagged_callable_helpers(
         self,
     ) -> None:
