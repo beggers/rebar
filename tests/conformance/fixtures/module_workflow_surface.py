@@ -1368,6 +1368,22 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": False
+      },
+      "categories": ["workflow", "compile", "named-group", "bytes", "compiled-pattern", "flags", "bool-false"],
+      "notes": [
+        "Publishes the bytes named-group explicit bool-false compiled-pattern module-level compile() keyword singleton on the shared module-workflow owner path without broadening into the default, integer-zero, NOFLAG, or nonzero-flag rejection slices."
+      ]
+    },
+    {
       "id": "workflow-module-match-bytes-compiled-pattern-on-str-string",
       "operation": "module_call",
       "family": "module_match_workflow",

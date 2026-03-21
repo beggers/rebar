@@ -1,8 +1,9 @@
 # RBR-0810: Publish the module-workflow compiled-pattern compile explicit-bool-false bytes named-group singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next concrete compiled-pattern compile keyword neighbor, publishing the exact explicit `flags=False` `rebar.compile(compiled_pattern, ...)` bytes named-group singleton for the existing `rb"(?P<word>abc)"` anchor before any `flags=re.NOFLAG` duplicate publication, nonzero-flag rejection rows, benchmark catch-up, or another owner family reopens the queue.
@@ -63,3 +64,8 @@ Created: 2026-03-21
   - `flags=re.NOFLAG` is still not the next task because the current owner-path signature normalizes `RegexFlag(0)` to the same integer-zero keyword signature that is already published, while this bytes named-group bool-false singleton remains the next distinct unpublished row on the current boundary;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` plus the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need additional backlog/current-status edits.
+
+## Completion
+- Added the single published `module_call` row `workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group` to `tests/conformance/fixtures/module_workflow_surface.py`, aligned the shared owner-path direct-case order and bundle/count assertions in `tests/python/test_module_workflow_parity_suite.py`, and extended the tracked representative-case list in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `1487` total / `1487` passed / `0` unimplemented overall, with `module.workflow` at `117` / `117`, `module.workflow.str` unchanged at `72` / `72`, `module.workflow.bytes` at `45` / `45`, `module.workflow.module_call` at `63` / `63`, and `module.workflow.pattern_call` unchanged at `42` / `42`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython tests/python/test_module_workflow_parity_suite.py::test_compiled_pattern_module_keyword_argument_calls_match_cpython` (`66 passed`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`806 passed, 1 skipped, 2010 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0810-module-workflow-compiled-pattern-compile-bool-false-bytes-named-group-singleton.py` (`117/117`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1487/1487`).
