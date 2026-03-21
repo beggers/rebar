@@ -461,6 +461,30 @@ SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE = replace(
     source_args=[b"zzabczz"],
     args=[b"zzabczz"],
 )
+SYNTHETIC_INCLUDE_PATTERN_MODULE_KEYWORD_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-module-pattern-keyword-str",
+    operation="module_call",
+    helper="search",
+    pattern="abc",
+    source_args=["zzABCzz"],
+    source_kwargs={"flags": int(re.IGNORECASE)},
+    args=["zzABCzz"],
+    kwargs={"flags": int(re.IGNORECASE)},
+    include_pattern_arg=True,
+)
+SYNTHETIC_COMPILED_MODULE_KEYWORD_SPLIT_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-module-compiled-pattern-keyword-split-str",
+    operation="module_call",
+    helper="split",
+    pattern="abc",
+    source_args=["abcabcabc"],
+    source_kwargs={"maxsplit": 1},
+    args=["abcabcabc"],
+    kwargs={"maxsplit": 1},
+    use_compiled_pattern=True,
+)
 SYNTHETIC_FULLMATCH_PATTERN_CASE = replace(
     SYNTHETIC_PATTERN_HELPER_CASE,
     case_id="synthetic-pattern-fullmatch-str",
@@ -486,6 +510,17 @@ SYNTHETIC_BYTES_PATTERN_CASE = replace(
     helper="split",
     source_args=[b"zzabczz", 1],
     args=[b"zzabczz", 1],
+)
+SYNTHETIC_PATTERN_KEYWORD_SEARCH_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-pattern-search-keyword-str",
+    operation="pattern_call",
+    helper="search",
+    pattern="abc",
+    source_args=["abcxabc"],
+    source_kwargs={"pos": 4, "endpos": 7},
+    args=["abcxabc"],
+    kwargs={"pos": 4, "endpos": 7},
 )
 BRANCH_LOCAL_NAMED_BACKREFERENCE_PATTERN = (
     r"a(?P<outer>(?P<inner>bc)|de)(?P=inner)d"
@@ -787,6 +822,10 @@ def test_case_text_argument_rejects_non_text_payloads() -> None:
         pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="raw-module-str"),
         pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="raw-module-bytes"),
         pytest.param(
+            SYNTHETIC_INCLUDE_PATTERN_MODULE_KEYWORD_CASE,
+            id="raw-module-include-pattern-keyword-str",
+        ),
+        pytest.param(
             SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
             id="compiled-module-str",
         ),
@@ -809,6 +848,9 @@ def test_fixture_case_module_call_args_return_isolated_helper_arguments(
     assert observed is not case.args
     if case.use_compiled_pattern:
         assert observed[0] is compiled_pattern
+        assert observed[1:] == original_args
+    elif case.include_pattern_arg:
+        assert observed[0] == case.pattern_payload()
         assert observed[1:] == original_args
     else:
         assert observed == original_args
@@ -1414,6 +1456,10 @@ def test_invoke_bounded_pattern_case_preserves_helper_and_bound_semantics(
             SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
             id="compiled-module-str",
         ),
+        pytest.param(
+            SYNTHETIC_PATTERN_KEYWORD_SEARCH_CASE,
+            id="pattern-keyword-search-str",
+        ),
         pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="module-bytes"),
         pytest.param(
             SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE,
@@ -1437,6 +1483,20 @@ def test_workflow_result_with_cpython_parity_accepts_representative_cases(
     assert observed is not None
     assert expected is not None
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+
+def test_workflow_result_with_cpython_parity_accepts_compiled_module_keyword_value_cases(
+    regex_backend: tuple[str, object],
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        SYNTHETIC_COMPILED_MODULE_KEYWORD_SPLIT_CASE,
+    )
+
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
@@ -1519,6 +1579,10 @@ def test_workflow_result_with_cpython_parity_accepts_shared_no_match_cases(
     (
         pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="module-str"),
         pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="module-bytes"),
+        pytest.param(
+            SYNTHETIC_INCLUDE_PATTERN_MODULE_KEYWORD_CASE,
+            id="module-include-pattern-keyword-str",
+        ),
     ),
 )
 def test_workflow_result_with_cpython_parity_skips_compile_for_raw_module_calls(
@@ -1561,6 +1625,11 @@ def test_workflow_result_with_cpython_parity_skips_compile_for_raw_module_calls(
             b"abc",
             id="compiled-module-bytes",
         ),
+        pytest.param(
+            SYNTHETIC_COMPILED_MODULE_KEYWORD_SPLIT_CASE,
+            "abc",
+            id="compiled-module-keyword-split-str",
+        ),
     ),
 )
 def test_workflow_result_with_cpython_parity_routes_compiled_module_cases_through_module_call_args(
@@ -1581,17 +1650,20 @@ def test_workflow_result_with_cpython_parity_routes_compiled_module_cases_throug
         compile_calls.append((backend_name, backend, pattern, flags))
         return observed_pattern, expected_pattern
 
-    class RecordingSearchTarget:
+    class RecordingHelperTarget:
         def __init__(self, result: object) -> None:
-            self.calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+            self.calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
             self._result = result
 
-        def search(self, *args: object, **kwargs: object) -> object:
-            self.calls.append((args, dict(kwargs)))
-            return self._result
+        def __getattr__(self, helper_name: str) -> Callable[..., object]:
+            def invoke(*args: object, **kwargs: object) -> object:
+                self.calls.append((helper_name, args, dict(kwargs)))
+                return self._result
 
-    fake_backend = RecordingSearchTarget("observed-result")
-    fake_re = RecordingSearchTarget("expected-result")
+            return invoke
+
+    fake_backend = RecordingHelperTarget("observed-result")
+    fake_re = RecordingHelperTarget("expected-result")
     backend_name = "synthetic-backend"
 
     monkeypatch.setattr(
@@ -1611,10 +1683,10 @@ def test_workflow_result_with_cpython_parity_routes_compiled_module_cases_throug
         (backend_name, fake_backend, expected_pattern_payload, 0),
     ]
     assert fake_backend.calls == [
-        (tuple(case.module_call_args(observed_pattern)), dict(case.kwargs)),
+        (case.helper, tuple(case.module_call_args(observed_pattern)), dict(case.kwargs)),
     ]
     assert fake_re.calls == [
-        (tuple(case.module_call_args(expected_pattern)), dict(case.kwargs)),
+        (case.helper, tuple(case.module_call_args(expected_pattern)), dict(case.kwargs)),
     ]
     assert observed == "observed-result"
     assert expected == "expected-result"
@@ -1633,6 +1705,11 @@ def test_workflow_result_with_cpython_parity_routes_compiled_module_cases_throug
             b"abc",
             id="pattern-bytes",
         ),
+        pytest.param(
+            SYNTHETIC_PATTERN_KEYWORD_SEARCH_CASE,
+            "abc",
+            id="pattern-keyword-search-str",
+        ),
     ),
 )
 def test_workflow_result_with_cpython_parity_routes_pattern_calls_through_compiled_patterns(
@@ -1644,12 +1721,15 @@ def test_workflow_result_with_cpython_parity_routes_pattern_calls_through_compil
 
     class RecordingPattern:
         def __init__(self, result: object) -> None:
-            self.calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+            self.calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
             self._result = result
 
-        def fullmatch(self, *args: object, **kwargs: object) -> object:
-            self.calls.append((args, dict(kwargs)))
-            return self._result
+        def __getattr__(self, helper_name: str) -> Callable[..., object]:
+            def invoke(*args: object, **kwargs: object) -> object:
+                self.calls.append((helper_name, args, dict(kwargs)))
+                return self._result
+
+            return invoke
 
     observed_pattern = RecordingPattern("observed-result")
     expected_pattern = RecordingPattern("expected-result")
@@ -1681,10 +1761,10 @@ def test_workflow_result_with_cpython_parity_routes_pattern_calls_through_compil
         (backend_name, fake_backend, expected_pattern_payload, 0),
     ]
     assert observed_pattern.calls == [
-        (tuple(case.args), dict(case.kwargs)),
+        (case.helper, tuple(case.args), dict(case.kwargs)),
     ]
     assert expected_pattern.calls == [
-        (tuple(case.args), dict(case.kwargs)),
+        (case.helper, tuple(case.args), dict(case.kwargs)),
     ]
     assert observed == "observed-result"
     assert expected == "expected-result"
