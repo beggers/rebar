@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0858` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` wrong-text-model `TypeError` benchmark trio up on the shared Python-path `collection_replacement_boundary.py` surface with the minimal haystack text-model override support needed to express that bounded mixed-text helper slice.
+`RBR-0860` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `findall()` / `finditer()` wrong-text-model `TypeError` benchmark pair up on the shared Python-path `collection_replacement_boundary.py` surface with the minimal `module.finditer` benchmark-runner support needed to express that bounded mixed-text collection slice.
 
 ## Ordered Work
-1. `RBR-0858` catches the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` wrong-text-model `TypeError` benchmark trio up on `python/rebar_harness/benchmarks.py`, `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0860` catches the adjacent compiled-pattern-first-argument `findall()` / `finditer()` wrong-text-model `TypeError` benchmark pair up on `python/rebar_harness/benchmarks.py`, `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

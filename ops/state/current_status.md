@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 831/831 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0858` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` wrong-text-model `TypeError` benchmark trio up on the shared Python-path `collection_replacement_boundary.py` benchmark surface with the minimal haystack text-model override support needed to express that bounded mixed-text helper slice.
+- `RBR-0860` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `findall()` / `finditer()` wrong-text-model `TypeError` benchmark pair up on the shared Python-path `collection_replacement_boundary.py` benchmark surface with the minimal `module.finditer` benchmark-runner support needed to express that bounded mixed-text collection slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1512 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0858` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` wrong-text-model `TypeError` benchmark trio up on the shared Python-path `collection_replacement_boundary.py` benchmark surface with the minimal haystack text-model override support needed to express that bounded mixed-text helper slice.
+- `RBR-0860` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `findall()` / `finditer()` wrong-text-model `TypeError` benchmark pair up on the shared Python-path `collection_replacement_boundary.py` benchmark surface with the minimal `module.finditer` benchmark-runner support needed to express that bounded mixed-text collection slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
