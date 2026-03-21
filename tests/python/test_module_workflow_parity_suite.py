@@ -1085,18 +1085,30 @@ PUBLISHED_COLLECTION_FIXTURE_CASES = _fixture_cases_for_helpers(
     COLLECTION_REPLACEMENT_BUNDLE,
     _COLLECTION_FRONTIER_HELPERS,
 )
-PUBLISHED_COLLECTION_MODULE_CASES = tuple(
-    _module_collection_case_from_fixture(case)
-    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
-    if case.operation == "module_call"
-)
-PUBLISHED_COLLECTION_PATTERN_CASES = tuple(
-    _pattern_collection_case_from_fixture(case)
-    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
-    if case.operation == "pattern_call"
-)
+
+
+def _published_module_collection_cases_for_helper(
+    helper: str,
+) -> tuple[CollectionModuleCase, ...]:
+    return tuple(
+        _module_collection_case_from_fixture(case)
+        for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+        if case.operation == "module_call" and case.helper == helper
+    )
+
+
+def _published_pattern_collection_cases_for_helper(
+    helper: str,
+) -> tuple[CollectionPatternCase, ...]:
+    return tuple(
+        _pattern_collection_case_from_fixture(case)
+        for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+        if case.operation == "pattern_call" and case.helper == helper
+    )
+
+
 MODULE_COLLECTION_CASES = (
-    *(case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "split"),
+    *_published_module_collection_cases_for_helper("split"),
     CollectionModuleCase(
         "module-split-str-maxsplit-one",
         "split",
@@ -1118,10 +1130,10 @@ MODULE_COLLECTION_CASES = (
         b"zzabczzabc",
         (1,),
     ),
-    *(case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "findall"),
+    *_published_module_collection_cases_for_helper("findall"),
     CollectionModuleCase("module-findall-str-repeated", "findall", "abc", "abcabc"),
     CollectionModuleCase("module-findall-str-no-match", "findall", "abc", "zzz"),
-    *(case for case in PUBLISHED_COLLECTION_MODULE_CASES if case.helper == "finditer"),
+    *_published_module_collection_cases_for_helper("finditer"),
     CollectionModuleCase("module-finditer-str-no-match", "finditer", "abc", "zzz"),
     CollectionModuleCase(
         "module-finditer-bytes-repeated",
@@ -1131,7 +1143,7 @@ MODULE_COLLECTION_CASES = (
     ),
 )
 PATTERN_COLLECTION_CASES = (
-    *(case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "split"),
+    *_published_pattern_collection_cases_for_helper("split"),
     CollectionPatternCase("pattern-split-str-no-match", "split", "abc", "zzz"),
     CollectionPatternCase("pattern-split-str-repeated", "split", "abc", "abcabc"),
     CollectionPatternCase(
@@ -1148,7 +1160,7 @@ PATTERN_COLLECTION_CASES = (
         "abcabc",
         (-1,),
     ),
-    *(case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "findall"),
+    *_published_pattern_collection_cases_for_helper("findall"),
     CollectionPatternCase(
         "pattern-findall-str-bounded",
         "findall",
@@ -1170,7 +1182,7 @@ PATTERN_COLLECTION_CASES = (
         b"zabcabcz",
         (1, 7),
     ),
-    *(case for case in PUBLISHED_COLLECTION_PATTERN_CASES if case.helper == "finditer"),
+    *_published_pattern_collection_cases_for_helper("finditer"),
     CollectionPatternCase(
         "pattern-finditer-str-bounded",
         "finditer",
@@ -6129,33 +6141,27 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
         {
             "module-split": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_MODULE_CASES
-                if case.helper == "split"
+                for case in _published_module_collection_cases_for_helper("split")
             ),
             "pattern-split": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_PATTERN_CASES
-                if case.helper == "split"
+                for case in _published_pattern_collection_cases_for_helper("split")
             ),
             "module-findall": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_MODULE_CASES
-                if case.helper == "findall"
+                for case in _published_module_collection_cases_for_helper("findall")
             ),
             "pattern-findall": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_PATTERN_CASES
-                if case.helper == "findall"
+                for case in _published_pattern_collection_cases_for_helper("findall")
             ),
             "module-finditer": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_MODULE_CASES
-                if case.helper == "finditer"
+                for case in _published_module_collection_cases_for_helper("finditer")
             ),
             "pattern-finditer": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_PATTERN_CASES
-                if case.helper == "finditer"
+                for case in _published_pattern_collection_cases_for_helper("finditer")
             ),
         },
         selected_case_ids=tuple(

@@ -1,8 +1,9 @@
 # RBR-0847: Collapse module-workflow published collection case sidecars onto fixture selectors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the detached published collection module/pattern case tables from `tests/python/test_module_workflow_parity_suite.py` so `PUBLISHED_COLLECTION_FIXTURE_CASES` remains the sole canonical owner for the published collection frontier inside this parity owner.
@@ -94,3 +95,9 @@ PY`
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because those mirrored top-level tables still exist; and
   - the import/order probe in Acceptance already passes (`ok`), showing that `PUBLISHED_COLLECTION_FIXTURE_CASES` plus the existing fixture-to-direct-case converters already carry the published ordering needed to delete the extra sidecar layer without changing behavior.
 - This stays on the same bounded post-JSON cleanup track as the recent sidecar removals in neighboring parity owners, but targets a still-live redundancy in the current checkout instead of reopening already-drained files.
+
+## Completion
+- 2026-03-21: Removed the mirrored `PUBLISHED_COLLECTION_MODULE_CASES` and `PUBLISHED_COLLECTION_PATTERN_CASES` sidecars from `tests/python/test_module_workflow_parity_suite.py`.
+- Added small file-local helper selectors that derive published module and pattern collection slices directly from `PUBLISHED_COLLECTION_FIXTURE_CASES`, preserving the published fixture ordering without introducing another owner layer.
+- Rewired `MODULE_COLLECTION_CASES`, `PATTERN_COLLECTION_CASES`, and `test_literal_collection_direct_test_buckets_cover_selected_frontier` to use those fixture-derived selectors while leaving `COLLECTION_REPLACEMENT_BUNDLE`, `PUBLISHED_COLLECTION_FIXTURE_CASES`, `_module_collection_case_from_fixture`, `_pattern_collection_case_from_fixture`, supplemental collection cases, bounded-wildcard collection cases, and collection behavior unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`1207 passed, 1 skipped in 1.19s`), `bash -lc "! rg -n '^(PUBLISHED_COLLECTION_MODULE_CASES|PUBLISHED_COLLECTION_PATTERN_CASES) =' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches), and the task-local import/order probe from Acceptance (`ok`).
