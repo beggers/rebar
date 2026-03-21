@@ -3040,6 +3040,28 @@ class _WarningCompileExceptionModule:
         return None
 
 
+class _WarningPurgeFailureModule:
+    def __init__(self, *, message: str) -> None:
+        self._message = message
+        self.calls: list[str] = []
+
+    def purge(self) -> None:
+        self.calls.append("purge")
+        warnings.warn("purge warning", RuntimeWarning)
+        raise NotImplementedError(self._message)
+
+    def compile(self, pattern: str, flags: int = 0) -> object:
+        self.calls.append("compile")
+        raise AssertionError("compile should not run after purge failure")
+
+
+class _WarningPurgeExceptionModule(_WarningPurgeFailureModule):
+    def purge(self) -> None:
+        self.calls.append("purge")
+        warnings.warn("purge warning", RuntimeWarning)
+        raise TypeError(self._message)
+
+
 class _WarningPatternCallFailurePattern:
     def search(self, string: str) -> object:
         warnings.warn("pattern helper warning", UserWarning)
@@ -3461,6 +3483,91 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                         "message": "cache helper failure",
                     },
                 )
+
+    def test_adapter_cache_like_workflows_preserve_warning_payloads_when_purge_is_unimplemented(
+        self,
+    ) -> None:
+        for operation in ("cache_workflow", "purge_workflow"):
+            case = _adapter_contract_case(
+                case_id=f"adapter-{operation}-purge-contract",
+                operation=operation,
+            )
+
+            for adapter_cls, expected_outcome in (
+                (CpythonReAdapter, "exception"),
+                (RebarAdapter, "unimplemented"),
+            ):
+                with self.subTest(operation=operation, adapter=adapter_cls.adapter_name):
+                    module = _WarningPurgeFailureModule(
+                        message=f"{operation} purge todo"
+                    )
+                    adapter = adapter_cls()
+                    adapter.module = module
+
+                    observation = adapter.observe(case)
+
+                    self.assertEqual(module.calls, ["purge"])
+                    self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                    self.assertEqual(observation["operation"], operation)
+                    self.assertEqual(observation["outcome"], expected_outcome)
+                    self.assertEqual(
+                        observation["warnings"],
+                        [
+                            {
+                                "category": "RuntimeWarning",
+                                "message": "purge warning",
+                            }
+                        ],
+                    )
+                    self.assertIsNone(observation["result"])
+                    self.assertEqual(
+                        observation["exception"],
+                        {
+                            "type": "NotImplementedError",
+                            "message": f"{operation} purge todo",
+                        },
+                    )
+
+    def test_adapter_cache_like_workflows_preserve_warning_payloads_for_purge_exceptions(
+        self,
+    ) -> None:
+        for operation in ("cache_workflow", "purge_workflow"):
+            case = _adapter_contract_case(
+                case_id=f"adapter-{operation}-purge-exception-contract",
+                operation=operation,
+            )
+
+            for adapter_cls in (CpythonReAdapter, RebarAdapter):
+                with self.subTest(operation=operation, adapter=adapter_cls.adapter_name):
+                    module = _WarningPurgeExceptionModule(
+                        message=f"{operation} purge failure"
+                    )
+                    adapter = adapter_cls()
+                    adapter.module = module
+
+                    observation = adapter.observe(case)
+
+                    self.assertEqual(module.calls, ["purge"])
+                    self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                    self.assertEqual(observation["operation"], operation)
+                    self.assertEqual(observation["outcome"], "exception")
+                    self.assertEqual(
+                        observation["warnings"],
+                        [
+                            {
+                                "category": "RuntimeWarning",
+                                "message": "purge warning",
+                            }
+                        ],
+                    )
+                    self.assertIsNone(observation["result"])
+                    self.assertEqual(
+                        observation["exception"],
+                        {
+                            "type": "TypeError",
+                            "message": f"{operation} purge failure",
+                        },
+                    )
 
     def test_adapter_pattern_call_preserves_warning_payloads_for_generic_exceptions(
         self,
