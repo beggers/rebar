@@ -6222,6 +6222,39 @@ def test_bounded_wildcard_module_match_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
+    tuple(case for case in BOUNDED_WILDCARD_MODULE_MATCH_CASES if case.compiled),
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_compiled_module_match_helpers_preserve_match_identity_like_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedWildcardModuleCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
+
+    observed = getattr(backend, case.helper)(observed_pattern, case.string)
+    expected = getattr(re, case.helper)(expected_pattern, case.string)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert observed is not None
+    assert expected is not None
+    _assert_compiled_match_identity(
+        observed,
+        expected,
+        pattern=case.pattern,
+        string=case.string,
+        observed_pattern=observed_pattern,
+        expected_pattern=expected_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
     BOUNDED_WILDCARD_MODULE_COLLECTION_CASES,
     ids=lambda case: case.case_id,
 )
