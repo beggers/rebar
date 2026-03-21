@@ -160,6 +160,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-compile-bytes-compiled-pattern-named-group",
             "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
             "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
+            "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
             "workflow-module-match-bytes-compiled-pattern-on-str-string",
             "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
             "workflow-module-match-str-bounded-wildcard-compiled-pattern",

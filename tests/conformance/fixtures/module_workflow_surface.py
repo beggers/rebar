@@ -1384,6 +1384,22 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": 2
+      },
+      "categories": ["workflow", "compile", "named-group", "bytes", "compiled-pattern", "flags", "ignorecase", "rejection"],
+      "notes": [
+        "Publishes the bytes named-group explicit IGNORECASE compiled-pattern module-level compile() keyword rejection singleton on the shared module-workflow owner path without broadening into the default, integer-zero, bool-false, NOFLAG, or str-side rejection slices."
+      ]
+    },
+    {
       "id": "workflow-module-match-bytes-compiled-pattern-on-str-string",
       "operation": "module_call",
       "family": "module_match_workflow",
