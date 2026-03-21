@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1504 cases across 114 manifests, with all 1504 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | No ready feature follow-on currently survives. The active milestone stays on the existing `module-workflow-surface` owner path. |
-| Work queue | `1` ready, `0` in progress, `828` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0828` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the raw module positional `__index__` trio up on the shared Python-path `collection_replacement_boundary.py` benchmark surface. |
+| Work queue | `1` ready, `0` in progress, `830` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1504` |
-| Passing in published slice | `1504` |
+| Published cases | `1512` |
+| Passing in published slice | `1512` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1504 cases across 114 manifests, with all 1504 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0826` is ready to reopen the active `module-workflow-surface` owner path with one bounded `Pattern` positional `__index__` octet.
+- `RBR-0828` is ready to catch the raw module positional `__index__` trio up on the existing Python-path `collection_replacement_boundary` benchmark surface.
 
 ### Current Risks
 
