@@ -26,6 +26,7 @@ from tests.python.fixture_parity_support import (
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
+    published_fixture_bundles_by_manifest_id,
     record_generated_match_failure,
     SupplementalMissCase,
     str_case_pattern,
@@ -69,14 +70,15 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(
     pattern_extractor=str_case_pattern,
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-QUANTIFIED_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "conditional-group-exists-quantified-workflows",
+FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
+    FIXTURE_BUNDLES
 )
-QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "conditional-group-exists-quantified-alternation-workflows",
-)
+QUANTIFIED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "conditional-group-exists-quantified-workflows"
+]
+QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "conditional-group-exists-quantified-alternation-workflows"
+]
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 CONDITIONAL_VARIANT_ORDER = {
     "plain": 0,

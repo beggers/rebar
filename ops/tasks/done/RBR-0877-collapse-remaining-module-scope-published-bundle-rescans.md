@@ -1,8 +1,9 @@
 # RBR-0877: Collapse remaining module-scope published-bundle rescans
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Delete the remaining module-scope `published_fixture_bundle_by_manifest_id(...)` rescan chains from four parity-suite owners by routing those already-loaded bundle tuples through the existing `published_fixture_bundles_by_manifest_id(...)` helper, so the suites stop linearly rewalking the same bundle tuples every time they derive top-level manifest constants.
@@ -55,3 +56,11 @@ Created: 2026-03-21
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` currently passes (`1774 passed, 1 skipped in 1.73s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py` currently passes (`1871 passed in 1.50s`); and
   - `bash -lc "! rg -n '^[A-Z0-9_]+ = published_fixture_bundle_by_manifest_id\\($' tests/python/test_module_workflow_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py"` currently fails exactly on the remaining module-scope rescan chains in those four suites.
+
+## Completion
+- 2026-03-21: Replaced the remaining module-scope `published_fixture_bundle_by_manifest_id(...)` rescan chains in `tests/python/test_module_workflow_parity_suite.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, and `tests/python/test_conditional_group_exists_parity_suite.py` with one manifest-id map per already-loaded bundle tuple via `published_fixture_bundles_by_manifest_id(...)`.
+- Preserved the existing bundle tuples, manifest ids, bundle ordering, generated-spec ordering, and deeper in-test one-off lookup sites that still intentionally use `published_fixture_bundle_by_manifest_id(...)`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` (`1774 passed, 1 skipped`)
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py` (`1871 passed`)
+  - `bash -lc "! rg -n '^[A-Z0-9_]+ = published_fixture_bundle_by_manifest_id\\($' tests/python/test_module_workflow_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py"` (passed with no matches)

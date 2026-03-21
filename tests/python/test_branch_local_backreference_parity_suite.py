@@ -35,6 +35,7 @@ from tests.python.fixture_parity_support import (
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
+    published_fixture_bundles_by_manifest_id,
     record_generated_match_failure,
     SupplementalMissCase,
     str_case_pattern,
@@ -104,47 +105,43 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(
     + select_correctness_fixture_paths(BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR),
     pattern_extractor=case_pattern,
 )
-NAMED_BACKREFERENCE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "named-backreference-workflows",
+FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
+    FIXTURE_BUNDLES
 )
-NUMBERED_BACKREFERENCE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "numbered-backreference-workflows",
-)
+NAMED_BACKREFERENCE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "named-backreference-workflows"
+]
+NUMBERED_BACKREFERENCE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "numbered-backreference-workflows"
+]
 WHOLE_MANIFEST_BACKREFERENCE_BUNDLES = (
     NAMED_BACKREFERENCE_BUNDLE,
     NUMBERED_BACKREFERENCE_BUNDLE,
 )
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "quantified-alternation-branch-local-backreference-workflows",
-    )
+    FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "quantified-alternation-branch-local-backreference-workflows"
+    ]
 )
 QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "quantified-nested-group-alternation-branch-local-backreference-workflows",
-    )
+    FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "quantified-nested-group-alternation-branch-local-backreference-workflows"
+    ]
 )
 NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
-    )
+    FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows"
+    ]
 )
 NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
-    )
+    FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows"
+    ]
 )
 NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
-    )
+    FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows"
+    ]
 )
 GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
     GeneratedQuantifiedBranchLocalParitySpec(

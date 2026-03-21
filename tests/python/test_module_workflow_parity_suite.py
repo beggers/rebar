@@ -49,7 +49,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_published_fixture_bundles,
-    published_fixture_bundle_by_manifest_id,
+    published_fixture_bundles_by_manifest_id,
 )
 
 MATURIN = shutil.which("maturin")
@@ -186,14 +186,15 @@ MODULE_WORKFLOW_SURFACE_BUNDLES = load_published_fixture_bundles(
 assert {bundle.manifest.path for bundle in MODULE_WORKFLOW_SURFACE_BUNDLES} == set(
     MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
 )
-MODULE_WORKFLOW_BUNDLE = published_fixture_bundle_by_manifest_id(
-    MODULE_WORKFLOW_SURFACE_BUNDLES,
-    MODULE_WORKFLOW_MANIFEST_ID,
+MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
+    MODULE_WORKFLOW_SURFACE_BUNDLES
 )
-MATCH_BEHAVIOR_BUNDLE = published_fixture_bundle_by_manifest_id(
-    MODULE_WORKFLOW_SURFACE_BUNDLES,
-    MATCH_BEHAVIOR_MANIFEST_ID,
-)
+MODULE_WORKFLOW_BUNDLE = MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID[
+    MODULE_WORKFLOW_MANIFEST_ID
+]
+MATCH_BEHAVIOR_BUNDLE = MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID[
+    MATCH_BEHAVIOR_MANIFEST_ID
+]
 MODULE_WORKFLOW_FIXTURE_PATH = MODULE_WORKFLOW_BUNDLE.manifest.path
 MATCH_BEHAVIOR_FIXTURE_PATH = MATCH_BEHAVIOR_BUNDLE.manifest.path
 
@@ -423,18 +424,16 @@ PUBLIC_SURFACE_BUNDLES = load_published_fixture_bundles(
     PUBLIC_SURFACE_FIXTURE_PATHS,
     pattern_extractor=_public_surface_case_contract_token,
 )
-PUBLIC_API_BUNDLE = published_fixture_bundle_by_manifest_id(
-    PUBLIC_SURFACE_BUNDLES,
-    "public-api-surface",
+PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
+    PUBLIC_SURFACE_BUNDLES
 )
-EXPORTED_SYMBOL_BUNDLE = published_fixture_bundle_by_manifest_id(
-    PUBLIC_SURFACE_BUNDLES,
-    "exported-symbol-surface",
-)
-PATTERN_OBJECT_BUNDLE = published_fixture_bundle_by_manifest_id(
-    PUBLIC_SURFACE_BUNDLES,
-    "pattern-object-surface",
-)
+PUBLIC_API_BUNDLE = PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID["public-api-surface"]
+EXPORTED_SYMBOL_BUNDLE = PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID[
+    "exported-symbol-surface"
+]
+PATTERN_OBJECT_BUNDLE = PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID[
+    "pattern-object-surface"
+]
 PUBLIC_HELPER_CASES = fixture_cases_for_operation((PUBLIC_API_BUNDLE,), "module_has_attr")
 PUBLIC_MODULE_CALL_CASES = fixture_cases_for_operation((PUBLIC_API_BUNDLE,), "module_call")
 EXPORTED_METADATA_CASES = fixture_cases_for_operation(
