@@ -1,8 +1,9 @@
 # RBR-0843: Collapse callable replacement pytest-param sidecars onto live specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the detached pytest-param tuple sidecars from `tests/python/test_callable_replacement_parity_suite.py` so `CALLABLE_MANIFEST_SPECS` and `CALLABLE_NEAR_MISS_CASE_SPECS` remain the sole canonical owners for callable-replacement manifest ordering and near-miss case ordering inside this parity owner.
@@ -77,3 +78,9 @@ PY`
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because those mirrored param tables still exist; and
   - the import probe in Acceptance already passes (`ok`), showing the live spec tuples already carry the ordering needed to delete the extra pytest-param layer without changing behavior.
 - This stays on the same bounded simplification track as `RBR-0839` and `RBR-0841`: those tasks collapsed mirrored follow-on case and pytest-param sidecars in neighboring parity owners, and the callable-replacement owner still carries the same kind of detached param layer on top of its live spec tables.
+
+## Completion
+- 2026-03-21: Removed the mirrored `CALLABLE_MANIFEST_PARAMS` and `CALLABLE_NEAR_MISS_CASES` tuples from `tests/python/test_callable_replacement_parity_suite.py`.
+- Rewired `test_callable_replacement_cases_stay_aligned_with_published_fixture` and `test_callable_replacement_near_miss_paths_leave_input_unchanged` to parametrize directly from `CALLABLE_MANIFEST_SPECS` and `CALLABLE_NEAR_MISS_CASE_SPECS` with ids derived from those live spec tuples, preserving the existing spec-owned order.
+- Left callable manifest ownership, near-miss ownership, pending-`rebar` tracking, compile-pattern pools, mixed-text routing, and selector/case semantics unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py` (`2747 passed in 2.22s`), `bash -lc "! rg -n '^(CALLABLE_MANIFEST_PARAMS|CALLABLE_NEAR_MISS_CASES) =' tests/python/test_callable_replacement_parity_suite.py"` (passes with no matches), and the task-local import/order probe from Acceptance (`ok`).

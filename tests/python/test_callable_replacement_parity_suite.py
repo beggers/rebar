@@ -376,9 +376,6 @@ CALLABLE_MANIFEST_SPECS_BY_ID = {
 }
 if len(CALLABLE_MANIFEST_SPECS_BY_ID) != len(CALLABLE_MANIFEST_SPECS):
     raise AssertionError("duplicate callable manifest ids in CALLABLE_MANIFEST_SPECS")
-CALLABLE_MANIFEST_PARAMS = tuple(
-    pytest.param(spec, id=spec.manifest_id) for spec in CALLABLE_MANIFEST_SPECS
-)
 CALLABLE_NEAR_MISS_CASE_SPECS = (
     CallableNearMissCase(
         id="module-numbered-sub-no-match-present-branch-rejects-no-arm",
@@ -788,9 +785,6 @@ CALLABLE_NEAR_MISS_CASE_SPECS = (
         count=1,
         expected_result=(b"zzabbdzz", 0),
     ),
-)
-CALLABLE_NEAR_MISS_CASES = tuple(
-    pytest.param(case, id=case.id) for case in CALLABLE_NEAR_MISS_CASE_SPECS
 )
 
 
@@ -1975,7 +1969,11 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     assert case.source_kwargs == {}
 
 
-@pytest.mark.parametrize("manifest_spec", CALLABLE_MANIFEST_PARAMS)
+@pytest.mark.parametrize(
+    "manifest_spec",
+    CALLABLE_MANIFEST_SPECS,
+    ids=lambda spec: spec.manifest_id,
+)
 def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     manifest_spec: CallableManifestSpec,
 ) -> None:
@@ -2270,7 +2268,11 @@ def test_bytes_callable_replacement_no_match_paths_leave_input_unchanged(
     )
 
 
-@pytest.mark.parametrize("near_miss_case", CALLABLE_NEAR_MISS_CASES)
+@pytest.mark.parametrize(
+    "near_miss_case",
+    CALLABLE_NEAR_MISS_CASE_SPECS,
+    ids=lambda case: case.id,
+)
 def test_callable_replacement_near_miss_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
     near_miss_case: CallableNearMissCase,
