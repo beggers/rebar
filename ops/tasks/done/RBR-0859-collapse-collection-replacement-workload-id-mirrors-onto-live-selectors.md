@@ -1,6 +1,6 @@
 # RBR-0859: Collapse collection-replacement workload-id mirrors onto live selectors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -132,3 +132,11 @@ PY`
   - `RBR-0851` already collapsed counted-repeat selected-case-id sidecars onto live bundles;
   - `RBR-0853` already collapsed module-workflow raw keyword-error sidecars onto live fixture categories; and
   - `RBR-0857` already removed the remaining replacement-suite case-id mirrors from the fixture-backed parity owner.
+
+## Completion
+- Replaced the collection-replacement positional-indexlike and keyword workload-id mirrors with live structural selectors in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Updated the three measured-row tests to derive their ordered workload ids from the manifest's live workloads through the shared selectors plus operation-prefix filtering.
+- Verified with:
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement and (indexlike or keyword)'`
+  - `bash -lc "! rg -n '^(COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS|COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS) =' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the task-local selector-order probe from the acceptance criteria (`ok`)

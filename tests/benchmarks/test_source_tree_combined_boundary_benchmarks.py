@@ -2996,6 +2996,24 @@ def select_source_tree_combined_slice_rows(
         if _workload_matches_source_tree_combined_slice(workload, expectation)
     ]
 
+
+def _manifest_workload_ids_matching(
+    manifest: BenchmarkManifest,
+    include_workload: Callable[[Workload], bool],
+    *,
+    operation_prefix: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for workload in manifest.workloads
+        if include_workload(workload)
+        and (
+            operation_prefix is None
+            or workload.operation.startswith(operation_prefix)
+        )
+    )
+
+
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
 
 
@@ -3235,17 +3253,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
         workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_collection_replacement_positional_indexlike_workload,
+        )
+        self.assertEqual(len(expected_measured_workload_ids), 6)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
-            (
-                "module-split-maxsplit-indexlike-positional-purged-bytes",
-                "module-sub-count-indexlike-positional-warm-str",
-                "module-subn-count-indexlike-positional-purged-bytes",
-                "pattern-split-maxsplit-indexlike-positional-warm-str",
-                "pattern-sub-count-indexlike-positional-purged-bytes",
-                "pattern-subn-count-indexlike-positional-warm-str",
-            ),
+            expected_measured_workload_ids,
             workload_count,
             expected_total_workload_count=workload_count,
         )
@@ -3255,20 +3271,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
         workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_collection_replacement_keyword_workload,
+            operation_prefix="pattern.",
+        )
+        self.assertEqual(len(expected_measured_workload_ids), 9)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
-            (
-                "pattern-split-maxsplit-keyword-warm-str",
-                "pattern-split-maxsplit-bool-keyword-warm-str",
-                "pattern-split-maxsplit-indexlike-keyword-warm-str",
-                "pattern-sub-count-keyword-purged-bytes",
-                "pattern-sub-count-bool-keyword-purged-bytes",
-                "pattern-sub-count-indexlike-keyword-purged-bytes",
-                "pattern-subn-count-keyword-warm-str",
-                "pattern-subn-count-bool-keyword-warm-str",
-                "pattern-subn-count-indexlike-keyword-warm-str",
-            ),
+            expected_measured_workload_ids,
             workload_count,
             expected_total_workload_count=workload_count,
         )
@@ -3278,38 +3290,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
         workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_collection_replacement_keyword_workload,
+            operation_prefix="module.",
+        )
+        self.assertEqual(len(expected_measured_workload_ids), 27)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
-            (
-                "module-split-maxsplit-keyword-purged-bytes",
-                "module-split-maxsplit-bool-keyword-purged-bytes",
-                "module-split-maxsplit-indexlike-keyword-purged-bytes",
-                "module-split-maxsplit-keyword-purged-str-compiled-pattern",
-                "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
-                "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
-                "module-split-duplicate-maxsplit-keyword-purged-str",
-                "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
-                "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
-                "module-sub-count-keyword-warm-str",
-                "module-sub-count-bool-keyword-warm-str",
-                "module-sub-count-indexlike-keyword-warm-str",
-                "module-sub-count-keyword-warm-str-compiled-pattern",
-                "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
-                "module-sub-count-bool-keyword-warm-str-compiled-pattern",
-                "module-sub-duplicate-count-keyword-warm-str",
-                "module-sub-unexpected-keyword-purged-str",
-                "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
-                "module-sub-unexpected-keyword-purged-str-compiled-pattern",
-                "module-subn-count-keyword-purged-bytes",
-                "module-subn-count-bool-keyword-purged-bytes",
-                "module-subn-count-indexlike-keyword-purged-bytes",
-                "module-subn-count-keyword-purged-bytes-compiled-pattern",
-                "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
-                "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
-                "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
-                "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
-            ),
+            expected_measured_workload_ids,
             workload_count,
             expected_total_workload_count=workload_count,
         )
@@ -5918,16 +5908,57 @@ def _is_compile_proxy_workload(workload: Any) -> bool:
     return workload.operation in {"compile", "module.compile"}
 
 
-COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS = frozenset(
-    {
-        "module-split-maxsplit-indexlike-positional-purged-bytes",
-        "module-sub-count-indexlike-positional-warm-str",
-        "module-subn-count-indexlike-positional-purged-bytes",
-        "pattern-split-maxsplit-indexlike-positional-warm-str",
-        "pattern-sub-count-indexlike-positional-purged-bytes",
-        "pattern-subn-count-indexlike-positional-warm-str",
-    }
+_COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
+    {"module.split", "pattern.split"}
 )
+_COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
+    {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+)
+
+
+def _is_encoded_indexlike_payload(value: object) -> bool:
+    return (
+        isinstance(value, dict)
+        and value.get("type") == "indexlike"
+        and isinstance(value.get("value"), int)
+        and not isinstance(value.get("value"), bool)
+    )
+
+
+def _collection_replacement_keyword_parameter_name(
+    workload: Any,
+) -> str | None:
+    if workload.operation in _COLLECTION_REPLACEMENT_SPLIT_OPERATIONS:
+        return "maxsplit"
+    if workload.operation in _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS:
+        return "count"
+    return None
+
+
+def _collection_replacement_parameter_payload(
+    workload: Any,
+) -> object | None:
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if keyword_parameter == "maxsplit":
+        return workload.maxsplit
+    if keyword_parameter == "count":
+        return workload.count
+    return None
+
+
+def _collection_replacement_has_expected_unexpected_keyword_error(
+    workload: Any,
+) -> bool:
+    if tuple(workload.kwargs) != ("missing",):
+        return False
+    expected_exception = workload.expected_exception
+    if expected_exception is None or expected_exception.get("type") != "TypeError":
+        return False
+    message_substring = expected_exception.get("message_substring")
+    return (
+        isinstance(message_substring, str)
+        and "unexpected keyword argument 'missing'" in message_substring
+    )
 
 
 def _module_workflow_positional_args_signature(
@@ -6033,7 +6064,7 @@ def _collection_replacement_positional_indexlike_workload_args(
 def _collection_replacement_positional_indexlike_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if workload.workload_id not in COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS:
+    if not _is_collection_replacement_positional_indexlike_workload(workload):
         raise AssertionError(
             "unexpected collection/replacement positional-indexlike workload "
             f"{workload.workload_id!r}"
@@ -6049,49 +6080,13 @@ def _collection_replacement_positional_indexlike_workload_signature(
 
 
 def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> bool:
-    return workload.workload_id in COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS
-
-
-COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
-    {
-        "module-split-maxsplit-keyword-purged-bytes",
-        "module-split-maxsplit-keyword-purged-str-compiled-pattern",
-        "module-split-maxsplit-bool-keyword-purged-bytes",
-        "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
-        "module-split-maxsplit-indexlike-keyword-purged-bytes",
-        "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
-        "module-split-duplicate-maxsplit-keyword-purged-str",
-        "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
-        "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
-        "module-sub-count-keyword-warm-str",
-        "module-sub-count-keyword-warm-str-compiled-pattern",
-        "module-sub-count-bool-keyword-warm-str",
-        "module-sub-count-bool-keyword-warm-str-compiled-pattern",
-        "module-sub-count-indexlike-keyword-warm-str",
-        "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
-        "module-sub-duplicate-count-keyword-warm-str",
-        "module-sub-unexpected-keyword-purged-str",
-        "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
-        "module-sub-unexpected-keyword-purged-str-compiled-pattern",
-        "module-subn-count-keyword-purged-bytes",
-        "module-subn-count-keyword-purged-bytes-compiled-pattern",
-        "module-subn-count-bool-keyword-purged-bytes",
-        "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
-        "module-subn-count-indexlike-keyword-purged-bytes",
-        "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
-        "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
-        "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
-        "pattern-split-maxsplit-keyword-warm-str",
-        "pattern-split-maxsplit-bool-keyword-warm-str",
-        "pattern-split-maxsplit-indexlike-keyword-warm-str",
-        "pattern-sub-count-keyword-purged-bytes",
-        "pattern-sub-count-bool-keyword-purged-bytes",
-        "pattern-sub-count-indexlike-keyword-purged-bytes",
-        "pattern-subn-count-keyword-warm-str",
-        "pattern-subn-count-bool-keyword-warm-str",
-        "pattern-subn-count-indexlike-keyword-warm-str",
-    }
-)
+    return (
+        not workload.kwargs
+        and workload.expected_exception is None
+        and _is_encoded_indexlike_payload(
+            _collection_replacement_parameter_payload(workload)
+        )
+    )
 
 
 def _collection_replacement_duplicate_keyword_field(
@@ -6103,25 +6098,12 @@ def _collection_replacement_duplicate_keyword_field(
     message_substring = expected_exception.get("message_substring")
     if not isinstance(message_substring, str):
         return None
-    if (
-        workload.operation == "module.split"
-        and "maxsplit" in workload.kwargs
-        and "multiple values for argument 'maxsplit'" in message_substring
-    ):
-        return "maxsplit"
-    if (
-        workload.operation == "module.sub"
-        and "count" in workload.kwargs
-        and "multiple values for argument 'count'" in message_substring
-    ):
-        return "count"
-    if (
-        workload.operation == "module.subn"
-        and "count" in workload.kwargs
-        and "multiple values for argument 'count'" in message_substring
-    ):
-        return "count"
-    return None
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if keyword_parameter is None or keyword_parameter not in workload.kwargs:
+        return None
+    if f"multiple values for argument '{keyword_parameter}'" not in message_substring:
+        return None
+    return keyword_parameter
 
 
 def _collection_replacement_keyword_correctness_case_signature(
@@ -6178,7 +6160,7 @@ def _collection_replacement_keyword_workload_args(
 def _collection_replacement_keyword_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if workload.workload_id not in COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS:
+    if not _is_collection_replacement_keyword_workload(workload):
         raise AssertionError(
             "unexpected collection/replacement keyword workload "
             f"{workload.workload_id!r}"
@@ -6197,7 +6179,15 @@ def _collection_replacement_keyword_workload_signature(
 
 
 def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
-    return workload.workload_id in COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if keyword_parameter is None or not workload.kwargs:
+        return False
+    keyword_names = tuple(workload.kwargs)
+    if len(keyword_names) != 1:
+        return False
+    if keyword_names[0] == keyword_parameter:
+        return True
+    return _collection_replacement_has_expected_unexpected_keyword_error(workload)
 
 
 MODULE_WORKFLOW_KEYWORD_FLAGS_WORKLOAD_IDS = frozenset(
