@@ -12,13 +12,10 @@ from rebar_harness.correctness import (
     FixtureManifest,
     load_fixture_manifest,
 )
+from tests.conftest import duplicate_string_ids
 
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
-
-
-def _duplicate_string_ids(ids: tuple[str, ...]) -> tuple[str, ...]:
-    return tuple(case_id for case_id, count in Counter(ids).items() if count > 1)
 
 
 class RecordingNativeBoundary:
@@ -448,7 +445,7 @@ def ordered_cases_from_owner_bundle(
     *,
     error_label: str,
 ) -> tuple[FixtureCase, ...]:
-    duplicate_requested_case_ids = _duplicate_string_ids(case_ids)
+    duplicate_requested_case_ids = duplicate_string_ids(case_ids)
     if duplicate_requested_case_ids:
         raise AssertionError(
             f"{error_label} contain duplicate requested case ids: "
@@ -456,7 +453,7 @@ def ordered_cases_from_owner_bundle(
         )
 
     published_cases = tuple(bundle.manifest.cases)
-    duplicate_published_case_ids = _duplicate_string_ids(
+    duplicate_published_case_ids = duplicate_string_ids(
         tuple(case.case_id for case in published_cases)
     )
     if duplicate_published_case_ids:
@@ -487,7 +484,7 @@ def assert_fixture_bundle_contract(
     if expected_fixture_path is not None:
         assert bundle.manifest.path == expected_fixture_path
     assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    duplicate_case_ids = _duplicate_string_ids(tuple(case.case_id for case in bundle.cases))
+    duplicate_case_ids = duplicate_string_ids(tuple(case.case_id for case in bundle.cases))
     assert not duplicate_case_ids, (
         f"{bundle.expected_manifest_id} bundle contains duplicate case ids: "
         f"{duplicate_case_ids}"
@@ -628,14 +625,14 @@ def assert_fixture_bundle_tracks_published_case_frontier(
 ) -> None:
     ordered_selected_case_ids = tuple(selected_case_ids)
     ordered_expected_uncovered_case_ids = tuple(expected_uncovered_case_ids)
-    duplicate_selected_case_ids = _duplicate_string_ids(ordered_selected_case_ids)
+    duplicate_selected_case_ids = duplicate_string_ids(ordered_selected_case_ids)
     if duplicate_selected_case_ids:
         raise AssertionError(
             f"{bundle.expected_manifest_id} selected_case_ids contain duplicate ids: "
             f"{duplicate_selected_case_ids}"
         )
 
-    duplicate_uncovered_case_ids = _duplicate_string_ids(
+    duplicate_uncovered_case_ids = duplicate_string_ids(
         ordered_expected_uncovered_case_ids
     )
     if duplicate_uncovered_case_ids:
@@ -699,7 +696,7 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
         raise AssertionError(
             f"{coverage_label} selected_case_ids must not be empty"
         )
-    duplicate_selected_case_ids = _duplicate_string_ids(ordered_selected_case_ids)
+    duplicate_selected_case_ids = duplicate_string_ids(ordered_selected_case_ids)
     if duplicate_selected_case_ids:
         raise AssertionError(
             f"{coverage_label} selected_case_ids contain duplicate ids: "

@@ -22,6 +22,10 @@ def duplicate_items(counter: Counter[str]) -> list[str]:
     return sorted(item for item, count in counter.items() if count > 1)
 
 
+def duplicate_string_ids(items: Iterable[str]) -> tuple[str, ...]:
+    return tuple(duplicate_items(Counter(items)))
+
+
 def run_harness_cli(
     module_name: str,
     cli_args: Iterable[str],

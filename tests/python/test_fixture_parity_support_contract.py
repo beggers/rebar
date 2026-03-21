@@ -24,7 +24,7 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
-from tests.conftest import duplicate_items
+from tests.conftest import duplicate_items, duplicate_string_ids
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -268,12 +268,6 @@ def _write_bundle_loader_contract_duplicate_fixture_module(
         }}
         """,
     )
-
-
-def _duplicate_string_ids(ids: tuple[str, ...]) -> tuple[str, ...]:
-    return tuple(duplicate_items(Counter(ids)))
-
-
 def _load_published_fixture_bundle(
     fixture_path: pathlib.Path,
     *,
@@ -296,7 +290,7 @@ def _build_selected_fixture_bundle(
 ) -> FixtureBundle:
     manifest = load_fixture_manifest(fixture_path)
     loaded_cases = tuple(manifest.cases)
-    duplicate_loaded_case_ids = _duplicate_string_ids(
+    duplicate_loaded_case_ids = duplicate_string_ids(
         tuple(case.case_id for case in loaded_cases)
     )
     if duplicate_loaded_case_ids:
@@ -310,7 +304,7 @@ def _build_selected_fixture_bundle(
         if not selected_case_ids:
             raise ValueError(f"{fixture_path.name} selected_case_ids must not be empty")
 
-        duplicate_case_ids = _duplicate_string_ids(selected_case_ids)
+        duplicate_case_ids = duplicate_string_ids(selected_case_ids)
         if duplicate_case_ids:
             raise ValueError(
                 f"{fixture_path.name} selected_case_ids contains duplicate ids: "
