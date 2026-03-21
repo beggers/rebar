@@ -1,8 +1,9 @@
 # RBR-0882: Catch up the compiled-pattern module-compile integer-zero named-group boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Extend the published Python-path `module_boundary.py` benchmark surface with the first adjacent compiled-pattern-first-argument explicit `flags=0` named-group `compile()` success pair that the shared `module-workflow-surface` correctness path already publishes, while keeping this catch-up on the existing `module_boundary.py` manifest and widening benchmark-path support only enough to time the bounded named-group integer-zero `module.compile()` keyword pair.
@@ -68,3 +69,9 @@ Created: 2026-03-21
   - `benchmarks/workloads/module_boundary.py` and `reports/benchmarks/latest.py` currently publish no compiled-pattern named-group explicit integer-zero `module.compile` rows on that owner route; and
   - `python/rebar_harness/benchmarks.py` currently limits compiled-pattern `module.compile` benchmark validation to the bounded literal success and keyword carriers plus the adjacent default named-group success pair that `RBR-0880` introduces, so the benchmark publication still lacks this named-group explicit integer-zero pair even though the runtime behavior already exists.
 - The acceptance counts above are intentionally written against the immediate post-`RBR-0880` state of `862` total / `862` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 854` and `REPORT["manifests"]["module-boundary"]` at `34` selected / `34` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Widened `python/rebar_harness/benchmarks.py` only enough for the bounded compiled-pattern-first-argument named-group `module.compile(..., flags=0)` str/bytes success pair on the shared `module-boundary` route, while keeping named-group `flags=False`, named-group `IGNORECASE`, `NOFLAG`, and broader helper-family churn out of scope.
+- Added `module-compile-flags-int-zero-warm-str-compiled-pattern-named-group` and `module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group` to `benchmarks/workloads/module_boundary.py`, and extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the matching slice coverage, manifest round-trip, correctness-anchor, callback/precompile, bounded validation, measured-row, and full-suite summary expectations on the existing source-tree contract path.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0882-compiled-pattern-module-compile-int-zero-named-group-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- Confirmed from the tracked `reports/benchmarks/latest.py` diff in this run that `REPORT["manifests"]["module-boundary"]` is now `36` selected / `36` measured / `0` known gaps, that both new workload ids publish `status == "measured"`, and that the combined summary is now `864` total / `864` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 856` and `REPORT["summary"]["regression_workloads"] == 8`.

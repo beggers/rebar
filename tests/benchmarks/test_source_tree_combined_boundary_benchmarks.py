@@ -1361,6 +1361,8 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "compiled-pattern-first-argument",
         ),
         required_categories=("compile", "named-group", "compiled-pattern"),
+        excluded_syntax_features=("keyword-flags",),
+        excluded_categories=("keyword", "flags"),
         expected_workload_ids=(
             "module-compile-named-group-warm-str-compiled-pattern",
             "module-compile-named-group-purged-bytes-compiled-pattern",
@@ -1369,6 +1371,34 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         expected_operations={"module.compile"},
         expected_haystacks=set(),
         required_row_categories=("compile", "named-group", "compiled-pattern"),
+        expected_status="measured",
+    ),
+    _combined_slice_expectation(
+        manifest_id="module-boundary",
+        slice_id="compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
+        required_syntax_features=(
+            "module-compile",
+            "grouping-forms",
+            "named-groups",
+            "compiled-pattern-first-argument",
+            "keyword-flags",
+        ),
+        required_categories=("compile", "named-group", "compiled-pattern", "keyword", "flags"),
+        excluded_categories=("bool", "ignorecase", "exception"),
+        expected_workload_ids=(
+            "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group",
+            "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group",
+        ),
+        expected_patterns={"(?P<word>abc)"},
+        expected_operations={"module.compile"},
+        expected_haystacks=set(),
+        required_row_categories=(
+            "compile",
+            "named-group",
+            "compiled-pattern",
+            "keyword",
+            "flags",
+        ),
         expected_status="measured",
     ),
     _combined_slice_expectation(
@@ -3593,6 +3623,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 ),
             ),
             (
+                "int-zero-named-group",
+                (
+                    _is_module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload
+                ),
+                (
+                    "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group",
+                    "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group",
+                ),
+            ),
+            (
                 "bool-false",
                 _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload,
                 (
@@ -5052,11 +5092,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 862,
-                "module_workloads": 854,
+                "measured_workloads": 864,
+                "module_workloads": 856,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 862,
+                "total_workloads": 864,
             },
         )
 
@@ -6842,6 +6882,10 @@ _COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE = (
 _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE = (
     ("flags", "int", int(re.IGNORECASE)),
 )
+_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS = ("abc",)
+_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS = (
+    "(?P<word>abc)",
+)
 _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
     "type": "ValueError",
     "message_substring": "cannot process flags argument with a compiled pattern",
@@ -6862,12 +6906,15 @@ def _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature
     case: Any,
     *,
     keyword_signature: tuple[tuple[str, str, object], ...],
+    allowed_patterns: tuple[str, ...],
 ) -> tuple[Any, ...] | None:
     if case.operation != "module_call" or not case.use_compiled_pattern:
         return None
     if case.helper != "compile" or case.args:
         return None
     if _module_workflow_keyword_kwargs_signature(case.kwargs) != keyword_signature:
+        return None
+    if case.pattern not in allowed_patterns:
         return None
     case_text_model = case.text_model or "str"
     return (
@@ -6886,11 +6933,13 @@ def _module_workflow_compiled_pattern_compile_keyword_workload_signature(
     *,
     keyword_label: str,
     keyword_signature: tuple[tuple[str, str, object], ...],
+    allowed_patterns: tuple[str, ...],
     expected_exception: dict[str, str] | None = None,
 ) -> tuple[Any, ...]:
     if not _is_module_workflow_compiled_pattern_compile_keyword_workload(
         workload,
         keyword_signature=keyword_signature,
+        allowed_patterns=allowed_patterns,
         expected_exception=expected_exception,
     ):
         raise AssertionError(
@@ -6912,6 +6961,7 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
     workload: Any,
     *,
     keyword_signature: tuple[tuple[str, str, object], ...],
+    allowed_patterns: tuple[str, ...],
     expected_exception: dict[str, str] | None = None,
 ) -> bool:
     return (
@@ -6921,7 +6971,7 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
             workload,
             expected_exception=expected_exception,
         )
-        and workload.pattern == "abc"
+        and workload.pattern in allowed_patterns
         and workload.flags == 0
         and _module_workflow_keyword_kwargs_signature(workload.kwargs)
         == keyword_signature
@@ -6934,6 +6984,7 @@ def _module_workflow_compiled_pattern_compile_int_zero_keyword_correctness_case_
     return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
         case,
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
     )
 
 
@@ -6944,6 +6995,7 @@ def _module_workflow_compiled_pattern_compile_int_zero_keyword_workload_signatur
         workload,
         keyword_label="int-zero",
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
     )
 
 
@@ -6953,6 +7005,38 @@ def _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload(
     return _is_module_workflow_compiled_pattern_compile_keyword_workload(
         workload,
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+        case,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+        workload,
+        keyword_label="int-zero-named-group",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+    )
+
+
+def _is_module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload(
+    workload: Any,
+) -> bool:
+    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+        workload,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
     )
 
 
@@ -6962,6 +7046,7 @@ def _module_workflow_compiled_pattern_compile_bool_false_keyword_correctness_cas
     return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
         case,
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
     )
 
 
@@ -6972,6 +7057,7 @@ def _module_workflow_compiled_pattern_compile_bool_false_keyword_workload_signat
         workload,
         keyword_label="bool-false",
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
     )
 
 
@@ -6981,6 +7067,7 @@ def _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload(
     return _is_module_workflow_compiled_pattern_compile_keyword_workload(
         workload,
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
     )
 
 
@@ -6990,6 +7077,7 @@ def _module_workflow_compiled_pattern_compile_ignorecase_keyword_correctness_cas
     return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
         case,
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
     )
 
 
@@ -7000,6 +7088,7 @@ def _module_workflow_compiled_pattern_compile_ignorecase_keyword_workload_signat
         workload,
         keyword_label="ignorecase",
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
         expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
     )
 
@@ -7010,6 +7099,7 @@ def _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload(
     return _is_module_workflow_compiled_pattern_compile_keyword_workload(
         workload,
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
         expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
     )
 
@@ -8221,6 +8311,31 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         workload_signature=(
             _module_workflow_compiled_pattern_compile_int_zero_keyword_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group": (
+                    "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
+                ),
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group": (
+                    "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
+                ),
+            },
+        ),
+        include_workload=(
+            _is_module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload
+        ),
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_correctness_case_signature
+        ),
+        workload_signature=(
+            _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload_signature
         ),
         run_callback_result_parity=True,
     ),
@@ -13017,6 +13132,7 @@ class CompiledPatternModuleCompileKeywordCase:
 class CompiledPatternModuleCompileKeywordCaseGroup:
     group_id: str
     keyword_signature: tuple[tuple[str, str, object], ...]
+    allowed_patterns: tuple[str, ...]
     cases: tuple[CompiledPatternModuleCompileKeywordCase, ...]
     contract_filename: str
     anchor_contract_filename: str
@@ -13027,6 +13143,7 @@ class CompiledPatternModuleCompileKeywordCaseGroup:
         return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
             case,
             keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
         )
 
     def workload_signature(self, workload: Any) -> tuple[Any, ...]:
@@ -13034,6 +13151,7 @@ class CompiledPatternModuleCompileKeywordCaseGroup:
             workload,
             keyword_label=self.group_id,
             keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
             expected_exception=self.expected_exception,
         )
 
@@ -13041,6 +13159,7 @@ class CompiledPatternModuleCompileKeywordCaseGroup:
         return _is_module_workflow_compiled_pattern_compile_keyword_workload(
             workload,
             keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
             expected_exception=self.expected_exception,
         )
 
@@ -13057,6 +13176,23 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES = (
         cache_mode="purged",
         text_model="bytes",
         kwargs_payload={"flags": 0},
+    ),
+)
+
+COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_CASES = (
+    CompiledPatternModuleCompileKeywordCase(
+        id="module-compile-flags-int-zero-warm-str-compiled-pattern-named-group",
+        cache_mode="warm",
+        text_model="str",
+        kwargs_payload={"flags": 0},
+        pattern="(?P<word>abc)",
+    ),
+    CompiledPatternModuleCompileKeywordCase(
+        id="module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group",
+        cache_mode="purged",
+        text_model="bytes",
+        kwargs_payload={"flags": 0},
+        pattern="(?P<word>abc)",
     ),
 )
 
@@ -13094,6 +13230,7 @@ COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES = (
 
 COMPILED_PATTERN_MODULE_COMPILE_ALL_KEYWORD_CASES = (
     *COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES,
+    *COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_CASES,
     *COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES,
     *COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES,
 )
@@ -13102,6 +13239,7 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
     CompiledPatternModuleCompileKeywordCaseGroup(
         group_id="int-zero",
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
         cases=COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES,
         contract_filename=(
             "python_benchmark_compiled_pattern_module_compile_keyword_contract.py"
@@ -13121,8 +13259,31 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
         ),
     ),
     CompiledPatternModuleCompileKeywordCaseGroup(
+        group_id="int-zero-named-group",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        cases=COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_CASES,
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
+            ),
+        ),
+    ),
+    CompiledPatternModuleCompileKeywordCaseGroup(
         group_id="bool-false",
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
         cases=COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES,
         contract_filename=(
             "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_contract.py"
@@ -13144,6 +13305,7 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
     CompiledPatternModuleCompileKeywordCaseGroup(
         group_id="ignorecase",
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
         cases=COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES,
         contract_filename=(
             "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_contract.py"
@@ -16093,7 +16255,7 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
         ),
         pytest.param(
             "module-boundary",
-            {"flags": 0},
+            {"flags": False},
             None,
             "(?P<word>abc)",
             0,
@@ -16101,9 +16263,12 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal keyword carriers"
+                "the bounded `abc` str/bytes literal keyword carriers, "
+                "the exact same-text-model `(?P<word>abc)` str/bytes "
+                "`flags=0` named-group keyword carriers, and "
+                "`flags=IGNORECASE` rejection pairs"
             ),
-            id="named-group-keyword-scope",
+            id="named-group-bool-false-keyword-scope",
         ),
         pytest.param(
             "module-boundary",

@@ -656,9 +656,15 @@ def validate_compiled_pattern_workload(
 
     if operation == "module.compile":
         keyword_flags = kwargs.get("flags") if kwargs else None
+        supports_int_zero_keyword = (
+            type(keyword_flags) is int and keyword_flags == 0
+        )
+        supports_bool_false_keyword = (
+            type(keyword_flags) is bool and keyword_flags is False
+        )
         supports_zero_or_false_keyword = (
-            (type(keyword_flags) is int and keyword_flags == 0)
-            or (type(keyword_flags) is bool and keyword_flags is False)
+            supports_int_zero_keyword
+            or supports_bool_false_keyword
         )
         supports_ignorecase_rejection = (
             type(keyword_flags) is int
@@ -699,15 +705,32 @@ def validate_compiled_pattern_workload(
                 "the bounded `flags=IGNORECASE` rejection rows"
             )
         if kwargs:
+            supports_literal_keyword_success = (
+                pattern == _COMPILED_PATTERN_MODULE_COMPILE_LITERAL_PATTERN
+                and flags == 0
+                and text_model in {"str", "bytes"}
+                and supports_zero_or_false_keyword
+                and expected_exception is None
+            )
+            supports_named_group_int_zero_keyword_success = (
+                pattern == _COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_PATTERN
+                and flags == 0
+                and text_model in {"str", "bytes"}
+                and supports_int_zero_keyword
+                and expected_exception is None
+            )
             if (
-                pattern != _COMPILED_PATTERN_MODULE_COMPILE_LITERAL_PATTERN
-                or flags != 0
-                or text_model not in {"str", "bytes"}
+                not supports_literal_keyword_success
+                and not supports_named_group_int_zero_keyword_success
+                and not supports_ignorecase_rejection
             ):
                 raise ValueError(
                     "benchmark compiled-pattern module-helper "
                     "module.compile workloads currently only support "
-                    "the bounded `abc` str/bytes literal keyword carriers"
+                    "the bounded `abc` str/bytes literal keyword carriers, "
+                    "the exact same-text-model `(?P<word>abc)` str/bytes "
+                    "`flags=0` named-group keyword carriers, and "
+                    "`flags=IGNORECASE` rejection pairs"
                 )
         elif (
             pattern
