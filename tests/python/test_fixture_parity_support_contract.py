@@ -26,7 +26,10 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
-from rebar_harness.scorecard_io import ordered_published_subset_filenames
+from rebar_harness.scorecard_io import (
+    declared_string_constants_by_suffix,
+    ordered_published_subset_filenames,
+)
 from tests.conftest import duplicate_items
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
@@ -71,19 +74,14 @@ class _NonCachingStdlibBackend:
         return re.compile(pattern, flags)
 
 
-def _declared_correctness_fixture_selectors() -> dict[str, str]:
-    return {
-        name: value
-        for name, value in vars(correctness).items()
-        if name.endswith("_FIXTURE_SELECTOR") and isinstance(value, str)
-    }
-
-
 def _declared_nondefault_correctness_fixture_selectors() -> tuple[str, ...]:
     return tuple(
         sorted(
             selector
-            for selector in _declared_correctness_fixture_selectors().values()
+            for selector in declared_string_constants_by_suffix(
+                correctness,
+                name_suffix="_FIXTURE_SELECTOR",
+            ).values()
             if selector != PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
         )
     )
@@ -690,7 +688,10 @@ def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
 
 
 def test_declared_correctness_fixture_selectors_match_registry_keys() -> None:
-    declared_selectors = _declared_correctness_fixture_selectors()
+    declared_selectors = declared_string_constants_by_suffix(
+        correctness,
+        name_suffix="_FIXTURE_SELECTOR",
+    )
 
     assert declared_selectors
     assert len(declared_selectors) == len(set(declared_selectors.values()))
@@ -700,7 +701,12 @@ def test_declared_correctness_fixture_selectors_match_registry_keys() -> None:
 
 
 def test_declared_nondefault_correctness_fixture_selectors_are_parametrized_once() -> None:
-    declared_nondefault_selectors = set(_declared_correctness_fixture_selectors().values())
+    declared_nondefault_selectors = set(
+        declared_string_constants_by_suffix(
+            correctness,
+            name_suffix="_FIXTURE_SELECTOR",
+        ).values()
+    )
     declared_nondefault_selectors.remove(PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR)
     expected_selectors = _declared_nondefault_correctness_fixture_selectors()
 

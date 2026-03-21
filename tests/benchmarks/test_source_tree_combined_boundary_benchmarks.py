@@ -38,6 +38,7 @@ from rebar_harness.benchmarks import (
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
+    declared_string_constants_by_suffix,
     ordered_published_subset_filenames,
 )
 from tests.conftest import REPO_ROOT, duplicate_items, run_harness_scorecard
@@ -68,12 +69,6 @@ CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS = (
 )
 
 
-def _declared_benchmark_manifest_selectors() -> dict[str, str]:
-    return {
-        name: value
-        for name, value in vars(benchmarks).items()
-        if name.endswith("_MANIFEST_SELECTOR") and isinstance(value, str)
-    }
 def _assert_benchmark_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],
@@ -8953,7 +8948,10 @@ def test_default_benchmark_published_full_suite_selector_covers_tracked_manifest
     "selector",
     tuple(
         selector
-        for selector in _declared_benchmark_manifest_selectors().values()
+        for selector in declared_string_constants_by_suffix(
+            benchmarks,
+            name_suffix="_MANIFEST_SELECTOR",
+        ).values()
         if selector != PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     ),
     ids=lambda selector: selector,
@@ -9021,13 +9019,17 @@ def test_benchmark_selector_subset_helper_keeps_benchmark_specific_missing_filen
 
 
 def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
-    declared_selectors = _declared_benchmark_manifest_selectors()
+    declared_selectors = declared_string_constants_by_suffix(
+        benchmarks,
+        name_suffix="_MANIFEST_SELECTOR",
+    )
 
     assert declared_selectors
     assert len(declared_selectors) == len(set(declared_selectors.values()))
     assert set(declared_selectors.values()) == set(
         benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR
     )
+
 
 def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
     manifests = published_benchmark_manifests()

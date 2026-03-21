@@ -7,6 +7,7 @@ import platform
 import pprint
 import sys
 from dataclasses import dataclass
+from types import ModuleType
 from typing import Any, Iterable, Sequence
 
 
@@ -47,6 +48,20 @@ def ordered_published_subset_filenames(
             f"{missing_filename_error_prefix}{sorted(missing_filenames)}"
         )
     return ordered_subset
+
+
+def declared_string_constants_by_suffix(
+    module: ModuleType,
+    *,
+    name_suffix: str,
+) -> dict[str, str]:
+    """Return declared string-valued module constants with the requested suffix."""
+
+    return {
+        name: value
+        for name, value in vars(module).items()
+        if name.endswith(name_suffix) and isinstance(value, str)
+    }
 
 
 class _IndexLike:

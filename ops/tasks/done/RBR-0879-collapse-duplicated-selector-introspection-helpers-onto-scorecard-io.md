@@ -1,6 +1,6 @@
 # RBR-0879: Collapse duplicated selector-introspection helpers onto scorecard_io
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -58,3 +58,11 @@ Created: 2026-03-21
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'shared_correctness_fixture_selectors_resolve_published_paths or correctness_selector_subset_helper_keeps_fixture_specific_missing_filename_error or declared_correctness_fixture_selectors_match_registry_keys or declared_nondefault_correctness_fixture_selectors_are_parametrized_once'` currently passes (`2 passed, 296 deselected in 0.07s`);
   - `bash -lc "rg -n '^def _declared_(benchmark_manifest|correctness_fixture)_selectors\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_fixture_parity_support_contract.py"` currently reports exactly the two remaining duplicated helper definitions; and
   - `python/rebar_harness/scorecard_io.py` already owns the adjacent shared selector/report utilities used by both harnesses, so consolidating this last reflection helper there reduces duplication without creating another owner module.
+
+## Completion Note
+- 2026-03-21: Added `declared_string_constants_by_suffix(...)` to `python/rebar_harness/scorecard_io.py` as the shared owner for suffix-based module constant discovery while preserving `vars(module)` declaration order and filtering to string-valued attributes only.
+- Rewired `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and `tests/python/test_fixture_parity_support_contract.py` to use that shared helper, deleted both duplicated local selector-introspection helpers, and kept the existing nondefault-selector parametrization plus registry-key invariants unchanged.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'shared_benchmark_manifest_selectors_resolve_published_subset_invariants or canonical_benchmark_manifest_subset_selectors_keep_membership_contract or declared_benchmark_manifest_selectors_match_registry_keys'` (`3 passed, 473 deselected`)
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'shared_correctness_fixture_selectors_resolve_published_paths or correctness_selector_subset_helper_keeps_fixture_specific_missing_filename_error or declared_correctness_fixture_selectors_match_registry_keys or declared_nondefault_correctness_fixture_selectors_are_parametrized_once'` (`22 passed, 276 deselected`)
+  - `bash -lc "! rg -n '^def _declared_(benchmark_manifest|correctness_fixture)_selectors\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_fixture_parity_support_contract.py"` (passed with no matches)
