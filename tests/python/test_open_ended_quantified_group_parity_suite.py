@@ -7,7 +7,11 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    FixtureCase,
+    OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -66,19 +70,9 @@ class OpenEndedTraceCase:
     fullmatch_text: str | bytes
 
 
-OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES = (
-    "open_ended_quantified_group_alternation_workflows.py",
-    "open_ended_quantified_group_alternation_conditional_workflows.py",
-    "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "broader_range_open_ended_quantified_group_alternation_workflows.py",
-    "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
-    "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "nested_open_ended_quantified_group_alternation_workflows.py",
-)
 FIXTURE_BUNDLES = load_published_fixture_bundles(
-    tuple(
-        CORRECTNESS_FIXTURES_ROOT / fixture_name
-        for fixture_name in OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_NAMES
+    select_correctness_fixture_paths(
+        OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR
     ),
     pattern_extractor=case_pattern,
 )
