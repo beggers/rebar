@@ -11143,6 +11143,97 @@ def test_standard_benchmark_manifest_measures_expected_exception_workloads(
 
 
 @pytest.mark.parametrize(
+    ("raised_exception", "expected_reason"),
+    (
+        pytest.param(
+            ValueError("wrong exception"),
+            (
+                "AssertionError: workload "
+                "'module-search-expected-exception-mismatch-contract' raised "
+                "ValueError: wrong exception instead of the expected 'TypeError' "
+                "exception"
+            ),
+            id="wrong-type",
+        ),
+        pytest.param(
+            TypeError("wrong detail"),
+            (
+                "AssertionError: workload "
+                "'module-search-expected-exception-mismatch-contract' raised "
+                "TypeError: wrong detail instead of the expected 'TypeError' "
+                "exception"
+            ),
+            id="wrong-message",
+        ),
+        pytest.param(
+            None,
+            (
+                "AssertionError: workload "
+                "'module-search-expected-exception-mismatch-contract' did not "
+                "raise the expected 'TypeError' exception"
+            ),
+            id="missing-exception",
+        ),
+    ),
+)
+def test_run_internal_workload_probe_reports_expected_exception_mismatches_as_unavailable(
+    monkeypatch,
+    raised_exception: Exception | None,
+    expected_reason: str,
+) -> None:
+    payload = {
+        "manifest_id": "python-benchmark-expected-exception-mismatch-contract",
+        "workload_id": "module-search-expected-exception-mismatch-contract",
+        "bucket": "module-search",
+        "family": "module",
+        "operation": "module.search",
+        "pattern": "abc",
+        "haystack": "abc",
+        "flags": 0,
+        "count": 0,
+        "maxsplit": 0,
+        "expected_exception": {
+            "type": "TypeError",
+            "message_substring": "expected detail",
+        },
+        "text_model": "str",
+        "cache_mode": "warm",
+        "timing_scope": "module-helper-call",
+        "warmup_iterations": 1,
+        "sample_iterations": 1,
+        "timed_samples": 1,
+        "notes": [],
+        "categories": [],
+        "syntax_features": [],
+        "smoke": False,
+    }
+
+    def fake_build_callable(module: Any, import_name: str, workload: Any) -> Any:
+        del module, import_name, workload
+
+        def callback() -> None:
+            if raised_exception is not None:
+                raise raised_exception
+            return None
+
+        return callback
+
+    monkeypatch.setattr(benchmarks, "build_callable", fake_build_callable)
+
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name="re",
+        adapter_name="cpython.re",
+    )
+
+    assert probe == {
+        "adapter": "cpython.re",
+        "status": "unavailable",
+        "reason": expected_reason,
+    }
+
+
+@pytest.mark.parametrize(
     ("import_name", "adapter_name"),
     (
         pytest.param("re", "cpython.re", id="cpython"),
