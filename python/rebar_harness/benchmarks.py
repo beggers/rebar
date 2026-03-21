@@ -182,9 +182,13 @@ class Workload:
             kwargs=kwargs,
         )
         validate_compiled_pattern_workload(
+            manifest_id=manifest_id,
             operation=operation,
             use_compiled_pattern=use_compiled_pattern,
+            kwargs=kwargs,
             cache_mode=cache_mode,
+            haystack_text_model=haystack_text_model,
+            expected_exception=expected_exception,
         )
         validate_haystack_text_model_override(
             manifest_id=manifest_id,
@@ -476,7 +480,7 @@ _MODULE_HELPER_DUPLICATE_KEYWORD_FIELDS_BY_OPERATION = {
     "module.sub": "count",
     "module.subn": "count",
 }
-_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
+_COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS = frozenset(
     {
         "module.split",
         "module.findall",
@@ -484,6 +488,13 @@ _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
         "module.sub",
         "module.subn",
     }
+)
+_COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS = frozenset(
+    {"module.search", "module.match", "module.fullmatch"}
+)
+_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
+    _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS
+    | _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS
 )
 _HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     **_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION,
@@ -581,9 +592,13 @@ def validate_helper_keyword_argument_carriers(
 
 def validate_compiled_pattern_workload(
     *,
+    manifest_id: str,
     operation: str,
     use_compiled_pattern: bool,
+    kwargs: dict[str, Any],
     cache_mode: str,
+    haystack_text_model: str | None,
+    expected_exception: dict[str, Any] | None,
 ) -> None:
     if not use_compiled_pattern:
         return
@@ -594,6 +609,30 @@ def validate_compiled_pattern_workload(
             "benchmark compiled-pattern module-helper workloads currently only "
             f"support {allowed_operations}; got {operation!r}"
         )
+
+    if operation in _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS:
+        if manifest_id != "module-boundary":
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "search/match/fullmatch workloads are only supported on the "
+                "`module-boundary` manifest"
+            )
+        if kwargs:
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "search/match/fullmatch workloads currently only support "
+                "positional helper calls"
+            )
+        if (
+            haystack_text_model is None
+            or expected_exception is None
+            or expected_exception.get("type") != "TypeError"
+        ):
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "search/match/fullmatch workloads currently only support "
+                "timed wrong-text-model TypeError rows"
+            )
 
     if cache_mode not in {"warm", "purged"}:
         raise ValueError(
@@ -628,17 +667,30 @@ def validate_haystack_text_model_override(
     if haystack_text_model is None:
         return
 
-    if manifest_id != "collection-replacement-boundary":
+    if manifest_id not in {"collection-replacement-boundary", "module-boundary"}:
         raise ValueError(
             "benchmark workload haystack_text_model is only supported on the "
-            "`collection-replacement-boundary` manifest"
+            "`collection-replacement-boundary` manifest and the bounded "
+            "`module-boundary` compiled-pattern wrong-text-model trio"
         )
 
-    if operation not in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS or not use_compiled_pattern:
-        raise ValueError(
-            "benchmark workload haystack_text_model currently only supports "
+    if manifest_id == "collection-replacement-boundary":
+        allowed_operations = _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS
+        operation_description = (
             "compiled-pattern module.split/module.findall/module.finditer/"
             "module.sub/module.subn workloads"
+        )
+    else:
+        allowed_operations = _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS
+        operation_description = (
+            "compiled-pattern module.search/module.match/module.fullmatch "
+            "workloads on the `module-boundary` manifest"
+        )
+
+    if operation not in allowed_operations or not use_compiled_pattern:
+        raise ValueError(
+            "benchmark workload haystack_text_model currently only supports "
+            f"{operation_description}"
         )
 
     if haystack_text_model == text_model:

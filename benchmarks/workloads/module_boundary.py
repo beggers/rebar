@@ -213,6 +213,40 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-search-on-bytes-string-warm-str-compiled-pattern",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "search",
+        "literal",
+        "warm-cache",
+        "compiled-pattern",
+        "wrong-text-model",
+        "exception"
+      ],
+      "syntax_features": [
+        "module-search",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.search helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-match-literal-warm-hit",
       "bucket": "module-match",
       "family": "module",
@@ -265,6 +299,41 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache bytes module.match helper path that keeps the bounded flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-match-on-str-string-purged-bytes-compiled-pattern",
+      "bucket": "module-match",
+      "family": "module",
+      "operation": "module.match",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a bytes pattern on a string-like object"
+      },
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "bytes",
+      "haystack_text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "match",
+        "bytes",
+        "purged-cache",
+        "compiled-pattern",
+        "wrong-text-model",
+        "exception"
+      ],
+      "syntax_features": [
+        "module-match",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache module.match helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on the shared module-boundary surface."
       ]
     },
     {
@@ -331,6 +400,40 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache module.fullmatch helper path that keeps the raw unexpected keyword TypeError on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+      "bucket": "module-fullmatch",
+      "family": "module",
+      "operation": "module.fullmatch",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "fullmatch",
+        "literal",
+        "warm-cache",
+        "compiled-pattern",
+        "wrong-text-model",
+        "exception"
+      ],
+      "syntax_features": [
+        "module-fullmatch",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.fullmatch helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on the shared module-boundary surface."
       ]
     },
     {

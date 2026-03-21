@@ -1,6 +1,6 @@
 # RBR-0862: Catch up the compiled-pattern module wrong-text-model boundary benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -68,3 +68,8 @@ Created: 2026-03-21
   - direct runtime probes in this run showed CPython and `rebar` already agree on the exact bounded `TypeError` payloads for `search(rebar.compile("abc"), b"abc")`, `match(rebar.compile(b"abc"), "abc")`, and `fullmatch(rebar.compile("abc"), b"abc")`, so no Rust or Python regex-behavior prerequisite is missing;
   - `python/rebar_harness/benchmarks.py` currently restricts compiled-pattern benchmark workloads to `module.split`, `module.sub`, and `module.subn`, and it currently restricts `haystack_text_model` overrides to the `collection-replacement-boundary` manifest, so these module-boundary rows are still unexpressible on the published benchmark surface today even though the runtime behavior already exists; and
   - `benchmarks/workloads/module_boundary.py` plus `reports/benchmarks/latest.py` currently publish no compiled-pattern module-helper rows, and the tracked benchmark report currently stands at `836` total / `836` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 828` and `REPORT["manifests"]["module-boundary"]` at `13` selected / `13` measured / `0` known gaps, so the acceptance counts above are intentionally written against the immediate post-`RBR-0860` state.
+- 2026-03-21 completion: widened `python/rebar_harness/benchmarks.py` only enough to admit the bounded compiled-pattern `module.search` / `module.match` / `module.fullmatch` wrong-text-model trio on `module-boundary`, added the three exact workload ids to `benchmarks/workloads/module_boundary.py`, extended the shared source-tree benchmark contract coverage in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and republished `reports/benchmarks/latest.py` at `839` total / `839` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 831` and `REPORT["manifests"]["module-boundary"]` at `16` selected / `16` measured / `0` known gaps.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0862-compiled-pattern-module-boundary-wrong-text-model.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
