@@ -8924,11 +8924,15 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
     assert findall_window_workload.pos is None
     assert findall_window_workload.endpos is None
     assert findall_window_workload.kwargs == {"endpos": 7, "pos": True}
+    assert type(findall_window_workload.kwargs["pos"]) is bool
     round_tripped_findall = workload_from_payload(
         workload_to_payload(findall_window_workload)
     )
     assert round_tripped_findall.kwargs == {"endpos": 7, "pos": True}
-    assert round_tripped_findall.keyword_arguments() == {"endpos": 7, "pos": True}
+    assert type(round_tripped_findall.kwargs["pos"]) is bool
+    materialized_findall_kwargs = round_tripped_findall.keyword_arguments()
+    assert materialized_findall_kwargs == {"endpos": 7, "pos": True}
+    assert materialized_findall_kwargs["pos"] is True
     assert run_benchmark_workload_with_cpython(round_tripped_findall) == [
         "abc",
         "abc",
@@ -9073,6 +9077,24 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                 ],
             },
             {
+                "id": "pattern-sub-count-bool-keyword-contract-bytes",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "count": False,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.sub count= bool keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-subn-count-keyword-contract-str",
                 "bucket": "pattern-subn",
                 "family": "module",
@@ -9089,6 +9111,39 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                     "Ensures benchmark manifests keep Pattern.subn count= keyword carriers unresolved until helper invocation."
                 ],
             },
+            {
+                "id": "pattern-subn-count-bool-keyword-contract-str",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "kwargs": {
+                    "count": True,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.subn count= bool keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-split-maxsplit-bool-keyword-contract-str",
+                "bucket": "pattern-split",
+                "family": "module",
+                "operation": "pattern.split",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "kwargs": {
+                    "maxsplit": True,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.split maxsplit= bool keyword carriers unresolved until helper invocation."
+                ],
+            },
         ],
     }
     """
@@ -9098,7 +9153,14 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         "python_benchmark_pattern_collection_replacement_keyword_contract.py",
         manifest_source,
     )
-    split_workload, sub_workload, subn_workload = load_manifest(manifest_path).workloads
+    (
+        split_workload,
+        sub_workload,
+        sub_bool_workload,
+        subn_workload,
+        subn_bool_workload,
+        split_bool_workload,
+    ) = load_manifest(manifest_path).workloads
 
     assert split_workload.kwargs == {"maxsplit": 1}
     round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
@@ -9112,11 +9174,53 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     assert round_tripped_sub.keyword_arguments() == {"count": 1}
     assert run_benchmark_workload_with_cpython(round_tripped_sub) == b"xabc"
 
+    assert sub_bool_workload.kwargs == {"count": False}
+    assert type(sub_bool_workload.kwargs["count"]) is bool
+    round_tripped_sub_bool = workload_from_payload(
+        workload_to_payload(sub_bool_workload)
+    )
+    assert round_tripped_sub_bool.kwargs == {"count": False}
+    assert type(round_tripped_sub_bool.kwargs["count"]) is bool
+    materialized_sub_bool_kwargs = round_tripped_sub_bool.keyword_arguments()
+    assert materialized_sub_bool_kwargs == {"count": False}
+    assert materialized_sub_bool_kwargs["count"] is False
+    assert run_benchmark_workload_with_cpython(round_tripped_sub_bool) == b"xx"
+
     assert subn_workload.kwargs == {"count": 1}
     round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
     assert round_tripped_subn.kwargs == {"count": 1}
     assert round_tripped_subn.keyword_arguments() == {"count": 1}
     assert run_benchmark_workload_with_cpython(round_tripped_subn) == ("xabc", 1)
+
+    assert subn_bool_workload.kwargs == {"count": True}
+    assert type(subn_bool_workload.kwargs["count"]) is bool
+    round_tripped_subn_bool = workload_from_payload(
+        workload_to_payload(subn_bool_workload)
+    )
+    assert round_tripped_subn_bool.kwargs == {"count": True}
+    assert type(round_tripped_subn_bool.kwargs["count"]) is bool
+    materialized_subn_bool_kwargs = round_tripped_subn_bool.keyword_arguments()
+    assert materialized_subn_bool_kwargs == {"count": True}
+    assert materialized_subn_bool_kwargs["count"] is True
+    assert run_benchmark_workload_with_cpython(round_tripped_subn_bool) == (
+        "xabc",
+        1,
+    )
+
+    assert split_bool_workload.kwargs == {"maxsplit": True}
+    assert type(split_bool_workload.kwargs["maxsplit"]) is bool
+    round_tripped_split_bool = workload_from_payload(
+        workload_to_payload(split_bool_workload)
+    )
+    assert round_tripped_split_bool.kwargs == {"maxsplit": True}
+    assert type(round_tripped_split_bool.kwargs["maxsplit"]) is bool
+    materialized_split_bool_kwargs = round_tripped_split_bool.keyword_arguments()
+    assert materialized_split_bool_kwargs == {"maxsplit": True}
+    assert materialized_split_bool_kwargs["maxsplit"] is True
+    assert run_benchmark_workload_with_cpython(round_tripped_split_bool) == [
+        "z",
+        "abc",
+    ]
 
 
 @pytest.mark.parametrize(
@@ -9159,6 +9263,36 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
             ("xabc", 1),
             ["kwargs.count"],
             id="subn-count-indexlike",
+        ),
+        pytest.param(
+            "pattern.split",
+            "zabcabc",
+            {"maxsplit": True},
+            None,
+            "str",
+            ["z", "abc"],
+            ["kwargs.maxsplit"],
+            id="split-maxsplit-bool",
+        ),
+        pytest.param(
+            "pattern.sub",
+            "abcabc",
+            {"count": False},
+            "x",
+            "bytes",
+            b"xx",
+            ["kwargs.count"],
+            id="sub-count-bool",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "abcabc",
+            {"count": True},
+            "x",
+            "str",
+            ("xabc", 1),
+            ["kwargs.count"],
+            id="subn-count-bool",
         ),
     ),
 )
