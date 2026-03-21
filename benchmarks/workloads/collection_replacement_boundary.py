@@ -206,6 +206,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-literal-warm-str-compiled-pattern",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "zzabczzabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "maxsplit": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "literal",
+        "compiled-pattern",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.split helper path that keeps the bounded compiled-pattern-first-argument direct-success workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-split-maxsplit-keyword-purged-str-compiled-pattern",
       "bucket": "module-split",
       "family": "module",
@@ -518,6 +547,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-findall-literal-purged-bytes-compiled-pattern",
+      "bucket": "module-findall",
+      "family": "module",
+      "operation": "module.findall",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "findall",
+        "bytes",
+        "compiled-pattern",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-findall",
+        "pattern-text-model",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Purged bytes module.findall helper path that keeps the bounded compiled-pattern-first-argument direct-success workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-findall-on-str-string-purged-bytes-compiled-pattern",
       "bucket": "module-findall",
       "family": "module",
@@ -550,6 +607,34 @@ MANIFEST = {
       ],
       "notes": [
         "Purged module.findall helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on str haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-finditer-literal-warm-str-compiled-pattern",
+      "bucket": "module-finditer",
+      "family": "module",
+      "operation": "module.finditer",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "finditer",
+        "literal",
+        "compiled-pattern",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-finditer",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.finditer helper path that keeps the bounded compiled-pattern-first-argument direct-success workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {
@@ -641,6 +726,36 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes module.sub helper path with a single replacement count so replacement-boundary overhead stays easy to isolate."
+      ]
+    },
+    {
+      "id": "module-sub-literal-warm-str-compiled-pattern",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "compiled-pattern",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded compiled-pattern-first-argument direct-success workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {
@@ -1081,6 +1196,36 @@ MANIFEST = {
       ],
       "notes": [
         "Purged module.sub helper path that keeps the bounded compiled-pattern-first-argument unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-literal-purged-bytes-compiled-pattern",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "compiled-pattern",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Purged bytes module.subn helper path that keeps the bounded compiled-pattern-first-argument direct-success workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

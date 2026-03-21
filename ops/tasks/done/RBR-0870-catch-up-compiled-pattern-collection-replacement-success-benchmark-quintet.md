@@ -1,6 +1,6 @@
 # RBR-0870: Catch up the compiled-pattern collection/replacement success benchmark quintet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -69,3 +69,8 @@ Created: 2026-03-21
   - `benchmarks/workloads/collection_replacement_boundary.py` currently publishes no compiled-pattern direct-success rows on the shared collection/replacement benchmark surface even though the correctness owner already publishes the full adjacent quintet;
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently carries compiled-pattern keyword and wrong-text-model collection/replacement coverage but no direct-success anchor-contract definition on that owner path; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0868` state of `847` total / `847` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 839` and `REPORT["manifests"]["collection-replacement-boundary"]` at `57` selected / `57` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Added the five compiled-pattern-first-argument direct-success `split()` / `findall()` / `finditer()` / `sub()` / `subn()` workloads to `benchmarks/workloads/collection_replacement_boundary.py`, extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the matching shared owner-path anchor/probe/precompile contract, and republished `reports/benchmarks/latest.py`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0870-compiled-pattern-collection-replacement-success.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- The tracked published benchmark artifact now shows `REPORT["manifests"]["collection-replacement-boundary"]` at `62` selected / `62` measured / `0` known gaps and the combined summary at `852` total / `852` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 844`.
