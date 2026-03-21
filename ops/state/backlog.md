@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0832` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the remaining precompiled `Pattern` positional `__index__` search/fullmatch/findall/finditer quintet up on the shared Python-path `pattern_boundary.py` benchmark surface.
+`RBR-0834` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the next precompiled `Pattern` keyword-form search/match/fullmatch/findall/finditer benchmark quintet up on the shared Python-path `pattern_boundary.py` surface.
 
 ## Ordered Work
-1. `RBR-0832` catches the remaining precompiled `Pattern` positional `__index__` search/fullmatch/findall/finditer quintet up on `benchmarks/workloads/pattern_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0834` catches the next precompiled `Pattern` keyword-form search/match/fullmatch/findall/finditer benchmark quintet up on `benchmarks/workloads/pattern_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
