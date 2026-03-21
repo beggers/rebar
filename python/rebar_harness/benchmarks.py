@@ -597,65 +597,39 @@ def workload_to_payload(workload: Workload) -> dict[str, Any]:
 
 
 def workload_from_payload(payload: dict[str, Any]) -> Workload:
-    operation = str(payload["operation"])
-    pos = (
-        None
-        if payload.get("pos") is None
-        else normalize_numeric_workload_argument(
-            payload.get("pos"),
-            field_name="pos",
-        )
-    )
-    endpos = (
-        None
-        if payload.get("endpos") is None
-        else normalize_numeric_workload_argument(
-            payload.get("endpos"),
-            field_name="endpos",
-        )
-    )
-    kwargs = normalize_keyword_workload_arguments(
-        payload.get("kwargs"),
-        operation=operation,
-    )
-    validate_helper_keyword_argument_carriers(
-        operation=operation,
-        pos=pos,
-        endpos=endpos,
-        kwargs=kwargs,
-    )
-    return Workload(
+    raw_workload: dict[str, Any] = {
+        "id": payload["workload_id"],
+        "bucket": payload["bucket"],
+        "family": payload["family"],
+        "operation": payload["operation"],
+        "pattern": payload.get("pattern", ""),
+        "haystack": payload.get("haystack"),
+        "replacement": payload.get("replacement"),
+        "expected_exception": payload.get("expected_exception"),
+        "flags": payload.get("flags", 0),
+        "count": payload.get("count", 0),
+        "maxsplit": payload.get("maxsplit", 0),
+        "text_model": payload["text_model"],
+        "cache_mode": payload["cache_mode"],
+        "timing_scope": payload["timing_scope"],
+        "warmup_iterations": payload["warmup_iterations"],
+        "sample_iterations": payload["sample_iterations"],
+        "timed_samples": payload["timed_samples"],
+        "notes": payload.get("notes", []),
+        "categories": payload.get("categories", []),
+        "syntax_features": payload.get("syntax_features", []),
+        "smoke": payload.get("smoke", False),
+    }
+    if payload.get("pos") is not None:
+        raw_workload["pos"] = payload["pos"]
+    if payload.get("endpos") is not None:
+        raw_workload["endpos"] = payload["endpos"]
+    if "kwargs" in payload:
+        raw_workload["kwargs"] = payload["kwargs"]
+    return Workload.from_dict(
         manifest_id=str(payload["manifest_id"]),
-        workload_id=str(payload["workload_id"]),
-        bucket=str(payload["bucket"]),
-        family=str(payload["family"]),
-        operation=operation,
-        pattern=str(payload.get("pattern", "")),
-        haystack=None if payload.get("haystack") is None else str(payload["haystack"]),
-        replacement=normalize_workload_value(payload.get("replacement")),
-        expected_exception=normalize_expected_exception(payload.get("expected_exception")),
-        flags=int(payload.get("flags", 0)),
-        count=normalize_numeric_workload_argument(
-            payload.get("count", 0),
-            field_name="count",
-        ),
-        maxsplit=normalize_numeric_workload_argument(
-            payload.get("maxsplit", 0),
-            field_name="maxsplit",
-        ),
-        pos=pos,
-        endpos=endpos,
-        kwargs=kwargs,
-        text_model=str(payload["text_model"]),
-        cache_mode=str(payload["cache_mode"]),
-        timing_scope=str(payload["timing_scope"]),
-        warmup_iterations=int(payload["warmup_iterations"]),
-        sample_iterations=int(payload["sample_iterations"]),
-        timed_samples=int(payload["timed_samples"]),
-        notes=[str(note) for note in payload.get("notes", [])],
-        categories=[str(category) for category in payload.get("categories", [])],
-        syntax_features=[str(feature) for feature in payload.get("syntax_features", [])],
-        smoke=bool(payload.get("smoke", False)),
+        raw_workload=raw_workload,
+        defaults={},
     )
 
 
