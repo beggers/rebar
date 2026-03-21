@@ -988,6 +988,19 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertEqual(value.__index__(), 2)
         self.assertEqual(repr(value), "IndexLike(2)")
 
+    def test_scorecard_materialize_descriptor_value_rejects_invalid_indexlike_carriers(
+        self,
+    ) -> None:
+        for invalid_value in (True, "2", 2.0, None):
+            with self.subTest(value=invalid_value):
+                with self.assertRaisesRegex(
+                    ValueError,
+                    re.escape("indexlike descriptor requires an integer `value`"),
+                ):
+                    scorecard_io.materialize_descriptor_value(
+                        {"type": "indexlike", "value": invalid_value}
+                    )
+
     def test_scorecard_materialize_descriptor_value_builds_tagged_callable_helpers(
         self,
     ) -> None:
@@ -1023,6 +1036,18 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertIsNotNone(match)
         self.assertEqual(constant(match), b"CONST")
         self.assertEqual(match_group(match), b"<abc>")
+
+    def test_scorecard_materialize_descriptor_value_defaults_callable_match_group_to_whole_match(
+        self,
+    ) -> None:
+        match_group = scorecard_io.materialize_descriptor_value(
+            {"type": "callable_match_group"},
+            text_model="bytes",
+        )
+        match = re.search(br"abc", b"zzabczz")
+
+        self.assertIsNotNone(match)
+        self.assertEqual(match_group(match), b"abc")
 
     def test_scorecard_materialize_descriptor_value_rejects_unsupported_text_model(
         self,
