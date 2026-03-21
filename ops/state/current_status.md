@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1504 cases across 114 manifests, with all 1504 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0826` is ready to reopen the active `module-workflow-surface` owner path with one bounded `Pattern` positional `__index__` octet.
+- `RBR-0828` is queued to catch the raw module positional `__index__` trio up on the existing Python-path `collection_replacement_boundary` benchmark surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.

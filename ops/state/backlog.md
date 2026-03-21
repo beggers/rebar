@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives. The active milestone stays on the existing `module-workflow-surface` owner path.
+`RBR-0828` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the raw module positional `__index__` trio up on the shared Python-path `collection_replacement_boundary.py` benchmark surface.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives. Keep the active owner path on `tests/conformance/fixtures/module_workflow_surface.py` and `tests/python/test_module_workflow_parity_suite.py`.
+1. `RBR-0828` catches the raw module positional `__index__` trio up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
