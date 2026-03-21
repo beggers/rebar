@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0854` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` duplicate and unexpected keyword benchmark sextet up on the shared Python-path `collection_replacement_boundary.py` surface.
+`RBR-0856` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` `maxsplit=` / `count=` keyword-carrier benchmark nonet up on the shared Python-path `collection_replacement_boundary.py` surface.
 
 ## Ordered Work
-1. `RBR-0854` catches the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` duplicate and unexpected keyword benchmark sextet up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0856` catches the adjacent compiled-pattern-first-argument `split()` / `sub()` / `subn()` `maxsplit=` / `count=` keyword-carrier benchmark nonet up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
