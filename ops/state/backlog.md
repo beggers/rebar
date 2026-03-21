@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0866` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument bounded-wildcard successful `search()` / `match()` / `fullmatch()` benchmark trio up on the shared Python-path `module_boundary.py` surface by reusing the bounded compiled-pattern module-helper timing path that the current frontier already leaves behind instead of reopening verbose-regression or broader compiled-pattern module-helper publication work.
+`RBR-0868` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument bytes verbose-regression successful `search()` / `fullmatch()` benchmark pair up on the shared Python-path `module_boundary.py` surface by reusing the compiled-pattern module-helper timing path already present on that owner route instead of widening the regression matrix or reopening broader compiled-pattern module-helper publication work.
 
 ## Ordered Work
-1. `RBR-0866` catches the adjacent compiled-pattern-first-argument bounded-wildcard successful `search()` / `match()` / `fullmatch()` benchmark trio up on `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0868` catches the adjacent compiled-pattern-first-argument bytes verbose-regression successful `search()` / `fullmatch()` benchmark pair up on `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
