@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass
-import pathlib
 import re
 
 import pytest
@@ -99,14 +98,6 @@ NO_MATCH_TEXT_CANDIDATES = (
     "ac",
     "ae",
     "ad",
-)
-CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS = select_correctness_fixture_paths(
-    CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR
-)
-OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS = (
-    select_correctness_fixture_paths(
-        OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR
-    )
 )
 GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID = "grouped-replacement-template"
 OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID = (
@@ -278,7 +269,7 @@ class ReplacementSurfaceSpec:
     match_snapshot_manifest_ids: tuple[str, ...] = ()
     match_group_access_manifest_ids: tuple[str, ...] = ()
     template_expand_manifest_ids: tuple[str, ...] = ()
-    selector_fixture_paths: tuple[pathlib.Path, ...] = ()
+    fixture_selector: str | None = None
     known_uncovered_published_fixture_filenames: tuple[str, ...] = ()
     discover_no_match_on_all_replacement_cases: bool = False
     no_match_text_candidates: tuple[TextValue, ...] = ()
@@ -1020,8 +1011,10 @@ def _grouped_replacement_template_bundles(
 
 
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
+    if spec.fixture_selector is None:
+        raise ValueError(f"{spec.id} is missing a published fixture selector")
     bundles = load_published_fixture_bundles(
-        spec.selector_fixture_paths,
+        select_correctness_fixture_paths(spec.fixture_selector),
         pattern_extractor=spec.pattern_extractor,
     )
     if spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID:
@@ -1255,9 +1248,7 @@ REPLACEMENT_SURFACE_SPECS = (
             GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
             NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
         ),
-        selector_fixture_paths=select_correctness_fixture_paths(
-            GROUPED_REPLACEMENT_FIXTURE_SELECTOR
-        ),
+        fixture_selector=GROUPED_REPLACEMENT_FIXTURE_SELECTOR,
         supplemental_no_match_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_REPEATED_CASES,
     ),
@@ -1284,7 +1275,7 @@ REPLACEMENT_SURFACE_SPECS = (
             NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows",
         ),
-        selector_fixture_paths=OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SELECTOR_FIXTURE_PATHS,
+        fixture_selector=OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
         supplemental_no_match_cases=OPEN_ENDED_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=OPEN_ENDED_SUPPLEMENTAL_REPEATED_CASES,
     ),
@@ -1306,7 +1297,7 @@ REPLACEMENT_SURFACE_SPECS = (
         template_expand_manifest_ids=(
             "conditional-group-exists-replacement-template-workflows",
         ),
-        selector_fixture_paths=CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS,
+        fixture_selector=CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
         discover_no_match_on_all_replacement_cases=True,
         no_match_text_candidates=NO_MATCH_TEXT_CANDIDATES,
         supplemental_repeated_cases=CONDITIONAL_SUPPLEMENTAL_REPEATED_CASES,
@@ -1357,7 +1348,7 @@ BROADER_RANGE_WIDER_RANGED_REPEAT_MIXED_TEXT_REPLACEMENT_BUNDLE = (
 SELECTOR_SURFACE_PARAMS = tuple(
     pytest.param(surface, id=surface.spec.id)
     for surface in REPLACEMENT_SURFACES
-    if surface.spec.selector_fixture_paths
+    if surface.spec.fixture_selector is not None
 )
 BUNDLE_PARAMS = tuple(
     pytest.param(surface, bundle, id=bundle.expected_manifest_id)
@@ -1440,7 +1431,10 @@ def _expected_uncovered_replacement_case_ids(
 def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     surface: LoadedReplacementSurface,
 ) -> None:
-    assert surface.spec.selector_fixture_paths
+    assert surface.spec.fixture_selector is not None
+    selector_fixture_paths = select_correctness_fixture_paths(
+        surface.spec.fixture_selector
+    )
 
     covered_paths = tuple(
         sorted(
@@ -1450,7 +1444,7 @@ def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     )
     uncovered_paths = tuple(
         path
-        for path in surface.spec.selector_fixture_paths
+        for path in selector_fixture_paths
         if path not in covered_paths
     )
     assert covered_paths
@@ -1459,7 +1453,7 @@ def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     )
     assert tuple(
         sorted((*covered_paths, *uncovered_paths), key=lambda path: path.name)
-    ) == surface.spec.selector_fixture_paths
+    ) == selector_fixture_paths
 
 
 @pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)
@@ -1825,9 +1819,7 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-pending-bytes-contract",
-            selector_fixture_paths=select_correctness_fixture_paths(
-                NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR
-            ),
+            fixture_selector=NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR,
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),
             pending_bytes_follow_on_manifest_ids=frozenset({manifest_id}),
@@ -1889,7 +1881,7 @@ def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> No
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="mixed-replacement-pending-bytes-contract",
-            selector_fixture_paths=select_correctness_fixture_paths(
+            fixture_selector=(
                 NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR
             ),
             pattern_extractor=case_pattern,
@@ -1952,9 +1944,7 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-mixed-contract",
-            selector_fixture_paths=select_correctness_fixture_paths(
-                NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR
-            ),
+            fixture_selector=NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR,
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),
         )
