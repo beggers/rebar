@@ -723,6 +723,33 @@ class _RecordingIndexLike:
         return self.value
 
 
+class _OrderedRecordingIndexLike:
+    """Records __index__ call order for multi-slot coercion parity checks."""
+
+    __slots__ = ("label", "value", "calls", "log", "_error")
+
+    def __init__(
+        self,
+        label: str,
+        value: int,
+        log: list[str],
+        *,
+        error: Exception | None = None,
+    ) -> None:
+        self.label = label
+        self.value = value
+        self.calls = 0
+        self.log = log
+        self._error = error
+
+    def __index__(self) -> int:
+        self.calls += 1
+        self.log.append(self.label)
+        if self._error is not None:
+            raise self._error
+        return self.value
+
+
 class _IndexLikeBoomError(Exception):
     pass
 
@@ -1933,6 +1960,22 @@ PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
         result_kind="value",
     ),
 )
+PATTERN_DUAL_INDEXLIKE_WINDOW_CASE_IDS = (
+    "pattern-fullmatch-window-indexlike-bytes",
+    "pattern-findall-window-indexlike-str",
+    "pattern-finditer-window-indexlike-bytes",
+    "pattern-fullmatch-window-indexlike-positional-bytes",
+    "pattern-findall-window-indexlike-positional-str",
+    "pattern-finditer-window-indexlike-positional-bytes",
+)
+PATTERN_DUAL_INDEXLIKE_WINDOW_CASES_BY_ID = {
+    case.case_id: case
+    for case in (*PATTERN_KEYWORD_CALL_CASES, *PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES)
+}
+PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
+    PATTERN_DUAL_INDEXLIKE_WINDOW_CASES_BY_ID[case_id]
+    for case_id in PATTERN_DUAL_INDEXLIKE_WINDOW_CASE_IDS
+)
 # Keep the representative fixture-backed rows small, then use a compact matrix
 # here to prove the helpers keep accepting the broader bool/int/__index__ slice.
 WORKFLOW_NUMERIC_COERCION_VALUES = (
@@ -2633,6 +2676,51 @@ def _call_pattern_positional_indexlike_case(
     case: PatternPositionalIndexLikeCallCase,
 ) -> object:
     return getattr(pattern, case.helper)(*case.args)
+
+
+def _pattern_dual_indexlike_window_bounds(
+    case: PatternKeywordCallCase | PatternPositionalIndexLikeCallCase,
+) -> tuple[int, int]:
+    if isinstance(case, PatternKeywordCallCase):
+        bounds_by_name = {
+            name: value
+            for name, kind, value in _workflow_keyword_kwargs_signature(case.kwargs)
+            if kind == "indexlike"
+        }
+        return bounds_by_name["pos"], bounds_by_name["endpos"]
+
+    signature = _workflow_positional_args_signature(case.args)
+    return signature[1][1], signature[2][1]
+
+
+def _call_pattern_dual_indexlike_window_case(
+    pattern: object,
+    case: PatternKeywordCallCase | PatternPositionalIndexLikeCallCase,
+    pos: object,
+    endpos: object,
+) -> object:
+    helper = getattr(pattern, case.helper)
+    string = case.args[0]
+
+    if isinstance(case, PatternKeywordCallCase):
+        return helper(string, pos=pos, endpos=endpos)
+
+    return helper(string, pos, endpos)
+
+
+def _ordered_recording_indexlike_pair(
+    *,
+    pos: int,
+    endpos: int,
+    pos_error: Exception | None = None,
+    endpos_error: Exception | None = None,
+) -> tuple[_OrderedRecordingIndexLike, _OrderedRecordingIndexLike, list[str]]:
+    log: list[str] = []
+    return (
+        _OrderedRecordingIndexLike("pos", pos, log, error=pos_error),
+        _OrderedRecordingIndexLike("endpos", endpos, log, error=endpos_error),
+        log,
+    )
 
 
 def _assert_workflow_numeric_coercion_result_parity(
@@ -4992,6 +5080,138 @@ def test_pattern_positional_indexlike_argument_calls_match_cpython(
         return
 
     assert_value_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_DUAL_INDEXLIKE_WINDOW_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_pattern_dual_indexlike_window_arguments_call___index___once_in_order(
+    regex_backend: tuple[str, object],
+    case: PatternKeywordCallCase | PatternPositionalIndexLikeCallCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
+    pos_bound, endpos_bound = _pattern_dual_indexlike_window_bounds(case)
+    observed_pos, observed_endpos, observed_log = _ordered_recording_indexlike_pair(
+        pos=pos_bound,
+        endpos=endpos_bound,
+    )
+    expected_pos, expected_endpos, expected_log = _ordered_recording_indexlike_pair(
+        pos=pos_bound,
+        endpos=endpos_bound,
+    )
+
+    observed = _call_pattern_dual_indexlike_window_case(
+        observed_pattern,
+        case,
+        observed_pos,
+        observed_endpos,
+    )
+    expected = _call_pattern_dual_indexlike_window_case(
+        expected_pattern,
+        case,
+        expected_pos,
+        expected_endpos,
+    )
+
+    _assert_workflow_numeric_coercion_result_parity(
+        backend_name,
+        observed,
+        expected,
+        result_kind=case.result_kind,
+    )
+    assert observed_log == expected_log == ["pos", "endpos"]
+    assert observed_pos.calls == expected_pos.calls == 1
+    assert observed_endpos.calls == expected_endpos.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("error_slot", "expected_log"),
+    (
+        pytest.param("pos", ["pos"], id="pos"),
+        pytest.param("endpos", ["pos", "endpos"], id="endpos"),
+    ),
+)
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_DUAL_INDEXLIKE_WINDOW_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_pattern_dual_indexlike_window_indexlike_exceptions_match_cpython(
+    regex_backend: tuple[str, object],
+    case: PatternKeywordCallCase | PatternPositionalIndexLikeCallCase,
+    error_slot: str,
+    expected_log: list[str],
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
+    pos_bound, endpos_bound = _pattern_dual_indexlike_window_bounds(case)
+
+    observed_pos, observed_endpos, observed_log = _ordered_recording_indexlike_pair(
+        pos=pos_bound,
+        endpos=endpos_bound,
+        pos_error=(
+            _IndexLikeBoomError(f"indexlike boom for {case.case_id} pos")
+            if error_slot == "pos"
+            else None
+        ),
+        endpos_error=(
+            _IndexLikeBoomError(f"indexlike boom for {case.case_id} endpos")
+            if error_slot == "endpos"
+            else None
+        ),
+    )
+    expected_pos, expected_endpos, expected_call_log = _ordered_recording_indexlike_pair(
+        pos=pos_bound,
+        endpos=endpos_bound,
+        pos_error=(
+            _IndexLikeBoomError(f"indexlike boom for {case.case_id} pos")
+            if error_slot == "pos"
+            else None
+        ),
+        endpos_error=(
+            _IndexLikeBoomError(f"indexlike boom for {case.case_id} endpos")
+            if error_slot == "endpos"
+            else None
+        ),
+    )
+
+    observed_error = _capture_error(
+        lambda: _call_pattern_dual_indexlike_window_case(
+            observed_pattern,
+            case,
+            observed_pos,
+            observed_endpos,
+        )
+    )
+    expected_error = _capture_error(
+        lambda: _call_pattern_dual_indexlike_window_case(
+            expected_pattern,
+            case,
+            expected_pos,
+            expected_endpos,
+        )
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+    assert observed_log == expected_call_log == expected_log
+    assert observed_pos.calls == expected_pos.calls == 1
+    assert observed_endpos.calls == expected_endpos.calls == (
+        0 if error_slot == "pos" else 1
+    )
 
 
 @pytest.mark.parametrize(
