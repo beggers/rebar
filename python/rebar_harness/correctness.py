@@ -56,6 +56,12 @@ CALLABLE_REPLACEMENT_FIXTURE_SELECTOR = "callable-replacement"
 OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR = (
     "open-ended-quantified-group-replacement-template"
 )
+NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR = (
+    "nested-broader-range-open-ended-replacement"
+)
+NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR = (
+    "nested-broader-range-open-ended-conditional-replacement"
+)
 OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "open-ended-quantified-group"
 MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR = "module-workflow-surface"
 PUBLIC_SURFACE_FIXTURE_SELECTOR = "public-surface"
@@ -348,6 +354,16 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             _sorted_published_fixture_subset(
                 "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+                "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+            )
+        ),
+        NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR: (
+            _sorted_published_fixture_subset(
+                "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+            )
+        ),
+        NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR: (
+            _sorted_published_fixture_subset(
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
             )
         ),

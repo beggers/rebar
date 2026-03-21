@@ -16,6 +16,8 @@ from rebar_harness.correctness import (
     CpythonReAdapter,
     FixtureCase,
     GROUPED_REPLACEMENT_FIXTURE_SELECTOR,
+    NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR,
+    NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR,
     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
     RebarAdapter,
     evaluate_case,
@@ -1823,8 +1825,8 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-pending-bytes-contract",
-            selector_fixture_paths=(
-                BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.manifest.path,
+            selector_fixture_paths=select_correctness_fixture_paths(
+                NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR
             ),
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),
@@ -1887,8 +1889,8 @@ def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> No
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="mixed-replacement-pending-bytes-contract",
-            selector_fixture_paths=(
-                MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.manifest.path,
+            selector_fixture_paths=select_correctness_fixture_paths(
+                NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR
             ),
             pattern_extractor=case_pattern,
             match_group_access_manifest_ids=(manifest_id,),
@@ -1950,8 +1952,8 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-mixed-contract",
-            selector_fixture_paths=(
-                BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE.manifest.path,
+            selector_fixture_paths=select_correctness_fixture_paths(
+                NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR
             ),
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),

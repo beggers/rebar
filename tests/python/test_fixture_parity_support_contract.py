@@ -193,6 +193,12 @@ _SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS = {
         "module_workflow_surface.py",
         "match_behavior_smoke.py",
     ),
+    correctness.NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR: (
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+    ),
+    correctness.NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR: (
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+    ),
     correctness.OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: (
         "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
