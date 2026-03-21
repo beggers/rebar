@@ -22,11 +22,12 @@ import rebar
 from rebar_harness import benchmarks
 from rebar_harness.correctness import (
     COLLECTION_REPLACEMENT_FIXTURE_SELECTOR,
-    CORRECTNESS_FIXTURES_ROOT,
     FixtureCase,
+    MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR,
     normalize_exported_symbol_metadata,
     normalize_exported_symbol_value,
     normalize_pattern_object_metadata,
+    PUBLIC_SURFACE_FIXTURE_SELECTOR,
     select_correctness_fixture_paths,
 )
 from tests.conftest import PYTHON_SOURCE
@@ -156,8 +157,9 @@ _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
 )
 
 
-MODULE_WORKFLOW_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "module_workflow_surface.py"
-MATCH_BEHAVIOR_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "match_behavior_smoke.py"
+MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
+    MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR
+)
 MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS = (
     "workflow-compile-str-bounded-wildcard",
     "workflow-compile-str-bounded-wildcard-ignorecase",
@@ -184,7 +186,7 @@ def _fixture_cases_for_helpers(
 
 
 (MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = load_published_fixture_bundles(
-    (MODULE_WORKFLOW_FIXTURE_PATH, MATCH_BEHAVIOR_FIXTURE_PATH)
+    MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
 )
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
@@ -416,12 +418,11 @@ NON_INSTANTIABLE_EXPORTS = (
 )
 # Keep the public-surface coverage on the canonical published manifests while
 # treating case ids as the contract token for these owner rows.
+PUBLIC_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
+    PUBLIC_SURFACE_FIXTURE_SELECTOR
+)
 PUBLIC_SURFACE_BUNDLES = load_published_fixture_bundles(
-    (
-        CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
-        CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
-        CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
-    ),
+    PUBLIC_SURFACE_FIXTURE_PATHS,
     pattern_extractor=_public_surface_case_contract_token,
 )
 PUBLIC_API_BUNDLE = published_fixture_bundle_by_manifest_id(
@@ -2462,7 +2463,7 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
+        expected_fixture_path=MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[0],
         expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
 
@@ -2502,7 +2503,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
 
 
 def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
-    assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
+    assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[0]
     assert (
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
@@ -2542,7 +2543,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
+        expected_fixture_path=MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[0],
         expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
     assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
@@ -3526,7 +3527,7 @@ def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> N
     assert_fixture_bundle_contract(
         MATCH_BEHAVIOR_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MATCH_BEHAVIOR_FIXTURE_PATH,
+        expected_fixture_path=MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS[1],
         expected_ordered_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
     )
 
@@ -6033,6 +6034,10 @@ def test_collection_helpers_stay_loud_for_unsupported_cases(
 def test_public_surface_parity_suite_stays_aligned_with_published_fixtures(
     bundle: FixtureBundle,
 ) -> None:
+    assert tuple(
+        public_surface_bundle.manifest.path
+        for public_surface_bundle in PUBLIC_SURFACE_BUNDLES
+    ) == PUBLIC_SURFACE_FIXTURE_PATHS
     assert tuple(
         public_surface_bundle.manifest.manifest_id
         for public_surface_bundle in PUBLIC_SURFACE_BUNDLES

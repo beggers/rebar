@@ -1,8 +1,9 @@
 # RBR-0823: Add surface selectors and collapse module-workflow owner path mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Delete the remaining raw owner-manifest path mirrors in `tests/python/test_module_workflow_parity_suite.py`.
@@ -108,3 +109,9 @@ PY` currently fails with `ImportError: cannot import name 'MODULE_WORKFLOW_SURFA
   - `ops/tasks/done/RBR-0817-collapse-grouped-capture-fixture-sidecar-onto-owner-ordered-selector.md`
   - `ops/tasks/done/RBR-0819-add-grouped-replacement-selector-and-collapse-suite-sidecar.md`
   - `ops/tasks/done/RBR-0821-add-collection-replacement-selector-and-collapse-singleton-fixture-loads.md`
+
+## Completion
+- Added `MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR = "module-workflow-surface"` and `PUBLIC_SURFACE_FIXTURE_SELECTOR = "public-surface"` to `python/rebar_harness/correctness.py`, and registered both selectors with the exact owner tuple order this suite already depended on.
+- Switched `tests/python/test_module_workflow_parity_suite.py` to load the module-workflow/match pair and the public-surface trio through `select_correctness_fixture_paths(...)`, keeping the existing bundle order, manifest-id checks, and `expected_fixture_path=` assertions anchored to selector-owned tuples instead of raw `CORRECTNESS_FIXTURES_ROOT / ...` literals.
+- Extended `_SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS` in `tests/python/test_fixture_parity_support_contract.py` so the shared selector registry contract now covers both new surface selectors.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`804 passed, 1 skipped`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`286 passed`), the required `rg` absence check (no matches), and the Acceptance selector-order probe (`ok`).

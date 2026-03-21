@@ -185,6 +185,10 @@ _SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS = {
     correctness.LITERAL_FLAG_FIXTURE_SELECTOR: (
         "literal_flag_workflows.py",
     ),
+    correctness.MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR: (
+        "module_workflow_surface.py",
+        "match_behavior_smoke.py",
+    ),
     correctness.OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: (
         "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
@@ -198,6 +202,11 @@ _SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS = {
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+    ),
+    correctness.PUBLIC_SURFACE_FIXTURE_SELECTOR: (
+        "public_api_surface.py",
+        "exported_symbol_surface.py",
+        "pattern_object_surface.py",
     ),
     correctness.QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR: (
         "exact_repeat_quantified_group_alternation_workflows.py",

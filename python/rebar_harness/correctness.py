@@ -57,6 +57,8 @@ OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR = (
     "open-ended-quantified-group-replacement-template"
 )
 OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "open-ended-quantified-group"
+MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR = "module-workflow-surface"
+PUBLIC_SURFACE_FIXTURE_SELECTOR = "public-surface"
 
 _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
     PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR: (
@@ -264,6 +266,15 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
         ),
         COLLECTION_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "collection_replacement_workflows.py",
+        ),
+        MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR: (
+            "module_workflow_surface.py",
+            "match_behavior_smoke.py",
+        ),
+        PUBLIC_SURFACE_FIXTURE_SELECTOR: (
+            "public_api_surface.py",
+            "exported_symbol_surface.py",
+            "pattern_object_surface.py",
         ),
         GROUPED_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "collection_replacement_workflows.py",
