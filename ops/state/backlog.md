@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0836` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the precompiled `Pattern` keyword replacement/split benchmark trio up on the shared Python-path `collection_replacement_boundary.py` surface.
+`RBR-0838` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the precompiled `Pattern` keyword `__index__` replacement/split benchmark trio up on the shared Python-path `collection_replacement_boundary.py` surface.
 
 ## Ordered Work
-1. `RBR-0836` catches the precompiled `Pattern` keyword replacement/split benchmark trio up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0838` catches the precompiled `Pattern` keyword `__index__` replacement/split benchmark trio up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
