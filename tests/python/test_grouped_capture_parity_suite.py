@@ -12,6 +12,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -28,96 +29,13 @@ from tests.python.fixture_parity_support import (
     workflow_result_with_cpython_parity,
 )
 from tests.conftest import duplicate_string_ids
-GROUPED_MATCH_TRACKED_CASE_IDS = (
-    "grouped-module-search-single-capture-str",
-    "grouped-module-fullmatch-single-capture-str",
-    "grouped-pattern-search-single-capture-str",
-    "grouped-pattern-match-single-capture-str",
-    "grouped-module-fullmatch-two-capture-gap-str",
-    "grouped-pattern-fullmatch-two-capture-gap-str",
-)
-NAMED_GROUP_CASE_IDS = (
-    "named-group-compile-metadata-str",
-    "named-group-module-search-metadata-str",
-    "named-group-pattern-search-metadata-str",
-)
 GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN = r"(ab)c"
-GROUPED_SEGMENT_CASE_IDS = (
-    "grouped-segment-compile-metadata-str",
-    "grouped-segment-module-search-str",
-    "grouped-segment-leading-capture-module-search-str",
-    "grouped-segment-pattern-fullmatch-str",
-    "grouped-segment-leading-capture-pattern-search-str",
-    "named-grouped-segment-compile-metadata-str",
-    "named-grouped-segment-module-search-str",
-    "named-grouped-segment-pattern-fullmatch-str",
-)
 GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER = (
     "grouped-segment-leading-capture-module-search-str",
     "grouped-segment-leading-capture-pattern-search-str",
 )
 GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS = frozenset(
     GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER
-)
-GROUPED_ALTERNATION_CASE_IDS = (
-    "grouped-alternation-compile-metadata-str",
-    "grouped-alternation-module-search-str",
-    "grouped-alternation-pattern-fullmatch-str",
-    "named-grouped-alternation-compile-metadata-str",
-    "named-grouped-alternation-module-search-str",
-    "named-grouped-alternation-pattern-fullmatch-str",
-)
-OPTIONAL_GROUP_CASE_IDS = (
-    "optional-group-compile-metadata-str",
-    "optional-group-module-search-present-str",
-    "optional-group-pattern-fullmatch-absent-str",
-    "named-optional-group-compile-metadata-str",
-    "named-optional-group-module-search-absent-str",
-    "named-optional-group-pattern-fullmatch-present-str",
-    "systematic-optional-group-numbered-compile-metadata-str",
-    "systematic-optional-group-numbered-module-search-present-str",
-    "systematic-optional-group-numbered-module-search-absent-str",
-    "systematic-optional-group-numbered-pattern-fullmatch-present-str",
-    "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
-    "systematic-optional-group-named-compile-metadata-str",
-    "systematic-optional-group-named-module-search-present-str",
-    "systematic-optional-group-named-module-search-absent-str",
-    "systematic-optional-group-named-pattern-fullmatch-present-str",
-    "systematic-optional-group-named-pattern-fullmatch-absent-str",
-)
-OPTIONAL_GROUP_ALTERNATION_CASE_IDS = (
-    "optional-group-alternation-compile-metadata-str",
-    "optional-group-alternation-module-search-present-str",
-    "optional-group-alternation-pattern-fullmatch-absent-str",
-    "named-optional-group-alternation-compile-metadata-str",
-    "named-optional-group-alternation-module-search-present-str",
-    "named-optional-group-alternation-pattern-fullmatch-absent-str",
-)
-NESTED_GROUP_CASE_IDS = (
-    "nested-group-compile-metadata-str",
-    "nested-group-module-search-str",
-    "nested-group-pattern-fullmatch-str",
-    "named-nested-group-compile-metadata-str",
-    "named-nested-group-module-search-str",
-    "named-nested-group-pattern-fullmatch-str",
-)
-NESTED_GROUP_ALTERNATION_CASE_IDS = (
-    "nested-group-alternation-compile-metadata-str",
-    "nested-group-alternation-module-search-str",
-    "nested-group-alternation-pattern-fullmatch-str",
-    "named-nested-group-alternation-compile-metadata-str",
-    "named-nested-group-alternation-module-search-str",
-    "named-nested-group-alternation-pattern-fullmatch-str",
-)
-GROUPED_CAPTURE_TRACKED_CASE_IDS = (
-    *GROUPED_MATCH_TRACKED_CASE_IDS,
-    *NAMED_GROUP_CASE_IDS,
-    *GROUPED_SEGMENT_CASE_IDS,
-    *GROUPED_ALTERNATION_CASE_IDS,
-    *OPTIONAL_GROUP_CASE_IDS,
-    *OPTIONAL_GROUP_ALTERNATION_CASE_IDS,
-    *NESTED_GROUP_CASE_IDS,
-    *NESTED_GROUP_ALTERNATION_CASE_IDS,
 )
 
 
@@ -162,22 +80,57 @@ GROUPED_MATCH_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "grouped-match-workflows",
 )
+NAMED_GROUP_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "named-group-workflows",
+)
 GROUPED_SEGMENT_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "grouped-segment-workflows",
 )
+NESTED_GROUP_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "nested-group-workflows",
+)
+NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "nested-group-alternation-workflows",
+)
+GROUPED_ALTERNATION_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "grouped-alternation-workflows",
+)
+OPTIONAL_GROUP_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "optional-group-workflows",
+)
+OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "optional-group-alternation-workflows",
+)
+
+
+def _bundle_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
+    return tuple(case.case_id for case in bundle.cases)
+
+
+def _grouped_capture_direct_test_bundles() -> tuple[tuple[str, FixtureBundle], ...]:
+    return (
+        ("grouped-match", GROUPED_MATCH_FIXTURE_BUNDLE),
+        ("named-group", NAMED_GROUP_FIXTURE_BUNDLE),
+        ("grouped-segment", GROUPED_SEGMENT_FIXTURE_BUNDLE),
+        ("grouped-alternation", GROUPED_ALTERNATION_FIXTURE_BUNDLE),
+        ("optional-group", OPTIONAL_GROUP_FIXTURE_BUNDLE),
+        ("optional-group-alternation", OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE),
+        ("nested-group", NESTED_GROUP_FIXTURE_BUNDLE),
+        ("nested-group-alternation", NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE),
+    )
 
 
 def _grouped_capture_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
     return {
-        "grouped-match": frozenset(GROUPED_MATCH_TRACKED_CASE_IDS),
-        "named-group": frozenset(NAMED_GROUP_CASE_IDS),
-        "grouped-segment": frozenset(GROUPED_SEGMENT_CASE_IDS),
-        "grouped-alternation": frozenset(GROUPED_ALTERNATION_CASE_IDS),
-        "optional-group": frozenset(OPTIONAL_GROUP_CASE_IDS),
-        "optional-group-alternation": frozenset(OPTIONAL_GROUP_ALTERNATION_CASE_IDS),
-        "nested-group": frozenset(NESTED_GROUP_CASE_IDS),
-        "nested-group-alternation": frozenset(NESTED_GROUP_ALTERNATION_CASE_IDS),
+        bucket_label: frozenset(_bundle_case_ids(bundle))
+        for bucket_label, bundle in _grouped_capture_direct_test_bundles()
     }
 
 
@@ -478,12 +431,9 @@ def _pattern_call_with_text(compiled_pattern: object, case: FixtureCase, text: s
 
 
 def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[str, ...]]:
-    assert tuple(case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.cases) == (
-        GROUPED_MATCH_TRACKED_CASE_IDS
-    )
-
-    selected_case_ids = GROUPED_MATCH_TRACKED_CASE_IDS[-2:]
-    uncovered_case_ids = GROUPED_MATCH_TRACKED_CASE_IDS[:-2]
+    grouped_match_case_ids = _bundle_case_ids(GROUPED_MATCH_FIXTURE_BUNDLE)
+    selected_case_ids = grouped_match_case_ids[-2:]
+    uncovered_case_ids = grouped_match_case_ids[:-2]
 
     assert tuple(case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.manifest.cases) == (
         *uncovered_case_ids,
@@ -493,12 +443,11 @@ def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[
 
 
 def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -> None:
-    assert tuple(case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases) == (
-        GROUPED_SEGMENT_CASE_IDS
+    grouped_segment_case_ids = frozenset(_bundle_case_ids(GROUPED_SEGMENT_FIXTURE_BUNDLE))
+    assert _grouped_capture_direct_test_case_id_buckets()["grouped-segment"] == (
+        grouped_segment_case_ids
     )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= frozenset(
-        case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
-    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= grouped_segment_case_ids
     assert GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN in {
         case.pattern for case in COMPILE_CASES
     }
@@ -588,7 +537,7 @@ def test_grouped_capture_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
             bundle,
-            selected_case_ids=tuple(case.case_id for case in bundle.cases),
+            selected_case_ids=_bundle_case_ids(bundle),
         )
 
 
@@ -696,9 +645,20 @@ def test_published_case_frontier_helper_reports_uncovered_order_drift() -> None:
 
 
 def test_grouped_capture_direct_test_buckets_cover_selected_frontier() -> None:
+    direct_test_bundle_entries = _grouped_capture_direct_test_bundles()
+    direct_test_case_id_buckets = _grouped_capture_direct_test_case_id_buckets()
+
+    assert tuple(direct_test_case_id_buckets) == tuple(
+        bucket_label for bucket_label, _ in direct_test_bundle_entries
+    )
+
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _grouped_capture_direct_test_case_id_buckets(),
-        selected_case_ids=GROUPED_CAPTURE_TRACKED_CASE_IDS,
+        direct_test_case_id_buckets,
+        selected_case_ids=tuple(
+            case_id
+            for _, bundle in direct_test_bundle_entries
+            for case_id in _bundle_case_ids(bundle)
+        ),
         coverage_label="grouped capture direct-test case-id buckets",
     )
 

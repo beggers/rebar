@@ -1,8 +1,9 @@
 # RBR-0849: Collapse grouped-capture manifest case-id sidecars onto owner bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the grouped-capture parity suite's remaining full-manifest case-id sidecars from `tests/python/test_grouped_capture_parity_suite.py` so the loaded owner bundles become the sole canonical source for those manifest-wide published case sets.
@@ -108,3 +109,9 @@ PY`
 - This is the direct post-JSON follow-on to the grouped-capture owner cleanup track rather than a new harness direction:
   - `RBR-0817` already moved the suite onto the shared `GROUPED_CAPTURE_FIXTURE_SELECTOR`; and
   - `RBR-0589` already reduced grouped-capture frontier plumbing to the grouped-match exception plus live bundle rows, leaving these remaining full-manifest case-id mirrors as the next small deletion.
+
+## Completion
+- 2026-03-21: Removed the detached grouped-capture manifest-wide case-id mirrors from `tests/python/test_grouped_capture_parity_suite.py`.
+- Added bundle-local case-id selectors and direct-test bundle ordering that derive grouped-match, named-group, grouped-segment, grouped-alternation, optional-group, optional-group-alternation, nested-group, and nested-group-alternation coverage directly from the already loaded owner bundles without changing subset contracts.
+- Rewired `_grouped_capture_direct_test_case_id_buckets()`, `_grouped_match_frontier_contract_case_ids()`, `test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier()`, `test_grouped_capture_parity_suite_tracks_published_case_frontier()`, and `test_grouped_capture_direct_test_buckets_cover_selected_frontier()` to use bundle-derived case ids while leaving `GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER`, `GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS`, `MATCH_GROUP_ACCESS_CASE_IDS`, `REGS_PARITY_CASE_IDS`, `SUPPLEMENTAL_MISS_CASES`, `PATTERN_BOUNDS_MATCH_CASES`, and `PATTERN_BOUNDS_NO_MATCH_CASES` unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` (`432 passed in 0.34s`), `bash -lc "! rg -n '^(GROUPED_MATCH_TRACKED_CASE_IDS|NAMED_GROUP_CASE_IDS|GROUPED_SEGMENT_CASE_IDS|GROUPED_ALTERNATION_CASE_IDS|OPTIONAL_GROUP_CASE_IDS|OPTIONAL_GROUP_ALTERNATION_CASE_IDS|NESTED_GROUP_CASE_IDS|NESTED_GROUP_ALTERNATION_CASE_IDS|GROUPED_CAPTURE_TRACKED_CASE_IDS) =' tests/python/test_grouped_capture_parity_suite.py"` (passes with no matches), and the task-local import/order probe from Acceptance (`ok`).
