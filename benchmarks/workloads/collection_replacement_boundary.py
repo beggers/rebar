@@ -518,6 +518,76 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-findall-on-str-string-purged-bytes-compiled-pattern",
+      "bucket": "module-findall",
+      "family": "module",
+      "operation": "module.findall",
+      "pattern": "abc",
+      "haystack": "zabczz",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a bytes pattern on a string-like object"
+      },
+      "text_model": "bytes",
+      "haystack_text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "findall",
+        "bytes",
+        "compiled-pattern",
+        "wrong-text-model",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-findall",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Purged module.findall helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on str haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-finditer-on-bytes-string-warm-str-compiled-pattern",
+      "bucket": "module-finditer",
+      "family": "module",
+      "operation": "module.finditer",
+      "pattern": "abc",
+      "haystack": "zabczz",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "finditer",
+        "literal",
+        "compiled-pattern",
+        "wrong-text-model",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-finditer",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Warm module.finditer helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on bytes haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-template-warm-str",
       "bucket": "module-sub",
       "family": "module",

@@ -477,7 +477,13 @@ _MODULE_HELPER_DUPLICATE_KEYWORD_FIELDS_BY_OPERATION = {
     "module.subn": "count",
 }
 _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
-    {"module.split", "module.sub", "module.subn"}
+    {
+        "module.split",
+        "module.findall",
+        "module.finditer",
+        "module.sub",
+        "module.subn",
+    }
 )
 _HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     **_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION,
@@ -631,7 +637,8 @@ def validate_haystack_text_model_override(
     if operation not in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS or not use_compiled_pattern:
         raise ValueError(
             "benchmark workload haystack_text_model currently only supports "
-            "compiled-pattern module.split/module.sub/module.subn workloads"
+            "compiled-pattern module.split/module.findall/module.finditer/"
+            "module.sub/module.subn workloads"
         )
 
     if haystack_text_model == text_model:
@@ -1049,6 +1056,8 @@ def helper_callable(module: Any, workload: Workload) -> Any:
             )
         if workload.operation == "module.findall":
             return module.findall(pattern_argument, haystack, workload.flags)
+        if workload.operation == "module.finditer":
+            return list(module.finditer(pattern_argument, haystack, workload.flags))
         if workload.operation == "module.sub":
             if uses_keyword_arguments:
                 if workload.flags != 0 and not uses_compiled_pattern:
@@ -1318,6 +1327,7 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
         "module.fullmatch",
         "module.split",
         "module.findall",
+        "module.finditer",
         "module.sub",
         "module.subn",
     }:

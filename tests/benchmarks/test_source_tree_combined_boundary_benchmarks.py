@@ -3317,7 +3317,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_wrong_text_model_workload,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 3)
+        self.assertEqual(len(expected_measured_workload_ids), 5)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -4702,11 +4702,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 834,
-                "module_workloads": 826,
+                "measured_workloads": 836,
+                "module_workloads": 828,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 834,
+                "total_workloads": 836,
             },
         )
 
@@ -5781,6 +5781,7 @@ def assert_benchmark_workload_matches_expected_result(
 
     if workload.operation in {
         "module.split",
+        "module.findall",
         "pattern.findall",
         "module.sub",
         "module.subn",
@@ -5791,7 +5792,7 @@ def assert_benchmark_workload_matches_expected_result(
         assert observed == expected
         return
 
-    if workload.operation == "pattern.finditer":
+    if workload.operation in {"module.finditer", "pattern.finditer"}:
         assert isinstance(observed, list)
         expected_matches = list(expected)
         assert len(observed) == len(expected_matches)
@@ -6230,7 +6231,7 @@ def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
 
 
 def _collection_replacement_wrong_text_model_haystack_index(operation: str) -> int:
-    if operation == "module.split":
+    if operation in {"module.split", "module.findall", "module.finditer"}:
         return 0
     if operation in {"module.sub", "module.subn"}:
         return 1
@@ -6245,7 +6246,7 @@ def _collection_replacement_wrong_text_model_correctness_case_signature(
 ) -> tuple[Any, ...] | None:
     if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
         return None
-    if case.helper not in {"split", "sub", "subn"}:
+    if case.helper not in {"split", "findall", "finditer", "sub", "subn"}:
         return None
     operation = f"module.{case.helper}"
     haystack_index = _collection_replacement_wrong_text_model_haystack_index(operation)
@@ -6275,6 +6276,8 @@ def _collection_replacement_wrong_text_model_workload_args(
             workload.haystack_payload(),
             workload.maxsplit_argument(),
         )
+    if workload.operation in {"module.findall", "module.finditer"}:
+        return (workload.haystack_payload(),)
     if workload.operation in {"module.sub", "module.subn"}:
         return (
             workload.replacement_payload(),
@@ -6312,7 +6315,14 @@ def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
         getattr(workload, "haystack_text_model", None) is not None
         and not workload.kwargs
         and workload.use_compiled_pattern
-        and workload.operation in {"module.split", "module.sub", "module.subn"}
+        and workload.operation
+        in {
+            "module.split",
+            "module.findall",
+            "module.finditer",
+            "module.sub",
+            "module.subn",
+        }
         and workload.expected_exception is not None
         and workload.expected_exception.get("type") == "TypeError"
     )
@@ -7234,6 +7244,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             {
                 "module-split-on-bytes-string-purged-str-compiled-pattern": (
                     "workflow-module-split-str-compiled-pattern-on-bytes-string",
+                ),
+                "module-findall-on-str-string-purged-bytes-compiled-pattern": (
+                    "workflow-module-findall-bytes-compiled-pattern-on-str-string",
+                ),
+                "module-finditer-on-bytes-string-warm-str-compiled-pattern": (
+                    "workflow-module-finditer-str-compiled-pattern-on-bytes-string",
                 ),
                 "module-sub-on-bytes-string-warm-str-compiled-pattern": (
                     "workflow-module-sub-str-compiled-pattern-on-bytes-string",
@@ -11152,6 +11168,7 @@ class CompiledPatternModuleWrongTextModelCase:
     count: int
     maxsplit: int
     expected_exception: dict[str, str]
+    expected_callback_result: object
 
 
 COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES = (
@@ -11169,6 +11186,7 @@ COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES = (
             "type": "TypeError",
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
+        expected_callback_result="module-result",
     ),
     CompiledPatternModuleWrongTextModelCase(
         id="module-sub-on-bytes-string-warm-str-compiled-pattern",
@@ -11184,6 +11202,7 @@ COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES = (
             "type": "TypeError",
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
+        expected_callback_result="module-result",
     ),
     CompiledPatternModuleWrongTextModelCase(
         id="module-subn-on-str-string-purged-bytes-compiled-pattern",
@@ -11199,6 +11218,39 @@ COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES = (
             "type": "TypeError",
             "message_substring": "cannot use a bytes pattern on a string-like object",
         },
+        expected_callback_result=("module-result", 0),
+    ),
+    CompiledPatternModuleWrongTextModelCase(
+        id="module-findall-on-str-string-purged-bytes-compiled-pattern",
+        operation="module.findall",
+        cache_mode="purged",
+        haystack="zabczz",
+        haystack_text_model="str",
+        replacement=None,
+        text_model="bytes",
+        count=0,
+        maxsplit=0,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a bytes pattern on a string-like object",
+        },
+        expected_callback_result="module-result",
+    ),
+    CompiledPatternModuleWrongTextModelCase(
+        id="module-finditer-on-bytes-string-warm-str-compiled-pattern",
+        operation="module.finditer",
+        cache_mode="warm",
+        haystack="zabczz",
+        haystack_text_model="bytes",
+        replacement=None,
+        text_model="str",
+        count=0,
+        maxsplit=0,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+        expected_callback_result=["module-finditer-result"],
     ),
 )
 
@@ -11283,6 +11335,22 @@ def _run_cpython_compiled_pattern_module_helper_wrong_text_model_workload(
             compiled_pattern,
             workload.haystack_payload(),
             workload.maxsplit_argument(),
+        )
+
+    if workload.operation == "module.findall":
+        return getattr(re, helper_name)(
+            compiled_pattern,
+            workload.haystack_payload(),
+            workload.flags,
+        )
+
+    if workload.operation == "module.finditer":
+        return list(
+            getattr(re, helper_name)(
+                compiled_pattern,
+                workload.haystack_payload(),
+                workload.flags,
+            )
         )
 
     if workload.operation in {"module.sub", "module.subn"}:
@@ -11415,6 +11483,18 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_wro
             ("module.subn", b"x", "zabczz", 1, 0, {}),
             id="module-subn-on-str-string-purged-bytes-compiled-pattern",
         ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES[3],
+            [("compile", b"abc", 0), ("purge",)],
+            ("module.findall", "zabczz", 0),
+            id="module-findall-on-str-string-purged-bytes-compiled-pattern",
+        ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES[4],
+            [("compile", "abc", 0)],
+            ("module.finditer", b"zabczz", 0),
+            id="module-finditer-on-bytes-string-warm-str-compiled-pattern",
+        ),
     ),
 )
 def test_compiled_pattern_module_helper_wrong_text_model_callbacks_precompile_first_argument_before_timing(
@@ -11431,7 +11511,7 @@ def test_compiled_pattern_module_helper_wrong_text_model_callbacks_precompile_fi
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() in {"module-result", ("module-result", 0)}
+    assert callback() == case.expected_callback_result
 
     compiled_pattern = module.compiled_patterns[0]
     last_call = module.calls[-1]
@@ -11968,6 +12048,28 @@ class _RecordingBenchmarkModule:
         if self._helper_exception is not None:
             raise self._helper_exception
         return "module-result"
+
+    def findall(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+    ) -> object:
+        self.calls.append(("module.findall", pattern, haystack, flags))
+        if self._helper_exception is not None:
+            raise self._helper_exception
+        return "module-result"
+
+    def finditer(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+    ) -> object:
+        self.calls.append(("module.finditer", pattern, haystack, flags))
+        if self._helper_exception is not None:
+            raise self._helper_exception
+        return iter(["module-finditer-result"])
 
     def sub(
         self,
@@ -12575,7 +12677,8 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             },
             re.escape(
                 "benchmark workload haystack_text_model currently only supports "
-                "compiled-pattern module.split/module.sub/module.subn workloads"
+                "compiled-pattern module.split/module.findall/module.finditer/"
+                "module.sub/module.subn workloads"
             ),
             id="operation-scope",
         ),
@@ -13596,10 +13699,10 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
         },
         "workloads": [
             {
-                "id": "module-finditer-unsupported-operation-contract",
-                "bucket": "module-finditer",
+                "id": "module-escape-unsupported-operation-contract",
+                "bucket": "module-escape",
                 "family": "module",
-                "operation": "module.finditer",
+                "operation": "module.escape",
                 "pattern": "abc",
                 "haystack": "abcabc",
                 "notes": [
@@ -13624,7 +13727,7 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
     ) == {
         "adapter": adapter_name,
         "status": "unavailable",
-        "reason": "ValueError: unsupported benchmark operation 'module.finditer'",
+        "reason": "ValueError: unsupported benchmark operation 'module.escape'",
     }
 
 
