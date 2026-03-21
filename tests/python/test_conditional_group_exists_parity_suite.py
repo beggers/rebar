@@ -77,9 +77,6 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(
     pattern_extractor=str_case_pattern,
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 QUANTIFIED_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "conditional-group-exists-quantified-workflows",
