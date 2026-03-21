@@ -517,12 +517,16 @@ def task_metadata_value(path: Path, key: str) -> str | None:
         lines = path.read_text(encoding="utf-8").splitlines()
     except OSError:
         return None
+    saw_task_title = False
     for line in lines:
+        if line.startswith("## "):
+            if saw_task_title:
+                break
+            saw_task_title = True
+            continue
         if line.startswith(prefix):
             value = line.partition(":")[2].strip()
             return value or None
-        if line.startswith("## "):
-            break
     return None
 
 
