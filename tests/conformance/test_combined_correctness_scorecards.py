@@ -4248,6 +4248,63 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
             },
         )
 
+    def test_build_suite_summaries_ignores_manifests_without_matching_case_results(
+        self,
+    ) -> None:
+        unused_manifest = _fixture_manifest(
+            filename="unused_fixture.py",
+            manifest_id="unused-fixture",
+            layer="module_workflow",
+            suite_id="unused.synthetic",
+        )
+
+        suites = correctness.build_suite_summaries(
+            (*MANIFESTS, unused_manifest),
+            CASE_RESULTS,
+        )
+
+        self.assertNotIn(
+            unused_manifest.suite_id,
+            [suite["id"] for suite in suites],
+        )
+        self.assertTrue(
+            all(
+                unused_manifest.manifest_id not in suite["manifest_ids"]
+                for suite in suites
+            )
+        )
+
+    def test_build_suite_summaries_only_fans_out_operations_for_multi_operation_manifests(
+        self,
+    ) -> None:
+        parser_suites = correctness.build_suite_summaries(
+            (PARSER_MANIFEST,),
+            CASE_RESULTS[:2],
+        )
+        workflow_suites = correctness.build_suite_summaries(
+            (WORKFLOW_MANIFEST,),
+            CASE_RESULTS[2:],
+        )
+
+        self.assertEqual(
+            [suite["id"] for suite in parser_suites],
+            [
+                "parser.compile",
+                "parser.compile.bytes",
+                "parser.compile.str",
+            ],
+        )
+        self.assertEqual(
+            [suite["id"] for suite in workflow_suites],
+            [
+                "workflow.synthetic",
+                "workflow.synthetic.bytes",
+                "workflow.synthetic.str",
+                "workflow.synthetic.module_call",
+                "workflow.synthetic.pattern_call",
+            ],
+        )
+
 
 class CorrectnessScorecardSuitesTest(unittest.TestCase):
     maxDiff = None
