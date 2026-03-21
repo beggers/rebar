@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 847/847 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0870` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument direct-success `split()` / `findall()` / `finditer()` / `sub()` / `subn()` quintet up on the shared Python-path `collection_replacement_boundary.py` surface by reusing the bounded compiled-pattern module-helper timing path already present on that owner route instead of widening the benchmark runner or reopening a broader compiled-pattern collection/replacement family. |
-| Work queue | `1` ready, `0` in progress, `872` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 852/852 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0872` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument literal `compile()` success pair up on the shared Python-path `module_boundary.py` surface by adding only the bounded benchmark-harness support needed for `module.compile(...)` with a precompiled first argument instead of reopening compile flag carriers, rejection neighbors, named-group compile publication, or another benchmark family. |
+| Work queue | `1` ready, `0` in progress, `874` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 847/847 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 852/852 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `847` |
-| Workloads with real `rebar` timings | `847` |
+| Published workloads | `852` |
+| Workloads with real `rebar` timings | `852` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0870` is the surviving follow-on on the `module-workflow-surface` frontier: add the compiled-pattern-first-argument direct-success `split()` / `findall()` / `finditer()` / `sub()` / `subn()` benchmark quintet to the shared Python-path `collection_replacement_boundary.py` surface without reopening broader compiled-pattern collection/replacement helper work.
+- `RBR-0872` is the surviving follow-on on the `module-workflow-surface` frontier: add the first compiled-pattern-first-argument literal `module.compile()` benchmark pair to the shared Python-path `module_boundary.py` surface with only the bounded benchmark-harness support that path still lacks, without reopening compile flag carriers, rejection neighbors, or named-group compile publication.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 847 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 852 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
