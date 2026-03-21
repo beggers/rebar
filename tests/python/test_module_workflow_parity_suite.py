@@ -4438,6 +4438,35 @@ def test_workflow_keyword_kwargs_signature_normalizes_indexlike_carriers_by_valu
     )
 
 
+def test_workflow_positional_args_signature_distinguishes_bool_int_and_indexlike() -> None:
+    assert _workflow_positional_args_signature([True, _INDEX_ONE, 1]) == (
+        ("bool", True),
+        ("indexlike", 1),
+        ("int", 1),
+    )
+    assert _workflow_positional_args_signature([1]) != _workflow_positional_args_signature(
+        [_INDEX_ONE]
+    )
+
+
+def test_workflow_positional_args_signature_normalizes_indexlike_carriers_by_value() -> None:
+    class _AlternateIndexLike:
+        __slots__ = ("value",)
+
+        def __init__(self, value: int) -> None:
+            self.value = value
+
+        def __index__(self) -> int:
+            return self.value
+
+        def __repr__(self) -> str:
+            return f"AlternateIndexLike({self.value})"
+
+    assert _workflow_positional_args_signature(["abc", _INDEX_FOUR]) == (
+        _workflow_positional_args_signature(["abc", _AlternateIndexLike(4)])
+    )
+
+
 def test_purge_regex_caches_calls_both_backends_before_and_after_test(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
