@@ -1767,8 +1767,17 @@ def _ensure_compatible_string(pattern: str | bytes, string: object) -> str | byt
 
 
 def _normalize_match_bounds(string: str | bytes, pos: int = 0, endpos: int | None = None) -> tuple[int, int]:
-    start, stop, _ = slice(pos, endpos).indices(len(string))
-    return start, stop
+    length = len(string)
+
+    def _clamp_bound(value: int) -> int:
+        normalized = operator.index(value)
+        if normalized < 0:
+            return 0
+        if normalized > length:
+            return length
+        return normalized
+
+    return _clamp_bound(pos), length if endpos is None else _clamp_bound(endpos)
 
 
 def _build_match(

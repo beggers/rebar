@@ -17162,12 +17162,7 @@ fn collect_literal_spans_bytes(
 fn normalize_bounds(length: usize, pos: isize, endpos: Option<isize>) -> (usize, usize) {
     let clamp = |index: isize| {
         if index < 0 {
-            let adjusted = length as isize + index;
-            if adjusted < 0 {
-                0
-            } else {
-                adjusted as usize
-            }
+            0
         } else {
             usize::min(index as usize, length)
         }
