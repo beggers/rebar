@@ -1,4 +1,6 @@
-Status: ready
+# RBR-0813: Collapse the branch-local backreference fixture sidecars onto canonical selectors
+
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -71,3 +73,4 @@ PY`
 - The selector order wrinkle is already architecturally contained in the suite:
   - `select_correctness_fixture_paths(BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR)` returns the branch-local manifest files in canonical sorted order rather than the suite's current local tuple order; but
   - this module resolves its important published anchors by manifest id and keeps the whole-manifest backreference order explicit through `WHOLE_MANIFEST_BACKREFERENCE_BUNDLES`, so this cleanup should delete the filename sidecars instead of preserving the broader local path order as another duplicate contract.
+- 2026-03-21: Replaced the local branch-local backreference filename sidecars in `tests/python/test_branch_local_backreference_parity_suite.py` with `select_correctness_fixture_paths(SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR)` plus `select_correctness_fixture_paths(BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR)`, kept the explicit whole-manifest and manifest-id bundle anchors intact, and removed the stale mixed-text-model order dependency by checking the same manifest-id coverage instead of the deleted sidecar order. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`561 passed in 0.81s`), `bash -lc "! rg -n 'BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES|WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES|CORRECTNESS_FIXTURES_ROOT / fixture_name' tests/python/test_branch_local_backreference_parity_suite.py"` (passed with no matches), and the task's selector coverage snippet (`ok`).

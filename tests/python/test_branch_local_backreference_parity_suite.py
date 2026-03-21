@@ -7,7 +7,12 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
+    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
+    FixtureCase,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_direct_bytes_follow_on_bundle_routing,
@@ -114,29 +119,9 @@ SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS = (
 )
 
 
-BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES = (
-    "named_backreference_workflows.py",
-    "numbered_backreference_workflows.py",
-    "branch_local_backreference_workflows.py",
-    "quantified_branch_local_backreference_workflows.py",
-    "optional_group_alternation_branch_local_backreference_workflows.py",
-    "conditional_group_exists_branch_local_backreference_workflows.py",
-    "nested_group_alternation_branch_local_backreference_workflows.py",
-    "quantified_alternation_branch_local_backreference_workflows.py",
-    "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
-    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
-    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
-)
-WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES = (
-    "named_backreference_workflows.py",
-    "numbered_backreference_workflows.py",
-)
 FIXTURE_BUNDLES = load_published_fixture_bundles(
-    tuple(
-        CORRECTNESS_FIXTURES_ROOT / fixture_name
-        for fixture_name in BRANCH_LOCAL_BACKREFERENCE_FIXTURE_NAMES
-    ),
+    select_correctness_fixture_paths(SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR)
+    + select_correctness_fixture_paths(BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR),
     pattern_extractor=case_pattern,
 )
 NAMED_BACKREFERENCE_BUNDLE = published_fixture_bundle_by_manifest_id(
@@ -1116,7 +1101,12 @@ def test_whole_manifest_backreference_bundles_load_in_declared_order_with_bundle
     bundles = WHOLE_MANIFEST_BACKREFERENCE_BUNDLES
 
     assert tuple(bundle.manifest.path.name for bundle in bundles) == (
-        WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES
+        tuple(
+            path.name
+            for path in select_correctness_fixture_paths(
+                SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR
+            )
+        )
     )
     for bundle in bundles:
         assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
@@ -1200,14 +1190,14 @@ def test_branch_local_backreference_direct_test_case_id_buckets_cover_selected_f
 
 def test_branch_local_backreference_mixed_text_model_manifests_keep_explicit_direct_bytes_follow_on_routing(
 ) -> None:
-    mixed_manifest_ids = tuple(
+    mixed_manifest_ids = {
         bundle.manifest.manifest_id
         for bundle in FIXTURE_BUNDLES
         if {case.text_model for case in bundle.cases} == {"bytes", "str"}
-    )
-    direct_follow_on_manifest_ids = tuple(
+    }
+    direct_follow_on_manifest_ids = {
         spec.bundle.manifest.manifest_id for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
-    )
+    }
 
     assert direct_follow_on_manifest_ids == mixed_manifest_ids
 
