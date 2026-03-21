@@ -241,25 +241,6 @@ PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
     and case_pattern(case) == "a.c"
     and case.helper in {"search", "match", "fullmatch"}
 )
-PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
-    case
-    for case in MODULE_CALL_CASES
-    if case.case_id
-    in {
-        "workflow-module-search-flags-keyword-str",
-        "workflow-module-match-flags-keyword-bytes",
-        "workflow-module-fullmatch-flags-keyword-str",
-        "workflow-module-split-maxsplit-keyword-bytes",
-        "workflow-module-split-maxsplit-indexlike-bytes",
-        "workflow-module-split-maxsplit-bool-false-bytes",
-        "workflow-module-sub-count-keyword-str",
-        "workflow-module-sub-count-indexlike-str",
-        "workflow-module-sub-count-bool-true-str",
-        "workflow-module-subn-count-keyword-bytes",
-        "workflow-module-subn-count-indexlike-bytes",
-        "workflow-module-subn-count-bool-false-bytes",
-    }
-)
 PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
@@ -1970,6 +1951,43 @@ PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
 )
 
 
+def _module_keyword_direct_signature(
+    case: ModuleKeywordCallCase,
+) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
+    pattern, *args = case.args
+    return (
+        case.helper,
+        pattern,
+        tuple(args),
+        _workflow_keyword_kwargs_signature(case.kwargs),
+        "bytes" if isinstance(pattern, bytes) else "str",
+    )
+
+
+def _module_keyword_fixture_signature(
+    case: FixtureCase,
+) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
+    return (
+        case.helper,
+        case_pattern(case),
+        tuple(case.args),
+        _workflow_keyword_kwargs_signature(case.kwargs),
+        case.text_model,
+    )
+
+
+def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
+    direct_signatures = {
+        _module_keyword_direct_signature(case) for case in MODULE_KEYWORD_CALL_CASES
+    }
+    return tuple(
+        case
+        for case in MODULE_CALL_CASES
+        if not case.use_compiled_pattern
+        and _module_keyword_fixture_signature(case) in direct_signatures
+    )
+
+
 def _module_positional_indexlike_direct_signature(
     case: ModulePositionalIndexLikeCallCase,
 ) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
@@ -2989,7 +3007,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
                 case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
             ),
             "module-keyword-helper": frozenset(
-                case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+                case.case_id for case in _published_module_keyword_fixture_cases()
             ),
             "module-positional-indexlike-helper": frozenset(
                 case.case_id for case in _published_module_positional_indexlike_fixture_cases()
@@ -3346,38 +3364,21 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
 def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases(
 ) -> None:
-    def direct_signature(
-        case: ModuleKeywordCallCase,
-    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-        pattern, *args = case.args
-        return (
-            case.helper,
-            pattern,
-            tuple(args),
-            _workflow_keyword_kwargs_signature(case.kwargs),
-            "bytes" if isinstance(pattern, bytes) else "str",
-        )
-
     direct_cases_by_signature = {
-        direct_signature(case): case for case in MODULE_KEYWORD_CALL_CASES
+        _module_keyword_direct_signature(case): case for case in MODULE_KEYWORD_CALL_CASES
     }
+    published_fixture_cases = _published_module_keyword_fixture_cases()
     selected_direct_cases = tuple(
         direct_cases_by_signature[
-            (
-                case.helper,
-                case_pattern(case),
-                tuple(case.args),
-                _workflow_keyword_kwargs_signature(case.kwargs),
-                case.text_model,
-            )
+            _module_keyword_fixture_signature(case)
         ]
-        for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+        for case in published_fixture_cases
     )
 
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
-            PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES,
+            published_fixture_cases,
             "str",
         )
     ) == (
@@ -3390,7 +3391,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
-            PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES,
+            published_fixture_cases,
             "bytes",
         )
     ) == (
@@ -3403,7 +3404,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-subn-count-bool-false-bytes",
     )
     assert tuple(
-        case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+        case.case_id for case in published_fixture_cases
     ) == (
         "workflow-module-search-flags-keyword-str",
         "workflow-module-match-flags-keyword-bytes",
@@ -3434,8 +3435,8 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "module-subn-count-indexlike-bytes",
         "module-subn-count-bool-false-bytes",
     )
-    assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES)
-    assert Counter(case.helper for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES) == (
+    assert len(selected_direct_cases) == len(published_fixture_cases)
+    assert Counter(case.helper for case in published_fixture_cases) == (
         Counter(
             {
                 "search": 1,
@@ -3448,11 +3449,11 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         )
     )
     assert tuple(
-        case.helper for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
+        case.helper for case in published_fixture_cases
     ) == tuple(case.helper for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(
-        PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES,
+        published_fixture_cases,
         selected_direct_cases,
     ):
         direct_pattern, *direct_args = direct_case.args
