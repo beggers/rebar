@@ -215,16 +215,6 @@ def _display_scorecard_path(path: pathlib.Path) -> str:
     return pathlib.PurePosixPath(*path.parts[reports_root_index:]).as_posix()
 
 
-def _retired_published_scorecard_path_error(published_path: pathlib.Path) -> str:
-    retired_path = published_path.with_suffix(".json")
-    return (
-        f"{_display_scorecard_path(retired_path)} is a retired legacy published "
-        "scorecard path; use "
-        f"{_display_scorecard_path(published_path)} for the tracked published "
-        "scorecard or a non-tracked temporary .json path for scratch output."
-    )
-
-
 def _resolve_report_path(report_path: pathlib.Path | str) -> pathlib.Path:
     expanded = pathlib.Path(report_path).expanduser()
     if not expanded.is_absolute():
@@ -244,7 +234,11 @@ class ScorecardReportDescriptor:
         retired_path = _resolve_report_path(self.published_path.with_suffix(".json"))
         if resolved_path == retired_path:
             raise ValueError(
-                _retired_published_scorecard_path_error(self.published_path)
+                f"{_display_scorecard_path(retired_path)} is a retired legacy "
+                "published scorecard path; use "
+                f"{_display_scorecard_path(self.published_path)} for the tracked "
+                "published scorecard or a non-tracked temporary .json path for "
+                "scratch output."
             )
         return resolved_path
 
