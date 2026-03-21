@@ -260,15 +260,15 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "conditional_group_exists_replacement_workflows.py",
             "conditional_group_exists_replacement_template_workflows.py",
         ),
-        GROUPED_CAPTURE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-            "grouped_alternation_workflows.py",
+        GROUPED_CAPTURE_FIXTURE_SELECTOR: (
             "grouped_match_workflows.py",
-            "grouped_segment_workflows.py",
             "named_group_workflows.py",
-            "nested_group_alternation_workflows.py",
-            "optional_group_alternation_workflows.py",
+            "grouped_segment_workflows.py",
+            "grouped_alternation_workflows.py",
             "optional_group_workflows.py",
+            "optional_group_alternation_workflows.py",
             "nested_group_workflows.py",
+            "nested_group_alternation_workflows.py",
         ),
         WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "wider_ranged_repeat_quantified_group_workflows.py",

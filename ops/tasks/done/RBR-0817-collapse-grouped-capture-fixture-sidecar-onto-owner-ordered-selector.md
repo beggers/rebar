@@ -1,6 +1,6 @@
 # RBR-0817: Collapse the grouped-capture fixture sidecar onto an owner-ordered selector
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -82,3 +82,6 @@ PY`
 - The selector-order wrinkle is already isolated:
   - `rg -n "GROUPED_CAPTURE_FIXTURE_SELECTOR" .` shows the selector is only defined in `python/rebar_harness/correctness.py` and not consumed anywhere else yet; and
   - `test_grouped_capture_parity_suite.py` already asserts the owner-order bundle contract explicitly, so the selector should carry that order instead of forcing the suite to duplicate it locally.
+
+## Completion
+- 2026-03-21: Moved the grouped-capture suite onto `GROUPED_CAPTURE_FIXTURE_SELECTOR`, changed that selector to the suite's owner-ordered eight-manifest tuple, and deleted the suite-local `CORRECTNESS_FIXTURES_ROOT / ...` sidecar. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py`, the `rg` absence check from Acceptance, and the selector-order probe from Acceptance.

@@ -7,7 +7,11 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    GROUPED_CAPTURE_FIXTURE_SELECTOR,
+    FixtureCase,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -152,16 +156,7 @@ class OptionalGroupExpandCase:
 
 
 FIXTURE_BUNDLES = load_published_fixture_bundles(
-    (
-        CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT / "named_group_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT / "grouped_segment_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT / "grouped_alternation_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT / "optional_group_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT / "optional_group_alternation_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT / "nested_group_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT / "nested_group_alternation_workflows.py",
-    ),
+    select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR),
     pattern_extractor=str_case_pattern,
 )
 GROUPED_MATCH_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
