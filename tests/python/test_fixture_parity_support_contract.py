@@ -2810,6 +2810,43 @@ def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes
         }.isdisjoint(bucket_case_ids)
 
 
+def test_direct_test_case_id_buckets_for_follow_on_bundles_keeps_shared_and_bytes_rows_separate(
+) -> None:
+    follow_on_fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
+    preserved_fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT
+        / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
+    )
+    follow_on_bundle, preserved_bundle = fixture_parity_support.load_published_fixture_bundles(
+        (follow_on_fixture_path, preserved_fixture_path)
+    )
+
+    compile_cases, module_cases, pattern_cases = (
+        fixture_parity_support.partition_direct_bytes_follow_on_case_buckets(
+            (follow_on_bundle, preserved_bundle),
+            (follow_on_bundle,),
+        )
+    )
+
+    assert fixture_parity_support.direct_test_case_id_buckets_for_follow_on_bundles(
+        compile_cases=compile_cases,
+        module_cases=module_cases,
+        pattern_cases=pattern_cases,
+        module_bucket_label="shared-module-search",
+        pattern_bucket_label="shared-pattern-fullmatch",
+        follow_on_buckets=(("open-ended-bytes-follow-on", follow_on_bundle),),
+    ) == {
+        "shared-compile": frozenset(case.case_id for case in compile_cases),
+        "shared-module-search": frozenset(case.case_id for case in module_cases),
+        "shared-pattern-fullmatch": frozenset(case.case_id for case in pattern_cases),
+        "open-ended-bytes-follow-on": frozenset(
+            case.case_id for case in follow_on_bundle.cases if case.text_model == "bytes"
+        ),
+    }
+
+
 def test_published_bytes_texts_by_pattern_separates_search_and_fullmatch_rows(
 ) -> None:
     fixture_path = (

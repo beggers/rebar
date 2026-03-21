@@ -377,6 +377,28 @@ def partition_direct_bytes_follow_on_case_buckets(
     )
 
 
+def direct_test_case_id_buckets_for_follow_on_bundles(
+    *,
+    compile_cases: Iterable[FixtureCase],
+    module_cases: Iterable[FixtureCase],
+    pattern_cases: Iterable[FixtureCase],
+    module_bucket_label: str,
+    pattern_bucket_label: str,
+    follow_on_buckets: Iterable[tuple[str, FixtureBundle]],
+) -> dict[str, frozenset[str]]:
+    return {
+        "shared-compile": frozenset(case.case_id for case in compile_cases),
+        module_bucket_label: frozenset(case.case_id for case in module_cases),
+        pattern_bucket_label: frozenset(case.case_id for case in pattern_cases),
+        **{
+            bucket_label: frozenset(
+                case.case_id for case in bundle.cases if case.text_model == "bytes"
+            )
+            for bucket_label, bundle in follow_on_buckets
+        },
+    }
+
+
 def load_published_fixture_bundles(
     fixture_paths: Iterable[pathlib.Path],
     *,

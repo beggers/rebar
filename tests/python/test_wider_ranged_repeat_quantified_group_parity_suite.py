@@ -31,6 +31,7 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
+    direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_for_operation,
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
@@ -339,21 +340,6 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS = tuple(
 )
 
 
-def _wider_ranged_repeat_quantified_group_direct_test_case_id_buckets(
-) -> dict[str, frozenset[str]]:
-    return {
-        "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-        "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
-        "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
-        **{
-            f"{spec.id}-bytes-follow-on": frozenset(
-                case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
-            )
-            for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
-        },
-    }
-
-
 def _build_backtracking_trace_cases(
     *,
     prefix: str,
@@ -571,7 +557,17 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
 def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _wider_ranged_repeat_quantified_group_direct_test_case_id_buckets(),
+        direct_test_case_id_buckets_for_follow_on_bundles(
+            compile_cases=COMPILE_CASES,
+            module_cases=MODULE_CASES,
+            pattern_cases=PATTERN_CASES,
+            module_bucket_label="shared-module-search",
+            pattern_bucket_label="shared-pattern-fullmatch",
+            follow_on_buckets=(
+                (f"{spec.id}-bytes-follow-on", spec.bundle)
+                for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+            ),
+        ),
         selected_case_ids=WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS,
         coverage_label=(
             "wider-ranged-repeat quantified group direct-test case-id buckets"

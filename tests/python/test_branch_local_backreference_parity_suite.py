@@ -26,6 +26,7 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
+    direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
@@ -362,10 +363,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CAS
 )
 
 
-def _direct_bytes_follow_on_bucket_label(bundle: FixtureBundle) -> str:
-    return f"{bundle.expected_manifest_id.removesuffix('-workflows')}-bytes-follow-on"
-
-
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
         bundle=QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
@@ -530,21 +527,6 @@ WORKFLOW_CASES = tuple(
 BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS = tuple(
     case.case_id for case in PUBLISHED_CASES
 )
-
-
-def _branch_local_backreference_direct_test_case_id_buckets(
-) -> dict[str, frozenset[str]]:
-    return {
-        "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-        "shared-module": frozenset(case.case_id for case in MODULE_CASES),
-        "shared-pattern": frozenset(case.case_id for case in PATTERN_CASES),
-        **{
-            _direct_bytes_follow_on_bucket_label(spec.bundle): frozenset(
-                case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
-            )
-            for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
-        },
-    }
 
 
 MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
@@ -1182,7 +1164,20 @@ def test_branch_local_backreference_parity_suite_tracks_published_case_frontier(
 def test_branch_local_backreference_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _branch_local_backreference_direct_test_case_id_buckets(),
+        direct_test_case_id_buckets_for_follow_on_bundles(
+            compile_cases=COMPILE_CASES,
+            module_cases=MODULE_CASES,
+            pattern_cases=PATTERN_CASES,
+            module_bucket_label="shared-module",
+            pattern_bucket_label="shared-pattern",
+            follow_on_buckets=(
+                (
+                    f"{spec.bundle.expected_manifest_id.removesuffix('-workflows')}-bytes-follow-on",
+                    spec.bundle,
+                )
+                for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+            ),
+        ),
         selected_case_ids=BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS,
         coverage_label="branch-local-backreference direct-test case-id buckets",
     )
@@ -1210,7 +1205,23 @@ def test_branch_local_backreference_mixed_text_model_manifests_keep_explicit_dir
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: BranchLocalBytesFollowOnSpec,
 ) -> None:
-    direct_test_case_id_buckets = _branch_local_backreference_direct_test_case_id_buckets()
+    direct_test_case_id_buckets = direct_test_case_id_buckets_for_follow_on_bundles(
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
+        module_bucket_label="shared-module",
+        pattern_bucket_label="shared-pattern",
+        follow_on_buckets=(
+            (
+                f"{follow_on_spec.bundle.expected_manifest_id.removesuffix('-workflows')}-bytes-follow-on",
+                follow_on_spec.bundle,
+            )
+            for follow_on_spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+        ),
+    )
+    bucket_label = (
+        f"{spec.bundle.expected_manifest_id.removesuffix('-workflows')}-bytes-follow-on"
+    )
     bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         spec.bundle,
         compile_cases=COMPILE_CASES,
@@ -1226,9 +1237,9 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
         if case.text_model == "bytes"
     )
 
-    assert direct_test_case_id_buckets[
-        _direct_bytes_follow_on_bucket_label(spec.bundle)
-    ] == frozenset(case.case_id for case in bundle_bytes_cases)
+    assert direct_test_case_id_buckets[bucket_label] == frozenset(
+        case.case_id for case in bundle_bytes_cases
+    )
     assert len(spec.cases) == 2
     assert {case.pattern for case in spec.cases} == expected_compile_patterns
     assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(

@@ -37,6 +37,7 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
+    direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_for_operation,
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
@@ -338,21 +339,6 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
 )
-
-
-def _open_ended_quantified_group_direct_test_case_id_buckets(
-) -> dict[str, frozenset[str]]:
-    return {
-        "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-        "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
-        "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
-        **{
-            f"{spec.follow_on_id}-bytes-follow-on": frozenset(
-                case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
-            )
-            for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
-        },
-    }
 
 
 def _flatten_open_ended_bytes_cases() -> tuple[SupplementalCase, ...]:
@@ -724,7 +710,17 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _open_ended_quantified_group_direct_test_case_id_buckets(),
+        direct_test_case_id_buckets_for_follow_on_bundles(
+            compile_cases=COMPILE_CASES,
+            module_cases=MODULE_CASES,
+            pattern_cases=PATTERN_CASES,
+            module_bucket_label="shared-module-search",
+            pattern_bucket_label="shared-pattern-fullmatch",
+            follow_on_buckets=(
+                (f"{spec.follow_on_id}-bytes-follow-on", spec.bundle)
+                for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+            ),
+        ),
         selected_case_ids=OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS,
         coverage_label="open-ended quantified group direct-test case-id buckets",
     )
