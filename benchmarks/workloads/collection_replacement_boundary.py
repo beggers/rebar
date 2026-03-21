@@ -314,6 +314,38 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-split-maxsplit-keyword-warm-str",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "zabczabc",
+      "flags": 0,
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "literal",
+        "maxsplit",
+        "keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "literal-text",
+        "keyword-maxsplit"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.split helper path that keeps the bounded maxsplit= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",
@@ -403,6 +435,40 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-count-keyword-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "count": 1
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "bytes",
+        "count",
+        "keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "cache-purge",
+        "keyword-count"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.sub helper path that keeps the bounded count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-subn-count-indexlike-positional-warm-str",
       "bucket": "pattern-subn",
       "family": "module",
@@ -435,6 +501,39 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled Pattern.subn helper path that keeps the bounded positional __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-count-keyword-warm-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count": 1
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "literal",
+        "count",
+        "keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "literal-text",
+        "keyword-count"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.subn helper path that keeps the bounded count= keyword workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

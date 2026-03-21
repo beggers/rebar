@@ -154,8 +154,11 @@ class Workload:
                 field_name="endpos",
             )
         )
-        kwargs = normalize_keyword_workload_arguments(raw_workload.get("kwargs"))
-        validate_pattern_helper_window_argument_carriers(
+        kwargs = normalize_keyword_workload_arguments(
+            raw_workload.get("kwargs"),
+            operation=operation,
+        )
+        validate_pattern_helper_keyword_argument_carriers(
             operation=operation,
             pos=pos,
             endpos=endpos,
@@ -408,6 +411,7 @@ def normalize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     }
 
 
+_PATTERN_HELPER_WINDOW_KEYWORD_FIELDS = frozenset({"pos", "endpos"})
 _PATTERN_HELPER_WINDOW_OPERATIONS = frozenset(
     {
         "pattern.search",
@@ -417,10 +421,29 @@ _PATTERN_HELPER_WINDOW_OPERATIONS = frozenset(
         "pattern.finditer",
     }
 )
-_PATTERN_HELPER_WINDOW_KEYWORD_FIELDS = frozenset({"pos", "endpos"})
+_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
+    **{
+        operation: _PATTERN_HELPER_WINDOW_KEYWORD_FIELDS
+        for operation in _PATTERN_HELPER_WINDOW_OPERATIONS
+    },
+    "pattern.split": frozenset({"maxsplit"}),
+    "pattern.sub": frozenset({"count"}),
+    "pattern.subn": frozenset({"count"}),
+}
+_PATTERN_HELPER_KEYWORD_OPERATIONS = frozenset(
+    _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION
+)
+_PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
+    "pattern.search, pattern.match, pattern.fullmatch, pattern.findall, "
+    "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
+)
 
 
-def normalize_keyword_workload_arguments(value: Any) -> dict[str, Any]:
+def normalize_keyword_workload_arguments(
+    value: Any,
+    *,
+    operation: str,
+) -> dict[str, Any]:
     if value is None:
         return {}
 
@@ -428,15 +451,31 @@ def normalize_keyword_workload_arguments(value: Any) -> dict[str, Any]:
     if not isinstance(normalized, dict):
         raise ValueError("benchmark workload kwargs must be an object")
 
+    allowed_keys = _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
+    if allowed_keys is None:
+        raise ValueError(
+            "benchmark workload kwargs are only supported for "
+            f"{_PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION}"
+        )
+
     unknown_keys = sorted(
         key
         for key in normalized
-        if key not in _PATTERN_HELPER_WINDOW_KEYWORD_FIELDS
+        if key not in allowed_keys
     )
     if unknown_keys:
+        allowed_key_description = ", ".join(f"`{key}`" for key in sorted(allowed_keys))
+        if len(allowed_keys) > 1:
+            allowed_key_description = allowed_key_description.replace(
+                ", ",
+                " and ",
+                len(allowed_keys) - 1,
+            )
         raise ValueError(
-            "benchmark workload kwargs only supports the `pos` and `endpos` "
-            f"keys; got unsupported keys {unknown_keys!r}"
+            f"benchmark workload kwargs for {operation} only supports the "
+            f"{allowed_key_description} key"
+            f"{'' if len(allowed_keys) == 1 else 's'}; got unsupported keys "
+            f"{unknown_keys!r}"
         )
 
     return {
@@ -448,7 +487,7 @@ def normalize_keyword_workload_arguments(value: Any) -> dict[str, Any]:
     }
 
 
-def validate_pattern_helper_window_argument_carriers(
+def validate_pattern_helper_keyword_argument_carriers(
     *,
     operation: str,
     pos: Any | None,
@@ -458,14 +497,11 @@ def validate_pattern_helper_window_argument_carriers(
     if not kwargs:
         return
 
-    if operation not in _PATTERN_HELPER_WINDOW_OPERATIONS:
-        raise ValueError(
-            "benchmark workload kwargs are only supported for pattern.search, "
-            "pattern.match, pattern.fullmatch, pattern.findall, and "
-            "pattern.finditer"
-        )
-
-    if pos is not None or endpos is not None:
+    if (
+        _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION.get(operation)
+        == _PATTERN_HELPER_WINDOW_KEYWORD_FIELDS
+        and (pos is not None or endpos is not None)
+    ):
         raise ValueError(
             "benchmark workload cannot mix top-level pos/endpos fields with "
             "keyword kwargs carriers"
@@ -574,8 +610,11 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
             field_name="endpos",
         )
     )
-    kwargs = normalize_keyword_workload_arguments(payload.get("kwargs"))
-    validate_pattern_helper_window_argument_carriers(
+    kwargs = normalize_keyword_workload_arguments(
+        payload.get("kwargs"),
+        operation=operation,
+    )
+    validate_pattern_helper_keyword_argument_carriers(
         operation=operation,
         pos=pos,
         endpos=endpos,
@@ -832,19 +871,29 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
     haystack = workload.haystack_payload()
     uses_positional_window = workload.pos is not None or workload.endpos is not None
-    uses_keyword_window = bool(workload.kwargs)
+    uses_keyword_arguments = bool(workload.kwargs)
 
     def compile_pattern() -> Any:
         return module.compile(pattern, workload.flags)
 
     def invoke(compiled: Any) -> object:
-        if uses_positional_window or uses_keyword_window:
-            if workload.operation not in _PATTERN_HELPER_WINDOW_OPERATIONS:
-                raise ValueError(
-                    "benchmark window arguments are only supported for "
-                    "pattern.search, pattern.match, pattern.fullmatch, "
-                    "pattern.findall, and pattern.finditer"
-                )
+        if (
+            uses_positional_window
+            and workload.operation not in _PATTERN_HELPER_WINDOW_OPERATIONS
+        ):
+            raise ValueError(
+                "benchmark window arguments are only supported for "
+                "pattern.search, pattern.match, pattern.fullmatch, "
+                "pattern.findall, and pattern.finditer"
+            )
+        if (
+            uses_keyword_arguments
+            and workload.operation not in _PATTERN_HELPER_KEYWORD_OPERATIONS
+        ):
+            raise ValueError(
+                "benchmark workload kwargs are only supported for "
+                f"{_PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION}"
+            )
 
         def window_call_args() -> tuple[Any, ...]:
             args: list[Any] = [haystack]
@@ -854,45 +903,59 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
                 args.append(workload.endpos_argument())
             return tuple(args)
 
-        def window_call_kwargs() -> dict[str, Any]:
-            if not uses_keyword_window:
+        def keyword_call_kwargs() -> dict[str, Any]:
+            if not uses_keyword_arguments:
                 return {}
             return workload.keyword_arguments()
 
         if workload.operation == "pattern.search":
-            if uses_keyword_window:
-                return compiled.search(haystack, **window_call_kwargs())
+            if uses_keyword_arguments:
+                return compiled.search(haystack, **keyword_call_kwargs())
             return compiled.search(*window_call_args())
         if workload.operation == "pattern.match":
-            if uses_keyword_window:
-                return compiled.match(haystack, **window_call_kwargs())
+            if uses_keyword_arguments:
+                return compiled.match(haystack, **keyword_call_kwargs())
             if uses_positional_window:
                 return compiled.match(*window_call_args())
             return compiled.match(haystack)
         if workload.operation == "pattern.fullmatch":
-            if uses_keyword_window:
-                return compiled.fullmatch(haystack, **window_call_kwargs())
+            if uses_keyword_arguments:
+                return compiled.fullmatch(haystack, **keyword_call_kwargs())
             return compiled.fullmatch(*window_call_args())
         if workload.operation == "pattern.split":
+            if uses_keyword_arguments:
+                return compiled.split(haystack, **keyword_call_kwargs())
             return compiled.split(
                 haystack,
                 workload.maxsplit_argument(),
             )
         if workload.operation == "pattern.findall":
-            if uses_keyword_window:
-                return compiled.findall(haystack, **window_call_kwargs())
+            if uses_keyword_arguments:
+                return compiled.findall(haystack, **keyword_call_kwargs())
             return compiled.findall(*window_call_args())
         if workload.operation == "pattern.finditer":
-            if uses_keyword_window:
-                return list(compiled.finditer(haystack, **window_call_kwargs()))
+            if uses_keyword_arguments:
+                return list(compiled.finditer(haystack, **keyword_call_kwargs()))
             return list(compiled.finditer(*window_call_args()))
         if workload.operation == "pattern.sub":
+            if uses_keyword_arguments:
+                return compiled.sub(
+                    workload.replacement_payload(),
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return compiled.sub(
                 workload.replacement_payload(),
                 haystack,
                 workload.count_argument(),
             )
         if workload.operation == "pattern.subn":
+            if uses_keyword_arguments:
+                return compiled.subn(
+                    workload.replacement_payload(),
+                    haystack,
+                    **keyword_call_kwargs(),
+                )
             return compiled.subn(
                 workload.replacement_payload(),
                 haystack,

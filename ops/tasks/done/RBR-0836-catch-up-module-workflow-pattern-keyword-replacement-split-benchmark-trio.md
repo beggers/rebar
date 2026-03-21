@@ -1,6 +1,6 @@
 # RBR-0836: Catch up the module-workflow `Pattern` keyword replacement/split benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -85,3 +85,9 @@ PY` returned `RBR-0836` with an empty reserved tail.
   - `python/rebar_harness/benchmarks.py` currently invokes `Pattern.split()` / `Pattern.sub()` / `Pattern.subn()` through positional `maxsplit` / `count` arguments only and does not yet expose keyword-backed `maxsplit` / `count` descriptors on the precompiled helper path, so the existing benchmark path cannot yet publish these exact keyword carriers faithfully even though the runtime behavior is already live;
   - `benchmarks/workloads/collection_replacement_boundary.py` already owns the adjacent precompiled `Pattern` collection/replacement surface, so this slice can stay on the existing manifest path instead of inventing another benchmark family; and
   - `reports/benchmarks/latest.py` currently reports `785` total / `785` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 777` and `REPORT["manifests"]["collection-replacement-boundary"]` at `16` selected / `16` measured / `0` known gaps because `RBR-0834` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0834` state.
+
+## Completion Note
+- Extended `python/rebar_harness/benchmarks.py` so precompiled `Pattern` helper benchmarks now accept keyword `kwargs` carriers for `split(maxsplit=...)`, `sub(count=...)`, and `subn(count=...)`, while keeping keyword numeric descriptors unresolved until callback invocation and leaving the existing window-keyword plus positional collection/replacement paths intact.
+- Added the three requested `collection_replacement_boundary.py` workloads, anchored them on the shared source-tree benchmark contract to `workflow-pattern-split-str-maxsplit-keyword`, `workflow-pattern-sub-count-keyword-bytes`, and `workflow-pattern-subn-count-keyword-str`, and expanded the zero-gap `collection-replacement-boundary` manifest from `16` to `19` selected/measured workloads.
+- Regenerated the tracked `reports/benchmarks/latest.py`; the published report now shows `793` total workloads, `793` measured, `0` known gaps, `785` module workloads, and `collection-replacement-boundary` at `19` selected / `19` measured / `0` gaps, with all three new workload ids published as `measured`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0836-collection-replacement-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
