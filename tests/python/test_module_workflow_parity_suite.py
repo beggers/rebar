@@ -730,15 +730,6 @@ class CollectionPatternCase:
 
 
 @dataclass(frozen=True)
-class CollectionTypeErrorCase:
-    case_id: str
-    helper: str
-    pattern: str | bytes
-    string: str | bytes
-    compiled: bool = False
-
-
-@dataclass(frozen=True)
 class BoundPatternTypeErrorCase:
     case_id: str
     helper: str
@@ -811,13 +802,12 @@ def _call_pattern_collection_helper(
     return getattr(pattern, case.helper)(case.string, *case.extra_args)
 
 
-def _invoke_collection_helper(
-    regex_api: object,
-    case: CollectionTypeErrorCase,
+def _invoke_fixture_collection_helper(
+    target: object,
+    case: FixtureCase,
 ) -> object:
-    target = regex_api.compile(case.pattern) if case.compiled else regex_api
-    args = (case.string,) if case.compiled else (case.pattern, case.string)
-    result = getattr(target, case.helper)(*args)
+    assert case.helper is not None
+    result = getattr(target, case.helper)(*case.args, **case.kwargs)
     if case.helper == "finditer":
         return list(result)
     return result
@@ -1063,6 +1053,31 @@ class _ModuleWorkflowFakeNativeBoundary(RecordingNativeBoundary):
 # Keep the published collection/replacement owner surface on its own fixture manifest.
 _COLLECTION_FRONTIER_HELPERS = frozenset({"split", "findall", "finditer"})
 _REPLACEMENT_FRONTIER_HELPERS = frozenset({"sub", "subn"})
+
+
+def _is_collection_type_error_fixture_case(case: FixtureCase) -> bool:
+    if case.helper not in _COLLECTION_FRONTIER_HELPERS or case.kwargs:
+        return False
+
+    if case.operation == "module_call":
+        if len(case.args) < 2:
+            return False
+        haystack = case.args[1]
+    elif case.operation == "pattern_call":
+        if not case.args:
+            return False
+        haystack = case.args[0]
+    else:
+        return False
+
+    text_model = case.text_model or "str"
+    if text_model == "str":
+        return isinstance(haystack, bytes)
+    if text_model == "bytes":
+        return isinstance(haystack, str)
+    raise AssertionError(f"unexpected collection fixture text model {text_model!r}")
+
+
 COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
     COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
 )
@@ -1073,6 +1088,16 @@ PUBLISHED_COLLECTION_FIXTURE_CASES = _fixture_cases_for_helpers(
     COLLECTION_REPLACEMENT_BUNDLE,
     _COLLECTION_FRONTIER_HELPERS,
 )
+PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES = tuple(
+    case
+    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+    if _is_collection_type_error_fixture_case(case)
+)
+PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES = tuple(
+    case
+    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+    if not _is_collection_type_error_fixture_case(case)
+)
 
 
 def _published_module_collection_cases_for_helper(
@@ -1080,7 +1105,7 @@ def _published_module_collection_cases_for_helper(
 ) -> tuple[CollectionModuleCase, ...]:
     return tuple(
         _module_collection_case_from_fixture(case)
-        for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+        for case in PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES
         if case.operation == "module_call" and case.helper == helper
     )
 
@@ -1090,7 +1115,7 @@ def _published_pattern_collection_cases_for_helper(
 ) -> tuple[CollectionPatternCase, ...]:
     return tuple(
         _pattern_collection_case_from_fixture(case)
-        for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+        for case in PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES
         if case.operation == "pattern_call" and case.helper == helper
     )
 
@@ -1268,34 +1293,6 @@ BOUNDED_WILDCARD_MODULE_COLLECTION_CASES = (
         helper="finditer",
         pattern="a.c",
         string="zabcaxcx",
-        compiled=True,
-    ),
-)
-COLLECTION_TYPE_ERROR_CASES = (
-    CollectionTypeErrorCase(
-        case_id="module-split-str-pattern-on-bytes-string",
-        helper="split",
-        pattern="abc",
-        string=b"abc",
-    ),
-    CollectionTypeErrorCase(
-        case_id="module-findall-str-pattern-on-bytes-string",
-        helper="findall",
-        pattern="abc",
-        string=b"abc",
-    ),
-    CollectionTypeErrorCase(
-        case_id="pattern-findall-bytes-pattern-on-str-string",
-        helper="findall",
-        pattern=b"abc",
-        string="abc",
-        compiled=True,
-    ),
-    CollectionTypeErrorCase(
-        case_id="pattern-finditer-bytes-pattern-on-str-string",
-        helper="finditer",
-        pattern=b"abc",
-        string="abc",
         compiled=True,
     ),
 )
@@ -6156,6 +6153,16 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
                 case.case_id
                 for case in _published_pattern_collection_cases_for_helper("finditer")
             ),
+            "module-type-error": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES
+                if case.operation == "module_call"
+            ),
+            "pattern-type-error": frozenset(
+                case.case_id
+                for case in PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES
+                if case.operation == "pattern_call"
+            ),
         },
         selected_case_ids=tuple(
             case.case_id for case in PUBLISHED_COLLECTION_FIXTURE_CASES
@@ -7003,22 +7010,40 @@ def test_literal_match_matrix_pattern_helpers_match_cpython_with_windows(
 
 @pytest.mark.parametrize(
     "case",
-    COLLECTION_TYPE_ERROR_CASES,
+    PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES,
     ids=lambda case: case.case_id,
 )
 def test_collection_helper_type_errors_match_cpython(
     regex_backend: tuple[str, object],
-    case: CollectionTypeErrorCase,
+    case: FixtureCase,
 ) -> None:
-    _, backend = regex_backend
+    backend_name, backend = regex_backend
 
-    with pytest.raises(TypeError) as expected_error:
-        _invoke_collection_helper(re, case)
+    if case.operation == "module_call":
+        observed_error = _capture_error(
+            lambda: _invoke_fixture_collection_helper(backend, case)
+        )
+        expected_error = _capture_error(
+            lambda: _invoke_fixture_collection_helper(re, case)
+        )
+    else:
+        assert case.operation == "pattern_call"
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case_pattern(case),
+            case.flags or 0,
+        )
+        assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
+        observed_error = _capture_error(
+            lambda: _invoke_fixture_collection_helper(observed_pattern, case)
+        )
+        expected_error = _capture_error(
+            lambda: _invoke_fixture_collection_helper(expected_pattern, case)
+        )
 
-    with pytest.raises(type(expected_error.value)) as observed_error:
-        _invoke_collection_helper(backend, case)
-
-    assert str(observed_error.value) == str(expected_error.value)
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
 
 
 @pytest.mark.parametrize(

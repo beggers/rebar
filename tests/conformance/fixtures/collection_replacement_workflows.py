@@ -31,6 +31,24 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-str-pattern-on-bytes-string",
+      "operation": "module_call",
+      "family": "split_workflow",
+      "helper": "split",
+      "args": [
+        "abc",
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "categories": ["workflow", "split", "literal", "str", "wrong-text-model", "type-error"],
+      "notes": [
+        "Publishes the raw module-level split wrong-text-model TypeError on a bytes haystack so the collection surface no longer relies only on a bespoke direct test."
+      ]
+    },
+    {
       "id": "pattern-split-bytes-maxsplit",
       "operation": "pattern_call",
       "family": "split_workflow",
@@ -74,6 +92,24 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-findall-str-pattern-on-bytes-string",
+      "operation": "module_call",
+      "family": "findall_workflow",
+      "helper": "findall",
+      "args": [
+        "abc",
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "categories": ["workflow", "findall", "literal", "str", "wrong-text-model", "type-error"],
+      "notes": [
+        "Publishes the raw module-level findall wrong-text-model TypeError on a bytes haystack so the collection frontier carries that public-module mismatch directly."
+      ]
+    },
+    {
       "id": "pattern-findall-str-no-match",
       "operation": "pattern_call",
       "family": "findall_workflow",
@@ -83,6 +119,19 @@ MANIFEST = {
       "categories": ["workflow", "findall", "literal", "str", "no-match"],
       "notes": [
         "Observes that the bound Pattern.findall path returns an empty list when the literal does not occur."
+      ]
+    },
+    {
+      "id": "pattern-findall-bytes-pattern-on-str-string",
+      "operation": "pattern_call",
+      "family": "findall_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "findall",
+      "args": ["abc"],
+      "categories": ["workflow", "findall", "literal", "bytes", "wrong-text-model", "type-error"],
+      "notes": [
+        "Publishes the bound Pattern.findall wrong-text-model TypeError for a bytes pattern on a str haystack so the collection fixture covers the compiled helper mismatch too."
       ]
     },
     {
@@ -115,6 +164,19 @@ MANIFEST = {
       "categories": ["workflow", "finditer", "literal", "bytes", "bounded", "iterator-exhaustion"],
       "notes": [
         "Pins the bounded compiled-pattern bytes finditer path, including its exhausted terminal state."
+      ]
+    },
+    {
+      "id": "pattern-finditer-bytes-pattern-on-str-string",
+      "operation": "pattern_call",
+      "family": "finditer_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "finditer",
+      "args": ["abc"],
+      "categories": ["workflow", "finditer", "literal", "bytes", "wrong-text-model", "type-error"],
+      "notes": [
+        "Publishes the bound Pattern.finditer wrong-text-model TypeError for a bytes pattern on a str haystack so the fixture-backed iterator surface owns that mismatch as well."
       ]
     },
     {
