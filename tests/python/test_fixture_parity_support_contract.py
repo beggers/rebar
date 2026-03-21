@@ -1265,6 +1265,20 @@ def test_direct_test_case_id_bucket_helper_accepts_exact_selected_frontier_cover
     )
 
 
+def test_direct_test_case_id_bucket_helper_rejects_empty_selected_frontier() -> None:
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "fixture parity support contract buckets selected_case_ids must not be empty"
+        ),
+    ):
+        assert_direct_test_case_id_buckets_cover_selected_frontier(
+            {},
+            selected_case_ids=(),
+            coverage_label="fixture parity support contract buckets",
+        )
+
+
 def test_direct_test_case_id_bucket_helper_rejects_duplicate_selected_ids() -> None:
     with pytest.raises(
         AssertionError,

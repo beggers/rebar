@@ -655,6 +655,10 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
     coverage_label: str = "direct-test case-id buckets",
 ) -> None:
     ordered_selected_case_ids = tuple(selected_case_ids)
+    if not ordered_selected_case_ids:
+        raise AssertionError(
+            f"{coverage_label} selected_case_ids must not be empty"
+        )
     duplicate_selected_case_ids = _duplicate_string_ids(ordered_selected_case_ids)
     if duplicate_selected_case_ids:
         raise AssertionError(
