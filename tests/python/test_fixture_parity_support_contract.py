@@ -1400,6 +1400,72 @@ def test_direct_test_case_id_bucket_helper_rejects_duplicate_ids_across_position
 
 
 @pytest.mark.parametrize(
+    (
+        "module_bucket_label",
+        "pattern_bucket_label",
+        "follow_on_bucket_labels",
+        "expected_duplicate_labels",
+    ),
+    (
+        pytest.param(
+            "shared-compile",
+            "shared-pattern-fullmatch",
+            ("mixed-follow-on",),
+            ("shared-compile",),
+            id="module-collides-with-shared-compile",
+        ),
+        pytest.param(
+            "shared-module-search",
+            "shared-module-search",
+            ("mixed-follow-on",),
+            ("shared-module-search",),
+            id="module-and-pattern-collide",
+        ),
+        pytest.param(
+            "shared-module-search",
+            "shared-pattern-fullmatch",
+            ("shared-pattern-fullmatch",),
+            ("shared-pattern-fullmatch",),
+            id="follow-on-collides-with-pattern",
+        ),
+        pytest.param(
+            "shared-module-search",
+            "shared-pattern-fullmatch",
+            ("duplicate-follow-on", "duplicate-follow-on"),
+            ("duplicate-follow-on",),
+            id="follow-on-collides-with-follow-on",
+        ),
+    ),
+)
+def test_direct_test_case_id_buckets_for_follow_on_bundles_rejects_duplicate_bucket_labels(
+    tmp_path: pathlib.Path,
+    module_bucket_label: str,
+    pattern_bucket_label: str,
+    follow_on_bucket_labels: tuple[str, ...],
+    expected_duplicate_labels: tuple[str, ...],
+) -> None:
+    bundle = _load_bundle_loader_contract_mixed_bundle(tmp_path)
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "direct-test case-id buckets contain duplicate labels: "
+            f"{expected_duplicate_labels}"
+        ),
+    ):
+        fixture_parity_support.direct_test_case_id_buckets_for_follow_on_bundles(
+            compile_cases=(),
+            module_cases=(),
+            pattern_cases=(),
+            module_bucket_label=module_bucket_label,
+            pattern_bucket_label=pattern_bucket_label,
+            follow_on_buckets=(
+                (bucket_label, bundle) for bucket_label in follow_on_bucket_labels
+            ),
+        )
+
+
+@pytest.mark.parametrize(
     ("compiled_pattern", "case", "expected"),
     (
         pytest.param(

@@ -398,17 +398,28 @@ def direct_test_case_id_buckets_for_follow_on_bundles(
     pattern_bucket_label: str,
     follow_on_buckets: Iterable[tuple[str, FixtureBundle]],
 ) -> dict[str, frozenset[str]]:
-    return {
-        "shared-compile": frozenset(case.case_id for case in compile_cases),
-        module_bucket_label: frozenset(case.case_id for case in module_cases),
-        pattern_bucket_label: frozenset(case.case_id for case in pattern_cases),
-        **{
-            bucket_label: frozenset(
-                case.case_id for case in bundle.cases if case.text_model == "bytes"
-            )
-            for bucket_label, bundle in follow_on_buckets
-        },
-    }
+    follow_on_bucket_entries = tuple(
+        (
+            bucket_label,
+            frozenset(case.case_id for case in bundle.cases if case.text_model == "bytes"),
+        )
+        for bucket_label, bundle in follow_on_buckets
+    )
+    bucket_entries = (
+        ("shared-compile", frozenset(case.case_id for case in compile_cases)),
+        (module_bucket_label, frozenset(case.case_id for case in module_cases)),
+        (pattern_bucket_label, frozenset(case.case_id for case in pattern_cases)),
+        *follow_on_bucket_entries,
+    )
+    duplicate_bucket_labels = duplicate_string_ids(
+        bucket_label for bucket_label, _ in bucket_entries
+    )
+    if duplicate_bucket_labels:
+        raise AssertionError(
+            "direct-test case-id buckets contain duplicate labels: "
+            f"{duplicate_bucket_labels}"
+        )
+    return dict(bucket_entries)
 
 
 def load_published_fixture_bundles(
