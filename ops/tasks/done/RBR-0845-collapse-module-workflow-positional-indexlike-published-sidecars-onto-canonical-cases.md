@@ -1,8 +1,9 @@
 # RBR-0845: Collapse module-workflow positional-indexlike published sidecars onto canonical cases
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the detached published positional-indexlike subset tables from `tests/python/test_module_workflow_parity_suite.py` so the canonical module/pattern fixture-case owners and direct-call case owners remain the only sources of truth for this bounded module-workflow slice.
@@ -146,3 +147,10 @@ PY`
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because those mirrored top-level tables still exist; and
   - the import probe in Acceptance already passes (`ok`), showing that `MODULE_CALL_CASES`, `PATTERN_CASES`, `MODULE_POSITIONAL_INDEXLIKE_CALL_CASES`, and `PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES` already carry the ordering and direct-alignment data needed to delete the extra published-sidecar layer without changing behavior.
 - This stays on the same bounded post-JSON cleanup track as the recent sidecar removals in neighboring parity owners, but targets a still-live redundancy in the current checkout instead of reopening already-drained files.
+
+## Completion
+- 2026-03-21: Removed the mirrored `PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES` and `PUBLISHED_PATTERN_POSITIONAL_INDEXLIKE_PATTERN_CASES` sidecars from `tests/python/test_module_workflow_parity_suite.py`.
+- Added small file-local selectors that derive the published positional-indexlike module and pattern fixture slices from `MODULE_CALL_CASES` / `PATTERN_CASES` plus `MODULE_POSITIONAL_INDEXLIKE_CALL_CASES` / `PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES`, preserving the existing published ordering and direct-case alignment.
+- Rewired `test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases`, `test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases`, and the direct-bucket coverage check to use those derived selectors instead of detached top-level tables.
+- Left `MODULE_CALL_CASES`, `PATTERN_CASES`, `MODULE_POSITIONAL_INDEXLIKE_CALL_CASES`, `PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES`, `PATTERN_DUAL_INDEXLIKE_WINDOW_CASES`, coercion helpers, and positional-indexlike behavior unchanged.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`1207 passed, 1 skipped in 1.19s`), `bash -lc "! rg -n '^(PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES|PUBLISHED_PATTERN_POSITIONAL_INDEXLIKE_PATTERN_CASES) =' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches), and the task-local import/signature probe from Acceptance (`ok`).
