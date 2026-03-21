@@ -121,6 +121,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-search-literal-warm-hit-str-compiled-pattern",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "abc",
+      "haystack": "zabczz",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "search",
+        "literal",
+        "warm-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-search",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.search helper path that keeps the bounded compiled-pattern-first-argument success row on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-search-flags-keyword-warm-str",
       "bucket": "module-search",
       "family": "module",
@@ -271,6 +299,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-match-literal-warm-hit-str-compiled-pattern",
+      "bucket": "module-match",
+      "family": "module",
+      "operation": "module.match",
+      "pattern": "abc",
+      "haystack": "abcdef",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "match",
+        "literal",
+        "warm-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-match",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.match helper path that keeps the bounded compiled-pattern-first-argument success row on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-match-flags-keyword-purged-bytes",
       "bucket": "module-match",
       "family": "module",
@@ -334,6 +390,35 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache module.match helper path that keeps the bounded compiled-pattern-first-argument wrong-text-model TypeError on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+      "bucket": "module-fullmatch",
+      "family": "module",
+      "operation": "module.fullmatch",
+      "pattern": "abc",
+      "haystack": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "fullmatch",
+        "bytes",
+        "purged-cache",
+        "compiled-pattern",
+        "single-match"
+      ],
+      "syntax_features": [
+        "module-fullmatch",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache module.fullmatch helper path that keeps the bounded compiled-pattern-first-argument success row on the shared module-boundary surface."
       ]
     },
     {

@@ -3344,6 +3344,31 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
+    def test_module_boundary_manifest_keeps_compiled_pattern_success_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("module-boundary")
+        workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_module_workflow_compiled_pattern_success_workload,
+        )
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "module-search-literal-warm-hit-str-compiled-pattern",
+                "module-match-literal-warm-hit-str-compiled-pattern",
+                "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+            ),
+        )
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "module-boundary",
+            expected_measured_workload_ids,
+            workload_count,
+            expected_total_workload_count=workload_count,
+        )
+
     def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(
         self,
     ) -> None:
@@ -4720,11 +4745,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 839,
-                "module_workloads": 831,
+                "measured_workloads": 842,
+                "module_workloads": 834,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 839,
+                "total_workloads": 842,
             },
         )
 
@@ -6346,7 +6371,7 @@ def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
     )
 
 
-def _module_workflow_compiled_pattern_wrong_text_model_correctness_case_signature(
+def _module_workflow_compiled_pattern_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
     if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
@@ -6355,12 +6380,7 @@ def _module_workflow_compiled_pattern_wrong_text_model_correctness_case_signatur
         return None
     if not case.args:
         return None
-    haystack = case.args[0]
     case_text_model = case.text_model or "str"
-    if case_text_model == "str" and not isinstance(haystack, bytes):
-        return None
-    if case_text_model == "bytes" and not isinstance(haystack, str):
-        return None
     return (
         f"module.{case.helper}",
         case_pattern(case),
@@ -6371,38 +6391,50 @@ def _module_workflow_compiled_pattern_wrong_text_model_correctness_case_signatur
     )
 
 
-def _module_workflow_compiled_pattern_wrong_text_model_workload_args(
+def _module_workflow_compiled_pattern_workload_args(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_module_workflow_compiled_pattern_wrong_text_model_workload(workload):
+    if not _is_module_workflow_compiled_pattern_workload(workload):
         raise AssertionError(
-            "unexpected module-workflow compiled-pattern wrong-text-model workload "
+            "unexpected module-workflow compiled-pattern workload "
             f"{workload.workload_id!r}"
         )
     return (workload.haystack_payload(),)
 
 
-def _module_workflow_compiled_pattern_wrong_text_model_workload_signature(
+def _module_workflow_compiled_pattern_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_module_workflow_compiled_pattern_wrong_text_model_workload(workload):
+    if not _is_module_workflow_compiled_pattern_workload(workload):
         raise AssertionError(
-            "unexpected module-workflow compiled-pattern wrong-text-model workload "
+            "unexpected module-workflow compiled-pattern workload "
             f"{workload.workload_id!r}"
         )
     return (
         workload.operation,
         workload.pattern_payload(),
-        freeze_signature_value(
-            list(
-                _module_workflow_compiled_pattern_wrong_text_model_workload_args(
-                    workload
-                )
-            )
-        ),
+        freeze_signature_value(list(_module_workflow_compiled_pattern_workload_args(workload))),
         workload.use_compiled_pattern,
         workload.flags,
         workload.text_model,
+    )
+
+
+def _is_module_workflow_compiled_pattern_workload(workload: Any) -> bool:
+    return (
+        not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation in {"module.search", "module.match", "module.fullmatch"}
+    )
+
+
+def _is_module_workflow_compiled_pattern_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.expected_exception is None
     )
 
 
@@ -6410,10 +6442,8 @@ def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
     workload: Any,
 ) -> bool:
     return (
-        getattr(workload, "haystack_text_model", None) is not None
-        and not workload.kwargs
-        and workload.use_compiled_pattern
-        and workload.operation in {"module.search", "module.match", "module.fullmatch"}
+        _is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is not None
         and workload.expected_exception is not None
         and workload.expected_exception.get("type") == "TypeError"
     )
@@ -7414,6 +7444,28 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         workload_signature=_module_workflow_keyword_workload_signature,
     ),
     StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-success",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-literal-warm-hit-str-compiled-pattern": (
+                    "workflow-module-search-str-compiled-pattern",
+                ),
+                "module-match-literal-warm-hit-str-compiled-pattern": (
+                    "workflow-module-match-str-compiled-pattern",
+                ),
+                "module-fullmatch-literal-purged-hit-bytes-compiled-pattern": (
+                    "workflow-module-fullmatch-bytes-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_compiled_pattern_success_workload,
+        correctness_case_signature=_module_workflow_compiled_pattern_correctness_case_signature,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-wrong-text-model",
         manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=_definition_anchor_expectations(
@@ -7431,12 +7483,8 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             },
         ),
         include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_wrong_text_model_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_wrong_text_model_workload_signature
-        ),
+        correctness_case_signature=_module_workflow_compiled_pattern_correctness_case_signature,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="pattern-window-positional-indexlike",
@@ -11290,6 +11338,249 @@ def test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argum
 
 
 @dataclass(frozen=True)
+class CompiledPatternModuleBoundarySuccessCase:
+    id: str
+    operation: str
+    cache_mode: str
+    haystack: str
+    text_model: str
+    expected_callback_result: object
+
+
+COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES = (
+    CompiledPatternModuleBoundarySuccessCase(
+        id="module-search-literal-warm-hit-str-compiled-pattern",
+        operation="module.search",
+        cache_mode="warm",
+        haystack="zabczz",
+        text_model="str",
+        expected_callback_result="module-result",
+    ),
+    CompiledPatternModuleBoundarySuccessCase(
+        id="module-match-literal-warm-hit-str-compiled-pattern",
+        operation="module.match",
+        cache_mode="warm",
+        haystack="abcdef",
+        text_model="str",
+        expected_callback_result="module-result",
+    ),
+    CompiledPatternModuleBoundarySuccessCase(
+        id="module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+        operation="module.fullmatch",
+        cache_mode="purged",
+        haystack="abc",
+        text_model="bytes",
+        expected_callback_result="module-result",
+    ),
+)
+
+
+def _compiled_pattern_module_boundary_success_manifest_payload(
+    case: CompiledPatternModuleBoundarySuccessCase,
+) -> dict[str, object]:
+    return {
+        "id": f"{case.id}-contract",
+        "bucket": case.operation.replace("module.", "module-"),
+        "family": "module",
+        "operation": case.operation,
+        "pattern": "abc",
+        "haystack": case.haystack,
+        "flags": 0,
+        "use_compiled_pattern": True,
+        "text_model": case.text_model,
+        "cache_mode": case.cache_mode,
+        "timing_scope": "module-helper-call",
+        "notes": [
+            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
+            "successful module-boundary rows unresolved until helper invocation."
+        ],
+    }
+
+
+def _compiled_pattern_module_boundary_success_workload(
+    case: CompiledPatternModuleBoundarySuccessCase,
+) -> Workload:
+    manifest_payload = _compiled_pattern_module_boundary_success_manifest_payload(case)
+    return workload_from_payload(
+        {
+            "manifest_id": "module-boundary",
+            "workload_id": str(manifest_payload["id"]),
+            **{key: value for key, value in manifest_payload.items() if key != "id"},
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _assert_compiled_pattern_module_boundary_success_payload_round_trip(
+    case: CompiledPatternModuleBoundarySuccessCase,
+    payload: dict[str, object],
+    round_tripped: Workload,
+) -> None:
+    expected_text_type = str if case.text_model == "str" else bytes
+
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload.get("expected_exception") is None
+    assert round_tripped.expected_exception is None
+    assert payload.get("haystack_text_model") is None
+    assert round_tripped.haystack_text_model is None
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_text_type)
+
+
+def _run_cpython_compiled_pattern_module_boundary_success_workload(
+    workload: Workload,
+) -> object:
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+    helper_name = workload.operation.removeprefix("module.")
+    return getattr(re, helper_name)(
+        compiled_pattern,
+        workload.haystack_payload(),
+        workload.flags,
+    )
+
+
+def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_success_rows_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest = {
+        "schema_version": 1,
+        "manifest_id": "module-boundary",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _compiled_pattern_module_boundary_success_manifest_payload(case)
+            for case in COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES
+        ],
+    }
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_compiled_pattern_module_boundary_success_contract.py",
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workloads = load_manifest(manifest_path).workloads
+
+    assert [workload.use_compiled_pattern for workload in workloads] == [
+        True
+    ] * len(COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES)
+    assert [workload.haystack_text_model for workload in workloads] == [
+        None
+    ] * len(COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES)
+
+    for case, workload in zip(
+        COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES,
+        workloads,
+        strict=True,
+    ):
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        _assert_compiled_pattern_module_boundary_success_payload_round_trip(
+            case,
+            payload,
+            round_tripped,
+        )
+        assert_benchmark_workload_matches_expected_result(
+            round_tripped,
+            _run_cpython_compiled_pattern_module_boundary_success_workload(workload),
+        )
+
+
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for case in COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_success_workloads(
+    case: CompiledPatternModuleBoundarySuccessCase,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    workload = _compiled_pattern_module_boundary_success_workload(case)
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    _assert_compiled_pattern_module_boundary_success_payload_round_trip(
+        case,
+        payload,
+        round_tripped,
+    )
+
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
+@pytest.mark.parametrize(
+    ("case", "expected_build_calls", "expected_callback_call"),
+    (
+        pytest.param(
+            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[0],
+            [("compile", "abc", 0)],
+            ("module.search", "zabczz", 0, {}),
+            id="module-search-literal-warm-hit-str-compiled-pattern",
+        ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[1],
+            [("compile", "abc", 0)],
+            ("module.match", "abcdef", 0, {}),
+            id="module-match-literal-warm-hit-str-compiled-pattern",
+        ),
+        pytest.param(
+            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[2],
+            [("compile", b"abc", 0), ("purge",)],
+            ("module.fullmatch", b"abc", 0, {}),
+            id="module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+        ),
+    ),
+)
+def test_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing(
+    case: CompiledPatternModuleBoundarySuccessCase,
+    expected_build_calls: list[tuple[object, ...]],
+    expected_callback_call: tuple[object, ...],
+) -> None:
+    module = _RecordingBenchmarkModule()
+    callback = build_callable(
+        module,
+        "re",
+        _compiled_pattern_module_boundary_success_workload(case),
+    )
+
+    assert module.calls == expected_build_calls
+    assert len(module.compiled_patterns) == 1
+    assert callback() == case.expected_callback_result
+
+    compiled_pattern = module.compiled_patterns[0]
+    last_call = module.calls[-1]
+    assert last_call[0] == expected_callback_call[0]
+    assert last_call[1] is compiled_pattern
+    assert last_call[2:] == expected_callback_call[1:]
+
+
+@dataclass(frozen=True)
 class CompiledPatternModuleWrongTextModelCase:
     id: str
     operation: str
@@ -13225,13 +13516,17 @@ def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_
             "module.search",
             {},
             None,
-            None,
+            {
+                "type": "TypeError",
+                "message_substring": "cannot use a string pattern on a bytes-like object",
+            },
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "search/match/fullmatch workloads currently only support "
-                "timed wrong-text-model TypeError rows"
+                "successful same-text-model rows or timed wrong-text-model "
+                "TypeError rows"
             ),
-            id="missing-wrong-text-model-contract",
+            id="unexpected-exception-on-success-row",
         ),
         pytest.param(
             "collection-replacement-boundary",

@@ -623,15 +623,23 @@ def validate_compiled_pattern_workload(
                 "search/match/fullmatch workloads currently only support "
                 "positional helper calls"
             )
-        if (
-            haystack_text_model is None
-            or expected_exception is None
+        if haystack_text_model is None:
+            if expected_exception is not None:
+                raise ValueError(
+                    "benchmark compiled-pattern module-helper "
+                    "search/match/fullmatch workloads currently only support "
+                    "successful same-text-model rows or timed wrong-text-model "
+                    "TypeError rows"
+                )
+        elif (
+            expected_exception is None
             or expected_exception.get("type") != "TypeError"
         ):
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "search/match/fullmatch workloads currently only support "
-                "timed wrong-text-model TypeError rows"
+                "successful same-text-model rows or timed wrong-text-model "
+                "TypeError rows"
             )
 
     if cache_mode not in {"warm", "purged"}:

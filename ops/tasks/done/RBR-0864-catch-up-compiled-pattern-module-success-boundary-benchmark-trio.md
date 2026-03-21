@@ -1,6 +1,6 @@
 # RBR-0864: Catch up the compiled-pattern module success boundary benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -61,3 +61,11 @@ Created: 2026-03-21
   - direct runtime probes in this run showed CPython and `rebar` already agree on the bounded matched-result payloads for `search(rebar.compile("abc"), "zzabczz")`, `match(rebar.compile("abc"), "abcdef")`, and `fullmatch(rebar.compile(b"abc"), b"abc")`, so no Rust or Python regex-behavior prerequisite is missing;
   - `benchmarks/workloads/module_boundary.py` currently publishes no compiled-pattern module-boundary success rows, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently carries no compiled-pattern module-boundary success anchor-contract definition on that owner path; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0862` state of `839` total / `839` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 831` and `REPORT["manifests"]["module-boundary"]` at `16` selected / `16` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Added the three compiled-pattern-first-argument success workloads on `benchmarks/workloads/module_boundary.py`, extended the shared source-tree contract coverage for manifest loading / anchor pinning / internal probes / precompiled callback timing, relaxed the bounded module-boundary compiled-pattern validation to allow success rows on the existing owner path, and regenerated `reports/benchmarks/latest.py`.
+- Verification passed with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0864-compiled-pattern-module-success-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Implementation note: the published correctness anchor `workflow-module-search-str-compiled-pattern` currently uses haystack `zabczz`, so the new benchmark row stays pinned to that exact published anchor instead of inventing a nearby `zzabczz` variant.
