@@ -77,12 +77,39 @@ _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
         "conditional_group_exists_fully_empty_boundary.py",
         "regression_matrix.py",
     ),
-    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: (
-        "pattern_boundary.py",
-        "collection_replacement_boundary.py",
-        "literal_flag_boundary.py",
-    ),
 }
+
+
+def _published_benchmark_manifest_subset(
+    *manifest_filenames: str,
+) -> tuple[str, ...]:
+    published_manifest_filenames = _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[
+        PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+    ]
+    expected_filenames = frozenset(manifest_filenames)
+    selected_filenames = tuple(
+        filename
+        for filename in published_manifest_filenames
+        if filename in expected_filenames
+    )
+    missing_filenames = expected_filenames - set(selected_filenames)
+    if missing_filenames:
+        raise ValueError(
+            "unknown published benchmark manifest filename(s): "
+            f"{sorted(missing_filenames)}"
+        )
+    return selected_filenames
+
+
+_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR.update(
+    {
+        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: _published_benchmark_manifest_subset(
+            "pattern_boundary.py",
+            "collection_replacement_boundary.py",
+            "literal_flag_boundary.py",
+        ),
+    }
+)
 
 
 def select_benchmark_manifest_paths(selector: str) -> tuple[pathlib.Path, ...]:

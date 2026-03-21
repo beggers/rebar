@@ -1,6 +1,6 @@
 # RBR-0869: Collapse the last manual benchmark selector onto the published helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -66,3 +66,11 @@ PY`
 - This stays on the same selector-normalization track as the recent correctness-side cleanup:
   - `RBR-0829`, `RBR-0831`, and `RBR-0867` already normalized the remaining correctness selectors onto published-order subset helpers; and
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already enforces the same ordered-subset invariant for every nondefault benchmark selector, so this cleanup brings the live benchmark registry into line with the contract it already publishes.
+
+## Completion
+- Replaced the last manual nondefault benchmark selector row in `python/rebar_harness/benchmarks.py` with `_published_benchmark_manifest_subset(...)`, keeping the built-native smoke selector pinned to the published full-suite order.
+- Added an explicit selector expectation table in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the built-native smoke subset contract stays pinned to `pattern_boundary.py`, `collection_replacement_boundary.py`, and `literal_flag_boundary.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'benchmark_manifest_selector or published_full_suite_selector or declared_benchmark_manifest_selectors'`
+  - the published-order invariant probe from the acceptance criteria (`ok`)
+  - `bash -lc "! rg -n '^\\s*BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: \\(' python/rebar_harness/benchmarks.py"`

@@ -52,6 +52,17 @@ from tests.python.fixture_parity_support import (
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
+CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS = (
+    pytest.param(
+        benchmarks.BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
+        (
+            "pattern_boundary.py",
+            "collection_replacement_boundary.py",
+            "literal_flag_boundary.py",
+        ),
+        id=benchmarks.BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
+    ),
+)
 
 
 def _declared_benchmark_manifest_selectors() -> dict[str, str]:
@@ -8367,6 +8378,28 @@ def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants
         assert path.is_file()
         assert path.suffix == ".py"
         assert path in published_manifest_paths
+
+
+@pytest.mark.parametrize(
+    ("selector", "expected_filenames"),
+    CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS,
+)
+def test_canonical_benchmark_manifest_subset_selectors_keep_membership_contract(
+    selector: str,
+    expected_filenames: tuple[str, ...],
+) -> None:
+    published_manifest_paths = select_benchmark_manifest_paths(
+        PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+    )
+    published_ordered_subset = tuple(
+        path.name for path in published_manifest_paths if path.name in set(expected_filenames)
+    )
+
+    assert published_ordered_subset == expected_filenames
+    assert benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[selector] == expected_filenames
+    assert tuple(path.name for path in select_benchmark_manifest_paths(selector)) == (
+        expected_filenames
+    )
 
 
 def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
