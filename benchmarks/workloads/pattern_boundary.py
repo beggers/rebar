@@ -177,6 +177,188 @@ MANIFEST = {
       "notes": [
         "Smoke-sized bytes fullmatch probe that keeps precompiled helper behavior and purge provenance easy to rerun."
       ]
+    },
+    {
+      "id": "pattern-search-pos-indexlike-positional-warm-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "pos": {
+        "type": "indexlike",
+        "value": 2
+      },
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "literal",
+        "warm-cache",
+        "positional-window",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "literal-text",
+        "pattern-window-pos"
+      ],
+      "notes": [
+        "Warm precompiled search helper path that keeps the Pattern.search positional __index__ boundary on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-endpos-indexlike-positional-purged-bytes",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "pos": 0,
+      "endpos": {
+        "type": "indexlike",
+        "value": 4
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "bytes",
+        "purged-cache",
+        "positional-window",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "pattern-text-model",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes search helper path that keeps endpos-backed positional __index__ timing on the shared Pattern.search benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-window-indexlike-positional-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "abc",
+      "haystack": "zabc",
+      "flags": 0,
+      "pos": {
+        "type": "indexlike",
+        "value": 1
+      },
+      "endpos": {
+        "type": "indexlike",
+        "value": 4
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "bytes",
+        "purged-cache",
+        "positional-window",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "pattern-window-pos",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes fullmatch helper path that keeps Pattern.fullmatch positional pos/endpos __index__ timing on the shared boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-findall-window-indexlike-positional-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabcabcabcz",
+      "flags": 0,
+      "pos": {
+        "type": "indexlike",
+        "value": 1
+      },
+      "endpos": {
+        "type": "indexlike",
+        "value": 7
+      },
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "findall",
+        "literal",
+        "warm-cache",
+        "positional-window",
+        "indexlike",
+        "collection"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "literal-text",
+        "pattern-window-pos",
+        "pattern-window-endpos"
+      ],
+      "notes": [
+        "Warm precompiled findall helper path that keeps Pattern.findall positional pos/endpos __index__ timing on the shared pattern-boundary manifest."
+      ]
+    },
+    {
+      "id": "pattern-finditer-window-indexlike-positional-purged-bytes",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "abc",
+      "haystack": "zabcabcabcz",
+      "flags": 0,
+      "pos": {
+        "type": "indexlike",
+        "value": 1
+      },
+      "endpos": {
+        "type": "indexlike",
+        "value": 7
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "finditer",
+        "bytes",
+        "purged-cache",
+        "positional-window",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "pattern-text-model",
+        "pattern-window-pos",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes finditer helper path that keeps Pattern.finditer positional pos/endpos __index__ timing on the shared pattern-boundary manifest."
+      ]
     }
   ]
 }

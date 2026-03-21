@@ -337,6 +337,14 @@ def assert_benchmark_workload_contract(
         workload_payload.get("maxsplit", 0),
     )
     testcase.assertEqual(
+        workload_record.get("pos"),
+        workload_payload.get("pos"),
+    )
+    testcase.assertEqual(
+        workload_record.get("endpos"),
+        workload_payload.get("endpos"),
+    )
+    testcase.assertEqual(
         workload_record["text_model"],
         workload_payload.get("text_model", "str"),
     )
@@ -3228,6 +3236,25 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=16,
         )
 
+    def test_pattern_boundary_manifest_keeps_positional_indexlike_window_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("pattern-boundary")
+        self.assertEqual(len(case.target_manifest.workloads), 11)
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "pattern-boundary",
+            (
+                "pattern-search-pos-indexlike-positional-warm-str",
+                "pattern-search-endpos-indexlike-positional-purged-bytes",
+                "pattern-fullmatch-window-indexlike-positional-purged-bytes",
+                "pattern-findall-window-indexlike-positional-warm-str",
+                "pattern-finditer-window-indexlike-positional-purged-bytes",
+            ),
+            11,
+            expected_total_workload_count=11,
+        )
+
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
         self,
     ) -> None:
@@ -4554,7 +4581,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             0,
         )
 
-    def test_published_full_suite_summary_reflects_collection_replacement_indexlike_trio(
+    def test_published_full_suite_summary_reflects_pattern_window_indexlike_quintet(
         self,
     ) -> None:
         manifests = list(published_benchmark_manifests())
@@ -4563,11 +4590,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 780,
-                "module_workloads": 772,
+                "measured_workloads": 785,
+                "module_workloads": 777,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 780,
+                "total_workloads": 785,
             },
         )
 
@@ -5206,6 +5233,9 @@ COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile
 REGRESSION_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
 )
+PATTERN_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py"
+)
 COLLECTION_REPLACEMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py"
 )
@@ -5612,7 +5642,7 @@ def assert_benchmark_workload_matches_expected_result(
         assert_pattern_parity("stdlib", observed, expected)
         return
 
-    if workload.operation in {"module.search", "pattern.fullmatch"}:
+    if workload.operation in {"module.search", "pattern.search", "pattern.fullmatch"}:
         assert_match_result_parity(
             "stdlib",
             observed,
@@ -5623,6 +5653,7 @@ def assert_benchmark_workload_matches_expected_result(
 
     if workload.operation in {
         "module.split",
+        "pattern.findall",
         "module.sub",
         "module.subn",
         "pattern.split",
@@ -5630,6 +5661,23 @@ def assert_benchmark_workload_matches_expected_result(
         "pattern.subn",
     }:
         assert observed == expected
+        return
+
+    if workload.operation == "pattern.finditer":
+        assert isinstance(observed, list)
+        expected_matches = list(expected)
+        assert len(observed) == len(expected_matches)
+        for observed_match, expected_match in zip(
+            observed,
+            expected_matches,
+            strict=True,
+        ):
+            assert_match_result_parity(
+                "stdlib",
+                observed_match,
+                expected_match,
+                check_regs=True,
+            )
         return
 
     raise AssertionError(
@@ -5866,6 +5914,78 @@ def _collection_replacement_positional_indexlike_workload_signature(
 
 def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> bool:
     return workload.workload_id in COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS
+
+
+PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS = frozenset(
+    {
+        "pattern-search-pos-indexlike-positional-warm-str",
+        "pattern-search-endpos-indexlike-positional-purged-bytes",
+        "pattern-fullmatch-window-indexlike-positional-purged-bytes",
+        "pattern-findall-window-indexlike-positional-warm-str",
+        "pattern-finditer-window-indexlike-positional-purged-bytes",
+    }
+)
+
+
+def _pattern_window_positional_indexlike_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "pattern_call" or case.kwargs:
+        return None
+    if case.helper not in {"search", "fullmatch", "findall", "finditer"}:
+        return None
+    if not any(hasattr(argument, "__index__") for argument in case.args):
+        return None
+    return (
+        case.helper,
+        case_pattern(case),
+        _module_workflow_positional_args_signature(case.args),
+        case.text_model or "str",
+    )
+
+
+def _pattern_window_positional_indexlike_workload_args(
+    workload: Any,
+) -> tuple[object, ...]:
+    if workload.operation not in {
+        "pattern.search",
+        "pattern.fullmatch",
+        "pattern.findall",
+        "pattern.finditer",
+    }:
+        raise AssertionError(
+            "unexpected pattern positional-indexlike workload operation "
+            f"{workload.operation!r}"
+        )
+
+    args: list[object] = [workload.haystack_payload()]
+    if workload.pos is not None or workload.endpos is not None:
+        args.append(0 if workload.pos is None else workload.pos)
+    if workload.endpos is not None:
+        args.append(workload.endpos)
+    return tuple(args)
+
+
+def _pattern_window_positional_indexlike_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if workload.workload_id not in PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS:
+        raise AssertionError(
+            "unexpected pattern positional-indexlike workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation.removeprefix("pattern."),
+        workload.pattern_payload(),
+        _module_workflow_positional_args_signature(
+            _pattern_window_positional_indexlike_workload_args(workload)
+        ),
+        workload.text_model,
+    )
+
+
+def _is_pattern_window_positional_indexlike_workload(workload: Any) -> bool:
+    return workload.workload_id in PATTERN_WINDOW_POSITIONAL_INDEXLIKE_WORKLOAD_IDS
 
 
 def _optional_group_correctness_case_signature(
@@ -6258,9 +6378,66 @@ def _manual_expected_result(workload: Any) -> object:
             return re.compile(pattern, workload.flags)
         if workload.operation == "module.search":
             return re.search(pattern, workload.haystack_payload(), workload.flags)
+        if workload.operation == "pattern.search":
+            compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return compiled.search(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                    workload.endpos_argument(),
+                )
+            if workload.pos is not None:
+                return compiled.search(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                )
+            return compiled.search(workload.haystack_payload())
         if workload.operation == "pattern.fullmatch":
             compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return compiled.fullmatch(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                    workload.endpos_argument(),
+                )
+            if workload.pos is not None:
+                return compiled.fullmatch(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                )
             return compiled.fullmatch(workload.haystack_payload())
+        if workload.operation == "pattern.findall":
+            compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return compiled.findall(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                    workload.endpos_argument(),
+                )
+            if workload.pos is not None:
+                return compiled.findall(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                )
+            return compiled.findall(workload.haystack_payload())
+        if workload.operation == "pattern.finditer":
+            compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return list(
+                    compiled.finditer(
+                        workload.haystack_payload(),
+                        workload.pos_argument(),
+                        workload.endpos_argument(),
+                    )
+                )
+            if workload.pos is not None:
+                return list(
+                    compiled.finditer(
+                        workload.haystack_payload(),
+                        workload.pos_argument(),
+                    )
+                )
+            return list(compiled.finditer(workload.haystack_payload()))
         if workload.operation == "module.sub":
             return re.sub(
                 pattern,
@@ -6389,6 +6566,36 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             _module_workflow_positional_indexlike_correctness_case_signature
         ),
         workload_signature=_collection_replacement_positional_indexlike_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="pattern-window-positional-indexlike",
+        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            PATTERN_BOUNDARY_MANIFEST_PATH,
+            {
+                "pattern-search-pos-indexlike-positional-warm-str": (
+                    "workflow-pattern-search-str-pos-indexlike-positional",
+                ),
+                "pattern-search-endpos-indexlike-positional-purged-bytes": (
+                    "workflow-pattern-search-bytes-endpos-indexlike-positional",
+                ),
+                "pattern-fullmatch-window-indexlike-positional-purged-bytes": (
+                    "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
+                ),
+                "pattern-findall-window-indexlike-positional-warm-str": (
+                    "workflow-pattern-findall-str-window-indexlike-positional",
+                ),
+                "pattern-finditer-window-indexlike-positional-purged-bytes": (
+                    "workflow-pattern-finditer-bytes-window-indexlike-positional",
+                ),
+            },
+        ),
+        include_workload=_is_pattern_window_positional_indexlike_workload,
+        correctness_case_signature=(
+            _pattern_window_positional_indexlike_correctness_case_signature
+        ),
+        workload_signature=_pattern_window_positional_indexlike_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -7797,6 +8004,238 @@ def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_unt
         "xxabc",
         2,
     )
+
+
+def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-pattern-window-indexlike-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "pattern-search-pos-indexlike-contract-str",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "pos": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.search positional indexlike descriptors unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-search-endpos-indexlike-contract-bytes",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "pos": 0,
+                "endpos": {
+                    "type": "indexlike",
+                    "value": 4,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.search endpos indexlike descriptors unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-fullmatch-window-indexlike-contract-bytes",
+                "bucket": "pattern-fullmatch",
+                "family": "module",
+                "operation": "pattern.fullmatch",
+                "pattern": "abc",
+                "haystack": "zabc",
+                "pos": {
+                    "type": "indexlike",
+                    "value": 1,
+                },
+                "endpos": {
+                    "type": "indexlike",
+                    "value": 4,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.fullmatch window indexlike descriptors unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-findall-window-indexlike-contract-str",
+                "bucket": "pattern-findall",
+                "family": "module",
+                "operation": "pattern.findall",
+                "pattern": "abc",
+                "haystack": "zabcabcabcz",
+                "pos": {
+                    "type": "indexlike",
+                    "value": 1,
+                },
+                "endpos": {
+                    "type": "indexlike",
+                    "value": 7,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.findall window indexlike descriptors unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-finditer-window-indexlike-contract-bytes",
+                "bucket": "pattern-finditer",
+                "family": "module",
+                "operation": "pattern.finditer",
+                "pattern": "abc",
+                "haystack": "zabcabcabcz",
+                "pos": {
+                    "type": "indexlike",
+                    "value": 1,
+                },
+                "endpos": {
+                    "type": "indexlike",
+                    "value": 7,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.finditer window indexlike descriptors unresolved until helper invocation."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_pattern_window_indexlike_contract.py",
+        manifest_source,
+    )
+    (
+        search_pos_workload,
+        search_endpos_workload,
+        fullmatch_window_workload,
+        findall_window_workload,
+        finditer_window_workload,
+    ) = load_manifest(manifest_path).workloads
+
+    assert search_pos_workload.pos == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    assert search_pos_workload.endpos is None
+    round_tripped_search_pos = workload_from_payload(
+        workload_to_payload(search_pos_workload)
+    )
+    assert round_tripped_search_pos.pos_argument().__index__() == 2
+    assert round_tripped_search_pos.endpos_argument() is None
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_search_pos),
+        re.compile("abc").search("zabcabc", 2),
+        check_regs=True,
+    )
+
+    assert search_endpos_workload.pos == 0
+    assert search_endpos_workload.endpos == {
+        "type": "indexlike",
+        "value": 4,
+    }
+    round_tripped_search_endpos = workload_from_payload(
+        workload_to_payload(search_endpos_workload)
+    )
+    assert round_tripped_search_endpos.pos_argument() == 0
+    assert round_tripped_search_endpos.endpos_argument().__index__() == 4
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_search_endpos),
+        re.compile(b"abc").search(b"zabcabc", 0, 4),
+        check_regs=True,
+    )
+
+    assert fullmatch_window_workload.pos == {
+        "type": "indexlike",
+        "value": 1,
+    }
+    assert fullmatch_window_workload.endpos == {
+        "type": "indexlike",
+        "value": 4,
+    }
+    round_tripped_fullmatch = workload_from_payload(
+        workload_to_payload(fullmatch_window_workload)
+    )
+    assert round_tripped_fullmatch.pos_argument().__index__() == 1
+    assert round_tripped_fullmatch.endpos_argument().__index__() == 4
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_fullmatch),
+        re.compile(b"abc").fullmatch(b"zabc", 1, 4),
+        check_regs=True,
+    )
+
+    assert findall_window_workload.pos == {
+        "type": "indexlike",
+        "value": 1,
+    }
+    assert findall_window_workload.endpos == {
+        "type": "indexlike",
+        "value": 7,
+    }
+    round_tripped_findall = workload_from_payload(
+        workload_to_payload(findall_window_workload)
+    )
+    assert round_tripped_findall.pos_argument().__index__() == 1
+    assert round_tripped_findall.endpos_argument().__index__() == 7
+    assert run_benchmark_workload_with_cpython(round_tripped_findall) == [
+        "abc",
+        "abc",
+    ]
+
+    assert finditer_window_workload.pos == {
+        "type": "indexlike",
+        "value": 1,
+    }
+    assert finditer_window_workload.endpos == {
+        "type": "indexlike",
+        "value": 7,
+    }
+    round_tripped_finditer = workload_from_payload(
+        workload_to_payload(finditer_window_workload)
+    )
+    assert round_tripped_finditer.pos_argument().__index__() == 1
+    assert round_tripped_finditer.endpos_argument().__index__() == 7
+    observed_finditer = run_benchmark_workload_with_cpython(round_tripped_finditer)
+    expected_finditer = list(re.compile(b"abc").finditer(b"zabcabcabcz", 1, 7))
+    assert len(observed_finditer) == len(expected_finditer) == 2
+    for observed_match, expected_match in zip(
+        observed_finditer,
+        expected_finditer,
+        strict=True,
+    ):
+        assert_match_result_parity(
+            "stdlib",
+            observed_match,
+            expected_match,
+            check_regs=True,
+        )
 
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(

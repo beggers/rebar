@@ -1,6 +1,6 @@
 # RBR-0832: Catch up the module-workflow `Pattern` positional `__index__` window benchmark quintet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -69,3 +69,7 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` currently exposes only `count` / `maxsplit` numeric helper arguments, ignores positional `pos` / `endpos` windows on the pattern-helper path, and lacks `pattern.findall` benchmark execution support, so the existing benchmark path cannot yet publish these exact positional carriers faithfully;
   - `benchmarks/workloads/pattern_boundary.py` already owns the adjacent precompiled `Pattern` search/fullmatch helper surface, so this slice can stay on the existing manifest path instead of inventing another benchmark family; and
   - `reports/benchmarks/latest.py` currently reports `777` total / `777` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 769` and `REPORT["manifests"]["pattern-boundary"]` at `6` selected / `6` measured / `0` known gaps because `RBR-0830` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0830` state.
+
+## Completion Note
+- Landed the benchmark-only catch-up on the existing `pattern_boundary.py` surface by extending `python/rebar_harness/benchmarks.py` with optional `pos` / `endpos` helper arguments and `pattern.findall` support, then adding the five targeted positional `__index__` `Pattern` rows without widening into raw-module windows or `Pattern.match(..., pos, endpos)`.
+- Verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0832-pattern-boundary.py` reported `11` measured / `0` gaps on `pattern-boundary`, and the tracked `reports/benchmarks/latest.py` now publishes `785` total workloads, `785` measured workloads, `0` known gaps, `777` module workloads, and `pattern-boundary` at `11` selected / `11` measured / `0` gaps.

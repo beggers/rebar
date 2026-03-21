@@ -114,6 +114,8 @@ class Workload:
     flags: int
     count: Any
     maxsplit: Any
+    pos: Any | None
+    endpos: Any | None
     text_model: str
     cache_mode: str
     timing_scope: str
@@ -158,6 +160,22 @@ class Workload:
             maxsplit=normalize_numeric_workload_argument(
                 raw_workload.get("maxsplit", 0),
                 field_name="maxsplit",
+            ),
+            pos=(
+                None
+                if raw_workload.get("pos") is None
+                else normalize_numeric_workload_argument(
+                    raw_workload.get("pos"),
+                    field_name="pos",
+                )
+            ),
+            endpos=(
+                None
+                if raw_workload.get("endpos") is None
+                else normalize_numeric_workload_argument(
+                    raw_workload.get("endpos"),
+                    field_name="endpos",
+                )
             ),
             text_model=str(raw_workload.get("text_model", "str")),
             cache_mode=str(raw_workload.get("cache_mode", "cold")),
@@ -210,6 +228,16 @@ class Workload:
             self.maxsplit,
             field_name="maxsplit",
         )
+
+    def pos_argument(self) -> Any:
+        if self.pos is None:
+            return 0
+        return materialize_numeric_workload_argument(self.pos, field_name="pos")
+
+    def endpos_argument(self) -> Any | None:
+        if self.endpos is None:
+            return None
+        return materialize_numeric_workload_argument(self.endpos, field_name="endpos")
 
 
 class _IndexLike:
@@ -410,7 +438,7 @@ class NativeBenchmarkProvisionError(RuntimeError):
 
 
 def workload_to_payload(workload: Workload) -> dict[str, Any]:
-    return {
+    payload = {
         "manifest_id": workload.manifest_id,
         "workload_id": workload.workload_id,
         "bucket": workload.bucket,
@@ -434,6 +462,11 @@ def workload_to_payload(workload: Workload) -> dict[str, Any]:
         "syntax_features": list(workload.syntax_features),
         "smoke": workload.smoke,
     }
+    if workload.pos is not None:
+        payload["pos"] = workload.pos
+    if workload.endpos is not None:
+        payload["endpos"] = workload.endpos
+    return payload
 
 
 def workload_from_payload(payload: dict[str, Any]) -> Workload:
@@ -455,6 +488,22 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         maxsplit=normalize_numeric_workload_argument(
             payload.get("maxsplit", 0),
             field_name="maxsplit",
+        ),
+        pos=(
+            None
+            if payload.get("pos") is None
+            else normalize_numeric_workload_argument(
+                payload.get("pos"),
+                field_name="pos",
+            )
+        ),
+        endpos=(
+            None
+            if payload.get("endpos") is None
+            else normalize_numeric_workload_argument(
+                payload.get("endpos"),
+                field_name="endpos",
+            )
         ),
         text_model=str(payload["text_model"]),
         cache_mode=str(payload["cache_mode"]),
@@ -689,19 +738,42 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
         return module.compile(pattern, workload.flags)
 
     def invoke(compiled: Any) -> object:
+        if workload.pos is not None or workload.endpos is not None:
+            if workload.operation not in {
+                "pattern.search",
+                "pattern.fullmatch",
+                "pattern.findall",
+                "pattern.finditer",
+            }:
+                raise ValueError(
+                    "benchmark window arguments are only supported for "
+                    "pattern.search, pattern.fullmatch, pattern.findall, "
+                    "and pattern.finditer"
+                )
+
+        def window_call_args() -> tuple[Any, ...]:
+            args: list[Any] = [haystack]
+            if workload.pos is not None or workload.endpos is not None:
+                args.append(workload.pos_argument())
+            if workload.endpos is not None:
+                args.append(workload.endpos_argument())
+            return tuple(args)
+
         if workload.operation == "pattern.search":
-            return compiled.search(haystack)
+            return compiled.search(*window_call_args())
         if workload.operation == "pattern.match":
             return compiled.match(haystack)
         if workload.operation == "pattern.fullmatch":
-            return compiled.fullmatch(haystack)
+            return compiled.fullmatch(*window_call_args())
         if workload.operation == "pattern.split":
             return compiled.split(
                 haystack,
                 workload.maxsplit_argument(),
             )
+        if workload.operation == "pattern.findall":
+            return compiled.findall(*window_call_args())
         if workload.operation == "pattern.finditer":
-            return list(compiled.finditer(haystack))
+            return list(compiled.finditer(*window_call_args()))
         if workload.operation == "pattern.sub":
             return compiled.sub(
                 workload.replacement_payload(),
@@ -767,6 +839,7 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
         "pattern.match",
         "pattern.fullmatch",
         "pattern.split",
+        "pattern.findall",
         "pattern.finditer",
         "pattern.sub",
         "pattern.subn",
@@ -988,7 +1061,7 @@ def evaluate_workload(
 
     baseline_ns = baseline_timing.get("median_ns")
     implementation_ns = implementation_timing.get("median_ns")
-    return {
+    result = {
         "id": workload.workload_id,
         "manifest_id": workload.manifest_id,
         "bucket": workload.bucket,
@@ -1020,6 +1093,11 @@ def evaluate_workload(
             "implementation": build_variance_summary(implementation_timing),
         },
     }
+    if workload.pos is not None:
+        result["pos"] = workload.pos
+    if workload.endpos is not None:
+        result["endpos"] = workload.endpos
+    return result
 
 
 def _median(values: list[int]) -> int | None:
