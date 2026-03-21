@@ -187,7 +187,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
 }
 
 
-def _sorted_published_fixture_subset(
+def _published_fixture_subset(
     *fixture_filenames: str,
 ) -> tuple[str, ...]:
     published_fixture_filenames = _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
@@ -195,11 +195,9 @@ def _sorted_published_fixture_subset(
     ]
     expected_filenames = frozenset(fixture_filenames)
     selected_filenames = tuple(
-        sorted(
-            filename
-            for filename in published_fixture_filenames
-            if filename in expected_filenames
-        )
+        filename
+        for filename in published_fixture_filenames
+        if filename in expected_filenames
     )
     missing_filenames = expected_filenames - set(selected_filenames)
     if missing_filenames:
@@ -212,11 +210,11 @@ def _sorted_published_fixture_subset(
 
 _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
     {
-        COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _published_fixture_subset(
             "exact_repeat_quantified_group_workflows.py",
             "ranged_repeat_quantified_group_workflows.py",
         ),
-        QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR: _published_fixture_subset(
             "exact_repeat_quantified_group_alternation_workflows.py",
             "literal_alternation_workflows.py",
             "quantified_alternation_workflows.py",
@@ -227,7 +225,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "quantified_alternation_open_ended_workflows.py",
             "quantified_alternation_nested_branch_workflows.py",
         ),
-        BOUNDED_WILDCARD_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        BOUNDED_WILDCARD_FIXTURE_SELECTOR: _published_fixture_subset(
             "collection_replacement_workflows.py",
             "literal_flag_workflows.py",
         ),
@@ -235,7 +233,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "parser_matrix.py",
             "conditional_group_exists_assertion_diagnostics.py",
         ),
-        SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: _published_fixture_subset(
             "named_backreference_workflows.py",
             "numbered_backreference_workflows.py",
         ),
@@ -263,7 +261,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "conditional_group_exists_empty_yes_else_alternation_workflows.py",
             "conditional_group_exists_fully_empty_alternation_workflows.py",
         ),
-        CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR: _published_fixture_subset(
             "conditional_group_exists_alternation_replacement_workflows.py",
             "conditional_group_exists_empty_else_replacement_workflows.py",
             "conditional_group_exists_empty_yes_else_replacement_workflows.py",
@@ -275,7 +273,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "conditional_group_exists_replacement_workflows.py",
             "conditional_group_exists_replacement_template_workflows.py",
         ),
-        COLLECTION_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        COLLECTION_REPLACEMENT_FIXTURE_SELECTOR: _published_fixture_subset(
             "collection_replacement_workflows.py",
         ),
         MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR: (
@@ -287,7 +285,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "exported_symbol_surface.py",
             "pattern_object_surface.py",
         ),
-        GROUPED_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        GROUPED_REPLACEMENT_FIXTURE_SELECTOR: _published_fixture_subset(
             "collection_replacement_workflows.py",
             "grouped_alternation_replacement_workflows.py",
             "named_group_replacement_workflows.py",
@@ -306,7 +304,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "nested_group_workflows.py",
             "nested_group_alternation_workflows.py",
         ),
-        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _published_fixture_subset(
             "wider_ranged_repeat_quantified_group_workflows.py",
             "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
             "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
@@ -318,7 +316,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
             "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         ),
-        BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR: _published_fixture_subset(
             "branch_local_backreference_workflows.py",
             "quantified_branch_local_backreference_workflows.py",
             "optional_group_alternation_branch_local_backreference_workflows.py",
@@ -330,10 +328,10 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
         ),
-        LITERAL_FLAG_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        LITERAL_FLAG_FIXTURE_SELECTOR: _published_fixture_subset(
             "literal_flag_workflows.py",
         ),
-        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _published_fixture_subset(
             "conditional_group_exists_callable_replacement_workflows.py",
             "grouped_alternation_callable_replacement_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
@@ -351,23 +349,23 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "quantified_nested_group_callable_replacement_workflows.py",
         ),
         OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR: (
-            _sorted_published_fixture_subset(
+            _published_fixture_subset(
                 "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
             )
         ),
         NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR: (
-            _sorted_published_fixture_subset(
+            _published_fixture_subset(
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
             )
         ),
         NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR: (
-            _sorted_published_fixture_subset(
+            _published_fixture_subset(
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
             )
         ),
-        OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _published_fixture_subset(
             "open_ended_quantified_group_alternation_workflows.py",
             "open_ended_quantified_group_alternation_conditional_workflows.py",
             "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",

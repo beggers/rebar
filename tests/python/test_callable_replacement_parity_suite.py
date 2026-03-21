@@ -1448,7 +1448,7 @@ def test_callable_replacement_selector_tracks_published_callable_manifests() -> 
         for manifest in published_fixture_manifests()
         if manifest.manifest_id.endswith("-callable-replacement-workflows")
     )
-    expected_paths = tuple(sorted(published_callable_paths, key=lambda path: path.name))
+    expected_paths = published_callable_paths
 
     assert expected_paths
     assert CALLABLE_FIXTURE_PATHS == expected_paths

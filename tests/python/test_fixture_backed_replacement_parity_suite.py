@@ -1436,24 +1436,23 @@ def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
         surface.spec.fixture_selector
     )
 
+    covered_path_set = {bundle.manifest.path for bundle in surface.bundles}
     covered_paths = tuple(
-        sorted(
-            (bundle.manifest.path for bundle in surface.bundles),
-            key=lambda path: path.name,
-        )
+        path
+        for path in selector_fixture_paths
+        if path in covered_path_set
     )
     uncovered_paths = tuple(
         path
         for path in selector_fixture_paths
-        if path not in covered_paths
+        if path not in covered_path_set
     )
     assert covered_paths
+    assert covered_path_set == set(covered_paths)
     assert tuple(path.name for path in uncovered_paths) == (
         surface.spec.known_uncovered_published_fixture_filenames
     )
-    assert tuple(
-        sorted((*covered_paths, *uncovered_paths), key=lambda path: path.name)
-    ) == selector_fixture_paths
+    assert set((*covered_paths, *uncovered_paths)) == set(selector_fixture_paths)
 
 
 @pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)

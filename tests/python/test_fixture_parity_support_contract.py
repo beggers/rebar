@@ -86,6 +86,19 @@ def _declared_nondefault_correctness_fixture_selectors() -> tuple[str, ...]:
     )
 
 
+def _helper_backed_published_order_selectors() -> tuple[str, ...]:
+    return (
+        correctness.QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
+        correctness.CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
+        correctness.GROUPED_REPLACEMENT_FIXTURE_SELECTOR,
+        correctness.WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
+        correctness.BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
+        correctness.CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
+        correctness.OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
+        correctness.OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
+    )
+
+
 def _assert_json_literal_safe(value: object) -> None:
     if value is None or isinstance(value, (bool, int, float, str)):
         return
@@ -679,6 +692,26 @@ def test_shared_correctness_fixture_selectors_resolve_published_paths(
         assert path.is_file()
         assert path.suffix == ".py"
         assert path in published_full_suite_path_set
+
+
+@pytest.mark.parametrize("selector", _helper_backed_published_order_selectors())
+def test_helper_backed_correctness_fixture_selectors_preserve_published_subset_order(
+    selector: str,
+) -> None:
+    published_full_suite_paths = select_correctness_fixture_paths(
+        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+    )
+    registry_filename_set = set(
+        correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[selector]
+    )
+    resolved_paths = select_correctness_fixture_paths(selector)
+    expected_ordered_subset = tuple(
+        path
+        for path in published_full_suite_paths
+        if path.name in registry_filename_set
+    )
+
+    assert resolved_paths == expected_ordered_subset
 
 
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:

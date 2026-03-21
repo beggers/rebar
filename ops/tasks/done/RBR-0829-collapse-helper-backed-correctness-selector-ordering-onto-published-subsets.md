@@ -1,6 +1,6 @@
 # RBR-0829: Collapse helper-backed correctness selector ordering onto published subsets
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -107,3 +107,18 @@ PY`
     - `tests/python/test_fixture_backed_replacement_parity_suite.py` (`1166 passed`)
     - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1341 passed`)
 - This task is the direct bounded follow-up to the note left in `ops/tasks/done/RBR-0827-collapse-reintroduced-correctness-selector-filename-mirror.md`: the correctness-side support contract now runs on live registry invariants, but the helper-backed selector rows themselves still encode a different local order than the canonical published subset.
+
+## Completion
+- 2026-03-21: Replaced `_sorted_published_fixture_subset(...)` in `python/rebar_harness/correctness.py` with `_published_fixture_subset(...)`, so helper-backed selectors now preserve `PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR` order while still validating requested filenames against the published inventory.
+- 2026-03-21: Added a focused helper-backed selector-order contract to `tests/python/test_fixture_parity_support_contract.py`, keeping the existing broad declared-selector coverage while asserting the scoped helper-backed selectors resolve as exact ordered subsets of the published full-suite paths.
+- 2026-03-21: Refreshed order-sensitive expectations in `tests/python/test_callable_replacement_parity_suite.py` and `tests/python/test_fixture_backed_replacement_parity_suite.py` so those suites compare selector paths against published subset order instead of filename sorting.
+- 2026-03-21: Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`
+  - the selector-order probe from the task acceptance block (`ok`)
+- Follow-up noted: the still-manual selector rows named in the task constraints (`parser-parity`, `conditional-group-exists`, `module-workflow-surface`, `public-surface`, and `grouped-capture`) still carry their own local order and would need a separate cleanup if the harness wants every nondefault selector normalized to published full-suite order.
