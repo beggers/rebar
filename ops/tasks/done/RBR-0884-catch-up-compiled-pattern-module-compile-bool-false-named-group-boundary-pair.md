@@ -1,6 +1,6 @@
 # RBR-0884: Catch up the compiled-pattern module-compile bool-false named-group boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -68,3 +68,8 @@ Created: 2026-03-21
   - `benchmarks/workloads/module_boundary.py` and `reports/benchmarks/latest.py` currently publish no compiled-pattern named-group explicit bool-false `module.compile` rows on that owner route; and
   - `python/rebar_harness/benchmarks.py` currently limits compiled-pattern `module.compile` benchmark validation to the bounded literal success and keyword carriers plus the adjacent default named-group success pair and the explicit integer-zero named-group pair that `RBR-0882` introduces, so the benchmark publication still lacks this named-group bool-false pair even though the runtime behavior already exists.
 - The acceptance counts above are intentionally written against the immediate post-`RBR-0882` state of `864` total / `864` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 856` and `REPORT["manifests"]["module-boundary"]` at `36` selected / `36` measured / `0` known gaps.
+
+## Completion
+- Added the bounded compiled-pattern-first-argument named-group `module.compile(..., flags=False)` str/bytes benchmark pair on the existing `benchmarks/workloads/module_boundary.py` surface and widened `python/rebar_harness/benchmarks.py` only enough to accept that exact named-group bool-false keyword carrier.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` on the shared source-tree contract path so the new pair is covered through manifest loading, callback construction, internal probe execution, slice accounting, and correctness-anchor mapping to `workflow-module-compile-flags-bool-false-{str,bytes}-compiled-pattern-named-group`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0884-compiled-pattern-module-compile-bool-false-named-group-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`; the tracked publication now reports `866` total / `866` measured / `0` known gaps overall and `38` selected / `38` measured / `0` known gaps on `module-boundary`.

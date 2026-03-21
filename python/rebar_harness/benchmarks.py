@@ -719,9 +719,17 @@ def validate_compiled_pattern_workload(
                 and supports_int_zero_keyword
                 and expected_exception is None
             )
+            supports_named_group_bool_false_keyword_success = (
+                pattern == _COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_PATTERN
+                and flags == 0
+                and text_model in {"str", "bytes"}
+                and supports_bool_false_keyword
+                and expected_exception is None
+            )
             if (
                 not supports_literal_keyword_success
                 and not supports_named_group_int_zero_keyword_success
+                and not supports_named_group_bool_false_keyword_success
                 and not supports_ignorecase_rejection
             ):
                 raise ValueError(
@@ -729,7 +737,7 @@ def validate_compiled_pattern_workload(
                     "module.compile workloads currently only support "
                     "the bounded `abc` str/bytes literal keyword carriers, "
                     "the exact same-text-model `(?P<word>abc)` str/bytes "
-                    "`flags=0` named-group keyword carriers, and "
+                    "`flags=0` and `flags=False` named-group keyword carriers, and "
                     "`flags=IGNORECASE` rejection pairs"
                 )
         elif (

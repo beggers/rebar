@@ -275,6 +275,76 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "(?P<word>abc)",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": False
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "named-group",
+        "warm-cache",
+        "compiled-pattern",
+        "keyword",
+        "flags",
+        "bool"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "named-groups",
+        "compiled-pattern-first-argument",
+        "keyword-flags"
+      ],
+      "notes": [
+        "Warm module.compile helper path that keeps the bounded compiled-pattern-first-argument named-group explicit bool-false flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "(?P<word>abc)",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": False
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "named-group",
+        "purged-cache",
+        "compiled-pattern",
+        "bytes",
+        "keyword",
+        "flags",
+        "bool"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "named-groups",
+        "compiled-pattern-first-argument",
+        "keyword-flags",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged module.compile helper path that keeps the bounded compiled-pattern-first-argument named-group explicit bool-false flags= keyword carrier on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-compile-flags-int-zero-warm-str-compiled-pattern",
       "bucket": "module-compile",
       "family": "module",
