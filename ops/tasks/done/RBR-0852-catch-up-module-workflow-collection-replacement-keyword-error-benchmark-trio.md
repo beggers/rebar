@@ -1,6 +1,6 @@
 # RBR-0852: Catch up the module-workflow collection/replacement keyword error benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -64,3 +64,12 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` already accepts module `split()` / `sub()` keyword carriers and already measures `expected_exception` workloads on the shared source-tree benchmark path, so the missing surface here is publication coverage rather than missing harness support;
   - `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` currently stop at the successful raw-module `maxsplit=` / `count=` keyword rows and do not yet publish the adjacent duplicate/unexpected keyword-error trio on that manifest; and
   - `reports/benchmarks/latest.py` currently reports `811` total / `811` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 803` and `REPORT["manifests"]["collection-replacement-boundary"]` at `34` selected / `34` measured / `0` known gaps because `RBR-0850` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0850` state.
+
+## Completion Note
+- Landed the shared benchmark-harness support needed to preserve duplicate positional `maxsplit` / `count` carriers for expected `TypeError` workloads and to pass the bounded unexpected-keyword payload through `module.sub()` without pre-validating it away.
+- Added the three raw-module collection/replacement keyword-error workloads on `benchmarks/workloads/collection_replacement_boundary.py` and updated the shared source-tree benchmark expectations and anchor mappings on `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0852-collection-replacement.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Regenerated the tracked benchmark publication. `reports/benchmarks/latest.py` now publishes `816` total workloads, `816` measured, `0` known gaps, `808` module workloads, and `REPORT["manifests"]["collection-replacement-boundary"] == 37 selected / 37 measured / 0 known gaps`, including measured rows for `module-split-duplicate-maxsplit-keyword-purged-str`, `module-sub-duplicate-count-keyword-warm-str`, and `module-sub-unexpected-keyword-purged-str`.

@@ -206,6 +206,44 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-duplicate-maxsplit-keyword-purged-str",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "abc",
+      "flags": 0,
+      "maxsplit": 1,
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "multiple values for argument 'maxsplit'"
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "literal",
+        "maxsplit",
+        "keyword",
+        "duplicate-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "literal-text",
+        "keyword-maxsplit",
+        "duplicate-keyword-error"
+      ],
+      "notes": [
+        "Purged module.split helper path that keeps the bounded duplicate maxsplit= keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-findall-single-dot-warm-str",
       "bucket": "module-findall",
       "family": "module",
@@ -446,6 +484,81 @@ MANIFEST = {
       ],
       "notes": [
         "Warm module.sub helper path that keeps the bounded keyword __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-sub-duplicate-count-keyword-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "count": 1,
+      "kwargs": {
+        "count": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "multiple values for argument 'count'"
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "count",
+        "keyword",
+        "duplicate-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "keyword-count",
+        "duplicate-keyword-error"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded duplicate count= keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-sub-unexpected-keyword-purged-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.sub helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

@@ -436,8 +436,13 @@ _MODULE_HELPER_KEYWORD_OPERATIONS = frozenset(
     _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION
 )
 _MODULE_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS = frozenset(
-    {"module.fullmatch"}
+    {"module.fullmatch", "module.sub"}
 )
+_MODULE_HELPER_DUPLICATE_KEYWORD_FIELDS_BY_OPERATION = {
+    "module.search": "flags",
+    "module.split": "maxsplit",
+    "module.sub": "count",
+}
 _HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     **_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION,
     **_MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION,
@@ -537,17 +542,29 @@ def materialize_numeric_workload_argument(value: Any, *, field_name: str) -> Any
     return materialize_descriptor_value(normalized)
 
 
-def _expects_duplicate_module_search_flags_error(workload: Workload) -> bool:
+def _expected_duplicate_module_helper_keyword_field(
+    workload: Workload,
+) -> str | None:
     expected_exception = workload.expected_exception
-    if workload.operation != "module.search" or expected_exception is None:
-        return False
-    if expected_exception.get("type") != "TypeError":
-        return False
-    message_substring = expected_exception.get("message_substring")
-    return (
-        isinstance(message_substring, str)
-        and "multiple values for argument 'flags'" in message_substring
+    expected_field = _MODULE_HELPER_DUPLICATE_KEYWORD_FIELDS_BY_OPERATION.get(
+        workload.operation
     )
+    if (
+        expected_exception is None
+        or expected_field is None
+        or expected_exception.get("type") != "TypeError"
+        or expected_field not in workload.kwargs
+    ):
+        return None
+    message_substring = expected_exception.get("message_substring")
+    if not isinstance(message_substring, str):
+        return None
+    if (
+        isinstance(message_substring, str)
+        and f"multiple values for argument '{expected_field}'" in message_substring
+    ):
+        return expected_field
+    return None
 
 
 def normalize_expected_exception(value: Any) -> dict[str, Any] | None:
@@ -807,6 +824,9 @@ def helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
     haystack = workload.haystack_payload()
     uses_keyword_arguments = bool(workload.kwargs)
+    duplicate_keyword_field = _expected_duplicate_module_helper_keyword_field(
+        workload
+    )
 
     def keyword_call_kwargs() -> dict[str, Any]:
         if not uses_keyword_arguments:
@@ -826,13 +846,13 @@ def helper_callable(module: Any, workload: Workload) -> Any:
             if uses_keyword_arguments:
                 if (
                     workload.flags != 0
-                    and not _expects_duplicate_module_search_flags_error(workload)
+                    and duplicate_keyword_field != "flags"
                 ):
                     raise ValueError(
                         "benchmark workload module.search keyword flags carriers "
                         "currently require `flags == 0`"
                     )
-                if _expects_duplicate_module_search_flags_error(workload):
+                if duplicate_keyword_field == "flags":
                     return module.search(
                         pattern,
                         haystack,
@@ -878,6 +898,13 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                         "benchmark workload module.split keyword maxsplit carriers "
                         "currently require `flags == 0`"
                     )
+                if duplicate_keyword_field == "maxsplit":
+                    return module.split(
+                        pattern,
+                        haystack,
+                        workload.maxsplit_argument(),
+                        **keyword_call_kwargs(),
+                    )
                 return module.split(
                     pattern,
                     haystack,
@@ -897,6 +924,14 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                     raise ValueError(
                         "benchmark workload module.sub keyword count carriers "
                         "currently require `flags == 0`"
+                    )
+                if duplicate_keyword_field == "count":
+                    return module.sub(
+                        pattern,
+                        workload.replacement_payload(),
+                        haystack,
+                        workload.count_argument(),
+                        **keyword_call_kwargs(),
                     )
                 return module.sub(
                     pattern,

@@ -3234,7 +3234,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 34)
+        self.assertEqual(len(case.target_manifest.workloads), 37)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3246,15 +3246,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-sub-count-indexlike-positional-purged-bytes",
                 "pattern-subn-count-indexlike-positional-warm-str",
             ),
-            34,
-            expected_total_workload_count=34,
+            37,
+            expected_total_workload_count=37,
         )
 
     def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 34)
+        self.assertEqual(len(case.target_manifest.workloads), 37)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3269,15 +3269,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-subn-count-bool-keyword-warm-str",
                 "pattern-subn-count-indexlike-keyword-warm-str",
             ),
-            34,
-            expected_total_workload_count=34,
+            37,
+            expected_total_workload_count=37,
         )
 
     def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 34)
+        self.assertEqual(len(case.target_manifest.workloads), 37)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3285,15 +3285,18 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "module-split-maxsplit-keyword-purged-bytes",
                 "module-split-maxsplit-bool-keyword-purged-bytes",
                 "module-split-maxsplit-indexlike-keyword-purged-bytes",
+                "module-split-duplicate-maxsplit-keyword-purged-str",
                 "module-sub-count-keyword-warm-str",
                 "module-sub-count-bool-keyword-warm-str",
                 "module-sub-count-indexlike-keyword-warm-str",
+                "module-sub-duplicate-count-keyword-warm-str",
+                "module-sub-unexpected-keyword-purged-str",
                 "module-subn-count-keyword-purged-bytes",
                 "module-subn-count-bool-keyword-purged-bytes",
                 "module-subn-count-indexlike-keyword-purged-bytes",
             ),
-            34,
-            expected_total_workload_count=34,
+            37,
+            expected_total_workload_count=37,
         )
 
     def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(
@@ -4655,11 +4658,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 813,
-                "module_workloads": 805,
+                "measured_workloads": 816,
+                "module_workloads": 808,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 813,
+                "total_workloads": 816,
             },
         )
 
@@ -5693,7 +5696,13 @@ def assert_anchored_workload_case_result_parity(
     anchored_pairs: Iterable[AnchoredWorkloadCasePair],
 ) -> None:
     for anchored_pair in anchored_pairs:
-        expected = run_correctness_case_with_cpython(anchored_pair.case)
+        try:
+            expected = run_correctness_case_with_cpython(anchored_pair.case)
+        except Exception as expected_exc:
+            with pytest.raises(type(expected_exc)) as observed_exc:
+                run_benchmark_workload_with_cpython(anchored_pair.workload)
+            assert str(observed_exc.value) == str(expected_exc)
+            continue
         assert_benchmark_workload_matches_expected_result(
             anchored_pair.workload,
             expected,
@@ -6033,9 +6042,12 @@ COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
         "module-split-maxsplit-keyword-purged-bytes",
         "module-split-maxsplit-bool-keyword-purged-bytes",
         "module-split-maxsplit-indexlike-keyword-purged-bytes",
+        "module-split-duplicate-maxsplit-keyword-purged-str",
         "module-sub-count-keyword-warm-str",
         "module-sub-count-bool-keyword-warm-str",
         "module-sub-count-indexlike-keyword-warm-str",
+        "module-sub-duplicate-count-keyword-warm-str",
+        "module-sub-unexpected-keyword-purged-str",
         "module-subn-count-keyword-purged-bytes",
         "module-subn-count-bool-keyword-purged-bytes",
         "module-subn-count-indexlike-keyword-purged-bytes",
@@ -6050,6 +6062,30 @@ COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
         "pattern-subn-count-indexlike-keyword-warm-str",
     }
 )
+
+
+def _collection_replacement_duplicate_keyword_field(
+    workload: Any,
+) -> str | None:
+    expected_exception = workload.expected_exception
+    if expected_exception is None or expected_exception.get("type") != "TypeError":
+        return None
+    message_substring = expected_exception.get("message_substring")
+    if not isinstance(message_substring, str):
+        return None
+    if (
+        workload.operation == "module.split"
+        and "maxsplit" in workload.kwargs
+        and "multiple values for argument 'maxsplit'" in message_substring
+    ):
+        return "maxsplit"
+    if (
+        workload.operation == "module.sub"
+        and "count" in workload.kwargs
+        and "multiple values for argument 'count'" in message_substring
+    ):
+        return "count"
+    return None
 
 
 def _collection_replacement_keyword_correctness_case_signature(
@@ -6077,18 +6113,25 @@ def _collection_replacement_keyword_correctness_case_signature(
 def _collection_replacement_keyword_workload_args(
     workload: Any,
 ) -> tuple[object, ...]:
+    duplicate_keyword_field = _collection_replacement_duplicate_keyword_field(workload)
     if workload.operation in {"module.split", "pattern.split"}:
-        return (workload.haystack_payload(),)
+        args: list[object] = [workload.haystack_payload()]
+        if duplicate_keyword_field == "maxsplit":
+            args.append(workload.maxsplit)
+        return tuple(args)
     if workload.operation in {
         "module.sub",
         "module.subn",
         "pattern.sub",
         "pattern.subn",
     }:
-        return (
+        args: list[object] = [
             workload.replacement_payload(),
             workload.haystack_payload(),
-        )
+        ]
+        if duplicate_keyword_field == "count":
+            args.append(workload.count)
+        return tuple(args)
     raise AssertionError(
         "unexpected collection/replacement keyword workload operation "
         f"{workload.operation!r}"
@@ -6911,6 +6954,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-split-maxsplit-indexlike-keyword-purged-bytes": (
                     "workflow-module-split-maxsplit-indexlike-bytes",
                 ),
+                "module-split-duplicate-maxsplit-keyword-purged-str": (
+                    "workflow-module-split-duplicate-maxsplit-keyword",
+                ),
                 "module-sub-count-keyword-warm-str": (
                     "workflow-module-sub-count-keyword-str",
                 ),
@@ -6919,6 +6965,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-sub-count-indexlike-keyword-warm-str": (
                     "workflow-module-sub-count-indexlike-str",
+                ),
+                "module-sub-duplicate-count-keyword-warm-str": (
+                    "workflow-module-sub-duplicate-count-keyword",
+                ),
+                "module-sub-unexpected-keyword-purged-str": (
+                    "workflow-module-sub-unexpected-keyword",
                 ),
                 "module-subn-count-keyword-purged-bytes": (
                     "workflow-module-subn-count-keyword-bytes",
@@ -10161,7 +10213,11 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
     (
         "operation",
         "cache_mode",
+        "haystack",
         "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
         "expected_exception",
         "expected_direct_exception",
         "expected_field_names",
@@ -10170,7 +10226,11 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
         pytest.param(
             "module.search",
             "warm",
+            "abc",
             {"flags": 0},
+            None,
+            0,
+            0,
             {
                 "type": "TypeError",
                 "message_substring": "multiple values for argument 'flags'",
@@ -10187,7 +10247,11 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
         pytest.param(
             "module.fullmatch",
             "purged",
+            "abc",
             {"missing": 1},
+            None,
+            0,
+            0,
             {
                 "type": "TypeError",
                 "message_substring": "unexpected keyword argument 'missing'",
@@ -10200,13 +10264,81 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
             ["kwargs.missing"],
             id="module-fullmatch-unexpected-keyword",
         ),
+        pytest.param(
+            "module.split",
+            "purged",
+            "abc",
+            {"maxsplit": 1},
+            None,
+            0,
+            1,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'maxsplit'",
+            },
+            lambda workload: re.split(
+                workload.pattern_payload(),
+                workload.haystack_payload(),
+                workload.maxsplit,
+                maxsplit=1,
+            ),
+            ["maxsplit", "kwargs.maxsplit"],
+            id="module-split-duplicate-maxsplit-keyword",
+        ),
+        pytest.param(
+            "module.sub",
+            "warm",
+            "abc",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'count'",
+            },
+            lambda workload: re.sub(
+                workload.pattern_payload(),
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+                count=1,
+            ),
+            ["count", "kwargs.count"],
+            id="module-sub-duplicate-count-keyword",
+        ),
+        pytest.param(
+            "module.sub",
+            "purged",
+            "abc",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            lambda workload: re.sub(
+                workload.pattern_payload(),
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                missing=1,
+            ),
+            ["kwargs.missing"],
+            id="module-sub-unexpected-keyword",
+        ),
     ),
 )
 def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions(
     monkeypatch,
     operation: str,
     cache_mode: str,
+    haystack: str,
     kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
     expected_exception: dict[str, str],
     expected_direct_exception,
     expected_field_names: list[str],
@@ -10219,11 +10351,12 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
             "family": "module",
             "operation": operation,
             "pattern": "abc",
-            "haystack": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
             "expected_exception": expected_exception,
             "flags": 0,
-            "count": 0,
-            "maxsplit": 0,
+            "count": count,
+            "maxsplit": maxsplit,
             "kwargs": kwargs_payload,
             "text_model": "str",
             "cache_mode": cache_mode,
