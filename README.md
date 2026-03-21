@@ -12,31 +12,31 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 834/834 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0860` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `findall()` / `finditer()` wrong-text-model `TypeError` benchmark pair up on the shared Python-path `collection_replacement_boundary.py` surface with the minimal `module.finditer` benchmark-runner support needed to express that bounded mixed-text collection slice. |
-| Work queue | `1` ready, `0` in progress, `862` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 836/836 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0862` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `search()` / `match()` / `fullmatch()` wrong-text-model `TypeError` benchmark trio up on the shared Python-path `module_boundary.py` surface by widening the bounded compiled-pattern benchmark-runner and haystack text-model override support just enough to express that exact mixed-text helper slice. |
+| Work queue | `1` ready, `0` in progress, `864` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1512` |
-| Passing in published slice | `1512` |
+| Published cases | `1516` |
+| Passing in published slice | `1516` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 834/834 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 836/836 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `834` |
-| Workloads with real `rebar` timings | `834` |
+| Published workloads | `836` |
+| Workloads with real `rebar` timings | `836` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0860` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `findall()` / `finditer()` wrong-text-model `TypeError` benchmark pair up on the shared Python-path `collection_replacement_boundary.py` benchmark surface with the minimal `module.finditer` benchmark-runner support needed to express that bounded mixed-text collection slice.
+- `RBR-0862` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `search()` / `match()` / `fullmatch()` wrong-text-model `TypeError` benchmark trio up on the shared Python-path `module_boundary.py` benchmark surface by widening the bounded compiled-pattern benchmark-runner and haystack text-model override support just enough to express that exact mixed-text helper slice.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 834 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 836 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
