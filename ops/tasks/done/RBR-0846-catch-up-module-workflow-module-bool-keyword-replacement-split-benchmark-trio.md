@@ -1,6 +1,6 @@
 # RBR-0846: Catch up the module-workflow module bool keyword replacement/split benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -65,3 +65,12 @@ Created: 2026-03-21
   - `benchmarks/workloads/collection_replacement_boundary.py` currently publishes the raw-module keyword integer trio and the precompiled `Pattern` keyword bool trio, but not the adjacent raw-module keyword bool trio, so this follow-on stays on the existing manifest instead of inventing another benchmark family;
   - the shared source-tree benchmark expectations in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and the tracked publication in `reports/benchmarks/latest.py` likewise still stop short of these three raw-module bool keyword workloads in the current checkout; and
   - `reports/benchmarks/latest.py` currently reports `802` total / `802` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 794` because `RBR-0844` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0844` state.
+
+## Completion Note
+- Added the three raw-module bool-keyword benchmark rows on the existing `collection_replacement_boundary.py` surface: `module-split-maxsplit-bool-keyword-purged-bytes`, `module-sub-count-bool-keyword-warm-str`, and `module-subn-count-bool-keyword-purged-bytes`.
+- Updated the shared source-tree benchmark contract to treat those rows as part of the existing collection/replacement keyword workload family and anchored them to `workflow-module-split-maxsplit-bool-false-bytes`, `workflow-module-sub-count-bool-true-str`, and `workflow-module-subn-count-bool-false-bytes`.
+- Regenerated the tracked benchmark publication. The tracked `reports/benchmarks/latest.py` artifact now shows `collection-replacement-boundary` at `34` selected / `34` measured / `0` known gaps and the combined published summary at `808` total / `808` measured / `0` known gaps, with `REPORT["summary"]["module_workloads"] == 800`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0846-collection-replacement-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
