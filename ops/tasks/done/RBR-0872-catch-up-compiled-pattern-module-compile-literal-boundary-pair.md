@@ -1,6 +1,6 @@
 # RBR-0872: Catch up the compiled-pattern module-compile literal boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -66,3 +66,9 @@ Created: 2026-03-21
   - `benchmarks/workloads/module_boundary.py` currently publishes only the raw `module.compile` literal cache trio on that owner route and no compiled-pattern `module.compile` rows;
   - `python/rebar_harness/benchmarks.py` currently rejects `use_compiled_pattern` when `operation == "module.compile"`, so the benchmark publication still lacks the bounded first-argument-compiled path even though the runtime behavior already exists; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0870` state of `852` total / `852` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 844` and `REPORT["manifests"]["module-boundary"]` at `24` selected / `24` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Extended `python/rebar_harness/benchmarks.py` so the shared `module-boundary` owner path can time `module.compile(...)` with `use_compiled_pattern=True` only for the bounded literal `abc` str/bytes success pair, with the first compiled pattern built before the timed callback and reused during each sample.
+- Added `module-compile-literal-warm-str-compiled-pattern` and `module-compile-literal-purged-bytes-compiled-pattern` to `benchmarks/workloads/module_boundary.py`, and extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the matching shared anchor/probe/precompile contract plus the updated combined-summary and manifest-count expectations.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0872-compiled-pattern-module-compile-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- Confirmed from the tracked `reports/benchmarks/latest.py` artifact in the current diff that `REPORT["manifests"]["module-boundary"]` is now `26` selected / `26` measured / `0` known gaps, that the new workload ids publish `status == "measured"`, and that the combined summary is now `854` total / `854` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 846`.

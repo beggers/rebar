@@ -97,6 +97,60 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-literal-warm-str-compiled-pattern",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "literal",
+        "warm-cache",
+        "compiled-pattern"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "literal-text",
+        "compiled-pattern-first-argument"
+      ],
+      "notes": [
+        "Warm module.compile helper path that keeps the bounded compiled-pattern-first-argument literal str success row on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-compile-literal-purged-bytes-compiled-pattern",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "literal",
+        "purged-cache",
+        "compiled-pattern",
+        "bytes"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged module.compile helper path that keeps the bounded compiled-pattern-first-argument literal bytes success row on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-search-literal-warm-hit",
       "bucket": "module-search",
       "family": "module",

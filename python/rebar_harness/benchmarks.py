@@ -204,6 +204,9 @@ class Workload:
         validate_compiled_pattern_workload(
             manifest_id=manifest_id,
             operation=operation,
+            pattern=str(raw_workload.get("pattern", "")),
+            flags=int(raw_workload.get("flags", 0)),
+            text_model=text_model,
             use_compiled_pattern=use_compiled_pattern,
             kwargs=kwargs,
             cache_mode=cache_mode,
@@ -512,9 +515,14 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS = frozenset(
 _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS = frozenset(
     {"module.search", "module.match", "module.fullmatch"}
 )
+_COMPILED_PATTERN_MODULE_COMPILE_OPERATIONS = frozenset({"module.compile"})
 _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
     _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS
     | _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS
+)
+_COMPILED_PATTERN_MODULE_OPERATIONS = frozenset(
+    _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
+    | _COMPILED_PATTERN_MODULE_COMPILE_OPERATIONS
 )
 _HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     **_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION,
@@ -614,6 +622,9 @@ def validate_compiled_pattern_workload(
     *,
     manifest_id: str,
     operation: str,
+    pattern: str,
+    flags: int,
+    text_model: str,
     use_compiled_pattern: bool,
     kwargs: dict[str, Any],
     cache_mode: str,
@@ -623,12 +634,38 @@ def validate_compiled_pattern_workload(
     if not use_compiled_pattern:
         return
 
-    if operation not in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS:
-        allowed_operations = ", ".join(sorted(_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS))
+    if operation not in _COMPILED_PATTERN_MODULE_OPERATIONS:
+        allowed_operations = ", ".join(sorted(_COMPILED_PATTERN_MODULE_OPERATIONS))
         raise ValueError(
             "benchmark compiled-pattern module-helper workloads currently only "
             f"support {allowed_operations}; got {operation!r}"
         )
+
+    if operation == "module.compile":
+        if manifest_id != "module-boundary":
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads are only supported on the "
+                "`module-boundary` manifest"
+            )
+        if kwargs:
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "positional helper calls"
+            )
+        if haystack_text_model is not None or expected_exception is not None:
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "successful same-text-model literal rows"
+            )
+        if pattern != "abc" or flags != 0 or text_model not in {"str", "bytes"}:
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "the bounded `abc` str/bytes literal success pair"
+            )
 
     if operation in _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS:
         if manifest_id != "module-boundary":
@@ -992,6 +1029,35 @@ def compile_callable(module: Any, workload: Workload) -> Any:
 
     if workload.operation not in {"compile", "module.compile"}:
         raise ValueError(f"unsupported compile workload operation {workload.operation!r}")
+
+    if workload.use_compiled_pattern:
+        if workload.operation != "module.compile":
+            raise ValueError(
+                "compiled-pattern compile workloads currently only support "
+                "`module.compile`"
+            )
+        compiled_pattern = module.compile(pattern, workload.flags)
+
+        if workload.cache_mode == "warm":
+
+            def run_once() -> object:
+                return module.compile(compiled_pattern, workload.flags)
+
+            return run_once
+
+        if workload.cache_mode == "purged":
+            if hasattr(module, "purge"):
+                module.purge()
+
+            def run_once() -> object:
+                return module.compile(compiled_pattern, workload.flags)
+
+            return run_once
+
+        raise ValueError(
+            "unsupported cache mode for compiled-pattern module.compile workload "
+            f"{workload.cache_mode!r}"
+        )
 
     if workload.cache_mode == "cold":
 
