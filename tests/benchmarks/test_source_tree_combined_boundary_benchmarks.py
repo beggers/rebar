@@ -14981,6 +14981,7 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
         "kwargs_payload",
         "expected_exception",
         "pattern",
+        "flags",
         "text_model",
         "error_pattern",
     ),
@@ -14990,6 +14991,7 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             None,
             None,
             "abc",
+            0,
             "str",
             re.escape(
                 "benchmark compiled-pattern module-helper "
@@ -15003,6 +15005,7 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             {"flags": 0},
             None,
             "abc",
+            0,
             "str",
             re.escape(
                 "benchmark workload kwargs are only supported for "
@@ -15021,6 +15024,7 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
                 "message_substring": "bad pattern",
             },
             "abc",
+            0,
             "str",
             re.escape(
                 "benchmark compiled-pattern module-helper "
@@ -15034,6 +15038,7 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             None,
             None,
             "(?P<word>abc)",
+            0,
             "str",
             re.escape(
                 "benchmark compiled-pattern module-helper "
@@ -15041,6 +15046,34 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
                 "the bounded `abc` str/bytes literal success pair"
             ),
             id="pattern-scope",
+        ),
+        pytest.param(
+            "module-boundary",
+            None,
+            None,
+            "abc",
+            int(re.IGNORECASE),
+            "str",
+            re.escape(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "the bounded `abc` str/bytes literal success pair"
+            ),
+            id="flags-scope",
+        ),
+        pytest.param(
+            "module-boundary",
+            None,
+            None,
+            "abc",
+            0,
+            "unicode",
+            re.escape(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "the bounded `abc` str/bytes literal success pair"
+            ),
+            id="text-model-scope",
         ),
     ),
 )
@@ -15050,6 +15083,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
     kwargs_payload: dict[str, object] | None,
     expected_exception: dict[str, str] | None,
     pattern: str,
+    flags: int,
     text_model: str,
     error_pattern: str,
 ) -> None:
@@ -15070,7 +15104,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
                 "operation": "module.compile",
                 "pattern": {pattern!r},
                 "expected_exception": {expected_exception!r},
-                "flags": 0,
+                "flags": {flags!r},
                 "use_compiled_pattern": True,
                 "count": 0,
                 "maxsplit": 0,
@@ -15099,7 +15133,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
         "operation": "module.compile",
         "pattern": pattern,
         "expected_exception": expected_exception,
-        "flags": 0,
+        "flags": flags,
         "use_compiled_pattern": True,
         "count": 0,
         "maxsplit": 0,
