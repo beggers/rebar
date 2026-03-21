@@ -245,6 +245,16 @@ PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
         "workflow-module-subn-count-bool-false-bytes",
     }
 )
+PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES = tuple(
+    case
+    for case in MODULE_CALL_CASES
+    if case.case_id
+    in {
+        "workflow-module-split-maxsplit-indexlike-positional-bytes",
+        "workflow-module-sub-count-indexlike-positional-str",
+        "workflow-module-subn-count-indexlike-positional-bytes",
+    }
+)
 PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
@@ -321,6 +331,27 @@ def _workflow_keyword_kwargs_signature(
             signature.append((name, "indexlike", int(value.__index__())))
             continue
         signature.append((name, type(value).__name__, repr(value)))
+    return tuple(signature)
+
+
+def _workflow_positional_args_signature(
+    args: tuple[object, ...] | list[object],
+) -> tuple[tuple[str, object], ...]:
+    signature: list[tuple[str, object]] = []
+    for value in args:
+        if isinstance(value, bool):
+            signature.append(("bool", value))
+            continue
+        if isinstance(value, int):
+            signature.append(("int", int(value)))
+            continue
+        if isinstance(value, (str, bytes)):
+            signature.append((type(value).__name__, value))
+            continue
+        if hasattr(value, "__index__"):
+            signature.append(("indexlike", int(value.__index__())))
+            continue
+        signature.append((type(value).__name__, repr(value)))
     return tuple(signature)
 
 
@@ -2488,6 +2519,10 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             "module-keyword-helper": frozenset(
                 case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
             ),
+            "module-positional-indexlike-helper": frozenset(
+                case.case_id
+                for case in PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES
+            ),
             "module-keyword-error": frozenset(
                 case.case_id
                 for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
@@ -2508,9 +2543,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 131
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 134
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 78, "bytes": 53}
+        {"str": 79, "bytes": 55}
     )
     assert len(PATTERN_CASES) == 45
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -2525,18 +2560,18 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 3,
         }
     )
-    assert len(MODULE_CALL_CASES) == 74
+    assert len(MODULE_CALL_CASES) == 77
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 16,
             "search": 7,
             "match": 5,
             "fullmatch": 7,
-            "split": 11,
+            "split": 12,
             "findall": 2,
             "finditer": 2,
-            "sub": 12,
-            "subn": 10,
+            "sub": 13,
+            "subn": 11,
             "escape": 2,
         }
     )
@@ -2959,6 +2994,97 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         assert _workflow_keyword_kwargs_signature(
             fixture_case.kwargs
         ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
+        assert fixture_case.flags == 0
+
+
+def test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases(
+) -> None:
+    def direct_signature(
+        case: ModulePositionalIndexLikeCallCase,
+    ) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
+        pattern, *args = case.args
+        return (
+            case.helper,
+            pattern,
+            _workflow_positional_args_signature(tuple(args)),
+            "bytes" if isinstance(pattern, bytes) else "str",
+        )
+
+    direct_cases_by_signature = {
+        direct_signature(case): case for case in MODULE_POSITIONAL_INDEXLIKE_CALL_CASES
+    }
+    selected_direct_cases = tuple(
+        direct_cases_by_signature[
+            (
+                case.helper,
+                case_pattern(case),
+                _workflow_positional_args_signature(tuple(case.args)),
+                case.text_model,
+            )
+        ]
+        for case in PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES
+    )
+
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES,
+            "str",
+        )
+    ) == ("workflow-module-sub-count-indexlike-positional-str",)
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES,
+            "bytes",
+        )
+    ) == (
+        "workflow-module-split-maxsplit-indexlike-positional-bytes",
+        "workflow-module-subn-count-indexlike-positional-bytes",
+    )
+    assert tuple(
+        case.case_id for case in PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES
+    ) == (
+        "workflow-module-split-maxsplit-indexlike-positional-bytes",
+        "workflow-module-sub-count-indexlike-positional-str",
+        "workflow-module-subn-count-indexlike-positional-bytes",
+    )
+    assert tuple(case.case_id for case in selected_direct_cases) == (
+        "module-split-maxsplit-indexlike-positional-bytes",
+        "module-sub-count-indexlike-positional-str",
+        "module-subn-count-indexlike-positional-bytes",
+    )
+    assert len(selected_direct_cases) == len(
+        PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES
+    )
+    assert Counter(
+        case.helper for case in PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES
+    ) == Counter(
+        {
+            "split": 1,
+            "sub": 1,
+            "subn": 1,
+        }
+    )
+    assert tuple(
+        case.helper for case in PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES
+    ) == tuple(case.helper for case in selected_direct_cases)
+
+    for fixture_case, direct_case in zip(
+        PUBLISHED_MODULE_POSITIONAL_INDEXLIKE_MODULE_HELPER_CASES,
+        selected_direct_cases,
+    ):
+        direct_pattern, *direct_args = direct_case.args
+        assert fixture_case.include_pattern_arg is True
+        assert fixture_case.use_compiled_pattern is False
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_pattern, bytes) else "str"
+        )
+        assert case_pattern(fixture_case) == direct_pattern
+        assert _workflow_positional_args_signature(tuple(fixture_case.args)) == (
+            _workflow_positional_args_signature(tuple(direct_args))
+        )
+        assert fixture_case.kwargs == {}
         assert fixture_case.flags == 0
 
 

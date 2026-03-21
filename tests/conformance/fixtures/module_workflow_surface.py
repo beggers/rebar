@@ -1018,6 +1018,7 @@ MANIFEST = {
       "family": "module_split_workflow",
       "pattern": "abc",
       "helper": "split",
+      "include_pattern_arg": True,
       "text_model": "bytes",
       "args": [
         {
@@ -1040,6 +1041,7 @@ MANIFEST = {
       "family": "module_split_workflow",
       "pattern": "abc",
       "helper": "split",
+      "include_pattern_arg": True,
       "text_model": "bytes",
       "args": [
         {
@@ -1202,6 +1204,66 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "count", "bool"],
       "notes": [
         "Publishes the bounded raw module-level subn() count=False keyword workflow on bytes payloads alongside the adjacent raw module bool-normalization rows."
+      ]
+    },
+    {
+      "id": "workflow-module-split-maxsplit-indexlike-positional-bytes",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "include_pattern_arg": True,
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcabc"
+        },
+        _INDEX_TWO
+      ],
+      "categories": ["workflow", "split", "literal", "bytes", "maxsplit"],
+      "notes": [
+        "Publishes the raw module-level split() positional __index__ workflow on bytes payloads already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-count-indexlike-positional-str",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "include_pattern_arg": True,
+      "args": ["x", "abcabcabc", _INDEX_TWO],
+      "categories": ["workflow", "sub", "literal", "str", "count"],
+      "notes": [
+        "Publishes the raw module-level sub() positional __index__ workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-indexlike-positional-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "include_pattern_arg": True,
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabcabc"
+        },
+        _INDEX_TWO
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "count"],
+      "notes": [
+        "Publishes the raw module-level subn() positional __index__ workflow on bytes payloads already anchored on the shared module-workflow owner path."
       ]
     },
     {

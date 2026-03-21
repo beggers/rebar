@@ -1,6 +1,6 @@
 # RBR-0824: Publish the module-workflow module positional `__index__` trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -69,3 +69,14 @@ Created: 2026-03-21
   - direct publication probes in this run confirmed `workflow-module-split-maxsplit-indexlike-positional-bytes`, `workflow-module-sub-count-indexlike-positional-str`, and `workflow-module-subn-count-indexlike-positional-bytes` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, while the adjacent keyword-form rows are already published;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need additional backlog/current-status edits.
+
+## Completion
+- 2026-03-21: Added `workflow-module-split-maxsplit-indexlike-positional-bytes`, `workflow-module-sub-count-indexlike-positional-str`, and `workflow-module-subn-count-indexlike-positional-bytes` to the shared `module-workflow-surface` manifest, with `include_pattern_arg` enabled so the correctness harness calls the raw module helpers on the same direct anchors already exercised in `MODULE_POSITIONAL_INDEXLIKE_CALL_CASES`.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the existing owner path now expects `134` published rows, `79` `str` rows, `55` `bytes` rows, `77` `module_call` rows, and the adjusted `split`/`sub`/`subn` helper counts; added the dedicated published-slice assertion and kept the direct-case matching semantic for `__index__` carriers rather than object identity.
+- Regenerated `reports/correctness/latest.py`; the tracked publication now reads `1504` total / `1504` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `134/134/0`, `module.workflow.str` at `79/79/0`, `module.workflow.bytes` at `55/55/0`, `module.workflow.module_call` at `77/77/0`, and `module.workflow.pattern_call` unchanged at `45/45/0`. The tracked report contains all three new positional case ids and marks each `pass`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_module_positional_indexlike_argument_calls_match_cpython` (`6 passed in 0.40s`);
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases' tests/conformance/test_combined_correctness_scorecards.py` (`1 passed, 837 deselected in 0.42s`);
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0824-module-workflow-module-positional-indexlike-trio.py` (`134/134`);
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1504/1504`);
+  - and an additional full `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` sanity pass (`32 passed, 2027 subtests passed in 35.75s`).
