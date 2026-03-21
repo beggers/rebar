@@ -175,6 +175,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-split-str-compiled-pattern",
             "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
             "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
+            "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
             "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
             "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
             "workflow-module-split-str-compiled-pattern-on-bytes-string",

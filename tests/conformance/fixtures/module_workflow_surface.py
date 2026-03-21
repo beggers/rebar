@@ -1634,6 +1634,29 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "maxsplit": False
+      },
+      "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "bool", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level split() maxsplit=False keyword workflow on bytes payloads without widening into the unpublished compiled-pattern replacement keyword rows."
+      ]
+    },
+    {
       "id": "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_split_workflow",

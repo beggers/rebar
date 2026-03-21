@@ -2501,9 +2501,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 122
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 123
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 74, "bytes": 48}
+        {"str": 74, "bytes": 49}
     )
     assert len(PATTERN_CASES) == 42
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -2518,14 +2518,14 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 2,
         }
     )
-    assert len(MODULE_CALL_CASES) == 68
+    assert len(MODULE_CALL_CASES) == 69
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 16,
             "search": 7,
             "match": 5,
             "fullmatch": 7,
-            "split": 9,
+            "split": 10,
             "findall": 2,
             "finditer": 2,
             "sub": 10,
@@ -3309,6 +3309,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-search-bytes-verbose-regression-compiled-pattern",
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
         "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
+        "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
         "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-findall-bytes-compiled-pattern",
         "workflow-module-findall-bytes-compiled-pattern-on-str-string",
@@ -3319,7 +3320,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 49
+    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 50
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == (
@@ -3353,6 +3354,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-split-str-compiled-pattern",
         "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
         "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
+        "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
         "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
         "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-split-str-compiled-pattern-on-bytes-string",
@@ -3406,6 +3408,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-split-str-maxsplit",
         "compiled-pattern-split-maxsplit-keyword-str",
         "compiled-pattern-split-maxsplit-indexlike-bytes",
+        "compiled-pattern-split-maxsplit-bool-false-bytes",
         "compiled-pattern-split-duplicate-maxsplit-keyword-str",
         "compiled-pattern-split-unexpected-keyword-bytes",
         "compiled-pattern-split-str-on-bytes-string",
