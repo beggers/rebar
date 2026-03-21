@@ -1,6 +1,6 @@
 # RBR-0856: Catch up the compiled-pattern module keyword-carrier collection/replacement benchmark nonet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -73,3 +73,8 @@ Created: 2026-03-21
   - `benchmarks/workloads/collection_replacement_boundary.py` currently contains `0` compiled-pattern collection/replacement rows on the shared benchmark surface even though the correctness owner already publishes the full adjacent nine-row keyword-carrier slice;
   - `RBR-0854` is already queued immediately ahead of this task to land the shared compiled-pattern-first-argument benchmark path and the six adjacent compiled-pattern keyword-error rows on the same owner manifest; and
   - `reports/benchmarks/latest.py` currently reports `816` total / `816` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 808` and `REPORT["manifests"]["collection-replacement-boundary"]` at `37` selected / `37` measured / `0` known gaps because `RBR-0854` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0854` state.
+- 2026-03-21 completion: added the exact nine compiled-pattern-first-argument `split()` / `sub()` / `subn()` keyword-carrier workloads to the shared `benchmarks/workloads/collection_replacement_boundary.py` manifest, updated the shared source-tree benchmark contract expectations in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and republished `reports/benchmarks/latest.py` at `831` total / `831` measured / `0` known gaps overall with `collection-replacement-boundary` at `52` selected / `52` measured / `0` known gaps.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0856-compiled-pattern-keyword-carriers.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

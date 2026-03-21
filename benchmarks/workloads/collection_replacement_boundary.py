@@ -206,6 +206,114 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "zabczabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "literal",
+        "compiled-pattern",
+        "maxsplit",
+        "keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "keyword-maxsplit"
+      ],
+      "notes": [
+        "Purged module.split helper path that keeps the bounded compiled-pattern-first-argument maxsplit= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "zabcabcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "maxsplit": {
+          "type": "indexlike",
+          "value": 2
+        }
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "bytes",
+        "compiled-pattern",
+        "maxsplit",
+        "indexlike",
+        "keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "indexlike",
+        "keyword-maxsplit"
+      ],
+      "notes": [
+        "Purged module.split helper path that keeps the bounded compiled-pattern-first-argument keyword __index__ maxsplit workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "abcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "maxsplit": False
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "bytes",
+        "compiled-pattern",
+        "maxsplit",
+        "keyword",
+        "bool",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "keyword-maxsplit"
+      ],
+      "notes": [
+        "Purged module.split helper path that keeps the bounded compiled-pattern-first-argument bool maxsplit= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-split-duplicate-maxsplit-keyword-purged-str",
       "bucket": "module-split",
       "family": "module",
@@ -566,6 +674,117 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-count-keyword-warm-str-compiled-pattern",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": 1
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "keyword-count"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded compiled-pattern-first-argument count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": {
+          "type": "indexlike",
+          "value": 2
+        }
+      },
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "bytes",
+        "compiled-pattern",
+        "count",
+        "indexlike",
+        "keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "indexlike",
+        "keyword-count"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded compiled-pattern-first-argument keyword __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-sub-count-bool-keyword-warm-str-compiled-pattern",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": True
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "bool",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "keyword-count"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded compiled-pattern-first-argument bool count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-duplicate-count-keyword-warm-str",
       "bucket": "module-sub",
       "family": "module",
@@ -859,6 +1078,117 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes module.subn helper path that keeps the bounded keyword __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-count-keyword-purged-bytes-compiled-pattern",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": 1
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "keyword-count"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": {
+          "type": "indexlike",
+          "value": 2
+        }
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "literal",
+        "compiled-pattern",
+        "count",
+        "indexlike",
+        "keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "indexlike",
+        "keyword-count"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument keyword __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": False
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "bool",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "keyword-count"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument bool count= keyword workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

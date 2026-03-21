@@ -3234,7 +3234,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 43)
+        self.assertEqual(len(case.target_manifest.workloads), 52)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3246,15 +3246,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-sub-count-indexlike-positional-purged-bytes",
                 "pattern-subn-count-indexlike-positional-warm-str",
             ),
-            43,
-            expected_total_workload_count=43,
+            52,
+            expected_total_workload_count=52,
         )
 
     def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 43)
+        self.assertEqual(len(case.target_manifest.workloads), 52)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3269,15 +3269,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-subn-count-bool-keyword-warm-str",
                 "pattern-subn-count-indexlike-keyword-warm-str",
             ),
-            43,
-            expected_total_workload_count=43,
+            52,
+            expected_total_workload_count=52,
         )
 
     def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 43)
+        self.assertEqual(len(case.target_manifest.workloads), 52)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3285,12 +3285,18 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "module-split-maxsplit-keyword-purged-bytes",
                 "module-split-maxsplit-bool-keyword-purged-bytes",
                 "module-split-maxsplit-indexlike-keyword-purged-bytes",
+                "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+                "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
+                "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
                 "module-split-duplicate-maxsplit-keyword-purged-str",
                 "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
                 "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
                 "module-sub-count-keyword-warm-str",
                 "module-sub-count-bool-keyword-warm-str",
                 "module-sub-count-indexlike-keyword-warm-str",
+                "module-sub-count-keyword-warm-str-compiled-pattern",
+                "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
+                "module-sub-count-bool-keyword-warm-str-compiled-pattern",
                 "module-sub-duplicate-count-keyword-warm-str",
                 "module-sub-unexpected-keyword-purged-str",
                 "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
@@ -3298,11 +3304,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "module-subn-count-keyword-purged-bytes",
                 "module-subn-count-bool-keyword-purged-bytes",
                 "module-subn-count-indexlike-keyword-purged-bytes",
+                "module-subn-count-keyword-purged-bytes-compiled-pattern",
+                "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
+                "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
                 "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
                 "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
             ),
-            43,
-            expected_total_workload_count=43,
+            52,
+            expected_total_workload_count=52,
         )
 
     def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(
@@ -4664,11 +4673,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 822,
-                "module_workloads": 814,
+                "measured_workloads": 831,
+                "module_workloads": 823,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 822,
+                "total_workloads": 831,
             },
         )
 
@@ -6046,21 +6055,30 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
 COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
     {
         "module-split-maxsplit-keyword-purged-bytes",
+        "module-split-maxsplit-keyword-purged-str-compiled-pattern",
         "module-split-maxsplit-bool-keyword-purged-bytes",
+        "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
         "module-split-maxsplit-indexlike-keyword-purged-bytes",
+        "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
         "module-split-duplicate-maxsplit-keyword-purged-str",
         "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
         "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
         "module-sub-count-keyword-warm-str",
+        "module-sub-count-keyword-warm-str-compiled-pattern",
         "module-sub-count-bool-keyword-warm-str",
+        "module-sub-count-bool-keyword-warm-str-compiled-pattern",
         "module-sub-count-indexlike-keyword-warm-str",
+        "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
         "module-sub-duplicate-count-keyword-warm-str",
         "module-sub-unexpected-keyword-purged-str",
         "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
         "module-sub-unexpected-keyword-purged-str-compiled-pattern",
         "module-subn-count-keyword-purged-bytes",
+        "module-subn-count-keyword-purged-bytes-compiled-pattern",
         "module-subn-count-bool-keyword-purged-bytes",
+        "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
         "module-subn-count-indexlike-keyword-purged-bytes",
+        "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
         "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
         "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
         "pattern-split-maxsplit-keyword-warm-str",
@@ -6974,6 +6992,15 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-split-maxsplit-indexlike-keyword-purged-bytes": (
                     "workflow-module-split-maxsplit-indexlike-bytes",
                 ),
+                "module-split-maxsplit-keyword-purged-str-compiled-pattern": (
+                    "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
+                ),
+                "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
+                ),
+                "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
+                ),
                 "module-split-duplicate-maxsplit-keyword-purged-str": (
                     "workflow-module-split-duplicate-maxsplit-keyword",
                 ),
@@ -6991,6 +7018,15 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-sub-count-indexlike-keyword-warm-str": (
                     "workflow-module-sub-count-indexlike-str",
+                ),
+                "module-sub-count-keyword-warm-str-compiled-pattern": (
+                    "workflow-module-sub-count-keyword-str-compiled-pattern",
+                ),
+                "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern": (
+                    "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
+                ),
+                "module-sub-count-bool-keyword-warm-str-compiled-pattern": (
+                    "workflow-module-sub-count-bool-true-str-compiled-pattern",
                 ),
                 "module-sub-duplicate-count-keyword-warm-str": (
                     "workflow-module-sub-duplicate-count-keyword",
@@ -7012,6 +7048,15 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-count-indexlike-keyword-purged-bytes": (
                     "workflow-module-subn-count-indexlike-bytes",
+                ),
+                "module-subn-count-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-subn-count-keyword-bytes-compiled-pattern",
+                ),
+                "module-subn-count-indexlike-keyword-purged-str-compiled-pattern": (
+                    "workflow-module-subn-count-indexlike-str-compiled-pattern",
+                ),
+                "module-subn-count-bool-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
                 ),
                 "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern": (
                     "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
@@ -10614,9 +10659,9 @@ class CompiledPatternModuleKeywordCarrierCase:
 
 COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-split-maxsplit-keyword-str-compiled-pattern",
+        id="module-split-maxsplit-keyword-purged-str-compiled-pattern",
         operation="module.split",
-        cache_mode="warm",
+        cache_mode="purged",
         haystack="zabczabc",
         kwargs_payload={"maxsplit": 1},
         replacement=None,
@@ -10625,7 +10670,7 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.maxsplit",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-split-maxsplit-indexlike-bytes-compiled-pattern",
+        id="module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
         operation="module.split",
         cache_mode="purged",
         haystack="zabcabcabc",
@@ -10636,7 +10681,7 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.maxsplit",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-split-maxsplit-bool-false-bytes-compiled-pattern",
+        id="module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
         operation="module.split",
         cache_mode="purged",
         haystack="abcabc",
@@ -10647,7 +10692,7 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.maxsplit",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-sub-count-keyword-str-compiled-pattern",
+        id="module-sub-count-keyword-warm-str-compiled-pattern",
         operation="module.sub",
         cache_mode="warm",
         haystack="abcabc",
@@ -10658,9 +10703,9 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.count",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-sub-count-indexlike-bytes-compiled-pattern",
+        id="module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
         operation="module.sub",
-        cache_mode="purged",
+        cache_mode="warm",
         haystack="abcabcabc",
         kwargs_payload={"count": {"type": "indexlike", "value": 2}},
         replacement="x",
@@ -10669,7 +10714,7 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.count",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-sub-count-bool-true-str-compiled-pattern",
+        id="module-sub-count-bool-keyword-warm-str-compiled-pattern",
         operation="module.sub",
         cache_mode="warm",
         haystack="abcabc",
@@ -10680,7 +10725,7 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.count",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-subn-count-keyword-bytes-compiled-pattern",
+        id="module-subn-count-keyword-purged-bytes-compiled-pattern",
         operation="module.subn",
         cache_mode="purged",
         haystack="abcabc",
@@ -10691,9 +10736,9 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.count",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-subn-count-indexlike-str-compiled-pattern",
+        id="module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
         operation="module.subn",
-        cache_mode="warm",
+        cache_mode="purged",
         haystack="abcabcabc",
         kwargs_payload={"count": {"type": "indexlike", "value": 2}},
         replacement="x",
@@ -10702,7 +10747,7 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.count",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
-        id="module-subn-count-bool-false-bytes-compiled-pattern",
+        id="module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
         operation="module.subn",
         cache_mode="purged",
         haystack="abcabc",
@@ -10905,21 +10950,21 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     (
         pytest.param(
             COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[0],
-            [("compile", "abc", 0)],
+            [("compile", "abc", 0), ("purge",)],
             ("module.split", "zabczabc", 0, 0, {"maxsplit": 1}),
-            id="module-split-maxsplit-keyword-str-compiled-pattern",
+            id="module-split-maxsplit-keyword-purged-str-compiled-pattern",
         ),
         pytest.param(
             COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[3],
             [("compile", "abc", 0)],
             ("module.sub", "x", "abcabc", 0, 0, {"count": 1}),
-            id="module-sub-count-keyword-str-compiled-pattern",
+            id="module-sub-count-keyword-warm-str-compiled-pattern",
         ),
         pytest.param(
             COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[6],
             [("compile", b"abc", 0), ("purge",)],
             ("module.subn", b"x", b"abcabc", 0, 0, {"count": 1}),
-            id="module-subn-count-keyword-bytes-compiled-pattern",
+            id="module-subn-count-keyword-purged-bytes-compiled-pattern",
         ),
     ),
 )
