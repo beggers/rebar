@@ -1,8 +1,9 @@
 # RBR-0853: Collapse the module-workflow raw keyword-error sidecar onto fixture categories
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the remaining raw-module keyword-error sidecar from `tests/python/test_module_workflow_parity_suite.py` so the loaded `MODULE_CALL_CASES` rows become the sole canonical owner for that published five-case slice.
@@ -77,3 +78,8 @@ PY`
 - This stays on the same post-JSON simplification track as the recent module-workflow sidecar removals rather than opening a new harness direction:
   - `RBR-0845` already collapsed the module-workflow positional-indexlike published sidecars onto canonical cases; and
   - `RBR-0847` already collapsed the module-workflow published collection case sidecars onto fixture selectors, leaving this raw keyword-error tuple as the next small deletion on the same owner file.
+
+## Completion Note
+- Replaced the handwritten `PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES` tuple with `_published_module_keyword_error_fixture_cases()`, which derives the same five raw module-call rows directly from `MODULE_CALL_CASES` by filtering on `use_compiled_pattern is False`, `text_model == "str"`, and `duplicate-keyword`/`unexpected-keyword` category membership.
+- Updated the module-workflow direct-bucket coverage and the published-slice alignment test to use the fixture-derived selector, preserving the existing published ordering and direct-case mapping.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`, `bash -lc "! rg -n '^(PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES) =' tests/python/test_module_workflow_parity_suite.py"`, and the acceptance probe that checks the fixture-derived five-case ordering and helper sequence.

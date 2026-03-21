@@ -241,18 +241,6 @@ PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
     and case_pattern(case) == "a.c"
     and case.helper in {"search", "match", "fullmatch"}
 )
-PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES = tuple(
-    case
-    for case in MODULE_CALL_CASES
-    if case.case_id
-    in {
-        "workflow-module-search-duplicate-flags-keyword",
-        "workflow-module-split-duplicate-maxsplit-keyword",
-        "workflow-module-sub-duplicate-count-keyword",
-        "workflow-module-fullmatch-unexpected-keyword",
-        "workflow-module-sub-unexpected-keyword",
-    }
-)
 PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
     case
     for case in PATTERN_CASES
@@ -2000,6 +1988,16 @@ def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
     )
 
 
+def _published_module_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in MODULE_CALL_CASES
+        if not case.use_compiled_pattern
+        and case.text_model == "str"
+        and {"duplicate-keyword", "unexpected-keyword"} & set(case.categories)
+    )
+
+
 def _module_positional_indexlike_direct_signature(
     case: ModulePositionalIndexLikeCallCase,
 ) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
@@ -3025,8 +3023,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
                 case.case_id for case in _published_module_positional_indexlike_fixture_cases()
             ),
             "module-keyword-error": frozenset(
-                case.case_id
-                for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+                case.case_id for case in _published_module_keyword_error_fixture_cases()
             ),
             "compiled-module-helper": frozenset(
                 case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
@@ -3565,6 +3562,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
             "bytes" if isinstance(pattern, bytes) else "str",
         )
 
+    published_fixture_cases = _published_module_keyword_error_fixture_cases()
     direct_cases_by_signature = {
         direct_signature(case): case for case in MODULE_KEYWORD_ERROR_CASES
     }
@@ -3578,11 +3576,11 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
                 case.text_model,
             )
         ]
-        for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+        for case in published_fixture_cases
     )
 
     assert tuple(
-        case.case_id for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+        case.case_id for case in published_fixture_cases
     ) == (
         "workflow-module-search-duplicate-flags-keyword",
         "workflow-module-split-duplicate-maxsplit-keyword",
@@ -3592,12 +3590,10 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
     )
     assert tuple(
         case.case_id for case in _fixture_cases_for_text_model(
-            PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES,
+            published_fixture_cases,
             "str",
         )
-    ) == tuple(
-        case.case_id for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
-    )
+    ) == tuple(case.case_id for case in published_fixture_cases)
     assert tuple(case.case_id for case in selected_direct_cases) == (
         "module-search-duplicate-flags-keyword",
         "module-split-duplicate-maxsplit-keyword",
@@ -3605,9 +3601,9 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "module-fullmatch-unexpected-keyword",
         "module-sub-unexpected-keyword",
     )
-    assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES)
+    assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(
-        case.helper for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+        case.helper for case in published_fixture_cases
     ) == Counter(
         {
             "search": 1,
@@ -3616,14 +3612,11 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
             "fullmatch": 1,
         }
     )
-    assert tuple(
-        case.helper for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
-    ) == tuple(case.helper for case in selected_direct_cases)
+    assert tuple(case.helper for case in published_fixture_cases) == tuple(
+        case.helper for case in selected_direct_cases
+    )
 
-    for fixture_case, direct_case in zip(
-        PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES,
-        selected_direct_cases,
-    ):
+    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
         direct_pattern, *direct_args = direct_case.args
         assert fixture_case.include_pattern_arg is True
         assert fixture_case.use_compiled_pattern is False
