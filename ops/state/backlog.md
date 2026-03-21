@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0862` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument `search()` / `match()` / `fullmatch()` wrong-text-model `TypeError` benchmark trio up on the shared Python-path `module_boundary.py` surface by widening the bounded compiled-pattern benchmark-runner and haystack text-model override support just enough to express that exact mixed-text helper slice.
+`RBR-0864` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument successful `search()` / `match()` / `fullmatch()` benchmark trio up on the shared Python-path `module_boundary.py` surface by reusing the bounded compiled-pattern module-helper timing path on that owner surface instead of reopening wildcard, verbose-regression, or collection/replacement work.
 
 ## Ordered Work
-1. `RBR-0862` catches the adjacent compiled-pattern-first-argument `search()` / `match()` / `fullmatch()` wrong-text-model `TypeError` benchmark trio up on `python/rebar_harness/benchmarks.py`, `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0864` catches the adjacent compiled-pattern-first-argument successful `search()` / `match()` / `fullmatch()` benchmark trio up on `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

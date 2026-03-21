@@ -39,8 +39,8 @@ Created: 2026-03-21
   - add focused contract coverage for the bounded haystack text-model override on compiled-pattern `module.search` / `module.match` / `module.fullmatch` workloads, proving the override round-trips through manifest loading, callback construction, internal probe execution, and timed `TypeError` matching against CPython;
   - update the module-boundary manifest expectations from `13` measured workloads to `16`, still with `0` known gaps on that manifest;
   - keep the manifest on the existing `post-parser-workflows` / combined-boundary path and wire the three new workloads to the exact correctness case ids listed above;
-  - update the combined publication totals from `834` total / `834` measured / `0` known gaps across `30` manifests to `837` / `837` / `0` across the same `30` manifests;
-  - update `REPORT["summary"]["module_workloads"]` from `826` to `829`;
+  - update the combined publication totals from `836` total / `836` measured / `0` known gaps across `30` manifests to `839` / `839` / `0` across the same `30` manifests;
+  - update `REPORT["summary"]["module_workloads"]` from `828` to `831`;
   - keep `REPORT["summary"]["regression_workloads"]` at `8`; and
   - keep the built-native smoke manifest set unchanged in this run.
 - `reports/benchmarks/latest.py` is regenerated honestly:
@@ -67,4 +67,4 @@ Created: 2026-03-21
   - `tests/conformance/fixtures/module_workflow_surface.py` already publishes the exact adjacent correctness anchors `workflow-module-search-str-compiled-pattern-on-bytes-string`, `workflow-module-match-bytes-compiled-pattern-on-str-string`, and `workflow-module-fullmatch-str-compiled-pattern-on-bytes-string`;
   - direct runtime probes in this run showed CPython and `rebar` already agree on the exact bounded `TypeError` payloads for `search(rebar.compile("abc"), b"abc")`, `match(rebar.compile(b"abc"), "abc")`, and `fullmatch(rebar.compile("abc"), b"abc")`, so no Rust or Python regex-behavior prerequisite is missing;
   - `python/rebar_harness/benchmarks.py` currently restricts compiled-pattern benchmark workloads to `module.split`, `module.sub`, and `module.subn`, and it currently restricts `haystack_text_model` overrides to the `collection-replacement-boundary` manifest, so these module-boundary rows are still unexpressible on the published benchmark surface today even though the runtime behavior already exists; and
-  - `benchmarks/workloads/module_boundary.py` plus `reports/benchmarks/latest.py` currently publish no compiled-pattern module-helper rows, so the acceptance counts above are intentionally written against the immediate post-`RBR-0860` state.
+  - `benchmarks/workloads/module_boundary.py` plus `reports/benchmarks/latest.py` currently publish no compiled-pattern module-helper rows, and the tracked benchmark report currently stands at `836` total / `836` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 828` and `REPORT["manifests"]["module-boundary"]` at `13` selected / `13` measured / `0` known gaps, so the acceptance counts above are intentionally written against the immediate post-`RBR-0860` state.
