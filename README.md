@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 785/785 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0834` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the next precompiled `Pattern` keyword-form search/match/fullmatch/findall/finditer benchmark quintet up on the shared Python-path `pattern_boundary.py` surface. |
-| Work queue | `1` ready, `0` in progress, `836` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 790/790 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0836` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the precompiled `Pattern` keyword replacement/split benchmark trio up on the shared Python-path `collection_replacement_boundary.py` surface. |
+| Work queue | `1` ready, `0` in progress, `838` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 785/785 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1512 cases across 114 manifests, with all 1512 passing in the current slice; the benchmark publication covers 790/790 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `785` |
-| Workloads with real `rebar` timings | `785` |
+| Published workloads | `790` |
+| Workloads with real `rebar` timings | `790` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0834` is the concrete follow-on on the existing `module-workflow-surface` frontier, catching the next precompiled `Pattern` keyword-form search/match/fullmatch/findall/finditer benchmark quintet up on the existing Python-path `pattern_boundary` benchmark surface.
+- `RBR-0836` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the precompiled `Pattern` keyword replacement/split benchmark trio up on the existing Python-path `collection_replacement_boundary` benchmark surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 785 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 790 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
