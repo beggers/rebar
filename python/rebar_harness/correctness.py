@@ -1300,28 +1300,26 @@ def build_layer_summaries(case_results: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def build_family_summaries(case_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    families = _sorted_unique_strings(result["family"] for result in case_results)
-    return [
-        {
-            "id": family,
-            "case_count": len(
-                [result for result in case_results if result["family"] == family]
-            ),
-            "layers": _sorted_unique_strings(
-                result["layer"] for result in case_results if result["family"] == family
-            ),
-            "operations": _sorted_unique_strings(
-                result["operation"] for result in case_results if result["family"] == family
-            ),
-            "text_models": _sorted_unique_strings(
-                result.get("text_model") for result in case_results if result["family"] == family
-            ),
-            "summary": build_summary(
-                [result for result in case_results if result["family"] == family]
-            ),
-        }
-        for family in families
-    ]
+    summaries: list[dict[str, Any]] = []
+    for family in _sorted_unique_strings(result["family"] for result in case_results):
+        family_cases = [result for result in case_results if result["family"] == family]
+        summaries.append(
+            {
+                "id": family,
+                "case_count": len(family_cases),
+                "layers": _sorted_unique_strings(
+                    result["layer"] for result in family_cases
+                ),
+                "operations": _sorted_unique_strings(
+                    result["operation"] for result in family_cases
+                ),
+                "text_models": _sorted_unique_strings(
+                    result.get("text_model") for result in family_cases
+                ),
+                "summary": build_summary(family_cases),
+            }
+        )
+    return summaries
 
 
 def determine_phase(layer_summaries: dict[str, Any]) -> str:
