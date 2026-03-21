@@ -6,7 +6,11 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR,
+    FixtureCase,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_fixture_bundle_contract,
@@ -90,35 +94,8 @@ QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
     r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
 )
 
-CONDITIONAL_FIXTURE_NAMES = (
-    "optional_group_conditional_workflows.py",
-    "conditional_group_exists_workflows.py",
-    "conditional_group_exists_no_else_workflows.py",
-    "conditional_group_exists_empty_else_workflows.py",
-    "conditional_group_exists_empty_yes_else_workflows.py",
-    "conditional_group_exists_fully_empty_workflows.py",
-    "conditional_group_exists_quantified_workflows.py",
-    "conditional_group_exists_quantified_alternation_workflows.py",
-    "conditional_group_exists_no_else_quantified_workflows.py",
-    "conditional_group_exists_empty_else_quantified_workflows.py",
-    "conditional_group_exists_empty_yes_else_quantified_workflows.py",
-    "conditional_group_exists_fully_empty_quantified_workflows.py",
-    "conditional_group_exists_nested_workflows.py",
-    "conditional_group_exists_no_else_nested_workflows.py",
-    "conditional_group_exists_empty_else_nested_workflows.py",
-    "conditional_group_exists_empty_yes_else_nested_workflows.py",
-    "conditional_group_exists_fully_empty_nested_workflows.py",
-    "conditional_group_exists_alternation_workflows.py",
-    "conditional_group_exists_no_else_alternation_workflows.py",
-    "conditional_group_exists_empty_else_alternation_workflows.py",
-    "conditional_group_exists_empty_yes_else_alternation_workflows.py",
-    "conditional_group_exists_fully_empty_alternation_workflows.py",
-)
 FIXTURE_BUNDLES = load_published_fixture_bundles(
-    tuple(
-        CORRECTNESS_FIXTURES_ROOT / fixture_name
-        for fixture_name in CONDITIONAL_FIXTURE_NAMES
-    ),
+    select_correctness_fixture_paths(CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR),
     pattern_extractor=str_case_pattern,
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)

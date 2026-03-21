@@ -40,6 +40,7 @@ COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "counted-repeat-quantified-gr
 QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR = "quantified-alternation"
 BOUNDED_WILDCARD_FIXTURE_SELECTOR = "bounded-wildcard"
 SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR = "simple-backreference"
+CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR = "conditional-group-exists"
 CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR = (
     "conditional-group-exists-replacement"
 )
@@ -222,6 +223,30 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
         SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "named_backreference_workflows.py",
             "numbered_backreference_workflows.py",
+        ),
+        CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR: (
+            "optional_group_conditional_workflows.py",
+            "conditional_group_exists_workflows.py",
+            "conditional_group_exists_no_else_workflows.py",
+            "conditional_group_exists_empty_else_workflows.py",
+            "conditional_group_exists_empty_yes_else_workflows.py",
+            "conditional_group_exists_fully_empty_workflows.py",
+            "conditional_group_exists_quantified_workflows.py",
+            "conditional_group_exists_quantified_alternation_workflows.py",
+            "conditional_group_exists_no_else_quantified_workflows.py",
+            "conditional_group_exists_empty_else_quantified_workflows.py",
+            "conditional_group_exists_empty_yes_else_quantified_workflows.py",
+            "conditional_group_exists_fully_empty_quantified_workflows.py",
+            "conditional_group_exists_nested_workflows.py",
+            "conditional_group_exists_no_else_nested_workflows.py",
+            "conditional_group_exists_empty_else_nested_workflows.py",
+            "conditional_group_exists_empty_yes_else_nested_workflows.py",
+            "conditional_group_exists_fully_empty_nested_workflows.py",
+            "conditional_group_exists_alternation_workflows.py",
+            "conditional_group_exists_no_else_alternation_workflows.py",
+            "conditional_group_exists_empty_else_alternation_workflows.py",
+            "conditional_group_exists_empty_yes_else_alternation_workflows.py",
+            "conditional_group_exists_fully_empty_alternation_workflows.py",
         ),
         CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "conditional_group_exists_alternation_replacement_workflows.py",

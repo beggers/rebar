@@ -1,6 +1,6 @@
 # RBR-0815: Add a conditional-group-exists fixture selector and collapse the suite sidecar
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -98,3 +98,7 @@ PY`
 - A simple sorted-subset selector is not sufficient for this suite:
   - the suite currently slices `FIXTURE_BUNDLES` into `BASE_BUNDLES`, `QUANTIFIED_BUNDLES`, and `NESTED_ALTERNATION_BUNDLES` by position; and
   - the published-full-suite order for these 22 manifests does not match the current suite order, so the new selector must preserve the suite's existing grouped order explicitly instead of routing through the alphabetizing helper.
+
+## Completion
+- Added `CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR` to `python/rebar_harness/correctness.py` with the exact 22-manifest order used by the parity suite, and switched `tests/python/test_conditional_group_exists_parity_suite.py` to load fixture paths through `select_correctness_fixture_paths(...)` instead of a duplicated local filename tuple.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py`, `bash -lc "! rg -n 'CONDITIONAL_FIXTURE_NAMES|CORRECTNESS_FIXTURES_ROOT / fixture_name' tests/python/test_conditional_group_exists_parity_suite.py"`, and the task's selector-order probe script (`ok`).
