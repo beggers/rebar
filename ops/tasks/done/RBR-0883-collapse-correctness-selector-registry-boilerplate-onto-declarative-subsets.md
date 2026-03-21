@@ -1,6 +1,6 @@
 # RBR-0883: Collapse correctness selector registry boilerplate onto declarative subsets
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -51,3 +51,11 @@ Created: 2026-03-21
   - `bash -lc "! rg -n '_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR\\.update\\(' python/rebar_harness/correctness.py"` currently fails because the file still contains the single long `.update(...)` construction block;
   - `bash -lc "[[ $(rg -F -c 'ordered_published_subset_filenames(' python/rebar_harness/correctness.py) -le 2 ]]"` currently fails because `python/rebar_harness/correctness.py` still contains 19 per-selector calls; and
   - `ops/tasks/`, `ops/state/`, and the latest architecture done tasks show adjacent selector-ordering and helper-consolidation work, but no existing ready or blocked task removes this remaining correctness-registry construction boilerplate.
+
+## Completion Note
+- 2026-03-21: Promoted `_PUBLISHED_CORRECTNESS_FIXTURE_FILENAMES` to the explicit published-order source tuple in `python/rebar_harness/correctness.py`, added one declarative `_NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES` table for the nondefault selector memberships, and rebuilt `_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR` through one shared `ordered_published_subset_filenames(...)` comprehension instead of the repeated `.update(...)` helper block.
+- Kept selector names, requested memberships, published-order resolution, missing-filename error text, and `select_correctness_fixture_paths(...)` behavior unchanged; `tests/python/test_fixture_parity_support_contract.py` did not need a behavioral update because its live-registry invariant checks still cover the simplified construction path.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'shared_correctness_fixture_selectors_resolve_published_paths or correctness_selector_subset_helper_keeps_fixture_specific_missing_filename_error or declared_correctness_fixture_selectors_match_registry_keys or declared_nondefault_correctness_fixture_selectors_are_parametrized_once'` (`22 passed, 288 deselected`)
+  - `bash -lc "! rg -n '_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR\\.update\\(' python/rebar_harness/correctness.py"` (passed with no matches)
+  - `bash -lc "[[ $(rg -F -c 'ordered_published_subset_filenames(' python/rebar_harness/correctness.py) -le 2 ]]"` (passed)
