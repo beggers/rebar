@@ -38,7 +38,6 @@ CORRECTNESS_FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"
 PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR = "published-full-suite"
 COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "counted-repeat-quantified-group"
 QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR = "quantified-alternation"
-BOUNDED_WILDCARD_FIXTURE_SELECTOR = "bounded-wildcard"
 SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR = "simple-backreference"
 CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR = "conditional-group-exists"
 CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR = (
@@ -224,10 +223,6 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "quantified_nested_group_alternation_workflows.py",
             "quantified_alternation_open_ended_workflows.py",
             "quantified_alternation_nested_branch_workflows.py",
-        ),
-        BOUNDED_WILDCARD_FIXTURE_SELECTOR: _published_fixture_subset(
-            "collection_replacement_workflows.py",
-            "literal_flag_workflows.py",
         ),
         PARSER_PARITY_FIXTURE_SELECTOR: (
             "parser_matrix.py",
