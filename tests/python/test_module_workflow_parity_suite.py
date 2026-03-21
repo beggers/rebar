@@ -2003,7 +2003,7 @@ def _module_positional_indexlike_direct_signature(
     )
 
 
-def _module_positional_indexlike_fixture_signature(
+def _workflow_positional_indexlike_fixture_signature(
     case: FixtureCase,
 ) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
     return (
@@ -2022,7 +2022,7 @@ def _published_module_positional_indexlike_fixture_cases() -> tuple[FixtureCase,
     return tuple(
         case
         for case in MODULE_CALL_CASES
-        if _module_positional_indexlike_fixture_signature(case) in direct_signatures
+        if _workflow_positional_indexlike_fixture_signature(case) in direct_signatures
     )
 
 
@@ -2037,17 +2037,6 @@ def _pattern_positional_indexlike_direct_signature(
     )
 
 
-def _pattern_positional_indexlike_fixture_signature(
-    case: FixtureCase,
-) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
-    return (
-        case.helper,
-        case_pattern(case),
-        _workflow_positional_args_signature(tuple(case.args)),
-        case.text_model,
-    )
-
-
 def _published_pattern_positional_indexlike_fixture_cases() -> tuple[FixtureCase, ...]:
     direct_signatures = {
         _pattern_positional_indexlike_direct_signature(case)
@@ -2057,7 +2046,7 @@ def _published_pattern_positional_indexlike_fixture_cases() -> tuple[FixtureCase
         case
         for case in PATTERN_CASES
         if case.kwargs == {}
-        and _pattern_positional_indexlike_fixture_signature(case) in direct_signatures
+        and _workflow_positional_indexlike_fixture_signature(case) in direct_signatures
     )
 
 
@@ -3479,7 +3468,7 @@ def test_module_workflow_surface_publishes_module_positional_indexlike_slice_fro
         for case in MODULE_POSITIONAL_INDEXLIKE_CALL_CASES
     }
     selected_direct_cases = tuple(
-        direct_cases_by_signature[_module_positional_indexlike_fixture_signature(case)]
+        direct_cases_by_signature[_workflow_positional_indexlike_fixture_signature(case)]
         for case in published_fixture_cases
     )
 
@@ -3899,7 +3888,7 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
         for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
     }
     selected_direct_cases = tuple(
-        direct_cases_by_signature[_pattern_positional_indexlike_fixture_signature(case)]
+        direct_cases_by_signature[_workflow_positional_indexlike_fixture_signature(case)]
         for case in published_fixture_cases
     )
 
