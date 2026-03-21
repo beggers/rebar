@@ -603,6 +603,13 @@ class PatternPositionalIndexLikeCallCase:
 
 
 @dataclass(frozen=True)
+class WorkflowNumericCoercionCase:
+    case_id: str
+    result_kind: str
+    call: Callable[[object, object], object]
+
+
+@dataclass(frozen=True)
 class ModuleKeywordErrorCase:
     case_id: str
     helper: str
@@ -662,6 +669,7 @@ class _IndexLike:
         return f"IndexLike({self.value})"
 
 
+_INDEX_ZERO = _IndexLike(0)
 _INDEX_ONE = _IndexLike(1)
 _INDEX_TWO = _IndexLike(2)
 _INDEX_FOUR = _IndexLike(4)
@@ -1874,6 +1882,200 @@ PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
         result_kind="value",
     ),
 )
+# Keep the representative fixture-backed rows small, then use a compact matrix
+# here to prove the helpers keep accepting the broader bool/int/__index__ slice.
+WORKFLOW_NUMERIC_COERCION_VALUES = (
+    pytest.param(0, id="int-zero"),
+    pytest.param(1, id="int-one"),
+    pytest.param(2, id="int-two"),
+    pytest.param(False, id="bool-false"),
+    pytest.param(True, id="bool-true"),
+    pytest.param(_INDEX_ZERO, id="indexlike-zero"),
+    pytest.param(_INDEX_ONE, id="indexlike-one"),
+    pytest.param(_INDEX_TWO, id="indexlike-two"),
+)
+WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_VALUES = (
+    pytest.param(_INDEX_ZERO, id="indexlike-zero"),
+    pytest.param(_INDEX_ONE, id="indexlike-one"),
+    pytest.param(_INDEX_TWO, id="indexlike-two"),
+)
+WORKFLOW_KEYWORD_NUMERIC_COERCION_CASES = (
+    WorkflowNumericCoercionCase(
+        case_id="module-split-maxsplit-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.split(
+            b"abc",
+            b"abcabcabc",
+            maxsplit=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="module-sub-count-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.sub(
+            "abc",
+            "x",
+            "abcabcabc",
+            count=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="module-subn-count-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.subn(
+            b"abc",
+            b"x",
+            b"abcabcabc",
+            count=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-search-pos-keyword-coercion",
+        result_kind="match",
+        call=lambda regex_api, value: regex_api.compile("abc").search(
+            "zabcabc",
+            pos=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-search-endpos-keyword-coercion",
+        result_kind="match",
+        call=lambda regex_api, value: regex_api.compile(b"abc").search(
+            b"zabcabc",
+            endpos=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-findall-window-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile("abc").findall(
+            "zabcabcabcz",
+            pos=value,
+            endpos=7,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-finditer-window-keyword-coercion",
+        result_kind="iter",
+        call=lambda regex_api, value: regex_api.compile(b"abc").finditer(
+            b"zabcabcabcz",
+            pos=value,
+            endpos=7,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-split-maxsplit-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile("abc").split(
+            "abcabcabc",
+            maxsplit=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-sub-count-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile(b"abc").sub(
+            b"x",
+            b"abcabcabc",
+            count=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-subn-count-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile("abc").subn(
+            "x",
+            "abcabcabc",
+            count=value,
+        ),
+    ),
+)
+WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_CASES = (
+    WorkflowNumericCoercionCase(
+        case_id="module-split-maxsplit-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.split(b"abc", b"abcabcabc", value),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="module-sub-count-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.sub("abc", "x", "abcabcabc", value),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="module-subn-count-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.subn(
+            b"abc",
+            b"x",
+            b"abcabcabc",
+            value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-search-pos-positional-coercion",
+        result_kind="match",
+        call=lambda regex_api, value: regex_api.compile("abc").search("zabcabc", value),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-search-endpos-positional-coercion",
+        result_kind="match",
+        call=lambda regex_api, value: regex_api.compile(b"abc").search(
+            b"zabcabc",
+            0,
+            value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-fullmatch-window-positional-coercion",
+        result_kind="match",
+        call=lambda regex_api, value: regex_api.compile(b"abc").fullmatch(
+            b"zabc",
+            value,
+            4,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-findall-window-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile("abc").findall(
+            "zabcabcabcz",
+            value,
+            7,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-finditer-window-positional-coercion",
+        result_kind="iter",
+        call=lambda regex_api, value: regex_api.compile(b"abc").finditer(
+            b"zabcabcabcz",
+            value,
+            7,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-split-maxsplit-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile("abc").split("abcabcabc", value),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-sub-count-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile(b"abc").sub(
+            b"x",
+            b"abcabcabc",
+            value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="pattern-subn-count-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile("abc").subn(
+            "x",
+            "abcabcabc",
+            value,
+        ),
+    ),
+)
 MODULE_KEYWORD_ERROR_CASES = (
     ModuleKeywordErrorCase(
         case_id="module-search-duplicate-flags-keyword",
@@ -2347,6 +2549,40 @@ def _call_pattern_positional_indexlike_case(
     case: PatternPositionalIndexLikeCallCase,
 ) -> object:
     return getattr(pattern, case.helper)(*case.args)
+
+
+def _assert_workflow_numeric_coercion_result_parity(
+    backend_name: str,
+    observed: object,
+    expected: object,
+    *,
+    result_kind: str,
+) -> None:
+    if result_kind == "match":
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        if expected is not None:
+            assert_match_convenience_api_parity(observed, expected)
+        return
+
+    if result_kind == "iter":
+        assert_finditer_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        return
+
+    if result_kind == "value":
+        assert_value_parity(observed, expected)
+        return
+
+    raise AssertionError(f"unsupported coercion result kind {result_kind!r}")
 
 
 def _capture_error(callback) -> BaseException:
@@ -4463,6 +4699,52 @@ def test_pattern_positional_indexlike_argument_calls_match_cpython(
         return
 
     assert_value_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    WORKFLOW_KEYWORD_NUMERIC_COERCION_CASES,
+    ids=lambda case: case.case_id,
+)
+@pytest.mark.parametrize("value", WORKFLOW_NUMERIC_COERCION_VALUES)
+def test_workflow_keyword_numeric_coercion_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: WorkflowNumericCoercionCase,
+    value: object,
+) -> None:
+    backend_name, backend = regex_backend
+    observed = case.call(backend, value)
+    expected = case.call(re, value)
+
+    _assert_workflow_numeric_coercion_result_parity(
+        backend_name,
+        observed,
+        expected,
+        result_kind=case.result_kind,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_CASES,
+    ids=lambda case: case.case_id,
+)
+@pytest.mark.parametrize("value", WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_VALUES)
+def test_workflow_positional_indexlike_coercion_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: WorkflowNumericCoercionCase,
+    value: object,
+) -> None:
+    backend_name, backend = regex_backend
+    observed = case.call(backend, value)
+    expected = case.call(re, value)
+
+    _assert_workflow_numeric_coercion_result_parity(
+        backend_name,
+        observed,
+        expected,
+        result_kind=case.result_kind,
+    )
 
 
 @pytest.mark.parametrize("case", MODULE_KEYWORD_ERROR_CASES, ids=lambda case: case.case_id)
