@@ -1345,51 +1345,47 @@ BROADER_RANGE_WIDER_RANGED_REPEAT_MIXED_TEXT_REPLACEMENT_BUNDLE = (
     )
 )
 
-SELECTOR_SURFACE_PARAMS = tuple(
-    pytest.param(surface, id=surface.spec.id)
-    for surface in REPLACEMENT_SURFACES
-    if surface.spec.fixture_selector is not None
-)
-BUNDLE_PARAMS = tuple(
-    pytest.param(surface, bundle, id=bundle.expected_manifest_id)
-    for surface in REPLACEMENT_SURFACES
-    for bundle in surface.bundles
-)
-COMPILE_PATTERN_PARAMS = tuple(
-    pytest.param(surface, pattern, id=_pattern_param_id(pattern))
-    for surface in REPLACEMENT_SURFACES
-    for pattern in surface.spec.compile_patterns
-)
-MODULE_CASE_PARAMS = tuple(
-    pytest.param(_replacement_parity_case(case), id=case.case_id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.module_cases
-)
-PATTERN_CASE_PARAMS = tuple(
-    pytest.param(_replacement_parity_case(case), id=case.case_id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.pattern_cases
-)
-MATCH_SNAPSHOT_CASE_PARAMS = tuple(
-    pytest.param(surface, case, id=case.case_id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.match_snapshot_cases
-)
-MATCH_GROUP_ACCESS_CASE_PARAMS = tuple(
-    pytest.param(surface, case, id=case.case_id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.match_group_access_cases
-)
-TEMPLATE_EXPAND_CASE_PARAMS = tuple(
-    pytest.param(surface, case, id=case.case_id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.template_expand_cases
-)
-DISCOVERED_NO_MATCH_CASE_PARAMS = tuple(
-    pytest.param(surface, case, id=case.case_id)
-    for surface in REPLACEMENT_SURFACES
-    for case in surface.discovered_no_match_cases
-)
+def _selector_surface_params() -> tuple[object, ...]:
+    return tuple(
+        pytest.param(surface, id=surface.spec.id)
+        for surface in REPLACEMENT_SURFACES
+        if surface.spec.fixture_selector is not None
+    )
+
+
+def _bundle_params() -> tuple[object, ...]:
+    return tuple(
+        pytest.param(surface, bundle, id=bundle.expected_manifest_id)
+        for surface in REPLACEMENT_SURFACES
+        for bundle in surface.bundles
+    )
+
+
+def _compile_pattern_params() -> tuple[object, ...]:
+    return tuple(
+        pytest.param(surface, pattern, id=_pattern_param_id(pattern))
+        for surface in REPLACEMENT_SURFACES
+        for pattern in surface.spec.compile_patterns
+    )
+
+
+def _replacement_case_params(
+    case_selector: Callable[[LoadedReplacementSurface], tuple[FixtureCase, ...]],
+    *,
+    include_surface: bool = False,
+    case_transform: Callable[[FixtureCase], object] | None = None,
+) -> tuple[object, ...]:
+    params: list[object] = []
+    for surface in REPLACEMENT_SURFACES:
+        for case in case_selector(surface):
+            param_case = case if case_transform is None else case_transform(case)
+            if include_surface:
+                params.append(pytest.param(surface, param_case, id=case.case_id))
+            else:
+                params.append(pytest.param(param_case, id=case.case_id))
+    return tuple(params)
+
+
 def _is_pending_bytes_follow_on_case(
     surface: LoadedReplacementSurface,
     case: FixtureCase,
@@ -1427,7 +1423,7 @@ def _expected_uncovered_replacement_case_ids(
     )
 
 
-@pytest.mark.parametrize("surface", SELECTOR_SURFACE_PARAMS)
+@pytest.mark.parametrize("surface", _selector_surface_params())
 def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     surface: LoadedReplacementSurface,
 ) -> None:
@@ -1455,7 +1451,7 @@ def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     assert set((*covered_paths, *uncovered_paths)) == set(selector_fixture_paths)
 
 
-@pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)
+@pytest.mark.parametrize(("surface", "bundle"), _bundle_params())
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     surface: LoadedReplacementSurface,
     bundle: FixtureBundle,
@@ -1599,7 +1595,7 @@ def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> No
     assert case_text_argument(pattern_case) == pattern_case.args[1]
 
 
-@pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)
+@pytest.mark.parametrize(("surface", "bundle"), _bundle_params())
 def test_replacement_suite_tracks_published_case_frontier(
     surface: LoadedReplacementSurface,
     bundle: FixtureBundle,
@@ -1626,7 +1622,7 @@ def test_replacement_suite_tracks_published_case_frontier(
     )
 
 
-@pytest.mark.parametrize("surface", SELECTOR_SURFACE_PARAMS)
+@pytest.mark.parametrize("surface", _selector_surface_params())
 def test_replacement_direct_test_buckets_cover_selected_frontier(
     surface: LoadedReplacementSurface,
 ) -> None:
@@ -1973,7 +1969,7 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
     assert _expected_uncovered_replacement_case_ids(surface, manifest_id) == ()
 
 
-@pytest.mark.parametrize(("surface", "pattern"), COMPILE_PATTERN_PARAMS)
+@pytest.mark.parametrize(("surface", "pattern"), _compile_pattern_params())
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     surface: LoadedReplacementSurface,
@@ -1984,7 +1980,13 @@ def test_compile_metadata_matches_cpython(
     compile_with_cpython_parity(backend_name, backend, pattern)
 
 
-@pytest.mark.parametrize("case", MODULE_CASE_PARAMS)
+@pytest.mark.parametrize(
+    "case",
+    _replacement_case_params(
+        lambda surface: surface.module_cases,
+        case_transform=_replacement_parity_case,
+    ),
+)
 def test_module_replacement_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -1998,7 +2000,13 @@ def test_module_replacement_matches_cpython(
     assert observed == expected
 
 
-@pytest.mark.parametrize("case", PATTERN_CASE_PARAMS)
+@pytest.mark.parametrize(
+    "case",
+    _replacement_case_params(
+        lambda surface: surface.pattern_cases,
+        case_transform=_replacement_parity_case,
+    ),
+)
 def test_pattern_replacement_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -2018,7 +2026,13 @@ def test_pattern_replacement_matches_cpython(
     assert observed == expected
 
 
-@pytest.mark.parametrize(("surface", "case"), MATCH_SNAPSHOT_CASE_PARAMS)
+@pytest.mark.parametrize(
+    ("surface", "case"),
+    _replacement_case_params(
+        lambda surface: surface.match_snapshot_cases,
+        include_surface=True,
+    ),
+)
 def test_replacement_match_snapshot_matches_cpython(
     regex_backend: tuple[str, object],
     surface: LoadedReplacementSurface,
@@ -2041,7 +2055,13 @@ def test_replacement_match_snapshot_matches_cpython(
     assert_match_convenience_api_parity(observed_match, expected_match)
 
 
-@pytest.mark.parametrize(("surface", "case"), MATCH_GROUP_ACCESS_CASE_PARAMS)
+@pytest.mark.parametrize(
+    ("surface", "case"),
+    _replacement_case_params(
+        lambda surface: surface.match_group_access_cases,
+        include_surface=True,
+    ),
+)
 def test_replacement_match_group_accessors_match_cpython(
     regex_backend: tuple[str, object],
     surface: LoadedReplacementSurface,
@@ -2064,7 +2084,13 @@ def test_replacement_match_group_accessors_match_cpython(
     assert_valid_match_group_access_parity(observed_match, expected_match)
 
 
-@pytest.mark.parametrize(("surface", "case"), MATCH_GROUP_ACCESS_CASE_PARAMS)
+@pytest.mark.parametrize(
+    ("surface", "case"),
+    _replacement_case_params(
+        lambda surface: surface.match_group_access_cases,
+        include_surface=True,
+    ),
+)
 def test_replacement_invalid_group_access_errors_match_cpython(
     regex_backend: tuple[str, object],
     surface: LoadedReplacementSurface,
@@ -2087,7 +2113,13 @@ def test_replacement_invalid_group_access_errors_match_cpython(
     assert_invalid_match_group_access_parity(observed_match, expected_match)
 
 
-@pytest.mark.parametrize(("surface", "case"), TEMPLATE_EXPAND_CASE_PARAMS)
+@pytest.mark.parametrize(
+    ("surface", "case"),
+    _replacement_case_params(
+        lambda surface: surface.template_expand_cases,
+        include_surface=True,
+    ),
+)
 def test_replacement_template_match_expand_matches_cpython(
     regex_backend: tuple[str, object],
     surface: LoadedReplacementSurface,
@@ -2118,7 +2150,13 @@ def test_replacement_template_match_expand_matches_cpython(
     assert observed == expected
 
 
-@pytest.mark.parametrize(("surface", "case"), DISCOVERED_NO_MATCH_CASE_PARAMS)
+@pytest.mark.parametrize(
+    ("surface", "case"),
+    _replacement_case_params(
+        lambda surface: surface.discovered_no_match_cases,
+        include_surface=True,
+    ),
+)
 def test_discovered_no_match_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
     surface: LoadedReplacementSurface,

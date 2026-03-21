@@ -1,8 +1,9 @@
 # RBR-0841: Collapse replacement pytest-param sidecars onto live surfaces
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the detached pytest-param tuple sidecars from `tests/python/test_fixture_backed_replacement_parity_suite.py` so `REPLACEMENT_SURFACES` remains the sole canonical owner for replacement-surface ordering, bundle routing, and case/compile parametrization inside this parity owner.
@@ -195,3 +196,9 @@ PY`
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because those mirrored param tables still exist; and
   - the import probe in Acceptance already passes (`ok`), showing `REPLACEMENT_SURFACES` already carries the canonical ordering and payloads needed to delete the extra param layer without changing behavior.
 - This stays on the same bounded replacement-harness simplification track as `RBR-0713`, `RBR-0785`, `RBR-0807`, and `RBR-0819`: those tasks already collapsed adjacent manifest-id, bundle-spec, and selector sidecars in this owner, and these remaining pytest-param tuples are now just another mirrored top-level view over live replacement surfaces.
+
+## Completion
+- 2026-03-21: Removed the nine mirrored pytest-param tuple sidecars from `tests/python/test_fixture_backed_replacement_parity_suite.py`.
+- Added small file-local helpers derived directly from `REPLACEMENT_SURFACES` for selector, bundle, compile-pattern, and replacement-case parametrization, then rewired the twelve targeted tests to call those helpers while preserving the existing nested surface-owned order.
+- Preserved canonical replacement ownership in `REPLACEMENT_SURFACES` without changing surface membership, bundle ordering, compile-pattern payloads, case payloads, mixed-text routing, or pending-bytes follow-on behavior.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`1166 passed in 0.94s`), `bash -lc "! rg -n '^(SELECTOR_SURFACE_PARAMS|BUNDLE_PARAMS|COMPILE_PATTERN_PARAMS|MODULE_CASE_PARAMS|PATTERN_CASE_PARAMS|MATCH_SNAPSHOT_CASE_PARAMS|MATCH_GROUP_ACCESS_CASE_PARAMS|TEMPLATE_EXPAND_CASE_PARAMS|DISCOVERED_NO_MATCH_CASE_PARAMS) =' tests/python/test_fixture_backed_replacement_parity_suite.py"` (passes with no matches), and the task-local import/order probe from Acceptance (`ok`).
