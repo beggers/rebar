@@ -1,6 +1,6 @@
 # RBR-0854: Catch up the compiled-pattern module keyword-error collection/replacement benchmark sextet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -70,3 +70,12 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` currently has no compiled-pattern-first-argument workload shape on the shared module-helper benchmark path, so the published collection/replacement surface still cannot time the adjacent compiled-pattern module-helper keyword-error slice even though the runtime behavior already exists;
   - `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` currently stop at raw-module and direct-`Pattern` collection/replacement keyword rows and do not yet publish any compiled-pattern-first-argument collection/replacement workloads on that manifest; and
   - `reports/benchmarks/latest.py` currently reports `813` total / `813` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 805` and `REPORT["manifests"]["collection-replacement-boundary"]` at `34` selected / `34` measured / `0` known gaps because `RBR-0852` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0852` state.
+
+## Completion Note
+- 2026-03-21: Landed the bounded compiled-pattern-first-argument benchmark shape on `module.split` / `module.sub` / `module.subn` only, keeping the timed callback on the shared module-helper path while precompiling outside the timed call.
+- Added the six requested `collection_replacement_boundary.py` workloads, updated the combined-boundary benchmark contract/anchor expectations, and extended the benchmark tests for compiled-pattern keyword-error manifest round-tripping, callback behavior, probe measurement, and precompile-before-timing order.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0854-compiled-pattern-keyword-errors.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+- Published report changed in the tracked diff: `reports/benchmarks/latest.py` now shows `collection-replacement-boundary` at `43` selected / `43` measured / `0` known gaps, and the combined summary at `822` total / `822` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 814`.

@@ -3234,7 +3234,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 37)
+        self.assertEqual(len(case.target_manifest.workloads), 43)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3246,15 +3246,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-sub-count-indexlike-positional-purged-bytes",
                 "pattern-subn-count-indexlike-positional-warm-str",
             ),
-            37,
-            expected_total_workload_count=37,
+            43,
+            expected_total_workload_count=43,
         )
 
     def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 37)
+        self.assertEqual(len(case.target_manifest.workloads), 43)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3269,15 +3269,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-subn-count-bool-keyword-warm-str",
                 "pattern-subn-count-indexlike-keyword-warm-str",
             ),
-            37,
-            expected_total_workload_count=37,
+            43,
+            expected_total_workload_count=43,
         )
 
     def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 37)
+        self.assertEqual(len(case.target_manifest.workloads), 43)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3286,17 +3286,23 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "module-split-maxsplit-bool-keyword-purged-bytes",
                 "module-split-maxsplit-indexlike-keyword-purged-bytes",
                 "module-split-duplicate-maxsplit-keyword-purged-str",
+                "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
+                "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
                 "module-sub-count-keyword-warm-str",
                 "module-sub-count-bool-keyword-warm-str",
                 "module-sub-count-indexlike-keyword-warm-str",
                 "module-sub-duplicate-count-keyword-warm-str",
                 "module-sub-unexpected-keyword-purged-str",
+                "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
+                "module-sub-unexpected-keyword-purged-str-compiled-pattern",
                 "module-subn-count-keyword-purged-bytes",
                 "module-subn-count-bool-keyword-purged-bytes",
                 "module-subn-count-indexlike-keyword-purged-bytes",
+                "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
+                "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
             ),
-            37,
-            expected_total_workload_count=37,
+            43,
+            expected_total_workload_count=43,
         )
 
     def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(
@@ -4658,11 +4664,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 816,
-                "module_workloads": 808,
+                "measured_workloads": 822,
+                "module_workloads": 814,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 816,
+                "total_workloads": 822,
             },
         )
 
@@ -6043,14 +6049,20 @@ COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
         "module-split-maxsplit-bool-keyword-purged-bytes",
         "module-split-maxsplit-indexlike-keyword-purged-bytes",
         "module-split-duplicate-maxsplit-keyword-purged-str",
+        "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
+        "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
         "module-sub-count-keyword-warm-str",
         "module-sub-count-bool-keyword-warm-str",
         "module-sub-count-indexlike-keyword-warm-str",
         "module-sub-duplicate-count-keyword-warm-str",
         "module-sub-unexpected-keyword-purged-str",
+        "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
+        "module-sub-unexpected-keyword-purged-str-compiled-pattern",
         "module-subn-count-keyword-purged-bytes",
         "module-subn-count-bool-keyword-purged-bytes",
         "module-subn-count-indexlike-keyword-purged-bytes",
+        "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
+        "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
         "pattern-split-maxsplit-keyword-warm-str",
         "pattern-split-maxsplit-bool-keyword-warm-str",
         "pattern-split-maxsplit-indexlike-keyword-warm-str",
@@ -6085,6 +6097,12 @@ def _collection_replacement_duplicate_keyword_field(
         and "multiple values for argument 'count'" in message_substring
     ):
         return "count"
+    if (
+        workload.operation == "module.subn"
+        and "count" in workload.kwargs
+        and "multiple values for argument 'count'" in message_substring
+    ):
+        return "count"
     return None
 
 
@@ -6095,9 +6113,9 @@ def _collection_replacement_keyword_correctness_case_signature(
         return None
     if case.helper not in {"split", "sub", "subn"}:
         return None
+    use_compiled_pattern = False
     if case.operation == "module_call":
-        if case.use_compiled_pattern:
-            return None
+        use_compiled_pattern = case.use_compiled_pattern
     elif case.operation != "pattern_call":
         return None
     return (
@@ -6105,6 +6123,7 @@ def _collection_replacement_keyword_correctness_case_signature(
         case_pattern(case),
         freeze_signature_value(list(case.args)),
         _module_workflow_keyword_kwargs_signature(case.kwargs),
+        use_compiled_pattern,
         case.flags or 0,
         case.text_model or "str",
     )
@@ -6153,6 +6172,7 @@ def _collection_replacement_keyword_workload_signature(
             list(_collection_replacement_keyword_workload_args(workload))
         ),
         _module_workflow_keyword_kwargs_signature(workload.kwargs),
+        workload.use_compiled_pattern,
         workload.flags,
         workload.text_model,
     )
@@ -6957,6 +6977,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-split-duplicate-maxsplit-keyword-purged-str": (
                     "workflow-module-split-duplicate-maxsplit-keyword",
                 ),
+                "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern": (
+                    "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
+                ),
+                "module-split-unexpected-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
+                ),
                 "module-sub-count-keyword-warm-str": (
                     "workflow-module-sub-count-keyword-str",
                 ),
@@ -6972,6 +6998,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-sub-unexpected-keyword-purged-str": (
                     "workflow-module-sub-unexpected-keyword",
                 ),
+                "module-sub-duplicate-count-keyword-warm-str-compiled-pattern": (
+                    "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
+                ),
+                "module-sub-unexpected-keyword-purged-str-compiled-pattern": (
+                    "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
+                ),
                 "module-subn-count-keyword-purged-bytes": (
                     "workflow-module-subn-count-keyword-bytes",
                 ),
@@ -6980,6 +7012,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-count-indexlike-keyword-purged-bytes": (
                     "workflow-module-subn-count-indexlike-bytes",
+                ),
+                "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern": (
+                    "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
+                ),
+                "module-subn-unexpected-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
                 ),
                 "pattern-split-maxsplit-keyword-warm-str": (
                     "workflow-pattern-split-str-maxsplit-keyword",
@@ -10561,6 +10599,481 @@ def test_run_internal_workload_probe_measures_module_helper_keyword_error_worklo
     assert probe["median_ns"] > 0
 
 
+def _compiled_pattern_module_helper_keyword_error_workload(
+    *,
+    operation: str,
+    cache_mode: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    expected_exception: dict[str, str],
+    text_model: str,
+) -> Workload:
+    return workload_from_payload(
+        {
+            "manifest_id": (
+                "python-benchmark-compiled-pattern-module-helper-keyword-error-contract"
+            ),
+            "workload_id": (
+                f"{operation}-compiled-pattern-keyword-error-{text_model}-contract"
+            ),
+            "bucket": operation.replace("module.", "module-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": "abc",
+            "replacement": replacement,
+            "expected_exception": expected_exception,
+            "flags": 0,
+            "use_compiled_pattern": True,
+            "count": count,
+            "maxsplit": maxsplit,
+            "kwargs": kwargs_payload,
+            "text_model": text_model,
+            "cache_mode": cache_mode,
+            "timing_scope": "module-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _run_cpython_compiled_pattern_module_helper_keyword_workload(
+    workload: Workload,
+) -> object:
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+    helper_name = workload.operation.removeprefix("module.")
+    kwargs = dict(workload.kwargs)
+
+    if workload.operation == "module.split":
+        args: list[object] = [compiled_pattern, workload.haystack_payload()]
+        if "maxsplit" in workload.kwargs and workload.expected_exception is not None:
+            args.append(workload.maxsplit)
+        return getattr(re, helper_name)(*args, **kwargs)
+
+    if workload.operation in {"module.sub", "module.subn"}:
+        args = [
+            compiled_pattern,
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+        ]
+        if "count" in workload.kwargs and workload.expected_exception is not None:
+            args.append(workload.count)
+        return getattr(re, helper_name)(*args, **kwargs)
+
+    raise AssertionError(
+        "unexpected compiled-pattern module helper keyword workload operation "
+        f"{workload.operation!r}"
+    )
+
+
+def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_error_rows_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-compiled-pattern-collection-replacement-keyword-error-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern-contract",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "abc",
+                "flags": 0,
+                "use_compiled_pattern": True,
+                "maxsplit": 1,
+                "kwargs": {"maxsplit": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "multiple values for argument 'maxsplit'",
+                },
+                "text_model": "str",
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+            },
+            {
+                "id": "module-sub-unexpected-keyword-purged-str-compiled-pattern-contract",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "flags": 0,
+                "use_compiled_pattern": True,
+                "kwargs": {"missing": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'missing'",
+                },
+                "text_model": "str",
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+            },
+            {
+                "id": "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern-contract",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "flags": 0,
+                "use_compiled_pattern": True,
+                "count": 1,
+                "kwargs": {"count": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "multiple values for argument 'count'",
+                },
+                "text_model": "bytes",
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_compiled_pattern_collection_replacement_keyword_error_contract.py",
+        manifest_source,
+    )
+    workloads = load_manifest(manifest_path).workloads
+
+    assert [workload.use_compiled_pattern for workload in workloads] == [True, True, True]
+
+    for workload in workloads:
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+        assert payload["use_compiled_pattern"] is True
+        assert round_tripped.use_compiled_pattern is True
+
+        with pytest.raises(TypeError) as expected_error:
+            _run_cpython_compiled_pattern_module_helper_keyword_workload(workload)
+        with pytest.raises(TypeError) as observed_error:
+            run_benchmark_workload_with_cpython(round_tripped)
+
+        assert str(observed_error.value) == str(expected_error.value)
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "cache_mode",
+        "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
+        "expected_exception",
+        "text_model",
+        "expected_field_names",
+    ),
+    (
+        pytest.param(
+            "module.split",
+            "purged",
+            {"maxsplit": 1},
+            None,
+            0,
+            1,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'maxsplit'",
+            },
+            "str",
+            ["maxsplit", "kwargs.maxsplit"],
+            id="module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            "module.split",
+            "purged",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "bytes",
+            ["kwargs.missing"],
+            id="module-split-unexpected-keyword-bytes-compiled-pattern",
+        ),
+        pytest.param(
+            "module.sub",
+            "warm",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'count'",
+            },
+            "str",
+            ["count", "kwargs.count"],
+            id="module-sub-duplicate-count-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            "module.sub",
+            "purged",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "str",
+            ["kwargs.missing"],
+            id="module-sub-unexpected-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            "module.subn",
+            "warm",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'count'",
+            },
+            "bytes",
+            ["count", "kwargs.count"],
+            id="module-subn-duplicate-count-keyword-bytes-compiled-pattern",
+        ),
+        pytest.param(
+            "module.subn",
+            "purged",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "bytes",
+            ["kwargs.missing"],
+            id="module-subn-unexpected-keyword-bytes-compiled-pattern",
+        ),
+    ),
+)
+def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions(
+    monkeypatch,
+    operation: str,
+    cache_mode: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    expected_exception: dict[str, str],
+    text_model: str,
+    expected_field_names: list[str],
+) -> None:
+    workload = _compiled_pattern_module_helper_keyword_error_workload(
+        operation=operation,
+        cache_mode=cache_mode,
+        kwargs_payload=kwargs_payload,
+        replacement=replacement,
+        count=count,
+        maxsplit=maxsplit,
+        expected_exception=expected_exception,
+        text_model=text_model,
+    )
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        with pytest.raises(TypeError) as expected_error:
+            _run_cpython_compiled_pattern_module_helper_keyword_workload(workload)
+        with pytest.raises(TypeError) as observed_error:
+            callback()
+
+        assert observed_field_names == expected_field_names
+        assert str(observed_error.value) == str(expected_error.value)
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "cache_mode",
+        "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
+        "expected_exception",
+        "text_model",
+    ),
+    (
+        pytest.param(
+            "module.split",
+            "purged",
+            {"maxsplit": 1},
+            None,
+            0,
+            1,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'maxsplit'",
+            },
+            "str",
+            id="module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            "module.split",
+            "purged",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "bytes",
+            id="module-split-unexpected-keyword-bytes-compiled-pattern",
+        ),
+        pytest.param(
+            "module.sub",
+            "warm",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'count'",
+            },
+            "str",
+            id="module-sub-duplicate-count-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            "module.sub",
+            "purged",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "str",
+            id="module-sub-unexpected-keyword-str-compiled-pattern",
+        ),
+        pytest.param(
+            "module.subn",
+            "warm",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'count'",
+            },
+            "bytes",
+            id="module-subn-duplicate-count-keyword-bytes-compiled-pattern",
+        ),
+        pytest.param(
+            "module.subn",
+            "purged",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "bytes",
+            id="module-subn-unexpected-keyword-bytes-compiled-pattern",
+        ),
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_error_workloads(
+    operation: str,
+    cache_mode: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    expected_exception: dict[str, str],
+    text_model: str,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    workload = _compiled_pattern_module_helper_keyword_error_workload(
+        operation=operation,
+        cache_mode=cache_mode,
+        kwargs_payload=kwargs_payload,
+        replacement=replacement,
+        count=count,
+        maxsplit=maxsplit,
+        expected_exception=expected_exception,
+        text_model=text_model,
+    )
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload["expected_exception"] == expected_exception
+    assert round_tripped.expected_exception == expected_exception
+    assert payload["kwargs"] == kwargs_payload
+    assert round_tripped.kwargs == kwargs_payload
+
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
 class _RecordingBenchmarkCompiledPattern:
     def __init__(self, calls: list[tuple[object, ...]]) -> None:
         self._calls = calls
@@ -10578,13 +11091,16 @@ class _RecordingBenchmarkModule:
     ) -> None:
         self.calls: list[tuple[object, ...]] = []
         self._helper_exception = helper_exception
+        self.compiled_patterns: list[_RecordingBenchmarkCompiledPattern] = []
 
     def purge(self) -> None:
         self.calls.append(("purge",))
 
     def compile(self, pattern: object, flags: int = 0) -> _RecordingBenchmarkCompiledPattern:
         self.calls.append(("compile", pattern, flags))
-        return _RecordingBenchmarkCompiledPattern(self.calls)
+        compiled_pattern = _RecordingBenchmarkCompiledPattern(self.calls)
+        self.compiled_patterns.append(compiled_pattern)
+        return compiled_pattern
 
     def search(
         self,
@@ -10597,6 +11113,50 @@ class _RecordingBenchmarkModule:
         if self._helper_exception is not None:
             raise self._helper_exception
         return "module-result"
+
+    def split(
+        self,
+        pattern: object,
+        haystack: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        maxsplit = args[0] if args else 0
+        flags = args[1] if len(args) > 1 else 0
+        self.calls.append(("module.split", pattern, haystack, maxsplit, flags, kwargs))
+        if self._helper_exception is not None:
+            raise self._helper_exception
+        return "module-result"
+
+    def sub(
+        self,
+        pattern: object,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        count = args[0] if args else 0
+        flags = args[1] if len(args) > 1 else 0
+        self.calls.append(("module.sub", pattern, repl, string, count, flags, kwargs))
+        if self._helper_exception is not None:
+            raise self._helper_exception
+        return "module-result"
+
+    def subn(
+        self,
+        pattern: object,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        count = args[0] if args else 0
+        flags = args[1] if len(args) > 1 else 0
+        self.calls.append(("module.subn", pattern, repl, string, count, flags, kwargs))
+        if self._helper_exception is not None:
+            raise self._helper_exception
+        return ("module-result", 0)
 
 
 def _module_search_cache_contract_workload(
@@ -10733,6 +11293,98 @@ def test_module_helper_warm_expected_exception_prewarms_compile_cache_without_in
         ("compile", "abc", 0),
         ("module.search", "abc", "zabcabc", 0, {}),
     ]
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "cache_mode",
+        "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
+        "text_model",
+        "expected_build_calls",
+        "expected_callback_call",
+    ),
+    (
+        pytest.param(
+            "module.split",
+            "warm",
+            {"maxsplit": 1},
+            None,
+            0,
+            1,
+            "str",
+            [("compile", "abc", 0)],
+            ("module.split", "abc", 1, 0, {"maxsplit": 1}),
+            id="module-split-duplicate-maxsplit-warm-compiled-pattern",
+        ),
+        pytest.param(
+            "module.subn",
+            "purged",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            "bytes",
+            [("compile", b"abc", 0), ("purge",)],
+            ("module.subn", b"x", b"abc", 0, 0, {"missing": 1}),
+            id="module-subn-unexpected-keyword-purged-compiled-pattern",
+        ),
+    ),
+)
+def test_compiled_pattern_module_helper_callbacks_precompile_first_argument_before_timing(
+    operation: str,
+    cache_mode: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    text_model: str,
+    expected_build_calls: list[tuple[object, ...]],
+    expected_callback_call: tuple[object, ...],
+) -> None:
+    module = _RecordingBenchmarkModule()
+    if "maxsplit" in kwargs_payload:
+        expected_exception = {
+            "type": "TypeError",
+            "message_substring": "multiple values for argument 'maxsplit'",
+        }
+    elif "count" in kwargs_payload:
+        expected_exception = {
+            "type": "TypeError",
+            "message_substring": "multiple values for argument 'count'",
+        }
+    else:
+        expected_exception = {
+            "type": "TypeError",
+            "message_substring": "unexpected keyword argument 'missing'",
+        }
+    callback = build_callable(
+        module,
+        "re",
+        _compiled_pattern_module_helper_keyword_error_workload(
+            operation=operation,
+            cache_mode=cache_mode,
+            kwargs_payload=kwargs_payload,
+            replacement=replacement,
+            count=count,
+            maxsplit=maxsplit,
+            expected_exception=expected_exception,
+            text_model=text_model,
+        ),
+    )
+
+    assert module.calls == expected_build_calls
+    assert len(module.compiled_patterns) == 1
+    assert callback() in {"module-result", ("module-result", 0)}
+
+    compiled_pattern = module.compiled_patterns[0]
+    last_call = module.calls[-1]
+    assert last_call[0] == expected_callback_call[0]
+    assert last_call[1] is compiled_pattern
+    assert last_call[2:] == expected_callback_call[1:]
 
 
 @pytest.mark.parametrize(

@@ -112,6 +112,7 @@ class Workload:
     replacement: Any | None
     expected_exception: dict[str, Any] | None
     flags: int
+    use_compiled_pattern: bool
     count: Any
     maxsplit: Any
     pos: Any | None
@@ -162,11 +163,23 @@ class Workload:
             operation=operation,
             expected_exception=expected_exception,
         )
+        use_compiled_pattern = bool(
+            raw_workload.get(
+                "use_compiled_pattern",
+                defaults.get("use_compiled_pattern", False),
+            )
+        )
+        cache_mode = str(raw_workload.get("cache_mode", "cold"))
         validate_helper_keyword_argument_carriers(
             operation=operation,
             pos=pos,
             endpos=endpos,
             kwargs=kwargs,
+        )
+        validate_compiled_pattern_workload(
+            operation=operation,
+            use_compiled_pattern=use_compiled_pattern,
+            cache_mode=cache_mode,
         )
         return cls(
             manifest_id=manifest_id,
@@ -183,6 +196,7 @@ class Workload:
             replacement=normalize_workload_value(raw_workload.get("replacement")),
             expected_exception=expected_exception,
             flags=int(raw_workload.get("flags", 0)),
+            use_compiled_pattern=use_compiled_pattern,
             count=normalize_numeric_workload_argument(
                 raw_workload.get("count", 0),
                 field_name="count",
@@ -195,7 +209,7 @@ class Workload:
             endpos=endpos,
             kwargs=kwargs,
             text_model=str(raw_workload.get("text_model", "str")),
-            cache_mode=str(raw_workload.get("cache_mode", "cold")),
+            cache_mode=cache_mode,
             timing_scope=str(raw_workload.get("timing_scope", "compile-path-proxy")),
             warmup_iterations=int(
                 raw_workload.get("warmup_iterations", defaults.get("warmup_iterations", 2))
@@ -436,13 +450,17 @@ _MODULE_HELPER_KEYWORD_OPERATIONS = frozenset(
     _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION
 )
 _MODULE_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS = frozenset(
-    {"module.fullmatch", "module.sub"}
+    {"module.fullmatch", "module.split", "module.sub", "module.subn"}
 )
 _MODULE_HELPER_DUPLICATE_KEYWORD_FIELDS_BY_OPERATION = {
     "module.search": "flags",
     "module.split": "maxsplit",
     "module.sub": "count",
+    "module.subn": "count",
 }
+_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
+    {"module.split", "module.sub", "module.subn"}
+)
 _HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     **_PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION,
     **_MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION,
@@ -534,6 +552,30 @@ def validate_helper_keyword_argument_carriers(
         raise ValueError(
             "benchmark workload cannot mix top-level pos/endpos fields with "
             "keyword kwargs carriers"
+        )
+
+
+def validate_compiled_pattern_workload(
+    *,
+    operation: str,
+    use_compiled_pattern: bool,
+    cache_mode: str,
+) -> None:
+    if not use_compiled_pattern:
+        return
+
+    if operation not in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS:
+        allowed_operations = ", ".join(sorted(_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS))
+        raise ValueError(
+            "benchmark compiled-pattern module-helper workloads currently only "
+            f"support {allowed_operations}; got {operation!r}"
+        )
+
+    if cache_mode not in {"warm", "purged"}:
+        raise ValueError(
+            "benchmark compiled-pattern module-helper workloads currently require "
+            "`cache_mode` to be `warm` or `purged` so timed callbacks exclude "
+            "pattern compilation"
         )
 
 
@@ -641,6 +683,8 @@ def workload_to_payload(workload: Workload) -> dict[str, Any]:
         payload["endpos"] = workload.endpos
     if workload.kwargs:
         payload["kwargs"] = dict(workload.kwargs)
+    if workload.use_compiled_pattern:
+        payload["use_compiled_pattern"] = True
     return payload
 
 
@@ -674,6 +718,8 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         raw_workload["endpos"] = payload["endpos"]
     if "kwargs" in payload:
         raw_workload["kwargs"] = payload["kwargs"]
+    if payload.get("use_compiled_pattern", False):
+        raw_workload["use_compiled_pattern"] = True
     return Workload.from_dict(
         manifest_id=str(payload["manifest_id"]),
         raw_workload=raw_workload,
@@ -824,16 +870,23 @@ def helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
     haystack = workload.haystack_payload()
     uses_keyword_arguments = bool(workload.kwargs)
+    uses_compiled_pattern = workload.use_compiled_pattern
     duplicate_keyword_field = _expected_duplicate_module_helper_keyword_field(
         workload
     )
+
+    def compile_pattern() -> Any:
+        return module.compile(pattern, workload.flags)
 
     def keyword_call_kwargs() -> dict[str, Any]:
         if not uses_keyword_arguments:
             return {}
         return workload.keyword_arguments()
 
-    def invoke() -> object:
+    def invoke(compiled_pattern: Any | None = None) -> object:
+        pattern_argument = (
+            compiled_pattern if uses_compiled_pattern else pattern
+        )
         if (
             uses_keyword_arguments
             and workload.operation not in _MODULE_HELPER_KEYWORD_OPERATIONS
@@ -854,17 +907,17 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                     )
                 if duplicate_keyword_field == "flags":
                     return module.search(
-                        pattern,
+                        pattern_argument,
                         haystack,
                         workload.flags,
                         **keyword_call_kwargs(),
                     )
                 return module.search(
-                    pattern,
+                    pattern_argument,
                     haystack,
                     **keyword_call_kwargs(),
                 )
-            return module.search(pattern, haystack, workload.flags)
+            return module.search(pattern_argument, haystack, workload.flags)
         if workload.operation == "module.match":
             if uses_keyword_arguments:
                 if workload.flags != 0:
@@ -873,11 +926,11 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                         "currently require `flags == 0`"
                     )
                 return module.match(
-                    pattern,
+                    pattern_argument,
                     haystack,
                     **keyword_call_kwargs(),
                 )
-            return module.match(pattern, haystack, workload.flags)
+            return module.match(pattern_argument, haystack, workload.flags)
         if workload.operation == "module.fullmatch":
             if uses_keyword_arguments:
                 if workload.flags != 0:
@@ -886,61 +939,74 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                         "currently require `flags == 0`"
                     )
                 return module.fullmatch(
-                    pattern,
+                    pattern_argument,
                     haystack,
                     **keyword_call_kwargs(),
                 )
-            return module.fullmatch(pattern, haystack, workload.flags)
+            return module.fullmatch(pattern_argument, haystack, workload.flags)
         if workload.operation == "module.split":
             if uses_keyword_arguments:
-                if workload.flags != 0:
+                if workload.flags != 0 and not uses_compiled_pattern:
                     raise ValueError(
                         "benchmark workload module.split keyword maxsplit carriers "
                         "currently require `flags == 0`"
                     )
                 if duplicate_keyword_field == "maxsplit":
                     return module.split(
-                        pattern,
+                        pattern_argument,
                         haystack,
                         workload.maxsplit_argument(),
                         **keyword_call_kwargs(),
                     )
                 return module.split(
-                    pattern,
+                    pattern_argument,
                     haystack,
                     **keyword_call_kwargs(),
                 )
+            if uses_compiled_pattern:
+                return module.split(
+                    pattern_argument,
+                    haystack,
+                    workload.maxsplit_argument(),
+                )
             return module.split(
-                pattern,
+                pattern_argument,
                 haystack,
                 workload.maxsplit_argument(),
                 workload.flags,
             )
         if workload.operation == "module.findall":
-            return module.findall(pattern, haystack, workload.flags)
+            return module.findall(pattern_argument, haystack, workload.flags)
         if workload.operation == "module.sub":
             if uses_keyword_arguments:
-                if workload.flags != 0:
+                if workload.flags != 0 and not uses_compiled_pattern:
                     raise ValueError(
                         "benchmark workload module.sub keyword count carriers "
                         "currently require `flags == 0`"
                     )
                 if duplicate_keyword_field == "count":
                     return module.sub(
-                        pattern,
+                        pattern_argument,
                         workload.replacement_payload(),
                         haystack,
                         workload.count_argument(),
                         **keyword_call_kwargs(),
                     )
                 return module.sub(
-                    pattern,
+                    pattern_argument,
                     workload.replacement_payload(),
                     haystack,
                     **keyword_call_kwargs(),
                 )
+            if uses_compiled_pattern:
+                return module.sub(
+                    pattern_argument,
+                    workload.replacement_payload(),
+                    haystack,
+                    workload.count_argument(),
+                )
             return module.sub(
-                pattern,
+                pattern_argument,
                 workload.replacement_payload(),
                 haystack,
                 workload.count_argument(),
@@ -948,25 +1014,64 @@ def helper_callable(module: Any, workload: Workload) -> Any:
             )
         if workload.operation == "module.subn":
             if uses_keyword_arguments:
-                if workload.flags != 0:
+                if workload.flags != 0 and not uses_compiled_pattern:
                     raise ValueError(
                         "benchmark workload module.subn keyword count carriers "
                         "currently require `flags == 0`"
                     )
+                if duplicate_keyword_field == "count":
+                    return module.subn(
+                        pattern_argument,
+                        workload.replacement_payload(),
+                        haystack,
+                        workload.count_argument(),
+                        **keyword_call_kwargs(),
+                    )
                 return module.subn(
-                    pattern,
+                    pattern_argument,
                     workload.replacement_payload(),
                     haystack,
                     **keyword_call_kwargs(),
                 )
+            if uses_compiled_pattern:
+                return module.subn(
+                    pattern_argument,
+                    workload.replacement_payload(),
+                    haystack,
+                    workload.count_argument(),
+                )
             return module.subn(
-                pattern,
+                pattern_argument,
                 workload.replacement_payload(),
                 haystack,
                 workload.count_argument(),
                 workload.flags,
             )
         raise ValueError(f"unsupported module helper operation {workload.operation!r}")
+
+    if uses_compiled_pattern:
+        compiled = compile_pattern()
+
+        if workload.cache_mode == "warm":
+
+            def run_once() -> object:
+                return invoke(compiled)
+
+            return run_once
+
+        if workload.cache_mode == "purged":
+            if hasattr(module, "purge"):
+                module.purge()
+
+            def run_once() -> object:
+                return invoke(compiled)
+
+            return run_once
+
+        raise ValueError(
+            "unsupported cache mode for compiled-pattern module helper "
+            f"{workload.cache_mode!r}"
+        )
 
     if workload.cache_mode == "cold":
 
