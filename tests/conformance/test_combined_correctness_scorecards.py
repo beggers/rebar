@@ -151,6 +151,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-compile-str-compiled-pattern-named-group",
             "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
             "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
+            "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
             "workflow-module-search-str-compiled-pattern",
             "workflow-module-search-str-compiled-pattern-on-bytes-string",
             "workflow-module-match-str-compiled-pattern",

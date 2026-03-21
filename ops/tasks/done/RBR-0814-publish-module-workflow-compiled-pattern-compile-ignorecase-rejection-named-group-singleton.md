@@ -1,8 +1,9 @@
 # RBR-0814: Publish the module-workflow compiled-pattern compile IGNORECASE rejection named-group singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next concrete compiled-pattern compile keyword-error neighbor, publishing the exact explicit `flags=IGNORECASE` `rebar.compile(compiled_pattern, ...)` str named-group singleton for the existing `r"(?P<word>abc)"` anchor before `flags=re.NOFLAG` duplicate publication, benchmark catch-up, or another owner family reopens the queue.
@@ -67,3 +68,8 @@ Created: 2026-03-21
   - `flags=re.NOFLAG` is still not the next task because the current owner-path keyword signature normalizes `RegexFlag(0)` to the already published integer-zero singleton, while this str named-group IGNORECASE rejection remains the next distinct unpublished neighbor on the active boundary;
   - no blocked feature task exists to reopen first; and
   - `ops/state/backlog.md` plus the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need additional backlog/current-status edits.
+
+## Completion
+- Added the single published `module_call` row `workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group` to `tests/conformance/fixtures/module_workflow_surface.py`, added the direct compiled-pattern keyword-error anchor `compiled-pattern-compile-flags-ignorecase-str-named-group`, and updated the shared owner-path count and order assertions in `tests/python/test_module_workflow_parity_suite.py`.
+- Extended the tracked representative-case list in `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked report now shows `1489` total / `1489` passed / `0` unimplemented overall, with `module.workflow` at `119` / `119`, `module.workflow.str` at `73` / `73`, `module.workflow.bytes` unchanged at `46` / `46`, `module.workflow.module_call` at `65` / `65`, and `module.workflow.pattern_call` unchanged at `42` / `42`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_compile_rejects_nonzero_flags_for_compiled_patterns_like_cpython tests/python/test_module_workflow_parity_suite.py::test_compiled_pattern_module_keyword_argument_errors_match_cpython tests/python/test_module_workflow_parity_suite.py::test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases` (`25 passed`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`832 passed, 1 skipped, 2012 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0814-module-workflow-compiled-pattern-compile-ignorecase-rejection-named-group-singleton.py` (`119/119`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1489/1489`).
