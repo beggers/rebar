@@ -2027,6 +2027,35 @@ WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_CASES = (
         ),
     ),
     WorkflowNumericCoercionCase(
+        case_id="compiled-pattern-module-split-maxsplit-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.split(
+            regex_api.compile(b"abc"),
+            b"abcabcabc",
+            value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="compiled-pattern-module-sub-count-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.sub(
+            regex_api.compile("abc"),
+            "x",
+            "abcabcabc",
+            value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="compiled-pattern-module-subn-count-positional-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.subn(
+            regex_api.compile(b"abc"),
+            b"x",
+            b"abcabcabc",
+            value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
         case_id="pattern-search-pos-positional-coercion",
         result_kind="match",
         call=lambda regex_api, value: regex_api.compile("abc").search("zabcabc", value),
