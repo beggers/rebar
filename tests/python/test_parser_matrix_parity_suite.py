@@ -7,7 +7,11 @@ import warnings
 import pytest
 
 import rebar
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    FixtureCase,
+    PARSER_PARITY_FIXTURE_SELECTOR,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -23,7 +27,6 @@ from tests.python.fixture_parity_support import (
 )
 
 
-PARSER_MATRIX_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "parser_matrix.py"
 EXPECTED_CASE_IDS = (
     "str-character-class-ignorecase-success",
     "str-possessive-quantifier-success",
@@ -47,19 +50,13 @@ KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS = (
     "str-literal-success",
     "bytes-literal-success",
 )
-CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH = (
-    CORRECTNESS_FIXTURES_ROOT / "conditional_group_exists_assertion_diagnostics.py"
-)
 EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = (
     "conditional-group-exists-assertion-positive-lookahead-error-str",
     "conditional-group-exists-assertion-negative-lookahead-error-str",
 )
 
 OWNER_FIXTURE_BUNDLES = load_published_fixture_bundles(
-    (
-        PARSER_MATRIX_FIXTURE_PATH,
-        CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH,
-    )
+    select_correctness_fixture_paths(PARSER_PARITY_FIXTURE_SELECTOR)
 )
 PARSER_MATRIX_OWNER_BUNDLE = published_fixture_bundle_by_manifest_id(
     OWNER_FIXTURE_BUNDLES,
@@ -255,7 +252,7 @@ def test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fix
     assert_fixture_bundle_contract(
         PARSER_MATRIX_FIXTURE_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=PARSER_MATRIX_FIXTURE_PATH,
+        expected_fixture_path=PARSER_MATRIX_OWNER_BUNDLE.manifest.path,
         expected_ordered_case_ids=EXPECTED_CASE_IDS,
     )
 
@@ -280,7 +277,7 @@ def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_c
     assert_fixture_bundle_contract(
         CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH,
+        expected_fixture_path=CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE.manifest.path,
         expected_ordered_case_ids=EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
     )
 

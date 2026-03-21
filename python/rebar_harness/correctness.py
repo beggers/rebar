@@ -59,6 +59,7 @@ OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR = (
 OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "open-ended-quantified-group"
 MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR = "module-workflow-surface"
 PUBLIC_SURFACE_FIXTURE_SELECTOR = "public-surface"
+PARSER_PARITY_FIXTURE_SELECTOR = "parser-parity"
 
 _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
     PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR: (
@@ -223,6 +224,10 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
         BOUNDED_WILDCARD_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "collection_replacement_workflows.py",
             "literal_flag_workflows.py",
+        ),
+        PARSER_PARITY_FIXTURE_SELECTOR: (
+            "parser_matrix.py",
+            "conditional_group_exists_assertion_diagnostics.py",
         ),
         SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "named_backreference_workflows.py",

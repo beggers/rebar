@@ -91,6 +91,10 @@ _SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS = {
         "collection_replacement_workflows.py",
         "literal_flag_workflows.py",
     ),
+    correctness.PARSER_PARITY_FIXTURE_SELECTOR: (
+        "parser_matrix.py",
+        "conditional_group_exists_assertion_diagnostics.py",
+    ),
     correctness.BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR: (
         "branch_local_backreference_workflows.py",
         "conditional_group_exists_branch_local_backreference_workflows.py",
