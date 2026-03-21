@@ -35,14 +35,7 @@ from tests.python.fixture_parity_support import (
 
 
 @dataclass(frozen=True)
-class SupplementalModuleFullmatchCase:
-    id: str
-    pattern: str
-    text: str
-
-
-@dataclass(frozen=True)
-class SupplementalPatternFullmatchCase:
+class SupplementalFullmatchCase:
     id: str
     pattern: str
     text: str
@@ -443,44 +436,44 @@ MATCH_API_CASES = tuple(CASES_BY_ID[case_id] for case_id in MATCH_API_CASE_IDS)
 # Preserve the extra module.fullmatch mixed-iteration checks that only lived in
 # the superseded singleton files and were never promoted into scorecard fixtures.
 SUPPLEMENTAL_MODULE_FULLMATCH_CASES = (
-    SupplementalModuleFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-empty-yes-else-quantified-numbered-module-fullmatch-mixed-present-then-absent-failure",
         pattern=r"(?:a(b)?c(?(1)|e)){2}",
         text="abcace",
     ),
-    SupplementalModuleFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-empty-yes-else-quantified-named-module-fullmatch-mixed-present-then-absent-failure",
         pattern=r"(?:a(?P<word>b)?c(?(word)|e)){2}",
         text="abcace",
     ),
-    SupplementalModuleFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-fully-empty-quantified-numbered-module-fullmatch-mixed-present-then-absent",
         pattern=r"(?:a(b)?c(?(1)|)){2}",
         text="abcac",
     ),
-    SupplementalModuleFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-fully-empty-quantified-named-module-fullmatch-mixed-present-then-absent",
         pattern=r"(?:a(?P<word>b)?c(?(word)|)){2}",
         text="abcac",
     ),
 )
 SUPPLEMENTAL_PATTERN_FULLMATCH_CASES = (
-    SupplementalPatternFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-quantified-alternation-numbered-pattern-fullmatch-mixed-arms",
         pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
         text="abcdedf",
     ),
-    SupplementalPatternFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-quantified-alternation-numbered-pattern-fullmatch-mixed-else-arms",
         pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
         text="acegeh",
     ),
-    SupplementalPatternFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-quantified-alternation-named-pattern-fullmatch-mixed-arms",
         pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
         text="abcdedf",
     ),
-    SupplementalPatternFullmatchCase(
+    SupplementalFullmatchCase(
         id="conditional-group-exists-quantified-alternation-named-pattern-fullmatch-mixed-else-arms",
         pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
         text="acegeh",
@@ -998,7 +991,7 @@ def test_match_convenience_and_group_access_apis_match_cpython(
 )
 def test_supplemental_module_fullmatch_workflows_match_cpython(
     regex_backend: tuple[str, object],
-    case: SupplementalModuleFullmatchCase,
+    case: SupplementalFullmatchCase,
 ) -> None:
     backend_name, backend = regex_backend
 
@@ -1020,7 +1013,7 @@ def test_supplemental_module_fullmatch_workflows_match_cpython(
 )
 def test_supplemental_pattern_fullmatch_workflows_match_cpython(
     regex_backend: tuple[str, object],
-    case: SupplementalPatternFullmatchCase,
+    case: SupplementalFullmatchCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern, expected_pattern = compile_with_cpython_parity(
