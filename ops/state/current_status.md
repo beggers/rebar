@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 854/854 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0874` is the surviving follow-on on the `module-workflow-surface` frontier: add the first compiled-pattern-first-argument explicit integer-zero `module.compile(..., flags=0)` benchmark pair to the shared Python-path `module_boundary.py` surface using the already-landed bounded precompiled-first-argument timing support, without reopening bool-false flag carriers, rejection neighbors, or named-group compile publication.
+- `RBR-0876` is the surviving follow-on on the `module-workflow-surface` frontier: add the first compiled-pattern-first-argument explicit bool-false `module.compile(..., flags=False)` benchmark pair to the shared Python-path `module_boundary.py` surface once the adjacent explicit integer-zero pair lands, without reopening `NOFLAG` spellings, rejection neighbors, or named-group compile publication.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1516 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0874` is the surviving follow-on on the `module-workflow-surface` frontier: add the first compiled-pattern-first-argument explicit integer-zero `module.compile(..., flags=0)` benchmark pair to the shared Python-path `module_boundary.py` surface using the already-landed bounded precompiled-first-argument timing support, without reopening bool-false flag carriers, rejection neighbors, or named-group compile publication.
+- `RBR-0876` is the surviving follow-on on the `module-workflow-surface` frontier: add the first compiled-pattern-first-argument explicit bool-false `module.compile(..., flags=False)` benchmark pair to the shared Python-path `module_boundary.py` surface once the adjacent explicit integer-zero pair lands, without reopening `NOFLAG` spellings, rejection neighbors, or named-group compile publication.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
