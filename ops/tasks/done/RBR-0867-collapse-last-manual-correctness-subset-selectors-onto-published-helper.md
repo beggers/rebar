@@ -1,6 +1,6 @@
 # RBR-0867: Collapse the last manual correctness subset selectors onto the published helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -74,3 +74,13 @@ PY`
   - the parser/public-surface parity checks named in Acceptance currently pass (`2 passed` and `4 passed`);
   - the published-order probe in Acceptance currently prints `ok`; and
   - `bash -lc "! rg -n '^\\s*(PARSER_PARITY_FIXTURE_SELECTOR|PUBLIC_SURFACE_FIXTURE_SELECTOR): \\(' python/rebar_harness/correctness.py"` currently fails exactly on this cleanup because those two raw tuple rows still exist.
+
+## Completion
+- Replaced the last two manual nondefault correctness selector rows in `python/rebar_harness/correctness.py` with `_published_fixture_subset(...)`, leaving the parser-parity and public-surface memberships and published-order resolution unchanged.
+- Added an explicit selector expectation table in `tests/python/test_fixture_parity_support_contract.py` so the parser-parity and public-surface subset contracts stay pinned to the canonical published manifest order.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'selector'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py::test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fixture tests/python/test_parser_matrix_parity_suite.py::test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_correctness_fixture`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py::test_public_surface_parity_suite_stays_aligned_with_published_fixtures tests/python/test_module_workflow_parity_suite.py::test_public_surface_parity_suite_tracks_published_case_frontier`
+  - the published-order invariant probe from the acceptance criteria (`ok`)
+  - `bash -lc "! rg -n '^\\s*(PARSER_PARITY_FIXTURE_SELECTOR|PUBLIC_SURFACE_FIXTURE_SELECTOR): \\(' python/rebar_harness/correctness.py"`

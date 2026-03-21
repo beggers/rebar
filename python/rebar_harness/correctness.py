@@ -224,7 +224,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "quantified_alternation_open_ended_workflows.py",
             "quantified_alternation_nested_branch_workflows.py",
         ),
-        PARSER_PARITY_FIXTURE_SELECTOR: (
+        PARSER_PARITY_FIXTURE_SELECTOR: _published_fixture_subset(
             "parser_matrix.py",
             "conditional_group_exists_assertion_diagnostics.py",
         ),
@@ -275,7 +275,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
             "module_workflow_surface.py",
             "match_behavior_smoke.py",
         ),
-        PUBLIC_SURFACE_FIXTURE_SELECTOR: (
+        PUBLIC_SURFACE_FIXTURE_SELECTOR: _published_fixture_subset(
             "public_api_surface.py",
             "exported_symbol_surface.py",
             "pattern_object_surface.py",
