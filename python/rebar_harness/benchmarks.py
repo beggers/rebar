@@ -485,6 +485,8 @@ _PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
     "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
 )
 _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_FIELDS = frozenset({"flags"})
+_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_PATTERN = "abc"
+_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_PATTERN = "(?P<word>abc)"
 _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE = int(cpython_re.IGNORECASE)
 _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
     "type": "ValueError",
@@ -686,22 +688,43 @@ def validate_compiled_pattern_workload(
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "successful same-text-model literal rows or the bounded "
-                "`flags=IGNORECASE` rejection rows"
+                "successful same-text-model literal or named-group rows or "
+                "the bounded `flags=IGNORECASE` rejection rows"
             )
         if expected_exception is not None and not supports_ignorecase_rejection:
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "successful same-text-model literal rows or the bounded "
-                "`flags=IGNORECASE` rejection rows"
+                "successful same-text-model literal or named-group rows or "
+                "the bounded `flags=IGNORECASE` rejection rows"
             )
-        if pattern != "abc" or flags != 0 or text_model not in {"str", "bytes"}:
+        if kwargs:
+            if (
+                pattern != _COMPILED_PATTERN_MODULE_COMPILE_LITERAL_PATTERN
+                or flags != 0
+                or text_model not in {"str", "bytes"}
+            ):
+                raise ValueError(
+                    "benchmark compiled-pattern module-helper "
+                    "module.compile workloads currently only support "
+                    "the bounded `abc` str/bytes literal keyword carriers"
+                )
+        elif (
+            pattern
+            not in {
+                _COMPILED_PATTERN_MODULE_COMPILE_LITERAL_PATTERN,
+                _COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_PATTERN,
+            }
+            or flags != 0
+            or text_model not in {"str", "bytes"}
+        ):
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success and "
-                "`flags=IGNORECASE` rejection pairs"
+                "the bounded `abc` str/bytes literal success pair, "
+                "the exact same-text-model `(?P<word>abc)` str/bytes "
+                "named-group success pair, and `flags=IGNORECASE` "
+                "rejection pairs"
             )
 
     if operation in _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS:

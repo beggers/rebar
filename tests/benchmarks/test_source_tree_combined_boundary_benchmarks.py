@@ -1353,6 +1353,26 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
     _combined_slice_expectation(
         manifest_id="module-boundary",
+        slice_id="compiled-pattern-module-compile-named-group-success",
+        required_syntax_features=(
+            "module-compile",
+            "grouping-forms",
+            "named-groups",
+            "compiled-pattern-first-argument",
+        ),
+        required_categories=("compile", "named-group", "compiled-pattern"),
+        expected_workload_ids=(
+            "module-compile-named-group-warm-str-compiled-pattern",
+            "module-compile-named-group-purged-bytes-compiled-pattern",
+        ),
+        expected_patterns={"(?P<word>abc)"},
+        expected_operations={"module.compile"},
+        expected_haystacks=set(),
+        required_row_categories=("compile", "named-group", "compiled-pattern"),
+        expected_status="measured",
+    ),
+    _combined_slice_expectation(
+        manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-int-zero-keyword",
         required_syntax_features=(
             "module-compile",
@@ -3510,7 +3530,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
-    def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_rows_measured(
+    def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_literal_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("module-boundary")
@@ -3524,6 +3544,30 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (
                 "module-compile-literal-warm-str-compiled-pattern",
                 "module-compile-literal-purged-bytes-compiled-pattern",
+            ),
+        )
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "module-boundary",
+            expected_measured_workload_ids,
+            workload_count,
+            expected_total_workload_count=workload_count,
+        )
+
+    def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_named_group_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("module-boundary")
+        workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_module_workflow_compiled_pattern_compile_named_group_success_workload,
+        )
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "module-compile-named-group-warm-str-compiled-pattern",
+                "module-compile-named-group-purged-bytes-compiled-pattern",
             ),
         )
         self._assert_zero_gap_manifest_workloads_measured(
@@ -5008,11 +5052,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 860,
-                "module_workloads": 852,
+                "measured_workloads": 862,
+                "module_workloads": 854,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 860,
+                "total_workloads": 862,
             },
         )
 
@@ -6778,6 +6822,17 @@ def _is_module_workflow_compiled_pattern_compile_literal_success_workload(
     )
 
 
+def _is_module_workflow_compiled_pattern_compile_named_group_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_compile_workload(workload)
+        and workload.expected_exception is None
+        and workload.pattern == "(?P<word>abc)"
+        and workload.flags == 0
+    )
+
+
 _COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE = (
     ("flags", "int", 0),
 )
@@ -8110,6 +8165,31 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         include_workload=(
             _is_module_workflow_compiled_pattern_compile_literal_success_workload
+        ),
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_compile_correctness_case_signature
+        ),
+        workload_signature=(
+            _module_workflow_compiled_pattern_compile_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-module-compile-named-group-success",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-compile-named-group-warm-str-compiled-pattern": (
+                    "workflow-module-compile-str-compiled-pattern-named-group",
+                ),
+                "module-compile-named-group-purged-bytes-compiled-pattern": (
+                    "workflow-module-compile-bytes-compiled-pattern-named-group",
+                ),
+            },
+        ),
+        include_workload=(
+            _is_module_workflow_compiled_pattern_compile_named_group_success_workload
         ),
         correctness_case_signature=(
             _module_workflow_compiled_pattern_compile_correctness_case_signature
@@ -12626,6 +12706,18 @@ COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES = (
         cache_mode="purged",
         text_model="bytes",
     ),
+    CompiledPatternModuleCompileSuccessCase(
+        id="module-compile-named-group-warm-str-compiled-pattern",
+        cache_mode="warm",
+        text_model="str",
+        pattern="(?P<word>abc)",
+    ),
+    CompiledPatternModuleCompileSuccessCase(
+        id="module-compile-named-group-purged-bytes-compiled-pattern",
+        cache_mode="purged",
+        text_model="bytes",
+        pattern="(?P<word>abc)",
+    ),
 )
 
 
@@ -12692,6 +12784,18 @@ def _run_cpython_compiled_pattern_module_compile_success_workload(
 ) -> object:
     compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
     return re.compile(compiled_pattern, workload.flags)
+
+
+def _compiled_pattern_module_compile_success_expected_build_calls(
+    case: CompiledPatternModuleCompileSuccessCase,
+) -> list[tuple[object, ...]]:
+    workload = _compiled_pattern_module_compile_success_workload(case)
+    build_calls: list[tuple[object, ...]] = [
+        ("compile", workload.pattern_payload(), workload.flags)
+    ]
+    if case.cache_mode == "purged":
+        build_calls.append(("purge",))
+    return build_calls
 
 
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_rows_until_helper_invocation(
@@ -12775,6 +12879,12 @@ def test_compiled_pattern_module_compile_success_rows_stay_anchored_to_published
             "module-compile-literal-purged-bytes-compiled-pattern-contract": (
                 "workflow-module-compile-bytes-compiled-pattern",
             ),
+            "module-compile-named-group-warm-str-compiled-pattern-contract": (
+                "workflow-module-compile-str-compiled-pattern-named-group",
+            ),
+            "module-compile-named-group-purged-bytes-compiled-pattern-contract": (
+                "workflow-module-compile-bytes-compiled-pattern-named-group",
+            ),
         },
     )
     anchor_case_ids = published_case_ids_by_signature(
@@ -12808,6 +12918,14 @@ def test_compiled_pattern_module_compile_success_rows_stay_anchored_to_published
         (
             "module-compile-literal-purged-bytes-compiled-pattern-contract",
             "workflow-module-compile-bytes-compiled-pattern",
+        ),
+        (
+            "module-compile-named-group-warm-str-compiled-pattern-contract",
+            "workflow-module-compile-str-compiled-pattern-named-group",
+        ),
+        (
+            "module-compile-named-group-purged-bytes-compiled-pattern-contract",
+            "workflow-module-compile-bytes-compiled-pattern-named-group",
         ),
     )
 
@@ -12852,24 +12970,18 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 
 
 @pytest.mark.parametrize(
-    ("case", "expected_build_calls"),
-    (
-        pytest.param(
-            COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES[0],
-            [("compile", "abc", 0)],
-            id="module-compile-literal-warm-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES[1],
-            [("compile", b"abc", 0), ("purge",)],
-            id="module-compile-literal-purged-bytes-compiled-pattern",
-        ),
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for case in COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES
     ),
 )
 def test_compiled_pattern_module_compile_success_callbacks_precompile_first_argument_before_timing(
     case: CompiledPatternModuleCompileSuccessCase,
-    expected_build_calls: list[tuple[object, ...]],
 ) -> None:
+    expected_build_calls = _compiled_pattern_module_compile_success_expected_build_calls(
+        case
+    )
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
@@ -15957,8 +16069,8 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "successful same-text-model literal rows or the bounded "
-                "`flags=IGNORECASE` rejection rows"
+                "successful same-text-model literal or named-group rows or "
+                "the bounded `flags=IGNORECASE` rejection rows"
             ),
             id="expected-exception-not-supported",
         ),
@@ -15966,16 +16078,32 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             "module-boundary",
             None,
             None,
+            "(?:abc)",
+            0,
+            "str",
+            re.escape(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "the bounded `abc` str/bytes literal success pair, "
+                "the exact same-text-model `(?P<word>abc)` str/bytes "
+                "named-group success pair, and `flags=IGNORECASE` "
+                "rejection pairs"
+            ),
+            id="pattern-scope",
+        ),
+        pytest.param(
+            "module-boundary",
+            {"flags": 0},
+            None,
             "(?P<word>abc)",
             0,
             "str",
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success and "
-                "`flags=IGNORECASE` rejection pairs"
+                "the bounded `abc` str/bytes literal keyword carriers"
             ),
-            id="pattern-scope",
+            id="named-group-keyword-scope",
         ),
         pytest.param(
             "module-boundary",
@@ -15987,8 +16115,10 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success and "
-                "`flags=IGNORECASE` rejection pairs"
+                "the bounded `abc` str/bytes literal success pair, "
+                "the exact same-text-model `(?P<word>abc)` str/bytes "
+                "named-group success pair, and `flags=IGNORECASE` "
+                "rejection pairs"
             ),
             id="flags-scope",
         ),
@@ -16002,8 +16132,10 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success and "
-                "`flags=IGNORECASE` rejection pairs"
+                "the bounded `abc` str/bytes literal success pair, "
+                "the exact same-text-model `(?P<word>abc)` str/bytes "
+                "named-group success pair, and `flags=IGNORECASE` "
+                "rejection pairs"
             ),
             id="text-model-scope",
         ),
