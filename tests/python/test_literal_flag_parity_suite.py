@@ -6,7 +6,11 @@ import re
 import pytest
 
 import rebar
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    FixtureCase,
+    LITERAL_FLAG_FIXTURE_SELECTOR,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -176,9 +180,8 @@ class _FakeNativeBoundary(RecordingNativeBoundary):
             return ("matched", 0, len(string), (0, 3))
         return ("unsupported", 0, len(string), None)
 
-
 LITERAL_FLAG_FIXTURE_BUNDLE, = load_published_fixture_bundles(
-    (CORRECTNESS_FIXTURES_ROOT / "literal_flag_workflows.py",)
+    select_correctness_fixture_paths(LITERAL_FLAG_FIXTURE_SELECTOR)
 )
 LITERAL_FLAG_CASES_BY_ID = {
     case.case_id: case for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases
@@ -476,11 +479,14 @@ FAKE_BOUNDARY_CASES = (
 
 def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -> None:
     bundle = LITERAL_FLAG_FIXTURE_BUNDLE
+    (expected_fixture_path,) = select_correctness_fixture_paths(
+        LITERAL_FLAG_FIXTURE_SELECTOR
+    )
 
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
-        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / "literal_flag_workflows.py",
+        expected_fixture_path=expected_fixture_path,
         expected_ordered_case_ids=tuple(
             case.case_id for case in bundle.manifest.cases
         ),
