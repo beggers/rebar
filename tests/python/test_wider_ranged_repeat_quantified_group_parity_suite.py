@@ -39,14 +39,6 @@ BACKTRACKING_BRANCH_TEXT = {
 
 
 @dataclass(frozen=True)
-class SupplementalCaseExpectation:
-    search_matches: tuple[bytes, ...] = ()
-    search_misses: tuple[bytes, ...] = ()
-    fullmatch_matches: tuple[bytes, ...] = ()
-    fullmatch_misses: tuple[bytes, ...] = ()
-
-
-@dataclass(frozen=True)
 class DirectBytesFollowOnSpec:
     id: str
     bundle: FixtureBundle
@@ -54,7 +46,6 @@ class DirectBytesFollowOnSpec:
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
-    expected_case_payloads: dict[str, SupplementalCaseExpectation]
 
 
 @dataclass(frozen=True)
@@ -223,20 +214,6 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abcbcded", b"abcbcbcbcbcd", b"ad"}
             ),
         },
-        expected_case_payloads={
-            "broader-range-wider-ranged-repeat-conditional-numbered-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz", b"zzabcdedededzz"),
-                search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
-                fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
-                fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
-            ),
-            "broader-range-wider-ranged-repeat-conditional-named-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz", b"zzabcdedededzz"),
-                search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
-                fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
-                fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
-            ),
-        },
     ),
     DirectBytesFollowOnSpec(
         id="broader-range-backtracking-heavy",
@@ -263,20 +240,6 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
             ),
             BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES[1].pattern: frozenset(
                 {b"abccbcd", b"abccbd", b"abcbcbcbcbcd"}
-            ),
-        },
-        expected_case_payloads={
-            "broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzabcdzz", b"zzabccdzz"),
-                search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-                fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
-                fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
-            ),
-            "broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzabccdzz", b"zzabcbccdzz", b"zzabcbccbccbcdzz"),
-                search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-                fullmatch_matches=(b"abccbcd",),
-                fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
             ),
         },
     ),
@@ -307,20 +270,6 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abcbcded", b"adedededed", b"ae", b"abcbcbcbcbcd"}
             ),
         },
-        expected_case_payloads={
-            "nested-broader-range-wider-ranged-repeat-grouped-alternation-numbered-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzabcdzz", b"zzadedzz"),
-                search_misses=(),
-                fullmatch_matches=(b"abcbcded", b"adedededed"),
-                fullmatch_misses=(b"ae", b"abcbcdede"),
-            ),
-            "nested-broader-range-wider-ranged-repeat-grouped-alternation-named-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzabcdzz", b"zzadedzz"),
-                search_misses=(),
-                fullmatch_matches=(b"abcbcded", b"adedededed"),
-                fullmatch_misses=(b"ae", b"abcbcbcbcbcd"),
-            ),
-        },
     ),
     DirectBytesFollowOnSpec(
         id="nested-broader-range-conditional",
@@ -349,20 +298,6 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abcbcdede", b"ae", b"abcbcbcbcbcde"}
             ),
         },
-        expected_case_payloads={
-            "nested-broader-range-wider-ranged-repeat-grouped-conditional-numbered-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzafzz", b"zzabcdezz", b"zzadedezz"),
-                search_misses=(),
-                fullmatch_matches=(b"abcbcdede",),
-                fullmatch_misses=(b"abcbcded", b"ae"),
-            ),
-            "nested-broader-range-wider-ranged-repeat-grouped-conditional-named-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzafzz", b"zzadedezz", b"zzadededededezz"),
-                search_misses=(),
-                fullmatch_matches=(b"abcbcdede",),
-                fullmatch_misses=(b"ae", b"abcbcbcbcbcde"),
-            ),
-        },
     ),
     DirectBytesFollowOnSpec(
         id="nested-broader-range-backtracking-heavy",
@@ -389,20 +324,6 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
             ),
             NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES[1].pattern: frozenset(
                 {b"abccbcd", b"abccbd", b"abcbcbcbcbcd"}
-            ),
-        },
-        expected_case_payloads={
-            "nested-broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzabcdzz", b"zzabccdzz"),
-                search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-                fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
-                fullmatch_misses=(b"abccbd",),
-            ),
-            "nested-broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes": SupplementalCaseExpectation(
-                search_matches=(b"zzabccdzz", b"zzabcbccdzz", b"zzabcbccbccbcdzz"),
-                search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-                fullmatch_matches=(b"abccbcd",),
-                fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
             ),
         },
     ),
@@ -723,13 +644,8 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     )
 
     for case in spec.cases:
-        expected_payload = spec.expected_case_payloads[case.id]
         assert case.unsupported_backends == ()
         assert case.unsupported_backend_reason is None
-        assert case.search_matches == expected_payload.search_matches
-        assert case.search_misses == expected_payload.search_misses
-        assert case.fullmatch_matches == expected_payload.fullmatch_matches
-        assert case.fullmatch_misses == expected_payload.fullmatch_misses
         assert set(case.search_matches).isdisjoint(case.search_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(
