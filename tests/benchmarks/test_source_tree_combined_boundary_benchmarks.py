@@ -56,17 +56,6 @@ from tests.python.fixture_parity_support import (
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
-CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS = (
-    pytest.param(
-        benchmarks.BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
-        (
-            "pattern_boundary.py",
-            "collection_replacement_boundary.py",
-            "literal_flag_boundary.py",
-        ),
-        id=benchmarks.BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
-    ),
-)
 
 
 def _assert_benchmark_summary_consistent(
@@ -9301,14 +9290,13 @@ def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants
         assert path in published_manifest_paths
 
 
-@pytest.mark.parametrize(
-    ("selector", "expected_filenames"),
-    CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS,
-)
-def test_canonical_benchmark_manifest_subset_selectors_keep_membership_contract(
-    selector: str,
-    expected_filenames: tuple[str, ...],
-) -> None:
+def test_built_native_smoke_manifest_selector_keeps_membership_contract() -> None:
+    selector = benchmarks.BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR
+    expected_filenames = (
+        benchmarks._NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES[
+            selector
+        ]
+    )
     published_manifest_paths = select_benchmark_manifest_paths(
         PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     )

@@ -45,64 +45,64 @@ DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
 BENCHMARK_WORKLOADS_ROOT = REPO_ROOT / "benchmarks" / "workloads"
 PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR = "published-full-suite"
 BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR = "built-native-smoke"
-_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
-    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR: (
-        "compile_matrix.py",
-        "module_boundary.py",
-        "pattern_boundary.py",
-        "collection_replacement_boundary.py",
-        "literal_flag_boundary.py",
-        "grouped_named_boundary.py",
-        "numbered_backreference_boundary.py",
-        "grouped_segment_boundary.py",
-        "literal_alternation_boundary.py",
-        "grouped_alternation_boundary.py",
-        "grouped_alternation_replacement_boundary.py",
-        "grouped_alternation_callable_replacement_boundary.py",
-        "nested_group_boundary.py",
-        "nested_group_alternation_boundary.py",
-        "nested_group_replacement_boundary.py",
-        "nested_group_callable_replacement_boundary.py",
-        "branch_local_backreference_boundary.py",
-        "optional_group_boundary.py",
-        "exact_repeat_quantified_group_boundary.py",
-        "ranged_repeat_quantified_group_boundary.py",
-        "wider_ranged_repeat_quantified_group_boundary.py",
-        "open_ended_quantified_group_boundary.py",
-        "quantified_alternation_boundary.py",
-        "optional_group_alternation_boundary.py",
-        "conditional_group_exists_boundary.py",
-        "conditional_group_exists_no_else_boundary.py",
-        "conditional_group_exists_empty_else_boundary.py",
-        "conditional_group_exists_empty_yes_else_boundary.py",
-        "conditional_group_exists_fully_empty_boundary.py",
-        "regression_matrix.py",
-    ),
-}
-
-_PUBLISHED_BENCHMARK_MANIFEST_FILENAMES = _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[
-    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
-]
+_PUBLISHED_BENCHMARK_MANIFEST_FILENAMES = (
+    "compile_matrix.py",
+    "module_boundary.py",
+    "pattern_boundary.py",
+    "collection_replacement_boundary.py",
+    "literal_flag_boundary.py",
+    "grouped_named_boundary.py",
+    "numbered_backreference_boundary.py",
+    "grouped_segment_boundary.py",
+    "literal_alternation_boundary.py",
+    "grouped_alternation_boundary.py",
+    "grouped_alternation_replacement_boundary.py",
+    "grouped_alternation_callable_replacement_boundary.py",
+    "nested_group_boundary.py",
+    "nested_group_alternation_boundary.py",
+    "nested_group_replacement_boundary.py",
+    "nested_group_callable_replacement_boundary.py",
+    "branch_local_backreference_boundary.py",
+    "optional_group_boundary.py",
+    "exact_repeat_quantified_group_boundary.py",
+    "ranged_repeat_quantified_group_boundary.py",
+    "wider_ranged_repeat_quantified_group_boundary.py",
+    "open_ended_quantified_group_boundary.py",
+    "quantified_alternation_boundary.py",
+    "optional_group_alternation_boundary.py",
+    "conditional_group_exists_boundary.py",
+    "conditional_group_exists_no_else_boundary.py",
+    "conditional_group_exists_empty_else_boundary.py",
+    "conditional_group_exists_empty_yes_else_boundary.py",
+    "conditional_group_exists_fully_empty_boundary.py",
+    "regression_matrix.py",
+)
 _PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX = (
     "unknown published benchmark manifest filename(s): "
 )
+_NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES = {
+    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: (
+        "pattern_boundary.py",
+        "collection_replacement_boundary.py",
+        "literal_flag_boundary.py",
+    ),
+}
 
-
-_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR.update(
-    {
-        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: ordered_published_subset_filenames(
+_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
+    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR: _PUBLISHED_BENCHMARK_MANIFEST_FILENAMES,
+    **{
+        selector: ordered_published_subset_filenames(
             _PUBLISHED_BENCHMARK_MANIFEST_FILENAMES,
-            (
-                "pattern_boundary.py",
-                "collection_replacement_boundary.py",
-                "literal_flag_boundary.py",
-            ),
+            requested_filenames,
             missing_filename_error_prefix=(
                 _PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX
             ),
-        ),
-    }
-)
+        )
+        for selector, requested_filenames in (
+            _NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES.items()
+        )
+    },
+}
 
 
 def select_benchmark_manifest_paths(selector: str) -> tuple[pathlib.Path, ...]:

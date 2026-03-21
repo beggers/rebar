@@ -1,8 +1,9 @@
 # RBR-0885: Collapse benchmark selector registry mutation onto declarative subsets
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Delete the remaining post-declaration mutation in `python/rebar_harness/benchmarks.py` by expressing the nondefault benchmark selectors as one declarative selector-to-requested-filenames table and deriving the resolved registry through one shared construction path.
@@ -70,3 +71,8 @@ PY`
 - This is the benchmark-side follow-on to the adjacent selector simplification already landed on the correctness path:
   - `RBR-0879` collapsed the duplicated selector introspection helpers onto `scorecard_io`; and
   - `RBR-0883` collapsed the correctness selector registry boilerplate onto one declarative nondefault-selector table, leaving the benchmark registry mutation as the matching remaining selector-construction cleanup.
+
+## Completion
+- Replaced the benchmark selector registry `.update(...)` mutation with a declarative `_NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES` table and one shared ordered-subset construction path.
+- Removed the mirrored canonical selector-membership tuple from the owner benchmark test and kept the built-native smoke membership contract asserted directly against the harness-owned selector table.
+- Verified with the task-required pytest selector target, direct Python selector assertions, and the two grep absence checks.
