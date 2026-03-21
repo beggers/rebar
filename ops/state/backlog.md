@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0876` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument explicit bool-false `compile(flags=False)` pair up on the shared Python-path `module_boundary.py` surface once the adjacent explicit integer-zero pair lands, instead of reopening `NOFLAG` spellings, compile rejection neighbors, named-group compile publication, or another benchmark family.
+`RBR-0878` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument explicit `IGNORECASE` `compile(flags=IGNORECASE)` rejection pair up on the shared Python-path `module_boundary.py` surface once the adjacent explicit bool-false pair lands, instead of reopening `NOFLAG` spellings, named-group compile publication, or another benchmark family.
 
 ## Ordered Work
-1. `RBR-0876` catches the first compiled-pattern-first-argument explicit bool-false `module.compile(..., flags=False)` pair up on `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0878` catches the first compiled-pattern-first-argument explicit `IGNORECASE` `module.compile(..., flags=IGNORECASE)` rejection pair up on `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
