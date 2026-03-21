@@ -10399,6 +10399,168 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
         re.purge()
 
 
+def _module_helper_keyword_error_probe_workload(
+    *,
+    operation: str,
+    cache_mode: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    expected_exception: dict[str, str],
+) -> Workload:
+    return workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-module-helper-keyword-error-probe-contract",
+            "workload_id": f"{operation}-keyword-error-probe-contract",
+            "bucket": operation.replace("module.", "module-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": "abc",
+            "replacement": replacement,
+            "expected_exception": expected_exception,
+            "flags": 0,
+            "count": count,
+            "maxsplit": maxsplit,
+            "kwargs": kwargs_payload,
+            "text_model": "str",
+            "cache_mode": cache_mode,
+            "timing_scope": "module-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "cache_mode",
+        "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
+        "expected_exception",
+    ),
+    (
+        pytest.param(
+            "module.search",
+            "warm",
+            {"flags": 0},
+            None,
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'flags'",
+            },
+            id="module-search-duplicate-flags-keyword",
+        ),
+        pytest.param(
+            "module.fullmatch",
+            "warm",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            id="module-fullmatch-unexpected-keyword",
+        ),
+        pytest.param(
+            "module.split",
+            "purged",
+            {"maxsplit": 1},
+            None,
+            0,
+            1,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'maxsplit'",
+            },
+            id="module-split-duplicate-maxsplit-keyword",
+        ),
+        pytest.param(
+            "module.sub",
+            "warm",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "multiple values for argument 'count'",
+            },
+            id="module-sub-duplicate-count-keyword",
+        ),
+        pytest.param(
+            "module.sub",
+            "purged",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            id="module-sub-unexpected-keyword",
+        ),
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_module_helper_keyword_error_workloads(
+    operation: str,
+    cache_mode: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    expected_exception: dict[str, str],
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    workload = _module_helper_keyword_error_probe_workload(
+        operation=operation,
+        cache_mode=cache_mode,
+        kwargs_payload=kwargs_payload,
+        replacement=replacement,
+        count=count,
+        maxsplit=maxsplit,
+        expected_exception=expected_exception,
+    )
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    assert payload["expected_exception"] == expected_exception
+    assert round_tripped.expected_exception == expected_exception
+    assert payload["kwargs"] == kwargs_payload
+    assert round_tripped.kwargs == kwargs_payload
+
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
 class _RecordingBenchmarkCompiledPattern:
     def __init__(self, calls: list[tuple[object, ...]]) -> None:
         self._calls = calls
