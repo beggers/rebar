@@ -1,8 +1,9 @@
 # RBR-0839: Collapse wider-ranged-repeat direct-bytes follow-on case sidecar onto canonical surfaces
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Remove the detached `DIRECT_BYTES_FOLLOW_ON_CASES` tuple from `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` so `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` becomes the sole canonical owner of wider-ranged-repeat direct-bytes follow-on case ordering and payload routing inside this parity suite.
@@ -80,3 +81,9 @@ PY`
 - This stays on the same bounded post-JSON parity-harness cleanup track as `RBR-0835` and `RBR-0837`:
   - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` already uses `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` as the bundle-and-payload owner for bytes follow-on routing; and
   - the remaining `DIRECT_BYTES_FOLLOW_ON_CASES` tuple is just a flattened second owner for the same case ordering, so this cleanup can delete duplication without changing behavior.
+
+## Completion
+- 2026-03-21: Removed the mirrored `DIRECT_BYTES_FOLLOW_ON_CASES` tuple from `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`.
+- Added one tiny file-local `_direct_bytes_follow_on_cases()` helper derived directly from `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES`, then rewired the seven direct-bytes follow-on parity parametrizations to flatten the canonical surface owner instead of reading a duplicated top-level tuple.
+- Preserved the existing direct-bytes follow-on surface membership, per-surface case payloads, and effective ten-case flattening order exactly as `broader-range-wider-ranged-repeat-conditional-numbered-bytes`, `broader-range-wider-ranged-repeat-conditional-named-bytes`, `broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes`, `broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes`, `nested-broader-range-wider-ranged-repeat-grouped-alternation-numbered-bytes`, `nested-broader-range-wider-ranged-repeat-grouped-alternation-named-bytes`, `nested-broader-range-wider-ranged-repeat-grouped-conditional-numbered-bytes`, `nested-broader-range-wider-ranged-repeat-grouped-conditional-named-bytes`, `nested-broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes`, `nested-broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1341 passed in 1.02s`), the task-local import-order probe from Acceptance (`ok`), and `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_CASES' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"` (passes with no matches).
