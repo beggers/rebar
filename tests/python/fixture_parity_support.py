@@ -506,23 +506,30 @@ def load_published_fixture_bundles(
     )
 
 
+def published_fixture_bundles_by_manifest_id(
+    bundles: Iterable[FixtureBundle],
+) -> dict[str, FixtureBundle]:
+    indexed_bundles: dict[str, FixtureBundle] = {}
+    for bundle in bundles:
+        manifest_id = bundle.manifest.manifest_id
+        if manifest_id in indexed_bundles:
+            raise ValueError(
+                f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
+            )
+        indexed_bundles[manifest_id] = bundle
+    return indexed_bundles
+
+
 def published_fixture_bundle_by_manifest_id(
     bundles: Iterable[FixtureBundle],
     manifest_id: str,
 ) -> FixtureBundle:
-    loaded_bundles = tuple(bundles)
-    matching_bundles = tuple(
-        bundle for bundle in loaded_bundles if bundle.manifest.manifest_id == manifest_id
-    )
-    if not matching_bundles:
+    indexed_bundles = published_fixture_bundles_by_manifest_id(bundles)
+    if manifest_id not in indexed_bundles:
         raise ValueError(
             f"published fixture bundles do not contain manifest_id {manifest_id!r}"
         )
-    if len(matching_bundles) > 1:
-        raise ValueError(
-            f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
-        )
-    return matching_bundles[0]
+    return indexed_bundles[manifest_id]
 
 
 def assert_fixture_bundle_contract(

@@ -42,7 +42,7 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
-    published_fixture_bundle_by_manifest_id,
+    published_fixture_bundles_by_manifest_id,
 )
 
 
@@ -77,34 +77,28 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(
     ),
     pattern_extractor=case_pattern,
 )
-OPEN_ENDED_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "open-ended-quantified-group-alternation-workflows",
-)
-OPEN_ENDED_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "open-ended-quantified-group-alternation-conditional-workflows",
-)
-BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "broader-range-open-ended-quantified-group-alternation-workflows",
-)
-BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
-)
-BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-)
-OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-)
-NESTED_OPEN_ENDED_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "nested-open-ended-quantified-group-alternation-workflows",
-)
+FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(FIXTURE_BUNDLES)
+OPEN_ENDED_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "open-ended-quantified-group-alternation-workflows"
+]
+OPEN_ENDED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "open-ended-quantified-group-alternation-conditional-workflows"
+]
+BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "broader-range-open-ended-quantified-group-alternation-workflows"
+]
+BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "broader-range-open-ended-quantified-group-alternation-conditional-workflows"
+]
+BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows"
+]
+OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "open-ended-quantified-group-alternation-backtracking-heavy-workflows"
+]
+NESTED_OPEN_ENDED_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "nested-open-ended-quantified-group-alternation-workflows"
+]
 OPEN_ENDED_TRACE_BUNDLES = (
     OPEN_ENDED_ALTERNATION_BUNDLE,
     NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,

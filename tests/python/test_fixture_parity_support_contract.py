@@ -2671,6 +2671,26 @@ def test_published_fixture_bundle_by_manifest_id_returns_requested_bundle(
     assert str_bundle is bundles[0]
 
 
+def test_published_fixture_bundle_by_manifest_id_map_returns_requested_bundles(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    bundles = fixture_parity_support.load_published_fixture_bundles(
+        (str_path, mixed_path)
+    )
+
+    bundles_by_manifest_id = fixture_parity_support.published_fixture_bundles_by_manifest_id(
+        bundles
+    )
+
+    assert tuple(bundles_by_manifest_id) == (
+        BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+        BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID,
+    )
+    assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID] is bundles[0]
+    assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID] is bundles[1]
+
+
 def test_published_fixture_bundle_by_manifest_id_rejects_missing_manifest_id(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -2707,6 +2727,24 @@ def test_published_fixture_bundle_by_manifest_id_rejects_duplicate_manifest_ids(
         fixture_parity_support.published_fixture_bundle_by_manifest_id(
             (bundle, bundle),
             BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+        )
+
+
+def test_published_fixture_bundle_by_manifest_id_map_rejects_duplicate_manifest_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    (bundle,) = fixture_parity_support.load_published_fixture_bundles((str_path,))
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "published fixture bundles contain duplicate manifest_id "
+            f"'{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}'"
+        ),
+    ):
+        fixture_parity_support.published_fixture_bundles_by_manifest_id(
+            (bundle, bundle)
         )
 
 

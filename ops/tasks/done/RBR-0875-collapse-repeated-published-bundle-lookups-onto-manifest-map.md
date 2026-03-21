@@ -1,6 +1,6 @@
 # RBR-0875: Collapse repeated published bundle lookups onto a manifest-id map
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
 
@@ -57,3 +57,12 @@ Created: 2026-03-21
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py` currently passes (`5112 passed in 3.99s`);
   - `bash -lc "! rg -n '^[A-Z0-9_]+ = published_fixture_bundle_by_manifest_id\\($' tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py"` currently fails exactly on the remaining repeated module-scope lookup chains in those three suites; and
   - `tests/python/fixture_parity_support.py` already owns the canonical published-bundle loader and one-off manifest-id lookup helper, so adding the indexed lookup path there reduces repetition without introducing another owner module.
+
+## Completion
+- 2026-03-21: Added `published_fixture_bundles_by_manifest_id(...)` to `tests/python/fixture_parity_support.py`, kept duplicate-manifest validation in that shared path, and routed `published_fixture_bundle_by_manifest_id(...)` through the indexed map while preserving its missing-manifest error text.
+- Added adjacent support-contract coverage in `tests/python/test_fixture_parity_support_contract.py` for successful manifest-id map construction and duplicate-manifest rejection without removing the existing one-off lookup coverage.
+- Replaced the repeated module-scope `published_fixture_bundle_by_manifest_id(...)` chains in `tests/python/test_grouped_capture_parity_suite.py`, `tests/python/test_quantified_alternation_parity_suite.py`, and `tests/python/test_open_ended_quantified_group_parity_suite.py` with one local manifest-id map per file derived from the already-loaded `FIXTURE_BUNDLES` tuple.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'published_fixture_bundle_by_manifest_id or load_published_fixture_bundles'` (`8 passed, 290 deselected`)
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py` (`5112 passed`)
+  - `bash -lc "! rg -n '^[A-Z0-9_]+ = published_fixture_bundle_by_manifest_id\\($' tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py"` (passed with no matches)

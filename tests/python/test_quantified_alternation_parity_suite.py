@@ -34,6 +34,7 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
+    published_fixture_bundles_by_manifest_id,
     published_fixture_bundle_by_manifest_id,
     record_generated_match_failure,
 )
@@ -88,30 +89,25 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(
     select_correctness_fixture_paths(QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR),
     pattern_extractor=case_pattern,
 )
-QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "quantified-alternation-workflows",
-)
-QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "quantified-alternation-broader-range-workflows",
-)
-QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "quantified-alternation-conditional-workflows",
-)
-QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "quantified-alternation-open-ended-workflows",
-)
-QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "quantified-alternation-nested-branch-workflows",
-)
-BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "quantified-alternation-backtracking-heavy-workflows",
-)
+FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(FIXTURE_BUNDLES)
+QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "quantified-alternation-workflows"
+]
+QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "quantified-alternation-broader-range-workflows"
+]
+QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "quantified-alternation-conditional-workflows"
+]
+QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "quantified-alternation-open-ended-workflows"
+]
+QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "quantified-alternation-nested-branch-workflows"
+]
+BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "quantified-alternation-backtracking-heavy-workflows"
+]
 GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
     GeneratedQuantifiedAlternationParitySpec(
         bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,

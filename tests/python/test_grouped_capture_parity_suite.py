@@ -25,7 +25,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
-    published_fixture_bundle_by_manifest_id,
+    published_fixture_bundles_by_manifest_id,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
@@ -68,38 +68,25 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(
     select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR),
     pattern_extractor=str_case_pattern,
 )
-GROUPED_MATCH_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "grouped-match-workflows",
-)
-NAMED_GROUP_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "named-group-workflows",
-)
-GROUPED_SEGMENT_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "grouped-segment-workflows",
-)
-NESTED_GROUP_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "nested-group-workflows",
-)
-NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "nested-group-alternation-workflows",
-)
-GROUPED_ALTERNATION_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "grouped-alternation-workflows",
-)
-OPTIONAL_GROUP_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "optional-group-workflows",
-)
-OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
-    FIXTURE_BUNDLES,
-    "optional-group-alternation-workflows",
-)
+FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(FIXTURE_BUNDLES)
+GROUPED_MATCH_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID["grouped-match-workflows"]
+NAMED_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID["named-group-workflows"]
+GROUPED_SEGMENT_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "grouped-segment-workflows"
+]
+NESTED_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID["nested-group-workflows"]
+NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "nested-group-alternation-workflows"
+]
+GROUPED_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "grouped-alternation-workflows"
+]
+OPTIONAL_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "optional-group-workflows"
+]
+OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "optional-group-alternation-workflows"
+]
 
 
 def _bundle_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
