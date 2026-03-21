@@ -52,7 +52,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
-    ordered_cases_from_owner_bundle,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
@@ -2741,82 +2740,6 @@ def test_published_fixture_bundle_by_manifest_id_rejects_duplicate_manifest_ids(
         fixture_parity_support.published_fixture_bundle_by_manifest_id(
             (bundle, bundle),
             BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
-        )
-
-
-def test_ordered_cases_from_owner_bundle_preserves_requested_case_order(
-    tmp_path: pathlib.Path,
-) -> None:
-    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
-    requested_case_ids = (published_case_ids[2], published_case_ids[0])
-
-    ordered_cases = ordered_cases_from_owner_bundle(
-        bundle,
-        requested_case_ids,
-        error_label="fixture parity support owner bundle",
-    )
-
-    assert tuple(case.case_id for case in ordered_cases) == requested_case_ids
-
-
-def test_ordered_cases_from_owner_bundle_rejects_duplicate_requested_case_ids(
-    tmp_path: pathlib.Path,
-) -> None:
-    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "fixture parity support owner bundle contain duplicate requested case ids: "
-            f"{(published_case_ids[0],)}"
-        ),
-    ):
-        ordered_cases_from_owner_bundle(
-            bundle,
-            (published_case_ids[0], published_case_ids[0]),
-            error_label="fixture parity support owner bundle",
-        )
-
-
-def test_ordered_cases_from_owner_bundle_rejects_duplicate_published_case_ids(
-    tmp_path: pathlib.Path,
-) -> None:
-    duplicate_path = _write_bundle_loader_contract_duplicate_fixture_module(tmp_path)
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((duplicate_path,))
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "fixture parity support owner bundle owner manifest contains duplicate "
-            f"case ids: {('bundle-loader-contract-duplicate-case',)}"
-        ),
-    ):
-        ordered_cases_from_owner_bundle(
-            bundle,
-            ("bundle-loader-contract-duplicate-case",),
-            error_label="fixture parity support owner bundle",
-        )
-
-
-def test_ordered_cases_from_owner_bundle_rejects_missing_case_ids(
-    tmp_path: pathlib.Path,
-) -> None:
-    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "fixture parity support owner bundle are missing published fixture rows: "
-            f"{('missing-case-id',)}"
-        ),
-    ):
-        ordered_cases_from_owner_bundle(
-            bundle,
-            (published_case_ids[0], "missing-case-id"),
-            error_label="fixture parity support owner bundle",
         )
 
 

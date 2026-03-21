@@ -39,7 +39,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_published_fixture_bundles,
-    ordered_cases_from_owner_bundle,
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
@@ -918,10 +917,22 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
             bundles,
             GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
         )
-        collection_cases = ordered_cases_from_owner_bundle(
-            collection_bundle,
-            GROUPED_REPLACEMENT_COLLECTION_CASE_IDS,
-            error_label="grouped replacement collection case ids",
+        collection_case_by_id = {
+            case.case_id: case for case in collection_bundle.manifest.cases
+        }
+        missing_collection_case_ids = tuple(
+            case_id
+            for case_id in GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
+            if case_id not in collection_case_by_id
+        )
+        if missing_collection_case_ids:
+            raise ValueError(
+                "grouped replacement collection case ids are missing published "
+                f"fixture rows: {missing_collection_case_ids}"
+            )
+        collection_cases = tuple(
+            collection_case_by_id[case_id]
+            for case_id in GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
         )
         adjusted_collection_bundle = build_fixture_bundle(
             collection_bundle.manifest,
