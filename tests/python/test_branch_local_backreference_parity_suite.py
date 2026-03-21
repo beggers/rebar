@@ -481,16 +481,12 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
         },
     ),
 )
-
-
-def _direct_bytes_follow_on_cases(
-) -> tuple[BranchLocalBackreferenceBytesFollowOnCase, ...]:
-    return tuple(case for spec in DIRECT_BYTES_FOLLOW_ON_SPECS for case in spec.cases)
-
-
+DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
+    case for spec in DIRECT_BYTES_FOLLOW_ON_SPECS for case in spec.cases
+)
 SUPPORTED_DIRECT_BYTES_PATTERNS = frozenset(
     case.pattern
-    for case in _direct_bytes_follow_on_cases()
+    for case in DIRECT_BYTES_FOLLOW_ON_CASES
     if not case.unsupported_backends
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
@@ -1005,18 +1001,6 @@ SUPPLEMENTAL_MISS_CASES = (
 MATCH_GROUP_ACCESS_CASES = tuple(
     CASES_BY_ID[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS
 )
-
-
-def _assert_direct_bytes_follow_on_case_backend_gating(
-    case: BranchLocalBackreferenceBytesFollowOnCase,
-    *,
-    expected_unsupported_backends: tuple[str, ...] = (),
-    expected_unsupported_backend_reason: str | None = None,
-) -> None:
-    assert case.unsupported_backends == expected_unsupported_backends
-    assert case.unsupported_backend_reason == expected_unsupported_backend_reason
-
-
 def test_match_group_access_rows_remain_on_shared_backreference_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
@@ -1233,10 +1217,10 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     )
 
     for case in spec.cases:
-        _assert_direct_bytes_follow_on_case_backend_gating(
-            case,
-            expected_unsupported_backends=spec.expected_unsupported_backends,
-            expected_unsupported_backend_reason=spec.expected_unsupported_backend_reason,
+        assert case.unsupported_backends == spec.expected_unsupported_backends
+        assert (
+            case.unsupported_backend_reason
+            == spec.expected_unsupported_backend_reason
         )
         assert frozenset(case.search_matches) == spec.expected_module_search_texts_by_pattern[
             case.pattern
@@ -1347,7 +1331,7 @@ def test_published_workflows_match_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1358,7 +1342,7 @@ def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_module_search_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1376,7 +1360,7 @@ def test_direct_bytes_follow_on_module_search_matches_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1394,7 +1378,7 @@ def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpyt
 
 
 @pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1413,7 +1397,7 @@ def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython
 
 
 @pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1444,7 +1428,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
 
 
 @pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1467,7 +1451,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_
 
 
 @pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
+    "case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
