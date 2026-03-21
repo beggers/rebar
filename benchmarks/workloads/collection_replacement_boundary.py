@@ -71,6 +71,39 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-maxsplit-indexlike-positional-purged-bytes",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "zabcabcabc",
+      "flags": 0,
+      "maxsplit": {
+        "type": "indexlike",
+        "value": 2
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "bytes",
+        "indexlike",
+        "positional",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "pattern-text-model",
+        "cache-purge",
+        "positional-indexlike"
+      ],
+      "notes": [
+        "Bytes module.split helper path that keeps the bounded positional __index__ maxsplit workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-findall-single-dot-warm-str",
       "bucket": "module-findall",
       "family": "module",
@@ -175,6 +208,75 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes module.sub helper path with a single replacement count so replacement-boundary overhead stays easy to isolate."
+      ]
+    },
+    {
+      "id": "module-sub-count-indexlike-positional-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabcabc",
+      "flags": 0,
+      "count": {
+        "type": "indexlike",
+        "value": 2
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "count",
+        "indexlike",
+        "positional",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "positional-indexlike"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded positional __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-count-indexlike-positional-purged-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabcabc",
+      "flags": 0,
+      "count": {
+        "type": "indexlike",
+        "value": 2
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "count",
+        "indexlike",
+        "positional",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "cache-purge",
+        "positional-indexlike"
+      ],
+      "notes": [
+        "Bytes module.subn helper path that keeps the bounded positional __index__ count workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

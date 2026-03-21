@@ -112,8 +112,8 @@ class Workload:
     replacement: Any | None
     expected_exception: dict[str, Any] | None
     flags: int
-    count: int
-    maxsplit: int
+    count: Any
+    maxsplit: Any
     text_model: str
     cache_mode: str
     timing_scope: str
@@ -151,8 +151,14 @@ class Workload:
                 raw_workload.get("expected_exception")
             ),
             flags=int(raw_workload.get("flags", 0)),
-            count=int(raw_workload.get("count", 0)),
-            maxsplit=int(raw_workload.get("maxsplit", 0)),
+            count=normalize_numeric_workload_argument(
+                raw_workload.get("count", 0),
+                field_name="count",
+            ),
+            maxsplit=normalize_numeric_workload_argument(
+                raw_workload.get("maxsplit", 0),
+                field_name="maxsplit",
+            ),
             text_model=str(raw_workload.get("text_model", "str")),
             cache_mode=str(raw_workload.get("cache_mode", "cold")),
             timing_scope=str(raw_workload.get("timing_scope", "compile-path-proxy")),
@@ -195,6 +201,30 @@ class Workload:
             text_model=self.text_model,
             callback_module_name="rebar_harness.benchmarks",
         )
+
+    def count_argument(self) -> Any:
+        return materialize_numeric_workload_argument(self.count, field_name="count")
+
+    def maxsplit_argument(self) -> Any:
+        return materialize_numeric_workload_argument(
+            self.maxsplit,
+            field_name="maxsplit",
+        )
+
+
+class _IndexLike:
+    """Small `__index__` carrier for JSON-safe benchmark argument descriptors."""
+
+    __slots__ = ("value",)
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __index__(self) -> int:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"IndexLike({self.value})"
 
 
 @dataclass(frozen=True, slots=True)
@@ -294,6 +324,48 @@ def normalize_workload_value(value: Any) -> Any:
     raise ValueError(f"unsupported workload value {value!r}")
 
 
+def normalize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
+    normalized = normalize_workload_value(value)
+    if isinstance(normalized, bool):
+        return normalized
+    if isinstance(normalized, int):
+        return normalized
+    if not isinstance(normalized, dict):
+        raise ValueError(
+            f"benchmark workload {field_name} must be an int, bool, or "
+            "indexlike descriptor"
+        )
+
+    if set(normalized) != {"type", "value"}:
+        raise ValueError(
+            f"benchmark workload {field_name} descriptor must contain only "
+            "`type` and `value`"
+        )
+    if normalized.get("type") != "indexlike":
+        raise ValueError(
+            f"benchmark workload {field_name} descriptor only supports "
+            "`type == \"indexlike\"`"
+        )
+
+    index_value = normalized.get("value")
+    if isinstance(index_value, bool) or not isinstance(index_value, int):
+        raise ValueError(
+            f"benchmark workload {field_name} indexlike descriptor requires an "
+            "integer `value`"
+        )
+    return {
+        "type": "indexlike",
+        "value": index_value,
+    }
+
+
+def materialize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
+    normalized = normalize_numeric_workload_argument(value, field_name=field_name)
+    if isinstance(normalized, dict):
+        return _IndexLike(normalized["value"])
+    return normalized
+
+
 def normalize_expected_exception(value: Any) -> dict[str, Any] | None:
     if value is None:
         return None
@@ -376,8 +448,14 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         replacement=normalize_workload_value(payload.get("replacement")),
         expected_exception=normalize_expected_exception(payload.get("expected_exception")),
         flags=int(payload.get("flags", 0)),
-        count=int(payload.get("count", 0)),
-        maxsplit=int(payload.get("maxsplit", 0)),
+        count=normalize_numeric_workload_argument(
+            payload.get("count", 0),
+            field_name="count",
+        ),
+        maxsplit=normalize_numeric_workload_argument(
+            payload.get("maxsplit", 0),
+            field_name="maxsplit",
+        ),
         text_model=str(payload["text_model"]),
         cache_mode=str(payload["cache_mode"]),
         timing_scope=str(payload["timing_scope"]),
@@ -542,7 +620,12 @@ def helper_callable(module: Any, workload: Workload) -> Any:
         if workload.operation == "module.fullmatch":
             return module.fullmatch(pattern, haystack, workload.flags)
         if workload.operation == "module.split":
-            return module.split(pattern, haystack, workload.maxsplit, workload.flags)
+            return module.split(
+                pattern,
+                haystack,
+                workload.maxsplit_argument(),
+                workload.flags,
+            )
         if workload.operation == "module.findall":
             return module.findall(pattern, haystack, workload.flags)
         if workload.operation == "module.sub":
@@ -550,7 +633,7 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                 pattern,
                 workload.replacement_payload(),
                 haystack,
-                workload.count,
+                workload.count_argument(),
                 workload.flags,
             )
         if workload.operation == "module.subn":
@@ -558,7 +641,7 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                 pattern,
                 workload.replacement_payload(),
                 haystack,
-                workload.count,
+                workload.count_argument(),
                 workload.flags,
             )
         raise ValueError(f"unsupported module helper operation {workload.operation!r}")
@@ -618,13 +701,13 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             return compiled.sub(
                 workload.replacement_payload(),
                 haystack,
-                count=workload.count,
+                count=workload.count_argument(),
             )
         if workload.operation == "pattern.subn":
             return compiled.subn(
                 workload.replacement_payload(),
                 haystack,
-                count=workload.count,
+                count=workload.count_argument(),
             )
         raise ValueError(f"unsupported pattern helper operation {workload.operation!r}")
 

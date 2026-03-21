@@ -47,6 +47,7 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     assert_match_result_parity,
     assert_pattern_parity,
+    case_pattern,
 )
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
@@ -3207,6 +3208,23 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
+    def test_collection_replacement_manifest_keeps_module_positional_indexlike_trio_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("collection-replacement-boundary")
+        self.assertEqual(len(case.target_manifest.workloads), 13)
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "collection-replacement-boundary",
+            (
+                "module-split-maxsplit-indexlike-positional-purged-bytes",
+                "module-sub-count-indexlike-positional-warm-str",
+                "module-subn-count-indexlike-positional-purged-bytes",
+            ),
+            13,
+            expected_total_workload_count=13,
+        )
+
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
         self,
     ) -> None:
@@ -4533,6 +4551,23 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             0,
         )
 
+    def test_published_full_suite_summary_reflects_collection_replacement_indexlike_trio(
+        self,
+    ) -> None:
+        manifests = list(published_benchmark_manifests())
+        self.assertEqual(len(manifests), 30)
+        self.assertEqual(
+            expected_summary_for_manifests(manifests, selection_mode="full"),
+            {
+                "known_gap_count": 0,
+                "measured_workloads": 777,
+                "module_workloads": 769,
+                "parser_workloads": 8,
+                "regression_workloads": 8,
+                "total_workloads": 777,
+            },
+        )
+
     def test_post_parser_workflows_promote_ignorecase_ascii_pair_to_measured_representatives(
         self,
     ) -> None:
@@ -5168,6 +5203,9 @@ COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile
 REGRESSION_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
 )
+COLLECTION_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py"
+)
 OPTIONAL_GROUP_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
 )
@@ -5581,6 +5619,7 @@ def assert_benchmark_workload_matches_expected_result(
         return
 
     if workload.operation in {
+        "module.split",
         "module.sub",
         "module.subn",
         "pattern.sub",
@@ -5610,7 +5649,13 @@ def run_correctness_case_with_cpython(case: Any) -> object:
     if case.operation == "module_call":
         if case.helper is None:
             raise AssertionError(f"expected helper for {case.case_id!r}")
-        return getattr(re, case.helper)(*case.args, **case.kwargs)
+        compiled_pattern = None
+        if case.use_compiled_pattern:
+            compiled_pattern = re.compile(case.pattern_payload(), case.flags or 0)
+        return getattr(re, case.helper)(
+            *case.module_call_args(compiled_pattern),
+            **case.kwargs,
+        )
 
     if case.operation == "pattern_call":
         if case.helper is None:
@@ -5709,6 +5754,103 @@ def _compile_proxy_workload_signature(
 
 def _is_compile_proxy_workload(workload: Any) -> bool:
     return workload.operation in {"compile", "module.compile"}
+
+
+COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS = frozenset(
+    {
+        "module-split-maxsplit-indexlike-positional-purged-bytes",
+        "module-sub-count-indexlike-positional-warm-str",
+        "module-subn-count-indexlike-positional-purged-bytes",
+    }
+)
+
+
+def _module_workflow_positional_args_signature(
+    args: tuple[object, ...] | list[object],
+) -> tuple[tuple[str, object], ...]:
+    signature: list[tuple[str, object]] = []
+    for value in args:
+        if isinstance(value, bool):
+            signature.append(("bool", value))
+            continue
+        if isinstance(value, int):
+            signature.append(("int", int(value)))
+            continue
+        if isinstance(value, (str, bytes)):
+            signature.append((type(value).__name__, value))
+            continue
+        if (
+            isinstance(value, dict)
+            and value.get("type") == "indexlike"
+            and isinstance(value.get("value"), int)
+            and not isinstance(value.get("value"), bool)
+        ):
+            signature.append(("indexlike", int(value["value"])))
+            continue
+        if hasattr(value, "__index__"):
+            signature.append(("indexlike", int(value.__index__())))
+            continue
+        signature.append((type(value).__name__, repr(value)))
+    return tuple(signature)
+
+
+def _module_workflow_positional_indexlike_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or case.helper not in {"split", "sub", "subn"}:
+        return None
+    if case.use_compiled_pattern or not case.include_pattern_arg or case.kwargs:
+        return None
+    if not any(hasattr(argument, "__index__") for argument in case.args):
+        return None
+    return (
+        case.helper,
+        case_pattern(case),
+        _module_workflow_positional_args_signature(case.args),
+        case.text_model or "str",
+    )
+
+
+def _collection_replacement_positional_indexlike_workload_args(
+    workload: Any,
+) -> tuple[object, ...]:
+    if workload.operation == "module.split":
+        return (
+            workload.haystack_payload(),
+            workload.maxsplit,
+        )
+    if workload.operation in {"module.sub", "module.subn"}:
+        return (
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+            workload.count,
+        )
+    raise AssertionError(
+        "unexpected collection/replacement positional-indexlike workload operation "
+        f"{workload.operation!r}"
+    )
+
+
+def _collection_replacement_positional_indexlike_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if workload.workload_id not in COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS:
+        raise AssertionError(
+            "unexpected collection/replacement positional-indexlike workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation.removeprefix("module."),
+        workload.pattern_payload(),
+        _module_workflow_positional_args_signature(
+            _collection_replacement_positional_indexlike_workload_args(workload)
+        ),
+        workload.text_model,
+    )
+
+
+def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> bool:
+    return workload.workload_id in COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS
 
 
 def _optional_group_correctness_case_signature(
@@ -6200,6 +6342,30 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         include_workload=_is_compile_proxy_workload,
         correctness_case_signature=_compile_proxy_correctness_case_signature,
         workload_signature=_compile_proxy_workload_signature,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="collection-replacement-module-positional-indexlike",
+        manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            {
+                "module-split-maxsplit-indexlike-positional-purged-bytes": (
+                    "workflow-module-split-maxsplit-indexlike-positional-bytes",
+                ),
+                "module-sub-count-indexlike-positional-warm-str": (
+                    "workflow-module-sub-count-indexlike-positional-str",
+                ),
+                "module-subn-count-indexlike-positional-purged-bytes": (
+                    "workflow-module-subn-count-indexlike-positional-bytes",
+                ),
+            },
+        ),
+        include_workload=_is_collection_replacement_positional_indexlike_workload,
+        correctness_case_signature=(
+            _module_workflow_positional_indexlike_correctness_case_signature
+        ),
+        workload_signature=_collection_replacement_positional_indexlike_workload_signature,
+        run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="optional-group-conditional",
@@ -7405,6 +7571,110 @@ def test_standard_benchmark_manifest_materializes_callable_replacement_descripto
             "encoding": "ascii",
         },
     }
+
+
+def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-indexlike-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "module-split-indexlike-contract-bytes",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "zabcabcabc",
+                "maxsplit": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.split positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "module-sub-indexlike-contract-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.sub positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-indexlike-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_indexlike_contract.py",
+        manifest_source,
+    )
+    split_workload, sub_workload, subn_workload = load_manifest(manifest_path).workloads
+
+    assert split_workload.maxsplit == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
+    assert round_tripped_split.maxsplit_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_split) == [b"z", b"", b"abc"]
+
+    assert sub_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_sub = workload_from_payload(workload_to_payload(sub_workload))
+    assert round_tripped_sub.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_sub) == "xxabc"
+
+    assert subn_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
+    assert round_tripped_subn.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_subn) == (b"xxabc", 2)
 
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(

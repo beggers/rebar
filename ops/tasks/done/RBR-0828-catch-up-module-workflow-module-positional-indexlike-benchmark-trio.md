@@ -1,6 +1,6 @@
 # RBR-0828: Catch up the module-workflow module positional `__index__` benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -65,3 +65,11 @@ Created: 2026-03-21
   - `benchmarks/workloads/collection_replacement_boundary.py` already owns the adjacent raw-module `split` / `sub` collection-replacement surface, so this slice can stay on the existing manifest path instead of inventing another benchmark family;
   - `reports/benchmarks/latest.py` currently reports `774` total / `774` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 766`, `REPORT["summary"]["regression_workloads"] == 8`, and `REPORT["manifests"]["collection-replacement-boundary"]` at `10` selected / `10` measured / `0` known gaps; and
   - no blocked feature task exists to reopen first.
+
+## Completion Notes
+- Landed descriptor-preserving `count` / `maxsplit` benchmark parsing in `python/rebar_harness/benchmarks.py`, added the three raw module positional `__index__` workloads to `benchmarks/workloads/collection_replacement_boundary.py`, and extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with a collection/replacement anchor contract plus a descriptor round-trip contract test.
+- Regenerated the tracked publication in `reports/benchmarks/latest.py`; the tracked report now shows `777` total workloads, `777` measured, `0` known gaps, `769` module workloads, and `REPORT["manifests"]["collection-replacement-boundary"]` at `13` selected / `13` measured / `0` known gaps with the three new positional `__index__` workload ids published as `measured`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0828-collection-replacement-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
