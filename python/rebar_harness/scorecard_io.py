@@ -189,33 +189,6 @@ def load_scorecard_report(
     )
 
 
-def write_scorecard_report(
-    scorecard: dict[str, Any],
-    report_path: pathlib.Path,
-    *,
-    report_attribute: str,
-    scorecard_kind: str,
-) -> None:
-    if report_path.suffix == ".json":
-        report_path.write_text(
-            json.dumps(scorecard, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        return
-    if report_path.suffix == ".py":
-        report_path.write_text(
-            format_python_scorecard_module(
-                scorecard,
-                report_attribute=report_attribute,
-            ),
-            encoding="utf-8",
-        )
-        return
-    raise ValueError(
-        f"unsupported {scorecard_kind} scorecard extension {report_path.suffix!r} for {report_path}"
-    )
-
-
 def _display_scorecard_path(path: pathlib.Path) -> str:
     try:
         reports_root_index = path.parts.index("reports")
@@ -275,11 +248,25 @@ class ScorecardReportDescriptor:
 
     def write(self, scorecard: dict[str, Any], report_path: pathlib.Path | str) -> None:
         resolved_report_path = self.validate_path(report_path)
-        write_scorecard_report(
-            scorecard,
-            resolved_report_path,
-            report_attribute=self.report_attribute,
-            scorecard_kind=self.scorecard_kind,
+        if resolved_report_path.suffix == ".json":
+            resolved_report_path.write_text(
+                json.dumps(scorecard, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            return
+        if resolved_report_path.suffix == ".py":
+            resolved_report_path.write_text(
+                format_python_scorecard_module(
+                    scorecard,
+                    report_attribute=self.report_attribute,
+                ),
+                encoding="utf-8",
+            )
+            return
+        raise ValueError(
+            "unsupported "
+            f"{self.scorecard_kind} scorecard extension {resolved_report_path.suffix!r} "
+            f"for {resolved_report_path}"
         )
 
 

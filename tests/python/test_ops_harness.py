@@ -1061,16 +1061,15 @@ class ReadmeReportingTest(unittest.TestCase):
                 "environment": {"python": "3.12.3"},
                 "totals": {"cases": 4, "passed": 4},
             }
+            descriptor = scorecard_io.build_scorecard_report_descriptor(
+                published_path=temp_path / "tracked.py",
+                scorecard_kind="correctness",
+            )
 
             for suffix in (".py", ".json"):
                 with self.subTest(suffix=suffix):
                     report_path = temp_path / f"latest{suffix}"
-                    scorecard_io.write_scorecard_report(
-                        scorecard,
-                        report_path,
-                        report_attribute="REPORT",
-                        scorecard_kind="correctness",
-                    )
+                    descriptor.write(scorecard, report_path)
 
                     if suffix == ".json":
                         self.assertEqual(
@@ -1085,12 +1084,7 @@ class ReadmeReportingTest(unittest.TestCase):
                         )
 
                     self.assertEqual(
-                        scorecard_io.load_scorecard_report(
-                            report_path,
-                            module_name_prefix="_scorecard_io_contract",
-                            report_attribute="REPORT",
-                            scorecard_kind="correctness",
-                        ),
+                        descriptor.load(report_path),
                         scorecard,
                     )
 
@@ -1224,6 +1218,10 @@ class ReadmeReportingTest(unittest.TestCase):
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = pathlib.Path(temp_dir)
+            descriptor = scorecard_io.build_scorecard_report_descriptor(
+                published_path=temp_path / "tracked.py",
+                scorecard_kind="correctness",
+            )
             missing_attribute_path = temp_path / "missing.py"
             missing_attribute_path.write_text("NOT_REPORT = {}\n", encoding="utf-8")
             wrong_type_python_path = temp_path / "wrong_type.py"
@@ -1235,60 +1233,35 @@ class ReadmeReportingTest(unittest.TestCase):
             unsupported_output_path = temp_path / "written.txt"
 
             with self.assertRaises(ValueError) as missing_attribute_raised:
-                scorecard_io.load_scorecard_report(
-                    missing_attribute_path,
-                    module_name_prefix="_scorecard_io_contract",
-                    report_attribute="REPORT",
-                    scorecard_kind="correctness",
-                )
+                descriptor.load(missing_attribute_path)
             self.assertEqual(
                 str(missing_attribute_raised.exception),
                 f"Python correctness scorecard module {missing_attribute_path} is missing a REPORT value",
             )
 
             with self.assertRaises(ValueError) as wrong_type_python_raised:
-                scorecard_io.load_scorecard_report(
-                    wrong_type_python_path,
-                    module_name_prefix="_scorecard_io_contract",
-                    report_attribute="REPORT",
-                    scorecard_kind="correctness",
-                )
+                descriptor.load(wrong_type_python_path)
             self.assertEqual(
                 str(wrong_type_python_raised.exception),
                 f"correctness scorecard in {wrong_type_python_path} must be a dict",
             )
 
             with self.assertRaises(ValueError) as wrong_type_json_raised:
-                scorecard_io.load_scorecard_report(
-                    wrong_type_json_path,
-                    module_name_prefix="_scorecard_io_contract",
-                    report_attribute="REPORT",
-                    scorecard_kind="correctness",
-                )
+                descriptor.load(wrong_type_json_path)
             self.assertEqual(
                 str(wrong_type_json_raised.exception),
                 f"correctness scorecard in {wrong_type_json_path} must be a dict",
             )
 
             with self.assertRaises(ValueError) as unsupported_input_raised:
-                scorecard_io.load_scorecard_report(
-                    unsupported_input_path,
-                    module_name_prefix="_scorecard_io_contract",
-                    report_attribute="REPORT",
-                    scorecard_kind="correctness",
-                )
+                descriptor.load(unsupported_input_path)
             self.assertEqual(
                 str(unsupported_input_raised.exception),
                 f"unsupported correctness scorecard extension '.txt' for {unsupported_input_path}",
             )
 
             with self.assertRaises(ValueError) as unsupported_output_raised:
-                scorecard_io.write_scorecard_report(
-                    {"schema_version": "1.0"},
-                    unsupported_output_path,
-                    report_attribute="REPORT",
-                    scorecard_kind="correctness",
-                )
+                descriptor.write({"schema_version": "1.0"}, unsupported_output_path)
             self.assertEqual(
                 str(unsupported_output_raised.exception),
                 f"unsupported correctness scorecard extension '.txt' for {unsupported_output_path}",
