@@ -160,6 +160,15 @@ _SHARED_CORRECTNESS_SELECTOR_FILENAME_EXPECTATIONS = {
         "exact_repeat_quantified_group_workflows.py",
         "ranged_repeat_quantified_group_workflows.py",
     ),
+    correctness.GROUPED_REPLACEMENT_FIXTURE_SELECTOR: (
+        "collection_replacement_workflows.py",
+        "grouped_alternation_replacement_workflows.py",
+        "named_group_replacement_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+        "nested_group_alternation_replacement_workflows.py",
+        "nested_group_replacement_workflows.py",
+        "quantified_nested_group_replacement_workflows.py",
+    ),
     correctness.GROUPED_CAPTURE_FIXTURE_SELECTOR: (
         "grouped_match_workflows.py",
         "named_group_workflows.py",
