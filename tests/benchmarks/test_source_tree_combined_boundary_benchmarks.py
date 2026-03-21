@@ -8126,6 +8126,167 @@ def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_unt
     )
 
 
+@pytest.mark.parametrize(
+    (
+        "workload_id",
+        "bucket",
+        "operation",
+        "haystack",
+        "replacement",
+        "count",
+        "maxsplit",
+        "text_model",
+        "expected_result",
+        "expected_field_name",
+    ),
+    (
+        pytest.param(
+            "module-split-indexlike-contract-bytes",
+            "module-split",
+            "module.split",
+            "zabcabcabc",
+            None,
+            0,
+            {"type": "indexlike", "value": 2},
+            "bytes",
+            [b"z", b"", b"abc"],
+            "maxsplit",
+            id="module-split",
+        ),
+        pytest.param(
+            "module-sub-indexlike-contract-str",
+            "module-sub",
+            "module.sub",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "str",
+            "xxabc",
+            "count",
+            id="module-sub",
+        ),
+        pytest.param(
+            "module-subn-indexlike-contract-bytes",
+            "module-subn",
+            "module.subn",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "bytes",
+            (b"xxabc", 2),
+            "count",
+            id="module-subn",
+        ),
+        pytest.param(
+            "pattern-split-indexlike-contract-str",
+            "pattern-split",
+            "pattern.split",
+            "zabcabcabc",
+            None,
+            0,
+            {"type": "indexlike", "value": 2},
+            "str",
+            ["z", "", "abc"],
+            "maxsplit",
+            id="pattern-split",
+        ),
+        pytest.param(
+            "pattern-sub-indexlike-contract-bytes",
+            "pattern-sub",
+            "pattern.sub",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "bytes",
+            b"xxabc",
+            "count",
+            id="pattern-sub",
+        ),
+        pytest.param(
+            "pattern-subn-indexlike-contract-str",
+            "pattern-subn",
+            "pattern.subn",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "str",
+            ("xxabc", 2),
+            "count",
+            id="pattern-subn",
+        ),
+    ),
+)
+def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper_call(
+    monkeypatch,
+    workload_id: str,
+    bucket: str,
+    operation: str,
+    haystack: str,
+    replacement: str | None,
+    count: object,
+    maxsplit: object,
+    text_model: str,
+    expected_result: object,
+    expected_field_name: str,
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-indexlike-contract",
+            "workload_id": workload_id,
+            "bucket": bucket,
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "flags": 0,
+            "count": count,
+            "maxsplit": maxsplit,
+            "text_model": text_model,
+            "cache_mode": "purged",
+            "timing_scope": (
+                "module-helper-call"
+                if operation.startswith("module.")
+                else "pattern-helper-call"
+            ),
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+        assert callback() == expected_result
+        assert callback() == expected_result
+    finally:
+        re.purge()
+
+    assert observed_field_names == [expected_field_name, expected_field_name]
+
+
 def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descriptors_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
