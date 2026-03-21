@@ -3208,11 +3208,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
-    def test_collection_replacement_manifest_keeps_module_positional_indexlike_trio_measured(
+    def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 13)
+        self.assertEqual(len(case.target_manifest.workloads), 16)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3220,9 +3220,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "module-split-maxsplit-indexlike-positional-purged-bytes",
                 "module-sub-count-indexlike-positional-warm-str",
                 "module-subn-count-indexlike-positional-purged-bytes",
+                "pattern-split-maxsplit-indexlike-positional-warm-str",
+                "pattern-sub-count-indexlike-positional-purged-bytes",
+                "pattern-subn-count-indexlike-positional-warm-str",
             ),
-            13,
-            expected_total_workload_count=13,
+            16,
+            expected_total_workload_count=16,
         )
 
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
@@ -4560,11 +4563,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 777,
-                "module_workloads": 769,
+                "measured_workloads": 780,
+                "module_workloads": 772,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 777,
+                "total_workloads": 780,
             },
         )
 
@@ -5622,6 +5625,7 @@ def assert_benchmark_workload_matches_expected_result(
         "module.split",
         "module.sub",
         "module.subn",
+        "pattern.split",
         "pattern.sub",
         "pattern.subn",
     }:
@@ -5761,6 +5765,9 @@ COLLECTION_REPLACEMENT_POSITIONAL_INDEXLIKE_WORKLOAD_IDS = frozenset(
         "module-split-maxsplit-indexlike-positional-purged-bytes",
         "module-sub-count-indexlike-positional-warm-str",
         "module-subn-count-indexlike-positional-purged-bytes",
+        "pattern-split-maxsplit-indexlike-positional-warm-str",
+        "pattern-sub-count-indexlike-positional-purged-bytes",
+        "pattern-subn-count-indexlike-positional-warm-str",
     }
 )
 
@@ -5797,9 +5804,12 @@ def _module_workflow_positional_args_signature(
 def _module_workflow_positional_indexlike_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.operation != "module_call" or case.helper not in {"split", "sub", "subn"}:
+    if case.helper not in {"split", "sub", "subn"} or case.kwargs:
         return None
-    if case.use_compiled_pattern or not case.include_pattern_arg or case.kwargs:
+    if case.operation == "module_call":
+        if case.use_compiled_pattern or not case.include_pattern_arg:
+            return None
+    elif case.operation != "pattern_call":
         return None
     if not any(hasattr(argument, "__index__") for argument in case.args):
         return None
@@ -5814,12 +5824,17 @@ def _module_workflow_positional_indexlike_correctness_case_signature(
 def _collection_replacement_positional_indexlike_workload_args(
     workload: Any,
 ) -> tuple[object, ...]:
-    if workload.operation == "module.split":
+    if workload.operation in {"module.split", "pattern.split"}:
         return (
             workload.haystack_payload(),
             workload.maxsplit,
         )
-    if workload.operation in {"module.sub", "module.subn"}:
+    if workload.operation in {
+        "module.sub",
+        "module.subn",
+        "pattern.sub",
+        "pattern.subn",
+    }:
         return (
             workload.replacement_payload(),
             workload.haystack_payload(),
@@ -5840,7 +5855,7 @@ def _collection_replacement_positional_indexlike_workload_signature(
             f"{workload.workload_id!r}"
         )
     return (
-        workload.operation.removeprefix("module."),
+        workload.operation.removeprefix("module.").removeprefix("pattern."),
         workload.pattern_payload(),
         _module_workflow_positional_args_signature(
             _collection_replacement_positional_indexlike_workload_args(workload)
@@ -6357,6 +6372,15 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-count-indexlike-positional-purged-bytes": (
                     "workflow-module-subn-count-indexlike-positional-bytes",
+                ),
+                "pattern-split-maxsplit-indexlike-positional-warm-str": (
+                    "workflow-pattern-split-str-maxsplit-indexlike-positional",
+                ),
+                "pattern-sub-count-indexlike-positional-purged-bytes": (
+                    "workflow-pattern-sub-count-indexlike-positional-bytes",
+                ),
+                "pattern-subn-count-indexlike-positional-warm-str": (
+                    "workflow-pattern-subn-count-indexlike-positional-str",
                 ),
             },
         ),
@@ -7641,6 +7665,60 @@ def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_unt
                     "Ensures benchmark manifests keep module.subn positional indexlike descriptors JSON-safe until helper invocation."
                 ],
             },
+            {
+                "id": "pattern-split-indexlike-contract-str",
+                "bucket": "pattern-split",
+                "family": "module",
+                "operation": "pattern.split",
+                "pattern": "abc",
+                "haystack": "zabcabcabc",
+                "maxsplit": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.split positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-sub-indexlike-contract-bytes",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.sub positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-subn-indexlike-contract-str",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.subn positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
         ],
     }
     """
@@ -7650,7 +7728,14 @@ def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_unt
         "python_benchmark_indexlike_contract.py",
         manifest_source,
     )
-    split_workload, sub_workload, subn_workload = load_manifest(manifest_path).workloads
+    (
+        split_workload,
+        sub_workload,
+        subn_workload,
+        pattern_split_workload,
+        pattern_sub_workload,
+        pattern_subn_workload,
+    ) = load_manifest(manifest_path).workloads
 
     assert split_workload.maxsplit == {
         "type": "indexlike",
@@ -7675,6 +7760,43 @@ def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_unt
     round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
     assert round_tripped_subn.count_argument().__index__() == 2
     assert run_benchmark_workload_with_cpython(round_tripped_subn) == (b"xxabc", 2)
+
+    assert pattern_split_workload.maxsplit == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_pattern_split = workload_from_payload(
+        workload_to_payload(pattern_split_workload)
+    )
+    assert round_tripped_pattern_split.maxsplit_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_split) == [
+        "z",
+        "",
+        "abc",
+    ]
+
+    assert pattern_sub_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_pattern_sub = workload_from_payload(
+        workload_to_payload(pattern_sub_workload)
+    )
+    assert round_tripped_pattern_sub.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_sub) == b"xxabc"
+
+    assert pattern_subn_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_pattern_subn = workload_from_payload(
+        workload_to_payload(pattern_subn_workload)
+    )
+    assert round_tripped_pattern_subn.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_subn) == (
+        "xxabc",
+        2,
+    )
 
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(

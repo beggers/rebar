@@ -280,6 +280,40 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-split-maxsplit-indexlike-positional-warm-str",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "zabcabcabc",
+      "flags": 0,
+      "maxsplit": {
+        "type": "indexlike",
+        "value": 2
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "literal",
+        "maxsplit",
+        "indexlike",
+        "positional",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "literal-text",
+        "positional-indexlike"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.split helper path that keeps the bounded positional __index__ maxsplit workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",
@@ -330,6 +364,77 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes precompiled Pattern.finditer helper path that keeps purge provenance visible while still consuming the tiny iterator output."
+      ]
+    },
+    {
+      "id": "pattern-sub-count-indexlike-positional-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabcabc",
+      "flags": 0,
+      "count": {
+        "type": "indexlike",
+        "value": 2
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "bytes",
+        "count",
+        "indexlike",
+        "positional",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "cache-purge",
+        "positional-indexlike"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.sub helper path that keeps the bounded positional __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-count-indexlike-positional-warm-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabcabc",
+      "flags": 0,
+      "count": {
+        "type": "indexlike",
+        "value": 2
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "literal",
+        "count",
+        "indexlike",
+        "positional",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "literal-text",
+        "positional-indexlike"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.subn helper path that keeps the bounded positional __index__ count workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

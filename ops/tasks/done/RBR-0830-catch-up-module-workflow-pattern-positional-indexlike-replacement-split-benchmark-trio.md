@@ -1,6 +1,6 @@
 # RBR-0830: Catch up the module-workflow `Pattern` positional `__index__` replacement/split benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -66,3 +66,12 @@ Created: 2026-03-21
   - `benchmarks/workloads/collection_replacement_boundary.py` already owns the adjacent precompiled `Pattern` collection/replacement surface, so this slice can stay on the existing manifest path instead of inventing another benchmark family;
   - the current checkout still reports `10` selected / `10` measured / `0` known gaps on `collection-replacement-boundary` and `774` / `774` / `0` overall because `RBR-0828` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0828` state; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- Added benchmark-runner support for `pattern.split` on the shared precompiled-helper path and switched `Pattern.sub()` / `Pattern.subn()` benchmark invocation to positional `count` arguments so the positional `__index__` boundary is timed directly.
+- Extended `benchmarks/workloads/collection_replacement_boundary.py` with the exact three precompiled positional workloads requested by this task and anchored them to the existing correctness ids `workflow-pattern-split-str-maxsplit-indexlike-positional`, `workflow-pattern-sub-count-indexlike-positional-bytes`, and `workflow-pattern-subn-count-indexlike-positional-str`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0830-collection-replacement-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- The tracked publication changed: `reports/benchmarks/latest.py` now reports `collection-replacement-boundary` at `16` selected / `16` measured / `0` known gaps, and the combined published summary at `780` total / `780` measured / `772` module / `8` parser / `8` regression workloads with `0` known gaps.

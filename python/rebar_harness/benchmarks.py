@@ -695,19 +695,24 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             return compiled.match(haystack)
         if workload.operation == "pattern.fullmatch":
             return compiled.fullmatch(haystack)
+        if workload.operation == "pattern.split":
+            return compiled.split(
+                haystack,
+                workload.maxsplit_argument(),
+            )
         if workload.operation == "pattern.finditer":
             return list(compiled.finditer(haystack))
         if workload.operation == "pattern.sub":
             return compiled.sub(
                 workload.replacement_payload(),
                 haystack,
-                count=workload.count_argument(),
+                workload.count_argument(),
             )
         if workload.operation == "pattern.subn":
             return compiled.subn(
                 workload.replacement_payload(),
                 haystack,
-                count=workload.count_argument(),
+                workload.count_argument(),
             )
         raise ValueError(f"unsupported pattern helper operation {workload.operation!r}")
 
@@ -761,6 +766,7 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
         "pattern.search",
         "pattern.match",
         "pattern.fullmatch",
+        "pattern.split",
         "pattern.finditer",
         "pattern.sub",
         "pattern.subn",
