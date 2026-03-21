@@ -1934,23 +1934,29 @@ PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
         result_kind="value",
     ),
 )
-PATTERN_DUAL_INDEXLIKE_WINDOW_CASE_IDS = (
-    "pattern-match-window-indexlike-bytes",
-    "pattern-fullmatch-window-indexlike-bytes",
-    "pattern-findall-window-indexlike-str",
-    "pattern-finditer-window-indexlike-bytes",
-    "pattern-match-window-indexlike-positional-bytes",
-    "pattern-fullmatch-window-indexlike-positional-bytes",
-    "pattern-findall-window-indexlike-positional-str",
-    "pattern-finditer-window-indexlike-positional-bytes",
-)
-PATTERN_DUAL_INDEXLIKE_WINDOW_CASES_BY_ID = {
-    case.case_id: case
-    for case in (*PATTERN_KEYWORD_CALL_CASES, *PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES)
-}
+
+
+def _is_pattern_dual_indexlike_window_case(
+    case: PatternKeywordCallCase | PatternPositionalIndexLikeCallCase,
+) -> bool:
+    if isinstance(case, PatternKeywordCallCase):
+        kinds_by_name = {
+            name: kind
+            for name, kind, _ in _workflow_keyword_kwargs_signature(case.kwargs)
+        }
+        return (
+            kinds_by_name.get("pos") == "indexlike"
+            and kinds_by_name.get("endpos") == "indexlike"
+        )
+
+    signature = _workflow_positional_args_signature(case.args)
+    return len(signature) >= 3 and signature[1][0] == signature[2][0] == "indexlike"
+
+
 PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
-    PATTERN_DUAL_INDEXLIKE_WINDOW_CASES_BY_ID[case_id]
-    for case_id in PATTERN_DUAL_INDEXLIKE_WINDOW_CASE_IDS
+    case
+    for case in (*PATTERN_KEYWORD_CALL_CASES, *PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES)
+    if _is_pattern_dual_indexlike_window_case(case)
 )
 
 
