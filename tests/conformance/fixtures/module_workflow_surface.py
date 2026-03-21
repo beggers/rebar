@@ -1206,6 +1206,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "helper": "compile",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": 2
+      },
+      "categories": ["workflow", "compile", "literal", "str", "compiled-pattern", "flags", "ignorecase", "rejection"],
+      "notes": [
+        "Publishes the str literal explicit IGNORECASE compiled-pattern module-level compile() keyword rejection singleton on the shared module-workflow owner path without broadening into the default, integer-zero, bool-false, NOFLAG, bytes-side, or named-group rejection slices."
+      ]
+    },
+    {
       "id": "workflow-module-compile-str-compiled-pattern-named-group",
       "operation": "module_call",
       "family": "compile_workflow",
