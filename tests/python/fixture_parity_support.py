@@ -559,14 +559,32 @@ def published_bytes_texts_by_pattern(
     for case in bundle_bytes_cases:
         pattern = case_pattern(case)
         assert isinstance(pattern, bytes)
+        if case.operation == "compile":
+            continue
         if case.operation == "module_call":
+            if case.helper != "search":
+                raise AssertionError(
+                    "published bytes texts expect module search rows, got "
+                    f"{case.helper!r} for {pattern!r}"
+                )
             text = case.args[0] if case.use_compiled_pattern else case.args[1]
             assert isinstance(text, bytes)
             published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
-        elif case.operation == "pattern_call":
+            continue
+        if case.operation == "pattern_call":
+            if case.helper != "fullmatch":
+                raise AssertionError(
+                    "published bytes texts expect pattern fullmatch rows, got "
+                    f"{case.helper!r} for {pattern!r}"
+                )
             text = case.args[0]
             assert isinstance(text, bytes)
             published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
+            continue
+        raise AssertionError(
+            "published bytes texts encountered unsupported operation "
+            f"{case.operation!r} for {pattern!r}"
+        )
 
     return (
         {

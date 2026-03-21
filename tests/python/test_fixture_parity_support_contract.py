@@ -2708,6 +2708,7 @@ def test_published_bytes_texts_by_pattern_deduplicates_texts_and_handles_compile
     )
     module_case = SimpleNamespace(
         operation="module_call",
+        helper="search",
         pattern="placeholder",
         args=(b"shared-pattern", b"shared-text"),
         pattern_payload=lambda: b"shared-pattern",
@@ -2715,6 +2716,7 @@ def test_published_bytes_texts_by_pattern_deduplicates_texts_and_handles_compile
     )
     compiled_module_case = SimpleNamespace(
         operation="module_call",
+        helper="search",
         pattern="placeholder",
         args=(b"compiled-text",),
         pattern_payload=lambda: b"shared-pattern",
@@ -2722,6 +2724,7 @@ def test_published_bytes_texts_by_pattern_deduplicates_texts_and_handles_compile
     )
     pattern_case = SimpleNamespace(
         operation="pattern_call",
+        helper="fullmatch",
         pattern="placeholder",
         args=(b"fullmatch-text",),
         pattern_payload=lambda: b"shared-pattern",
@@ -2741,6 +2744,55 @@ def test_published_bytes_texts_by_pattern_deduplicates_texts_and_handles_compile
         {b"shared-pattern": frozenset({b"shared-text", b"compiled-text"})},
         {b"shared-pattern": frozenset({b"fullmatch-text"})},
     )
+
+
+@pytest.mark.parametrize(
+    ("case", "expected_message"),
+    (
+        pytest.param(
+            SimpleNamespace(
+                operation="module_call",
+                helper="match",
+                pattern="placeholder",
+                args=(b"shared-pattern", b"module-text"),
+                pattern_payload=lambda: b"shared-pattern",
+                use_compiled_pattern=False,
+            ),
+            "published bytes texts expect module search rows",
+            id="module-helper",
+        ),
+        pytest.param(
+            SimpleNamespace(
+                operation="pattern_call",
+                helper="search",
+                pattern="placeholder",
+                args=(b"pattern-text",),
+                pattern_payload=lambda: b"shared-pattern",
+                use_compiled_pattern=False,
+            ),
+            "published bytes texts expect pattern fullmatch rows",
+            id="pattern-helper",
+        ),
+        pytest.param(
+            SimpleNamespace(
+                operation="module_scan",
+                helper="search",
+                pattern="placeholder",
+                args=(b"shared-pattern", b"module-text"),
+                pattern_payload=lambda: b"shared-pattern",
+                use_compiled_pattern=False,
+            ),
+            "published bytes texts encountered unsupported operation",
+            id="operation",
+        ),
+    ),
+)
+def test_published_bytes_texts_by_pattern_rejects_unexpected_rows(
+    case: SimpleNamespace,
+    expected_message: str,
+) -> None:
+    with pytest.raises(AssertionError, match=expected_message):
+        fixture_parity_support.published_bytes_texts_by_pattern((case,))
 
 
 @pytest.mark.parametrize(
