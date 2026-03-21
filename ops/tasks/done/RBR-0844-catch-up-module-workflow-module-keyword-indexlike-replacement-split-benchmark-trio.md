@@ -1,6 +1,6 @@
 # RBR-0844: Catch up the module-workflow module keyword `__index__` replacement/split benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -65,3 +65,9 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` currently times raw-module collection/replacement helpers through positional `__index__` arguments and does not yet expose the adjacent raw-module keyword `__index__` carriers on the shared benchmark path, even though the runtime behavior is already live;
   - `benchmarks/workloads/collection_replacement_boundary.py` currently publishes the raw-module positional `__index__` trio and the precompiled `Pattern` keyword / `__index__` trio, but not the adjacent raw-module keyword `__index__` trio, so this follow-on stays on the existing manifest instead of inventing another benchmark family; and
   - `reports/benchmarks/latest.py` currently reports `799` total / `799` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 791` because `RBR-0842` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0842` state.
+
+## Completion Notes
+- 2026-03-21: Added the three requested raw-module keyword `__index__` workloads to `benchmarks/workloads/collection_replacement_boundary.py`: `module-split-maxsplit-indexlike-keyword-purged-bytes`, `module-sub-count-indexlike-keyword-warm-str`, and `module-subn-count-indexlike-keyword-purged-bytes`.
+- 2026-03-21: Extended the shared source-tree benchmark contract in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the existing collection/replacement keyword anchor set covers the new module-keyword `__index__` trio and the manifest/full-suite expectations move to `31` collection/replacement workloads and `805` combined workloads.
+- 2026-03-21: Regenerated the tracked `reports/benchmarks/latest.py` publication and verified the tracked artifact in the diff; it now reports `805` total workloads, `805` measured, `0` known gaps, `797` module workloads, and `REPORT["manifests"]["collection-replacement-boundary"]` at `31` selected / `31` measured / `0` known gaps, with all three new workload ids published as `measured`.
+- 2026-03-21: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`223 passed, 3 skipped, 1372 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0844-collection-replacement-boundary.py` (`31` total / `31` measured / `0` known gaps), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (`805` total / `805` measured / `0` known gaps).

@@ -3224,7 +3224,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 28)
+        self.assertEqual(len(case.target_manifest.workloads), 31)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3236,15 +3236,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-sub-count-indexlike-positional-purged-bytes",
                 "pattern-subn-count-indexlike-positional-warm-str",
             ),
-            28,
-            expected_total_workload_count=28,
+            31,
+            expected_total_workload_count=31,
         )
 
     def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 28)
+        self.assertEqual(len(case.target_manifest.workloads), 31)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3259,25 +3259,28 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-subn-count-bool-keyword-warm-str",
                 "pattern-subn-count-indexlike-keyword-warm-str",
             ),
-            28,
-            expected_total_workload_count=28,
+            31,
+            expected_total_workload_count=31,
         )
 
     def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured(
         self,
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 28)
+        self.assertEqual(len(case.target_manifest.workloads), 31)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
             (
                 "module-split-maxsplit-keyword-purged-bytes",
+                "module-split-maxsplit-indexlike-keyword-purged-bytes",
                 "module-sub-count-keyword-warm-str",
+                "module-sub-count-indexlike-keyword-warm-str",
                 "module-subn-count-keyword-purged-bytes",
+                "module-subn-count-indexlike-keyword-purged-bytes",
             ),
-            28,
-            expected_total_workload_count=28,
+            31,
+            expected_total_workload_count=31,
         )
 
     def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(
@@ -4639,11 +4642,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 802,
-                "module_workloads": 794,
+                "measured_workloads": 805,
+                "module_workloads": 797,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 802,
+                "total_workloads": 805,
             },
         )
 
@@ -6012,8 +6015,11 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
 COLLECTION_REPLACEMENT_KEYWORD_WORKLOAD_IDS = frozenset(
     {
         "module-split-maxsplit-keyword-purged-bytes",
+        "module-split-maxsplit-indexlike-keyword-purged-bytes",
         "module-sub-count-keyword-warm-str",
+        "module-sub-count-indexlike-keyword-warm-str",
         "module-subn-count-keyword-purged-bytes",
+        "module-subn-count-indexlike-keyword-purged-bytes",
         "pattern-split-maxsplit-keyword-warm-str",
         "pattern-split-maxsplit-bool-keyword-warm-str",
         "pattern-split-maxsplit-indexlike-keyword-warm-str",
@@ -6805,11 +6811,20 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-split-maxsplit-keyword-purged-bytes": (
                     "workflow-module-split-maxsplit-keyword-bytes",
                 ),
+                "module-split-maxsplit-indexlike-keyword-purged-bytes": (
+                    "workflow-module-split-maxsplit-indexlike-bytes",
+                ),
                 "module-sub-count-keyword-warm-str": (
                     "workflow-module-sub-count-keyword-str",
                 ),
+                "module-sub-count-indexlike-keyword-warm-str": (
+                    "workflow-module-sub-count-indexlike-str",
+                ),
                 "module-subn-count-keyword-purged-bytes": (
                     "workflow-module-subn-count-keyword-bytes",
+                ),
+                "module-subn-count-indexlike-keyword-purged-bytes": (
+                    "workflow-module-subn-count-indexlike-bytes",
                 ),
                 "pattern-split-maxsplit-keyword-warm-str": (
                     "workflow-pattern-split-str-maxsplit-keyword",
