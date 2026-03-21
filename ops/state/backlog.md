@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0882` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument named-group explicit `flags=0` `compile()` pair up on the shared Python-path `module_boundary.py` surface once the named-group default success pair lands, instead of reopening named-group bool-false carriers, named-group `IGNORECASE` rejections, `NOFLAG` spellings, or another benchmark family.
+`RBR-0884` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument named-group explicit `flags=False` `compile()` pair up on the shared Python-path `module_boundary.py` surface once the named-group explicit `flags=0` pair lands, instead of reopening named-group `IGNORECASE` rejections, `NOFLAG` spellings, or another benchmark family.
 
 ## Ordered Work
-1. `RBR-0882` catches the first compiled-pattern-first-argument named-group explicit `flags=0` `module.compile(...)` pair up on `python/rebar_harness/benchmarks.py`, `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. `RBR-0884` catches the first compiled-pattern-first-argument named-group explicit `flags=False` `module.compile(...)` pair up on `python/rebar_harness/benchmarks.py`, `benchmarks/workloads/module_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
