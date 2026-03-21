@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 842/842 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0866` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument bounded-wildcard successful `search()` / `match()` / `fullmatch()` benchmark trio up on the shared Python-path `module_boundary.py` surface by reusing the bounded compiled-pattern module-helper timing path that the current frontier already leaves behind instead of reopening verbose-regression or broader compiled-pattern module-helper publication work. |
-| Work queue | `1` ready, `0` in progress, `868` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 845/845 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0868` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument bytes verbose-regression successful `search()` / `fullmatch()` benchmark pair up on the shared Python-path `module_boundary.py` surface by reusing the compiled-pattern module-helper timing path already present on that owner route instead of widening the regression matrix or reopening broader compiled-pattern module-helper publication work. |
+| Work queue | `1` ready, `0` in progress, `870` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 842/842 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 845/845 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `842` |
-| Workloads with real `rebar` timings | `842` |
+| Published workloads | `845` |
+| Workloads with real `rebar` timings | `845` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0866` is the concrete surviving follow-on on the existing `module-workflow-surface` frontier, catching the adjacent compiled-pattern-first-argument bounded-wildcard successful `search()` / `match()` / `fullmatch()` benchmark trio up on the shared Python-path `module_boundary.py` benchmark surface by reusing the bounded compiled-pattern module-helper timing path that the current frontier already leaves behind instead of reopening verbose-regression or broader compiled-pattern module-helper publication work.
+- `RBR-0868` is the surviving follow-on on the `module-workflow-surface` frontier: add the compiled-pattern-first-argument bytes verbose-regression `search()` / `fullmatch()` benchmark pair to the shared Python-path `module_boundary.py` surface without reopening broader compiled-pattern helper work.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 842 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 845 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
