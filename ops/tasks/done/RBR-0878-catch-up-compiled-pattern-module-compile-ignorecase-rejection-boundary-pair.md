@@ -1,6 +1,6 @@
 # RBR-0878: Catch up the compiled-pattern module-compile IGNORECASE rejection boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -60,3 +60,9 @@ Created: 2026-03-21
   - a direct runtime probe in this run confirmed CPython and `rebar` already agree on the bounded helper behavior for `compile(rebar.compile("abc"), flags=rebar.IGNORECASE)` and `compile(rebar.compile(b"abc"), flags=rebar.IGNORECASE)`, both raising `ValueError` with the substring `cannot process flags argument with a compiled pattern`, so no Rust or Python regex-behavior prerequisite is missing for this pair;
   - `benchmarks/workloads/module_boundary.py` and `reports/benchmarks/latest.py` currently publish no compiled-pattern explicit `IGNORECASE` `module.compile` rows on that owner route; and
   - the acceptance counts above are intentionally written against the immediate post-`RBR-0876` state of `858` total / `858` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 850` and `REPORT["manifests"]["module-boundary"]` at `30` selected / `30` measured / `0` known gaps.
+
+## Completion
+- 2026-03-21: Extended `python/rebar_harness/benchmarks.py` so the shared `module-boundary` owner path accepts only the bounded compiled-pattern-first-argument `module.compile(..., flags=IGNORECASE)` rejection carrier beside the already-landed `flags=0` and `flags=False` keyword rows, without reopening `NOFLAG`, named-group, or broader compile-helper shapes.
+- Added `module-compile-flags-ignorecase-warm-str-compiled-pattern` and `module-compile-flags-ignorecase-purged-bytes-compiled-pattern` to `benchmarks/workloads/module_boundary.py`, and extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the matching manifest round-trip, correctness-anchor, callback/precompile, expected-exception measurement, slice-coverage, and full-suite summary assertions.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0878-compiled-pattern-module-compile-ignorecase-rejection-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- Confirmed from the tracked `reports/benchmarks/latest.py` diff in this run that `REPORT["manifests"]["module-boundary"]` is now `32` selected / `32` measured / `0` known gaps, that both new workload ids publish `status == "measured"` with the expected `ValueError` metadata, and that the combined summary is now `860` total / `860` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 852` and `REPORT["summary"]["regression_workloads"] == 8`.

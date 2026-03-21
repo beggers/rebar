@@ -1361,7 +1361,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "keyword-flags",
         ),
         required_categories=("compile", "literal", "compiled-pattern", "keyword", "flags"),
-        excluded_categories=("bool",),
+        excluded_categories=("bool", "ignorecase", "exception"),
         expected_workload_ids=(
             "module-compile-flags-int-zero-warm-str-compiled-pattern",
             "module-compile-flags-int-zero-purged-bytes-compiled-pattern",
@@ -1403,6 +1403,43 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "keyword",
             "flags",
             "bool",
+        ),
+        expected_status="measured",
+    ),
+    _combined_slice_expectation(
+        manifest_id="module-boundary",
+        slice_id="compiled-pattern-module-compile-flags-ignorecase-keyword-rejection",
+        required_syntax_features=(
+            "module-compile",
+            "literal-text",
+            "compiled-pattern-first-argument",
+            "keyword-flags",
+            "ignorecase-flag",
+        ),
+        required_categories=(
+            "compile",
+            "literal",
+            "compiled-pattern",
+            "keyword",
+            "flags",
+            "ignorecase",
+            "exception",
+        ),
+        expected_workload_ids=(
+            "module-compile-flags-ignorecase-warm-str-compiled-pattern",
+            "module-compile-flags-ignorecase-purged-bytes-compiled-pattern",
+        ),
+        expected_patterns={"abc"},
+        expected_operations={"module.compile"},
+        expected_haystacks=set(),
+        required_row_categories=(
+            "compile",
+            "literal",
+            "compiled-pattern",
+            "keyword",
+            "flags",
+            "ignorecase",
+            "exception",
         ),
         expected_status="measured",
     ),
@@ -3519,6 +3556,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
                 ),
             ),
+            (
+                "ignorecase-rejection",
+                (
+                    _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload
+                ),
+                (
+                    "module-compile-flags-ignorecase-warm-str-compiled-pattern",
+                    "module-compile-flags-ignorecase-purged-bytes-compiled-pattern",
+                ),
+            ),
         )
 
         for group_id, include_workload, expected_workload_ids in cases:
@@ -4961,11 +5008,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 858,
-                "module_workloads": 850,
+                "measured_workloads": 860,
+                "module_workloads": 852,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 858,
+                "total_workloads": 860,
             },
         )
 
@@ -6737,6 +6784,23 @@ _COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE = (
 _COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE = (
     ("flags", "bool", False),
 )
+_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE = (
+    ("flags", "int", int(re.IGNORECASE)),
+)
+_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
+    "type": "ValueError",
+    "message_substring": "cannot process flags argument with a compiled pattern",
+}
+
+
+def _workload_matches_expected_exception(
+    workload: Any,
+    *,
+    expected_exception: dict[str, str] | None,
+) -> bool:
+    if expected_exception is None:
+        return workload.expected_exception is None
+    return workload.expected_exception == expected_exception
 
 
 def _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
@@ -6767,10 +6831,12 @@ def _module_workflow_compiled_pattern_compile_keyword_workload_signature(
     *,
     keyword_label: str,
     keyword_signature: tuple[tuple[str, str, object], ...],
+    expected_exception: dict[str, str] | None = None,
 ) -> tuple[Any, ...]:
     if not _is_module_workflow_compiled_pattern_compile_keyword_workload(
         workload,
         keyword_signature=keyword_signature,
+        expected_exception=expected_exception,
     ):
         raise AssertionError(
             "unexpected module-workflow compiled-pattern module.compile "
@@ -6791,11 +6857,15 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
     workload: Any,
     *,
     keyword_signature: tuple[tuple[str, str, object], ...],
+    expected_exception: dict[str, str] | None = None,
 ) -> bool:
     return (
         workload.use_compiled_pattern
         and workload.operation == "module.compile"
-        and workload.expected_exception is None
+        and _workload_matches_expected_exception(
+            workload,
+            expected_exception=expected_exception,
+        )
         and workload.pattern == "abc"
         and workload.flags == 0
         and _module_workflow_keyword_kwargs_signature(workload.kwargs)
@@ -6856,6 +6926,36 @@ def _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload(
     return _is_module_workflow_compiled_pattern_compile_keyword_workload(
         workload,
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_ignorecase_keyword_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+        case,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_ignorecase_keyword_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+        workload,
+        keyword_label="ignorecase",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    )
+
+
+def _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload(
+    workload: Any,
+) -> bool:
+    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+        workload,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
     )
 
 
@@ -8066,6 +8166,34 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         workload_signature=(
             _module_workflow_compiled_pattern_compile_bool_false_keyword_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name=(
+            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
+            "keyword-rejection"
+        ),
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern": (
+                    "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
+                ),
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern": (
+                    "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=(
+            _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload
+        ),
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_compile_ignorecase_keyword_correctness_case_signature
+        ),
+        workload_signature=(
+            _module_workflow_compiled_pattern_compile_ignorecase_keyword_workload_signature
         ),
         run_callback_result_parity=True,
     ),
@@ -12770,6 +12898,7 @@ class CompiledPatternModuleCompileKeywordCase:
     pattern: str = "abc"
     flags: int = 0
     expected_field_names: tuple[str, ...] = ("kwargs.flags",)
+    expected_exception: dict[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -12780,6 +12909,7 @@ class CompiledPatternModuleCompileKeywordCaseGroup:
     contract_filename: str
     anchor_contract_filename: str
     expected_anchor_pairs: tuple[tuple[str, str], ...]
+    expected_exception: dict[str, str] | None = None
 
     def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
         return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
@@ -12792,12 +12922,14 @@ class CompiledPatternModuleCompileKeywordCaseGroup:
             workload,
             keyword_label=self.group_id,
             keyword_signature=self.keyword_signature,
+            expected_exception=self.expected_exception,
         )
 
     def include_workload(self, workload: Any) -> bool:
         return _is_module_workflow_compiled_pattern_compile_keyword_workload(
             workload,
             keyword_signature=self.keyword_signature,
+            expected_exception=self.expected_exception,
         )
 
 
@@ -12831,9 +12963,27 @@ COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES = (
     ),
 )
 
+COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES = (
+    CompiledPatternModuleCompileKeywordCase(
+        id="module-compile-flags-ignorecase-warm-str-compiled-pattern",
+        cache_mode="warm",
+        text_model="str",
+        kwargs_payload={"flags": int(re.IGNORECASE)},
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
+    CompiledPatternModuleCompileKeywordCase(
+        id="module-compile-flags-ignorecase-purged-bytes-compiled-pattern",
+        cache_mode="purged",
+        text_model="bytes",
+        kwargs_payload={"flags": int(re.IGNORECASE)},
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
+)
+
 COMPILED_PATTERN_MODULE_COMPILE_ALL_KEYWORD_CASES = (
     *COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES,
     *COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES,
+    *COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES,
 )
 
 COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
@@ -12879,13 +13029,35 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
             ),
         ),
     ),
+    CompiledPatternModuleCompileKeywordCaseGroup(
+        group_id="ignorecase",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        cases=COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES,
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
+            ),
+        ),
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
 )
 
 
 def _compiled_pattern_module_compile_keyword_manifest_payload(
     case: CompiledPatternModuleCompileKeywordCase,
 ) -> dict[str, object]:
-    return {
+    payload: dict[str, object] = {
         "id": f"{case.id}-contract",
         "bucket": "module-compile",
         "family": "module",
@@ -12902,6 +13074,9 @@ def _compiled_pattern_module_compile_keyword_manifest_payload(
             "module.compile flags= keyword rows unresolved until helper invocation."
         ],
     }
+    if case.expected_exception is not None:
+        payload["expected_exception"] = case.expected_exception
+    return payload
 
 
 def _compiled_pattern_module_compile_keyword_workload(
@@ -12938,8 +13113,8 @@ def _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
     assert payload["kwargs"] == case.kwargs_payload
     assert round_tripped.kwargs == case.kwargs_payload
     assert type(round_tripped.kwargs["flags"]) is type(expected_keyword_value)
-    assert payload.get("expected_exception") is None
-    assert round_tripped.expected_exception is None
+    assert payload.get("expected_exception") == case.expected_exception
+    assert round_tripped.expected_exception == case.expected_exception
     assert payload.get("haystack_text_model") is None
     assert round_tripped.haystack_text_model is None
     assert isinstance(round_tripped.pattern_payload(), expected_text_type)
@@ -12982,6 +13157,16 @@ def _compiled_pattern_module_compile_keyword_expected_build_calls(
     return build_calls
 
 
+def _expected_exception_instance(
+    expected_exception: dict[str, str],
+) -> Exception:
+    exception_type = {
+        "TypeError": TypeError,
+        "ValueError": ValueError,
+    }[expected_exception["type"]]
+    return exception_type(expected_exception["message_substring"])
+
+
 @pytest.mark.parametrize(
     "case_group",
     COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS,
@@ -13016,10 +13201,24 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_k
             payload,
             round_tripped,
         )
-        assert_benchmark_workload_matches_expected_result(
-            round_tripped,
-            _run_cpython_compiled_pattern_module_compile_keyword_workload(workload),
-        )
+        if case.expected_exception is None:
+            assert_benchmark_workload_matches_expected_result(
+                round_tripped,
+                _run_cpython_compiled_pattern_module_compile_keyword_workload(
+                    workload
+                ),
+            )
+            continue
+
+        expected_exception = _expected_exception_instance(case.expected_exception)
+        with pytest.raises(
+            type(expected_exception),
+            match=case.expected_exception["message_substring"],
+        ) as expected_error:
+            _run_cpython_compiled_pattern_module_compile_keyword_workload(workload)
+        with pytest.raises(type(expected_error.value)) as observed_error:
+            run_benchmark_workload_with_cpython(round_tripped)
+        assert str(observed_error.value) == str(expected_error.value)
 
 
 @pytest.mark.parametrize(
@@ -13100,10 +13299,18 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
         callback = build_callable(re, "re", workload)
         assert observed_field_names == []
 
-        observed_result = callback()
+        if case.expected_exception is None:
+            observed_result = callback()
+            assert observed_result.pattern == workload.pattern_payload()
+        else:
+            expected_exception = _expected_exception_instance(case.expected_exception)
+            with pytest.raises(
+                type(expected_exception),
+                match=case.expected_exception["message_substring"],
+            ):
+                callback()
 
         assert observed_field_names == list(case.expected_field_names)
-        assert observed_result.pattern == workload.pattern_payload()
     finally:
         re.purge()
 
@@ -13160,7 +13367,12 @@ def test_compiled_pattern_module_compile_keyword_callbacks_precompile_first_argu
     expected_build_calls = _compiled_pattern_module_compile_keyword_expected_build_calls(
         case
     )
-    module = _RecordingBenchmarkModule()
+    compile_exception = (
+        None
+        if case.expected_exception is None
+        else _expected_exception_instance(case.expected_exception)
+    )
+    module = _RecordingBenchmarkModule(compile_exception=compile_exception)
     callback = build_callable(
         module,
         "re",
@@ -13171,7 +13383,14 @@ def test_compiled_pattern_module_compile_keyword_callbacks_precompile_first_argu
     assert len(module.compiled_patterns) == 1
 
     compiled_pattern = module.compiled_patterns[0]
-    assert callback() is compiled_pattern
+    if case.expected_exception is None:
+        assert callback() is compiled_pattern
+    else:
+        with pytest.raises(
+            type(compile_exception),
+            match=case.expected_exception["message_substring"],
+        ):
+            callback()
 
     last_call = module.calls[-1]
     assert last_call[0] == "compile"
@@ -14688,9 +14907,11 @@ class _RecordingBenchmarkModule:
         self,
         *,
         helper_exception: Exception | None = None,
+        compile_exception: Exception | None = None,
     ) -> None:
         self.calls: list[tuple[object, ...]] = []
         self._helper_exception = helper_exception
+        self._compile_exception = compile_exception
         self.compiled_patterns: list[_RecordingBenchmarkCompiledPattern] = []
 
     def purge(self) -> None:
@@ -14699,6 +14920,8 @@ class _RecordingBenchmarkModule:
     def compile(self, pattern: object, flags: int = 0) -> _RecordingBenchmarkCompiledPattern:
         self.calls.append(("compile", pattern, flags))
         if isinstance(pattern, _RecordingBenchmarkCompiledPattern):
+            if self._compile_exception is not None:
+                raise self._compile_exception
             return pattern
         compiled_pattern = _RecordingBenchmarkCompiledPattern(self.calls)
         self.compiled_patterns.append(compiled_pattern)
@@ -15701,9 +15924,25 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `flags=0` and `flags=False` keyword carriers"
+                "the bounded `flags=0`, `flags=False`, and "
+                "`flags=IGNORECASE` rejection keyword carriers"
             ),
             id="keyword-carrier-scope",
+        ),
+        pytest.param(
+            "module-boundary",
+            {"flags": int(re.IGNORECASE)},
+            None,
+            "abc",
+            0,
+            "str",
+            re.escape(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "the bounded `flags=0`, `flags=False`, and "
+                "`flags=IGNORECASE` rejection keyword carriers"
+            ),
+            id="ignorecase-rejection-missing-expected-exception",
         ),
         pytest.param(
             "module-boundary",
@@ -15718,7 +15957,8 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "successful same-text-model literal rows"
+                "successful same-text-model literal rows or the bounded "
+                "`flags=IGNORECASE` rejection rows"
             ),
             id="expected-exception-not-supported",
         ),
@@ -15732,7 +15972,8 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success pair"
+                "the bounded `abc` str/bytes literal success and "
+                "`flags=IGNORECASE` rejection pairs"
             ),
             id="pattern-scope",
         ),
@@ -15746,7 +15987,8 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success pair"
+                "the bounded `abc` str/bytes literal success and "
+                "`flags=IGNORECASE` rejection pairs"
             ),
             id="flags-scope",
         ),
@@ -15760,7 +16002,8 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
             re.escape(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success pair"
+                "the bounded `abc` str/bytes literal success and "
+                "`flags=IGNORECASE` rejection pairs"
             ),
             id="text-model-scope",
         ),
@@ -15842,6 +16085,34 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
 
     with pytest.raises(ValueError, match=error_pattern):
         workload_from_payload(payload)
+
+
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for case in COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES
+    ),
+)
+def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows(
+    tmp_path: pathlib.Path,
+    case: CompiledPatternModuleCompileKeywordCase,
+) -> None:
+    manifest = _compiled_pattern_module_compile_keyword_manifest((case,))
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_compiled_pattern_module_compile_ignorecase_validation_contract.py",
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workload = load_manifest(manifest_path).workloads[0]
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
+        case,
+        payload,
+        round_tripped,
+    )
 
 
 @pytest.mark.parametrize(

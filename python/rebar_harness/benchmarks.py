@@ -485,6 +485,11 @@ _PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
     "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
 )
 _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_FIELDS = frozenset({"flags"})
+_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE = int(cpython_re.IGNORECASE)
+_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
+    "type": "ValueError",
+    "message_substring": "cannot process flags argument with a compiled pattern",
+}
 _MODULE_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
     "module.search": frozenset({"flags"}),
     "module.match": frozenset({"flags"}),
@@ -648,6 +653,16 @@ def validate_compiled_pattern_workload(
         )
 
     if operation == "module.compile":
+        keyword_flags = kwargs.get("flags") if kwargs else None
+        supports_zero_or_false_keyword = (
+            (type(keyword_flags) is int and keyword_flags == 0)
+            or (type(keyword_flags) is bool and keyword_flags is False)
+        )
+        supports_ignorecase_rejection = (
+            type(keyword_flags) is int
+            and keyword_flags == _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE
+            and expected_exception == _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION
+        )
         if manifest_id != "module-boundary":
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
@@ -656,28 +671,37 @@ def validate_compiled_pattern_workload(
             )
         if kwargs and (
             set(kwargs) != _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_FIELDS
-            or (
-                type(kwargs.get("flags")) is not int
-                and type(kwargs.get("flags")) is not bool
+            or not (
+                supports_zero_or_false_keyword
+                or supports_ignorecase_rejection
             )
-            or kwargs["flags"] != 0
         ):
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `flags=0` and `flags=False` keyword carriers"
+                "the bounded `flags=0`, `flags=False`, and "
+                "`flags=IGNORECASE` rejection keyword carriers"
             )
-        if haystack_text_model is not None or expected_exception is not None:
+        if haystack_text_model is not None:
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "successful same-text-model literal rows"
+                "successful same-text-model literal rows or the bounded "
+                "`flags=IGNORECASE` rejection rows"
+            )
+        if expected_exception is not None and not supports_ignorecase_rejection:
+            raise ValueError(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "successful same-text-model literal rows or the bounded "
+                "`flags=IGNORECASE` rejection rows"
             )
         if pattern != "abc" or flags != 0 or text_model not in {"str", "bytes"}:
             raise ValueError(
                 "benchmark compiled-pattern module-helper "
                 "module.compile workloads currently only support "
-                "the bounded `abc` str/bytes literal success pair"
+                "the bounded `abc` str/bytes literal success and "
+                "`flags=IGNORECASE` rejection pairs"
             )
 
     if operation in _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS:
