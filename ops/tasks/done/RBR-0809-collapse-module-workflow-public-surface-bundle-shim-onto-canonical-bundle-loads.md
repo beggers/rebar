@@ -1,8 +1,9 @@
 # RBR-0809: Collapse the module-workflow public-surface bundle shim onto canonical bundle loads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-21
+Completed: 2026-03-21
 
 ## Goal
 - Delete the synthetic public-surface bundle rebuild in `tests/python/test_module_workflow_parity_suite.py`.
@@ -69,3 +70,11 @@ PY`
   - `ops/tasks/done/RBR-0797-collapse-generated-quantified-alternation-spec-sidecars-onto-live-bundle-metadata.md`
   - `ops/tasks/done/RBR-0799-collapse-generated-quantified-conditional-spec-sidecars-onto-live-bundle-metadata.md`
   - `ops/tasks/done/RBR-0807-collapse-grouped-replacement-manifest-sidecars-onto-live-surface-bundles.md`
+
+## Completion Note
+- Removed the synthetic public-surface bundle rebuild from `tests/python/test_module_workflow_parity_suite.py`, deleted `_public_surface_loader_token` plus `PUBLIC_SURFACE_EXPECTED_TEXT_MODELS_BY_MANIFEST_ID`, and loaded the three owner manifests directly through `load_published_fixture_bundles(...)` with `_public_surface_case_contract_token` as the canonical case-id token source.
+- Kept the public-surface contract explicit by asserting the canonical manifest order, published per-bundle case order from `bundle.manifest.cases`, case-id-backed `expected_patterns`, and the mixed `{"bytes", "str"}` pattern-object text-model contract directly in `test_public_surface_parity_suite_stays_aligned_with_published_fixtures()`, without reintroducing a manifest-id sidecar or local bundle-spec layer.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`
+  - `bash -lc "! rg -n '_public_surface_loader_token|PUBLIC_SURFACE_EXPECTED_TEXT_MODELS_BY_MANIFEST_ID|PUBLIC_SURFACE_BUNDLES = tuple\\(|expected_patterns=frozenset\\(case\\.case_id for case in bundle\\.cases\\)|expected_case_ids=frozenset\\(case\\.case_id for case in bundle\\.cases\\)' tests/python/test_module_workflow_parity_suite.py"`
+  - the task's public-surface probe (`ok`)

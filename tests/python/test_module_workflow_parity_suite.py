@@ -42,7 +42,6 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     assert_placeholder_message_contains,
     assert_value_parity,
-    build_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
@@ -349,14 +348,8 @@ PUBLISHED_BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES = tuple(
 )
 
 
-def _public_surface_loader_token(case: FixtureCase) -> str | bytes:
-    if case.pattern is None and not case.args:
-        return case.case_id
-    return case_pattern(case)
-
-PUBLIC_SURFACE_EXPECTED_TEXT_MODELS_BY_MANIFEST_ID = {
-    "pattern-object-surface": frozenset({"bytes", "str"})
-}
+def _public_surface_case_contract_token(case: FixtureCase) -> str:
+    return case.case_id
 
 
 # Keep the public-surface coverage on the module workflow owner file.
@@ -413,26 +406,15 @@ NON_INSTANTIABLE_EXPORTS = (
         id="Match",
     ),
 )
-# Reuse the shared full-manifest loader even for owner rows without pattern
-# payloads, then reapply this file's case-id-based contract on the returned bundles.
-PUBLIC_SURFACE_BUNDLES = tuple(
-    build_fixture_bundle(
-        bundle.manifest,
-        bundle.cases,
-        expected_patterns=frozenset(case.case_id for case in bundle.cases),
-        expected_case_ids=frozenset(case.case_id for case in bundle.cases),
-        expected_text_models=PUBLIC_SURFACE_EXPECTED_TEXT_MODELS_BY_MANIFEST_ID.get(
-            bundle.manifest.manifest_id
-        ),
-    )
-    for bundle in load_published_fixture_bundles(
-        (
-            CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
-            CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
-            CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
-        ),
-        pattern_extractor=_public_surface_loader_token,
-    )
+# Keep the public-surface coverage on the canonical published manifests while
+# treating case ids as the contract token for these owner rows.
+PUBLIC_SURFACE_BUNDLES = load_published_fixture_bundles(
+    (
+        CORRECTNESS_FIXTURES_ROOT / "public_api_surface.py",
+        CORRECTNESS_FIXTURES_ROOT / "exported_symbol_surface.py",
+        CORRECTNESS_FIXTURES_ROOT / "pattern_object_surface.py",
+    ),
+    pattern_extractor=_public_surface_case_contract_token,
 )
 PUBLIC_API_BUNDLE = published_fixture_bundle_by_manifest_id(
     PUBLIC_SURFACE_BUNDLES,
@@ -5787,10 +5769,6 @@ def test_collection_helpers_stay_loud_for_unsupported_cases(
         operation()
 
 
-def _public_surface_case_contract_token(case: FixtureCase) -> str:
-    return case.case_id
-
-
 @pytest.mark.parametrize(
     "bundle",
     PUBLIC_SURFACE_BUNDLES,
@@ -5799,17 +5777,34 @@ def _public_surface_case_contract_token(case: FixtureCase) -> str:
 def test_public_surface_parity_suite_stays_aligned_with_published_fixtures(
     bundle: FixtureBundle,
 ) -> None:
-    assert_fixture_bundle_contract(
-        bundle,
-        pattern_extractor=_public_surface_case_contract_token,
+    assert tuple(
+        public_surface_bundle.manifest.manifest_id
+        for public_surface_bundle in PUBLIC_SURFACE_BUNDLES
+    ) == (
+        "public-api-surface",
+        "exported-symbol-surface",
+        "pattern-object-surface",
     )
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == len({case.case_id for case in bundle.cases})
+    assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
+    assert tuple(case.case_id for case in bundle.cases) == _published_case_ids(bundle)
+    assert {
+        _public_surface_case_contract_token(case) for case in bundle.cases
+    } == bundle.expected_patterns
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        bundle.expected_operation_helper_counts
+    )
+    if bundle is PATTERN_OBJECT_BUNDLE:
+        assert bundle.expected_text_models == frozenset({"bytes", "str"})
+        assert {case.text_model for case in bundle.cases} == {"bytes", "str"}
 
 
 def test_public_surface_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in PUBLIC_SURFACE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
             bundle,
-            selected_case_ids=tuple(case.case_id for case in bundle.cases),
+            selected_case_ids=_published_case_ids(bundle),
         )
 
 
