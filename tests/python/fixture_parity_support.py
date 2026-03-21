@@ -16,6 +16,12 @@ from tests.conftest import duplicate_string_ids
 
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
+WRAPPER_PAIRS = (
+    ("", ""),
+    ("zz", ""),
+    ("", "zz"),
+    ("zz", "zz"),
+)
 
 
 class RecordingNativeBoundary:

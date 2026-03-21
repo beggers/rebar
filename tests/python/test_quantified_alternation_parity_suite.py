@@ -15,6 +15,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     SupplementalCase,
+    WRAPPER_PAIRS,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -90,12 +91,6 @@ class BoundedPatternCase:
 
 HELPERS = ("search", "match", "fullmatch")
 BODY_ATOMS = ("b", "c", "e")
-WRAPPER_PAIRS = (
-    ("", ""),
-    ("zz", ""),
-    ("", "zz"),
-    ("zz", "zz"),
-)
 FAILURE_PREVIEW_LIMIT = 20
 STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
 

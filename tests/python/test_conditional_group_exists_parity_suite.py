@@ -13,6 +13,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    WRAPPER_PAIRS,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -64,12 +65,6 @@ class GeneratedQuantifiedConditionalParitySpec:
 
 
 HELPERS = ("search", "match", "fullmatch")
-WRAPPER_PAIRS = (
-    ("", ""),
-    ("zz", ""),
-    ("", "zz"),
-    ("zz", "zz"),
-)
 FAILURE_PREVIEW_LIMIT = 20
 
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
