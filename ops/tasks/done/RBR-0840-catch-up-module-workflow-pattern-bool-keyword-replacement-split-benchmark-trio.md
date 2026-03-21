@@ -1,6 +1,6 @@
 # RBR-0840: Catch up the module-workflow `Pattern` bool keyword replacement/split benchmark trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
 
@@ -65,3 +65,7 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` already owns the shared precompiled-helper keyword path for `Pattern.split()` / `Pattern.sub()` / `Pattern.subn()` after `RBR-0836`, so once `RBR-0838` lands this follow-on stays on the existing benchmark-owner surface instead of reopening helper-plumbing work;
   - `benchmarks/workloads/collection_replacement_boundary.py` currently publishes the plain integer keyword trio but not the adjacent bool-keyword trio, and `RBR-0838` is already queued to land the intervening `__index__` trio on the same manifest path first; and
   - `reports/benchmarks/latest.py` currently reports `793` total / `793` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 785` and `REPORT["manifests"]["collection-replacement-boundary"]` at `19` selected / `19` measured / `0` known gaps because `RBR-0838` is still ready in this run, so the acceptance counts above are intentionally written against the immediate post-`RBR-0838` state.
+
+## Completion
+- 2026-03-21: Added the three precompiled `Pattern.split()` / `Pattern.sub()` / `Pattern.subn()` bool-keyword workloads to `benchmarks/workloads/collection_replacement_boundary.py`, updated the shared source-tree benchmark expectation suite to keep those rows on the existing collection/replacement contract path and anchor them to `workflow-pattern-split-str-maxsplit-bool-true`, `workflow-pattern-sub-count-bool-false-bytes`, and `workflow-pattern-subn-count-bool-true-str`, and republished `reports/benchmarks/latest.py` at `799` total / `799` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 791` and `REPORT["manifests"]["collection-replacement-boundary"]` at `25` selected / `25` measured / `0` known gaps.
+- 2026-03-21: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0840-collection-replacement-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
