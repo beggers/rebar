@@ -24,6 +24,47 @@ WRAPPER_PAIRS = (
 )
 
 
+class IndexLike:
+    """Minimal ``__index__`` carrier for parity tests that coerce numeric inputs."""
+
+    __slots__ = ("value",)
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __index__(self) -> int:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"IndexLike({self.value})"
+
+
+class RecordingIndexLike:
+    """Track ``__index__`` calls while optionally surfacing a caller-provided error."""
+
+    __slots__ = ("value", "error", "calls")
+
+    def __init__(
+        self,
+        value: int = 1,
+        *,
+        error: BaseException | None = None,
+    ) -> None:
+        self.value = value
+        self.error = error
+        self.calls = 0
+
+    def __index__(self) -> int:
+        self.calls += 1
+        if self.error is not None:
+            raise self.error
+        return self.value
+
+
+class IndexLikeBoomError(Exception):
+    """Distinct ``__index__`` failure used by coercion parity tests."""
+
+
 class RecordingNativeBoundary:
     def __init__(self, *, native_placeholder_messages: bool = False) -> None:
         self.calls: list[tuple[object, ...]] = []

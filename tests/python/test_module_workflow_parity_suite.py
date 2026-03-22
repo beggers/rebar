@@ -35,7 +35,10 @@ from tests.python import conftest as python_conftest
 from tests.python.conftest import _unsupported_backend_skip_reason
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    IndexLike as _IndexLike,
+    IndexLikeBoomError as _IndexLikeBoomError,
     RecordingNativeBoundary,
+    RecordingIndexLike as _RecordingIndexLike,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -596,21 +599,6 @@ class _EscapeBytesSubclass(bytes):
     pass
 
 
-class _IndexLike:
-    """Minimal __index__ carrier for keyword-argument parity coverage."""
-
-    __slots__ = ("value",)
-
-    def __init__(self, value: int) -> None:
-        self.value = value
-
-    def __index__(self) -> int:
-        return self.value
-
-    def __repr__(self) -> str:
-        return f"IndexLike({self.value})"
-
-
 class _AlternateIndexLike:
     """Distinct __index__ carrier used to prove value-based normalization."""
 
@@ -631,23 +619,6 @@ _INDEX_ONE = _IndexLike(1)
 _INDEX_TWO = _IndexLike(2)
 _INDEX_FOUR = _IndexLike(4)
 _INDEX_SEVEN = _IndexLike(7)
-
-
-class _RecordingIndexLike:
-    """Tracks __index__ usage for coercion-semantics parity checks."""
-
-    __slots__ = ("value", "calls", "_error")
-
-    def __init__(self, value: int = 1, *, error: Exception | None = None) -> None:
-        self.value = value
-        self.calls = 0
-        self._error = error
-
-    def __index__(self) -> int:
-        self.calls += 1
-        if self._error is not None:
-            raise self._error
-        return self.value
 
 
 class _OrderedRecordingIndexLike:
@@ -675,10 +646,6 @@ class _OrderedRecordingIndexLike:
         if self._error is not None:
             raise self._error
         return self.value
-
-
-class _IndexLikeBoomError(Exception):
-    pass
 
 
 @dataclass(frozen=True)

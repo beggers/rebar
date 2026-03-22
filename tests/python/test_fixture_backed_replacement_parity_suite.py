@@ -24,6 +24,9 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    IndexLike as _IndexLike,
+    IndexLikeBoomError as _IndexLikeBoomError,
+    RecordingIndexLike as _RecordingIndexLike,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -181,43 +184,6 @@ _LITERAL_REPLACEMENT_COUNT_COERCION_CASES = (
     pytest.param("abc", "x", "abcabcabc", id="str"),
     pytest.param(b"abc", b"x", b"abcabcabc", id="bytes"),
 )
-
-
-class _IndexLike:
-    """Minimal __index__ carrier for replacement-count parity coverage."""
-
-    def __init__(self, value: int) -> None:
-        self.value = value
-
-    def __index__(self) -> int:
-        return self.value
-
-    def __repr__(self) -> str:
-        return f"IndexLike({self.value})"
-
-
-class _RecordingIndexLike:
-    """Tracks replacement count coercion calls for __index__ parity checks."""
-
-    def __init__(
-        self,
-        value: int = 1,
-        *,
-        error: BaseException | None = None,
-    ) -> None:
-        self.value = value
-        self.error = error
-        self.calls = 0
-
-    def __index__(self) -> int:
-        self.calls += 1
-        if self.error is not None:
-            raise self.error
-        return self.value
-
-
-class _IndexLikeBoomError(Exception):
-    """Distinct __index__ failure used for replacement count coercion parity."""
 
 
 _INDEXLIKE_ZERO = _IndexLike(0)
