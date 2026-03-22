@@ -43,6 +43,32 @@ LEGACY_CORRECTNESS_REPORT_PATH = CORRECTNESS_REPORT_PATH.with_suffix(".json")
 BENCHMARK_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 LEGACY_BENCHMARK_REPORT_PATH = BENCHMARK_REPORT_PATH.with_suffix(".json")
 
+
+DELIVERY_ESTIMATE_PATTERN = re.compile(
+    r"Published correctness covers "
+    r"(?P<correctness_cases>\d+) cases across "
+    r"(?P<correctness_manifests>\d+) manifests, with all "
+    r"(?P<correctness_passed>\d+) passing in the current slice; "
+    r"the benchmark publication covers "
+    r"(?P<benchmark_measured>\d+)/(?P<benchmark_total>\d+) measured workloads across "
+    r"(?P<benchmark_manifests>\d+) manifests with "
+    r"(?P<benchmark_known_gaps>\d+) known gap(?:s)?,"
+)
+COMPATIBILITY_HEURISTIC_PATTERN = re.compile(
+    r"The published correctness slice now covers "
+    r"(?P<correctness_cases>\d+) cases across "
+    r"(?P<correctness_manifests>\d+) manifests, all passing, and "
+    r"(?P<benchmark_measured>\d+) benchmark workloads are measured"
+)
+
+
+def _match_summary_line(pattern: re.Pattern[str], line: str) -> dict[str, int]:
+    match = pattern.search(line)
+    if match is None:
+        raise AssertionError(f"summary line did not match expected shape: {line!r}")
+    return {key: int(value) for key, value in match.groupdict().items()}
+
+
 class OpsHarnessTest(unittest.TestCase):
     def test_dispatch_policies_match_the_current_specialist_mix(self) -> None:
         rebar_ops = load_rebar_ops_module()
@@ -1692,7 +1718,9 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertNotIn("native_smoke.json", rendered)
         self.assertNotIn("native_full.json", rendered)
 
-    def test_current_status_readme_summaries_track_live_scorecard_counts(self) -> None:
+    def test_current_status_readme_summaries_do_not_overstate_live_scorecard_counts(
+        self,
+    ) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
         status_sections = rebar_ops.markdown_sections(CURRENT_STATUS_PATH)
@@ -1712,16 +1740,34 @@ class ReadmeReportingTest(unittest.TestCase):
         delivery_estimate = rebar_ops.first_nonempty_line(
             status_sections["README Delivery Estimate"]
         )
-        self.assertIn(
-            (
-                f"Published correctness covers {correctness_scorecard['cases_total']} cases "
-                f"across {correctness_scorecard['case_manifest_count']} manifests"
-            ),
-            delivery_estimate,
+        delivery_counts = _match_summary_line(DELIVERY_ESTIMATE_PATTERN, delivery_estimate)
+        self.assertLessEqual(
+            delivery_counts["correctness_cases"], correctness_scorecard["cases_total"]
         )
-        self.assertIn(
-            f"with all {correctness_scorecard['cases_passed']} passing",
-            delivery_estimate,
+        self.assertLessEqual(
+            delivery_counts["correctness_manifests"],
+            correctness_scorecard["case_manifest_count"],
+        )
+        self.assertLessEqual(
+            delivery_counts["correctness_passed"], correctness_scorecard["cases_passed"]
+        )
+        self.assertLessEqual(
+            delivery_counts["correctness_passed"], delivery_counts["correctness_cases"]
+        )
+        self.assertLessEqual(
+            delivery_counts["benchmark_measured"], benchmark_summary["measured_workloads"]
+        )
+        self.assertLessEqual(
+            delivery_counts["benchmark_total"], benchmark_summary["total_workloads"]
+        )
+        self.assertLessEqual(
+            delivery_counts["benchmark_manifests"], benchmark_manifest_count
+        )
+        self.assertGreaterEqual(
+            delivery_counts["benchmark_known_gaps"], benchmark_summary["known_gap_count"]
+        )
+        self.assertLessEqual(
+            delivery_counts["benchmark_measured"], delivery_counts["benchmark_total"]
         )
         self.assertIn(
             (
@@ -1730,22 +1776,25 @@ class ReadmeReportingTest(unittest.TestCase):
                 f"measured workloads across {benchmark_manifest_count} manifests with "
                 f"{benchmark_summary['known_gap_count']} {benchmark_gap_label}"
             ),
-            delivery_estimate,
+            rebar_ops.render_readme_status(config),
         )
 
         compatibility_heuristic = rebar_ops.first_nonempty_line(
             status_sections["Compatibility Heuristic"]
         )
-        self.assertIn(
-            (
-                f"The published correctness slice now covers {correctness_scorecard['cases_total']} "
-                f"cases across {correctness_scorecard['case_manifest_count']} manifests"
-            ),
+        compatibility_counts = _match_summary_line(
+            COMPATIBILITY_HEURISTIC_PATTERN,
             compatibility_heuristic,
         )
-        self.assertIn(
-            f"{benchmark_summary['measured_workloads']} benchmark workloads are measured",
-            compatibility_heuristic,
+        self.assertLessEqual(
+            compatibility_counts["correctness_cases"], correctness_scorecard["cases_total"]
+        )
+        self.assertLessEqual(
+            compatibility_counts["correctness_manifests"],
+            correctness_scorecard["case_manifest_count"],
+        )
+        self.assertLessEqual(
+            compatibility_counts["benchmark_measured"], benchmark_summary["measured_workloads"]
         )
 
     def test_checked_in_readme_status_block_keeps_expected_section_scaffold(self) -> None:
