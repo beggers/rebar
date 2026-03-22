@@ -7358,6 +7358,13 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
         "pattern-findall-str-bounded-no-match",
         "pattern-findall-bytes-bounded",
     )
+    assert tuple(
+        case.case_id for case in _published_pattern_collection_cases_for_helper("finditer")
+    ) == (
+        "pattern-finditer-str-bounded",
+        "pattern-finditer-str-bounded-no-match",
+        "pattern-finditer-bytes-bounded",
+    )
 
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         {

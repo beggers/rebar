@@ -191,6 +191,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-finditer-str-bounded",
+      "operation": "pattern_call",
+      "family": "finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "args": ["zabcabcx", 1, 7],
+      "categories": ["workflow", "finditer", "literal", "str", "bounded", "iterator-exhaustion"],
+      "notes": [
+        "Publishes the bounded compiled-pattern str finditer path, including its exhausted terminal state."
+      ]
+    },
+    {
+      "id": "pattern-finditer-str-bounded-no-match",
+      "operation": "pattern_call",
+      "family": "finditer_workflow",
+      "pattern": "abc",
+      "helper": "finditer",
+      "args": ["zabz", 1, 4],
+      "categories": ["workflow", "finditer", "literal", "str", "bounded", "no-match", "iterator-exhaustion"],
+      "notes": [
+        "Publishes the bounded compiled-pattern str finditer no-match window without widening beyond the direct helper slice."
+      ]
+    },
+    {
       "id": "pattern-finditer-bytes-bounded",
       "operation": "pattern_call",
       "family": "finditer_workflow",

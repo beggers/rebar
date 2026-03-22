@@ -1,6 +1,6 @@
 ## RBR-0981: Publish the direct Pattern `finditer()` bounded str pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -63,3 +63,12 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-finditer-str-bounded or pattern-finditer-str-bounded-no-match or literal_collection_direct_test_buckets_cover_selected_frontier'` currently passes (`11 passed`), so the exact bounded direct parity slice is already green in this checkout;
   - `rg -n 'pattern-finditer-str-bounded|pattern-finditer-str-bounded-no-match|workflow-pattern-finditer-str-bounded|workflow-pattern-finditer-str-bounded-no-match' tests/conformance/fixtures/collection_replacement_workflows.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` currently returns only the neighboring bounded-wildcard owner-path publication on `module-workflow-surface`, confirming the exact bounded collection-pair ids are still absent from the published collection/replacement correctness surface; and
   - `rg -n 'pattern-finditer-bounded-warm-str|pattern-finditer-bounded-no-match-warm-str|pattern-finditer-bounded-purged-bytes|workflow-pattern-finditer-str-bounded|workflow-pattern-finditer-str-bounded-no-match|workflow-pattern-finditer-bytes-bounded' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns only the neighboring bounded-wildcard benchmark anchors on another owner path, while `benchmarks/workloads/collection_replacement_boundary.py` still carries only the existing `pattern-finditer-literal-warm-str` and `pattern-finditer-literal-purged-bytes` rows for direct `Pattern.finditer()`, confirming a later catch-up remains concrete on the existing `collection_replacement_boundary.py` path instead of requiring a new benchmark family.
+
+## Completion Notes
+- 2026-03-22: Published `pattern-finditer-str-bounded` and `pattern-finditer-str-bounded-no-match` on the existing `collection-replacement-workflows` manifest immediately before `pattern-finditer-bytes-bounded`, added an explicit owner-path ordering assertion for the shared `pattern-finditer` frontier, refreshed the combined scorecard expectation sample for this manifest, and republished `reports/correctness/latest.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-finditer-str-bounded or pattern-finditer-str-bounded-no-match or literal_collection_direct_test_buckets_cover_selected_frontier'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-0981-pattern-finditer-bounded-str-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Published tracked totals in `reports/correctness/latest.py`: overall `1561` total / `1561` passed / `0` failed / `0` unimplemented across `114` manifests; `collection.replacement.workflow` `24`/`24`; `collection.replacement.workflow.str` `17`/`17`; `collection.replacement.workflow.bytes` stayed `7`/`7`; `collection.replacement.workflow.pattern_call` `12`/`12`; `collection.replacement.workflow.module_call` stayed `12`/`12`.

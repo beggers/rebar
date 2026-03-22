@@ -265,9 +265,11 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
     "collection-replacement-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
             "module-finditer-str-repeated",
+            "pattern-finditer-str-bounded",
+            "pattern-finditer-str-bounded-no-match",
+            "pattern-finditer-bytes-bounded",
             "pattern-findall-str-bounded",
             "pattern-findall-str-bounded-no-match",
-            "pattern-findall-bytes-bounded",
             "pattern-split-bytes-maxsplit",
             "module-subn-bytes-count",
             "module-sub-template-str",
