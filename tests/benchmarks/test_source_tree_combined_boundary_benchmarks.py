@@ -13571,14 +13571,24 @@ def _compiled_pattern_module_helper_keyword_source_workloads() -> tuple[Workload
     )
 
 
-def _compiled_pattern_module_helper_keyword_source_workload(
-    workload_id: str,
-) -> Workload:
-    return next(
+def _compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads(
+) -> tuple[Workload, ...]:
+    anchor_ids = (
+        "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+        "module-sub-count-keyword-warm-str-compiled-pattern",
+        "module-subn-count-keyword-purged-bytes-compiled-pattern",
+    )
+    selected = tuple(
         workload
         for workload in _compiled_pattern_module_helper_keyword_source_workloads()
-        if workload.workload_id == workload_id
+        if workload.workload_id in anchor_ids
     )
+    if tuple(workload.workload_id for workload in selected) != anchor_ids:
+        raise AssertionError(
+            "compiled-pattern module-helper keyword precompile anchors drifted "
+            "from the live source workload surface"
+        )
+    return selected
 
 
 def _compiled_pattern_module_helper_keyword_manifest_payload(
@@ -13901,53 +13911,18 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     ("source_workload", "expected_build_calls", "expected_callback_call"),
     (
         pytest.param(
-            _compiled_pattern_module_helper_keyword_source_workload(
-                "module-split-maxsplit-keyword-purged-str-compiled-pattern"
-            ),
+            source_workload,
             _compiled_pattern_module_helper_keyword_expected_build_calls(
-                _compiled_pattern_module_helper_keyword_source_workload(
-                    "module-split-maxsplit-keyword-purged-str-compiled-pattern"
-                )
+                source_workload
             ),
             _compiled_pattern_module_helper_keyword_expected_callback_call(
-                _compiled_pattern_module_helper_keyword_source_workload(
-                    "module-split-maxsplit-keyword-purged-str-compiled-pattern"
-                )
+                source_workload
             ),
-            id="module-split-maxsplit-keyword-purged-str-compiled-pattern",
-        ),
-        pytest.param(
-            _compiled_pattern_module_helper_keyword_source_workload(
-                "module-sub-count-keyword-warm-str-compiled-pattern"
-            ),
-            _compiled_pattern_module_helper_keyword_expected_build_calls(
-                _compiled_pattern_module_helper_keyword_source_workload(
-                    "module-sub-count-keyword-warm-str-compiled-pattern"
-                )
-            ),
-            _compiled_pattern_module_helper_keyword_expected_callback_call(
-                _compiled_pattern_module_helper_keyword_source_workload(
-                    "module-sub-count-keyword-warm-str-compiled-pattern"
-                )
-            ),
-            id="module-sub-count-keyword-warm-str-compiled-pattern",
-        ),
-        pytest.param(
-            _compiled_pattern_module_helper_keyword_source_workload(
-                "module-subn-count-keyword-purged-bytes-compiled-pattern"
-            ),
-            _compiled_pattern_module_helper_keyword_expected_build_calls(
-                _compiled_pattern_module_helper_keyword_source_workload(
-                    "module-subn-count-keyword-purged-bytes-compiled-pattern"
-                )
-            ),
-            _compiled_pattern_module_helper_keyword_expected_callback_call(
-                _compiled_pattern_module_helper_keyword_source_workload(
-                    "module-subn-count-keyword-purged-bytes-compiled-pattern"
-                )
-            ),
-            id="module-subn-count-keyword-purged-bytes-compiled-pattern",
-        ),
+            id=source_workload.workload_id,
+        )
+        for source_workload in (
+            _compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads()
+        )
     ),
 )
 def test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argument_before_timing(

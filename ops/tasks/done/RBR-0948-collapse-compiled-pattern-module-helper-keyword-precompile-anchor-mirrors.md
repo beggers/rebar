@@ -1,8 +1,9 @@
 # RBR-0948: Collapse compiled-pattern module-helper keyword precompile anchor mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the remaining handwritten three-row precompile-anchor mirror from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the compiled-pattern module-helper keyword precompile coverage derives from the same live eleven-row source-workload surface already selected from `benchmarks/workloads/collection_replacement_boundary.py` instead of re-looking up three ids through a detached helper-and-tuple layer.
@@ -71,3 +72,8 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_workloads'` currently passes (`36 passed, 578 deselected`)
   - the anchor-surface probe in Verification currently passes (`ok 3`), proving the exact split/sub/subn precompile anchors already exist on the live eleven-row source surface without another handwritten id table
   - `bash -lc "! rg -n 'def _compiled_pattern_module_helper_keyword_source_workload\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails only because the detached lookup helper is still present at line `13574`, with the remaining mirror calls at lines `13904`, `13908`, `13913`, `13920`, `13924`, `13929`, `13936`, `13940`, and `13945`
+
+## Completion
+- 2026-03-22: Deleted the detached `_compiled_pattern_module_helper_keyword_source_workload(...)` helper from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and replaced the handwritten three-row precompile tuple with `_compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads()`, a file-local live selector over `_compiled_pattern_module_helper_keyword_source_workloads()` that asserts the exact split/sub/subn anchor order stays aligned with the published eleven-row source surface.
+- Kept `test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argument_before_timing(...)` on the same three anchor ids while deriving `source_workload`, expected build calls, and expected callback calls directly from the selected live `Workload` objects. The callback contract remains unchanged: `"module-result"` for `module.split` and `module.sub`, and `("module-result", 0)` for `module.subn`.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_workloads'`, `bash -lc "! rg -n 'def _compiled_pattern_module_helper_keyword_source_workload\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`, and the task’s anchor-order probe (`ok 3`).
