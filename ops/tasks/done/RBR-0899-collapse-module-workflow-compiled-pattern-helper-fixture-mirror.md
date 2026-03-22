@@ -1,8 +1,9 @@
 # RBR-0899: Collapse the module-workflow compiled-pattern helper fixture mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the remaining published compiled-pattern module-helper fixture mirror in `tests/python/test_module_workflow_parity_suite.py`, so the owner file derives that published slice directly from the live compiled-pattern direct cases plus the fixture-backed `MODULE_CALL_CASES` inventory instead of keeping one extra top-level tuple constant.
@@ -49,3 +50,11 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled_pattern_module_helper or module_workflow_parity_suite_stays_aligned_with_published_fixture or module_workflow_direct_test_buckets_cover_selected_frontier'` currently passes (`3 passed, 1234 deselected`);
   - `rg -n '^PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = ' tests/python/test_module_workflow_parity_suite.py` currently reports the residual mirror at line `231`; and
   - the same owner file already derives the neighboring module-keyword, module-positional-indexlike, and pattern-keyword published slices from direct-case signatures, so this compiled-pattern mirror can be removed without introducing another abstraction layer.
+
+## Completion
+- Removed the `PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES` tuple mirror from `tests/python/test_module_workflow_parity_suite.py`.
+- Added file-local compiled-pattern signature helpers plus `_published_compiled_pattern_module_helper_fixture_cases()` so the owner file now derives the published compiled-pattern fixture slice directly from `MODULE_CALL_CASES` and the live compiled-pattern direct inventories already used by the owner assertions.
+- Rewired `test_module_workflow_direct_test_buckets_cover_selected_frontier()` and `test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases()` to use the live selector for ordering, `str` / `bytes` partition, helper-count, and fixture-to-direct alignment checks without changing the published 56-case frontier.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled_pattern_module_helper or module_workflow_parity_suite_stays_aligned_with_published_fixture or module_workflow_direct_test_buckets_cover_selected_frontier'`
+  - `bash -lc "! rg -n '^PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = ' tests/python/test_module_workflow_parity_suite.py"`

@@ -228,11 +228,6 @@ MATCH_HELPER_PATTERN_CASES = tuple(
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
-PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
-    case
-    for case in MODULE_CALL_CASES
-    if case.use_compiled_pattern
-)
 
 
 def _fixture_cases_for_text_model(
@@ -2037,6 +2032,88 @@ def _published_module_positional_indexlike_fixture_cases() -> tuple[FixtureCase,
     )
 
 
+def _compiled_pattern_module_helper_direct_case_helper(
+    case: object,
+) -> str:
+    if isinstance(case, CompiledPatternCompileCase):
+        return "compile"
+    return case.helper
+
+
+def _compiled_pattern_module_helper_direct_case_args(
+    case: object,
+) -> tuple[object, ...]:
+    if isinstance(case, CompiledPatternCompileCase):
+        return ()
+    if hasattr(case, "args"):
+        return tuple(case.args)
+    return (case.string,)
+
+
+def _compiled_pattern_module_helper_direct_signature(
+    case: object,
+) -> tuple[
+    str,
+    str | bytes,
+    tuple[object, ...],
+    int,
+    bool,
+    tuple[tuple[str, str, object], ...],
+    str,
+]:
+    return (
+        _compiled_pattern_module_helper_direct_case_helper(case),
+        case.pattern,
+        _compiled_pattern_module_helper_direct_case_args(case),
+        getattr(case, "flags", 0),
+        getattr(case, "compiled", True),
+        _workflow_keyword_kwargs_signature(getattr(case, "kwargs", {})),
+        "bytes" if isinstance(case.pattern, bytes) else "str",
+    )
+
+
+def _compiled_pattern_module_helper_fixture_signature(
+    case: FixtureCase,
+) -> tuple[
+    str,
+    str | bytes,
+    tuple[object, ...],
+    int,
+    bool,
+    tuple[tuple[str, str, object], ...],
+    str,
+]:
+    return (
+        case.helper,
+        case_pattern(case),
+        tuple(case.args),
+        case.flags,
+        case.use_compiled_pattern,
+        _workflow_keyword_kwargs_signature(case.kwargs),
+        case.text_model,
+    )
+
+
+def _published_compiled_pattern_module_helper_fixture_cases() -> tuple[FixtureCase, ...]:
+    direct_signatures = {
+        _compiled_pattern_module_helper_direct_signature(case)
+        for case in (
+            *COMPILED_PATTERN_COMPILE_CASES,
+            *COMPILED_PATTERN_MODULE_HELPER_CASES,
+            *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
+            *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
+            *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
+            *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+        )
+    }
+    return tuple(
+        case
+        for case in MODULE_CALL_CASES
+        if case.use_compiled_pattern
+        and _compiled_pattern_module_helper_fixture_signature(case) in direct_signatures
+    )
+
+
 def _pattern_positional_indexlike_direct_signature(
     case: PatternPositionalIndexLikeCallCase,
 ) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
@@ -3097,7 +3174,8 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
                 case.case_id for case in _published_module_keyword_error_fixture_cases()
             ),
             "compiled-module-helper": frozenset(
-                case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+                case.case_id
+                for case in _published_compiled_pattern_module_helper_fixture_cases()
             ),
             "escape": frozenset(case.case_id for case in ESCAPE_CASES),
         },
@@ -4088,63 +4166,8 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
-    def direct_case_helper(
-        case: (
-            CompiledPatternCompileCase
-            | CompiledPatternModuleHelperCase
-            | CompiledPatternModuleKeywordCallCase
-            | CompiledPatternModuleKeywordErrorCase
-            | CompiledPatternModuleHelperErrorCase
-            | BoundedWildcardModuleCase
-        ),
-    ) -> str:
-        if isinstance(case, CompiledPatternCompileCase):
-            return "compile"
-        return case.helper
-
-    def direct_case_args(
-        case: (
-            CompiledPatternCompileCase
-            | CompiledPatternModuleHelperCase
-            | CompiledPatternModuleKeywordCallCase
-            | CompiledPatternModuleKeywordErrorCase
-            | CompiledPatternModuleHelperErrorCase
-            | BoundedWildcardModuleCase
-        ),
-    ) -> tuple[object, ...]:
-        if isinstance(case, CompiledPatternCompileCase):
-            return ()
-        return tuple(case.args) if hasattr(case, "args") else (case.string,)
-
-    def direct_signature(
-        case: (
-            CompiledPatternCompileCase
-            |
-            CompiledPatternModuleHelperCase
-            | CompiledPatternModuleKeywordCallCase
-            | CompiledPatternModuleKeywordErrorCase
-            | CompiledPatternModuleHelperErrorCase
-            | BoundedWildcardModuleCase
-        ),
-    ) -> tuple[
-        str,
-        str | bytes,
-        tuple[object, ...],
-        int,
-        bool,
-        tuple[tuple[str, str, object], ...],
-    ]:
-        return (
-            direct_case_helper(case),
-            case.pattern,
-            direct_case_args(case),
-            getattr(case, "flags", 0),
-            getattr(case, "compiled", True),
-            _workflow_keyword_kwargs_signature(getattr(case, "kwargs", {})),
-        )
-
     direct_cases_by_signature = {
-        direct_signature(case): case
+        _compiled_pattern_module_helper_direct_signature(case): case
         for case in (
             *COMPILED_PATTERN_COMPILE_CASES,
             *COMPILED_PATTERN_MODULE_HELPER_CASES,
@@ -4154,24 +4177,18 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
             *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
         )
     }
+    published_fixture_cases = _published_compiled_pattern_module_helper_fixture_cases()
     selected_direct_cases = tuple(
         direct_cases_by_signature[
-            (
-                case.helper,
-                case_pattern(case),
-                tuple(case.args),
-                case.flags,
-                case.use_compiled_pattern,
-                _workflow_keyword_kwargs_signature(case.kwargs),
-            )
+            _compiled_pattern_module_helper_fixture_signature(case)
         ]
-        for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+        for case in published_fixture_cases
     )
 
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
-            PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
+            published_fixture_cases,
             "str",
         )
     ) == (
@@ -4209,7 +4226,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
-            PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
+            published_fixture_cases,
             "bytes",
         )
     ) == (
@@ -4240,9 +4257,9 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 56
+    assert len(published_fixture_cases) == 56
     assert tuple(
-        case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+        case.case_id for case in published_fixture_cases
     ) == (
         "workflow-module-compile-str-compiled-pattern",
         "workflow-module-compile-flags-noflag-str-compiled-pattern",
@@ -4361,20 +4378,21 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-subn-unexpected-keyword-bytes",
         "compiled-pattern-subn-bytes-on-str-string",
     )
-    assert len(selected_direct_cases) == len(
-        PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
-    )
+    assert len(selected_direct_cases) == len(published_fixture_cases)
     assert tuple(
-        case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ) == tuple(direct_case_helper(case) for case in selected_direct_cases)
+        case.helper for case in published_fixture_cases
+    ) == tuple(
+        _compiled_pattern_module_helper_direct_case_helper(case)
+        for case in selected_direct_cases
+    )
 
     for fixture_case, direct_case in zip(
-        PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
+        published_fixture_cases,
         selected_direct_cases,
     ):
         assert fixture_case.use_compiled_pattern is True
         direct_pattern = direct_case.pattern
-        direct_args = direct_case_args(direct_case)
+        direct_args = _compiled_pattern_module_helper_direct_case_args(direct_case)
         assert fixture_case.text_model == (
             "bytes" if isinstance(direct_pattern, bytes) else "str"
         )
