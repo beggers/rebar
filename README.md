@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1528 cases across 114 manifests, with all 1528 passing in the current slice; the benchmark publication covers 876/876 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice. |
-| Work queue | `1` ready, `0` in progress, `910` done, `0` blocked |
+| Current milestone | `RBR-0910` is the surviving follow-on on the shared direct bound-pattern replacement frontier, publishing the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair on the existing `module-workflow-surface` correctness path before Python-path benchmark catch-up or adjacent direct bound-pattern unexpected-keyword / `split()` duplicate-`maxsplit=` follow-ons reopen that replacement-keyword error slice. |
+| Work queue | `1` ready, `0` in progress, `912` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice.
+- `RBR-0910` is the surviving follow-on on the shared direct bound-pattern replacement frontier, publishing the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair on the existing `module-workflow-surface` correctness path before Python-path benchmark catch-up or adjacent direct bound-pattern unexpected-keyword / `split()` duplicate-`maxsplit=` follow-ons reopen that replacement-keyword error slice.
 
 ### Current Risks
 
