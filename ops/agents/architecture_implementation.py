@@ -20,7 +20,7 @@ SPEC = {
     },
     "codex": {
         "config": [
-            'model_reasoning_effort="medium"',
+            'model_reasoning_effort="high"',
         ],
     },
 }
