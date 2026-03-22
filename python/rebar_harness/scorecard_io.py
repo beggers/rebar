@@ -240,32 +240,6 @@ def load_python_dict_attribute(
     return payload
 
 
-def load_scorecard_report(
-    report_path: pathlib.Path,
-    *,
-    module_name_prefix: str,
-    report_attribute: str,
-    scorecard_kind: str,
-) -> dict[str, Any]:
-    if report_path.suffix == ".json":
-        raw_payload = json.loads(report_path.read_text(encoding="utf-8"))
-        if not isinstance(raw_payload, dict):
-            raise ValueError(f"{scorecard_kind} scorecard in {report_path} must be a dict")
-        return raw_payload
-    if report_path.suffix == ".py":
-        return load_python_dict_attribute(
-            report_path,
-            module_name_prefix=module_name_prefix,
-            attribute_name=report_attribute,
-            load_error_label=f"Python {scorecard_kind} scorecard",
-            missing_error_label=f"Python {scorecard_kind} scorecard module",
-            type_error_label=f"{scorecard_kind} scorecard",
-        )
-    raise ValueError(
-        f"unsupported {scorecard_kind} scorecard extension {report_path.suffix!r} for {report_path}"
-    )
-
-
 @dataclass(frozen=True, slots=True)
 class ScorecardReportDescriptor:
     published_path: pathlib.Path
@@ -316,11 +290,30 @@ class ScorecardReportDescriptor:
         return self.validate_path(report_path)
 
     def load(self, report_path: pathlib.Path | str) -> dict[str, Any]:
-        return load_scorecard_report(
-            pathlib.Path(report_path),
-            module_name_prefix=self.module_name_prefix,
-            report_attribute=self.report_attribute,
-            scorecard_kind=self.scorecard_kind,
+        resolved_report_path = pathlib.Path(report_path)
+        if resolved_report_path.suffix == ".json":
+            raw_payload = json.loads(
+                resolved_report_path.read_text(encoding="utf-8")
+            )
+            if not isinstance(raw_payload, dict):
+                raise ValueError(
+                    f"{self.scorecard_kind} scorecard in {resolved_report_path} "
+                    "must be a dict"
+                )
+            return raw_payload
+        if resolved_report_path.suffix == ".py":
+            return load_python_dict_attribute(
+                resolved_report_path,
+                module_name_prefix=self.module_name_prefix,
+                attribute_name=self.report_attribute,
+                load_error_label=f"Python {self.scorecard_kind} scorecard",
+                missing_error_label=f"Python {self.scorecard_kind} scorecard module",
+                type_error_label=f"{self.scorecard_kind} scorecard",
+            )
+        raise ValueError(
+            "unsupported "
+            f"{self.scorecard_kind} scorecard extension "
+            f"{resolved_report_path.suffix!r} for {resolved_report_path}"
         )
 
     def write(self, scorecard: dict[str, Any], report_path: pathlib.Path | str) -> None:
