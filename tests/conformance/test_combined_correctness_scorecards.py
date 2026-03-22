@@ -15,6 +15,7 @@ from rebar_harness import correctness
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     declared_string_constants_by_suffix,
+    ordered_published_subset_filenames,
 )
 from tests.conftest import REPO_ROOT, run_harness_scorecard
 
@@ -4569,7 +4570,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 f"['{missing_filename}']"
             ),
         ):
-            correctness.ordered_published_subset_filenames(
+            ordered_published_subset_filenames(
                 correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
                     correctness.PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
                 ],

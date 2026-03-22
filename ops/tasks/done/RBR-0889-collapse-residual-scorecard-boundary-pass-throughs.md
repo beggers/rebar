@@ -1,6 +1,6 @@
 # RBR-0889: Collapse residual scorecard boundary pass-throughs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -58,4 +58,10 @@ Created: 2026-03-22
 - This is the next small boundary cleanup after the selector-registry simplifications already landed:
   - `RBR-0883` collapsed correctness selector-registry boilerplate onto one declarative subset table;
   - `RBR-0885` did the matching benchmark-side selector cleanup and removed its selector-membership mirror; and
-  - `RBR-0887` removed the last correctness-side canonical selector-membership mirror, leaving these residual scorecard helper/report path pass-throughs as the next bounded post-JSON simplification.
+- `RBR-0887` removed the last correctness-side canonical selector-membership mirror, leaving these residual scorecard helper/report path pass-throughs as the next bounded post-JSON simplification.
+
+## Completion
+- Routed the correctness-side missing-filename contract check directly through `rebar_harness.scorecard_io.ordered_published_subset_filenames(...)`, keeping the existing correctness-specific error prefix and selector assertions intact.
+- Switched the benchmark-side tracked report constant to `benchmarks.SCORECARD_REPORT.published_path`, removing the remaining hard-coded `REPO_ROOT / reports / benchmarks / latest.py` reconstruction.
+- Dropped the now-unused `ordered_published_subset_filenames` imports from `python/rebar_harness/correctness.py` and `python/rebar_harness/benchmarks.py`.
+- Verified with the task's focused pytest and `rg` commands.

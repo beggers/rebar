@@ -31,7 +31,6 @@ from rebar_harness.scorecard_io import (
     build_scorecard_report_descriptor,
     load_python_dict_attribute,
     materialize_descriptor_value,
-    ordered_published_subset_filenames,
     select_published_subset_paths,
 )
 

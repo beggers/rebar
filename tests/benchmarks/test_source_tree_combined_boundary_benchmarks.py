@@ -53,7 +53,7 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     case_pattern,
 )
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
+TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
