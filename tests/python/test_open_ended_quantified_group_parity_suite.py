@@ -39,7 +39,6 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
-    flatten_supplemental_cases,
     fixture_cases_for_operation,
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
@@ -323,7 +322,6 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
 )
-SUPPLEMENTAL_BYTES_CASES = flatten_supplemental_cases(OPEN_ENDED_BYTES_CASE_SURFACES)
 
 
 def _compile_case_prefix(case: FixtureCase) -> str:
@@ -1271,7 +1269,7 @@ def test_pattern_bounds_misses_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    SUPPLEMENTAL_BYTES_CASES,
+    tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
     ids=lambda case: case.id,
 )
 def test_supplemental_bytes_compile_metadata_matches_cpython(
@@ -1284,7 +1282,7 @@ def test_supplemental_bytes_compile_metadata_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    SUPPLEMENTAL_BYTES_CASES,
+    tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
     ids=lambda case: case.id,
 )
 def test_supplemental_bytes_module_search_matches_cpython(
@@ -1308,7 +1306,7 @@ def test_supplemental_bytes_module_search_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    SUPPLEMENTAL_BYTES_CASES,
+    tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
     ids=lambda case: case.id,
 )
 def test_supplemental_bytes_module_search_convenience_api_matches_cpython(
@@ -1328,7 +1326,7 @@ def test_supplemental_bytes_module_search_convenience_api_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    SUPPLEMENTAL_BYTES_CASES,
+    tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
     ids=lambda case: case.id,
 )
 def test_supplemental_bytes_module_search_match_group_access_matches_cpython(
@@ -1349,7 +1347,7 @@ def test_supplemental_bytes_module_search_match_group_access_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    SUPPLEMENTAL_BYTES_CASES,
+    tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
     ids=lambda case: case.id,
 )
 def test_supplemental_bytes_pattern_fullmatch_matches_cpython(
@@ -1378,7 +1376,7 @@ def test_supplemental_bytes_pattern_fullmatch_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    SUPPLEMENTAL_BYTES_CASES,
+    tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
     ids=lambda case: case.id,
 )
 def test_supplemental_bytes_pattern_fullmatch_convenience_api_matches_cpython(
@@ -1403,7 +1401,7 @@ def test_supplemental_bytes_pattern_fullmatch_convenience_api_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    SUPPLEMENTAL_BYTES_CASES,
+    tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
     ids=lambda case: case.id,
 )
 def test_supplemental_bytes_pattern_fullmatch_match_group_access_matches_cpython(

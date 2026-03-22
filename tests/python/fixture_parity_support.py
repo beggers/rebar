@@ -5,7 +5,6 @@ from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 import pathlib
 import re
-from typing import Protocol, TypeVar
 
 import rebar
 from rebar_harness.correctness import (
@@ -318,19 +317,6 @@ class SupplementalCase:
     fullmatch_misses: tuple[bytes, ...] = ()
     unsupported_backends: tuple[str, ...] = ()
     unsupported_backend_reason: str | None = None
-
-
-_SurfaceCaseT = TypeVar("_SurfaceCaseT")
-
-
-class _CaseSurface(Protocol[_SurfaceCaseT]):
-    cases: tuple[_SurfaceCaseT, ...]
-
-
-def flatten_supplemental_cases(
-    surfaces: Iterable[_CaseSurface[_SurfaceCaseT]],
-) -> tuple[_SurfaceCaseT, ...]:
-    return tuple(case for surface in surfaces for case in surface.cases)
 
 
 @dataclass(frozen=True)
