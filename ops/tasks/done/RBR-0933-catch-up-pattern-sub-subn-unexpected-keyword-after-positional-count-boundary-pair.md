@@ -1,6 +1,6 @@
 # RBR-0933: Catch up the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword-after-positional-count boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -63,3 +63,12 @@ Created: 2026-03-22
   - a synthetic `workload_from_payload(workload_to_payload(...))` probe that starts from `pattern-sub-unexpected-keyword-warm-str` and `pattern-subn-unexpected-keyword-warm-bytes`, then sets `count == 1` and the new workload ids, succeeds for both rows in this checkout, so the current benchmark payload model already supports the exact positional-count-plus-extra-keyword shape;
   - `run_internal_workload_probe(...)` against those two synthetic workload payloads returns `status == "measured"` for the `rebar` adapter in this checkout, so the existing timed callback path already measures the exact bounded pair without further harness work; and
   - `rg -n 'pattern-sub-unexpected-keyword-after-positional-count-warm-str|pattern-subn-unexpected-keyword-after-positional-count-warm-bytes' benchmarks/workloads tests/benchmarks reports/benchmarks` returned no matches in this run, so the exact benchmark workloads are still absent while `reports/benchmarks/latest.py` remains at `885` total / `885` measured / `0` known gaps overall and `collection-replacement-boundary` remains at `77` selected / `77` measured / `0` known gaps.
+
+## Completion
+- 2026-03-22: Added `pattern-sub-unexpected-keyword-after-positional-count-warm-str` and `pattern-subn-unexpected-keyword-after-positional-count-warm-bytes` to `benchmarks/workloads/collection_replacement_boundary.py`, extended the shared collection/replacement keyword benchmark anchors and direct pattern-helper contract coverage in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and fixed the narrowly reproducible direct-pattern benchmark callback regression in `python/rebar_harness/benchmarks.py` so a positional `count` is preserved when an unrelated keyword is also present.
+- Republished `reports/benchmarks/latest.py` with `887` total / `887` measured / `0` known gaps across `30` manifests, `879` module workloads, and `collection-replacement-boundary` at `79` selected / `79` measured / `0` known gaps; both new workload ids publish `status == "measured"`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-unexpected-keyword-after-positional-count-str or pattern-subn-unexpected-keyword-after-positional-count-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_keyword or pattern_helper_collection_replacement or collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0933-pattern-sub-subn-unexpected-keyword-after-positional-count-boundary-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

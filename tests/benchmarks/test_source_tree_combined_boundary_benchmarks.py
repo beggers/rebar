@@ -3503,7 +3503,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="pattern.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 17)
+        self.assertEqual(len(expected_measured_workload_ids), 19)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5205,11 +5205,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 885,
-                "module_workloads": 877,
+                "measured_workloads": 887,
+                "module_workloads": 879,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 885,
+                "total_workloads": 887,
             },
         )
 
@@ -6658,9 +6658,13 @@ def _collection_replacement_duplicate_keyword_field(
     if not isinstance(message_substring, str):
         return None
     keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
-    if keyword_parameter is None or keyword_parameter not in workload.kwargs:
+    if keyword_parameter is None:
         return None
-    if f"multiple values for argument '{keyword_parameter}'" in message_substring:
+    if (
+        keyword_parameter in workload.kwargs
+        and f"multiple values for argument '{keyword_parameter}'"
+        in message_substring
+    ):
         return keyword_parameter
     if workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}:
         positional_limit = {
@@ -6758,6 +6762,8 @@ def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
     if len(keyword_names) != 1:
         return False
     if keyword_names[0] == keyword_parameter:
+        return True
+    if _collection_replacement_duplicate_keyword_field(workload) is not None:
         return True
     return _collection_replacement_has_expected_unexpected_keyword_error(workload)
 
@@ -8478,6 +8484,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-sub-unexpected-keyword-warm-str": (
                     "workflow-pattern-sub-unexpected-keyword-str",
                 ),
+                "pattern-sub-unexpected-keyword-after-positional-count-warm-str": (
+                    "workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
+                ),
                 "pattern-subn-count-keyword-warm-str": (
                     "workflow-pattern-subn-count-keyword-str",
                 ),
@@ -8495,6 +8504,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "pattern-subn-unexpected-keyword-warm-bytes": (
                     "workflow-pattern-subn-unexpected-keyword-bytes",
+                ),
+                "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes": (
+                    "workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
                 ),
             },
         ),
@@ -11467,6 +11479,28 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                 ],
             },
             {
+                "id": "pattern-sub-unexpected-keyword-after-positional-count-contract-str",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "count": 1,
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "sub() takes at most 3 arguments (4 given)",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.sub positional count plus unexpected keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-subn-count-keyword-contract-str",
                 "bucket": "pattern-subn",
                 "family": "module",
@@ -11522,6 +11556,29 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                     "Ensures benchmark manifests keep Pattern.subn unexpected-keyword carriers unresolved until helper invocation."
                 ],
             },
+            {
+                "id": "pattern-subn-unexpected-keyword-after-positional-count-contract-bytes",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "text_model": "bytes",
+                "count": 1,
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "subn() takes at most 3 arguments (4 given)",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.subn positional count plus unexpected keyword carriers unresolved until helper invocation."
+                ],
+            },
         ],
     }
     """
@@ -11548,10 +11605,16 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     sub_workload = workloads_by_id["pattern-sub-count-keyword-contract-bytes"]
     sub_bool_workload = workloads_by_id["pattern-sub-count-bool-keyword-contract-bytes"]
     sub_missing_workload = workloads_by_id["pattern-sub-unexpected-keyword-contract-str"]
+    sub_missing_after_positional_count_workload = workloads_by_id[
+        "pattern-sub-unexpected-keyword-after-positional-count-contract-str"
+    ]
     subn_workload = workloads_by_id["pattern-subn-count-keyword-contract-str"]
     subn_bool_workload = workloads_by_id["pattern-subn-count-bool-keyword-contract-str"]
     subn_missing_workload = workloads_by_id[
         "pattern-subn-unexpected-keyword-contract-bytes"
+    ]
+    subn_missing_after_positional_count_workload = workloads_by_id[
+        "pattern-subn-unexpected-keyword-after-positional-count-contract-bytes"
     ]
 
     assert split_workload.kwargs == {"maxsplit": 1}
@@ -11631,6 +11694,25 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     ):
         run_benchmark_workload_with_cpython(round_tripped_sub_missing)
 
+    assert sub_missing_after_positional_count_workload.count == 1
+    assert sub_missing_after_positional_count_workload.kwargs == {"missing": 1}
+    round_tripped_sub_missing_after_positional_count = workload_from_payload(
+        workload_to_payload(sub_missing_after_positional_count_workload)
+    )
+    assert round_tripped_sub_missing_after_positional_count.count == 1
+    assert round_tripped_sub_missing_after_positional_count.kwargs == {"missing": 1}
+    assert (
+        round_tripped_sub_missing_after_positional_count.keyword_arguments()
+        == {"missing": 1}
+    )
+    with pytest.raises(
+        TypeError,
+        match=re.escape("sub() takes at most 3 arguments (4 given)"),
+    ):
+        run_benchmark_workload_with_cpython(
+            round_tripped_sub_missing_after_positional_count
+        )
+
     assert subn_workload.kwargs == {"count": 1}
     round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
     assert round_tripped_subn.kwargs == {"count": 1}
@@ -11663,6 +11745,25 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         match=re.escape("'missing' is an invalid keyword argument for subn()"),
     ):
         run_benchmark_workload_with_cpython(round_tripped_subn_missing)
+
+    assert subn_missing_after_positional_count_workload.count == 1
+    assert subn_missing_after_positional_count_workload.kwargs == {"missing": 1}
+    round_tripped_subn_missing_after_positional_count = workload_from_payload(
+        workload_to_payload(subn_missing_after_positional_count_workload)
+    )
+    assert round_tripped_subn_missing_after_positional_count.count == 1
+    assert round_tripped_subn_missing_after_positional_count.kwargs == {"missing": 1}
+    assert (
+        round_tripped_subn_missing_after_positional_count.keyword_arguments()
+        == {"missing": 1}
+    )
+    with pytest.raises(
+        TypeError,
+        match=re.escape("subn() takes at most 3 arguments (4 given)"),
+    ):
+        run_benchmark_workload_with_cpython(
+            round_tripped_subn_missing_after_positional_count
+        )
 
 
 def test_standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation(
@@ -12008,16 +12109,19 @@ def _run_cpython_pattern_helper_keyword_error_workload(workload: Workload) -> ob
     helper_name = workload.operation.removeprefix("pattern.")
     compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
     kwargs = dict(workload.kwargs)
+    positional_keyword_field = _collection_replacement_duplicate_keyword_field(
+        workload
+    )
 
     if workload.operation == "pattern.split":
         args: list[object] = [workload.haystack_payload()]
-        if "maxsplit" in workload.kwargs and workload.expected_exception is not None:
+        if positional_keyword_field == "maxsplit":
             args.append(workload.maxsplit_argument())
         return getattr(compiled_pattern, helper_name)(*args, **kwargs)
 
     if workload.operation in {"pattern.sub", "pattern.subn"}:
         args = [workload.replacement_payload(), workload.haystack_payload()]
-        if "count" in workload.kwargs and workload.expected_exception is not None:
+        if positional_keyword_field == "count":
             args.append(workload.count_argument())
         return getattr(compiled_pattern, helper_name)(*args, **kwargs)
 
@@ -12258,6 +12362,21 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             id="pattern-sub-unexpected-keyword",
         ),
         pytest.param(
+            "pattern.sub",
+            "abc",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "sub() takes at most 3 arguments (4 given)",
+            },
+            ["count", "kwargs.missing"],
+            id="pattern-sub-unexpected-keyword-after-positional-count",
+        ),
+        pytest.param(
             "pattern.subn",
             "abc",
             {"count": 1},
@@ -12286,6 +12405,21 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             },
             ["kwargs.missing"],
             id="pattern-subn-unexpected-keyword",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "abc",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "subn() takes at most 3 arguments (4 given)",
+            },
+            ["count", "kwargs.missing"],
+            id="pattern-subn-unexpected-keyword-after-positional-count",
         ),
     ),
 )

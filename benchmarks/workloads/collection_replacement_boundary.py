@@ -2289,6 +2289,46 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-unexpected-keyword-after-positional-count-warm-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "count": 1,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "sub() takes at most 3 arguments (4 given)"
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "literal",
+        "count",
+        "keyword",
+        "unexpected-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "literal-text",
+        "positional-count",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.sub helper path that keeps the bounded positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-sub-on-bytes-string-warm-str",
       "bucket": "pattern-sub",
       "family": "module",
@@ -2571,6 +2611,46 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes precompiled Pattern.subn helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "count": 1,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "subn() takes at most 3 arguments (4 given)"
+      },
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "count",
+        "keyword",
+        "unexpected-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "positional-count",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.subn helper path that keeps the bounded positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

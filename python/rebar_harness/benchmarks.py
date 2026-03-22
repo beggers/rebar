@@ -922,7 +922,7 @@ def _expected_duplicate_module_helper_keyword_field(
     return None
 
 
-def _expected_duplicate_pattern_helper_keyword_field(
+def _expected_pattern_helper_positional_keyword_field(
     workload: Workload,
 ) -> str | None:
     expected_exception = workload.expected_exception
@@ -950,22 +950,19 @@ def _expected_duplicate_pattern_helper_keyword_field(
     if positional_limit is None:
         return None
 
-    expected_field = {
-        "pattern.split": "maxsplit",
-        "pattern.sub": "count",
-        "pattern.subn": "count",
-    }[workload.operation]
-    if expected_field not in workload.kwargs:
-        return None
-
     helper_name = workload.operation.removeprefix("pattern.")
     bound_method_message = (
         f"{helper_name}() takes at most {positional_limit} arguments "
         f"({positional_limit + 1} given)"
     )
-    if bound_method_message in message_substring:
-        return expected_field
-    return None
+    if bound_method_message not in message_substring:
+        return None
+
+    return {
+        "pattern.split": "maxsplit",
+        "pattern.sub": "count",
+        "pattern.subn": "count",
+    }[workload.operation]
 
 
 def normalize_expected_exception(value: Any) -> dict[str, Any] | None:
@@ -1523,7 +1520,9 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
     )
     uses_positional_window = workload.pos is not None or workload.endpos is not None
     uses_keyword_arguments = bool(workload.kwargs)
-    duplicate_keyword_field = _expected_duplicate_pattern_helper_keyword_field(workload)
+    positional_keyword_field = _expected_pattern_helper_positional_keyword_field(
+        workload
+    )
 
     def compile_pattern() -> Any:
         return module.compile(pattern, workload.flags)
@@ -1590,7 +1589,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             return compiled.fullmatch(*window_call_args())
         if workload.operation == "pattern.split":
             if uses_keyword_arguments:
-                if duplicate_keyword_field == "maxsplit":
+                if positional_keyword_field == "maxsplit":
                     return compiled.split(
                         resolved_haystack,
                         workload.maxsplit_argument(),
@@ -1622,7 +1621,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             return list(compiled.finditer(*window_call_args()))
         if workload.operation == "pattern.sub":
             if uses_keyword_arguments:
-                if duplicate_keyword_field == "count":
+                if positional_keyword_field == "count":
                     return compiled.sub(
                         workload.replacement_payload(),
                         resolved_haystack,
@@ -1641,7 +1640,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             )
         if workload.operation == "pattern.subn":
             if uses_keyword_arguments:
-                if duplicate_keyword_field == "count":
+                if positional_keyword_field == "count":
                     return compiled.subn(
                         workload.replacement_payload(),
                         resolved_haystack,
