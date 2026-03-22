@@ -1,8 +1,9 @@
 # RBR-0920: Collapse callable-replacement published case-id mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `PUBLISHED_CALLABLE_CASE_IDS` tuple from `tests/python/test_callable_replacement_parity_suite.py`, so the callable-replacement owner derives its selected published frontier directly from the live `PUBLISHED_CALLABLE_CASES` rows it already builds instead of caching a second ordered case-id mirror.
@@ -54,3 +55,17 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py` currently passes (`2747 passed in 2.06s`);
   - `rg -n '^PUBLISHED_CALLABLE_CASE_IDS = ' tests/python/test_callable_replacement_parity_suite.py` currently finds the remaining mirror at line `1075`; and
   - the task-local live-flattening probe in Acceptance currently passes (`ok 168`), proving the live `FIXTURE_BUNDLES` to `PUBLISHED_CALLABLE_CASES` path already recovers the full ordered published callable frontier without the cached tuple.
+
+## Completion
+- Deleted the detached `PUBLISHED_CALLABLE_CASE_IDS` tuple from `tests/python/test_callable_replacement_parity_suite.py`.
+- Kept the direct-frontier bucket assertion on the same four labels and routed `selected_case_ids` through a live ordered projection of `PUBLISHED_CALLABLE_CASES`, preserving the published callable frontier without introducing another cached mirror.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py`
+  - `bash -lc "! rg -n '^PUBLISHED_CALLABLE_CASE_IDS = ' tests/python/test_callable_replacement_parity_suite.py"`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY'`
+    `from tests.python.test_callable_replacement_parity_suite import FIXTURE_BUNDLES, PUBLISHED_CALLABLE_CASES`
+    `live_case_ids = tuple(case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases)`
+    `flattened_case_ids = tuple(case.case_id for case in PUBLISHED_CALLABLE_CASES)`
+    `assert flattened_case_ids == live_case_ids`
+    `print("ok", len(flattened_case_ids))`
+    `PY`

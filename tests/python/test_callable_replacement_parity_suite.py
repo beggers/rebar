@@ -1072,7 +1072,6 @@ FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
 PUBLISHED_CALLABLE_CASES = tuple(
     case for bundle in FIXTURE_BUNDLES for case in bundle.cases
 )
-PUBLISHED_CALLABLE_CASE_IDS = tuple(case.case_id for case in PUBLISHED_CALLABLE_CASES)
 SHARED_CALLABLE_CASES = tuple(
     case for case in PUBLISHED_CALLABLE_CASES if not _is_pending_rebar_callable_case(case)
 )
@@ -2142,7 +2141,9 @@ def test_callable_replacement_direct_test_buckets_cover_selected_frontier() -> N
                 case.case_id for case in PENDING_REBAR_PATTERN_CASES
             ),
         },
-        selected_case_ids=PUBLISHED_CALLABLE_CASE_IDS,
+        selected_case_ids=(
+            case.case_id for case in PUBLISHED_CALLABLE_CASES
+        ),
         coverage_label="callable replacement direct-test case-id buckets",
     )
 
