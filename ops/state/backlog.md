@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives beyond the shared direct bound-pattern split-error frontier pinned to `re.compile("abc").split("abcabc", 1, maxsplit=1)` / `re.compile(b"abc").split(b"abcabc", missing=1)`.
+No ready feature follow-on currently survives beyond the shared direct bound-pattern collection/replacement wrong-text-model frontier pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the shared direct bound-pattern split-error owner path beyond the exact `re.compile("abc").split("abcabc", 1, maxsplit=1)` / `re.compile(b"abc").split(b"abcabc", missing=1)` pair.
+1. No ready feature follow-on currently survives on the shared direct bound-pattern collection/replacement wrong-text-model owner path beyond the exact `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")` slice, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
