@@ -2786,6 +2786,43 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-count-alias-keyword-warm-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count_alias": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "'count_alias' is an invalid keyword argument for sub()"
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "literal",
+        "keyword",
+        "unexpected-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "literal-text",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.sub helper path that keeps the bounded count_alias keyword-name rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-sub-on-bytes-string-warm-str",
       "bucket": "pattern-sub",
       "family": "module",
@@ -3108,6 +3145,43 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes precompiled Pattern.subn helper path that keeps the bounded positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-count-alias-keyword-warm-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count_alias": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "'count_alias' is an invalid keyword argument for subn()"
+      },
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "keyword",
+        "unexpected-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.subn helper path that keeps the bounded count_alias keyword-name rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

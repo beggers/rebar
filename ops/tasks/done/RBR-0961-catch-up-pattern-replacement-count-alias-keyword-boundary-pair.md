@@ -1,6 +1,6 @@
 # RBR-0961: Catch up the pattern replacement `count_alias` keyword boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -64,3 +64,12 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... re.compile('abc').sub('x', 'abcabc', count_alias=1) ... rebar.compile('abc').sub('x', 'abcabc', count_alias=1) ... re.compile(b'abc').subn(b'x', b'abcabc', count_alias=1) ... rebar.compile(b'abc').subn(b'x', b'abcabc', count_alias=1) ... PY` shows CPython and `rebar` already agree on the exact bounded `TypeError.args`: `("'count_alias' is an invalid keyword argument for sub()",)` for the `str` spelling and `("'count_alias' is an invalid keyword argument for subn()",)` for the `bytes` spelling;
   - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... _pattern_helper_collection_replacement_keyword_error_workload(...) synthetic count_alias probes ... run_internal_workload_probe(...) ... PY` returns `status == "measured"` for both adapters on both synthetic workload shapes in this checkout; and
   - `pattern-sub-count-alias-keyword-warm-str` and `pattern-subn-count-alias-keyword-warm-bytes` are currently absent from `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, while the matching correctness anchors are already present in `tests/conformance/fixtures/module_workflow_surface.py` and `reports/correctness/latest.py`.
+
+## Completion
+- 2026-03-22: Added `pattern-sub-count-alias-keyword-warm-str` and `pattern-subn-count-alias-keyword-warm-bytes` to `benchmarks/workloads/collection_replacement_boundary.py`, extended the shared collection/replacement benchmark contract and probe coverage in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and regenerated `reports/benchmarks/latest.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern_replacement_unexpected_keyword_names_match_cpython or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured or pattern_helper_collection_replacement_keyword_error_callbacks_match_cpython_exceptions or run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0961-pattern-replacement-count-alias-keyword-boundary-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Tracked benchmark publication totals now read `903` total / `903` measured / `0` known gaps, with `895` module workloads. `collection-replacement-boundary` now reads `93` selected / `93` measured / `0` known gaps, and both new direct-`Pattern` workloads publish `status == "measured"`.
