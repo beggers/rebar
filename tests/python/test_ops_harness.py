@@ -75,10 +75,7 @@ class OpsHarnessTest(unittest.TestCase):
         config = rebar_ops.load_config()
         agents = {agent.name: agent for agent in rebar_ops.load_agent_specs(config)}
 
-        for name, interval_seconds in (
-            ("reporting", 3600),
-            ("implementation-faithfulness", 21600),
-        ):
+        for name, interval_seconds in (("implementation-faithfulness", 21600),):
             self.assertIn(name, agents)
             self.assertEqual(agents[name].dispatch["mode"], "interval")
             self.assertEqual(agents[name].dispatch["interval_seconds"], interval_seconds)
@@ -89,6 +86,7 @@ class OpsHarnessTest(unittest.TestCase):
             "feature-planning",
             "qa-testing",
             "cleanup",
+            "reporting",
         ):
             self.assertIn(name, agents)
             self.assertEqual(agents[name].dispatch["mode"], "every_cycle")
