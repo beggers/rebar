@@ -1187,6 +1187,45 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-unexpected-keyword-after-positional-count-purged-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "count": 1,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "count",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "positional-count",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.sub helper path that keeps the bounded positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
       "bucket": "module-sub",
       "family": "module",
@@ -1586,6 +1625,45 @@ MANIFEST = {
       ],
       "notes": [
         "Purged module.subn helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "count": 1,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "count",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "positional-count",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

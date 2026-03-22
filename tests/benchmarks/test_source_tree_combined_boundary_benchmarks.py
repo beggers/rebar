@@ -3522,7 +3522,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 35)
+        self.assertEqual(len(expected_measured_workload_ids), 37)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5223,11 +5223,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 891,
-                "module_workloads": 883,
+                "measured_workloads": 893,
+                "module_workloads": 885,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 891,
+                "total_workloads": 893,
             },
         )
 
@@ -8438,6 +8438,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-sub-unexpected-keyword-purged-str": (
                     "workflow-module-sub-unexpected-keyword",
                 ),
+                "module-sub-unexpected-keyword-after-positional-count-purged-str": (
+                    "workflow-module-sub-unexpected-keyword-after-positional-count",
+                ),
                 "module-sub-duplicate-count-keyword-warm-str-compiled-pattern": (
                     "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
                 ),
@@ -8464,6 +8467,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-unexpected-keyword-purged-bytes": (
                     "workflow-module-subn-unexpected-keyword-bytes",
+                ),
+                "module-subn-unexpected-keyword-after-positional-count-purged-bytes": (
+                    "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
                 ),
                 "module-subn-count-keyword-purged-bytes-compiled-pattern": (
                     "workflow-module-subn-count-keyword-bytes-compiled-pattern",
@@ -12016,6 +12022,53 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
                     "Ensures benchmark manifests keep module.subn unexpected-keyword carriers unresolved until helper invocation."
                 ],
             },
+            {
+                "id": "module-sub-unexpected-keyword-after-positional-count-contract-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "flags": 0,
+                "count": 1,
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'missing'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.sub positional-count-plus-unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-unexpected-keyword-after-positional-count-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "flags": 0,
+                "count": 1,
+                "text_model": "bytes",
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'missing'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn positional-count-plus-unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
         ],
     }
     """
@@ -12037,6 +12090,8 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         subn_indexlike_workload,
         subn_duplicate_workload,
         subn_missing_workload,
+        sub_missing_after_positional_count_workload,
+        subn_missing_after_positional_count_workload,
     ) = load_manifest(manifest_path).workloads
 
     assert split_workload.kwargs == {"maxsplit": 1}
@@ -12180,6 +12235,44 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         match=re.escape("subn() got an unexpected keyword argument 'missing'"),
     ):
         run_benchmark_workload_with_cpython(round_tripped_subn_missing)
+
+    assert sub_missing_after_positional_count_workload.count == 1
+    assert sub_missing_after_positional_count_workload.kwargs == {"missing": 1}
+    round_tripped_sub_missing_after_positional_count = workload_from_payload(
+        workload_to_payload(sub_missing_after_positional_count_workload)
+    )
+    assert round_tripped_sub_missing_after_positional_count.count == 1
+    assert round_tripped_sub_missing_after_positional_count.kwargs == {"missing": 1}
+    assert (
+        round_tripped_sub_missing_after_positional_count.keyword_arguments()
+        == {"missing": 1}
+    )
+    with pytest.raises(
+        TypeError,
+        match=re.escape("sub() got an unexpected keyword argument 'missing'"),
+    ):
+        run_benchmark_workload_with_cpython(
+            round_tripped_sub_missing_after_positional_count
+        )
+
+    assert subn_missing_after_positional_count_workload.count == 1
+    assert subn_missing_after_positional_count_workload.kwargs == {"missing": 1}
+    round_tripped_subn_missing_after_positional_count = workload_from_payload(
+        workload_to_payload(subn_missing_after_positional_count_workload)
+    )
+    assert round_tripped_subn_missing_after_positional_count.count == 1
+    assert round_tripped_subn_missing_after_positional_count.kwargs == {"missing": 1}
+    assert (
+        round_tripped_subn_missing_after_positional_count.keyword_arguments()
+        == {"missing": 1}
+    )
+    with pytest.raises(
+        TypeError,
+        match=re.escape("subn() got an unexpected keyword argument 'missing'"),
+    ):
+        run_benchmark_workload_with_cpython(
+            round_tripped_subn_missing_after_positional_count
+        )
 
 
 def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
@@ -13092,6 +13185,32 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             ["kwargs.missing"],
             id="module-subn-unexpected-keyword-bytes",
         ),
+        pytest.param(
+            "module.sub",
+            "abc",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            "str",
+            None,
+            "sub() got an unexpected keyword argument 'missing'",
+            ["count", "kwargs.missing"],
+            id="module-sub-unexpected-keyword-after-positional-count",
+        ),
+        pytest.param(
+            "module.subn",
+            "abc",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            "bytes",
+            None,
+            "subn() got an unexpected keyword argument 'missing'",
+            ["count", "kwargs.missing"],
+            id="module-subn-unexpected-keyword-after-positional-count-bytes",
+        ),
     ),
 )
 def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time(
@@ -13252,6 +13371,7 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
         "count",
         "maxsplit",
         "expected_exception",
+        "text_model",
         "expected_direct_exception",
         "expected_field_names",
     ),
@@ -13268,6 +13388,7 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
                 "type": "TypeError",
                 "message_substring": "multiple values for argument 'flags'",
             },
+            "str",
             lambda workload: re.search(
                 workload.pattern_payload(),
                 workload.haystack_payload(),
@@ -13289,6 +13410,7 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
                 "type": "TypeError",
                 "message_substring": "unexpected keyword argument 'missing'",
             },
+            "str",
             lambda workload: re.fullmatch(
                 workload.pattern_payload(),
                 workload.haystack_payload(),
@@ -13309,6 +13431,7 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
                 "type": "TypeError",
                 "message_substring": "multiple values for argument 'maxsplit'",
             },
+            "str",
             lambda workload: re.split(
                 workload.pattern_payload(),
                 workload.haystack_payload(),
@@ -13330,6 +13453,7 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
                 "type": "TypeError",
                 "message_substring": "multiple values for argument 'count'",
             },
+            "str",
             lambda workload: re.sub(
                 workload.pattern_payload(),
                 workload.replacement_payload(),
@@ -13352,6 +13476,7 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
                 "type": "TypeError",
                 "message_substring": "unexpected keyword argument 'missing'",
             },
+            "str",
             lambda workload: re.sub(
                 workload.pattern_payload(),
                 workload.replacement_payload(),
@@ -13360,6 +13485,52 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
             ),
             ["kwargs.missing"],
             id="module-sub-unexpected-keyword",
+        ),
+        pytest.param(
+            "module.sub",
+            "purged",
+            "abc",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "str",
+            lambda workload: re.sub(
+                workload.pattern_payload(),
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+                missing=1,
+            ),
+            ["count", "kwargs.missing"],
+            id="module-sub-unexpected-keyword-after-positional-count",
+        ),
+        pytest.param(
+            "module.subn",
+            "purged",
+            "abc",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "bytes",
+            lambda workload: re.subn(
+                workload.pattern_payload(),
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+                missing=1,
+            ),
+            ["count", "kwargs.missing"],
+            id="module-subn-unexpected-keyword-after-positional-count-bytes",
         ),
     ),
 )
@@ -13373,6 +13544,7 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
     count: object,
     maxsplit: object,
     expected_exception: dict[str, str],
+    text_model: str,
     expected_direct_exception,
     expected_field_names: list[str],
 ) -> None:
@@ -13391,7 +13563,7 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
             "count": count,
             "maxsplit": maxsplit,
             "kwargs": kwargs_payload,
-            "text_model": "str",
+            "text_model": text_model,
             "cache_mode": cache_mode,
             "timing_scope": "module-helper-call",
             "warmup_iterations": 1,
@@ -13441,6 +13613,7 @@ def _module_helper_keyword_error_probe_workload(
     count: object,
     maxsplit: object,
     expected_exception: dict[str, str],
+    text_model: str,
 ) -> Workload:
     return workload_from_payload(
         {
@@ -13457,7 +13630,7 @@ def _module_helper_keyword_error_probe_workload(
             "count": count,
             "maxsplit": maxsplit,
             "kwargs": kwargs_payload,
-            "text_model": "str",
+            "text_model": text_model,
             "cache_mode": cache_mode,
             "timing_scope": "module-helper-call",
             "warmup_iterations": 1,
@@ -13480,6 +13653,7 @@ def _module_helper_keyword_error_probe_workload(
         "count",
         "maxsplit",
         "expected_exception",
+        "text_model",
     ),
     (
         pytest.param(
@@ -13493,6 +13667,7 @@ def _module_helper_keyword_error_probe_workload(
                 "type": "TypeError",
                 "message_substring": "multiple values for argument 'flags'",
             },
+            "str",
             id="module-search-duplicate-flags-keyword",
         ),
         pytest.param(
@@ -13506,6 +13681,7 @@ def _module_helper_keyword_error_probe_workload(
                 "type": "TypeError",
                 "message_substring": "unexpected keyword argument 'missing'",
             },
+            "str",
             id="module-fullmatch-unexpected-keyword",
         ),
         pytest.param(
@@ -13519,6 +13695,7 @@ def _module_helper_keyword_error_probe_workload(
                 "type": "TypeError",
                 "message_substring": "multiple values for argument 'maxsplit'",
             },
+            "str",
             id="module-split-duplicate-maxsplit-keyword",
         ),
         pytest.param(
@@ -13532,6 +13709,7 @@ def _module_helper_keyword_error_probe_workload(
                 "type": "TypeError",
                 "message_substring": "multiple values for argument 'count'",
             },
+            "str",
             id="module-sub-duplicate-count-keyword",
         ),
         pytest.param(
@@ -13545,7 +13723,36 @@ def _module_helper_keyword_error_probe_workload(
                 "type": "TypeError",
                 "message_substring": "unexpected keyword argument 'missing'",
             },
+            "str",
             id="module-sub-unexpected-keyword",
+        ),
+        pytest.param(
+            "module.sub",
+            "purged",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "str",
+            id="module-sub-unexpected-keyword-after-positional-count",
+        ),
+        pytest.param(
+            "module.subn",
+            "purged",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            {
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+            "bytes",
+            id="module-subn-unexpected-keyword-after-positional-count-bytes",
         ),
     ),
 )
@@ -13564,6 +13771,7 @@ def test_run_internal_workload_probe_measures_module_helper_keyword_error_worklo
     count: object,
     maxsplit: object,
     expected_exception: dict[str, str],
+    text_model: str,
     import_name: str,
     adapter_name: str,
 ) -> None:
@@ -13575,6 +13783,7 @@ def test_run_internal_workload_probe_measures_module_helper_keyword_error_worklo
         count=count,
         maxsplit=maxsplit,
         expected_exception=expected_exception,
+        text_model=text_model,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
