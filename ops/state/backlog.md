@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0900` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface once the matching correctness anchors have landed.
+`RBR-0902` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact raw module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface through the existing collection/replacement keyword owner path.
 
 ## Ordered Work
-1. `RBR-0900` catches up `re.sub(re.compile("abc"), "x", "abcabc", count=False)` and `re.subn(re.compile(b"abc"), b"x", b"abcabc", count=True)` on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing compiled-pattern keyword-carrier owner path instead of opening another manifest family.
+1. `RBR-0902` catches up `re.sub("abc", "x", "abcabc", count=False)` and `re.subn(b"abc", b"x", b"abcabc", count=True)` on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing raw module keyword-carrier owner path instead of widening into compiled-pattern or direct-`Pattern` neighbors.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

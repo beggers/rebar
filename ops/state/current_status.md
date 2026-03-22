@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1526 cases across 114 manifests, with all 1526 passing in the current slice; the benchmark publication covers 870/870 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0900` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface once the matching correctness anchors have landed.
+- `RBR-0902` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact raw module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface through the existing collection/replacement keyword owner path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1526 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0900` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface once the matching correctness anchors have landed.
+- `RBR-0902` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact raw module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface through the existing collection/replacement keyword owner path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
