@@ -347,23 +347,20 @@ def _resolve_bound_pattern_replacement_count(
     count: object,
     kwargs: dict[str, object],
 ) -> object:
-    if len(extra_args) > 1:
-        raise TypeError(
-            f"Pattern.{method_name}() takes from 3 to 4 positional arguments "
-            f"but {len(extra_args) + 3} were given"
-        )
+    extra_argument_count = len(extra_args) + len(kwargs)
+    if count is not _PATTERN_REPLACEMENT_COUNT_UNSET:
+        extra_argument_count += 1
 
-    if extra_args and count is not _PATTERN_REPLACEMENT_COUNT_UNSET:
+    if extra_argument_count > 1:
         raise TypeError(
             f"{method_name}() takes at most 3 arguments "
-            f"({2 + len(extra_args) + 1 + len(kwargs)} given)"
+            f"({2 + extra_argument_count} given)"
         )
 
     if kwargs:
         unexpected_keyword = next(iter(kwargs))
         raise TypeError(
-            f"Pattern.{method_name}() got an unexpected keyword argument "
-            f"{unexpected_keyword!r}"
+            f"{unexpected_keyword!r} is an invalid keyword argument for {method_name}()"
         )
 
     if extra_args:

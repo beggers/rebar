@@ -1316,11 +1316,25 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
         kwargs={"count": 1},
     ),
     PatternHelperErrorCase(
+        case_id="pattern-sub-unexpected-keyword-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abc"),
+        kwargs={"missing": 1},
+    ),
+    PatternHelperErrorCase(
         case_id="pattern-subn-duplicate-count-keyword-bytes",
         helper="subn",
         pattern=b"abc",
         args=(b"x", b"abc", 1),
         kwargs={"count": 1},
+    ),
+    PatternHelperErrorCase(
+        case_id="pattern-subn-unexpected-keyword-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abc"),
+        kwargs={"missing": 1},
     ),
 )
 COLLECTION_UNSUPPORTED_CASES = (

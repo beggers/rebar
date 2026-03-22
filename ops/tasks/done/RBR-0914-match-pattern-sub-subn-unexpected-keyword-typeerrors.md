@@ -1,6 +1,6 @@
 # RBR-0914: Match direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword `TypeError`s
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -47,3 +47,11 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-sub-unexpected-keyword-str or compiled-pattern-subn-unexpected-keyword-bytes'` passed in this run (`4 passed, 1307 deselected`), so the adjacent compiled-pattern-first-argument owner path is already green and does not need to be reopened here;
   - direct publication probes in this run confirmed there are still no `pattern-sub-unexpected-keyword-...`, `pattern-subn-unexpected-keyword-...`, `workflow-pattern-sub-unexpected-keyword-...`, or `workflow-pattern-subn-unexpected-keyword-...` cases in the live correctness or benchmark publications, so publication and benchmark follow-ons should wait until this behavior matches CPython first; and
   - `python/rebar/__init__.py` still defines `Pattern.sub()` / `Pattern.subn()` with fixed Python signatures, which is why Python-level argument binding still leaks the wrong unexpected-keyword diagnostics before the shared replacement logic runs.
+
+## Completion Note
+- Landed direct bound-pattern replacement keyword parity by updating `_resolve_bound_pattern_replacement_count()` in `python/rebar/__init__.py` so a lone unexpected keyword now raises CPython-shaped `("'missing' is an invalid keyword argument for sub()/subn()",)` while the existing multi-extra-argument `takes at most 3 arguments` path remains intact.
+- Added `pattern-sub-unexpected-keyword-str` and `pattern-subn-unexpected-keyword-bytes` to `tests/python/test_module_workflow_parity_suite.py` on the existing `BOUND_PATTERN_TYPE_ERROR_CASES` / `_invoke_bound_pattern_helper()` owner path; published correctness and benchmark fixtures were intentionally left unchanged.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-unexpected-keyword-str or pattern-subn-unexpected-keyword-bytes'` -> `8 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bound_pattern_helper_type_errors_match_cpython'` -> `20 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-sub-unexpected-keyword-str or compiled-pattern-subn-unexpected-keyword-bytes'` -> `4 passed`
