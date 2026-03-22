@@ -3519,7 +3519,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="pattern.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 11)
+        self.assertEqual(len(expected_measured_workload_ids), 13)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5180,11 +5180,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 876,
-                "module_workloads": 868,
+                "measured_workloads": 878,
+                "module_workloads": 870,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 876,
+                "total_workloads": 878,
             },
         )
 
@@ -6619,9 +6619,22 @@ def _collection_replacement_duplicate_keyword_field(
     keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
     if keyword_parameter is None or keyword_parameter not in workload.kwargs:
         return None
-    if f"multiple values for argument '{keyword_parameter}'" not in message_substring:
-        return None
-    return keyword_parameter
+    if f"multiple values for argument '{keyword_parameter}'" in message_substring:
+        return keyword_parameter
+    if workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}:
+        positional_limit = {
+            "pattern.split": 2,
+            "pattern.sub": 3,
+            "pattern.subn": 3,
+        }[workload.operation]
+        helper_name = workload.operation.removeprefix("pattern.")
+        expected_message = (
+            f"{helper_name}() takes at most {positional_limit} arguments "
+            f"({positional_limit + 1} given)"
+        )
+        if expected_message in message_substring:
+            return keyword_parameter
+    return None
 
 
 def _collection_replacement_keyword_correctness_case_signature(
@@ -8310,6 +8323,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-sub-count-indexlike-keyword-purged-bytes": (
                     "workflow-pattern-sub-count-indexlike-bytes",
                 ),
+                "pattern-sub-duplicate-count-keyword-warm-str": (
+                    "workflow-pattern-sub-duplicate-count-keyword-str",
+                ),
                 "pattern-subn-count-keyword-warm-str": (
                     "workflow-pattern-subn-count-keyword-str",
                 ),
@@ -8321,6 +8337,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "pattern-subn-count-indexlike-keyword-warm-str": (
                     "workflow-pattern-subn-count-indexlike-str",
+                ),
+                "pattern-subn-duplicate-count-keyword-warm-bytes": (
+                    "workflow-pattern-subn-duplicate-count-keyword-bytes",
                 ),
             },
         ),

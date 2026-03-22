@@ -2103,6 +2103,46 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-duplicate-count-keyword-warm-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "count": 1,
+      "kwargs": {
+        "count": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "sub() takes at most 3 arguments (4 given)"
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "literal",
+        "count",
+        "keyword",
+        "duplicate-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "literal-text",
+        "keyword-count",
+        "duplicate-keyword-error"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.sub helper path that keeps the bounded duplicate count= keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-subn-count-indexlike-positional-warm-str",
       "bucket": "pattern-subn",
       "family": "module",
@@ -2273,6 +2313,46 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled Pattern.subn helper path that keeps the bounded keyword __index__ count workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-duplicate-count-keyword-warm-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "count": 1,
+      "kwargs": {
+        "count": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "subn() takes at most 3 arguments (4 given)"
+      },
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "count",
+        "keyword",
+        "duplicate-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "keyword-count",
+        "duplicate-keyword-error"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.subn helper path that keeps the bounded duplicate count= keyword rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

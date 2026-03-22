@@ -1,6 +1,6 @@
 # RBR-0912: Catch up the direct `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -64,3 +64,12 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_keyword'` currently passes in this checkout, so the shared direct-`Pattern` collection/replacement keyword benchmark owner path is already green before widening the exact duplicate-`count=` spellings;
   - `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` currently contain no `pattern-sub-duplicate-count-keyword-...` or `pattern-subn-duplicate-count-keyword-...` workload ids in this run; and
   - `reports/benchmarks/latest.py` currently reports `876` total / `876` measured / `0` known gaps overall, with `REPORT["manifests"]["collection-replacement-boundary"]` still at `68` selected workloads / `68` measured / `0` known gaps and the direct pattern keyword replacement/split subset still at `11` measured rows.
+
+## Completion
+- Added `pattern-sub-duplicate-count-keyword-warm-str` and `pattern-subn-duplicate-count-keyword-warm-bytes` on the existing `benchmarks/workloads/collection_replacement_boundary.py` surface, mapped them onto the shared `collection-replacement-keyword` benchmark/correctness owner path, and taught the benchmark harness to time direct bound-pattern duplicate-keyword error callbacks by passing the positional `count` alongside the keyword carrier.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-duplicate-count-keyword-str or pattern-subn-duplicate-count-keyword-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_keyword or collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0912-pattern-sub-subn-duplicate-count-keyword-boundary-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Published benchmark report now shows `collection-replacement-boundary` at `70` selected / `70` measured / `0` known gaps, with combined tracked totals at `878` total / `878` measured / `0` known gaps and `870` module workloads.

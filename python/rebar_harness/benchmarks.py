@@ -475,6 +475,11 @@ _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
 _PATTERN_HELPER_KEYWORD_OPERATIONS = frozenset(
     _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION
 )
+_PATTERN_HELPER_DUPLICATE_KEYWORD_POSITIONAL_LIMITS = {
+    "pattern.split": 2,
+    "pattern.sub": 3,
+    "pattern.subn": 3,
+}
 _PATTERN_HELPER_KEYWORD_OPERATIONS_DESCRIPTION = (
     "pattern.search, pattern.match, pattern.fullmatch, pattern.findall, "
     "pattern.finditer, pattern.split, pattern.sub, and pattern.subn"
@@ -883,6 +888,52 @@ def _expected_duplicate_module_helper_keyword_field(
         isinstance(message_substring, str)
         and f"multiple values for argument '{expected_field}'" in message_substring
     ):
+        return expected_field
+    return None
+
+
+def _expected_duplicate_pattern_helper_keyword_field(
+    workload: Workload,
+) -> str | None:
+    expected_exception = workload.expected_exception
+    allowed_fields = _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION.get(workload.operation)
+    if (
+        expected_exception is None
+        or expected_exception.get("type") != "TypeError"
+        or allowed_fields is None
+    ):
+        return None
+    message_substring = expected_exception.get("message_substring")
+    if not isinstance(message_substring, str):
+        return None
+
+    for allowed_field in allowed_fields:
+        if (
+            allowed_field in workload.kwargs
+            and f"multiple values for argument '{allowed_field}'" in message_substring
+        ):
+            return allowed_field
+
+    positional_limit = _PATTERN_HELPER_DUPLICATE_KEYWORD_POSITIONAL_LIMITS.get(
+        workload.operation
+    )
+    if positional_limit is None:
+        return None
+
+    expected_field = {
+        "pattern.split": "maxsplit",
+        "pattern.sub": "count",
+        "pattern.subn": "count",
+    }[workload.operation]
+    if expected_field not in workload.kwargs:
+        return None
+
+    helper_name = workload.operation.removeprefix("pattern.")
+    bound_method_message = (
+        f"{helper_name}() takes at most {positional_limit} arguments "
+        f"({positional_limit + 1} given)"
+    )
+    if bound_method_message in message_substring:
         return expected_field
     return None
 
@@ -1438,6 +1489,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
     haystack = workload.haystack_payload()
     uses_positional_window = workload.pos is not None or workload.endpos is not None
     uses_keyword_arguments = bool(workload.kwargs)
+    duplicate_keyword_field = _expected_duplicate_pattern_helper_keyword_field(workload)
 
     def compile_pattern() -> Any:
         return module.compile(pattern, workload.flags)
@@ -1490,6 +1542,12 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             return compiled.fullmatch(*window_call_args())
         if workload.operation == "pattern.split":
             if uses_keyword_arguments:
+                if duplicate_keyword_field == "maxsplit":
+                    return compiled.split(
+                        haystack,
+                        workload.maxsplit_argument(),
+                        **keyword_call_kwargs(),
+                    )
                 return compiled.split(haystack, **keyword_call_kwargs())
             return compiled.split(
                 haystack,
@@ -1505,6 +1563,13 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             return list(compiled.finditer(*window_call_args()))
         if workload.operation == "pattern.sub":
             if uses_keyword_arguments:
+                if duplicate_keyword_field == "count":
+                    return compiled.sub(
+                        workload.replacement_payload(),
+                        haystack,
+                        workload.count_argument(),
+                        **keyword_call_kwargs(),
+                    )
                 return compiled.sub(
                     workload.replacement_payload(),
                     haystack,
@@ -1517,6 +1582,13 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             )
         if workload.operation == "pattern.subn":
             if uses_keyword_arguments:
+                if duplicate_keyword_field == "count":
+                    return compiled.subn(
+                        workload.replacement_payload(),
+                        haystack,
+                        workload.count_argument(),
+                        **keyword_call_kwargs(),
+                    )
                 return compiled.subn(
                     workload.replacement_payload(),
                     haystack,
