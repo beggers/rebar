@@ -27,10 +27,12 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
+    build_published_subset_registry,
     build_scorecard_report_descriptor,
     load_python_dict_attribute,
     materialize_descriptor_value,
     ordered_published_subset_filenames,
+    select_published_subset_paths,
 )
 
 
@@ -88,29 +90,23 @@ _NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES = {
     ),
 }
 
-_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
-    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR: _PUBLISHED_BENCHMARK_MANIFEST_FILENAMES,
-    **{
-        selector: ordered_published_subset_filenames(
-            _PUBLISHED_BENCHMARK_MANIFEST_FILENAMES,
-            requested_filenames,
-            missing_filename_error_prefix=(
-                _PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX
-            ),
-        )
-        for selector, requested_filenames in (
-            _NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES.items()
-        )
-    },
-}
+_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = build_published_subset_registry(
+    _PUBLISHED_BENCHMARK_MANIFEST_FILENAMES,
+    _NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES,
+    full_suite_selector=PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
+    missing_filename_error_prefix=(
+        _PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX
+    ),
+)
 
 
 def select_benchmark_manifest_paths(selector: str) -> tuple[pathlib.Path, ...]:
-    try:
-        manifest_filenames = _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[selector]
-    except KeyError as exc:
-        raise ValueError(f"unknown benchmark manifest selector {selector!r}") from exc
-    return tuple(BENCHMARK_WORKLOADS_ROOT / filename for filename in manifest_filenames)
+    return select_published_subset_paths(
+        selector,
+        filenames_by_selector=_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR,
+        root=BENCHMARK_WORKLOADS_ROOT,
+        unknown_selector_error_prefix="unknown benchmark manifest selector",
+    )
 
 
 SOURCE_TREE_SHIM_MODE = "source-tree-shim"

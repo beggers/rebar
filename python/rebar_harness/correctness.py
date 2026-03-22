@@ -20,10 +20,12 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 import rebar
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
+    build_published_subset_registry,
     build_scorecard_report_descriptor,
     load_python_dict_attribute,
     materialize_descriptor_value,
     ordered_published_subset_filenames,
+    select_published_subset_paths,
 )
 
 
@@ -344,29 +346,23 @@ _NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES = {
     ),
 }
 
-_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
-    PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR: _PUBLISHED_CORRECTNESS_FIXTURE_FILENAMES,
-    **{
-        selector: ordered_published_subset_filenames(
-            _PUBLISHED_CORRECTNESS_FIXTURE_FILENAMES,
-            requested_filenames,
-            missing_filename_error_prefix=(
-                _PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX
-            ),
-        )
-        for selector, requested_filenames in (
-            _NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES.items()
-        )
-    },
-}
+_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = build_published_subset_registry(
+    _PUBLISHED_CORRECTNESS_FIXTURE_FILENAMES,
+    _NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES,
+    full_suite_selector=PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR,
+    missing_filename_error_prefix=(
+        _PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX
+    ),
+)
 
 
 def select_correctness_fixture_paths(selector: str) -> tuple[pathlib.Path, ...]:
-    try:
-        fixture_filenames = _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[selector]
-    except KeyError as exc:
-        raise ValueError(f"unknown correctness fixture selector {selector!r}") from exc
-    return tuple(CORRECTNESS_FIXTURES_ROOT / filename for filename in fixture_filenames)
+    return select_published_subset_paths(
+        selector,
+        filenames_by_selector=_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR,
+        root=CORRECTNESS_FIXTURES_ROOT,
+        unknown_selector_error_prefix="unknown correctness fixture selector",
+    )
 
 
 DEFAULT_FIXTURE_PATHS = select_correctness_fixture_paths(

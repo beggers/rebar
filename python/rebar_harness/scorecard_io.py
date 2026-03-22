@@ -8,7 +8,7 @@ import pprint
 import sys
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 
 
 def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
@@ -48,6 +48,45 @@ def ordered_published_subset_filenames(
             f"{missing_filename_error_prefix}{sorted(missing_filenames)}"
         )
     return ordered_subset
+
+
+def build_published_subset_registry(
+    published_filenames: Sequence[str],
+    requested_filenames_by_selector: Mapping[str, Iterable[str]],
+    *,
+    full_suite_selector: str,
+    missing_filename_error_prefix: str,
+) -> dict[str, tuple[str, ...]]:
+    """Build a selector registry that preserves published full-suite order."""
+
+    published_filename_tuple = tuple(published_filenames)
+    return {
+        full_suite_selector: published_filename_tuple,
+        **{
+            selector: ordered_published_subset_filenames(
+                published_filename_tuple,
+                requested_filenames,
+                missing_filename_error_prefix=missing_filename_error_prefix,
+            )
+            for selector, requested_filenames in requested_filenames_by_selector.items()
+        },
+    }
+
+
+def select_published_subset_paths(
+    selector: str,
+    *,
+    filenames_by_selector: Mapping[str, Sequence[str]],
+    root: pathlib.Path,
+    unknown_selector_error_prefix: str,
+) -> tuple[pathlib.Path, ...]:
+    """Resolve the paths for a selector-backed published subset registry."""
+
+    try:
+        selected_filenames = filenames_by_selector[selector]
+    except KeyError as exc:
+        raise ValueError(f"{unknown_selector_error_prefix} {selector!r}") from exc
+    return tuple(root / filename for filename in selected_filenames)
 
 
 def declared_string_constants_by_suffix(
