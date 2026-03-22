@@ -510,6 +510,13 @@ class CompiledPatternCompileCase:
 
 
 @dataclass(frozen=True)
+class CompiledPatternModuleHelperOwnerPathRow:
+    fixture_case_id: str
+    direct_case_id: str
+    text_model: str
+
+
+@dataclass(frozen=True)
 class ModuleKeywordCallCase:
     case_id: str
     helper: str
@@ -2308,17 +2315,372 @@ def _compiled_pattern_module_helper_fixture_signature(
     )
 
 
+COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS = (
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-str-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-str-literal",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-noflag-str-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-noflag-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-int-zero-str-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-int-zero-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-bool-false-str-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-bool-false-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-ignorecase-str-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-ignorecase-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-str-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-str-named-group",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-noflag-str-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-noflag-str-named-group",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-int-zero-str-named-group",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-bool-false-str-named-group",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-ignorecase-str-named-group",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-search-str-compiled-pattern",
+        direct_case_id="compiled-pattern-search-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-search-str-compiled-pattern-on-bytes-string",
+        direct_case_id="compiled-pattern-search-str-on-bytes-string",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-match-str-compiled-pattern",
+        direct_case_id="compiled-pattern-match-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-bytes-literal",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-noflag-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-noflag-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-int-zero-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-bool-false-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-compile-flags-ignorecase-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-bytes-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-bytes-named-group",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-noflag-bytes-named-group",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-int-zero-bytes-named-group",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-bool-false-bytes-named-group",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
+        direct_case_id="compiled-pattern-compile-flags-ignorecase-bytes-named-group",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-fullmatch-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-fullmatch-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-match-bytes-compiled-pattern-on-str-string",
+        direct_case_id="compiled-pattern-match-bytes-on-str-string",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+        direct_case_id="compiled-module-search-ignorecase-bounded-hit",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-match-str-bounded-wildcard-compiled-pattern",
+        direct_case_id="compiled-module-match-bounded-hit",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
+        direct_case_id="compiled-module-fullmatch-bounded-hit",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
+        direct_case_id="compiled-pattern-fullmatch-str-on-bytes-string",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-search-bytes-verbose-regression-compiled-pattern",
+        direct_case_id="compiled-pattern-search-bytes-verbose-regression",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+        direct_case_id="compiled-pattern-fullmatch-bytes-verbose-regression",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-split-str-compiled-pattern",
+        direct_case_id="compiled-pattern-split-str-maxsplit",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-split-maxsplit-keyword-str-compiled-pattern",
+        direct_case_id="compiled-pattern-split-maxsplit-keyword-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-split-maxsplit-indexlike-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-split-maxsplit-bool-false-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
+        direct_case_id="compiled-pattern-split-duplicate-maxsplit-keyword-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-split-unexpected-keyword-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-split-str-compiled-pattern-on-bytes-string",
+        direct_case_id="compiled-pattern-split-str-on-bytes-string",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-findall-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-findall-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-findall-bytes-compiled-pattern-on-str-string",
+        direct_case_id="compiled-pattern-findall-bytes-on-str-string",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-finditer-str-compiled-pattern",
+        direct_case_id="compiled-pattern-finditer-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-finditer-str-compiled-pattern-on-bytes-string",
+        direct_case_id="compiled-pattern-finditer-str-on-bytes-string",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-str-count",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-count-keyword-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-count-keyword-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-count-indexlike-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-count-indexlike-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-count-bool-true-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-count-bool-true-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-count-bool-false-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-count-bool-false-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-duplicate-count-keyword-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-unexpected-keyword-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-unexpected-keyword-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-count-alias-keyword-str-compiled-pattern",
+        direct_case_id="compiled-pattern-sub-count-alias-keyword-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-sub-str-compiled-pattern-on-bytes-string",
+        direct_case_id="compiled-pattern-sub-str-on-bytes-string",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-bytes-count",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-count-keyword-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-count-keyword-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-count-indexlike-str-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-count-indexlike-str",
+        text_model="str",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-count-bool-false-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-count-bool-false-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-count-bool-true-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-count-bool-true-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-duplicate-count-keyword-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-unexpected-keyword-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
+        direct_case_id="compiled-pattern-subn-count-alias-keyword-bytes",
+        text_model="bytes",
+    ),
+    CompiledPatternModuleHelperOwnerPathRow(
+        fixture_case_id="workflow-module-subn-bytes-compiled-pattern-on-str-string",
+        direct_case_id="compiled-pattern-subn-bytes-on-str-string",
+        text_model="bytes",
+    ),
+)
+
+
+def _compiled_pattern_module_helper_owner_path_rows(
+    text_model: str | None = None,
+) -> tuple[CompiledPatternModuleHelperOwnerPathRow, ...]:
+    if text_model is None:
+        return COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+    return tuple(
+        row
+        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+        if row.text_model == text_model
+    )
+
+
+def _compiled_pattern_module_helper_owner_path_fixture_case_ids(
+    text_model: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        row.fixture_case_id
+        for row in _compiled_pattern_module_helper_owner_path_rows(text_model)
+    )
+
+
+def _compiled_pattern_module_helper_owner_path_direct_case_ids() -> tuple[str, ...]:
+    return tuple(
+        row.direct_case_id for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+    )
+
+
+def _compiled_pattern_module_helper_owner_path_direct_cases() -> tuple[object, ...]:
+    return (
+        *COMPILED_PATTERN_COMPILE_CASES,
+        *COMPILED_PATTERN_MODULE_HELPER_CASES,
+        *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
+        *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
+        *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
+        *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+    )
+
+
+def _compiled_pattern_module_helper_owner_path_selected_direct_cases() -> tuple[object, ...]:
+    direct_cases_by_id = {
+        case.case_id: case for case in _compiled_pattern_module_helper_owner_path_direct_cases()
+    }
+    return tuple(
+        direct_cases_by_id[row.direct_case_id]
+        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+    )
+
+
 def _published_compiled_pattern_module_helper_fixture_cases() -> tuple[FixtureCase, ...]:
     direct_signatures = {
         _compiled_pattern_module_helper_direct_signature(case)
-        for case in (
-            *COMPILED_PATTERN_COMPILE_CASES,
-            *COMPILED_PATTERN_MODULE_HELPER_CASES,
-            *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
-            *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
-            *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
-            *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
-        )
+        for case in _compiled_pattern_module_helper_owner_path_selected_direct_cases()
     }
     return tuple(
         case
@@ -4989,24 +5351,8 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
-    direct_cases_by_signature = {
-        _compiled_pattern_module_helper_direct_signature(case): case
-        for case in (
-            *COMPILED_PATTERN_COMPILE_CASES,
-            *COMPILED_PATTERN_MODULE_HELPER_CASES,
-            *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
-            *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
-            *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
-            *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
-        )
-    }
     published_fixture_cases = _published_compiled_pattern_module_helper_fixture_cases()
-    selected_direct_cases = tuple(
-        direct_cases_by_signature[
-            _compiled_pattern_module_helper_fixture_signature(case)
-        ]
-        for case in published_fixture_cases
-    )
+    selected_direct_cases = _compiled_pattern_module_helper_owner_path_selected_direct_cases()
 
     assert tuple(
         case.case_id
@@ -5014,78 +5360,14 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
             published_fixture_cases,
             "str",
         )
-    ) == (
-        "workflow-module-compile-str-compiled-pattern",
-        "workflow-module-compile-flags-noflag-str-compiled-pattern",
-        "workflow-module-compile-flags-int-zero-str-compiled-pattern",
-        "workflow-module-compile-flags-bool-false-str-compiled-pattern",
-        "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
-        "workflow-module-compile-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-noflag-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
-        "workflow-module-search-str-compiled-pattern",
-        "workflow-module-search-str-compiled-pattern-on-bytes-string",
-        "workflow-module-match-str-compiled-pattern",
-        "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
-        "workflow-module-match-str-bounded-wildcard-compiled-pattern",
-        "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
-        "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
-        "workflow-module-split-str-compiled-pattern",
-        "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
-        "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
-        "workflow-module-split-str-compiled-pattern-on-bytes-string",
-        "workflow-module-finditer-str-compiled-pattern",
-        "workflow-module-finditer-str-compiled-pattern-on-bytes-string",
-        "workflow-module-sub-str-compiled-pattern",
-        "workflow-module-sub-count-keyword-str-compiled-pattern",
-        "workflow-module-sub-count-bool-true-str-compiled-pattern",
-        "workflow-module-sub-count-bool-false-str-compiled-pattern",
-        "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
-        "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
-        "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
-        "workflow-module-sub-count-alias-keyword-str-compiled-pattern",
-        "workflow-module-sub-str-compiled-pattern-on-bytes-string",
-        "workflow-module-subn-count-indexlike-str-compiled-pattern",
-    )
+    ) == _compiled_pattern_module_helper_owner_path_fixture_case_ids("str")
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == (
-        "workflow-module-compile-bytes-compiled-pattern",
-        "workflow-module-compile-flags-noflag-bytes-compiled-pattern",
-        "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
-        "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
-        "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
-        "workflow-module-compile-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
-        "workflow-module-fullmatch-bytes-compiled-pattern",
-        "workflow-module-match-bytes-compiled-pattern-on-str-string",
-        "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-        "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-        "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
-        "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
-        "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
-        "workflow-module-findall-bytes-compiled-pattern",
-        "workflow-module-findall-bytes-compiled-pattern-on-str-string",
-        "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
-        "workflow-module-subn-bytes-compiled-pattern",
-        "workflow-module-subn-count-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
-        "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
-        "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
-        "workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-bytes-compiled-pattern-on-str-string",
-    )
+    ) == _compiled_pattern_module_helper_owner_path_fixture_case_ids("bytes")
     assert len(published_fixture_cases) == 62
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
         {"str": 33, "bytes": 29}
@@ -5105,136 +5387,10 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     )
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == (
-        "workflow-module-compile-str-compiled-pattern",
-        "workflow-module-compile-flags-noflag-str-compiled-pattern",
-        "workflow-module-compile-flags-int-zero-str-compiled-pattern",
-        "workflow-module-compile-flags-bool-false-str-compiled-pattern",
-        "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
-        "workflow-module-compile-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-noflag-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
-        "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
-        "workflow-module-search-str-compiled-pattern",
-        "workflow-module-search-str-compiled-pattern-on-bytes-string",
-        "workflow-module-match-str-compiled-pattern",
-        "workflow-module-compile-bytes-compiled-pattern",
-        "workflow-module-compile-flags-noflag-bytes-compiled-pattern",
-        "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
-        "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
-        "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
-        "workflow-module-compile-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
-        "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
-        "workflow-module-fullmatch-bytes-compiled-pattern",
-        "workflow-module-match-bytes-compiled-pattern-on-str-string",
-        "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
-        "workflow-module-match-str-bounded-wildcard-compiled-pattern",
-        "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
-        "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
-        "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-        "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-        "workflow-module-split-str-compiled-pattern",
-        "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
-        "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
-        "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
-        "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
-        "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
-        "workflow-module-split-str-compiled-pattern-on-bytes-string",
-        "workflow-module-findall-bytes-compiled-pattern",
-        "workflow-module-findall-bytes-compiled-pattern-on-str-string",
-        "workflow-module-finditer-str-compiled-pattern",
-        "workflow-module-finditer-str-compiled-pattern-on-bytes-string",
-        "workflow-module-sub-str-compiled-pattern",
-        "workflow-module-sub-count-keyword-str-compiled-pattern",
-        "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
-        "workflow-module-sub-count-bool-true-str-compiled-pattern",
-        "workflow-module-sub-count-bool-false-str-compiled-pattern",
-        "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
-        "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
-        "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
-        "workflow-module-sub-count-alias-keyword-str-compiled-pattern",
-        "workflow-module-sub-str-compiled-pattern-on-bytes-string",
-        "workflow-module-subn-bytes-compiled-pattern",
-        "workflow-module-subn-count-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-count-indexlike-str-compiled-pattern",
-        "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
-        "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
-        "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
-        "workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
-        "workflow-module-subn-bytes-compiled-pattern-on-str-string",
-    )
+    ) == _compiled_pattern_module_helper_owner_path_fixture_case_ids()
     assert tuple(
         case.case_id for case in selected_direct_cases
-    ) == (
-        "compiled-pattern-compile-str-literal",
-        "compiled-pattern-compile-flags-noflag-str",
-        "compiled-pattern-compile-flags-int-zero-str",
-        "compiled-pattern-compile-flags-bool-false-str",
-        "compiled-pattern-compile-flags-ignorecase-str",
-        "compiled-pattern-compile-str-named-group",
-        "compiled-pattern-compile-flags-noflag-str-named-group",
-        "compiled-pattern-compile-flags-int-zero-str-named-group",
-        "compiled-pattern-compile-flags-bool-false-str-named-group",
-        "compiled-pattern-compile-flags-ignorecase-str-named-group",
-        "compiled-pattern-search-str",
-        "compiled-pattern-search-str-on-bytes-string",
-        "compiled-pattern-match-str",
-        "compiled-pattern-compile-bytes-literal",
-        "compiled-pattern-compile-flags-noflag-bytes",
-        "compiled-pattern-compile-flags-int-zero-bytes",
-        "compiled-pattern-compile-flags-bool-false-bytes",
-        "compiled-pattern-compile-flags-ignorecase-bytes",
-        "compiled-pattern-compile-bytes-named-group",
-        "compiled-pattern-compile-flags-noflag-bytes-named-group",
-        "compiled-pattern-compile-flags-int-zero-bytes-named-group",
-        "compiled-pattern-compile-flags-bool-false-bytes-named-group",
-        "compiled-pattern-compile-flags-ignorecase-bytes-named-group",
-        "compiled-pattern-fullmatch-bytes",
-        "compiled-pattern-match-bytes-on-str-string",
-        "compiled-module-search-ignorecase-bounded-hit",
-        "compiled-module-match-bounded-hit",
-        "compiled-module-fullmatch-bounded-hit",
-        "compiled-pattern-fullmatch-str-on-bytes-string",
-        "compiled-pattern-search-bytes-verbose-regression",
-        "compiled-pattern-fullmatch-bytes-verbose-regression",
-        "compiled-pattern-split-str-maxsplit",
-        "compiled-pattern-split-maxsplit-keyword-str",
-        "compiled-pattern-split-maxsplit-indexlike-bytes",
-        "compiled-pattern-split-maxsplit-bool-false-bytes",
-        "compiled-pattern-split-duplicate-maxsplit-keyword-str",
-        "compiled-pattern-split-unexpected-keyword-bytes",
-        "compiled-pattern-split-str-on-bytes-string",
-        "compiled-pattern-findall-bytes",
-        "compiled-pattern-findall-bytes-on-str-string",
-        "compiled-pattern-finditer-str",
-        "compiled-pattern-finditer-str-on-bytes-string",
-        "compiled-pattern-sub-str-count",
-        "compiled-pattern-sub-count-keyword-str",
-        "compiled-pattern-sub-count-indexlike-bytes",
-        "compiled-pattern-sub-count-bool-true-str",
-        "compiled-pattern-sub-count-bool-false-str",
-        "compiled-pattern-sub-duplicate-count-keyword-str",
-        "compiled-pattern-sub-unexpected-keyword-str",
-        "compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
-        "compiled-pattern-sub-count-alias-keyword-str",
-        "compiled-pattern-sub-str-on-bytes-string",
-        "compiled-pattern-subn-bytes-count",
-        "compiled-pattern-subn-count-keyword-bytes",
-        "compiled-pattern-subn-count-indexlike-str",
-        "compiled-pattern-subn-count-bool-false-bytes",
-        "compiled-pattern-subn-count-bool-true-bytes",
-        "compiled-pattern-subn-duplicate-count-keyword-bytes",
-        "compiled-pattern-subn-unexpected-keyword-bytes",
-        "compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
-        "compiled-pattern-subn-count-alias-keyword-bytes",
-        "compiled-pattern-subn-bytes-on-str-string",
-    )
+    ) == _compiled_pattern_module_helper_owner_path_direct_case_ids()
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert tuple(
         case.helper for case in published_fixture_cases
@@ -5243,22 +5399,19 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         for case in selected_direct_cases
     )
 
-    for fixture_case, direct_case in zip(
+    for row, fixture_case, direct_case in zip(
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
         published_fixture_cases,
         selected_direct_cases,
     ):
+        assert fixture_case.case_id == row.fixture_case_id
+        assert direct_case.case_id == row.direct_case_id
         assert fixture_case.use_compiled_pattern is True
-        direct_pattern = direct_case.pattern
-        direct_args = _compiled_pattern_module_helper_direct_case_args(direct_case)
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_pattern, bytes) else "str"
+        assert fixture_case.text_model == row.text_model
+        assert (
+            _compiled_pattern_module_helper_fixture_signature(fixture_case)
+            == _compiled_pattern_module_helper_direct_signature(direct_case)
         )
-        assert case_pattern(fixture_case) == direct_case.pattern
-        assert tuple(fixture_case.args) == direct_args
-        assert _workflow_keyword_kwargs_signature(
-            fixture_case.kwargs
-        ) == _workflow_keyword_kwargs_signature(getattr(direct_case, "kwargs", {}))
-        assert fixture_case.flags == getattr(direct_case, "flags", 0)
 
 
 def test_compiled_pattern_module_keyword_bool_count_direct_cases_cover_complements(

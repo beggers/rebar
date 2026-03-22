@@ -1,6 +1,6 @@
 # RBR-0964: Collapse compiled-pattern module-helper publication owner-path mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -133,3 +133,8 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases or compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path'` currently passes (`2 passed, 1423 deselected`);
   - the publication-surface probe in Verification currently passes (`ok 62`), proving the live owner path already resolves to the expected 62-row surface with the current helper/text-model counts; and
   - the structural probe in Verification currently fails only because `tests/python/test_module_workflow_parity_suite.py` still carries two `*COMPILED_PATTERN_COMPILE_CASES,` bundle occurrences plus duplicate fixture-id mirror literals for the compiled-pattern module-helper publication path.
+- 2026-03-22 architecture-implementation: Replaced the duplicated compiled-pattern module-helper publication mirrors in `tests/python/test_module_workflow_parity_suite.py` with one file-local canonical owner-path row table plus helper accessors for fixture ids, direct ids, and selected direct cases. `_published_compiled_pattern_module_helper_fixture_cases()` now derives its signature set from that shared owner-path surface, and the publication assertion test now derives the `str`/`bytes` subsets, full fixture order, and full direct-case order from the same canonical rows while keeping the signature-alignment checks intact.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases or compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path'` passed (`2 passed, 1423 deselected`).
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... _published_compiled_pattern_module_helper_fixture_cases() ... PY` passed (`ok 62`).
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... Path(\"tests/python/test_module_workflow_parity_suite.py\").read_text() ... PY` passed (`ok`), confirming one `*COMPILED_PATTERN_COMPILE_CASES,` occurrence and one occurrence each of the first/last owner-path fixture ids.
