@@ -1,8 +1,9 @@
 # RBR-0945: Publish the module-workflow module `split()` unexpected-keyword str/bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the adjacent raw module-level `split()` unexpected-keyword str/bytes pair, publishing the exact CPython-visible rejection spellings that the shared owner path already exposes directly before matching Python-path benchmark catch-up or another module-helper family widens the queue.
@@ -96,3 +97,9 @@ Created: 2026-03-22
   - `rg -n 'workflow-module-split-unexpected-keyword\"|workflow-module-split-unexpected-keyword-bytes\"|module-split-unexpected-keyword-purged-str\"|module-split-unexpected-keyword-purged-bytes\"' tests/conformance/fixtures/module_workflow_surface.py reports/correctness/latest.py tests/conformance/test_combined_correctness_scorecards.py benchmarks/workloads/collection_replacement_boundary.py reports/benchmarks/latest.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns no matches, so both exact raw publication ids and their matching raw benchmark ids are still absent in this checkout;
   - `reports/correctness/latest.py` currently reports `1545` total / `1545` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `171`, `module.workflow.str` at `96`, `module.workflow.bytes` at `75`, `module.workflow.module_call` at `91`, and `module.workflow.pattern_call` at `68`; and
   - `reports/benchmarks/latest.py` currently reports `893` total / `893` measured / `0` known gaps across `30` manifests, so this run should stay on correctness publication instead of skipping ahead to benchmark-only changes.
+
+## Completion
+- 2026-03-22: Added `workflow-module-split-unexpected-keyword` and `workflow-module-split-unexpected-keyword-bytes` to `tests/conformance/fixtures/module_workflow_surface.py` as the adjacent raw `module_call` `split()` keyword-error rows, keeping `include_pattern_arg == True`, the exact `missing=1` signature, and the existing bytes payload encoding shape on the shared module-workflow owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so `MODULE_KEYWORD_ERROR_CASES` and the published `module-keyword-error` slice now include the new `str`/`bytes` direct anchors in order, and so the owner-path bundle expectations move to `173` total rows, a `97`/`76` `str`/`bytes` split, `93` published `module_call` rows, and `14` raw module `split` rows while leaving `pattern_call` at `68`.
+- Extended `tests/conformance/test_combined_correctness_scorecards.py` so the combined scorecard representative-case inventory includes the new raw module `split()` unexpected-keyword slice, then republished `reports/correctness/latest.py`. The tracked report remains in the diff and now reads `1547` total / `1547` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `173/173/0`, `module.workflow.str` at `97/97/0`, `module.workflow.bytes` at `76/76/0`, `module.workflow.module_call` at `93/93/0`, and `module.workflow.pattern_call` unchanged at `68/68/0`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module-split-unexpected-keyword or module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases'`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0945-module-workflow-module-split-unexpected-keyword-str-bytes-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

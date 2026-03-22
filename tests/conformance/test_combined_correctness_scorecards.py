@@ -178,6 +178,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-subn-count-bool-true-bytes",
             "workflow-module-search-duplicate-flags-keyword",
             "workflow-module-split-duplicate-maxsplit-keyword",
+            "workflow-module-split-unexpected-keyword",
+            "workflow-module-split-unexpected-keyword-bytes",
             "workflow-module-sub-duplicate-count-keyword",
             "workflow-module-fullmatch-unexpected-keyword",
             "workflow-module-sub-unexpected-keyword",

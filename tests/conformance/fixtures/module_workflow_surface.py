@@ -1860,6 +1860,45 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-unexpected-keyword",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "include_pattern_arg": True,
+      "args": ["abc"],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "split", "literal", "str", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level split() unexpected keyword rejection on the shared module-workflow owner path without widening into a broader keyword-error dump."
+      ]
+    },
+    {
+      "id": "workflow-module-split-unexpected-keyword-bytes",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "include_pattern_arg": True,
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "split", "literal", "bytes", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level split() unexpected keyword rejection on bytes payloads on the shared module-workflow owner path without widening into a broader keyword-error dump."
+      ]
+    },
+    {
       "id": "workflow-module-sub-duplicate-count-keyword",
       "operation": "module_call",
       "family": "module_sub_workflow",
