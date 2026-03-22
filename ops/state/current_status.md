@@ -23,7 +23,7 @@ The published correctness slice now covers 1556 cases across 114 manifests, all 
 
 ## Queue Frontier
 - No ready feature follow-on currently survives in the feature queue after the latest same-cycle drain.
-- No feature tasks are in progress or blocked, and the done queue now holds `972` completed task files in this checkout.
+- No feature tasks are in progress or blocked, and the done queue now holds `975` completed task files in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
