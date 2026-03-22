@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0910` is the surviving follow-on on the shared direct bound-pattern replacement frontier, publishing the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair on the existing `module-workflow-surface` correctness path before Python-path benchmark catch-up or adjacent direct bound-pattern unexpected-keyword / `split()` duplicate-`maxsplit=` follow-ons reopen that replacement-keyword error slice.
+`RBR-0912` is the surviving follow-on on the shared direct bound-pattern replacement frontier, catching the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair up on the existing `collection_replacement_boundary.py` Python-path benchmark surface before adjacent direct bound-pattern unexpected-keyword or `split()` duplicate-`maxsplit=` publication follow-ons reopen that replacement-keyword error slice.
 
 ## Ordered Work
-1. `RBR-0910` publishes `re.compile("abc").sub("x", "abc", 1, count=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, count=1)` in `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, reusing the shared direct bound-pattern error owner path so the same replacement-keyword diagnostics reach the tracked correctness surface before Python-path benchmark catch-up or adjacent unexpected-keyword / split-duplicate follow-ons widen the frontier.
+1. `RBR-0912` catches up `re.compile("abc").sub("x", "abc", 1, count=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, count=1)` in `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the shared collection/replacement keyword benchmark owner path so the same direct bound-pattern duplicate-`count=` diagnostics reach the tracked Python-path benchmark surface before adjacent unexpected-keyword or split-duplicate publication follow-ons widen the frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

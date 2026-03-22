@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1528 cases across 114 manifests, with all 1528 passing in the current slice; the benchmark publication covers 876/876 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0910` is the surviving follow-on on the shared direct bound-pattern replacement frontier, publishing the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair on the existing `module-workflow-surface` correctness path before Python-path benchmark catch-up or adjacent direct bound-pattern unexpected-keyword / `split()` duplicate-`maxsplit=` follow-ons reopen that replacement-keyword error slice.
+- `RBR-0912` is the surviving follow-on on the shared direct bound-pattern replacement frontier, catching the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair up on the existing `collection_replacement_boundary.py` Python-path benchmark surface before adjacent direct bound-pattern unexpected-keyword or `split()` duplicate-`maxsplit=` publication follow-ons reopen that replacement-keyword error slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1528 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0910` is the surviving follow-on on the shared direct bound-pattern replacement frontier, publishing the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair on the existing `module-workflow-surface` correctness path before Python-path benchmark catch-up or adjacent direct bound-pattern unexpected-keyword / `split()` duplicate-`maxsplit=` follow-ons reopen that replacement-keyword error slice.
+- `RBR-0912` is the surviving follow-on on the shared direct bound-pattern replacement frontier, catching the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair up on the existing `collection_replacement_boundary.py` Python-path benchmark surface before adjacent direct bound-pattern unexpected-keyword or `split()` duplicate-`maxsplit=` publication follow-ons reopen that replacement-keyword error slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
