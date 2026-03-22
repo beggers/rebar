@@ -1,8 +1,9 @@
 # RBR-0928: Collapse parser-matrix case-tuple mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the remaining detached parser-matrix case-tuple mirrors from `tests/python/test_parser_matrix_parity_suite.py` so the suite derives its compile-metadata, placeholder-search, compile-cache, diagnostic, and no-stdlib-delegation slices directly from the live parser fixture rows it already loads instead of caching second copies of those ordered subsets through explicit case-id lookups.
@@ -144,3 +145,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py` currently passes (`61 passed, 29 skipped in 0.11s`);
   - `rg -n '^(COMPILE_METADATA_CASES|PLACEHOLDER_SEARCH_CASES|REPEATED_COMPILE_CACHE_CASES|DIAGNOSTIC_CASES|NO_STDLIB_DELEGATION_CASES)\\s*=' tests/python/test_parser_matrix_parity_suite.py` currently finds the remaining mirrors at lines `83`, `96`, `110`, `122`, and `133`; and
   - the task-local live-selector probe in Acceptance currently passes (`ok 8 9 7 6 9`), proving the file's existing parser fixture rows already recover the same ordered subset surfaces without those cached tuple mirrors.
+
+## Completion
+- Replaced the parser-matrix case-id lookup table plus the five detached tuple mirrors in `tests/python/test_parser_matrix_parity_suite.py` with file-local live selectors over `PARSER_MATRIX_FIXTURE_BUNDLE.cases`.
+- Kept the compile-metadata, placeholder-search, repeated-compile-cache, diagnostic, direct-bucket, warning, ignorecase-cache, and no-stdlib-delegation surfaces wired to the same live parser rows, including the expected diagnostic order from the fixture bundle.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py`
+  - `bash -lc "! rg -n '^(COMPILE_METADATA_CASES|PLACEHOLDER_SEARCH_CASES|REPEATED_COMPILE_CACHE_CASES|DIAGNOSTIC_CASES|NO_STDLIB_DELEGATION_CASES)\\s*=' tests/python/test_parser_matrix_parity_suite.py"`
+  - the acceptance probe from this task (`ok 8 9 7 6 9`)
