@@ -210,6 +210,76 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-search-endpos-keyword-purged-bytes",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "endpos": 4
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "bytes",
+        "purged-cache",
+        "keyword",
+        "endpos",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "pattern-text-model",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes search helper path that keeps the Pattern.search endpos= keyword carrier on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-endpos-indexlike-keyword-purged-bytes",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "endpos": {
+          "type": "indexlike",
+          "value": 4
+        }
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "bytes",
+        "purged-cache",
+        "keyword",
+        "endpos",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "pattern-text-model",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes search helper path that keeps the Pattern.search endpos= __index__ keyword carrier on the shared pattern-boundary surface."
+      ]
+    },
+    {
       "id": "pattern-match-pos-keyword-purged-str",
       "bucket": "pattern-match",
       "family": "module",
