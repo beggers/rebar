@@ -181,6 +181,35 @@ _LITERAL_REPLACEMENT_MATRIX_STRINGS = (
 )
 _LITERAL_REPLACEMENT_MATRIX_COUNTS = (0, 1, 2, -1)
 _LITERAL_REPLACEMENT_HELPERS = ("sub", "subn")
+_LITERAL_REPLACEMENT_COUNT_COERCION_CASES = (
+    pytest.param("abc", "x", "abcabcabc", id="str"),
+    pytest.param(b"abc", b"x", b"abcabcabc", id="bytes"),
+)
+
+
+class _IndexLike:
+    """Minimal __index__ carrier for replacement-count parity coverage."""
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __index__(self) -> int:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"IndexLike({self.value})"
+
+
+_INDEXLIKE_ZERO = _IndexLike(0)
+_INDEXLIKE_ONE = _IndexLike(1)
+_INDEXLIKE_TWO = _IndexLike(2)
+_LITERAL_REPLACEMENT_COUNT_COERCION_VALUES = (
+    pytest.param(False, id="bool-false"),
+    pytest.param(True, id="bool-true"),
+    pytest.param(_INDEXLIKE_ZERO, id="indexlike-zero"),
+    pytest.param(_INDEXLIKE_ONE, id="indexlike-one"),
+    pytest.param(_INDEXLIKE_TWO, id="indexlike-two"),
+)
 
 
 def _literal_replacement_matrix_payloads(
@@ -2335,7 +2364,7 @@ def _assert_literal_replacement_result_matches_cpython(
     pattern: TextValue,
     replacement: TextValue,
     string: TextValue,
-    count: int,
+    count: object,
     observed: ReplacementOutcome,
     expected: ReplacementOutcome,
 ) -> None:
@@ -2345,7 +2374,7 @@ def _assert_literal_replacement_result_matches_cpython(
     except AssertionError as exc:
         raise AssertionError(
             f"{backend_name} {context} {helper} mismatch for pattern={pattern!r}, "
-            f"replacement={replacement!r}, string={string!r}, count={count}"
+            f"replacement={replacement!r}, string={string!r}, count={count!r}"
         ) from exc
 
 
@@ -2497,6 +2526,121 @@ def test_literal_replacement_matrix_module_helpers_accept_compiled_patterns(
                                 helper,
                             )(expected_pattern, replacement, string, count=count),
                         )
+
+
+# Keep the representative fixture-backed rows normalized to ints, then use a
+# compact direct matrix here to prove replacement helpers accept bool and
+# __index__ count carriers across all entry points.
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("count", _LITERAL_REPLACEMENT_COUNT_COERCION_VALUES)
+def test_literal_replacement_count_coercion_matches_cpython_for_module_helpers(
+    regex_backend: tuple[str, object],
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+    count: object,
+) -> None:
+    backend_name, backend = regex_backend
+
+    for helper in _LITERAL_REPLACEMENT_HELPERS:
+        _assert_literal_replacement_result_matches_cpython(
+            backend_name=backend_name,
+            context="module count coercion",
+            helper=helper,
+            pattern=pattern,
+            replacement=replacement,
+            string=string,
+            count=count,
+            observed=getattr(
+                backend,
+                helper,
+            )(pattern, replacement, string, count=count),
+            expected=getattr(
+                re,
+                helper,
+            )(pattern, replacement, string, count=count),
+        )
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("count", _LITERAL_REPLACEMENT_COUNT_COERCION_VALUES)
+def test_literal_replacement_count_coercion_matches_cpython_for_pattern_helpers(
+    regex_backend: tuple[str, object],
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+    count: object,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+
+    for helper in _LITERAL_REPLACEMENT_HELPERS:
+        _assert_literal_replacement_result_matches_cpython(
+            backend_name=backend_name,
+            context="pattern count coercion",
+            helper=helper,
+            pattern=pattern,
+            replacement=replacement,
+            string=string,
+            count=count,
+            observed=getattr(
+                observed_pattern,
+                helper,
+            )(replacement, string, count=count),
+            expected=getattr(
+                expected_pattern,
+                helper,
+            )(replacement, string, count=count),
+        )
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("count", _LITERAL_REPLACEMENT_COUNT_COERCION_VALUES)
+def test_literal_replacement_count_coercion_matches_cpython_for_compiled_pattern_module_helpers(
+    regex_backend: tuple[str, object],
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+    count: object,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+
+    for helper in _LITERAL_REPLACEMENT_HELPERS:
+        _assert_literal_replacement_result_matches_cpython(
+            backend_name=backend_name,
+            context="compiled-pattern module count coercion",
+            helper=helper,
+            pattern=pattern,
+            replacement=replacement,
+            string=string,
+            count=count,
+            observed=getattr(
+                backend,
+                helper,
+            )(observed_pattern, replacement, string, count=count),
+            expected=getattr(
+                re,
+                helper,
+            )(expected_pattern, replacement, string, count=count),
+        )
 
 
 @pytest.mark.parametrize(
