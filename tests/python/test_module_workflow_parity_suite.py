@@ -607,6 +607,21 @@ class _IndexLike:
         return f"IndexLike({self.value})"
 
 
+class _AlternateIndexLike:
+    """Distinct __index__ carrier used to prove value-based normalization."""
+
+    __slots__ = ("value",)
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __index__(self) -> int:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"AlternateIndexLike({self.value})"
+
+
 _INDEX_ZERO = _IndexLike(0)
 _INDEX_ONE = _IndexLike(1)
 _INDEX_TWO = _IndexLike(2)
@@ -4845,18 +4860,6 @@ def test_workflow_keyword_kwargs_signature_preserves_explicit_noflag_carrier() -
 
 
 def test_workflow_keyword_kwargs_signature_normalizes_indexlike_carriers_by_value() -> None:
-    class _AlternateIndexLike:
-        __slots__ = ("value",)
-
-        def __init__(self, value: int) -> None:
-            self.value = value
-
-        def __index__(self) -> int:
-            return self.value
-
-        def __repr__(self) -> str:
-            return f"AlternateIndexLike({self.value})"
-
     assert _workflow_keyword_kwargs_signature({"endpos": _INDEX_FOUR}) == (
         _workflow_keyword_kwargs_signature({"endpos": _AlternateIndexLike(4)})
     )
@@ -4874,18 +4877,6 @@ def test_workflow_positional_args_signature_distinguishes_bool_int_and_indexlike
 
 
 def test_workflow_positional_args_signature_normalizes_indexlike_carriers_by_value() -> None:
-    class _AlternateIndexLike:
-        __slots__ = ("value",)
-
-        def __init__(self, value: int) -> None:
-            self.value = value
-
-        def __index__(self) -> int:
-            return self.value
-
-        def __repr__(self) -> str:
-            return f"AlternateIndexLike({self.value})"
-
     assert _workflow_positional_args_signature(["abc", _INDEX_FOUR]) == (
         _workflow_positional_args_signature(["abc", _AlternateIndexLike(4)])
     )
