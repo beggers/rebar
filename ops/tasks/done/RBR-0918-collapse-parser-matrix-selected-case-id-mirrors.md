@@ -1,6 +1,9 @@
-Status: ready
+# RBR-0918: Collapse parser-matrix selected case-id mirrors
+
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `PARSER_MATRIX_SELECTED_CASE_IDS` and `CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS` mirrors from `tests/python/test_parser_matrix_parity_suite.py`, so the parser-matrix owner routes bundle construction and frontier assertions through the live case tuples it already defines.
@@ -76,3 +79,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py` currently passes (`61 passed, 29 skipped in 0.11s`);
   - `rg -n 'PARSER_MATRIX_SELECTED_CASE_IDS|CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS' tests/python/test_parser_matrix_parity_suite.py` currently finds the remaining mirror definitions and reads at lines `50` and `54`; and
   - the task-local case-order probe in Acceptance currently passes (`ok`), proving the live `TARGET_CASES` and `CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES` tuples already recover the same ordered selected surfaces without the handwritten id mirrors.
+
+## Completion
+- Removed `PARSER_MATRIX_SELECTED_CASE_IDS` and `CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS` from `tests/python/test_parser_matrix_parity_suite.py` and replaced their call sites with one file-local `_ordered_case_ids()` selector over the live `TARGET_CASES` and `CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES` tuples.
+- Kept the selected parser frontier and ordered assertion-diagnostic pair unchanged while preserving `KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS` as the explicit policy boundary.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py`
+  - `bash -lc "! rg -n '^(PARSER_MATRIX_SELECTED_CASE_IDS|CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS)\\s*=' tests/python/test_parser_matrix_parity_suite.py"`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... PY`

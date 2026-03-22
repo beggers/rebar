@@ -42,27 +42,29 @@ PARSER_MATRIX_OWNER_BUNDLE = OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID["parser-matrix
 CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE = OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID[
     "conditional-group-exists-assertion-diagnostics"
 ]
+
+
+def _ordered_case_ids(cases: tuple[FixtureCase, ...]) -> tuple[str, ...]:
+    return tuple(case.case_id for case in cases)
+
+
 TARGET_CASES = tuple(
     case
     for case in PARSER_MATRIX_OWNER_BUNDLE.manifest.cases
     if case.case_id not in KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS
 )
-PARSER_MATRIX_SELECTED_CASE_IDS = tuple(case.case_id for case in TARGET_CASES)
 CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
     CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE.manifest.cases
 )
-CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = tuple(
-    case.case_id for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES
-)
 PARSER_MATRIX_FIXTURE_BUNDLE = build_selected_fixture_bundle(
     PARSER_MATRIX_OWNER_BUNDLE.manifest.path,
-    selected_case_ids=PARSER_MATRIX_SELECTED_CASE_IDS,
+    selected_case_ids=_ordered_case_ids(TARGET_CASES),
     pattern_extractor=case_pattern,
     expected_text_models=frozenset(case.text_model or "str" for case in TARGET_CASES),
 )
 CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE = build_selected_fixture_bundle(
     CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE.manifest.path,
-    selected_case_ids=CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
+    selected_case_ids=_ordered_case_ids(CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES),
     pattern_extractor=case_pattern,
     expected_text_models=frozenset(
         case.text_model or "str"
@@ -225,14 +227,14 @@ def test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fix
         PARSER_MATRIX_FIXTURE_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=PARSER_MATRIX_OWNER_BUNDLE.manifest.path,
-        expected_ordered_case_ids=PARSER_MATRIX_SELECTED_CASE_IDS,
+        expected_ordered_case_ids=_ordered_case_ids(TARGET_CASES),
     )
 
 
 def test_parser_matrix_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         PARSER_MATRIX_FIXTURE_BUNDLE,
-        selected_case_ids=PARSER_MATRIX_SELECTED_CASE_IDS,
+        selected_case_ids=_ordered_case_ids(TARGET_CASES),
         expected_uncovered_case_ids=KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS,
     )
 
@@ -240,7 +242,7 @@ def test_parser_matrix_parity_suite_tracks_published_case_frontier() -> None:
 def test_parser_matrix_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         _parser_matrix_direct_test_case_id_buckets(),
-        selected_case_ids=PARSER_MATRIX_SELECTED_CASE_IDS,
+        selected_case_ids=_ordered_case_ids(TARGET_CASES),
         coverage_label="parser matrix direct-test case-id buckets",
     )
 
@@ -250,7 +252,9 @@ def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_c
         CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE.manifest.path,
-        expected_ordered_case_ids=CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
+        expected_ordered_case_ids=_ordered_case_ids(
+            CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES
+        ),
     )
 
 
