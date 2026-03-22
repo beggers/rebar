@@ -1086,6 +1086,8 @@ def assert_finditer_parity(
     expected_iter: object,
     *,
     check_regs: bool = False,
+    match_callback: Callable[[object, re.Match[str] | re.Match[bytes]], None]
+    | None = None,
 ) -> None:
     assert iter(observed_iter) is observed_iter, (
         f"{backend_name} finditer result must be its own iterator"
@@ -1111,6 +1113,8 @@ def assert_finditer_parity(
             expected,
             check_regs=check_regs,
         )
+        if match_callback is not None:
+            match_callback(observed, expected)
 
     assert next(observed_iter, None) is None
     assert next(expected_iter, None) is None
