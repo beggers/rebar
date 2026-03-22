@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1539 cases across 114 manifests, with all 1539 passing in the current slice; the benchmark publication covers 887/887 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives in the feature queue after the latest same-cycle drain.
+- No ready feature follow-on currently survives in the feature queue beyond the single active ready task.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -22,8 +22,8 @@ Published correctness covers 1539 cases across 114 manifests, with all 1539 pass
 The published correctness slice now covers 1539 cases across 114 manifests, all passing, and 887 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- Live task counts in this checkout are `0` ready, `0` in progress, `936` done, and `0` blocked.
-- No ready feature follow-on currently survives in this checkout after the latest same-cycle drain.
+- Live task counts in this checkout are `1` ready, `0` in progress, `937` done, and `0` blocked.
+- No ready feature follow-on currently survives in this checkout beyond the single active ready task.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
