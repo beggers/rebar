@@ -3519,7 +3519,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="pattern.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 9)
+        self.assertEqual(len(expected_measured_workload_ids), 11)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5180,11 +5180,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 874,
-                "module_workloads": 866,
+                "measured_workloads": 876,
+                "module_workloads": 868,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 874,
+                "total_workloads": 876,
             },
         )
 
@@ -8304,6 +8304,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-sub-count-bool-keyword-purged-bytes": (
                     "workflow-pattern-sub-count-bool-false-bytes",
                 ),
+                "pattern-sub-count-bool-true-keyword-purged-bytes": (
+                    "workflow-pattern-sub-count-bool-true-bytes",
+                ),
                 "pattern-sub-count-indexlike-keyword-purged-bytes": (
                     "workflow-pattern-sub-count-indexlike-bytes",
                 ),
@@ -8312,6 +8315,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "pattern-subn-count-bool-keyword-warm-str": (
                     "workflow-pattern-subn-count-bool-true-str",
+                ),
+                "pattern-subn-count-bool-false-keyword-warm-str": (
+                    "workflow-pattern-subn-count-bool-false-str",
                 ),
                 "pattern-subn-count-indexlike-keyword-warm-str": (
                     "workflow-pattern-subn-count-indexlike-str",

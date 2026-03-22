@@ -2030,6 +2030,41 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-count-bool-true-keyword-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "count": True
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "bytes",
+        "count",
+        "keyword",
+        "bool",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "cache-purge",
+        "keyword-count"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.sub helper path that keeps the bounded bool-true count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-sub-count-indexlike-keyword-purged-bytes",
       "bucket": "pattern-sub",
       "family": "module",
@@ -2167,6 +2202,40 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled Pattern.subn helper path that keeps the bounded bool count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-count-bool-false-keyword-warm-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count": False
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "literal",
+        "count",
+        "keyword",
+        "bool",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "literal-text",
+        "keyword-count"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.subn helper path that keeps the bounded bool-false count= keyword workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

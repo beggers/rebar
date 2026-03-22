@@ -1,8 +1,9 @@
 # RBR-0906: Catch up the direct `Pattern.sub()`/`Pattern.subn()` bool-count complement boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Extend the published Python-path `collection_replacement_boundary.py` benchmark surface with the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair that `RBR-0904` publishes on the shared `module-workflow-surface` correctness path, reusing the existing direct-`Pattern` keyword-carrier owner route instead of widening the correctness surface again, inventing another benchmark family, or reopening unrelated collection/replacement helpers.
@@ -63,3 +64,8 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile(b"abc").sub(b"x", b"abcabc", count=True) ... rebar.compile("abc").subn("x", "abcabc", count=False) ... PY` matched stdlib `re` for both exact calls in this run;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_keyword'` passed in this run (`30 passed, 525 deselected`), so the shared direct-`Pattern` keyword-carrier benchmark owner path is already green before widening the exact bool-count complement spellings; and
   - `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` currently publish only `pattern-sub-count-bool-keyword-purged-bytes` anchored to `workflow-pattern-sub-count-bool-false-bytes` and `pattern-subn-count-bool-keyword-warm-str` anchored to `workflow-pattern-subn-count-bool-true-str`, not the exact `count=True` / `count=False` complement rows queued here.
+
+## Completion Note
+- Added `pattern-sub-count-bool-true-keyword-purged-bytes` and `pattern-subn-count-bool-false-keyword-warm-str` to `benchmarks/workloads/collection_replacement_boundary.py` on the existing direct-`Pattern` keyword-carrier path, anchored to `workflow-pattern-sub-count-bool-true-bytes` and `workflow-pattern-subn-count-bool-false-str`.
+- Updated the shared benchmark contract in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the pattern keyword replacement/split subset now expects `11` measured rows and the combined publication totals now expect `876` total / `876` measured / `868` module workloads across the same `30` manifests.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_keyword'`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks or collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured'`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0906-pattern-sub-subn-bool-count-complement-boundary-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
