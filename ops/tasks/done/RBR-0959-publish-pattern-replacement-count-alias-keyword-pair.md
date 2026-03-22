@@ -1,6 +1,6 @@
 # RBR-0959: Publish the bound Pattern replacement `count_alias` keyword pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -66,3 +66,14 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... re.compile('abc').sub('x', 'abcabc', count_alias=1) ... rebar.compile('abc').sub('x', 'abcabc', count_alias=1) ... re.compile(b'abc').subn(b'x', b'abcabc', count_alias=1) ... rebar.compile(b'abc').subn(b'x', b'abcabc', count_alias=1) ... PY` shows CPython and `rebar` already agree on the exact bounded `TypeError.args`: `("'count_alias' is an invalid keyword argument for sub()",)` for the `str` spelling and `("'count_alias' is an invalid keyword argument for subn()",)` for the `bytes` spelling;
   - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... _pattern_helper_collection_replacement_keyword_error_workload(...) synthetic count_alias probes ... run_internal_workload_probe(...) ... PY` returns `status == "measured"` for both adapters on both synthetic workload shapes, so the later `collection_replacement_boundary.py` benchmark catch-up is already concrete in this checkout; and
   - `rg -n 'workflow-pattern-sub-count-alias-keyword-str|workflow-pattern-subn-count-alias-keyword-bytes|pattern-sub-count-alias-keyword-warm-str|pattern-subn-count-alias-keyword-warm-bytes' tests/conformance/fixtures/module_workflow_surface.py reports/correctness/latest.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, so both exact publication ids and their matching benchmark ids are still absent in this checkout.
+
+## Completion
+- Added the two bound-pattern `count_alias` keyword-name rejection rows to `tests/conformance/fixtures/module_workflow_surface.py` in the required positions, with the required args/kwargs payloads, categories, and shared-owner-path notes.
+- Extended `tests/python/test_module_workflow_parity_suite.py` on the existing bound-pattern keyword-error owner path so the direct-case ladder, published keyword-error slice ordering, and bundle totals now cover the new `Pattern.sub()` / `Pattern.subn()` pair.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the tracked `module-workflow-surface` representative case set includes both new pattern-call rows.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `1553` total / `1553` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `179` / `179`, `module.workflow.str` at `100` / `100`, `module.workflow.bytes` at `79` / `79`, `module.workflow.pattern_call` at `70` / `70`, and `module.workflow.module_call` unchanged at `97` / `97`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern_replacement_unexpected_keyword_names_match_cpython or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0959-pattern-replacement-count-alias-keyword-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
