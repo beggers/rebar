@@ -1,6 +1,6 @@
 # RBR-0966: Collapse pattern-keyword publication owner-path mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -116,3 +116,10 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on'` currently passes (`2 passed, 1423 deselected`);
   - the publication-surface probe in Verification currently passes (`ok 27`), proving the live owner path already resolves to the expected 27-row surface with the current text-model and helper counts; and
   - the structural probe in Verification currently fails only because `tests/python/test_module_workflow_parity_suite.py` still repeats representative fixture/direct ids for the same owner path instead of deriving them from one canonical publication surface.
+
+## Completion
+- Landed a file-local `PatternKeywordPublicationOwnerPathRow` owner-path surface in `tests/python/test_module_workflow_parity_suite.py` and routed the pattern-keyword publication assertions, the bundle-contract fixture-id subset, and the bool-count follow-on check through it so the repeated fixture/direct inventories collapse to one canonical slice.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on'`
+  - the publication-count probe from this task (`ok 27`)
+  - the structural literal-count probe from this task (`ok`)

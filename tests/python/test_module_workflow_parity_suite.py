@@ -544,6 +544,16 @@ class PatternKeywordCallCase:
 
 
 @dataclass(frozen=True)
+class PatternKeywordPublicationOwnerPathRow:
+    fixture_case_id: str
+    direct_case: PatternKeywordCallCase
+
+    @property
+    def text_model(self) -> str:
+        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
+
+
+@dataclass(frozen=True)
 class PatternPositionalIndexLikeCallCase:
     case_id: str
     helper: str
@@ -2047,6 +2057,84 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
 )
+PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
+    PatternKeywordPublicationOwnerPathRow(
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+    )
+    for fixture_case_id, direct_case in zip(
+        (
+            "workflow-pattern-search-str-pos-keyword",
+            "workflow-pattern-search-str-bool-endpos-keyword",
+            "workflow-pattern-search-bytes-endpos-keyword",
+            "workflow-pattern-search-str-pos-indexlike",
+            "workflow-pattern-search-bytes-endpos-indexlike",
+            "workflow-pattern-match-str-pos-keyword",
+            "workflow-pattern-match-str-bool-pos-keyword",
+            "workflow-pattern-match-bytes-window-indexlike",
+            "workflow-pattern-fullmatch-bytes-window-keyword",
+            "workflow-pattern-fullmatch-bytes-window-indexlike",
+            "workflow-pattern-findall-str-window-keyword",
+            "workflow-pattern-findall-str-window-indexlike",
+            "workflow-pattern-findall-str-bool-window-keyword",
+            "workflow-pattern-finditer-bytes-window-keyword",
+            "workflow-pattern-finditer-bytes-window-indexlike",
+            "workflow-pattern-finditer-bytes-bool-window-keyword",
+            "workflow-pattern-split-str-maxsplit-keyword",
+            "workflow-pattern-split-str-maxsplit-indexlike",
+            "workflow-pattern-split-str-maxsplit-bool-true",
+            "workflow-pattern-sub-count-keyword-bytes",
+            "workflow-pattern-sub-count-indexlike-bytes",
+            "workflow-pattern-sub-count-bool-false-bytes",
+            "workflow-pattern-sub-count-bool-true-bytes",
+            "workflow-pattern-subn-count-keyword-str",
+            "workflow-pattern-subn-count-indexlike-str",
+            "workflow-pattern-subn-count-bool-false-str",
+            "workflow-pattern-subn-count-bool-true-str",
+        ),
+        (
+            *PATTERN_KEYWORD_CALL_CASES[:25],
+            PATTERN_KEYWORD_CALL_CASES[26],
+            PATTERN_KEYWORD_CALL_CASES[25],
+        ),
+        strict=True,
+    )
+)
+
+
+def _pattern_keyword_publication_owner_path_rows(
+    text_model: str | None = None,
+) -> tuple[PatternKeywordPublicationOwnerPathRow, ...]:
+    return tuple(
+        row
+        for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+        if text_model is None or row.text_model == text_model
+    )
+
+
+def _pattern_keyword_publication_owner_path_fixture_case_ids(
+    text_model: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        row.fixture_case_id
+        for row in _pattern_keyword_publication_owner_path_rows(text_model)
+    )
+
+
+def _pattern_keyword_publication_owner_path_selected_direct_cases(
+) -> tuple[PatternKeywordCallCase, ...]:
+    return tuple(
+        row.direct_case
+        for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+    )
+
+
+PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES = (
+    *PATTERN_KEYWORD_CALL_CASES[21:23],
+    *PATTERN_KEYWORD_CALL_CASES[25:27],
+)
+
+
 PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
     PatternPositionalIndexLikeCallCase(
         case_id="pattern-search-pos-indexlike-positional-str",
@@ -4138,43 +4226,19 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-search-str-verbose-regression",
         "workflow-pattern-search-str-verbose-regression-digits",
         "workflow-pattern-search-str-verbose-regression-too-many-digits",
-        "workflow-pattern-search-str-pos-keyword",
-        "workflow-pattern-search-str-bool-endpos-keyword",
-        "workflow-pattern-search-bytes-endpos-keyword",
-        "workflow-pattern-search-str-pos-indexlike",
-        "workflow-pattern-search-bytes-endpos-indexlike",
+        *_pattern_keyword_publication_owner_path_fixture_case_ids(),
         "workflow-pattern-search-bytes-verbose-regression",
         "workflow-pattern-search-bytes-verbose-regression-digits",
         "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
-        "workflow-pattern-match-str-pos-keyword",
-        "workflow-pattern-match-str-bool-pos-keyword",
-        "workflow-pattern-match-bytes-window-indexlike",
         "workflow-pattern-fullmatch-str-verbose-regression",
         "workflow-pattern-fullmatch-str-verbose-regression-alpha",
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
         "workflow-pattern-fullmatch-bytes-verbose-regression",
         "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
         "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
-        "workflow-pattern-fullmatch-bytes-window-keyword",
-        "workflow-pattern-fullmatch-bytes-window-indexlike",
-        "workflow-pattern-findall-str-window-keyword",
-        "workflow-pattern-findall-str-window-indexlike",
-        "workflow-pattern-findall-str-bool-window-keyword",
-        "workflow-pattern-finditer-bytes-window-keyword",
-        "workflow-pattern-finditer-bytes-window-indexlike",
-        "workflow-pattern-finditer-bytes-bool-window-keyword",
-        "workflow-pattern-split-str-maxsplit-keyword",
-        "workflow-pattern-split-str-maxsplit-indexlike",
-        "workflow-pattern-split-str-maxsplit-bool-true",
-        "workflow-pattern-sub-count-keyword-bytes",
-        "workflow-pattern-sub-count-indexlike-bytes",
-        "workflow-pattern-sub-count-bool-false-bytes",
         "workflow-pattern-sub-duplicate-count-keyword-str",
         "workflow-pattern-sub-unexpected-keyword-str",
         "workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
-        "workflow-pattern-subn-count-keyword-str",
-        "workflow-pattern-subn-count-indexlike-str",
-        "workflow-pattern-subn-count-bool-true-str",
         "workflow-pattern-subn-duplicate-count-keyword-bytes",
         "workflow-pattern-subn-unexpected-keyword-bytes",
         "workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
@@ -4782,104 +4846,22 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
             published_fixture_cases,
             "str",
         )
-    ) == (
-        "workflow-pattern-search-str-pos-keyword",
-        "workflow-pattern-search-str-bool-endpos-keyword",
-        "workflow-pattern-search-str-pos-indexlike",
-        "workflow-pattern-match-str-pos-keyword",
-        "workflow-pattern-match-str-bool-pos-keyword",
-        "workflow-pattern-findall-str-window-keyword",
-        "workflow-pattern-findall-str-window-indexlike",
-        "workflow-pattern-findall-str-bool-window-keyword",
-        "workflow-pattern-split-str-maxsplit-keyword",
-        "workflow-pattern-split-str-maxsplit-indexlike",
-        "workflow-pattern-split-str-maxsplit-bool-true",
-        "workflow-pattern-subn-count-keyword-str",
-        "workflow-pattern-subn-count-indexlike-str",
-        "workflow-pattern-subn-count-bool-false-str",
-        "workflow-pattern-subn-count-bool-true-str",
-    )
+    ) == _pattern_keyword_publication_owner_path_fixture_case_ids("str")
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == (
-        "workflow-pattern-search-bytes-endpos-keyword",
-        "workflow-pattern-search-bytes-endpos-indexlike",
-        "workflow-pattern-match-bytes-window-indexlike",
-        "workflow-pattern-fullmatch-bytes-window-keyword",
-        "workflow-pattern-fullmatch-bytes-window-indexlike",
-        "workflow-pattern-finditer-bytes-window-keyword",
-        "workflow-pattern-finditer-bytes-window-indexlike",
-        "workflow-pattern-finditer-bytes-bool-window-keyword",
-        "workflow-pattern-sub-count-keyword-bytes",
-        "workflow-pattern-sub-count-indexlike-bytes",
-        "workflow-pattern-sub-count-bool-false-bytes",
-        "workflow-pattern-sub-count-bool-true-bytes",
-    )
+    ) == _pattern_keyword_publication_owner_path_fixture_case_ids("bytes")
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == (
-        "workflow-pattern-search-str-pos-keyword",
-        "workflow-pattern-search-str-bool-endpos-keyword",
-        "workflow-pattern-search-bytes-endpos-keyword",
-        "workflow-pattern-search-str-pos-indexlike",
-        "workflow-pattern-search-bytes-endpos-indexlike",
-        "workflow-pattern-match-str-pos-keyword",
-        "workflow-pattern-match-str-bool-pos-keyword",
-        "workflow-pattern-match-bytes-window-indexlike",
-        "workflow-pattern-fullmatch-bytes-window-keyword",
-        "workflow-pattern-fullmatch-bytes-window-indexlike",
-        "workflow-pattern-findall-str-window-keyword",
-        "workflow-pattern-findall-str-window-indexlike",
-        "workflow-pattern-findall-str-bool-window-keyword",
-        "workflow-pattern-finditer-bytes-window-keyword",
-        "workflow-pattern-finditer-bytes-window-indexlike",
-        "workflow-pattern-finditer-bytes-bool-window-keyword",
-        "workflow-pattern-split-str-maxsplit-keyword",
-        "workflow-pattern-split-str-maxsplit-indexlike",
-        "workflow-pattern-split-str-maxsplit-bool-true",
-        "workflow-pattern-sub-count-keyword-bytes",
-        "workflow-pattern-sub-count-indexlike-bytes",
-        "workflow-pattern-sub-count-bool-false-bytes",
-        "workflow-pattern-sub-count-bool-true-bytes",
-        "workflow-pattern-subn-count-keyword-str",
-        "workflow-pattern-subn-count-indexlike-str",
-        "workflow-pattern-subn-count-bool-false-str",
-        "workflow-pattern-subn-count-bool-true-str",
-    )
+    ) == _pattern_keyword_publication_owner_path_fixture_case_ids()
     assert tuple(
         case.case_id for case in selected_direct_cases
-    ) == (
-        "pattern-search-pos-keyword-str",
-        "pattern-search-bool-endpos-keyword-str",
-        "pattern-search-endpos-keyword-bytes",
-        "pattern-search-pos-indexlike-str",
-        "pattern-search-endpos-indexlike-bytes",
-        "pattern-match-pos-keyword-str",
-        "pattern-match-bool-pos-keyword-str",
-        "pattern-match-window-indexlike-bytes",
-        "pattern-fullmatch-window-keyword-bytes",
-        "pattern-fullmatch-window-indexlike-bytes",
-        "pattern-findall-window-keyword-str",
-        "pattern-findall-window-indexlike-str",
-        "pattern-findall-bool-window-keyword-str",
-        "pattern-finditer-window-keyword-bytes",
-        "pattern-finditer-window-indexlike-bytes",
-        "pattern-finditer-bool-window-keyword-bytes",
-        "pattern-split-maxsplit-keyword-str",
-        "pattern-split-maxsplit-indexlike-str",
-        "pattern-split-maxsplit-bool-true-str",
-        "pattern-sub-count-keyword-bytes",
-        "pattern-sub-count-indexlike-bytes",
-        "pattern-sub-count-bool-false-bytes",
-        "pattern-sub-count-bool-true-bytes",
-        "pattern-subn-count-keyword-str",
-        "pattern-subn-count-indexlike-str",
-        "pattern-subn-count-bool-false-str",
-        "pattern-subn-count-bool-true-str",
+    ) == tuple(
+        case.case_id
+        for case in _pattern_keyword_publication_owner_path_selected_direct_cases()
     )
     assert len(published_fixture_cases) == 27
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
@@ -5099,31 +5081,14 @@ def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_f
             (("count", "bool", True),),
         }
         and case.helper in {"sub", "subn"}
-    ) == (
+    ) == tuple(
         (
-            "pattern-sub-count-bool-false-bytes",
-            "sub",
-            b"abc",
-            (("count", "bool", False),),
-        ),
-        (
-            "pattern-sub-count-bool-true-bytes",
-            "sub",
-            b"abc",
-            (("count", "bool", True),),
-        ),
-        (
-            "pattern-subn-count-bool-true-str",
-            "subn",
-            "abc",
-            (("count", "bool", True),),
-        ),
-        (
-            "pattern-subn-count-bool-false-str",
-            "subn",
-            "abc",
-            (("count", "bool", False),),
-        ),
+            case.case_id,
+            case.helper,
+            case.pattern,
+            _workflow_keyword_kwargs_signature(case.kwargs),
+        )
+        for case in PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES
     )
 
 
