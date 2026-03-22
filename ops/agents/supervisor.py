@@ -11,7 +11,7 @@ SPEC = {
     },
     "codex": {
         "config": [
-            'model_reasoning_effort="xhigh"',
+            'model_reasoning_effort="high"',
         ],
     },
 }
