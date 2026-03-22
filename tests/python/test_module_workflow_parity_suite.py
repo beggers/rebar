@@ -1633,6 +1633,13 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     ModuleKeywordCallCase(
+        case_id="module-sub-count-bool-false-str",
+        helper="sub",
+        args=("abc", "x", "abcabc"),
+        kwargs={"count": False},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
         case_id="module-subn-count-keyword-bytes",
         helper="subn",
         args=(b"abc", b"x", b"abcabc"),
@@ -1651,6 +1658,13 @@ MODULE_KEYWORD_CALL_CASES = (
         helper="subn",
         args=(b"abc", b"x", b"abcabc"),
         kwargs={"count": False},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
+        case_id="module-subn-count-bool-true-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abcabc"),
+        kwargs={"count": True},
         result_kind="value",
     ),
 )
@@ -3504,6 +3518,38 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
             fixture_case.kwargs
         ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
         assert fixture_case.flags == 0
+
+
+def test_module_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on(
+) -> None:
+    assert tuple(
+        (
+            case.case_id,
+            case.helper,
+            case.args[0],
+            _workflow_keyword_kwargs_signature(case.kwargs),
+        )
+        for case in MODULE_KEYWORD_CALL_CASES
+        if _workflow_keyword_kwargs_signature(case.kwargs) in {
+            (("count", "bool", False),),
+            (("count", "bool", True),),
+        }
+    ) == (
+        ("module-sub-count-bool-true-str", "sub", "abc", (("count", "bool", True),)),
+        ("module-sub-count-bool-false-str", "sub", "abc", (("count", "bool", False),)),
+        (
+            "module-subn-count-bool-false-bytes",
+            "subn",
+            b"abc",
+            (("count", "bool", False),),
+        ),
+        (
+            "module-subn-count-bool-true-bytes",
+            "subn",
+            b"abc",
+            (("count", "bool", True),),
+        ),
+    )
 
 
 def test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases(
