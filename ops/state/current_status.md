@@ -9,7 +9,7 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 880/880 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
+Published correctness covers 1534 cases across 114 manifests, with all 1534 passing in the current slice; the benchmark publication covers 880/880 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
 - The surviving shared direct bound-pattern frontier is the split-error pair pinned to `re.compile("abc").split("abcabc", 1, maxsplit=1)` / `re.compile(b"abc").split(b"abcabc", missing=1)`; no ready feature follow-on is queued behind it.
@@ -19,7 +19,7 @@ Published correctness covers 1532 cases across 114 manifests, with all 1532 pass
 - The published benchmark surface is still bounded at 880 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1532 cases across 114 manifests, all passing, and 880 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1534 cases across 114 manifests, all passing, and 880 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -310,7 +310,7 @@ The published correctness slice now covers 1532 cases across 114 manifests, all 
 - Tracked state and task queue directories under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1532 cases, with all 1532 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1534 cases, with all 1534 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 880 workloads across 30 manifests with 880 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
