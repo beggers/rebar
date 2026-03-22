@@ -49,3 +49,4 @@ Created: 2026-03-22
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently repeats the same inline `manifest = {...}` block for this owner slice at lines `12965-12977` and `13017-13029`, with both copies using the same manifest id, defaults, and workload comprehension;
   - that duplication is confined to the compiled-pattern collection/replacement success contract coverage rather than the broader benchmark owner; and
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success'` currently passes (`17 passed, 538 deselected in 0.15s`).
+- 2026-03-22T07:33:57+00:00: harness requeued after failed or incomplete run after run `20260322T073320Z-architecture-implementation-RBR-0913-collapse-compiled-pattern-collection-replacement-success-contract-manifest-mirror` (exit=1, timed_out=false).
