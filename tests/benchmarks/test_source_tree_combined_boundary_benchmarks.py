@@ -14317,6 +14317,24 @@ def _compiled_pattern_module_boundary_success_workload(
     )
 
 
+def _compiled_pattern_module_boundary_success_manifest(
+    cases: tuple[CompiledPatternModuleBoundarySuccessCase, ...],
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "manifest_id": "module-boundary",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _compiled_pattern_module_boundary_success_manifest_payload(case)
+            for case in cases
+        ],
+    }
+
+
 def _assert_compiled_pattern_module_boundary_success_payload_round_trip(
     case: CompiledPatternModuleBoundarySuccessCase,
     payload: dict[str, object],
@@ -14352,19 +14370,9 @@ def _run_cpython_compiled_pattern_module_boundary_success_workload(
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_success_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_boundary_success_manifest_payload(case)
-            for case in COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES
-        ],
-    }
+    manifest = _compiled_pattern_module_boundary_success_manifest(
+        COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -14402,19 +14410,9 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
 def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_boundary_success_manifest_payload(case)
-            for case in COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES
-        ],
-    }
+    manifest = _compiled_pattern_module_boundary_success_manifest(
+        COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
