@@ -1386,6 +1386,88 @@ PATTERN_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES = (
         id="subn-bytes-count-alias-only",
     ),
 )
+MODULE_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES = (
+    pytest.param(
+        "sub",
+        ("abc", "x", "abcabc"),
+        {"missing": 1},
+        id="sub-str-missing-only",
+    ),
+    pytest.param(
+        "sub",
+        ("abc", "x", "abcabc"),
+        {"count": 1, "missing": 1},
+        id="sub-str-count-and-missing",
+    ),
+    pytest.param(
+        "sub",
+        ("abc", "x", "abcabc"),
+        {"count_alias": 1},
+        id="sub-str-count-alias-only",
+    ),
+    pytest.param(
+        "subn",
+        (b"abc", b"x", b"abcabc"),
+        {"missing": 1},
+        id="subn-bytes-missing-only",
+    ),
+    pytest.param(
+        "subn",
+        (b"abc", b"x", b"abcabc"),
+        {"count": 1, "missing": 1},
+        id="subn-bytes-count-and-missing",
+    ),
+    pytest.param(
+        "subn",
+        (b"abc", b"x", b"abcabc"),
+        {"count_alias": 1},
+        id="subn-bytes-count-alias-only",
+    ),
+)
+COMPILED_PATTERN_MODULE_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES = (
+    pytest.param(
+        "sub",
+        "abc",
+        ("x", "abcabc"),
+        {"missing": 1},
+        id="sub-str-missing-only",
+    ),
+    pytest.param(
+        "sub",
+        "abc",
+        ("x", "abcabc"),
+        {"count": 1, "missing": 1},
+        id="sub-str-count-and-missing",
+    ),
+    pytest.param(
+        "sub",
+        "abc",
+        ("x", "abcabc"),
+        {"count_alias": 1},
+        id="sub-str-count-alias-only",
+    ),
+    pytest.param(
+        "subn",
+        b"abc",
+        (b"x", b"abcabc"),
+        {"missing": 1},
+        id="subn-bytes-missing-only",
+    ),
+    pytest.param(
+        "subn",
+        b"abc",
+        (b"x", b"abcabc"),
+        {"count": 1, "missing": 1},
+        id="subn-bytes-count-and-missing",
+    ),
+    pytest.param(
+        "subn",
+        b"abc",
+        (b"x", b"abcabc"),
+        {"count_alias": 1},
+        id="subn-bytes-count-alias-only",
+    ),
+)
 COLLECTION_UNSUPPORTED_CASES = (
     pytest.param(
         lambda: rebar.findall("abc", "abc", rebar.IGNORECASE),
@@ -7976,6 +8058,57 @@ def test_bound_pattern_replacement_unexpected_keyword_names_match_cpython(
     )
     expected_error = _capture_error(
         lambda: getattr(expected_pattern, helper)(repl, string, **kwargs)
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+
+
+@pytest.mark.parametrize(
+    ("helper", "args", "kwargs"),
+    MODULE_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES,
+)
+def test_module_replacement_unexpected_keyword_names_match_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
+) -> None:
+    _, backend = regex_backend
+
+    observed_error = _capture_error(lambda: getattr(backend, helper)(*args, **kwargs))
+    expected_error = _capture_error(lambda: getattr(re, helper)(*args, **kwargs))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+
+
+@pytest.mark.parametrize(
+    ("helper", "pattern", "args", "kwargs"),
+    COMPILED_PATTERN_MODULE_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES,
+)
+def test_compiled_pattern_module_replacement_unexpected_keyword_names_match_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: str | bytes,
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
+) -> None:
+    _, backend = regex_backend
+
+    observed_error = _capture_error(
+        lambda: getattr(backend, helper)(
+            backend.compile(pattern),
+            *args,
+            **kwargs,
+        )
+    )
+    expected_error = _capture_error(
+        lambda: getattr(re, helper)(
+            re.compile(pattern),
+            *args,
+            **kwargs,
+        )
     )
 
     assert type(observed_error) is type(expected_error)
