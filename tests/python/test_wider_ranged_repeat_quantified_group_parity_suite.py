@@ -22,12 +22,11 @@ from tests.python.fixture_parity_support import (
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_bounded_pattern_case_match_parity,
+    assert_fixture_case_optional_match_parity,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
-    assert_module_search_case_parity,
-    assert_pattern_fullmatch_case_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     build_selected_fixture_bundle,
@@ -795,7 +794,13 @@ def test_module_search_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_module_search_case_parity(regex_backend, case, check_regs=True)
+    assert_fixture_case_optional_match_parity(
+        regex_backend,
+        case,
+        expected_helper="search",
+        compile_pattern=False,
+        check_regs=True,
+    )
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
@@ -803,9 +808,11 @@ def test_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_module_search_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="search",
+        compile_pattern=False,
         check_convenience_api=True,
     )
 
@@ -815,9 +822,11 @@ def test_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_module_search_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="search",
+        compile_pattern=False,
         check_group_access=True,
     )
 
@@ -827,7 +836,13 @@ def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_pattern_fullmatch_case_parity(regex_backend, case, check_regs=True)
+    assert_fixture_case_optional_match_parity(
+        regex_backend,
+        case,
+        expected_helper="fullmatch",
+        compile_pattern=True,
+        check_regs=True,
+    )
 
 
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
@@ -835,9 +850,11 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_pattern_fullmatch_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="fullmatch",
+        compile_pattern=True,
         check_convenience_api=True,
     )
 
@@ -849,9 +866,11 @@ def test_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_pattern_fullmatch_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="fullmatch",
+        compile_pattern=True,
         check_group_access=True,
     )
 

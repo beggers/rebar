@@ -35,17 +35,16 @@ from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_bounded_pattern_case_match_parity,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
+    assert_fixture_case_optional_match_parity,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
     assert_finditer_parity,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
-    assert_module_search_case_parity,
     assert_match_parity,
     assert_match_result_parity,
     assert_mixed_text_model_case_pairs,
     assert_pattern_parity,
-    assert_pattern_fullmatch_case_parity,
     assert_value_parity,
     assert_valid_match_group_access_parity,
     build_fixture_bundle,
@@ -2483,13 +2482,15 @@ def test_evaluate_fixture_case_optional_match_rejects_helper_drift() -> None:
         pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="bytes-match"),
     ),
 )
-def test_module_search_case_parity_helper_accepts_representative_cases(
+def test_fixture_case_optional_match_parity_helper_accepts_representative_search_cases(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_module_search_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="search",
+        compile_pattern=False,
         check_regs=True,
         check_convenience_api=True,
         check_group_access=True,
@@ -2503,13 +2504,15 @@ def test_module_search_case_parity_helper_accepts_representative_cases(
         pytest.param(SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE, id="bytes-match"),
     ),
 )
-def test_module_search_case_parity_helper_accepts_compiled_pattern_cases(
+def test_fixture_case_optional_match_parity_helper_accepts_compiled_search_cases(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_module_search_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="search",
+        compile_pattern=False,
         check_regs=True,
         check_convenience_api=True,
         check_group_access=True,
@@ -2539,13 +2542,15 @@ def test_module_search_case_parity_helper_accepts_compiled_pattern_cases(
         ),
     ),
 )
-def test_module_search_case_parity_helper_accepts_shared_no_match_cases(
+def test_fixture_case_optional_match_parity_helper_accepts_search_no_match_cases(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_module_search_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="search",
+        compile_pattern=False,
         check_regs=True,
         check_convenience_api=True,
         check_group_access=True,
@@ -2575,26 +2580,30 @@ def test_module_search_case_parity_helper_accepts_shared_no_match_cases(
         ),
     ),
 )
-def test_module_search_case_parity_helper_accepts_compiled_pattern_no_match_cases(
+def test_fixture_case_optional_match_parity_helper_accepts_compiled_search_no_match_cases(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_module_search_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="search",
+        compile_pattern=False,
         check_regs=True,
         check_convenience_api=True,
         check_group_access=True,
     )
 
 
-def test_module_search_case_parity_helper_rejects_non_search_cases(
+def test_fixture_case_optional_match_parity_helper_rejects_non_search_cases(
     regex_backend: tuple[str, object],
 ) -> None:
     with pytest.raises(AssertionError):
-        assert_module_search_case_parity(
+        assert_fixture_case_optional_match_parity(
             regex_backend,
             replace(SYNTHETIC_MODULE_PATTERN_CASE, helper="match"),
+            expected_helper="search",
+            compile_pattern=False,
         )
 
 
@@ -2605,13 +2614,15 @@ def test_module_search_case_parity_helper_rejects_non_search_cases(
         pytest.param(SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE, id="bytes-match"),
     ),
 )
-def test_pattern_fullmatch_case_parity_helper_accepts_representative_cases(
+def test_fixture_case_optional_match_parity_helper_accepts_fullmatch_cases(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_pattern_fullmatch_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="fullmatch",
+        compile_pattern=True,
         check_regs=True,
         check_convenience_api=True,
         check_group_access=True,
@@ -2641,26 +2652,30 @@ def test_pattern_fullmatch_case_parity_helper_accepts_representative_cases(
         ),
     ),
 )
-def test_pattern_fullmatch_case_parity_helper_accepts_shared_no_match_cases(
+def test_fixture_case_optional_match_parity_helper_accepts_fullmatch_no_match_cases(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    assert_pattern_fullmatch_case_parity(
+    assert_fixture_case_optional_match_parity(
         regex_backend,
         case,
+        expected_helper="fullmatch",
+        compile_pattern=True,
         check_regs=True,
         check_convenience_api=True,
         check_group_access=True,
     )
 
 
-def test_pattern_fullmatch_case_parity_helper_rejects_non_fullmatch_cases(
+def test_fixture_case_optional_match_parity_helper_rejects_non_fullmatch_cases(
     regex_backend: tuple[str, object],
 ) -> None:
     with pytest.raises(AssertionError):
-        assert_pattern_fullmatch_case_parity(
+        assert_fixture_case_optional_match_parity(
             regex_backend,
             replace(SYNTHETIC_FULLMATCH_PATTERN_CASE, helper="search"),
+            expected_helper="fullmatch",
+            compile_pattern=True,
         )
 
 

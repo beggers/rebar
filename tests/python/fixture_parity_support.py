@@ -1372,10 +1372,12 @@ def _evaluate_fixture_case_optional_match(
     return backend_name, observed, expected
 
 
-def assert_module_search_case_parity(
+def assert_fixture_case_optional_match_parity(
     regex_backend: tuple[str, object],
     case: FixtureCase,
     *,
+    expected_helper: str,
+    compile_pattern: bool,
     check_regs: bool = False,
     check_convenience_api: bool = False,
     check_group_access: bool = False,
@@ -1383,34 +1385,8 @@ def assert_module_search_case_parity(
     backend_name, observed, expected = _evaluate_fixture_case_optional_match(
         regex_backend,
         case,
-        expected_helper="search",
-        compile_pattern=False,
-    )
-
-    assert (observed is None) == (expected is None)
-    _assert_optional_match_case_parity(
-        backend_name,
-        observed,
-        expected,
-        check_regs=check_regs,
-        check_convenience_api=check_convenience_api,
-        check_group_access=check_group_access,
-    )
-
-
-def assert_pattern_fullmatch_case_parity(
-    regex_backend: tuple[str, object],
-    case: FixtureCase,
-    *,
-    check_regs: bool = False,
-    check_convenience_api: bool = False,
-    check_group_access: bool = False,
-) -> None:
-    backend_name, observed, expected = _evaluate_fixture_case_optional_match(
-        regex_backend,
-        case,
-        expected_helper="fullmatch",
-        compile_pattern=True,
+        expected_helper=expected_helper,
+        compile_pattern=compile_pattern,
     )
 
     assert (observed is None) == (expected is None)
