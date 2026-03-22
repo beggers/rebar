@@ -1,8 +1,9 @@
 # RBR-0911: Collapse grouped-capture direct-test bucket wrapper mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `_bundle_case_ids()`, `_grouped_capture_direct_test_bundles()`, and `_grouped_capture_direct_test_case_id_buckets()` wrappers from `tests/python/test_grouped_capture_parity_suite.py`, so the grouped-capture direct-frontier coverage test derives its bucket labels and selected case ids straight from the live owner bundles that file already loads instead of maintaining an extra helper stack around `bundle.cases`.
@@ -55,3 +56,10 @@ Created: 2026-03-22
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` currently passes (`432 passed in 0.31s`);
   - `bash -lc "! rg -n '^def (_bundle_case_ids|_grouped_capture_direct_test_bundles|_grouped_capture_direct_test_case_id_buckets)\\b' tests/python/test_grouped_capture_parity_suite.py"` currently fails exactly on the remaining helper wrappers at lines `93`, `97`, and `110`; and
   - `test_grouped_capture_direct_test_buckets_cover_selected_frontier()` already recovers both the bucket-order assertion and `selected_case_ids` from those wrappers alone, so deleting the wrappers is a bounded owner-file cleanup rather than a behavior change.
+
+## Completion
+- Removed `_bundle_case_ids()`, `_grouped_capture_direct_test_bundles()`, and `_grouped_capture_direct_test_case_id_buckets()` from `tests/python/test_grouped_capture_parity_suite.py`.
+- Added one live ordered `GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES` tuple and rewired the grouped-capture direct-test bucket assertions plus the remaining published-frontier reads directly through each bundle's live `cases`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py`
+  - `bash -lc "! rg -n '^def (_bundle_case_ids|_grouped_capture_direct_test_bundles|_grouped_capture_direct_test_case_id_buckets)\\b' tests/python/test_grouped_capture_parity_suite.py"`

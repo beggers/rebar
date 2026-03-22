@@ -14,7 +14,6 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     CaseIdBoundedPatternCase as BoundedPatternCase,
-    FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -88,30 +87,16 @@ OPTIONAL_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
 OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
     "optional-group-alternation-workflows"
 ]
-
-
-def _bundle_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
-    return tuple(case.case_id for case in bundle.cases)
-
-
-def _grouped_capture_direct_test_bundles() -> tuple[tuple[str, FixtureBundle], ...]:
-    return (
-        ("grouped-match", GROUPED_MATCH_FIXTURE_BUNDLE),
-        ("named-group", NAMED_GROUP_FIXTURE_BUNDLE),
-        ("grouped-segment", GROUPED_SEGMENT_FIXTURE_BUNDLE),
-        ("grouped-alternation", GROUPED_ALTERNATION_FIXTURE_BUNDLE),
-        ("optional-group", OPTIONAL_GROUP_FIXTURE_BUNDLE),
-        ("optional-group-alternation", OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE),
-        ("nested-group", NESTED_GROUP_FIXTURE_BUNDLE),
-        ("nested-group-alternation", NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE),
-    )
-
-
-def _grouped_capture_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
-    return {
-        bucket_label: frozenset(_bundle_case_ids(bundle))
-        for bucket_label, bundle in _grouped_capture_direct_test_bundles()
-    }
+GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES = (
+    ("grouped-match", GROUPED_MATCH_FIXTURE_BUNDLE),
+    ("named-group", NAMED_GROUP_FIXTURE_BUNDLE),
+    ("grouped-segment", GROUPED_SEGMENT_FIXTURE_BUNDLE),
+    ("grouped-alternation", GROUPED_ALTERNATION_FIXTURE_BUNDLE),
+    ("optional-group", OPTIONAL_GROUP_FIXTURE_BUNDLE),
+    ("optional-group-alternation", OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE),
+    ("nested-group", NESTED_GROUP_FIXTURE_BUNDLE),
+    ("nested-group-alternation", NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE),
+)
 
 
 def _iter_fixture_cases() -> Iterator[FixtureCase]:
@@ -415,7 +400,9 @@ def _pattern_call_with_text(compiled_pattern: object, case: FixtureCase, text: s
 
 
 def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[str, ...]]:
-    grouped_match_case_ids = _bundle_case_ids(GROUPED_MATCH_FIXTURE_BUNDLE)
+    grouped_match_case_ids = tuple(
+        case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.cases
+    )
     selected_case_ids = grouped_match_case_ids[-2:]
     uncovered_case_ids = grouped_match_case_ids[:-2]
 
@@ -427,8 +414,14 @@ def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[
 
 
 def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -> None:
-    grouped_segment_case_ids = frozenset(_bundle_case_ids(GROUPED_SEGMENT_FIXTURE_BUNDLE))
-    assert _grouped_capture_direct_test_case_id_buckets()["grouped-segment"] == (
+    grouped_segment_case_ids = frozenset(
+        case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
+    )
+    direct_test_case_id_buckets = {
+        bucket_label: frozenset(case.case_id for case in bundle.cases)
+        for bucket_label, bundle in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
+    }
+    assert direct_test_case_id_buckets["grouped-segment"] == (
         grouped_segment_case_ids
     )
     assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= grouped_segment_case_ids
@@ -521,7 +514,7 @@ def test_grouped_capture_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
             bundle,
-            selected_case_ids=_bundle_case_ids(bundle),
+            selected_case_ids=tuple(case.case_id for case in bundle.cases),
         )
 
 
@@ -629,19 +622,21 @@ def test_published_case_frontier_helper_reports_uncovered_order_drift() -> None:
 
 
 def test_grouped_capture_direct_test_buckets_cover_selected_frontier() -> None:
-    direct_test_bundle_entries = _grouped_capture_direct_test_bundles()
-    direct_test_case_id_buckets = _grouped_capture_direct_test_case_id_buckets()
+    direct_test_case_id_buckets = {
+        bucket_label: frozenset(case.case_id for case in bundle.cases)
+        for bucket_label, bundle in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
+    }
 
     assert tuple(direct_test_case_id_buckets) == tuple(
-        bucket_label for bucket_label, _ in direct_test_bundle_entries
+        bucket_label for bucket_label, _ in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
     )
 
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         direct_test_case_id_buckets,
         selected_case_ids=tuple(
-            case_id
-            for _, bundle in direct_test_bundle_entries
-            for case_id in _bundle_case_ids(bundle)
+            case.case_id
+            for _, bundle in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
+            for case in bundle.cases
         ),
         coverage_label="grouped capture direct-test case-id buckets",
     )
