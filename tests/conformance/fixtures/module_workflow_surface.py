@@ -972,6 +972,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abc", 1],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "unexpected-keyword"],
+      "notes": [
+        "Publishes the direct bound Pattern.sub unexpected-keyword rejection spelling with a positional count already supplied, adjacent to the already-published replacement keyword rows rather than widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-sub-str-pattern-on-bytes-string",
       "operation": "pattern_call",
       "family": "bound_sub_workflow",
@@ -1103,6 +1118,34 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword"],
       "notes": [
         "Publishes the direct bound Pattern.subn unexpected-keyword rejection spelling beside the adjacent replacement keyword rows without widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        1
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword"],
+      "notes": [
+        "Publishes the direct bound Pattern.subn unexpected-keyword rejection spelling with a positional count already supplied, adjacent to the already-published replacement keyword rows rather than widening into a broader bound-pattern keyword-error dump."
       ]
     },
     {

@@ -1,8 +1,9 @@
 # RBR-0931: Publish the module-workflow `Pattern.sub()` / `Pattern.subn()` unexpected-keyword-after-positional-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the adjacent direct bound-`Pattern` `sub()` / `subn()` unexpected-keyword-after-positional-count pair, so the shared collection/replacement owner path publishes the already-landed CPython-visible `TypeError` behavior before Python-path benchmark catch-up or another direct helper family widens the queue.
@@ -75,3 +76,14 @@ Created: 2026-03-22
   - `rg -n 'workflow-pattern-sub-unexpected-keyword-after-positional-count-str|workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes' tests/conformance/fixtures/module_workflow_surface.py reports/correctness/latest.py tests/conformance/test_combined_correctness_scorecards.py` returned no matches in this run, so the exact direct bound-pattern publication rows are still absent;
   - `reports/correctness/latest.py` currently reports `1537` total / `1537` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `163`, `module.workflow.str` at `93`, `module.workflow.bytes` at `70`, `module.workflow.module_call` at `85`, and `module.workflow.pattern_call` at `66`; and
   - `reports/benchmarks/latest.py` already reports `885` total / `885` measured / `0` known gaps across `30` manifests, so this run stays on the correctness-publication step instead of skipping ahead to another benchmark-only refresh.
+
+## Completion
+- Added `workflow-pattern-sub-unexpected-keyword-after-positional-count-str` and `workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes` to `tests/conformance/fixtures/module_workflow_surface.py` on the existing direct bound `Pattern.sub()` / `Pattern.subn()` owner path, in the required positions immediately after the adjacent unexpected-keyword rows and before the already-published wrong-text-model rows.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the published direct bound-pattern keyword-error selector now maps the exact eight-row slice, while keeping the published bound-pattern keyword-helper subset at `27` rows and the published positional `__index__` subset at `9` rows. The module-workflow bundle assertions now track `165` total rows with `94` `str`, `71` `bytes`, `85` `module_call`, and `68` `pattern_call` rows, and the published `pattern_call` helper breakdown now carries `split: 7`, `sub: 9`, and `subn: 9`.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` to treat the two new `module-workflow-surface` rows as representative pattern-call cases, then regenerated `reports/correctness/latest.py`. The tracked published artifact remains in the diff and now reports `1539` total / `1539` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `165`, `module.workflow.str` at `94`, `module.workflow.bytes` at `71`, `module.workflow.module_call` unchanged at `85`, and `module.workflow.pattern_call` at `68`. The tracked report now contains both new case ids.
+- Left benchmark manifests, benchmark reports, README text, and implementation files unchanged in this run.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-unexpected-keyword-after-positional-count-str or pattern-subn-unexpected-keyword-after-positional-count-bytes or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0931-module-workflow-pattern-sub-subn-unexpected-keyword-after-positional-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
