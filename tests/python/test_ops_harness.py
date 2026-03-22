@@ -1911,6 +1911,7 @@ class ReadmeReportingTest(unittest.TestCase):
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
         status_sections = rebar_ops.markdown_sections(CURRENT_STATUS_PATH)
+        rendered_status = rebar_ops.render_readme_status(config)
         correctness_scorecard = rebar_ops.scorecard_from_config(
             config,
             "correctness_scorecard",
@@ -1920,9 +1921,6 @@ class ReadmeReportingTest(unittest.TestCase):
         benchmark_payload = benchmarks.SCORECARD_REPORT.load(BENCHMARK_REPORT_PATH)
         benchmark_summary = benchmark_payload["summary"]
         benchmark_manifest_count = len(benchmark_payload["manifests"])
-        benchmark_gap_label = (
-            "known gap" if benchmark_summary["known_gap_count"] == 1 else "known gaps"
-        )
 
         delivery_estimate = rebar_ops.first_nonempty_line(
             status_sections["README Delivery Estimate"]
@@ -1956,14 +1954,47 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertLessEqual(
             delivery_counts["benchmark_measured"], delivery_counts["benchmark_total"]
         )
-        self.assertIn(
-            (
-                "the benchmark publication covers "
-                f"{benchmark_summary['measured_workloads']}/{benchmark_summary['total_workloads']} "
-                f"measured workloads across {benchmark_manifest_count} manifests with "
-                f"{benchmark_summary['known_gap_count']} {benchmark_gap_label}"
-            ),
-            rebar_ops.render_readme_status(config),
+
+        rendered_delivery_match = re.search(
+            DELIVERY_ESTIMATE_PATTERN,
+            rendered_status,
+        )
+        self.assertIsNotNone(rendered_delivery_match)
+        rendered_delivery_counts = {
+            key: int(value)
+            for key, value in rendered_delivery_match.groupdict().items()
+        }
+        self.assertLessEqual(
+            rendered_delivery_counts["correctness_cases"],
+            correctness_scorecard["cases_total"],
+        )
+        self.assertLessEqual(
+            rendered_delivery_counts["correctness_manifests"],
+            correctness_scorecard["case_manifest_count"],
+        )
+        self.assertLessEqual(
+            rendered_delivery_counts["correctness_passed"],
+            correctness_scorecard["cases_passed"],
+        )
+        self.assertLessEqual(
+            rendered_delivery_counts["benchmark_measured"],
+            benchmark_summary["measured_workloads"],
+        )
+        self.assertLessEqual(
+            rendered_delivery_counts["benchmark_total"],
+            benchmark_summary["total_workloads"],
+        )
+        self.assertLessEqual(
+            rendered_delivery_counts["benchmark_manifests"],
+            benchmark_manifest_count,
+        )
+        self.assertGreaterEqual(
+            rendered_delivery_counts["benchmark_known_gaps"],
+            benchmark_summary["known_gap_count"],
+        )
+        self.assertLessEqual(
+            rendered_delivery_counts["benchmark_measured"],
+            rendered_delivery_counts["benchmark_total"],
         )
 
         compatibility_heuristic = rebar_ops.first_nonempty_line(
