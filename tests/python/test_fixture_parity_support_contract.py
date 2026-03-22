@@ -379,6 +379,9 @@ def _paired_mixed_text_contract_bundle() -> FixtureBundle:
             suite_id=manifest.suite_id,
             layer=manifest.layer,
             family=manifest.manifest_id,
+            pattern=SYNTHETIC_CASE_PATTERN,
+            source_args=[SYNTHETIC_CASE_PATTERN.encode("latin-1"), b"zzabczz"],
+            args=[SYNTHETIC_CASE_PATTERN.encode("latin-1"), b"zzabczz"],
             categories=["workflow", "search", "literal", "bytes"],
         ),
         replace(
@@ -388,7 +391,7 @@ def _paired_mixed_text_contract_bundle() -> FixtureBundle:
             suite_id=manifest.suite_id,
             layer=manifest.layer,
             family=manifest.manifest_id,
-            pattern="abc",
+            pattern=SYNTHETIC_CASE_PATTERN,
             text_model="bytes",
             categories=["workflow", "search", "literal", "bytes"],
             source_args=[b"zzabczz"],
@@ -525,6 +528,21 @@ def test_assert_mixed_text_model_case_pairs_rejects_pairing_drift(
             {"family": "synthetic-mixed-family-drift"},
             "family drifted",
             id="family",
+        ),
+        pytest.param(
+            {"pattern": "abd"},
+            "pattern drifted",
+            id="pattern",
+        ),
+        pytest.param(
+            {"flags": re.IGNORECASE},
+            "flags drifted",
+            id="flags",
+        ),
+        pytest.param(
+            {"pattern_encoding": "utf-8"},
+            "pattern encoding drifted",
+            id="pattern-encoding",
         ),
         pytest.param(
             {"use_compiled_pattern": True},

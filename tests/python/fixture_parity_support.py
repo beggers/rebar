@@ -632,6 +632,21 @@ def assert_mixed_text_model_case_pairs(
                 f"{str_case.case_id}/{bytes_case.case_id} family drifted: "
                 f"{str_case.family!r} != {bytes_case.family!r}"
             )
+        if str_case.pattern != bytes_case.pattern:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} pattern drifted: "
+                f"{str_case.pattern!r} != {bytes_case.pattern!r}"
+            )
+        if str_case.flags != bytes_case.flags:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} flags drifted: "
+                f"{str_case.flags!r} != {bytes_case.flags!r}"
+            )
+        if str_case.pattern_encoding != bytes_case.pattern_encoding:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} pattern encoding drifted: "
+                f"{str_case.pattern_encoding!r} != {bytes_case.pattern_encoding!r}"
+            )
         if str_case.use_compiled_pattern != bytes_case.use_compiled_pattern:
             drift_messages.append(
                 f"{str_case.case_id}/{bytes_case.case_id} compiled-pattern routing drifted"
