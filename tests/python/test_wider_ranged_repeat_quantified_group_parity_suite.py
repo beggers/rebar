@@ -542,6 +542,137 @@ def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_
 
 
 @pytest.mark.parametrize(
+    ("supplemental_cases", "expected_case_ids"),
+    (
+        pytest.param(
+            BROADER_RANGE_CONDITIONAL_BYTES_CASES,
+            (
+                "broader-range-wider-ranged-repeat-conditional-numbered-bytes",
+                "broader-range-wider-ranged-repeat-conditional-named-bytes",
+            ),
+            id="broader-range-conditional",
+        ),
+        pytest.param(
+            BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
+            (
+                "broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
+                "broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
+            ),
+            id="broader-range-backtracking-heavy",
+        ),
+        pytest.param(
+            NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES,
+            (
+                "nested-broader-range-wider-ranged-repeat-grouped-alternation-numbered-bytes",
+                "nested-broader-range-wider-ranged-repeat-grouped-alternation-named-bytes",
+            ),
+            id="nested-broader-range-alternation",
+        ),
+        pytest.param(
+            NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES,
+            (
+                "nested-broader-range-wider-ranged-repeat-grouped-conditional-numbered-bytes",
+                "nested-broader-range-wider-ranged-repeat-grouped-conditional-named-bytes",
+            ),
+            id="nested-broader-range-conditional",
+        ),
+        pytest.param(
+            NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
+            (
+                "nested-broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
+                "nested-broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
+            ),
+            id="nested-broader-range-backtracking-heavy",
+        ),
+    ),
+)
+def test_wider_ranged_repeat_supplemental_bytes_case_tables_keep_case_ids_in_order(
+    supplemental_cases: tuple[SupplementalCase, ...],
+    expected_case_ids: tuple[str, ...],
+) -> None:
+    assert tuple(case.id for case in supplemental_cases) == expected_case_ids
+
+
+def test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_keep_expected_manifest_pairings(
+) -> None:
+    assert tuple(spec.id for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES) == (
+        "broader-range-conditional",
+        "broader-range-backtracking-heavy",
+        "nested-broader-range-alternation",
+        "nested-broader-range-conditional",
+        "nested-broader-range-backtracking-heavy",
+    )
+    assert tuple(
+        (spec.id, spec.bundle.manifest.manifest_id)
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    ) == (
+        (
+            "broader-range-conditional",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+        ),
+        (
+            "broader-range-backtracking-heavy",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+        ),
+        (
+            "nested-broader-range-alternation",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
+        ),
+        (
+            "nested-broader-range-conditional",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+        ),
+        (
+            "nested-broader-range-backtracking-heavy",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+        ),
+    )
+    assert DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[0].cases is BROADER_RANGE_CONDITIONAL_BYTES_CASES
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[1].cases
+        is BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES
+    )
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[2].cases
+        is NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES
+    )
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[3].cases
+        is NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES
+    )
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[4].cases
+        is NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES
+    )
+
+
+def test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_resolve_to_expected_published_mixed_fixtures(
+) -> None:
+    assert tuple(
+        spec.bundle.manifest.path.name for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    ) == (
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+    )
+    assert all(
+        {case.text_model for case in spec.bundle.cases} == {"bytes", "str"}
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    )
+    assert all(
+        {
+            case.operation
+            for case in spec.bundle.cases
+            if case.text_model == "bytes"
+        }
+        == {"compile", "module_call", "pattern_call"}
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    )
+
+
+@pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
     ids=lambda spec: spec.id,
