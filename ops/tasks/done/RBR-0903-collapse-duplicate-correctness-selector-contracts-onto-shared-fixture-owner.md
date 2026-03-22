@@ -1,8 +1,9 @@
 # RBR-0903: Collapse duplicate correctness selector contracts onto the shared fixture owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the duplicate correctness-selector contract block from `tests/conformance/test_combined_correctness_scorecards.py` so the shared selector registry invariants live only in `tests/python/test_fixture_parity_support_contract.py`, while the combined correctness owner keeps only scorecard/publication-specific coverage.
@@ -53,3 +54,12 @@ Created: 2026-03-22
   - `rg -n 'def test_default_correctness_fixture_selector_rejects_unknown_selector|def test_default_correctness_published_full_suite_selector_covers_tracked_fixtures|def test_shared_correctness_fixture_selectors_resolve_published_subset_invariants|def test_correctness_selector_subset_helper_keeps_correctness_specific_missing_filename_error|def test_declared_correctness_fixture_selectors_match_registry_keys|def test_default_correctness_published_manifest_helper_is_cached_and_preserves_selector_order' tests/conformance/test_combined_correctness_scorecards.py` currently returns exactly the six duplicate test definitions at lines `4508`, `4515`, `4534`, `4566`, `4588`, and `4601`;
   - `rg -n 'declared_string_constants_by_suffix|ordered_published_subset_filenames' tests/conformance/test_combined_correctness_scorecards.py` currently returns only the selector-only imports/usages at lines `17`, `18`, `4578`, and `4589`; and
   - the shared owner file `tests/python/test_fixture_parity_support_contract.py` already covers the same unknown-selector, published-full-suite inventory, ordered-subset, missing-filename, declared-selector, and manifest-helper cache invariants, so the combined scorecard owner is maintaining a second copy of the same contract today.
+
+## Completion
+- Removed the six duplicate selector-contract tests from `tests/conformance/test_combined_correctness_scorecards.py`, leaving the shared selector-registry invariants owned only by `tests/python/test_fixture_parity_support_contract.py`.
+- Dropped the now-unused selector-only imports and the file-local `_tracked_correctness_fixture_paths()` helper that only served the deleted inventory assertion.
+- Preserved the combined correctness owner’s scorecard/publication-specific coverage, including the live `published_fixture_manifests()`-based ordering and manifest expectation assertions.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/python/test_fixture_parity_support_contract.py` (`348 passed, 2057 subtests passed`)
+  - `bash -lc "! rg -n 'def test_default_correctness_fixture_selector_rejects_unknown_selector|def test_default_correctness_published_full_suite_selector_covers_tracked_fixtures|def test_shared_correctness_fixture_selectors_resolve_published_subset_invariants|def test_correctness_selector_subset_helper_keeps_correctness_specific_missing_filename_error|def test_declared_correctness_fixture_selectors_match_registry_keys|def test_default_correctness_published_manifest_helper_is_cached_and_preserves_selector_order' tests/conformance/test_combined_correctness_scorecards.py"`
+  - `bash -lc "! rg -n 'declared_string_constants_by_suffix|ordered_published_subset_filenames' tests/conformance/test_combined_correctness_scorecards.py"`

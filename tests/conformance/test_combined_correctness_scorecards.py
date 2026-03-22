@@ -14,8 +14,6 @@ import warnings
 from rebar_harness import correctness
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
-    declared_string_constants_by_suffix,
-    ordered_published_subset_filenames,
 )
 from tests.conftest import REPO_ROOT, run_harness_scorecard
 
@@ -4390,14 +4388,6 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         _tracked_report_freshness_manifest_ids.cache_clear()
         _tracked_report_freshness_manifests.cache_clear()
 
-    def _tracked_correctness_fixture_paths(self) -> tuple[pathlib.Path, ...]:
-        return tuple(
-            sorted(
-                correctness.CORRECTNESS_FIXTURES_ROOT.glob("*.py"),
-                key=lambda path: path.name,
-            )
-        )
-
     def _assert_mixed_text_manifests_cover_both_representative_text_models(
         self,
         *,
@@ -4504,114 +4494,6 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 self.assertIs(suite.expectation_table, expectation_table)
                 manifest_id = next(iter(expectation_table))
                 self.assertNotIsInstance(expectation_table[manifest_id], dict)
-
-    def test_default_correctness_fixture_selector_rejects_unknown_selector(self) -> None:
-        with self.assertRaisesRegex(
-            ValueError,
-            "unknown correctness fixture selector",
-        ):
-            correctness.select_correctness_fixture_paths("missing-selector")
-
-    def test_default_correctness_published_full_suite_selector_covers_tracked_fixtures(
-        self,
-    ) -> None:
-        published_fixture_paths = correctness.select_correctness_fixture_paths(
-            correctness.PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-        )
-        tracked_fixture_paths = self._tracked_correctness_fixture_paths()
-
-        self.assertEqual(set(published_fixture_paths), set(tracked_fixture_paths))
-        self.assertEqual(len(published_fixture_paths), len(set(published_fixture_paths)))
-
-        for path in published_fixture_paths:
-            with self.subTest(path=path.name):
-                self.assertTrue(
-                    path.is_relative_to(correctness.CORRECTNESS_FIXTURES_ROOT)
-                )
-                self.assertTrue(path.is_file())
-                self.assertEqual(path.suffix, ".py")
-
-    def test_shared_correctness_fixture_selectors_resolve_published_subset_invariants(
-        self,
-    ) -> None:
-        published_fixture_paths = correctness.select_correctness_fixture_paths(
-            correctness.PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-        )
-        shared_subset_selectors = tuple(
-            correctness._NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES
-        )
-
-        self.assertNotEqual(shared_subset_selectors, ())
-
-        for selector in shared_subset_selectors:
-            with self.subTest(selector=selector):
-                selected_paths = correctness.select_correctness_fixture_paths(selector)
-                selected_path_set = set(selected_paths)
-                expected_ordered_subset = tuple(
-                    path for path in published_fixture_paths if path in selected_path_set
-                )
-
-                self.assertNotEqual(selected_paths, ())
-                self.assertEqual(len(selected_paths), len(selected_path_set))
-                self.assertEqual(selected_paths, expected_ordered_subset)
-
-                for path in selected_paths:
-                    self.assertTrue(
-                        path.is_relative_to(correctness.CORRECTNESS_FIXTURES_ROOT)
-                    )
-                    self.assertTrue(path.is_file())
-                    self.assertEqual(path.suffix, ".py")
-                    self.assertIn(path, published_fixture_paths)
-
-    def test_correctness_selector_subset_helper_keeps_correctness_specific_missing_filename_error(
-        self,
-    ) -> None:
-        missing_filename = "missing_fixture.py"
-
-        with self.assertRaisesRegex(
-            ValueError,
-            re.escape(
-                f"{correctness._PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX}"
-                f"['{missing_filename}']"
-            ),
-        ):
-            ordered_published_subset_filenames(
-                correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
-                    correctness.PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-                ],
-                (missing_filename,),
-                missing_filename_error_prefix=(
-                    correctness._PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX
-                ),
-            )
-
-    def test_declared_correctness_fixture_selectors_match_registry_keys(self) -> None:
-        declared_selectors = declared_string_constants_by_suffix(
-            correctness,
-            name_suffix="_FIXTURE_SELECTOR",
-        )
-
-        self.assertTrue(declared_selectors)
-        self.assertEqual(len(declared_selectors), len(set(declared_selectors.values())))
-        self.assertEqual(
-            set(declared_selectors.values()),
-            set(correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR),
-        )
-
-    def test_default_correctness_published_manifest_helper_is_cached_and_preserves_selector_order(
-        self,
-    ) -> None:
-        manifests = published_fixture_manifests()
-        published_fixture_paths = correctness.select_correctness_fixture_paths(
-            correctness.PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-        )
-
-        self.assertIs(published_fixture_manifests(), manifests)
-        self.assertEqual(correctness.DEFAULT_FIXTURE_PATHS, published_fixture_paths)
-        self.assertEqual(
-            tuple(manifest.path for manifest in manifests),
-            published_fixture_paths,
-        )
 
     def test_suite_registry_target_manifests_follow_default_fixture_order(self) -> None:
         manifests = correctness.published_fixture_manifests()
