@@ -1,8 +1,9 @@
 # RBR-0935: Publish the module-workflow compiled-pattern `sub()` / `subn()` unexpected-keyword-after-positional-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the adjacent compiled-pattern-first-argument `sub()` / `subn()` unexpected-keyword-after-positional-count pair, so the shared module-helper owner path publishes the already-landed CPython-visible `TypeError` behavior before Python-path benchmark catch-up or another compiled-pattern keyword family widens the queue.
@@ -66,3 +67,15 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... re.sub(re.compile("abc"), "x", "abc", 1, missing=1) ... rebar.sub(rebar.compile("abc"), "x", "abc", 1, missing=1) ... re.subn(re.compile(b"abc"), b"x", b"abc", 1, missing=1) ... rebar.subn(rebar.compile(b"abc"), b"x", b"abc", 1, missing=1) ... PY` shows CPython and `rebar` already agree on the exact bounded `TypeError.args`: `("sub() takes at most 3 arguments (4 given)",)` and `("subn() takes at most 3 arguments (4 given)",)`;
   - `rg -n 'workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern|workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern' tests/conformance/fixtures/module_workflow_surface.py reports/correctness/latest.py` returned no matches in this run, so the exact compiled-pattern publication rows are still absent; and
   - `reports/correctness/latest.py` currently reports `1539` total / `1539` passed / `0` unimplemented across `114` manifests, while `reports/benchmarks/latest.py` already reports `887` total / `887` measured / `0` known gaps across `30` manifests, so this run stays on correctness publication instead of skipping ahead to benchmark-only changes.
+
+## Completion
+- Added `workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern` and `workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern` to `tests/conformance/fixtures/module_workflow_surface.py` on the existing compiled-pattern module-helper owner path, in the required positions immediately after the adjacent unexpected-keyword rows and before the already-published wrong-text-model rows.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared compiled-pattern module-helper publication assertions now include both new rows, the stale direct-only frontier guard now asserts these positional-count cases are published on the shared owner path, and the bundle/helper totals now track `167` module-workflow rows overall with `95` `str`, `72` `bytes`, `87` `module_call`, `68` `pattern_call`, plus compiled-pattern helper subtotals of `60` rows with `32` `str`, `28` `bytes`, `sub: 9`, and `subn: 9`.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the two new `module-workflow-surface` rows are treated as representative module-call cases, then regenerated `reports/correctness/latest.py`. The tracked published artifact remains in the diff and now reports `1541` total / `1541` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `167`, `module.workflow.str` at `95`, `module.workflow.bytes` at `72`, `module.workflow.module_call` at `87`, and `module.workflow.pattern_call` unchanged at `68`. The tracked report now contains both new case ids.
+- Left benchmark manifests, benchmark reports, README text, and implementation files unchanged in this run.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-sub-unexpected-keyword-after-positional-count-str or compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes or module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0935-module-workflow-compiled-pattern-sub-subn-unexpected-keyword-after-positional-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`

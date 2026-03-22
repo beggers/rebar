@@ -3403,12 +3403,12 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
     )
 
 
-def test_compiled_pattern_module_keyword_frontier_keeps_after_positional_count_cases_direct_only(
+def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path(
 ) -> None:
     direct_cases_by_id = {
         case.case_id: case for case in COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES
     }
-    direct_only_case_ids = (
+    published_after_positional_count_case_ids = (
         "compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
         "compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
     )
@@ -3416,22 +3416,34 @@ def test_compiled_pattern_module_keyword_frontier_keeps_after_positional_count_c
         "compiled-pattern-sub-unexpected-keyword-str",
         "compiled-pattern-subn-unexpected-keyword-bytes",
     )
+    published_fixture_case_ids = (
+        "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
+        "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
+        "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
+        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
+    )
 
-    direct_only_cases = tuple(
-        direct_cases_by_id[case_id] for case_id in direct_only_case_ids
+    published_after_positional_count_cases = tuple(
+        direct_cases_by_id[case_id]
+        for case_id in published_after_positional_count_case_ids
     )
     adjacent_published_cases = tuple(
         direct_cases_by_id[case_id] for case_id in adjacent_published_case_ids
     )
+    published_fixture_cases = _published_compiled_pattern_module_helper_fixture_cases()
     published_fixture_signatures = {
         _compiled_pattern_module_helper_fixture_signature(case)
-        for case in _published_compiled_pattern_module_helper_fixture_cases()
+        for case in published_fixture_cases
     }
 
-    assert tuple(case.case_id for case in direct_only_cases) == direct_only_case_ids
+    assert tuple(
+        case.case_id
+        for case in published_fixture_cases
+        if case.case_id in published_fixture_case_ids
+    ) == published_fixture_case_ids
     assert {
         _compiled_pattern_module_helper_direct_signature(case)
-        for case in direct_only_cases
+        for case in published_after_positional_count_cases
     } == {
         (
             "sub",
@@ -3452,10 +3464,10 @@ def test_compiled_pattern_module_keyword_frontier_keeps_after_positional_count_c
             "bytes",
         ),
     }
-    assert not {
+    assert {
         _compiled_pattern_module_helper_direct_signature(case)
-        for case in direct_only_cases
-    } & published_fixture_signatures
+        for case in published_after_positional_count_cases
+    } <= published_fixture_signatures
     assert {
         _compiled_pattern_module_helper_direct_signature(case)
         for case in adjacent_published_cases
@@ -3468,9 +3480,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 165
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 167
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 94, "bytes": 71}
+        {"str": 95, "bytes": 72}
     )
     assert len(PATTERN_CASES) == 68
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -3485,7 +3497,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 9,
         }
     )
-    assert len(MODULE_CALL_CASES) == 85
+    assert len(MODULE_CALL_CASES) == 87
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 20,
@@ -3495,8 +3507,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "split": 12,
             "findall": 2,
             "finditer": 2,
-            "sub": 15,
-            "subn": 13,
+            "sub": 16,
+            "subn": 14,
             "escape": 2,
         }
     )
@@ -4727,6 +4739,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-sub-count-bool-false-str-compiled-pattern",
         "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
         "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
+        "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern-on-bytes-string",
         "workflow-module-subn-count-indexlike-str-compiled-pattern",
     )
@@ -4763,11 +4776,12 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
         "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
+        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(published_fixture_cases) == 58
+    assert len(published_fixture_cases) == 60
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 31, "bytes": 27}
+        {"str": 32, "bytes": 28}
     )
     assert Counter(case.helper for case in published_fixture_cases) == Counter(
         {
@@ -4778,8 +4792,8 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
             "split": 7,
             "findall": 2,
             "finditer": 2,
-            "sub": 8,
-            "subn": 8,
+            "sub": 9,
+            "subn": 9,
         }
     )
     assert tuple(
@@ -4834,6 +4848,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-sub-count-bool-false-str-compiled-pattern",
         "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
         "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
+        "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern-on-bytes-string",
         "workflow-module-subn-bytes-compiled-pattern",
         "workflow-module-subn-count-keyword-bytes-compiled-pattern",
@@ -4842,6 +4857,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
         "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
+        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
     assert tuple(
@@ -4896,6 +4912,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-sub-count-bool-false-str",
         "compiled-pattern-sub-duplicate-count-keyword-str",
         "compiled-pattern-sub-unexpected-keyword-str",
+        "compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
         "compiled-pattern-sub-str-on-bytes-string",
         "compiled-pattern-subn-bytes-count",
         "compiled-pattern-subn-count-keyword-bytes",
@@ -4904,6 +4921,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-subn-count-bool-true-bytes",
         "compiled-pattern-subn-duplicate-count-keyword-bytes",
         "compiled-pattern-subn-unexpected-keyword-bytes",
+        "compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
         "compiled-pattern-subn-bytes-on-str-string",
     )
     assert len(selected_direct_cases) == len(published_fixture_cases)
