@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0902` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact raw module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface through the existing collection/replacement keyword owner path.
+`RBR-0904` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, publishing the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair on the tracked module-workflow correctness surface through the existing pattern replacement keyword owner path.
 
 ## Ordered Work
-1. `RBR-0902` catches up `re.sub("abc", "x", "abcabc", count=False)` and `re.subn(b"abc", b"x", b"abcabc", count=True)` on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing raw module keyword-carrier owner path instead of widening into compiled-pattern or direct-`Pattern` neighbors.
+1. `RBR-0904` publishes `re.compile(b"abc").sub(b"x", b"abcabc", count=True)` and `re.compile("abc").subn("x", "abcabc", count=False)` on `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, reusing the existing direct-`Pattern` replacement keyword owner path instead of widening into benchmark catch-up or a larger keyword matrix.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
