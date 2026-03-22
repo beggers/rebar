@@ -163,6 +163,7 @@ _NATIVE_CALLABLE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
     }
 )
 _MATCH_FALLBACK_UNSUPPORTED = object()
+_PATTERN_SPLIT_MAXSPLIT_UNSET = object()
 _PATTERN_REPLACEMENT_COUNT_UNSET = object()
 
 
@@ -256,7 +257,18 @@ class Pattern:
     def fullmatch(self, *_args: object, **_kwargs: object) -> object:
         return _dispatch_pattern_match(self, "fullmatch", *_args, **_kwargs)
 
-    def split(self, string: object, maxsplit: int = 0) -> object:
+    def split(
+        self,
+        string: object,
+        *args: object,
+        maxsplit: object = _PATTERN_SPLIT_MAXSPLIT_UNSET,
+        **kwargs: object,
+    ) -> object:
+        maxsplit = _resolve_bound_pattern_split_maxsplit(
+            args,
+            maxsplit=maxsplit,
+            kwargs=kwargs,
+        )
         if _native is not None:
             return _run_native_literal_split(self, string, maxsplit=maxsplit)
         if not _supports_literal_collection_execution(self):
@@ -338,6 +350,36 @@ class Pattern:
 
 
 Pattern.__module__ = "re"
+
+
+def _resolve_bound_pattern_split_maxsplit(
+    extra_args: tuple[object, ...],
+    *,
+    maxsplit: object,
+    kwargs: dict[str, object],
+) -> object:
+    extra_argument_count = len(extra_args) + len(kwargs)
+    if maxsplit is not _PATTERN_SPLIT_MAXSPLIT_UNSET:
+        extra_argument_count += 1
+
+    if extra_argument_count > 1:
+        raise TypeError(
+            f"split() takes at most 2 arguments ({1 + extra_argument_count} given)"
+        )
+
+    if kwargs:
+        unexpected_keyword = next(iter(kwargs))
+        raise TypeError(
+            f"{unexpected_keyword!r} is an invalid keyword argument for split()"
+        )
+
+    if extra_args:
+        return extra_args[0]
+
+    if maxsplit is _PATTERN_SPLIT_MAXSPLIT_UNSET:
+        return 0
+
+    return maxsplit
 
 
 def _resolve_bound_pattern_replacement_count(

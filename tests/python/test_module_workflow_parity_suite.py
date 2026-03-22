@@ -1297,6 +1297,20 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
         args=(b"zabczz",),
     ),
     PatternHelperErrorCase(
+        case_id="pattern-split-duplicate-maxsplit-keyword-str",
+        helper="split",
+        pattern="abc",
+        args=("abcabc", 1),
+        kwargs={"maxsplit": 1},
+    ),
+    PatternHelperErrorCase(
+        case_id="pattern-split-unexpected-keyword-bytes",
+        helper="split",
+        pattern=b"abc",
+        args=(b"abcabc",),
+        kwargs={"missing": 1},
+    ),
+    PatternHelperErrorCase(
         case_id="pattern-sub-str-pattern-on-bytes-string",
         helper="sub",
         pattern="abc",

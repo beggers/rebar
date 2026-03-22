@@ -1,8 +1,9 @@
 # RBR-0921: Match direct `Pattern.split()` duplicate-`maxsplit=` / unexpected-keyword `TypeError`s
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Land the missing CPython-compatible duplicate-`maxsplit=` and unexpected-keyword `TypeError` behavior for the exact direct `Pattern.split()` pair adjacent to the landed `sub()` / `subn()` keyword-error slice, so the next correctness-publication step can reuse the existing direct bound-pattern split owner path instead of publishing against mismatched diagnostics.
@@ -46,3 +47,12 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... re.compile("abc").split("abcabc", 1, maxsplit=1) ... re.compile(b"abc").split(b"abcabc", missing=1) ... PY` showed CPython and `rebar` still disagree on the exact direct errors in this run: CPython raises `("split() takes at most 2 arguments (3 given)",)` and `("'missing' is an invalid keyword argument for split()",)`, while `rebar` currently raises `("Pattern.split() got multiple values for argument 'maxsplit'",)` and `("Pattern.split() got an unexpected keyword argument 'missing'",)`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-split-duplicate-maxsplit-keyword-str or compiled-pattern-split-unexpected-keyword-bytes'` currently passes in this checkout (`4 passed, 1335 deselected`), so the adjacent compiled-pattern-first-argument owner path is already green and does not need to be reopened here; and
   - `rg -n "pattern-split-duplicate-maxsplit|pattern-split-unexpected-keyword|workflow-pattern-split-duplicate-maxsplit|workflow-pattern-split-unexpected-keyword" tests/python/test_module_workflow_parity_suite.py tests/conformance/fixtures/module_workflow_surface.py reports/correctness/latest.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` returned only compiled-pattern/module-helper rows in this run, so direct `Pattern.split()` publication and benchmark rows are still absent and should wait until this exact parity gap is closed.
+
+## Completion
+- Changed `python/rebar/__init__.py` so bound `Pattern.split()` now resolves its optional `maxsplit` argument through a manual binder path, matching CPython for duplicate `maxsplit=` and unexpected-keyword `TypeError.args` while keeping the existing successful direct `maxsplit` keyword and positional carriers unchanged.
+- Added the exact direct parity cases `pattern-split-duplicate-maxsplit-keyword-str` and `pattern-split-unexpected-keyword-bytes` to `tests/python/test_module_workflow_parity_suite.py` on the existing `BOUND_PATTERN_TYPE_ERROR_CASES` owner path, reusing the shared `_invoke_bound_pattern_helper(...)` keyword-argument invocation flow already used by adjacent `Pattern.sub()` / `Pattern.subn()` checks.
+- Left `tests/conformance/fixtures/module_workflow_surface.py`, `reports/correctness/latest.py`, benchmark manifests, and `reports/benchmarks/latest.py` unchanged in this run; no published scorecard artifact changed.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-duplicate-maxsplit-keyword-str or pattern-split-unexpected-keyword-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bound_pattern_helper_type_errors_match_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-split-duplicate-maxsplit-keyword-str or compiled-pattern-split-unexpected-keyword-bytes'`
