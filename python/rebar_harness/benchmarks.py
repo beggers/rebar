@@ -922,6 +922,34 @@ def _expected_duplicate_module_helper_keyword_field(
     return None
 
 
+def _has_explicit_positional_helper_argument(value: Any) -> bool:
+    return type(value) is bool or isinstance(value, dict) or value != 0
+
+
+def _expected_positional_module_helper_keyword_field(
+    workload: Workload,
+) -> str | None:
+    expected_exception = workload.expected_exception
+    if (
+        expected_exception is None
+        or expected_exception.get("type") != "TypeError"
+        or not workload.kwargs
+    ):
+        return None
+
+    if workload.operation == "module.split":
+        if _has_explicit_positional_helper_argument(workload.maxsplit):
+            return "maxsplit"
+        return None
+
+    if workload.operation in {"module.sub", "module.subn"}:
+        if _has_explicit_positional_helper_argument(workload.count):
+            return "count"
+        return None
+
+    return None
+
+
 def _expected_pattern_helper_positional_keyword_field(
     workload: Workload,
 ) -> str | None:
@@ -1274,6 +1302,9 @@ def helper_callable(module: Any, workload: Workload) -> Any:
     duplicate_keyword_field = _expected_duplicate_module_helper_keyword_field(
         workload
     )
+    positional_keyword_field = _expected_positional_module_helper_keyword_field(
+        workload
+    )
 
     def compile_pattern() -> Any:
         return module.compile(pattern, workload.flags)
@@ -1352,7 +1383,9 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                         "benchmark workload module.split keyword maxsplit carriers "
                         "currently require `flags == 0`"
                     )
-                if duplicate_keyword_field == "maxsplit":
+                if duplicate_keyword_field == "maxsplit" or (
+                    positional_keyword_field == "maxsplit"
+                ):
                     return module.split(
                         pattern_argument,
                         haystack,
@@ -1387,7 +1420,9 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                         "benchmark workload module.sub keyword count carriers "
                         "currently require `flags == 0`"
                     )
-                if duplicate_keyword_field == "count":
+                if duplicate_keyword_field == "count" or (
+                    positional_keyword_field == "count"
+                ):
                     return module.sub(
                         pattern_argument,
                         workload.replacement_payload(),
@@ -1422,7 +1457,9 @@ def helper_callable(module: Any, workload: Workload) -> Any:
                         "benchmark workload module.subn keyword count carriers "
                         "currently require `flags == 0`"
                     )
-                if duplicate_keyword_field == "count":
+                if duplicate_keyword_field == "count" or (
+                    positional_keyword_field == "count"
+                ):
                     return module.subn(
                         pattern_argument,
                         workload.replacement_payload(),

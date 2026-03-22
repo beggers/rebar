@@ -1268,6 +1268,48 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "count": 1,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "positional-count",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.sub helper path that keeps the bounded compiled-pattern-first-argument positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-subn-literal-purged-bytes-compiled-pattern",
       "bucket": "module-subn",
       "family": "module",
@@ -1734,6 +1776,48 @@ MANIFEST = {
       ],
       "notes": [
         "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "count": 1,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "positional-count",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

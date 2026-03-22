@@ -1,8 +1,9 @@
 # RBR-0937: Catch up the compiled-pattern module-helper `sub()` / `subn()` unexpected-keyword-after-positional-count boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Extend the published Python-path `collection_replacement_boundary.py` benchmark surface with the exact compiled-pattern-first-argument module-helper `sub()` / `subn()` positional-count-plus-extra-keyword rejection pair that `RBR-0935` just published on the shared `module-workflow-surface` correctness path, while keeping this work on the existing compiled-pattern module-helper collection/replacement keyword owner route and limiting the run to the exact missing benchmark rows plus the matching shared benchmark assertions.
@@ -63,3 +64,14 @@ Created: 2026-03-22
   - a task-local `load_manifest(...)` plus `run_internal_workload_probe(...)` clone of the adjacent compiled-pattern module-helper unexpected-keyword workloads, with only `count` changed to `1` and the ids rewritten to the new `-after-positional-count-` spellings, returns `status == "measured"` for both synthetic `rebar` probes in this checkout, so the current benchmark harness already measures the exact bounded pair without another prerequisite;
   - `rg -n 'module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern|module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern' benchmarks/workloads tests/benchmarks reports/benchmarks` returned no matches in this run, so the exact benchmark workloads are still absent while `reports/benchmarks/latest.py` remains at `887` total / `887` measured / `0` known gaps overall and `collection-replacement-boundary` remains at `79` selected / `79` measured / `0` known gaps; and
   - `reports/correctness/latest.py` currently reports `1541` total / `1541` passed / `0` unimplemented across `114` manifests, so this run stays on benchmark catch-up instead of reopening correctness publication.
+
+## Completion
+- Added `module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern` and `module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern` to `benchmarks/workloads/collection_replacement_boundary.py` at the required insertion points on the existing collection/replacement manifest.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared `collection-replacement-keyword` anchor map includes both new workload ids, the module keyword measured-row expectation moves to `33`, a focused compiled-pattern module-helper keyword-error measured-row assertion now expects `8` rows, the compiled-pattern keyword-error manifest/oracle/materialization/probe coverage now includes the positional-count-plus-extra-keyword pair, and the combined published summary expectation moves to `889` total / `889` measured / `0` known gaps with `881` module workloads.
+- Fixed the narrowly reproducible benchmark callback/signature regression in `python/rebar_harness/benchmarks.py` and the shared benchmark test helpers so module-helper keyword-error workloads preserve a positional `count` or `maxsplit` when one is present alongside an extra keyword, which is required for the exact compiled-pattern `sub()` / `subn()` call shapes in this task.
+- Republished `reports/benchmarks/latest.py`. The tracked artifact remains in the diff and now reports `889` total / `889` measured / `0` known gaps across `30` manifests, `881` module workloads, and `collection-replacement-boundary` at `81` selected / `81` measured / `0` known gaps. Both new workload ids publish `status == "measured"` with real `rebar` timings.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-sub-unexpected-keyword-after-positional-count-str or compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error or collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0937-compiled-pattern-module-helper-sub-subn-unexpected-keyword-after-positional-count-boundary-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
