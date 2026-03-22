@@ -4579,6 +4579,22 @@ def test_value_parity_rejects_equal_mapping_keys_with_different_types() -> None:
         assert_value_parity({True: "alpha"}, {1: "alpha"})
 
 
+def test_value_parity_rejects_missing_mapping_keys_with_clear_error() -> None:
+    with pytest.raises(
+        AssertionError,
+        match=r"missing mapping key parity for 'beta'",
+    ):
+        assert_value_parity({"alpha": 1}, {"alpha": 1, "beta": 2})
+
+
+def test_value_parity_rejects_unexpected_mapping_keys_with_clear_error() -> None:
+    with pytest.raises(
+        AssertionError,
+        match=r"unexpected mapping key parity for \('beta',\)",
+    ):
+        assert_value_parity({"alpha": 1, "beta": 2}, {"alpha": 1})
+
+
 @pytest.mark.parametrize(
     "text",
     (

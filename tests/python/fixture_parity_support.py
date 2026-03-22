@@ -1128,8 +1128,6 @@ def assert_value_parity(
 
     if isinstance(expected, Mapping):
         observed_items = list(observed.items())
-        assert len(observed_items) == len(expected)
-
         for expected_key, expected_value in expected.items():
             for index, (observed_key, observed_value) in enumerate(observed_items):
                 if type(observed_key) is not type(expected_key):
@@ -1146,7 +1144,11 @@ def assert_value_parity(
             assert_value_parity(observed_key, expected_key)
             assert_value_parity(observed_value, expected_value)
 
-        assert not observed_items
+        if observed_items:
+            raise AssertionError(
+                "unexpected mapping key parity for "
+                f"{tuple(observed_key for observed_key, _ in observed_items)!r}"
+            )
         return
 
     if isinstance(expected, (list, tuple)):
