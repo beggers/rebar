@@ -1,6 +1,6 @@
 ## RBR-0977: Publish the direct Pattern `findall()` bounded trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -66,3 +66,12 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-findall-str-bounded or pattern-findall-str-bounded-no-match or pattern-findall-bytes-bounded or literal_collection_direct_test_buckets_cover_selected_frontier'` currently passes (`9 passed`), so the exact bounded direct parity slice is already green in this checkout;
   - `rg -n 'pattern-findall-str-bounded|pattern-findall-str-bounded-no-match|pattern-findall-bytes-bounded|workflow-pattern-findall-str-bounded|workflow-pattern-findall-bytes-bounded' tests/conformance/fixtures/collection_replacement_workflows.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` currently returns no matches, so the exact trio is still absent from the published correctness surface; and
   - `rg -n 'pattern-findall' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently shows only the existing bounded-wildcard and keyword-window `Pattern.findall()` benchmark anchors, confirming a later catch-up remains concrete on the existing `collection_replacement_boundary.py` path instead of requiring a new benchmark family.
+
+## Completion
+- Added the three bounded `Pattern.findall()` publication rows to `tests/conformance/fixtures/collection_replacement_workflows.py` in the required slot, added an explicit ordered `findall` frontier assertion to `tests/python/test_module_workflow_parity_suite.py`, and extended the combined scorecard manifest sample in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `1559` total / `1559` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `22/22`, `.str` at `15/15`, `.bytes` at `7/7`, `.pattern_call` at `10/10`, and `.module_call` unchanged at `12/12`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-findall-str-bounded or pattern-findall-str-bounded-no-match or pattern-findall-bytes-bounded or literal_collection_direct_test_buckets_cover_selected_frontier'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-0977-pattern-findall-bounded-trio.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

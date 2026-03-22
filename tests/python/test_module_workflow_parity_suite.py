@@ -7450,6 +7450,15 @@ def test_literal_collection_suite_tracks_published_case_frontier() -> None:
 
 
 def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> None:
+    assert tuple(
+        case.case_id for case in _published_pattern_collection_cases_for_helper("findall")
+    ) == (
+        "pattern-findall-str-no-match",
+        "pattern-findall-str-bounded",
+        "pattern-findall-str-bounded-no-match",
+        "pattern-findall-bytes-bounded",
+    )
+
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         {
             "module-split": frozenset(

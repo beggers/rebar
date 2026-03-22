@@ -122,6 +122,51 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-findall-str-bounded",
+      "operation": "pattern_call",
+      "family": "findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "args": ["zabcabcz", 1, 7],
+      "categories": ["workflow", "findall", "literal", "str", "bounded"],
+      "notes": [
+        "Publishes the bounded Pattern.findall str path on the shared collection workflow frontier."
+      ]
+    },
+    {
+      "id": "pattern-findall-str-bounded-no-match",
+      "operation": "pattern_call",
+      "family": "findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "args": ["zabz", 1, 4],
+      "categories": ["workflow", "findall", "literal", "str", "bounded", "no-match"],
+      "notes": [
+        "Publishes the bounded Pattern.findall str no-match window without widening beyond the direct helper slice."
+      ]
+    },
+    {
+      "id": "pattern-findall-bytes-bounded",
+      "operation": "pattern_call",
+      "family": "findall_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "findall",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcz"
+        },
+        1,
+        7
+      ],
+      "categories": ["workflow", "findall", "literal", "bytes", "bounded"],
+      "notes": [
+        "Publishes the bounded Pattern.findall bytes path on the shared collection workflow frontier."
+      ]
+    },
+    {
       "id": "pattern-findall-bytes-pattern-on-str-string",
       "operation": "pattern_call",
       "family": "findall_workflow",
