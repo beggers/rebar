@@ -27,7 +27,6 @@ from tests.python.fixture_parity_support import (
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_bounded_pattern_case_match_parity,
-    assert_bounded_pattern_case_no_match_parity,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -1263,9 +1262,10 @@ def test_pattern_bounds_misses_match_cpython(
     regex_backend: tuple[str, object],
     case: BoundedPatternCase,
 ) -> None:
-    assert_bounded_pattern_case_no_match_parity(
+    assert_bounded_pattern_case_match_parity(
         regex_backend,
         case,
+        expect_match=False,
         check_regs=True,
     )
 

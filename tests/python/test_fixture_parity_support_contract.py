@@ -34,7 +34,6 @@ import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_bounded_pattern_case_match_parity,
-    assert_bounded_pattern_case_no_match_parity,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -2688,13 +2687,14 @@ def test_bounded_pattern_case_match_parity_helper_accepts_representative_cases(
         ),
     ),
 )
-def test_bounded_pattern_case_no_match_parity_helper_accepts_representative_cases(
+def test_bounded_pattern_case_match_parity_helper_accepts_representative_no_match_cases(
     regex_backend: tuple[str, object],
     case: SimpleNamespace,
 ) -> None:
-    assert_bounded_pattern_case_no_match_parity(
+    assert_bounded_pattern_case_match_parity(
         regex_backend,
         case,
+        expect_match=False,
         check_regs=True,
     )
 
