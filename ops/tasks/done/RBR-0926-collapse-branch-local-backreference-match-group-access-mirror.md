@@ -1,6 +1,6 @@
 # RBR-0926: Collapse branch-local backreference match-group-access mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -104,3 +104,6 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` currently passes (`561 passed in 0.81s`);
   - `rg -n '^(MATCH_GROUP_ACCESS_CASE_IDS)\\s*=' tests/python/test_branch_local_backreference_parity_suite.py` currently finds the remaining mirror at line `533`; and
   - the task-local live-selector probe in Acceptance currently passes (`ok 14`), proving the file's existing owner bundles already recover the same ordered match-group-access surface without the detached tuple.
+
+## Completion
+- 2026-03-22: Removed the detached `MATCH_GROUP_ACCESS_CASE_IDS` mirror from `tests/python/test_branch_local_backreference_parity_suite.py` and replaced it with tiny live selectors over the existing simple, nested branch-local, and quantified branch-local owner bundles. Preserved the same ordered 14-row `MATCH_GROUP_ACCESS_CASES` surface, kept the two `@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ...)` parity tests unchanged, and verified with the full task-specified pytest run, the no-mirror `rg` check, and the task-local live-selector probe (`ok 14`).

@@ -530,17 +530,43 @@ MATCH_CONVENIENCE_CASE_IDS = frozenset(
     for case in WORKFLOW_CASES
     if case.manifest_id in MATCH_CONVENIENCE_MANIFEST_IDS and case.operation != "compile"
 )
-MATCH_GROUP_ACCESS_CASE_IDS = (
-    *_simple_backreference_workflow_case_ids(),
-    "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
-    "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
-    "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
-    "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
-    "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
-    "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-str",
-    "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
-    "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
-)
+
+
+def _nested_branch_local_match_group_access_case_ids() -> tuple[str, ...]:
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "nested-group-alternation-branch-local-backreference-workflows"
+    ]
+    return tuple(
+        case.case_id
+        for case in bundle.cases
+        if case.text_model == "str"
+        and case.operation != "compile"
+        and "no-match" not in case.case_id
+    )
+
+
+def _quantified_branch_local_match_group_access_case_ids() -> tuple[str, ...]:
+    return tuple(
+        case.case_id
+        for case in QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE.cases
+        if case.text_model == "str"
+        and case.operation != "compile"
+        and "no-match" not in case.case_id
+        and (
+            case.operation == "module_call"
+            or ("second-repetition" in case.case_id and "c-branch" not in case.case_id)
+        )
+    )
+
+
+def _match_group_access_case_ids() -> tuple[str, ...]:
+    return (
+        *_simple_backreference_workflow_case_ids(),
+        *_nested_branch_local_match_group_access_case_ids(),
+        *_quantified_branch_local_match_group_access_case_ids(),
+    )
+
+
 SIMPLE_NAMED_PATTERN_SEARCH_CASE_ID = "named-backreference-pattern-search-str"
 SIMPLE_NUMBERED_PATTERN_SEARCH_CASE_ID = "numbered-backreference-pattern-search-str"
 SIMPLE_NUMBERED_SEGMENT_MODULE_SEARCH_CASE_ID = (
@@ -1008,10 +1034,29 @@ SUPPLEMENTAL_MISS_CASES = (
     ),
 )
 MATCH_GROUP_ACCESS_CASES = tuple(
-    CASES_BY_ID[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS
+    CASES_BY_ID[case_id] for case_id in _match_group_access_case_ids()
 )
+
+
 def test_match_group_access_rows_remain_on_shared_backreference_fixture_paths() -> None:
-    assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
+    expected_case_ids = (
+        "named-backreference-module-search-str",
+        "named-backreference-pattern-search-str",
+        "numbered-backreference-module-search-str",
+        "numbered-backreference-pattern-search-str",
+        "numbered-backreference-segment-module-search-str",
+        "numbered-backreference-prefix-pattern-search-str",
+        "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
+        "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
+        "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
+        "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
+        "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
+        "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-str",
+        "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
+        "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
+    )
+    assert _match_group_access_case_ids() == expected_case_ids
+    assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == expected_case_ids
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
 
 
