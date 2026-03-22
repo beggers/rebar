@@ -2438,6 +2438,95 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-findall-bounded-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabcabcz",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 7,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "findall",
+        "literal",
+        "bounded",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.findall helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-findall-bounded-no-match-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabz",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 4,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "findall",
+        "literal",
+        "bounded",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.findall helper path that keeps the bounded literal no-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-findall-bounded-purged-bytes",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabcabcz",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 7,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "findall",
+        "bytes",
+        "bounded",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes Pattern.findall helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",

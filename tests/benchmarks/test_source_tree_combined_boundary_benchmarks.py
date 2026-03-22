@@ -3621,6 +3621,28 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
+    def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("collection-replacement-boundary")
+        workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_collection_replacement_pattern_findall_bounded_workload,
+        )
+        self.assertEqual(
+            expected_measured_workload_ids,
+            _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_IDS,
+        )
+        self.assertEqual(len(expected_measured_workload_ids), 3)
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "collection-replacement-boundary",
+            expected_measured_workload_ids,
+            workload_count,
+            expected_total_workload_count=workload_count,
+        )
+
     def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured(
         self,
     ) -> None:
@@ -5294,11 +5316,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 932,
-                "module_workloads": 924,
+                "measured_workloads": 935,
+                "module_workloads": 927,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 932,
+                "total_workloads": 935,
             },
         )
 
@@ -7883,6 +7905,18 @@ _PATTERN_BOUNDED_WILDCARD_CASE_IDS = (
     "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
 )
 
+_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_IDS = (
+    "pattern-findall-bounded-warm-str",
+    "pattern-findall-bounded-no-match-warm-str",
+    "pattern-findall-bounded-purged-bytes",
+)
+
+_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_CASE_IDS = (
+    "pattern-findall-str-bounded",
+    "pattern-findall-str-bounded-no-match",
+    "pattern-findall-bytes-bounded",
+)
+
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
     "pattern-search-verbose-regression-warm-str",
     "pattern-search-verbose-regression-digits-warm-str",
@@ -7983,6 +8017,60 @@ def _is_pattern_bounded_wildcard_workload(workload: Any) -> bool:
         and workload.expected_exception is None
         and not workload.use_compiled_pattern
         and workload.text_model == "str"
+        and workload.pos is not None
+        and workload.endpos is not None
+        and not workload.kwargs
+    )
+
+
+def _pattern_collection_replacement_bounded_findall_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.case_id not in _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_CASE_IDS:
+        return None
+    if case.operation != "pattern_call" or case.kwargs or case.helper != "findall":
+        return None
+    return (
+        "pattern.findall",
+        case_pattern(case),
+        freeze_signature_value(list(case.args)),
+        (),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _pattern_collection_replacement_bounded_findall_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_collection_replacement_pattern_findall_bounded_workload(workload):
+        raise AssertionError(
+            "unexpected collection/replacement bounded Pattern.findall workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value(
+            list(_pattern_window_positional_indexlike_workload_args(workload))
+        ),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_collection_replacement_pattern_findall_bounded_workload(
+    workload: Any,
+) -> bool:
+    return (
+        workload.workload_id
+        in _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_IDS
+        and workload.operation == "pattern.findall"
+        and workload.pattern == "abc"
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+        and workload.text_model in {"str", "bytes"}
         and workload.pos is not None
         and workload.endpos is not None
         and not workload.kwargs
@@ -8979,6 +9067,32 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         workload_signature=(
             _collection_replacement_pattern_wrong_text_model_workload_signature
         ),
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="collection-replacement-pattern-findall-bounded",
+        manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            {
+                "pattern-findall-bounded-warm-str": (
+                    "pattern-findall-str-bounded",
+                ),
+                "pattern-findall-bounded-no-match-warm-str": (
+                    "pattern-findall-str-bounded-no-match",
+                ),
+                "pattern-findall-bounded-purged-bytes": (
+                    "pattern-findall-bytes-bounded",
+                ),
+            },
+        ),
+        include_workload=_is_collection_replacement_pattern_findall_bounded_workload,
+        correctness_case_signature=(
+            _pattern_collection_replacement_bounded_findall_correctness_case_signature
+        ),
+        workload_signature=(
+            _pattern_collection_replacement_bounded_findall_workload_signature
+        ),
+        run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-keyword-flags",

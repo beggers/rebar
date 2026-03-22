@@ -1,6 +1,6 @@
 ## RBR-0979: Catch up the direct Pattern `findall()` bounded trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -64,3 +64,11 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-findall-str-bounded or pattern-findall-str-bounded-no-match or pattern-findall-bytes-bounded or literal_collection_direct_test_buckets_cover_selected_frontier'` currently passes (`15 passed`), so the exact bounded direct parity slice is already green in this checkout;
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... Workload.from_dict(...) / workload_to_payload(...) / run_internal_workload_probe(...) synthetic pattern-findall-bounded-warm-str, pattern-findall-bounded-no-match-warm-str, and pattern-findall-bounded-purged-bytes ... PY` returns `status == "measured"` for both adapters on all three synthetic workloads through the current benchmark harness in this checkout; and
   - `rg -n 'pattern-findall-bounded-warm-str|pattern-findall-bounded-no-match-warm-str|pattern-findall-bounded-purged-bytes|workflow-pattern-findall-str-bounded|workflow-pattern-findall-str-bounded-no-match|workflow-pattern-findall-bytes-bounded' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while `reports/benchmarks/latest.py` still reports `932` total / `932` measured / `0` known gaps overall with `collection-replacement-boundary` fixed at `93` selected / `93` measured / `93` workload-count rows and `module_workloads == 924`.
+
+## Completion Note
+- Added the three bounded direct `Pattern.findall()` rows to `benchmarks/workloads/collection_replacement_boundary.py` immediately after `pattern-split-on-bytes-string-warm-str`, kept the block on the existing owner route, and anchored it in the shared benchmark suite to the published `collection_replacement_workflows` correctness ids `pattern-findall-str-bounded`, `pattern-findall-str-bounded-no-match`, and `pattern-findall-bytes-bounded`.
+- Verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-findall-str-bounded or pattern-findall-str-bounded-no-match or pattern-findall-bytes-bounded or literal_collection_direct_test_buckets_cover_selected_frontier'` -> `15 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured or (collection-replacement-pattern-findall-bounded and (test_standard_benchmark_workloads_stay_pinned_to_exact_case_ids or test_standard_benchmark_workload_callbacks_match_anchor_case_results)) or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'` -> `4 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0979-pattern-findall-bounded-trio.py` -> `96` total / `96` measured / `0` known gaps
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` -> published `935` total / `935` measured / `0` known gaps, `927` module workloads, and `collection-replacement-boundary` at `96` selected / `96` measured / `96` workload-count rows with all three new workload ids marked `measured`
