@@ -269,9 +269,9 @@ def build_selected_fixture_bundle(
         bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
         if expected_case_ids is None:
             expected_case_ids = frozenset(selected_case_ids)
-    elif expected_text_models is None:
+    if expected_text_models is None:
         expected_text_models = frozenset(
-            case.text_model or "str" for case in loaded_cases
+            case.text_model or "str" for case in bundle_cases
         )
 
     return build_fixture_bundle(

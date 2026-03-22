@@ -3549,7 +3549,7 @@ def test_selected_fixture_bundle_preserves_requested_order(
     pattern_cases = fixture_cases_for_operation((bundle,), "pattern_call")
 
     assert bundle.expected_case_ids == frozenset(selected_case_ids)
-    assert bundle.expected_text_models is None
+    assert bundle.expected_text_models == frozenset({"str"})
     assert tuple(case.case_id for case in compile_cases) == (
         "bundle-loader-contract-compile-str",
     )
@@ -3577,7 +3577,6 @@ def test_selected_mixed_text_fixture_bundle_preserves_requested_order_and_text_m
         mixed_path,
         selected_case_ids=selected_case_ids,
         pattern_extractor=case_pattern,
-        expected_text_models=frozenset({"bytes", "str"}),
     )
 
     assert bundle.expected_case_ids == frozenset(selected_case_ids)
