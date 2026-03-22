@@ -998,6 +998,37 @@ def test_case_pattern_helpers_reject_non_text_payloads_and_str_only_mismatches()
         str_case_pattern(SYNTHETIC_BYTES_PATTERN_CASE)
 
 
+def test_indexlike_helper_contract_exposes_value_and_repr() -> None:
+    carrier = fixture_parity_support.IndexLike(7)
+
+    assert carrier.__index__() == 7
+    assert repr(carrier) == "IndexLike(7)"
+
+
+def test_recording_indexlike_helper_tracks_each_index_request() -> None:
+    carrier = fixture_parity_support.RecordingIndexLike(4)
+
+    assert carrier.calls == 0
+    assert carrier.__index__() == 4
+    assert carrier.__index__() == 4
+    assert carrier.calls == 2
+
+
+def test_recording_indexlike_helper_propagates_configured_errors_after_counting_calls(
+) -> None:
+    error = fixture_parity_support.IndexLikeBoomError("indexlike boom")
+    carrier = fixture_parity_support.RecordingIndexLike(error=error)
+
+    with pytest.raises(
+        fixture_parity_support.IndexLikeBoomError,
+        match="indexlike boom",
+    ) as raised:
+        carrier.__index__()
+
+    assert raised.value is error
+    assert carrier.calls == 1
+
+
 @pytest.mark.parametrize(
     ("case", "expected_replacement", "expected_text"),
     (
