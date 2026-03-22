@@ -15,6 +15,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    BoundedPatternCase as DirectBytesBoundedPatternCase,
     CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
     WRAPPER_PAIRS,
@@ -41,15 +42,6 @@ from tests.python.fixture_parity_support import (
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
-
-
-@dataclass(frozen=True)
-class DirectBytesBoundedPatternCase:
-    id: str
-    pattern: bytes
-    helper: str
-    string: bytes
-    bounds: tuple[int, ...]
 
 
 @dataclass(frozen=True)
