@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0888` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the first compiled-pattern-first-argument named-group explicit `flags=NOFLAG` `compile()` acceptance pair on the shared correctness surface by teaching the owner-path publication helpers to preserve the `RegexFlag` zero carrier distinct from raw integer zero, while leaving the Python-path benchmark frontier unchanged because `module_boundary.py` already measures the normalized integer-zero carrier.
+`RBR-0890` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the adjacent compiled-pattern-first-argument literal explicit `flags=NOFLAG` `compile()` acceptance pair on the shared correctness surface by reusing the `RegexFlag` zero-carrier distinction that `RBR-0888` lands, while leaving the Python-path benchmark frontier unchanged because `module_boundary.py` already measures the normalized integer-zero carrier.
 
 ## Ordered Work
-1. `RBR-0888` publishes the compiled-pattern-first-argument named-group explicit `flags=NOFLAG` `module.compile(...)` acceptance pair on `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, without minting a duplicate benchmark row for the already-measured zero-valued keyword carrier.
+1. `RBR-0890` publishes the compiled-pattern-first-argument literal explicit `flags=NOFLAG` `module.compile(...)` acceptance pair on `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, without minting a duplicate benchmark row for the already-measured zero-valued keyword carrier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

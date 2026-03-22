@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 868/868 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0888` is the surviving `module-workflow-surface` follow-on: publish the named-group compiled-pattern `compile(..., flags=NOFLAG)` acceptance pair on the shared correctness surface while leaving the benchmark frontier on the already measured integer-zero carrier.
+- `RBR-0890` is the surviving `module-workflow-surface` follow-on: publish the literal compiled-pattern `compile(..., flags=NOFLAG)` acceptance pair on the shared correctness surface while leaving the benchmark frontier on the already measured integer-zero carrier.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1516 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0888` is the surviving `module-workflow-surface` follow-on: publish the named-group compiled-pattern `compile(..., flags=NOFLAG)` acceptance pair on the shared correctness surface while leaving the benchmark frontier on the already measured integer-zero carrier.
+- `RBR-0890` is the surviving `module-workflow-surface` follow-on: publish the literal compiled-pattern `compile(..., flags=NOFLAG)` acceptance pair on the shared correctness surface while leaving the benchmark frontier on the already measured integer-zero carrier.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
