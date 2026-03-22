@@ -345,6 +345,88 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "(?P<word>abc)",
+      "expected_exception": {
+        "type": "ValueError",
+        "message_substring": "cannot process flags argument with a compiled pattern"
+      },
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": 2
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "named-group",
+        "warm-cache",
+        "compiled-pattern",
+        "keyword",
+        "flags",
+        "ignorecase",
+        "exception"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "named-groups",
+        "compiled-pattern-first-argument",
+        "keyword-flags",
+        "ignorecase-flag"
+      ],
+      "notes": [
+        "Warm module.compile helper path that keeps the bounded compiled-pattern-first-argument named-group explicit IGNORECASE flags= rejection on the shared module-boundary surface."
+      ]
+    },
+    {
+      "id": "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "(?P<word>abc)",
+      "expected_exception": {
+        "type": "ValueError",
+        "message_substring": "cannot process flags argument with a compiled pattern"
+      },
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": 2
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "named-group",
+        "purged-cache",
+        "compiled-pattern",
+        "bytes",
+        "keyword",
+        "flags",
+        "ignorecase",
+        "exception"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "named-groups",
+        "compiled-pattern-first-argument",
+        "keyword-flags",
+        "ignorecase-flag",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged module.compile helper path that keeps the bounded compiled-pattern-first-argument named-group explicit IGNORECASE flags= rejection on the shared module-boundary surface."
+      ]
+    },
+    {
       "id": "module-compile-flags-int-zero-warm-str-compiled-pattern",
       "bucket": "module-compile",
       "family": "module",

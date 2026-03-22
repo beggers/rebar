@@ -1,8 +1,9 @@
 # RBR-0886: Catch up the compiled-pattern module-compile IGNORECASE rejection named-group boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-21
+Completed: 2026-03-22
 
 ## Goal
 - Extend the published Python-path `module_boundary.py` benchmark surface with the first adjacent compiled-pattern-first-argument explicit `flags=IGNORECASE` named-group `compile()` rejection pair that the shared `module-workflow-surface` correctness path already publishes, reusing the bounded compiled-pattern `module.compile(..., flags=...)` expected-exception route on the same owner path instead of reopening `NOFLAG` spellings, another benchmark family, or a deeper runtime prerequisite.
@@ -63,3 +64,9 @@ Created: 2026-03-21
   - `python/rebar_harness/benchmarks.py` already accepts the bounded compiled-pattern `module.compile(..., flags=IGNORECASE)` expected-exception route on the shared `module-boundary` surface, so this follow-on remains a publication-only benchmark catch-up slice rather than a missing harness prerequisite.
 - `flags=re.NOFLAG` is still not the next task because the current owner-path keyword signature normalizes `RegexFlag(0)` to the already-benchmarked integer-zero carrier, while this named-group `IGNORECASE` rejection remains the next distinct unpublished neighbor on the active boundary.
 - The acceptance counts above are intentionally written against the immediate post-`RBR-0884` state of `866` total / `866` measured / `0` known gaps overall with `REPORT["summary"]["module_workloads"] == 858` and `REPORT["manifests"]["module-boundary"]` at `38` selected / `38` measured / `0` known gaps.
+
+## Completion
+- Added `module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group` and `module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group` to `benchmarks/workloads/module_boundary.py`, keeping the catch-up on the existing module-boundary manifest and the existing compiled-pattern `module.compile(..., flags=...)` rejection route.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the matching named-group IGNORECASE slice expectation, manifest/measured-row assertions, anchor-contract wiring, keyword-case group coverage, and updated published summary expectations on the shared source-tree contract path.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/module_boundary.py --report .rebar/tmp/rbr-0886-compiled-pattern-module-compile-ignorecase-rejection-named-group-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- Confirmed from the tracked `reports/benchmarks/latest.py` diff in this run that `REPORT["manifests"]["module-boundary"]` is now `40` selected / `40` measured / `0` known gaps, that both new workload ids publish `status == "measured"`, and that the combined summary is now `868` total / `868` measured / `0` known gaps with `REPORT["summary"]["module_workloads"] == 860` and `REPORT["summary"]["regression_workloads"] == 8`.

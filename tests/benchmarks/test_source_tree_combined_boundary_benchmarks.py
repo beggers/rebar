@@ -1427,6 +1427,44 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
     _combined_slice_expectation(
         manifest_id="module-boundary",
+        slice_id="compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
+        required_syntax_features=(
+            "module-compile",
+            "grouping-forms",
+            "named-groups",
+            "compiled-pattern-first-argument",
+            "keyword-flags",
+            "ignorecase-flag",
+        ),
+        required_categories=(
+            "compile",
+            "named-group",
+            "compiled-pattern",
+            "keyword",
+            "flags",
+            "ignorecase",
+            "exception",
+        ),
+        expected_workload_ids=(
+            "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
+            "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
+        ),
+        expected_patterns={"(?P<word>abc)"},
+        expected_operations={"module.compile"},
+        expected_haystacks=set(),
+        required_row_categories=(
+            "compile",
+            "named-group",
+            "compiled-pattern",
+            "keyword",
+            "flags",
+            "ignorecase",
+            "exception",
+        ),
+        expected_status="measured",
+    ),
+    _combined_slice_expectation(
+        manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-int-zero-keyword",
         required_syntax_features=(
             "module-compile",
@@ -3675,6 +3713,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 ),
             ),
             (
+                "ignorecase-rejection-named-group",
+                (
+                    _is_module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload
+                ),
+                (
+                    "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
+                    "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
+                ),
+            ),
+            (
                 "ignorecase-rejection",
                 (
                     _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload
@@ -5126,11 +5174,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 866,
-                "module_workloads": 858,
+                "measured_workloads": 868,
+                "module_workloads": 860,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 866,
+                "total_workloads": 868,
             },
         )
 
@@ -7169,6 +7217,39 @@ def _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload(
     )
 
 
+def _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+        case,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+        workload,
+        keyword_label="ignorecase-named-group",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    )
+
+
+def _is_module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload(
+    workload: Any,
+) -> bool:
+    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+        workload,
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    )
+
+
 def _module_workflow_compiled_pattern_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -8482,6 +8563,34 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         workload_signature=(
             _module_workflow_compiled_pattern_compile_ignorecase_keyword_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name=(
+            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
+            "keyword-rejection-named-group"
+        ),
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group": (
+                    "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
+                ),
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group": (
+                    "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
+                ),
+            },
+        ),
+        include_workload=(
+            _is_module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload
+        ),
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_correctness_case_signature
+        ),
+        workload_signature=(
+            _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload_signature
         ),
         run_callback_result_parity=True,
     ),
@@ -13337,12 +13446,32 @@ COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES = (
     ),
 )
 
+COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_NAMED_GROUP_KEYWORD_CASES = (
+    CompiledPatternModuleCompileKeywordCase(
+        id="module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
+        cache_mode="warm",
+        text_model="str",
+        pattern="(?P<word>abc)",
+        kwargs_payload={"flags": int(re.IGNORECASE)},
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
+    CompiledPatternModuleCompileKeywordCase(
+        id="module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
+        cache_mode="purged",
+        text_model="bytes",
+        pattern="(?P<word>abc)",
+        kwargs_payload={"flags": int(re.IGNORECASE)},
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
+)
+
 COMPILED_PATTERN_MODULE_COMPILE_ALL_KEYWORD_CASES = (
     *COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES,
     *COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_CASES,
     *COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES,
     *COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_NAMED_GROUP_KEYWORD_CASES,
     *COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES,
+    *COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_NAMED_GROUP_KEYWORD_CASES,
 )
 
 COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
@@ -13453,6 +13582,29 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
             (
                 "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-contract",
                 "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
+            ),
+        ),
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
+    CompiledPatternModuleCompileKeywordCaseGroup(
+        group_id="ignorecase-named-group",
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        cases=COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_NAMED_GROUP_KEYWORD_CASES,
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
             ),
         ),
         expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
@@ -16503,7 +16655,10 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
     "case",
     tuple(
         pytest.param(case, id=case.id)
-        for case in COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES
+        for case in (
+            COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES
+            + COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_NAMED_GROUP_KEYWORD_CASES
+        )
     ),
 )
 def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows(
