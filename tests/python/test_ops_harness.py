@@ -415,6 +415,31 @@ Verified with `python -m unittest`.
             "Updated README and Current status for one reporting coherence fix",
         )
 
+    def test_commit_summary_text_prefers_first_sentence_of_action_line(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            f"""Updated {REPO_ROOT / 'README.md'} and {REPO_ROOT / 'ops' / 'state' / 'current_status.md'} to fix one reporting coherence drift. The published correctness totals now read 1522 cases across 114 manifests with 1522 passing.
+
+Verified with `pytest -q`.
+"""
+        )
+
+        self.assertEqual(
+            summary,
+            "Updated README and Current status to fix one reporting coherence drift",
+        )
+
+    def test_truncate_commit_subject_prefers_word_boundary(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        self.assertEqual(
+            rebar_ops.truncate_commit_subject(
+                "reporting: Updated README and Current status to fix one reporting coherence drift"
+            ),
+            "reporting: Updated README and Current status to fix one reporting...",
+        )
+
     def test_owner_routed_task_claims_select_only_matching_owner(self) -> None:
         rebar_ops = load_rebar_ops_module()
         with tempfile.TemporaryDirectory() as temp_dir:

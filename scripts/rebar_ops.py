@@ -2173,15 +2173,26 @@ def commit_summary_text(text: str) -> str | None:
     for line in candidates:
         if line.lower().startswith(preamble_prefixes):
             continue
-        return line
-    return candidates[0]
+        return commit_summary_sentence(line)
+    return commit_summary_sentence(candidates[0])
+
+
+def commit_summary_sentence(text: str) -> str:
+    match = re.search(r"(?<=[.!?])\s+(?=[A-Z0-9`])", text)
+    if match is None:
+        return text.rstrip(".!?")
+    return text[: match.start()].rstrip(".!?")
 
 
 def truncate_commit_subject(text: str, limit: int = 72) -> str:
     cleaned = " ".join(text.split())
     if len(cleaned) <= limit:
         return cleaned
-    return cleaned[: max(0, limit - 3)].rstrip() + "..."
+    truncated = cleaned[: max(0, limit - 3)].rstrip()
+    word_boundary = truncated.rfind(" ")
+    if word_boundary > 0:
+        truncated = truncated[:word_boundary].rstrip()
+    return truncated + "..."
 
 
 def compose_agent_commit_message(
