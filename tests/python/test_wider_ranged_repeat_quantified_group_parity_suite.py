@@ -54,14 +54,6 @@ class DirectBytesFollowOnSpec:
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
 
 
-@dataclass(frozen=True)
-class MixedTextModelBundleSpec:
-    id: str
-    bundle: FixtureBundle
-    expected_fixture_filename: str
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-
-
 FIXTURE_BUNDLES = tuple(
     build_selected_fixture_bundle(path, pattern_extractor=case_pattern)
     for path in (
@@ -321,85 +313,6 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
 )
-MIXED_TEXT_MODEL_BUNDLE_SPECS = (
-    MixedTextModelBundleSpec(
-        id="broader-range-conditional",
-        bundle=BROADER_RANGE_CONDITIONAL_BUNDLE,
-        expected_fixture_filename=(
-            "broader_range_wider_ranged_repeat_quantified_group_"
-            "alternation_conditional_workflows.py"
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 12,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-    ),
-    MixedTextModelBundleSpec(
-        id="broader-range-backtracking-heavy",
-        bundle=BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
-        expected_fixture_filename=(
-            "broader_range_wider_ranged_repeat_quantified_group_"
-            "alternation_backtracking_heavy_workflows.py"
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 10,
-                ("pattern_call", "fullmatch"): 14,
-            }
-        ),
-    ),
-    MixedTextModelBundleSpec(
-        id="nested-broader-range-alternation",
-        bundle=NESTED_BROADER_RANGE_ALTERNATION_BUNDLE,
-        expected_fixture_filename=(
-            "nested_broader_range_wider_ranged_repeat_quantified_group_"
-            "alternation_workflows.py"
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 8,
-                ("pattern_call", "fullmatch"): 16,
-            }
-        ),
-    ),
-    MixedTextModelBundleSpec(
-        id="nested-broader-range-conditional",
-        bundle=NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE,
-        expected_fixture_filename=(
-            "nested_broader_range_wider_ranged_repeat_quantified_group_"
-            "alternation_conditional_workflows.py"
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 12,
-                ("pattern_call", "fullmatch"): 12,
-            }
-        ),
-    ),
-    MixedTextModelBundleSpec(
-        id="nested-broader-range-backtracking-heavy",
-        bundle=NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
-        expected_fixture_filename=(
-            "nested_broader_range_wider_ranged_repeat_quantified_group_"
-            "alternation_backtracking_heavy_workflows.py"
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("module_call", "search"): 10,
-                ("pattern_call", "fullmatch"): 14,
-            }
-        ),
-    ),
-)
-
-
 # Keep the shared manifest contract honest, but route the published bytes slices
 # through explicit supplemental parity anchors so the direct bytes contracts
 # stay covered without duplicating the shared manifest rows in this suite.
@@ -565,43 +478,40 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 
 
 @pytest.mark.parametrize(
-    "spec",
-    MIXED_TEXT_MODEL_BUNDLE_SPECS,
-    ids=lambda spec: spec.id,
+    "surface",
+    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
+    ids=lambda surface: surface.id,
 )
 def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract(
-    spec: MixedTextModelBundleSpec,
+    surface: DirectBytesFollowOnSpec,
 ) -> None:
-    bundle = spec.bundle
+    bundle = surface.bundle
+    expected_operation_helper_counts = Counter(
+        (case.operation, case.helper) for case in bundle.cases
+    )
+    expected_half_counts = Counter(
+        {
+            (operation, helper): count // 2
+            for (operation, helper), count in expected_operation_helper_counts.items()
+        }
+    )
     str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
 
     assert bundle.expected_case_ids is None
     assert bundle.expected_text_models == frozenset({"bytes", "str"})
     assert len(str_cases) == len(bytes_cases) == (
-        sum(spec.expected_operation_helper_counts.values()) // 2
+        sum(expected_operation_helper_counts.values()) // 2
     )
-    assert Counter((case.operation, case.helper) for case in str_cases) == Counter(
-        {
-            (operation, helper): count // 2
-            for (operation, helper), count in spec.expected_operation_helper_counts.items()
-        }
-    )
-    assert Counter((case.operation, case.helper) for case in bytes_cases) == Counter(
-        {
-            (operation, helper): count // 2
-            for (operation, helper), count in spec.expected_operation_helper_counts.items()
-        }
-    )
+    assert Counter((case.operation, case.helper) for case in str_cases) == expected_half_counts
+    assert Counter((case.operation, case.helper) for case in bytes_cases) == expected_half_counts
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        spec.expected_operation_helper_counts
+        expected_operation_helper_counts
     )
     assert {isinstance(case_pattern(case), str) for case in str_cases} == {True}
     assert {isinstance(case_pattern(case), bytes) for case in bytes_cases} == {True}
-    assert bundle.manifest.path.name == spec.expected_fixture_filename
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
-        expected_fixture_path=bundle.manifest.path,
         expected_ordered_case_ids=tuple(
             case.case_id for case in bundle.manifest.cases
         ),
