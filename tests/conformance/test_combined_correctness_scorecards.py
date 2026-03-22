@@ -3986,6 +3986,37 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
             ],
         )
 
+    def test_finalize_observation_preserves_case_operation_and_payloads(self) -> None:
+        case = _adapter_contract_case(
+            case_id="finalize-observation-contract",
+            operation="module_call",
+            helper="search",
+            args=["abc"],
+        )
+
+        self.assertEqual(
+            correctness.finalize_observation(
+                adapter="rebar",
+                case=case,
+                outcome="exception",
+                warnings_payload=[
+                    {"category": "RuntimeWarning", "message": "helper warning"}
+                ],
+                result={"status": "partial"},
+                exception={"type": "TypeError", "message": "boom"},
+            ),
+            {
+                "adapter": "rebar",
+                "operation": "module_call",
+                "outcome": "exception",
+                "warnings": [
+                    {"category": "RuntimeWarning", "message": "helper warning"}
+                ],
+                "result": {"status": "partial"},
+                "exception": {"type": "TypeError", "message": "boom"},
+            },
+        )
+
     def test_build_observation_summary_counts_sorted_outcomes_warnings_and_exceptions(
         self,
     ) -> None:
@@ -4026,6 +4057,100 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                     "TypeError": 1,
                     "error": 1,
                 },
+            },
+        )
+
+    def test_build_diagnostics_summary_keeps_adapter_observations_separate(self) -> None:
+        case_results = [
+            _case_result(
+                case_id="diagnostics-case-success",
+                manifest_id=WORKFLOW_MANIFEST.manifest_id,
+                suite_id=WORKFLOW_MANIFEST.suite_id,
+                layer=WORKFLOW_MANIFEST.layer,
+                family="workflow_diagnostics",
+                operation="module_call",
+                comparison="pass",
+                text_model="str",
+                cpython_observation=correctness.finalize_observation(
+                    adapter="cpython.re",
+                    case=_adapter_contract_case(
+                        case_id="diagnostics-cpython-success",
+                        operation="module_call",
+                        helper="search",
+                    ),
+                    outcome="success",
+                    warnings_payload=[
+                        {"category": "FutureWarning", "message": "cpython warning"}
+                    ],
+                    result={"matched": True},
+                ),
+                rebar_observation=correctness.finalize_observation(
+                    adapter="rebar",
+                    case=_adapter_contract_case(
+                        case_id="diagnostics-rebar-success",
+                        operation="module_call",
+                        helper="search",
+                    ),
+                    outcome="success",
+                    warnings_payload=[],
+                    result={"matched": True},
+                ),
+            ),
+            _case_result(
+                case_id="diagnostics-case-gap",
+                manifest_id=WORKFLOW_MANIFEST.manifest_id,
+                suite_id=WORKFLOW_MANIFEST.suite_id,
+                layer=WORKFLOW_MANIFEST.layer,
+                family="workflow_diagnostics",
+                operation="pattern_call",
+                comparison="unimplemented",
+                text_model="bytes",
+                cpython_observation=correctness.finalize_observation(
+                    adapter="cpython.re",
+                    case=_adapter_contract_case(
+                        case_id="diagnostics-cpython-exception",
+                        operation="pattern_call",
+                        helper="fullmatch",
+                    ),
+                    outcome="exception",
+                    warnings_payload=[],
+                    exception={"type": "error", "message": "bad pattern"},
+                ),
+                rebar_observation=correctness.finalize_observation(
+                    adapter="rebar",
+                    case=_adapter_contract_case(
+                        case_id="diagnostics-rebar-unimplemented",
+                        operation="pattern_call",
+                        helper="fullmatch",
+                    ),
+                    outcome="unimplemented",
+                    warnings_payload=[
+                        {"category": "RuntimeWarning", "message": "rebar todo"}
+                    ],
+                    exception={"type": "NotImplementedError", "message": "todo"},
+                ),
+            ),
+        ]
+
+        self.assertEqual(
+            correctness.build_diagnostics_summary(case_results),
+            {
+                "by_adapter": {
+                    "cpython": {
+                        "outcomes": {"exception": 1, "success": 1},
+                        "warning_case_count": 1,
+                        "exception_case_count": 1,
+                        "warning_categories": {"FutureWarning": 1},
+                        "exception_types": {"error": 1},
+                    },
+                    "rebar": {
+                        "outcomes": {"success": 1, "unimplemented": 1},
+                        "warning_case_count": 1,
+                        "exception_case_count": 1,
+                        "warning_categories": {"RuntimeWarning": 1},
+                        "exception_types": {"NotImplementedError": 1},
+                    },
+                }
             },
         )
 
