@@ -476,7 +476,7 @@ _PATTERN_HELPER_KEYWORD_OPERATIONS = frozenset(
     _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION
 )
 _PATTERN_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS = frozenset(
-    {"pattern.sub", "pattern.subn"}
+    {"pattern.split", "pattern.sub", "pattern.subn"}
 )
 _PATTERN_HELPER_DUPLICATE_KEYWORD_POSITIONAL_LIMITS = {
     "pattern.split": 2,

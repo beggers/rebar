@@ -3503,7 +3503,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="pattern.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 15)
+        self.assertEqual(len(expected_measured_workload_ids), 17)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5187,11 +5187,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 880,
-                "module_workloads": 872,
+                "measured_workloads": 882,
+                "module_workloads": 874,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 880,
+                "total_workloads": 882,
             },
         )
 
@@ -8334,6 +8334,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-split-maxsplit-indexlike-keyword-warm-str": (
                     "workflow-pattern-split-str-maxsplit-indexlike",
                 ),
+                "pattern-split-duplicate-maxsplit-keyword-warm-str": (
+                    "workflow-pattern-split-duplicate-maxsplit-keyword-str",
+                ),
+                "pattern-split-unexpected-keyword-warm-bytes": (
+                    "workflow-pattern-split-unexpected-keyword-bytes",
+                ),
                 "pattern-sub-count-keyword-purged-bytes": (
                     "workflow-pattern-sub-count-keyword-bytes",
                 ),
@@ -11201,6 +11207,64 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                 ],
             },
             {
+                "id": "pattern-split-maxsplit-bool-keyword-contract-str",
+                "bucket": "pattern-split",
+                "family": "module",
+                "operation": "pattern.split",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "kwargs": {
+                    "maxsplit": True,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.split maxsplit= bool keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-split-duplicate-maxsplit-keyword-contract-str",
+                "bucket": "pattern-split",
+                "family": "module",
+                "operation": "pattern.split",
+                "pattern": "abc",
+                "haystack": "abcabc",
+                "maxsplit": 1,
+                "kwargs": {
+                    "maxsplit": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "split() takes at most 2 arguments (3 given)",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.split duplicate maxsplit= carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-split-unexpected-keyword-contract-bytes",
+                "bucket": "pattern-split",
+                "family": "module",
+                "operation": "pattern.split",
+                "pattern": "abc",
+                "haystack": "abcabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "'missing' is an invalid keyword argument for split()",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.split unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-sub-count-keyword-contract-bytes",
                 "bucket": "pattern-sub",
                 "family": "module",
@@ -11313,22 +11377,6 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                     "Ensures benchmark manifests keep Pattern.subn unexpected-keyword carriers unresolved until helper invocation."
                 ],
             },
-            {
-                "id": "pattern-split-maxsplit-bool-keyword-contract-str",
-                "bucket": "pattern-split",
-                "family": "module",
-                "operation": "pattern.split",
-                "pattern": "abc",
-                "haystack": "zabcabc",
-                "kwargs": {
-                    "maxsplit": True,
-                },
-                "cache_mode": "warm",
-                "timing_scope": "pattern-helper-call",
-                "notes": [
-                    "Ensures benchmark manifests keep Pattern.split maxsplit= bool keyword carriers unresolved until helper invocation."
-                ],
-            },
         ],
     }
     """
@@ -11338,22 +11386,75 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         "python_benchmark_pattern_collection_replacement_keyword_contract.py",
         manifest_source,
     )
-    (
-        split_workload,
-        sub_workload,
-        sub_bool_workload,
-        sub_missing_workload,
-        subn_workload,
-        subn_bool_workload,
-        subn_missing_workload,
-        split_bool_workload,
-    ) = load_manifest(manifest_path).workloads
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in load_manifest(manifest_path).workloads
+    }
+    split_workload = workloads_by_id["pattern-split-maxsplit-keyword-contract-str"]
+    split_bool_workload = workloads_by_id[
+        "pattern-split-maxsplit-bool-keyword-contract-str"
+    ]
+    split_duplicate_workload = workloads_by_id[
+        "pattern-split-duplicate-maxsplit-keyword-contract-str"
+    ]
+    split_missing_workload = workloads_by_id[
+        "pattern-split-unexpected-keyword-contract-bytes"
+    ]
+    sub_workload = workloads_by_id["pattern-sub-count-keyword-contract-bytes"]
+    sub_bool_workload = workloads_by_id["pattern-sub-count-bool-keyword-contract-bytes"]
+    sub_missing_workload = workloads_by_id["pattern-sub-unexpected-keyword-contract-str"]
+    subn_workload = workloads_by_id["pattern-subn-count-keyword-contract-str"]
+    subn_bool_workload = workloads_by_id["pattern-subn-count-bool-keyword-contract-str"]
+    subn_missing_workload = workloads_by_id[
+        "pattern-subn-unexpected-keyword-contract-bytes"
+    ]
 
     assert split_workload.kwargs == {"maxsplit": 1}
     round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
     assert round_tripped_split.kwargs == {"maxsplit": 1}
     assert round_tripped_split.keyword_arguments() == {"maxsplit": 1}
     assert run_benchmark_workload_with_cpython(round_tripped_split) == ["z", "zabc"]
+
+    assert split_bool_workload.kwargs == {"maxsplit": True}
+    assert type(split_bool_workload.kwargs["maxsplit"]) is bool
+    round_tripped_split_bool = workload_from_payload(
+        workload_to_payload(split_bool_workload)
+    )
+    assert round_tripped_split_bool.kwargs == {"maxsplit": True}
+    assert type(round_tripped_split_bool.kwargs["maxsplit"]) is bool
+    materialized_split_bool_kwargs = round_tripped_split_bool.keyword_arguments()
+    assert materialized_split_bool_kwargs == {"maxsplit": True}
+    assert materialized_split_bool_kwargs["maxsplit"] is True
+    assert run_benchmark_workload_with_cpython(round_tripped_split_bool) == [
+        "z",
+        "abc",
+    ]
+
+    assert split_duplicate_workload.maxsplit == 1
+    assert split_duplicate_workload.kwargs == {"maxsplit": 1}
+    round_tripped_split_duplicate = workload_from_payload(
+        workload_to_payload(split_duplicate_workload)
+    )
+    assert round_tripped_split_duplicate.maxsplit == 1
+    assert round_tripped_split_duplicate.kwargs == {"maxsplit": 1}
+    assert round_tripped_split_duplicate.keyword_arguments() == {"maxsplit": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("split() takes at most 2 arguments (3 given)"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_split_duplicate)
+
+    assert split_missing_workload.kwargs == {"missing": 1}
+    round_tripped_split_missing = workload_from_payload(
+        workload_to_payload(split_missing_workload)
+    )
+    assert round_tripped_split_missing.kwargs == {"missing": 1}
+    assert round_tripped_split_missing.keyword_arguments() == {"missing": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("'missing' is an invalid keyword argument for split()"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_split_missing)
 
     assert sub_workload.kwargs == {"count": 1}
     round_tripped_sub = workload_from_payload(workload_to_payload(sub_workload))
@@ -11417,21 +11518,6 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         match=re.escape("'missing' is an invalid keyword argument for subn()"),
     ):
         run_benchmark_workload_with_cpython(round_tripped_subn_missing)
-
-    assert split_bool_workload.kwargs == {"maxsplit": True}
-    assert type(split_bool_workload.kwargs["maxsplit"]) is bool
-    round_tripped_split_bool = workload_from_payload(
-        workload_to_payload(split_bool_workload)
-    )
-    assert round_tripped_split_bool.kwargs == {"maxsplit": True}
-    assert type(round_tripped_split_bool.kwargs["maxsplit"]) is bool
-    materialized_split_bool_kwargs = round_tripped_split_bool.keyword_arguments()
-    assert materialized_split_bool_kwargs == {"maxsplit": True}
-    assert materialized_split_bool_kwargs["maxsplit"] is True
-    assert run_benchmark_workload_with_cpython(round_tripped_split_bool) == [
-        "z",
-        "abc",
-    ]
 
 
 def test_standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation(
@@ -11776,17 +11862,63 @@ def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_c
 def _run_cpython_pattern_helper_keyword_error_workload(workload: Workload) -> object:
     helper_name = workload.operation.removeprefix("pattern.")
     compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+    kwargs = dict(workload.kwargs)
+
+    if workload.operation == "pattern.split":
+        args: list[object] = [workload.haystack_payload()]
+        if "maxsplit" in workload.kwargs and workload.expected_exception is not None:
+            args.append(workload.maxsplit_argument())
+        return getattr(compiled_pattern, helper_name)(*args, **kwargs)
 
     if workload.operation in {"pattern.sub", "pattern.subn"}:
-        return getattr(compiled_pattern, helper_name)(
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            **dict(workload.kwargs),
-        )
+        args = [workload.replacement_payload(), workload.haystack_payload()]
+        if "count" in workload.kwargs and workload.expected_exception is not None:
+            args.append(workload.count_argument())
+        return getattr(compiled_pattern, helper_name)(*args, **kwargs)
 
     raise AssertionError(
         "unexpected pattern helper keyword-error workload operation "
         f"{workload.operation!r}"
+    )
+
+
+def _pattern_helper_collection_replacement_keyword_error_workload(
+    *,
+    operation: str,
+    haystack: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    expected_exception: dict[str, str],
+    text_model: str,
+) -> Workload:
+    return workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-pattern-collection-replacement-keyword-contract",
+            "workload_id": f"{operation}-keyword-error-materialization-contract",
+            "bucket": operation.replace("pattern.", "pattern-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "expected_exception": expected_exception,
+            "flags": 0,
+            "count": count,
+            "maxsplit": maxsplit,
+            "kwargs": kwargs_payload,
+            "text_model": text_model,
+            "cache_mode": "warm",
+            "timing_scope": "pattern-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
     )
 
 
@@ -11908,62 +12040,134 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
 
 
 @pytest.mark.parametrize(
-    ("operation", "text_model", "expected_exception"),
+    (
+        "operation",
+        "haystack",
+        "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
+        "text_model",
+        "expected_exception",
+        "expected_field_names",
+    ),
     (
         pytest.param(
+            "pattern.split",
+            "abcabc",
+            {"maxsplit": 1},
+            None,
+            0,
+            1,
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "split() takes at most 2 arguments (3 given)",
+            },
+            ["maxsplit", "kwargs.maxsplit"],
+            id="pattern-split-duplicate-maxsplit-keyword",
+        ),
+        pytest.param(
+            "pattern.split",
+            "abcabc",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "'missing' is an invalid keyword argument for split()",
+            },
+            ["kwargs.missing"],
+            id="pattern-split-unexpected-keyword",
+        ),
+        pytest.param(
             "pattern.sub",
+            "abc",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "sub() takes at most 3 arguments (4 given)",
+            },
+            ["count", "kwargs.count"],
+            id="pattern-sub-duplicate-count-keyword",
+        ),
+        pytest.param(
+            "pattern.sub",
+            "abc",
+            {"missing": 1},
+            "x",
+            0,
+            0,
             "str",
             {
                 "type": "TypeError",
                 "message_substring": "'missing' is an invalid keyword argument for sub()",
             },
+            ["kwargs.missing"],
             id="pattern-sub-unexpected-keyword",
         ),
         pytest.param(
             "pattern.subn",
+            "abc",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "subn() takes at most 3 arguments (4 given)",
+            },
+            ["count", "kwargs.count"],
+            id="pattern-subn-duplicate-count-keyword",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "abc",
+            {"missing": 1},
+            "x",
+            0,
+            0,
             "bytes",
             {
                 "type": "TypeError",
                 "message_substring": "'missing' is an invalid keyword argument for subn()",
             },
+            ["kwargs.missing"],
             id="pattern-subn-unexpected-keyword",
         ),
     ),
 )
-def test_pattern_helper_collection_replacement_unexpected_keyword_callbacks_match_cpython_exceptions(
+def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpython_exceptions(
     monkeypatch,
     operation: str,
+    haystack: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
     text_model: str,
     expected_exception: dict[str, str],
+    expected_field_names: list[str],
 ) -> None:
-    workload = workload_from_payload(
-        {
-            "manifest_id": "python-benchmark-pattern-collection-replacement-keyword-contract",
-            "workload_id": f"{operation}-unexpected-keyword-materialization-contract",
-            "bucket": operation.replace("pattern.", "pattern-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": "abc",
-            "haystack": "abc",
-            "replacement": "x",
-            "expected_exception": expected_exception,
-            "flags": 0,
-            "count": 0,
-            "maxsplit": 0,
-            "kwargs": {"missing": 1},
-            "text_model": text_model,
-            "cache_mode": "warm",
-            "timing_scope": "pattern-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
+    workload = _pattern_helper_collection_replacement_keyword_error_workload(
+        operation=operation,
+        haystack=haystack,
+        kwargs_payload=kwargs_payload,
+        replacement=replacement,
+        count=count,
+        maxsplit=maxsplit,
+        expected_exception=expected_exception,
+        text_model=text_model,
     )
     observed_field_names: list[str] = []
+    callback_field_names: list[str] = []
     original_materialize = benchmarks.materialize_numeric_workload_argument
 
     def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
@@ -11984,12 +12188,14 @@ def test_pattern_helper_collection_replacement_unexpected_keyword_callbacks_matc
         for _ in range(2):
             with pytest.raises(TypeError) as expected_error:
                 _run_cpython_pattern_helper_keyword_error_workload(workload)
+            observed_field_names.clear()
             with pytest.raises(TypeError) as observed_error:
                 callback()
+            callback_field_names.extend(observed_field_names)
 
             assert str(observed_error.value) == str(expected_error.value)
 
-        assert observed_field_names == ["kwargs.missing", "kwargs.missing"]
+        assert callback_field_names == expected_field_names * 2
     finally:
         re.purge()
 

@@ -1,6 +1,6 @@
 # RBR-0925: Catch up the direct `Pattern.split()` keyword-error boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -69,3 +69,6 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_keyword'` currently passes in this checkout (`30 passed, 527 deselected`), so the shared direct-`Pattern` collection/replacement keyword benchmark owner path is already green before widening the exact split-error spellings;
   - `rg -n 'pattern-split-duplicate-maxsplit-keyword|pattern-split-unexpected-keyword' benchmarks/workloads tests/benchmarks reports/benchmarks` returned no matches in this run, so the exact direct-`Pattern.split()` benchmark workloads are still absent; and
   - a synthetic benchmark-harness probe in this run showed the remaining bounded harness gaps directly: the duplicate `Pattern.split()` workload shape does not yet surface the expected duplicate-argument `TypeError` through the current benchmark callback path, and the unexpected-keyword shape is still rejected during workload normalization with `benchmark workload kwargs for pattern.split only supports the \`maxsplit\` key; got unsupported keys ['missing']`.
+
+## Completion
+- 2026-03-22: Landed the bounded benchmark-path follow-on by allowing `pattern.split` expected-exception workloads to carry the exact unexpected `missing` keyword, adding the two direct `Pattern.split()` keyword-error rows to `benchmarks/workloads/collection_replacement_boundary.py`, extending the shared benchmark contract coverage for pattern-helper keyword round-trip/materialization/error parity, and republishing `reports/benchmarks/latest.py` at `882` total / `882` measured / `0` known gaps with `874` module workloads and `74` measured collection-replacement workloads. Verified with the task-specified parity pytest slice, the shared benchmark pytest slice, the narrow manifest benchmark rerun to `.rebar/tmp/rbr-0925-pattern-split-keyword-error-boundary-pair.py`, and the tracked full-suite benchmark publication command.

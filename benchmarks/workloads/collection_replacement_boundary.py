@@ -1872,6 +1872,81 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-split-duplicate-maxsplit-keyword-warm-str",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "abcabc",
+      "flags": 0,
+      "maxsplit": 1,
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "split() takes at most 2 arguments (3 given)"
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "literal",
+        "maxsplit",
+        "keyword",
+        "duplicate-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "literal-text",
+        "keyword-maxsplit",
+        "duplicate-keyword-error"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.split helper path that keeps the bounded duplicate maxsplit= keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-split-unexpected-keyword-warm-bytes",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "'missing' is an invalid keyword argument for split()"
+      },
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "bytes",
+        "keyword",
+        "unexpected-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "pattern-text-model",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.split helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",
