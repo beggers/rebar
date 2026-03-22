@@ -565,6 +565,16 @@ class PatternKeywordPublicationOwnerPathRow:
 
 
 @dataclass(frozen=True)
+class PatternTypeErrorOwnerPathRow:
+    fixture_case_id: str
+    direct_case: PatternHelperErrorCase
+
+    @property
+    def text_model(self) -> str:
+        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
+
+
+@dataclass(frozen=True)
 class PatternPositionalIndexLikeCallCase:
     case_id: str
     helper: str
@@ -1405,6 +1415,71 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
         pattern=b"abc",
         args=(b"x", b"abcabc"),
         kwargs={"count_alias": 1},
+    ),
+)
+_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID = {
+    case.case_id: case for case in BOUND_PATTERN_TYPE_ERROR_CASES
+}
+_PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS = (
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-split-duplicate-maxsplit-keyword-str",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-split-duplicate-maxsplit-keyword-str"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-split-unexpected-keyword-bytes",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-split-unexpected-keyword-bytes"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-sub-duplicate-count-keyword-str",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-sub-duplicate-count-keyword-str"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-sub-unexpected-keyword-str",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-sub-unexpected-keyword-str"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-sub-unexpected-keyword-after-positional-count-str"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-sub-count-alias-keyword-str",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-sub-count-alias-keyword-str"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-subn-duplicate-count-keyword-bytes",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-subn-duplicate-count-keyword-bytes"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-subn-unexpected-keyword-bytes",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-subn-unexpected-keyword-bytes"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-subn-unexpected-keyword-after-positional-count-bytes"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-subn-count-alias-keyword-bytes",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-subn-count-alias-keyword-bytes"
+        ],
     ),
 )
 PATTERN_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES = (
@@ -2895,17 +2970,51 @@ def _published_pattern_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
     )
 
 
-_PATTERN_KEYWORD_ERROR_CASE_IDS = (
-    "pattern-split-duplicate-maxsplit-keyword-str",
-    "pattern-split-unexpected-keyword-bytes",
-    "pattern-sub-duplicate-count-keyword-str",
-    "pattern-sub-unexpected-keyword-str",
-    "pattern-sub-unexpected-keyword-after-positional-count-str",
-    "pattern-sub-count-alias-keyword-str",
-    "pattern-subn-duplicate-count-keyword-bytes",
-    "pattern-subn-unexpected-keyword-bytes",
-    "pattern-subn-unexpected-keyword-after-positional-count-bytes",
-    "pattern-subn-count-alias-keyword-bytes",
+def _pattern_type_error_owner_path_fixture_case_ids(
+    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
+    text_model: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        row.fixture_case_id
+        for row in rows
+        if text_model is None or row.text_model == text_model
+    )
+
+
+def _pattern_type_error_owner_path_direct_case_ids(
+    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
+) -> tuple[str, ...]:
+    return tuple(row.direct_case.case_id for row in rows)
+
+
+def _published_pattern_type_error_owner_path_fixture_cases(
+    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
+) -> tuple[FixtureCase, ...]:
+    fixture_cases_by_signature = {
+        _pattern_keyword_fixture_signature(case): case for case in PATTERN_CASES
+    }
+    return tuple(
+        fixture_cases_by_signature[_pattern_helper_error_direct_signature(row.direct_case)]
+        for row in rows
+    )
+
+
+def _selected_pattern_type_error_owner_path_direct_cases(
+    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
+    published_fixture_cases: tuple[FixtureCase, ...],
+) -> tuple[PatternHelperErrorCase, ...]:
+    direct_cases_by_signature = {
+        _pattern_helper_error_direct_signature(row.direct_case): row.direct_case
+        for row in rows
+    }
+    return tuple(
+        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
+        for case in published_fixture_cases
+    )
+
+
+_PATTERN_KEYWORD_ERROR_CASE_IDS = _pattern_type_error_owner_path_direct_case_ids(
+    _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
 )
 _PATTERN_WRONG_TEXT_MODEL_CASE_IDS = (
     "pattern-search-str-pattern-on-bytes-string",
@@ -4941,12 +5050,12 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
 
 def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_type_error_fixture_cases(
-        _PATTERN_KEYWORD_ERROR_CASE_IDS
+    published_fixture_cases = _published_pattern_type_error_owner_path_fixture_cases(
+        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_pattern_type_error_direct_cases(
+    selected_direct_cases = _selected_pattern_type_error_owner_path_direct_cases(
+        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
         published_fixture_cases,
-        _PATTERN_KEYWORD_ERROR_CASE_IDS,
     )
 
     assert tuple(
@@ -4955,12 +5064,9 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             published_fixture_cases,
             "str",
         )
-    ) == (
-        "workflow-pattern-split-duplicate-maxsplit-keyword-str",
-        "workflow-pattern-sub-duplicate-count-keyword-str",
-        "workflow-pattern-sub-unexpected-keyword-str",
-        "workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
-        "workflow-pattern-sub-count-alias-keyword-str",
+    ) == _pattern_type_error_owner_path_fixture_case_ids(
+        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
+        "str",
     )
     assert tuple(
         case.case_id
@@ -4968,36 +5074,19 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             published_fixture_cases,
             "bytes",
         )
-    ) == (
-        "workflow-pattern-split-unexpected-keyword-bytes",
-        "workflow-pattern-subn-duplicate-count-keyword-bytes",
-        "workflow-pattern-subn-unexpected-keyword-bytes",
-        "workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
-        "workflow-pattern-subn-count-alias-keyword-bytes",
+    ) == _pattern_type_error_owner_path_fixture_case_ids(
+        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
+        "bytes",
     )
     assert tuple(case.case_id for case in published_fixture_cases) == (
-        "workflow-pattern-split-duplicate-maxsplit-keyword-str",
-        "workflow-pattern-split-unexpected-keyword-bytes",
-        "workflow-pattern-sub-duplicate-count-keyword-str",
-        "workflow-pattern-sub-unexpected-keyword-str",
-        "workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
-        "workflow-pattern-sub-count-alias-keyword-str",
-        "workflow-pattern-subn-duplicate-count-keyword-bytes",
-        "workflow-pattern-subn-unexpected-keyword-bytes",
-        "workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
-        "workflow-pattern-subn-count-alias-keyword-bytes",
+        _pattern_type_error_owner_path_fixture_case_ids(
+            _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
+        )
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
-        "pattern-split-duplicate-maxsplit-keyword-str",
-        "pattern-split-unexpected-keyword-bytes",
-        "pattern-sub-duplicate-count-keyword-str",
-        "pattern-sub-unexpected-keyword-str",
-        "pattern-sub-unexpected-keyword-after-positional-count-str",
-        "pattern-sub-count-alias-keyword-str",
-        "pattern-subn-duplicate-count-keyword-bytes",
-        "pattern-subn-unexpected-keyword-bytes",
-        "pattern-subn-unexpected-keyword-after-positional-count-bytes",
-        "pattern-subn-count-alias-keyword-bytes",
+        _pattern_type_error_owner_path_direct_case_ids(
+            _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
+        )
     )
     assert len(published_fixture_cases) == 10
     assert len(selected_direct_cases) == len(published_fixture_cases)

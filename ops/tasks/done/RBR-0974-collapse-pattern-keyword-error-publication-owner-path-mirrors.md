@@ -1,6 +1,6 @@
 # RBR-0974: Collapse pattern-keyword-error publication owner-path mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -152,3 +152,6 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases or pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on'` currently passes (`2 passed, 1431 deselected`);
   - the publication-count probe in Verification currently passes (`ok 10`), proving the live owner path already resolves to the expected 10-row surface with the current text-model and helper counts; and
   - the structural literal-count probe in Verification currently fails because the same pattern keyword-error publication slice is still mirrored across `_PATTERN_KEYWORD_ERROR_CASE_IDS` and the assertion test instead of deriving from one canonical owner-path surface.
+
+## Completion
+- 2026-03-22: Replaced the duplicated pattern keyword-error fixture/direct inventories with one file-local owner-path row tuple, derived `_PATTERN_KEYWORD_ERROR_CASE_IDS` plus the test expectations from that canonical surface, and kept the published 10-row order, text-model split, and helper split unchanged. Verified with the targeted pytest selector, the publication-count probe, and the structural literal-count probe from this task.
