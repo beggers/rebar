@@ -862,12 +862,13 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
         return scorecard
 
     try:
-        payload = load_scorecard_io_module().load_scorecard_report(
-            path,
+        scorecard_io = load_scorecard_io_module()
+        payload = scorecard_io.build_scorecard_report_descriptor(
+            published_path=path,
             module_name_prefix="_rebar_ops_scorecard",
             report_attribute="REPORT",
             scorecard_kind="scorecard",
-        )
+        ).load(path)
     except (OSError, ImportError, SyntaxError, ValueError):
         payload = None
     if not isinstance(payload, dict):
