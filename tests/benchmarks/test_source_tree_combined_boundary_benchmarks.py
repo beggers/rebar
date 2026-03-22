@@ -10394,6 +10394,28 @@ def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descript
                 ],
             },
             {
+                "id": "pattern-match-window-indexlike-positional-contract-bytes",
+                "bucket": "pattern-match",
+                "family": "module",
+                "operation": "pattern.match",
+                "pattern": "abc",
+                "haystack": "zabc",
+                "pos": {
+                    "type": "indexlike",
+                    "value": 1,
+                },
+                "endpos": {
+                    "type": "indexlike",
+                    "value": 4,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.match positional pos/endpos indexlike descriptors unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-fullmatch-window-indexlike-contract-bytes",
                 "bucket": "pattern-fullmatch",
                 "family": "module",
@@ -10470,6 +10492,7 @@ def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descript
     (
         search_pos_workload,
         search_endpos_workload,
+        match_window_workload,
         fullmatch_window_workload,
         findall_window_workload,
         finditer_window_workload,
@@ -10506,6 +10529,26 @@ def test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descript
         "stdlib",
         run_benchmark_workload_with_cpython(round_tripped_search_endpos),
         re.compile(b"abc").search(b"zabcabc", 0, 4),
+        check_regs=True,
+    )
+
+    assert match_window_workload.pos == {
+        "type": "indexlike",
+        "value": 1,
+    }
+    assert match_window_workload.endpos == {
+        "type": "indexlike",
+        "value": 4,
+    }
+    round_tripped_match = workload_from_payload(
+        workload_to_payload(match_window_workload)
+    )
+    assert round_tripped_match.pos_argument().__index__() == 1
+    assert round_tripped_match.endpos_argument().__index__() == 4
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_match),
+        re.compile(b"abc").match(b"zabc", 1, 4),
         check_regs=True,
     )
 
@@ -10749,6 +10792,30 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
                 ],
             },
             {
+                "id": "pattern-match-window-indexlike-keyword-contract-bytes",
+                "bucket": "pattern-match",
+                "family": "module",
+                "operation": "pattern.match",
+                "pattern": "abc",
+                "haystack": "zabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "pos": {
+                        "type": "indexlike",
+                        "value": 1,
+                    },
+                    "endpos": {
+                        "type": "indexlike",
+                        "value": 4,
+                    },
+                },
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.match keyword pos/endpos indexlike carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-fullmatch-window-keyword-contract-bytes",
                 "bucket": "pattern-fullmatch",
                 "family": "module",
@@ -10819,6 +10886,7 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
     (
         search_pos_workload,
         match_pos_workload,
+        match_window_workload,
         fullmatch_window_workload,
         findall_window_workload,
         finditer_window_workload,
@@ -10851,6 +10919,31 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
         "stdlib",
         run_benchmark_workload_with_cpython(round_tripped_match_pos),
         re.compile("abc").match("zabcabc", pos=1),
+        check_regs=True,
+    )
+
+    assert match_window_workload.pos is None
+    assert match_window_workload.endpos is None
+    assert match_window_workload.kwargs == {
+        "endpos": {"type": "indexlike", "value": 4},
+        "pos": {"type": "indexlike", "value": 1},
+    }
+    round_tripped_match_window = workload_from_payload(
+        workload_to_payload(match_window_workload)
+    )
+    assert round_tripped_match_window.kwargs == {
+        "endpos": {"type": "indexlike", "value": 4},
+        "pos": {"type": "indexlike", "value": 1},
+    }
+    materialized_match_window_kwargs = (
+        round_tripped_match_window.keyword_arguments()
+    )
+    assert materialized_match_window_kwargs["pos"].__index__() == 1
+    assert materialized_match_window_kwargs["endpos"].__index__() == 4
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_match_window),
+        re.compile(b"abc").match(b"zabc", pos=1, endpos=4),
         check_regs=True,
     )
 
