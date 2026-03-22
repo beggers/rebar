@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 868/868 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0888` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the first compiled-pattern-first-argument named-group explicit `flags=NOFLAG` `compile()` acceptance pair on the shared correctness surface by teaching the owner-path publication helpers to preserve the `RegexFlag` zero carrier distinct from raw integer zero, while leaving the Python-path benchmark frontier unchanged because `module_boundary.py` already measures the normalized integer-zero carrier. |
-| Work queue | `1` ready, `0` in progress, `890` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1518 cases across 114 manifests, with all 1518 passing in the current slice; the benchmark publication covers 868/868 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0890` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the adjacent compiled-pattern-first-argument literal explicit `flags=NOFLAG` `compile()` acceptance pair on the shared correctness surface by reusing the `RegexFlag` zero-carrier distinction that `RBR-0888` lands, while leaving the Python-path benchmark frontier unchanged because `module_boundary.py` already measures the normalized integer-zero carrier. |
+| Work queue | `1` ready, `0` in progress, `892` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1516` |
-| Passing in published slice | `1516` |
+| Published cases | `1518` |
+| Passing in published slice | `1518` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 868/868 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1518 cases across 114 manifests, with all 1518 passing in the current slice; the benchmark publication covers 868/868 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0888` is the surviving `module-workflow-surface` follow-on: publish the named-group compiled-pattern `compile(..., flags=NOFLAG)` acceptance pair on the shared correctness surface while leaving the benchmark frontier on the already measured integer-zero carrier.
+- `RBR-0890` is the surviving `module-workflow-surface` follow-on: publish the literal compiled-pattern `compile(..., flags=NOFLAG)` acceptance pair on the shared correctness surface while leaving the benchmark frontier on the already measured integer-zero carrier.
 
 ### Current Risks
 
