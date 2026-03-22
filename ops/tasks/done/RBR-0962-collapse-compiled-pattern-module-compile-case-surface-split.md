@@ -1,6 +1,6 @@
 # RBR-0962: Collapse compiled-pattern module.compile case surface split
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -170,3 +170,12 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_success_and_keyword_contract or compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time or compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows'` currently passes (`77 passed, 577 deselected`);
   - the source-surface probe in Verification currently passes (`ok 4 6`), proving the success rows plus the six keyword case groups already exist directly on the tracked manifest-selected workload path; and
   - the structural `rg` check plus unified-type probe in Verification currently fail only because `CompiledPatternModuleCompileKeywordCaseGroup`, `_compiled_pattern_module_compile_keyword_params()`, and the remaining split compile-case surface are still present in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+
+## Completion
+- Collapsed the remaining success-versus-keyword compile-contract split in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` into a single `CompiledPatternModuleCompileContractCase` surface, keeping the success and keyword callback/runtime branches explicit inside that one file-local type.
+- Removed `CompiledPatternModuleCompileKeywordCaseGroup`, deleted `_compiled_pattern_module_compile_keyword_params()`, and updated the shared manifest/workload/probe/callback helpers plus the focused keyword-only tests to use the unified case surface without union typing.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_success_and_keyword_contract or compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time or compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows'` (`78 passed, 576 deselected`)
+  - `bash -lc "! rg -n 'class CompiledPatternModuleCompileKeywordCaseGroup|def _compiled_pattern_module_compile_keyword_params\\(|CompiledPatternModuleCompileContractCase\\s*\\|\\s*CompiledPatternModuleCompileKeywordCaseGroup' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -U"`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ...` unified-type probe (`ok success ('int-zero', 'int-zero-named-group', 'bool-false', 'bool-false-named-group', 'ignorecase', 'ignorecase-named-group')`)
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ...` source-surface probe (`ok 4 6`)
