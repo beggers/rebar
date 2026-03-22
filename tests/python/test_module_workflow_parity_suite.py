@@ -786,6 +786,15 @@ def _invoke_bound_pattern_helper(
 _LITERAL_COLLECTION_MATRIX_ALPHABET = "ab"
 _LITERAL_MATCH_HELPERS = ("search", "match", "fullmatch")
 _LITERAL_COLLECTION_SPLIT_COUNTS = (0, 1, -1)
+_BOUNDED_WILDCARD_MATRIX_WRAPPER_PAIRS = (
+    ("", ""),
+    ("z", ""),
+    ("", "z"),
+    ("z", "z"),
+)
+_BOUNDED_WILDCARD_MATRIX_LEADING_CHARS = ("a", "A", "z")
+_BOUNDED_WILDCARD_MATRIX_MIDDLE_CHARS = ("b", "B", "z")
+_BOUNDED_WILDCARD_MATRIX_TRAILING_CHARS = ("c", "C", "z")
 
 
 def _literal_collection_matrix_payloads(
@@ -824,6 +833,27 @@ def _literal_collection_window_cases(
         seen.add(window)
         windows.append(window)
     return tuple(windows)
+
+
+def _bounded_wildcard_matrix_texts() -> tuple[str, ...]:
+    candidate_texts = ("", "a", "ab", "bc", "zz")
+    generated_texts = (
+        f"{prefix}{leading}{middle}{trailing}{suffix}"
+        for leading, middle, trailing in product(
+            _BOUNDED_WILDCARD_MATRIX_LEADING_CHARS,
+            _BOUNDED_WILDCARD_MATRIX_MIDDLE_CHARS,
+            _BOUNDED_WILDCARD_MATRIX_TRAILING_CHARS,
+        )
+        for prefix, suffix in _BOUNDED_WILDCARD_MATRIX_WRAPPER_PAIRS
+    )
+    ordered_texts: list[str] = []
+    seen: set[str] = set()
+    for text in (*candidate_texts, *generated_texts):
+        if text in seen:
+            continue
+        seen.add(text)
+        ordered_texts.append(text)
+    return tuple(ordered_texts)
 
 
 def _call_pattern_helper_with_window(
@@ -7571,6 +7601,100 @@ def test_bounded_wildcard_pattern_match_helpers_match_cpython(
     assert_match_result_parity(backend_name, observed, expected)
     if expected is not None:
         assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    _published_bounded_wildcard_compile_fixture_cases(),
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_generated_module_match_matrix_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = case_pattern(case)
+    flags = case.flags or 0
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        flags,
+    )
+
+    for text in _bounded_wildcard_matrix_texts():
+        for helper in _LITERAL_MATCH_HELPERS:
+            if flags:
+                observed_module = getattr(backend, helper)(pattern, text, flags)
+                expected_module = getattr(re, helper)(pattern, text, flags)
+            else:
+                observed_module = getattr(backend, helper)(pattern, text)
+                expected_module = getattr(re, helper)(pattern, text)
+            _assert_literal_match_helper_result_matches_cpython(
+                backend_name=backend_name,
+                context="module",
+                helper=helper,
+                pattern=pattern,
+                string=text,
+                observed=observed_module,
+                expected=expected_module,
+            )
+
+            _assert_literal_match_helper_result_matches_cpython(
+                backend_name=backend_name,
+                context="compiled-pattern module",
+                helper=helper,
+                pattern=pattern,
+                string=text,
+                observed=getattr(backend, helper)(observed_pattern, text),
+                expected=getattr(re, helper)(expected_pattern, text),
+            )
+
+
+@pytest.mark.parametrize(
+    "case",
+    _published_bounded_wildcard_compile_fixture_cases(),
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_generated_pattern_match_matrix_with_windows_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = case_pattern(case)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        case.flags or 0,
+    )
+
+    for text in _bounded_wildcard_matrix_texts():
+        for pos, endpos in _literal_collection_window_cases(len(text)):
+            for helper in _LITERAL_MATCH_HELPERS:
+                _assert_literal_match_helper_result_matches_cpython(
+                    backend_name=backend_name,
+                    context="pattern",
+                    helper=helper,
+                    pattern=pattern,
+                    string=text,
+                    observed=_call_pattern_helper_with_window(
+                        observed_pattern,
+                        helper,
+                        text,
+                        pos,
+                        endpos,
+                    ),
+                    expected=_call_pattern_helper_with_window(
+                        expected_pattern,
+                        helper,
+                        text,
+                        pos,
+                        endpos,
+                    ),
+                    pos=pos,
+                    endpos=endpos,
+                )
 
 
 @pytest.mark.parametrize(
