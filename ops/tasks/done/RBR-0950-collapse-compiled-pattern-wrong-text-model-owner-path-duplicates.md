@@ -1,6 +1,6 @@
 # RBR-0950: Collapse compiled-pattern wrong-text-model owner-path duplicates
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -108,3 +108,10 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_wrong_text_model or compiled_pattern_module_boundary_wrong_text_model'` currently passes (`25 passed, 591 deselected`);
   - `bash -lc "rg -n 'def _compiled_pattern_module_helper_wrong_text_model_workload\\(|def _compiled_pattern_module_boundary_wrong_text_model_workload\\(|def _compiled_pattern_module_helper_wrong_text_model_source_workloads\\(|def _compiled_pattern_module_boundary_wrong_text_model_source_workloads\\(|test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_wrong_text_model_rows_until_helper_invocation|test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_wrong_text_model_rows_until_helper_invocation|test_run_internal_workload_probe_measures_compiled_pattern_module_helper_wrong_text_model_workloads|test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_wrong_text_model_workloads|test_compiled_pattern_module_helper_wrong_text_model_callbacks_precompile_first_argument_before_timing|test_compiled_pattern_module_boundary_wrong_text_model_callbacks_precompile_first_argument_before_timing' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently finds the paired wrappers and six duplicate test bodies at lines `15875`, `15885`, `15919`, `15926`, `16072`, `16130`, `16200`, `16239`, `16273`, and `16313`; and
   - the selector probe in Verification currently passes (`ok 5 3`), proving both owner surfaces already exist directly in the tracked manifests without the extra wrapper/test duplication.
+
+## Completion Note
+- Landed a file-local `CompiledPatternModuleWrongTextModelOwnerSpec` pair in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, deleted the four owner-path duplicate workload/source selectors, and collapsed the manifest, internal-probe, and precompile-first callback checks onto shared owner-spec-driven tests while preserving the published 5-row collection/replacement path and 3-row module-boundary path exactly.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_wrong_text_model or compiled_pattern_module_boundary_wrong_text_model'` (`26 passed, 590 deselected`)
+  - `bash -lc "! rg -n 'def _compiled_pattern_module_helper_wrong_text_model_workload\\(|def _compiled_pattern_module_boundary_wrong_text_model_workload\\(|def _compiled_pattern_module_helper_wrong_text_model_source_workloads\\(|def _compiled_pattern_module_boundary_wrong_text_model_source_workloads\\(|test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_wrong_text_model_rows_until_helper_invocation|test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_wrong_text_model_rows_until_helper_invocation|test_run_internal_workload_probe_measures_compiled_pattern_module_helper_wrong_text_model_workloads|test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_wrong_text_model_workloads|test_compiled_pattern_module_helper_wrong_text_model_callbacks_precompile_first_argument_before_timing|test_compiled_pattern_module_boundary_wrong_text_model_callbacks_precompile_first_argument_before_timing' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the selector probe from Verification (`ok 5 3`)
