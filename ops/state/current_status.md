@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 866/866 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0886` is the surviving follow-on on the existing `module-workflow-surface` frontier, adding the next compiled-pattern-first-argument named-group `compile(..., flags=IGNORECASE)` rejection pair to the shared Python-path `module_boundary.py` benchmark surface.
+- `RBR-0888` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the compiled-pattern-first-argument named-group `compile(..., flags=NOFLAG)` acceptance pair on the shared correctness surface while leaving the benchmark frontier on the already-measured integer-zero carrier.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
