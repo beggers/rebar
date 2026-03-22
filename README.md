@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1537 cases across 114 manifests, with all 1537 passing in the current slice; the benchmark publication covers 885/885 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model benchmark slice on the existing `collection_replacement_boundary.py` owner path, pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it. |
-| Work queue | `0` ready, `0` in progress, `932` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1539 cases across 114 manifests, with all 1539 passing in the current slice; the benchmark publication covers 885/885 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | No ready feature follow-on currently survives in the feature queue after the latest same-cycle drain. |
+| Work queue | `0` ready, `0` in progress, `934` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1537` |
-| Passing in published slice | `1537` |
+| Published cases | `1539` |
+| Passing in published slice | `1539` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1537 cases across 114 manifests, with all 1537 passing in the current slice; the benchmark publication covers 885/885 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1539 cases across 114 manifests, with all 1539 passing in the current slice; the benchmark publication covers 885/885 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model benchmark slice on the existing `collection_replacement_boundary.py` owner path, pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it.
+- No ready feature follow-on currently survives in the feature queue after the latest same-cycle drain.
 
 ### Current Risks
 
