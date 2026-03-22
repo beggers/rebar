@@ -188,10 +188,6 @@ LITERAL_FLAG_CASES_BY_ID = {
 }
 
 
-def _literal_flag_frontier_case_ids() -> tuple[str, ...]:
-    return tuple(case.case_id for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases)
-
-
 MODULE_IGNORECASE_CASES = (
     _module_case_from_fixture(
         LITERAL_FLAG_CASES_BY_ID["flag-module-search-ignorecase-str-hit"]
@@ -421,31 +417,6 @@ CACHE_DISTINCT_STR_NORMALIZED_CASE = LITERAL_FLAG_CASES_BY_ID[
     "flag-cache-distinct-str-normalized"
 ]
 
-
-def _literal_flag_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
-    selected_case_ids = frozenset(_literal_flag_frontier_case_ids())
-    return {
-        "module-ignorecase": frozenset(
-            case.id for case in MODULE_IGNORECASE_CASES if case.id in selected_case_ids
-        ),
-        "pattern-ignorecase": frozenset(
-            case.id for case in PATTERN_IGNORECASE_CASES if case.id in selected_case_ids
-        ),
-        "cache-workflows": frozenset(
-            case.case_id
-            for case in (
-                CACHE_HIT_BYTES_IGNORECASE_CASE,
-                CACHE_DISTINCT_STR_NORMALIZED_CASE,
-            )
-            if case.case_id in selected_case_ids
-        ),
-        "native-boundary": frozenset(
-            case.id
-            for case in NATIVE_MODULE_PARITY_CASES
-            if case.id in selected_case_ids
-        ),
-    }
-
 FAKE_BOUNDARY_CASES = (
     FakeBoundaryCase(
         id="inline-flag-native-boundary-search",
@@ -494,16 +465,39 @@ def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -
 
 
 def test_literal_flag_parity_suite_tracks_published_case_frontier() -> None:
+    selected_case_ids = tuple(case.case_id for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases)
     assert_fixture_bundle_tracks_published_case_frontier(
         LITERAL_FLAG_FIXTURE_BUNDLE,
-        selected_case_ids=_literal_flag_frontier_case_ids(),
+        selected_case_ids=selected_case_ids,
     )
 
 
 def test_literal_flag_direct_test_buckets_cover_selected_frontier() -> None:
+    selected_case_ids = tuple(case.case_id for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases)
+    selected_case_id_set = frozenset(selected_case_ids)
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        _literal_flag_direct_test_case_id_buckets(),
-        selected_case_ids=_literal_flag_frontier_case_ids(),
+        {
+            "module-ignorecase": frozenset(
+                case.id for case in MODULE_IGNORECASE_CASES if case.id in selected_case_id_set
+            ),
+            "pattern-ignorecase": frozenset(
+                case.id for case in PATTERN_IGNORECASE_CASES if case.id in selected_case_id_set
+            ),
+            "cache-workflows": frozenset(
+                case.case_id
+                for case in (
+                    CACHE_HIT_BYTES_IGNORECASE_CASE,
+                    CACHE_DISTINCT_STR_NORMALIZED_CASE,
+                )
+                if case.case_id in selected_case_id_set
+            ),
+            "native-boundary": frozenset(
+                case.id
+                for case in NATIVE_MODULE_PARITY_CASES
+                if case.id in selected_case_id_set
+            ),
+        },
+        selected_case_ids=selected_case_ids,
         coverage_label="literal flag direct-test case-id buckets",
     )
 
