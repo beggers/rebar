@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0896` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the raw module-level `sub()` / `subn()` bool-count complement pair on the shared correctness surface after `RBR-0894` closes the adjacent bytes bound-`Pattern.match()` window benchmark catch-up.
+`RBR-0898` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the shared correctness surface while leaving the shared collection/replacement benchmark frontier unchanged.
 
 ## Ordered Work
-1. `RBR-0896` publishes `re.sub("abc", "x", "abcabc", count=False)` and `re.subn(b"abc", b"x", b"abcabc", count=True)` on `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, reusing the existing module keyword-helper owner path after `RBR-0894` drains.
+1. `RBR-0898` publishes `re.sub(re.compile("abc"), "x", "abcabc", count=False)` and `re.subn(re.compile(b"abc"), b"x", b"abcabc", count=True)` on `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, reusing the existing compiled-pattern module-helper owner path while leaving the adjacent Python-path benchmark surface unchanged in this run.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1522 cases across 114 manifests, with all 1522 passing in the current slice; the benchmark publication covers 870/870 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0896` is the surviving `module-workflow-surface` follow-on: publish the raw module-level `sub()` / `subn()` bool-count complement pair on the shared correctness surface once the adjacent bytes bound-`Pattern.match()` window benchmark catch-up drains.
+- `RBR-0898` is the surviving `module-workflow-surface` follow-on: publish the compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the shared correctness surface while leaving the shared collection/replacement benchmark frontier unchanged.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
