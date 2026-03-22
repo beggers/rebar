@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0898` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the shared correctness surface while leaving the shared collection/replacement benchmark frontier unchanged.
+`RBR-0900` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface once the matching correctness anchors have landed.
 
 ## Ordered Work
-1. `RBR-0898` publishes `re.sub(re.compile("abc"), "x", "abcabc", count=False)` and `re.subn(re.compile(b"abc"), b"x", b"abcabc", count=True)` on `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, reusing the existing compiled-pattern module-helper owner path while leaving the adjacent Python-path benchmark surface unchanged in this run.
+1. `RBR-0900` catches up `re.sub(re.compile("abc"), "x", "abcabc", count=False)` and `re.subn(re.compile(b"abc"), b"x", b"abcabc", count=True)` on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing compiled-pattern keyword-carrier owner path instead of opening another manifest family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
