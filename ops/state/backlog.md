@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite on the shared direct bound-pattern replacement frontier.
+`RBR-0916` now leads the shared direct bound-pattern replacement frontier by publishing the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword pair on `module_workflow_surface.py`; no ready feature follow-on currently survives behind that correctness-publication slice.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite, so the next frontier addition should be derived from the live replacement-error surface again once that bounded implementation slice lands.
+1. `RBR-0916` is the active frontier task on the shared direct bound-pattern replacement owner path, publishing `re.compile("abc").sub("x", "abc", missing=1)` and `re.compile(b"abc").subn(b"x", b"abc", missing=1)` into `tests/conformance/fixtures/module_workflow_surface.py` and `reports/correctness/latest.py`; no ready feature follow-on currently survives behind that bounded correctness-publication step.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
