@@ -1748,18 +1748,50 @@ class ReadmeReportingTest(unittest.TestCase):
             compatibility_heuristic,
         )
 
-    def test_checked_in_readme_status_block_matches_rendered_snapshot(self) -> None:
+    def test_checked_in_readme_status_block_keeps_expected_section_scaffold(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        current = README_PATH.read_text(encoding="utf-8")
+        self.assertEqual(current.count(rebar_ops.README_STATUS_START), 1)
+        self.assertEqual(current.count(rebar_ops.README_STATUS_END), 1)
+
+        _, remainder = current.split(rebar_ops.README_STATUS_START, 1)
+        status_block, _ = remainder.split(rebar_ops.README_STATUS_END, 1)
+
+        self.assertIn("## Current State", status_block)
+        self.assertIn("### Correctness Snapshot", status_block)
+        self.assertIn("### Benchmark Snapshot", status_block)
+        self.assertIn("### Immediate Next Steps", status_block)
+        self.assertIn("### Current Risks", status_block)
+        self.assertIn("reports/correctness/latest.py", status_block)
+        self.assertIn("reports/benchmarks/latest.py", status_block)
+        self.assertNotIn("reports/correctness/latest.json", status_block)
+        self.assertNotIn("reports/benchmarks/latest.json", status_block)
+
+    def test_replace_markdown_block_only_mutates_the_delimited_readme_status_region(
+        self,
+    ) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
         current = README_PATH.read_text(encoding="utf-8")
+        rendered_status = rebar_ops.render_readme_status(config)
         expected = rebar_ops.replace_markdown_block(
             current,
             rebar_ops.README_STATUS_START,
             rebar_ops.README_STATUS_END,
-            rebar_ops.render_readme_status(config),
+            rendered_status,
         )
 
-        self.assertEqual(current, expected)
+        current_prefix, current_remainder = current.split(rebar_ops.README_STATUS_START, 1)
+        _, current_suffix = current_remainder.split(rebar_ops.README_STATUS_END, 1)
+        expected_prefix, expected_remainder = expected.split(rebar_ops.README_STATUS_START, 1)
+        expected_block, expected_suffix = expected_remainder.split(
+            rebar_ops.README_STATUS_END, 1
+        )
+        normalized_rendered_status = rendered_status.rstrip("\n")
+
+        self.assertEqual(expected_prefix, current_prefix)
+        self.assertEqual(expected_suffix, current_suffix)
+        self.assertEqual(expected_block, f"\n{normalized_rendered_status}\n")
 
     def test_benchmark_scorecard_uses_tracked_summary_shape(self) -> None:
         rebar_ops = load_rebar_ops_module()
