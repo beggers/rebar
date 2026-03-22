@@ -1,6 +1,6 @@
 # RBR-0982: Collapse module/pattern owner-path selector duplicates
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -148,3 +148,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_direct_test_buckets_cover_selected_frontier or test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases or test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases or test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases or test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases'` currently passes (`6 passed, 1441 deselected`);
   - the owner-path row probe in Verification currently passes (`ok`), confirming the five live owner-path publication slices already preserve their current fixture ordering and helper/text-model splits through the canonical row tables; and
   - `rg -n '^def _published_module_keyword_owner_path_fixture_cases\\(|^def _selected_module_keyword_owner_path_direct_cases\\(|^def _published_pattern_owner_path_fixture_cases\\(|^def _selected_pattern_owner_path_direct_cases\\(' tests/python/test_module_workflow_parity_suite.py` currently finds the duplicated helper stack at lines `2408`, `2419`, `2809`, and `2819`, so the structural no-match check will fail until this cleanup lands.
+
+## Completion
+- Replaced the duplicated module/pattern owner-path selector stacks in `tests/python/test_module_workflow_parity_suite.py` with one generic fixture selector and one generic direct-case selector, backed by the existing file-local owner-path row dataclasses.
+- Updated the direct-test bucket assertion plus the five owner-path publication-slice tests to derive their published fixture rows and selected direct cases from the shared selector surface while preserving the existing counts, ordering, helper splits, and text-model splits.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_direct_test_buckets_cover_selected_frontier or test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases or test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases or test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases or test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases'` (`6 passed, 1441 deselected`)
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... PY` owner-path row probe (`ok`)
+  - `bash -lc "! rg -n '^def _published_module_keyword_owner_path_fixture_cases\\(|^def _selected_module_keyword_owner_path_direct_cases\\(|^def _published_pattern_owner_path_fixture_cases\\(|^def _selected_pattern_owner_path_direct_cases\\(' tests/python/test_module_workflow_parity_suite.py"` (no matches)

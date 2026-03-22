@@ -15,7 +15,7 @@ import sys
 import tempfile
 import textwrap
 from types import SimpleNamespace
-from typing import Protocol
+from typing import Protocol, TypeVar
 
 import pytest
 
@@ -219,6 +219,9 @@ MATCH_HELPER_PATTERN_CASES = tuple(
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
+RAW_MODULE_CALL_CASES = tuple(
+    case for case in MODULE_CALL_CASES if not case.use_compiled_pattern
+)
 
 
 def _fixture_cases_for_text_model(
@@ -592,8 +595,12 @@ class PatternPositionalIndexLikeCallCase:
     flags: int = 0
 
 
-class _OwnerPathRow(Protocol):
+_DirectCaseT = TypeVar("_DirectCaseT")
+
+
+class _OwnerPathRow(Protocol[_DirectCaseT]):
     fixture_case_id: str
+    direct_case: _DirectCaseT
 
     @property
     def text_model(self) -> str: ...
@@ -2020,7 +2027,7 @@ MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
 
 
 def _owner_path_fixture_case_ids(
-    rows: tuple[_OwnerPathRow, ...],
+    rows: tuple[_OwnerPathRow[object], ...],
     text_model: str | None = None,
 ) -> tuple[str, ...]:
     return tuple(
@@ -2405,20 +2412,17 @@ PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
 )
 
 
-def _published_module_keyword_owner_path_fixture_cases(
-    rows: tuple[ModuleKeywordOwnerPathRow, ...],
+def _published_owner_path_fixture_cases(
+    fixture_cases: tuple[FixtureCase, ...],
+    rows: tuple[_OwnerPathRow[object], ...],
 ) -> tuple[FixtureCase, ...]:
-    fixture_cases_by_id = {
-        case.case_id: case
-        for case in MODULE_CALL_CASES
-        if not case.use_compiled_pattern
-    }
+    fixture_cases_by_id = {case.case_id: case for case in fixture_cases}
     return tuple(fixture_cases_by_id[row.fixture_case_id] for row in rows)
 
 
-def _selected_module_keyword_owner_path_direct_cases(
-    rows: tuple[ModuleKeywordOwnerPathRow, ...],
-) -> tuple[ModuleKeywordCallCase | ModuleKeywordErrorCase, ...]:
+def _selected_owner_path_direct_cases(
+    rows: tuple[_OwnerPathRow[_DirectCaseT], ...],
+) -> tuple[_DirectCaseT, ...]:
     return tuple(row.direct_case for row in rows)
 
 
@@ -2804,25 +2808,6 @@ def _published_pattern_positional_indexlike_fixture_cases() -> tuple[FixtureCase
         if case.kwargs == {}
         and _workflow_positional_indexlike_fixture_signature(case) in direct_signatures
     )
-
-
-def _published_pattern_owner_path_fixture_cases(
-    rows: tuple[
-        PatternKeywordPublicationOwnerPathRow | PatternTypeErrorOwnerPathRow,
-        ...,
-    ],
-) -> tuple[FixtureCase, ...]:
-    fixture_cases_by_id = {case.case_id: case for case in PATTERN_CASES}
-    return tuple(fixture_cases_by_id[row.fixture_case_id] for row in rows)
-
-
-def _selected_pattern_owner_path_direct_cases(
-    rows: tuple[
-        PatternKeywordPublicationOwnerPathRow | PatternTypeErrorOwnerPathRow,
-        ...,
-    ],
-) -> tuple[PatternKeywordCallCase | PatternHelperErrorCase, ...]:
-    return tuple(row.direct_case for row in rows)
 
 
 # Keep the representative fixture-backed rows small, then use a compact matrix
@@ -4070,7 +4055,8 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             ),
             "module-keyword-helper": frozenset(
                 case.case_id
-                for case in _published_module_keyword_owner_path_fixture_cases(
+                for case in _published_owner_path_fixture_cases(
+                    RAW_MODULE_CALL_CASES,
                     MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
                 )
             ),
@@ -4079,7 +4065,8 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             ),
             "module-keyword-error": frozenset(
                 case.case_id
-                for case in _published_module_keyword_owner_path_fixture_cases(
+                for case in _published_owner_path_fixture_cases(
+                    RAW_MODULE_CALL_CASES,
                     MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
                 )
             ),
@@ -4521,10 +4508,11 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
 def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_module_keyword_owner_path_fixture_cases(
+    published_fixture_cases = _published_owner_path_fixture_cases(
+        RAW_MODULE_CALL_CASES,
         MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_module_keyword_owner_path_direct_cases(
+    selected_direct_cases = _selected_owner_path_direct_cases(
         MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
     )
 
@@ -4701,10 +4689,11 @@ def test_module_workflow_surface_publishes_module_positional_indexlike_slice_fro
 
 def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_module_keyword_owner_path_fixture_cases(
+    published_fixture_cases = _published_owner_path_fixture_cases(
+        RAW_MODULE_CALL_CASES,
         MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_module_keyword_owner_path_direct_cases(
+    selected_direct_cases = _selected_owner_path_direct_cases(
         MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
     )
 
@@ -4772,10 +4761,11 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
 
 def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_owner_path_fixture_cases(
+    published_fixture_cases = _published_owner_path_fixture_cases(
+        PATTERN_CASES,
         PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_pattern_owner_path_direct_cases(
+    selected_direct_cases = _selected_owner_path_direct_cases(
         PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
 
@@ -4848,10 +4838,11 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
 
 def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_owner_path_fixture_cases(
+    published_fixture_cases = _published_owner_path_fixture_cases(
+        PATTERN_CASES,
         _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_pattern_owner_path_direct_cases(
+    selected_direct_cases = _selected_owner_path_direct_cases(
         _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
     )
 
@@ -4910,10 +4901,11 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
 
 def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_owner_path_fixture_cases(
+    published_fixture_cases = _published_owner_path_fixture_cases(
+        PATTERN_CASES,
         _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_pattern_owner_path_direct_cases(
+    selected_direct_cases = _selected_owner_path_direct_cases(
         _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
     )
 
