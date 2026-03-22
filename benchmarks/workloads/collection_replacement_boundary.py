@@ -1296,6 +1296,42 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-count-alias-keyword-purged-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count_alias": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'count_alias'"
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.sub helper path that keeps the bounded count_alias keyword-name rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
       "bucket": "module-sub",
       "family": "module",
@@ -1734,6 +1770,42 @@ MANIFEST = {
       ],
       "notes": [
         "Purged module.subn helper path that keeps the bounded positional count plus unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-count-alias-keyword-purged-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "kwargs": {
+        "count_alias": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'count_alias'"
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded count_alias keyword-name rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

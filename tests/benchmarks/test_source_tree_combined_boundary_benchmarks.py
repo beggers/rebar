@@ -3540,7 +3540,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 39)
+        self.assertEqual(len(expected_measured_workload_ids), 41)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5243,11 +5243,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 897,
-                "module_workloads": 889,
+                "measured_workloads": 899,
+                "module_workloads": 891,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 897,
+                "total_workloads": 899,
             },
         )
 
@@ -6539,7 +6539,12 @@ def _collection_replacement_parameter_payload(
 def _collection_replacement_has_expected_unexpected_keyword_error(
     workload: Any,
 ) -> bool:
-    if tuple(workload.kwargs) != ("missing",):
+    keyword_names = tuple(workload.kwargs)
+    if len(keyword_names) != 1:
+        return False
+    keyword_name = keyword_names[0]
+    expected_keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if keyword_name == expected_keyword_parameter:
         return False
     expected_exception = workload.expected_exception
     if expected_exception is None or expected_exception.get("type") != "TypeError":
@@ -6547,13 +6552,13 @@ def _collection_replacement_has_expected_unexpected_keyword_error(
     message_substring = expected_exception.get("message_substring")
     if not isinstance(message_substring, str):
         return False
-    if "unexpected keyword argument 'missing'" in message_substring:
+    if f"unexpected keyword argument '{keyword_name}'" in message_substring:
         return True
     if workload.operation.startswith("pattern."):
         helper_name = workload.operation.removeprefix("pattern.")
         return (
             message_substring
-            == f"'missing' is an invalid keyword argument for {helper_name}()"
+            == f"'{keyword_name}' is an invalid keyword argument for {helper_name}()"
         )
     return False
 
@@ -8467,6 +8472,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-sub-unexpected-keyword-after-positional-count-purged-str": (
                     "workflow-module-sub-unexpected-keyword-after-positional-count",
                 ),
+                "module-sub-count-alias-keyword-purged-str": (
+                    "workflow-module-sub-count-alias-keyword",
+                ),
                 "module-sub-duplicate-count-keyword-warm-str-compiled-pattern": (
                     "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
                 ),
@@ -8496,6 +8504,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-unexpected-keyword-after-positional-count-purged-bytes": (
                     "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
+                ),
+                "module-subn-count-alias-keyword-purged-bytes": (
+                    "workflow-module-subn-count-alias-keyword-bytes",
                 ),
                 "module-subn-count-keyword-purged-bytes-compiled-pattern": (
                     "workflow-module-subn-count-keyword-bytes-compiled-pattern",
@@ -12279,6 +12290,28 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
                 ],
             },
             {
+                "id": "module-sub-count-alias-keyword-contract-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "flags": 0,
+                "kwargs": {
+                    "count_alias": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'count_alias'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.sub count_alias keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "module-sub-unexpected-keyword-after-positional-count-contract-str",
                 "bucket": "module-sub",
                 "family": "module",
@@ -12299,6 +12332,29 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
                 "timing_scope": "module-helper-call",
                 "notes": [
                     "Ensures benchmark manifests keep module.sub positional-count-plus-unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-count-alias-keyword-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "flags": 0,
+                "text_model": "bytes",
+                "kwargs": {
+                    "count_alias": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'count_alias'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn count_alias keyword carriers unresolved until helper invocation."
                 ],
             },
             {
@@ -12348,7 +12404,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         split_missing_str_workload,
         split_missing_bytes_workload,
         subn_missing_workload,
+        sub_count_alias_workload,
         sub_missing_after_positional_count_workload,
+        subn_count_alias_workload,
         subn_missing_after_positional_count_workload,
     ) = load_manifest(manifest_path).workloads
 
@@ -12518,6 +12576,18 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
     ):
         run_benchmark_workload_with_cpython(round_tripped_subn_missing)
 
+    assert sub_count_alias_workload.kwargs == {"count_alias": 1}
+    round_tripped_sub_count_alias = workload_from_payload(
+        workload_to_payload(sub_count_alias_workload)
+    )
+    assert round_tripped_sub_count_alias.kwargs == {"count_alias": 1}
+    assert round_tripped_sub_count_alias.keyword_arguments() == {"count_alias": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("sub() got an unexpected keyword argument 'count_alias'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_sub_count_alias)
+
     assert sub_missing_after_positional_count_workload.count == 1
     assert sub_missing_after_positional_count_workload.kwargs == {"missing": 1}
     round_tripped_sub_missing_after_positional_count = workload_from_payload(
@@ -12536,6 +12606,18 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         run_benchmark_workload_with_cpython(
             round_tripped_sub_missing_after_positional_count
         )
+
+    assert subn_count_alias_workload.kwargs == {"count_alias": 1}
+    round_tripped_subn_count_alias = workload_from_payload(
+        workload_to_payload(subn_count_alias_workload)
+    )
+    assert round_tripped_subn_count_alias.kwargs == {"count_alias": 1}
+    assert round_tripped_subn_count_alias.keyword_arguments() == {"count_alias": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("subn() got an unexpected keyword argument 'count_alias'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_subn_count_alias)
 
     assert subn_missing_after_positional_count_workload.count == 1
     assert subn_missing_after_positional_count_workload.kwargs == {"missing": 1}
@@ -13473,6 +13555,19 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
         ),
         pytest.param(
             "module.sub",
+            "abcabc",
+            {"count_alias": 1},
+            "x",
+            0,
+            0,
+            "str",
+            None,
+            "sub() got an unexpected keyword argument 'count_alias'",
+            ["kwargs.count_alias"],
+            id="module-sub-count-alias-keyword",
+        ),
+        pytest.param(
+            "module.sub",
             "abc",
             {"missing": 1},
             "x",
@@ -13483,6 +13578,19 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "sub() got an unexpected keyword argument 'missing'",
             ["count", "kwargs.missing"],
             id="module-sub-unexpected-keyword-after-positional-count",
+        ),
+        pytest.param(
+            "module.subn",
+            "abcabc",
+            {"count_alias": 1},
+            "x",
+            0,
+            0,
+            "bytes",
+            None,
+            "subn() got an unexpected keyword argument 'count_alias'",
+            ["kwargs.count_alias"],
+            id="module-subn-count-alias-keyword-bytes",
         ),
         pytest.param(
             "module.subn",
@@ -13644,6 +13752,8 @@ _MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS = frozenset(
         "module-sub-duplicate-count-keyword-warm-str",
         "module-sub-unexpected-keyword-purged-str",
         "module-sub-unexpected-keyword-after-positional-count-purged-str",
+        "module-sub-count-alias-keyword-purged-str",
+        "module-subn-count-alias-keyword-purged-bytes",
         "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
     }
 )
