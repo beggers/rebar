@@ -315,12 +315,13 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
         },
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = tuple(
-    spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
-)
 COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
     FIXTURE_BUNDLES,
-    tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
+    tuple(
+        spec.bundle
+        for spec in OPEN_ENDED_BYTES_CASE_SURFACES
+        if spec.follow_on_id is not None
+    ),
 )
 
 
@@ -697,7 +698,8 @@ def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_
             pattern_bucket_label="shared-pattern-fullmatch",
             follow_on_buckets=(
                 (f"{spec.follow_on_id}-bytes-follow-on", spec.bundle)
-                for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+                for spec in OPEN_ENDED_BYTES_CASE_SURFACES
+                if spec.follow_on_id is not None
             ),
         ),
         selected_case_ids=tuple(
@@ -728,7 +730,8 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     )
     direct_manifest_ids = frozenset(
         follow_on_spec.bundle.manifest.manifest_id
-        for follow_on_spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        for follow_on_spec in OPEN_ENDED_BYTES_CASE_SURFACES
+        if follow_on_spec.follow_on_id is not None
     )
 
     assert (spec.follow_on_id is None) == (
@@ -814,7 +817,9 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
 
 @pytest.mark.parametrize(
     "spec",
-    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
+    tuple(
+        spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
+    ),
     ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
@@ -905,15 +910,18 @@ def test_open_ended_supplemental_bytes_case_tables_keep_case_ids_in_order(
 
 def test_open_ended_direct_bytes_follow_on_case_surfaces_keep_expected_manifest_pairings(
 ) -> None:
-    assert tuple(spec.follow_on_id for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES) == (
+    follow_on_specs = tuple(
+        spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
+    )
+
+    assert tuple(spec.follow_on_id for spec in follow_on_specs) == (
         "broader-range-alternation",
         "open-ended-backtracking-heavy",
         "broader-range-conditional",
         "broader-range-backtracking-heavy",
     )
     assert tuple(
-        (spec.follow_on_id, spec.bundle.manifest.manifest_id)
-        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        (spec.follow_on_id, spec.bundle.manifest.manifest_id) for spec in follow_on_specs
     ) == (
         (
             "broader-range-alternation",
@@ -932,28 +940,23 @@ def test_open_ended_direct_bytes_follow_on_case_surfaces_keep_expected_manifest_
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
         ),
     )
+    assert follow_on_specs[0].cases is BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES
+    assert follow_on_specs[1].cases is OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
+    assert follow_on_specs[2].cases is BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES
     assert (
-        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[0].cases
-        is BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES
-    )
-    assert (
-        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[1].cases
-        is OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
-    )
-    assert (
-        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[2].cases
-        is BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES
-    )
-    assert (
-        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[3].cases
+        follow_on_specs[3].cases
         is BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
     )
 
 
 def test_open_ended_direct_bytes_follow_on_case_surfaces_resolve_to_expected_published_mixed_fixtures(
 ) -> None:
+    follow_on_specs = tuple(
+        spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
+    )
+
     assert tuple(
-        spec.bundle.manifest.path.name for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        spec.bundle.manifest.path.name for spec in follow_on_specs
     ) == (
         "broader_range_open_ended_quantified_group_alternation_workflows.py",
         "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
@@ -962,7 +965,7 @@ def test_open_ended_direct_bytes_follow_on_case_surfaces_resolve_to_expected_pub
     )
     assert all(
         {case.text_model for case in spec.bundle.cases} == {"bytes", "str"}
-        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        for spec in follow_on_specs
     )
     assert all(
         {
@@ -971,7 +974,7 @@ def test_open_ended_direct_bytes_follow_on_case_surfaces_resolve_to_expected_pub
             if case.text_model == "bytes"
         }
         == {"compile", "module_call", "pattern_call"}
-        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        for spec in follow_on_specs
     )
 
 
