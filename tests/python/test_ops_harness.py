@@ -1291,6 +1291,39 @@ class ReadmeReportingTest(unittest.TestCase):
                 scorecard,
             )
 
+    def test_scorecard_load_python_dict_attribute_rejects_unloadable_python_modules(
+        self,
+    ) -> None:
+        report_path = pathlib.Path("/tmp/unloadable-scorecard.py")
+        missing_loader_spec = mock.Mock()
+        missing_loader_spec.loader = None
+
+        for label, spec in (
+            ("missing-spec", None),
+            ("missing-loader", missing_loader_spec),
+        ):
+            with self.subTest(spec=label):
+                with mock.patch.object(
+                    importlib.util,
+                    "spec_from_file_location",
+                    return_value=spec,
+                ):
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        re.escape(
+                            "unable to load Python correctness scorecard from "
+                            f"{report_path}"
+                        ),
+                    ):
+                        scorecard_io.load_python_dict_attribute(
+                            report_path,
+                            module_name_prefix="_scorecard_io_contract",
+                            attribute_name="REPORT",
+                            load_error_label="Python correctness scorecard",
+                            missing_error_label="Python correctness scorecard module",
+                            type_error_label="correctness scorecard",
+                        )
+
     def test_scorecard_report_round_trips_for_supported_extensions(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = pathlib.Path(temp_dir)
