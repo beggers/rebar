@@ -8,6 +8,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
+from types import ModuleType
 from typing import Any
 
 
@@ -24,6 +25,18 @@ def duplicate_items(counter: Counter[str]) -> list[str]:
 
 def duplicate_string_ids(items: Iterable[str]) -> tuple[str, ...]:
     return tuple(duplicate_items(Counter(items)))
+
+
+def declared_string_constants_by_suffix(
+    module: ModuleType,
+    *,
+    name_suffix: str,
+) -> dict[str, str]:
+    return {
+        name: value
+        for name, value in vars(module).items()
+        if name.endswith(name_suffix) and isinstance(value, str)
+    }
 
 
 def run_harness_cli(

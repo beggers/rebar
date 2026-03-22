@@ -7,7 +7,6 @@ import platform
 import pprint
 import sys
 from dataclasses import dataclass
-from types import ModuleType
 from typing import Any, Iterable, Mapping, Sequence
 
 
@@ -87,20 +86,6 @@ def select_published_subset_paths(
     except KeyError as exc:
         raise ValueError(f"{unknown_selector_error_prefix} {selector!r}") from exc
     return tuple(root / filename for filename in selected_filenames)
-
-
-def declared_string_constants_by_suffix(
-    module: ModuleType,
-    *,
-    name_suffix: str,
-) -> dict[str, str]:
-    """Return declared string-valued module constants with the requested suffix."""
-
-    return {
-        name: value
-        for name, value in vars(module).items()
-        if name.endswith(name_suffix) and isinstance(value, str)
-    }
 
 
 class _IndexLike:

@@ -27,10 +27,9 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from rebar_harness.scorecard_io import (
-    declared_string_constants_by_suffix,
     ordered_published_subset_filenames,
 )
-from tests.conftest import duplicate_items
+from tests.conftest import declared_string_constants_by_suffix, duplicate_items
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,

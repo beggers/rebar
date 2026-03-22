@@ -38,10 +38,14 @@ from rebar_harness.benchmarks import (
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
-    declared_string_constants_by_suffix,
     ordered_published_subset_filenames,
 )
-from tests.conftest import REPO_ROOT, duplicate_items, run_harness_scorecard
+from tests.conftest import (
+    REPO_ROOT,
+    declared_string_constants_by_suffix,
+    duplicate_items,
+    run_harness_scorecard,
+)
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
