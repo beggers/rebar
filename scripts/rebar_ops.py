@@ -160,6 +160,17 @@ def relpath(path: Path) -> str:
         return str(path)
 
 
+def runtime_path_override_or_artifact_default(
+    raw: Any,
+    *,
+    artifact_root: Path,
+    default_name: str,
+) -> Path:
+    if raw in {None, ""}:
+        return artifact_root / default_name
+    return resolve_repo_path(raw)
+
+
 def runtime_paths(config: dict[str, Any]) -> dict[str, Path]:
     runtime_cfg = config.get("runtime", {})
     reporting_cfg = config.get("reporting", {})
@@ -170,14 +181,20 @@ def runtime_paths(config: dict[str, Any]) -> dict[str, Path]:
         "runs_root": artifact_root / "runs",
         "cycle_lock": artifact_root / "cycle.lock.d",
         "loop_state": artifact_root / "loop_state.json",
-        "task_state": resolve_repo_path(
-            recovery_cfg.get("state_path", ".rebar/runtime/task_state.json")
+        "task_state": runtime_path_override_or_artifact_default(
+            recovery_cfg.get("state_path"),
+            artifact_root=artifact_root,
+            default_name="task_state.json",
         ),
-        "dashboard_json": resolve_repo_path(
-            reporting_cfg.get("status_json_path", ".rebar/runtime/dashboard.json")
+        "dashboard_json": runtime_path_override_or_artifact_default(
+            reporting_cfg.get("status_json_path"),
+            artifact_root=artifact_root,
+            default_name="dashboard.json",
         ),
-        "dashboard_markdown": resolve_repo_path(
-            reporting_cfg.get("status_markdown_path", ".rebar/runtime/dashboard.md")
+        "dashboard_markdown": runtime_path_override_or_artifact_default(
+            reporting_cfg.get("status_markdown_path"),
+            artifact_root=artifact_root,
+            default_name="dashboard.md",
         ),
         "loop_log": artifact_root / "loop.log",
     }
