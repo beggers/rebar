@@ -144,6 +144,11 @@ BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID = "bundle-loader-contract-mixed"
 BUNDLE_LOADER_CONTRACT_DUPLICATE_FILENAME = "bundle_loader_contract_duplicate.py"
 BUNDLE_LOADER_CONTRACT_DUPLICATE_MANIFEST_ID = "bundle-loader-contract-duplicate"
 BUNDLE_LOADER_CONTRACT_DUPLICATE_CASE_ID = "bundle-loader-contract-duplicate-case"
+ZERO_FLAG_KEYWORD_CARRIER_FILENAME = "zero_flag_keyword_carrier_contract.py"
+ZERO_FLAG_KEYWORD_CARRIER_MANIFEST_ID = "zero-flag-keyword-carrier-contract"
+ZERO_FLAG_KEYWORD_NOFLAG_CASE_ID = "zero-flag-keyword-noflag"
+ZERO_FLAG_KEYWORD_INT_ZERO_CASE_ID = "zero-flag-keyword-int-zero"
+ZERO_FLAG_KEYWORD_BOOL_FALSE_CASE_ID = "zero-flag-keyword-bool-false"
 
 
 def _write_bundle_loader_contract_fixture_modules(
@@ -256,6 +261,74 @@ def _write_bundle_loader_contract_duplicate_fixture_module(
         }}
         """,
     )
+
+
+def _write_zero_flag_keyword_carrier_fixture_module(
+    tmp_path: pathlib.Path,
+) -> pathlib.Path:
+    return _write_fixture_module(
+        tmp_path,
+        ZERO_FLAG_KEYWORD_CARRIER_FILENAME,
+        f"""
+        import re
+
+        MANIFEST = {{
+            "schema_version": 1,
+            "manifest_id": "{ZERO_FLAG_KEYWORD_CARRIER_MANIFEST_ID}",
+            "layer": "module_workflow",
+            "suite_id": "zero.flag.keyword.carrier.contract",
+            "cases": [
+                {{
+                    "id": "{ZERO_FLAG_KEYWORD_NOFLAG_CASE_ID}",
+                    "operation": "module_call",
+                    "helper": "compile",
+                    "pattern": "(?P<word>abc)",
+                    "text_model": "str",
+                    "use_compiled_pattern": True,
+                    "kwargs": {{
+                        "flags": re.NOFLAG,
+                    }},
+                }},
+                {{
+                    "id": "{ZERO_FLAG_KEYWORD_INT_ZERO_CASE_ID}",
+                    "operation": "module_call",
+                    "helper": "compile",
+                    "pattern": "(?P<word>abc)",
+                    "text_model": "str",
+                    "use_compiled_pattern": True,
+                    "kwargs": {{
+                        "flags": 0,
+                    }},
+                }},
+                {{
+                    "id": "{ZERO_FLAG_KEYWORD_BOOL_FALSE_CASE_ID}",
+                    "operation": "module_call",
+                    "helper": "compile",
+                    "pattern": "(?P<word>abc)",
+                    "text_model": "str",
+                    "use_compiled_pattern": True,
+                    "kwargs": {{
+                        "flags": False,
+                    }},
+                }},
+            ],
+        }}
+        """,
+    )
+
+
+def _assert_zero_flag_keyword_carrier(
+    case: FixtureCase,
+    *,
+    expected_type: type[object],
+) -> None:
+    source_value = case.source_kwargs["flags"]
+    materialized_value = case.kwargs["flags"]
+
+    assert type(source_value) is expected_type
+    assert type(materialized_value) is expected_type
+    assert source_value == 0
+    assert materialized_value == 0
 
 
 def _load_published_fixture_bundle(
@@ -3740,6 +3813,58 @@ def test_selected_fixture_bundle_rejects_duplicate_fixture_case_ids(
             selected_case_ids=selected_case_ids,
             pattern_extractor=str_case_pattern,
         )
+
+
+def test_load_fixture_manifest_preserves_distinct_zero_flag_keyword_carriers(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_zero_flag_keyword_carrier_fixture_module(tmp_path)
+    manifest = load_fixture_manifest(fixture_path)
+    cases_by_id = {case.case_id: case for case in manifest.cases}
+
+    assert tuple(cases_by_id) == (
+        ZERO_FLAG_KEYWORD_NOFLAG_CASE_ID,
+        ZERO_FLAG_KEYWORD_INT_ZERO_CASE_ID,
+        ZERO_FLAG_KEYWORD_BOOL_FALSE_CASE_ID,
+    )
+    _assert_zero_flag_keyword_carrier(
+        cases_by_id[ZERO_FLAG_KEYWORD_NOFLAG_CASE_ID],
+        expected_type=re.RegexFlag,
+    )
+    _assert_zero_flag_keyword_carrier(
+        cases_by_id[ZERO_FLAG_KEYWORD_INT_ZERO_CASE_ID],
+        expected_type=int,
+    )
+    _assert_zero_flag_keyword_carrier(
+        cases_by_id[ZERO_FLAG_KEYWORD_BOOL_FALSE_CASE_ID],
+        expected_type=bool,
+    )
+
+
+def test_selected_fixture_bundle_preserves_zero_flag_keyword_carriers_and_order(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_zero_flag_keyword_carrier_fixture_module(tmp_path)
+    selected_case_ids = (
+        ZERO_FLAG_KEYWORD_BOOL_FALSE_CASE_ID,
+        ZERO_FLAG_KEYWORD_NOFLAG_CASE_ID,
+    )
+    bundle = build_selected_fixture_bundle(
+        fixture_path,
+        selected_case_ids=selected_case_ids,
+        pattern_extractor=case_pattern,
+    )
+
+    assert bundle.expected_case_ids == frozenset(selected_case_ids)
+    assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
+    _assert_zero_flag_keyword_carrier(bundle.cases[0], expected_type=bool)
+    _assert_zero_flag_keyword_carrier(bundle.cases[1], expected_type=re.RegexFlag)
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=fixture_path,
+        expected_ordered_case_ids=selected_case_ids,
+    )
 
 
 @pytest.mark.parametrize(
