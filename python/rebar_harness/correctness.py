@@ -22,6 +22,7 @@ from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     build_published_subset_registry,
     build_scorecard_report_descriptor,
+    load_unique_record_collection,
     load_python_dict_attribute,
     materialize_descriptor_value,
     select_published_subset_paths,
@@ -544,30 +545,21 @@ def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
 
 
 def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> list[FixtureManifest]:
-    manifests: list[FixtureManifest] = []
-    seen_manifest_ids: dict[str, pathlib.Path] = {}
-    seen_case_ids: dict[str, pathlib.Path] = {}
-    for path in paths:
-        manifest = load_fixture_manifest(path)
-        prior_manifest_path = seen_manifest_ids.get(manifest.manifest_id)
-        if prior_manifest_path is not None:
-            raise ValueError(
-                "duplicate fixture manifest id "
-                f"{manifest.manifest_id!r} in {prior_manifest_path} and {manifest.path}"
-            )
-        seen_manifest_ids[manifest.manifest_id] = manifest.path
-
-        for case in manifest.cases:
-            prior_case_path = seen_case_ids.get(case.case_id)
-            if prior_case_path is not None:
-                raise ValueError(
-                    "duplicate fixture case id "
-                    f"{case.case_id!r} in {prior_case_path} and {manifest.path}"
-                )
-            seen_case_ids[case.case_id] = manifest.path
-
-        manifests.append(manifest)
-    return manifests
+    return load_unique_record_collection(
+        paths,
+        load_record=load_fixture_manifest,
+        record_id=lambda manifest: manifest.manifest_id,
+        record_path=lambda manifest: manifest.path,
+        duplicate_record_error=lambda manifest_id, prior_path, current_path: (
+            "duplicate fixture manifest id "
+            f"{manifest_id!r} in {prior_path} and {current_path}"
+        ),
+        nested_ids=lambda manifest: (case.case_id for case in manifest.cases),
+        duplicate_nested_error=lambda case_id, prior_path, current_path: (
+            "duplicate fixture case id "
+            f"{case_id!r} in {prior_path} and {current_path}"
+        ),
+    )
 
 
 @lru_cache(maxsize=1)

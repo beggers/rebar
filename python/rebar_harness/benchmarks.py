@@ -29,6 +29,7 @@ from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     build_published_subset_registry,
     build_scorecard_report_descriptor,
+    load_unique_record_collection,
     load_python_dict_attribute,
     materialize_descriptor_value,
     select_published_subset_paths,
@@ -1132,25 +1133,21 @@ def load_manifest(path: pathlib.Path) -> BenchmarkManifest:
 
 
 def load_manifests(paths: list[pathlib.Path]) -> list[BenchmarkManifest]:
-    manifests: list[BenchmarkManifest] = []
-    manifest_ids: set[str] = set()
-    workload_ids: set[str] = set()
-
-    for path in paths:
-        manifest = load_manifest(path)
-        manifest_id = manifest.manifest_id
-        if manifest_id in manifest_ids:
-            raise ValueError(f"duplicate benchmark manifest id {manifest_id!r}")
-        manifest_ids.add(manifest_id)
-
-        for workload in manifest.workloads:
-            if workload.workload_id in workload_ids:
-                raise ValueError(f"duplicate benchmark workload id {workload.workload_id!r}")
-            workload_ids.add(workload.workload_id)
-
-        manifests.append(manifest)
-
-    return manifests
+    return load_unique_record_collection(
+        paths,
+        load_record=load_manifest,
+        record_id=lambda manifest: manifest.manifest_id,
+        record_path=lambda manifest: manifest.path,
+        duplicate_record_error=lambda manifest_id, _prior_path, _current_path: (
+            f"duplicate benchmark manifest id {manifest_id!r}"
+        ),
+        nested_ids=lambda manifest: (
+            workload.workload_id for workload in manifest.workloads
+        ),
+        duplicate_nested_error=lambda workload_id, _prior_path, _current_path: (
+            f"duplicate benchmark workload id {workload_id!r}"
+        ),
+    )
 
 
 @cache

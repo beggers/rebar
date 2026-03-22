@@ -7,7 +7,10 @@ import platform
 import pprint
 import sys
 from dataclasses import dataclass
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Mapping, Sequence, TypeVar
+
+
+_RecordT = TypeVar("_RecordT")
 
 
 def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
@@ -86,6 +89,52 @@ def select_published_subset_paths(
     except KeyError as exc:
         raise ValueError(f"{unknown_selector_error_prefix} {selector!r}") from exc
     return tuple(root / filename for filename in selected_filenames)
+
+
+def load_unique_record_collection(
+    paths: Iterable[pathlib.Path],
+    *,
+    load_record: Callable[[pathlib.Path], _RecordT],
+    record_id: Callable[[_RecordT], str],
+    record_path: Callable[[_RecordT], pathlib.Path],
+    duplicate_record_error: Callable[[str, pathlib.Path, pathlib.Path], str],
+    nested_ids: Callable[[_RecordT], Iterable[str]],
+    duplicate_nested_error: Callable[[str, pathlib.Path, pathlib.Path], str],
+) -> list[_RecordT]:
+    """Load a record collection while enforcing unique top-level and nested ids."""
+
+    records: list[_RecordT] = []
+    seen_record_paths: dict[str, pathlib.Path] = {}
+    seen_nested_paths: dict[str, pathlib.Path] = {}
+    for path in paths:
+        record = load_record(path)
+        current_path = record_path(record)
+        current_record_id = record_id(record)
+        prior_record_path = seen_record_paths.get(current_record_id)
+        if prior_record_path is not None:
+            raise ValueError(
+                duplicate_record_error(
+                    current_record_id,
+                    prior_record_path,
+                    current_path,
+                )
+            )
+        seen_record_paths[current_record_id] = current_path
+
+        for nested_id in nested_ids(record):
+            prior_nested_path = seen_nested_paths.get(nested_id)
+            if prior_nested_path is not None:
+                raise ValueError(
+                    duplicate_nested_error(
+                        nested_id,
+                        prior_nested_path,
+                        current_path,
+                    )
+                )
+            seen_nested_paths[nested_id] = current_path
+
+        records.append(record)
+    return records
 
 
 class _IndexLike:
