@@ -1,6 +1,6 @@
 # RBR-0976: Collapse pattern wrong-text-model publication owner-path mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -133,3 +133,6 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases or pattern-search-str-pattern-on-bytes-string or pattern-match-bytes-pattern-on-str-string or pattern-fullmatch-str-pattern-on-bytes-string or pattern-split-str-pattern-on-bytes-string or pattern-sub-str-pattern-on-bytes-string or pattern-subn-bytes-pattern-on-str-string'` currently passes (`19 passed, 1414 deselected`);
   - the publication-count probe in Verification currently passes (`ok 6`), proving the live helper stack already resolves to the expected 6-row surface with the current text-model and helper counts; and
   - `rg -n '^_PATTERN_WRONG_TEXT_MODEL_CASE_IDS =|^def _published_pattern_type_error_fixture_cases\\(|^def _selected_pattern_type_error_direct_cases\\(' tests/python/test_module_workflow_parity_suite.py` currently finds the dedicated wrong-text-model mirror stack at lines `2945`, `2955`, and `2970`, while the structural literal-count probe in Verification currently fails because the same owner path is still retyped in both the helper stack and the assertion body.
+
+## Completion
+- 2026-03-22: Replaced the wrong-text-model mirror stack with one file-local `_PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS` tuple in `tests/python/test_module_workflow_parity_suite.py`, deleted `_PATTERN_WRONG_TEXT_MODEL_CASE_IDS` plus the two one-off selector helpers, and derived the published fixture order, `str`/`bytes` subsets, and selected direct-case order from the canonical owner-path rows. Verified with the targeted pytest selector, an owner-path publication-count probe (`ok 6`), the no-match `rg` check for the removed mirror stack, and the raw literal-count probe from this task.

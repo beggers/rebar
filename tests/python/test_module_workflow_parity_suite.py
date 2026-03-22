@@ -1489,6 +1489,44 @@ _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS = (
         ],
     ),
 )
+_PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS = (
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-search-str-pattern-on-bytes-string",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-search-str-pattern-on-bytes-string"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-match-bytes-pattern-on-str-string",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-match-bytes-pattern-on-str-string"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-fullmatch-str-pattern-on-bytes-string",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-fullmatch-str-pattern-on-bytes-string"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-split-str-pattern-on-bytes-string",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-split-str-pattern-on-bytes-string"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-sub-str-pattern-on-bytes-string",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-sub-str-pattern-on-bytes-string"
+        ],
+    ),
+    PatternTypeErrorOwnerPathRow(
+        fixture_case_id="workflow-pattern-subn-bytes-pattern-on-str-string",
+        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
+            "pattern-subn-bytes-pattern-on-str-string"
+        ],
+    ),
+)
 PATTERN_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES = (
     pytest.param(
         "sub",
@@ -2942,44 +2980,6 @@ def _selected_pattern_type_error_owner_path_direct_cases(
 _PATTERN_KEYWORD_ERROR_CASE_IDS = _pattern_type_error_owner_path_direct_case_ids(
     _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
 )
-_PATTERN_WRONG_TEXT_MODEL_CASE_IDS = (
-    "pattern-search-str-pattern-on-bytes-string",
-    "pattern-match-bytes-pattern-on-str-string",
-    "pattern-fullmatch-str-pattern-on-bytes-string",
-    "pattern-split-str-pattern-on-bytes-string",
-    "pattern-sub-str-pattern-on-bytes-string",
-    "pattern-subn-bytes-pattern-on-str-string",
-)
-
-
-def _published_pattern_type_error_fixture_cases(
-    case_ids: tuple[str, ...],
-) -> tuple[FixtureCase, ...]:
-    direct_signatures = {
-        _pattern_helper_error_direct_signature(case)
-        for case in BOUND_PATTERN_TYPE_ERROR_CASES
-        if case.case_id in case_ids
-    }
-    return tuple(
-        case
-        for case in PATTERN_CASES
-        if _pattern_keyword_fixture_signature(case) in direct_signatures
-    )
-
-
-def _selected_pattern_type_error_direct_cases(
-    published_fixture_cases: tuple[FixtureCase, ...],
-    case_ids: tuple[str, ...],
-):
-    direct_cases_by_signature = {
-        _pattern_helper_error_direct_signature(case): case
-        for case in BOUND_PATTERN_TYPE_ERROR_CASES
-        if case.case_id in case_ids
-    }
-    return tuple(
-        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
-    )
 
 
 # Keep the representative fixture-backed rows small, then use a compact matrix
@@ -5054,12 +5054,12 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
 
 def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_type_error_fixture_cases(
-        _PATTERN_WRONG_TEXT_MODEL_CASE_IDS
+    published_fixture_cases = _published_pattern_type_error_owner_path_fixture_cases(
+        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_pattern_type_error_direct_cases(
+    selected_direct_cases = _selected_pattern_type_error_owner_path_direct_cases(
+        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
         published_fixture_cases,
-        _PATTERN_WRONG_TEXT_MODEL_CASE_IDS,
     )
 
     assert tuple(
@@ -5068,11 +5068,9 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
             published_fixture_cases,
             "str",
         )
-    ) == (
-        "workflow-pattern-search-str-pattern-on-bytes-string",
-        "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
-        "workflow-pattern-split-str-pattern-on-bytes-string",
-        "workflow-pattern-sub-str-pattern-on-bytes-string",
+    ) == _pattern_type_error_owner_path_fixture_case_ids(
+        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
+        "str",
     )
     assert tuple(
         case.case_id
@@ -5080,31 +5078,25 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
             published_fixture_cases,
             "bytes",
         )
-    ) == (
-        "workflow-pattern-match-bytes-pattern-on-str-string",
-        "workflow-pattern-subn-bytes-pattern-on-str-string",
+    ) == _pattern_type_error_owner_path_fixture_case_ids(
+        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
+        "bytes",
     )
     assert tuple(case.case_id for case in published_fixture_cases) == (
-        "workflow-pattern-search-str-pattern-on-bytes-string",
-        "workflow-pattern-match-bytes-pattern-on-str-string",
-        "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
-        "workflow-pattern-split-str-pattern-on-bytes-string",
-        "workflow-pattern-sub-str-pattern-on-bytes-string",
-        "workflow-pattern-subn-bytes-pattern-on-str-string",
+        _pattern_type_error_owner_path_fixture_case_ids(
+            _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
+        )
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
-        "pattern-search-str-pattern-on-bytes-string",
-        "pattern-match-bytes-pattern-on-str-string",
-        "pattern-fullmatch-str-pattern-on-bytes-string",
-        "pattern-split-str-pattern-on-bytes-string",
-        "pattern-sub-str-pattern-on-bytes-string",
-        "pattern-subn-bytes-pattern-on-str-string",
+        _pattern_type_error_owner_path_direct_case_ids(
+            _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
+        )
     )
     assert len(published_fixture_cases) == 6
+    assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
         {"str": 4, "bytes": 2}
     )
-    assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.helper for case in published_fixture_cases) == Counter(
         {
             "search": 1,
