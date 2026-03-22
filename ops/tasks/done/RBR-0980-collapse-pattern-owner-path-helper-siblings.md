@@ -1,6 +1,6 @@
 # RBR-0980: Collapse pattern owner-path helper siblings
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -96,3 +96,8 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases or module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases or pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on'` currently passes (`4 passed, 1435 deselected`);
   - the owner-path row probe in Verification currently passes (`ok`), confirming the canonical success, keyword-error, and wrong-text-model row tables already preserve the live 27-row, 10-row, and 6-row slices; and
   - `rg -n '^def _published_pattern_keyword_fixture_cases\\(|^def _pattern_type_error_owner_path_direct_case_ids\\(|^def _published_pattern_type_error_owner_path_fixture_cases\\(|^def _selected_pattern_type_error_owner_path_direct_cases\\(' tests/python/test_module_workflow_parity_suite.py` currently finds the split helper stack at lines `2881`, `2890`, `2896`, and `2908`, while the success publication test still carries its own local `direct_cases_by_signature` mirror at line `4876`.
+
+## Completion
+- Replaced the split success-only and type-error-only pattern owner-path selector helpers in `tests/python/test_module_workflow_parity_suite.py` with one smaller shared row-based helper pair that selects fixture cases by `fixture_case_id` and direct cases directly from the canonical owner-path rows.
+- Switched the success, keyword-error, and wrong-text-model publication tests over to that shared helper surface while preserving the live row counts, text-model/helper splits, and direct/fixture ordering contracts.
+- Verified the targeted parity pytest slice passes, the owner-path row probe still reports the expected `27`, `10`, and `6` row tables, and the structural `rg` check returns no matches for the removed helper definitions.

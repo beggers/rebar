@@ -2842,86 +2842,23 @@ def _published_pattern_positional_indexlike_fixture_cases() -> tuple[FixtureCase
     )
 
 
-def _pattern_keyword_direct_signature(
-    case: PatternKeywordCallCase,
-) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-    return (
-        case.helper,
-        case.pattern,
-        tuple(case.args),
-        _workflow_keyword_kwargs_signature(case.kwargs),
-        "bytes" if isinstance(case.pattern, bytes) else "str",
-    )
-
-
-def _pattern_keyword_fixture_signature(
-    case: FixtureCase,
-) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-    return (
-        case.helper,
-        case_pattern(case),
-        tuple(case.args),
-        _workflow_keyword_kwargs_signature(case.kwargs),
-        case.text_model,
-    )
-
-
-def _pattern_helper_error_direct_signature(
-    case: PatternHelperErrorCase,
-) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-    return (
-        case.helper,
-        case.pattern,
-        tuple(case.args),
-        _workflow_keyword_kwargs_signature(case.kwargs),
-        "bytes" if isinstance(case.pattern, bytes) else "str",
-    )
-
-
-def _published_pattern_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
-    direct_signatures = {
-        _pattern_keyword_direct_signature(case) for case in PATTERN_KEYWORD_CALL_CASES
-    }
-    return tuple(
-        case
-        for case in PATTERN_CASES
-        if _pattern_keyword_fixture_signature(case) in direct_signatures
-    )
-def _pattern_type_error_owner_path_direct_case_ids(
-    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
-) -> tuple[str, ...]:
-    return tuple(row.direct_case.case_id for row in rows)
-
-
-def _published_pattern_type_error_owner_path_fixture_cases(
-    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
+def _published_pattern_owner_path_fixture_cases(
+    rows: tuple[
+        PatternKeywordPublicationOwnerPathRow | PatternTypeErrorOwnerPathRow,
+        ...,
+    ],
 ) -> tuple[FixtureCase, ...]:
-    fixture_cases_by_signature = {
-        _pattern_keyword_fixture_signature(case): case for case in PATTERN_CASES
-    }
-    return tuple(
-        fixture_cases_by_signature[_pattern_helper_error_direct_signature(row.direct_case)]
-        for row in rows
-    )
+    fixture_cases_by_id = {case.case_id: case for case in PATTERN_CASES}
+    return tuple(fixture_cases_by_id[row.fixture_case_id] for row in rows)
 
 
-def _selected_pattern_type_error_owner_path_direct_cases(
-    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
-    published_fixture_cases: tuple[FixtureCase, ...],
-) -> tuple[PatternHelperErrorCase, ...]:
-    direct_cases_by_signature = {
-        _pattern_helper_error_direct_signature(row.direct_case): row.direct_case
-        for row in rows
-    }
-    return tuple(
-        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
-    )
-
-
-_PATTERN_KEYWORD_ERROR_CASE_IDS = _pattern_type_error_owner_path_direct_case_ids(
-    _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
-)
+def _selected_pattern_owner_path_direct_cases(
+    rows: tuple[
+        PatternKeywordPublicationOwnerPathRow | PatternTypeErrorOwnerPathRow,
+        ...,
+    ],
+) -> tuple[PatternKeywordCallCase | PatternHelperErrorCase, ...]:
+    return tuple(row.direct_case for row in rows)
 
 
 # Keep the representative fixture-backed rows small, then use a compact matrix
@@ -4873,14 +4810,11 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
 
 def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
 ) -> None:
-    direct_cases_by_signature = {
-        _pattern_keyword_direct_signature(case): case
-        for case in PATTERN_KEYWORD_CALL_CASES
-    }
-    published_fixture_cases = _published_pattern_keyword_fixture_cases()
-    selected_direct_cases = tuple(
-        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
+    published_fixture_cases = _published_pattern_owner_path_fixture_cases(
+        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+    )
+    selected_direct_cases = _selected_pattern_owner_path_direct_cases(
+        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
 
     assert tuple(
@@ -4952,12 +4886,11 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
 
 def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_type_error_owner_path_fixture_cases(
+    published_fixture_cases = _published_pattern_owner_path_fixture_cases(
         _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_pattern_type_error_owner_path_direct_cases(
+    selected_direct_cases = _selected_pattern_owner_path_direct_cases(
         _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
-        published_fixture_cases,
     )
 
     assert tuple(
@@ -4986,9 +4919,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
         )
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
-        _pattern_type_error_owner_path_direct_case_ids(
-            _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
-        )
+        tuple(row.direct_case.case_id for row in _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS)
     )
     assert len(published_fixture_cases) == 10
     assert len(selected_direct_cases) == len(published_fixture_cases)
@@ -5017,12 +4948,11 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
 
 def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_type_error_owner_path_fixture_cases(
+    published_fixture_cases = _published_pattern_owner_path_fixture_cases(
         _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
     )
-    selected_direct_cases = _selected_pattern_type_error_owner_path_direct_cases(
+    selected_direct_cases = _selected_pattern_owner_path_direct_cases(
         _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
-        published_fixture_cases,
     )
 
     assert tuple(
@@ -5051,8 +4981,9 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
         )
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
-        _pattern_type_error_owner_path_direct_case_ids(
-            _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
+        tuple(
+            row.direct_case.case_id
+            for row in _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
         )
     )
     assert len(published_fixture_cases) == 6
