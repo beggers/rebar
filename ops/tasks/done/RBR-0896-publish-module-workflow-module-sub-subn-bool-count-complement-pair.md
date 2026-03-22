@@ -1,6 +1,6 @@
 # RBR-0896: Publish the module-workflow module `sub()`/`subn()` bool-count complement pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -73,3 +73,8 @@ Created: 2026-03-22
   - direct publication probes in this run confirmed `workflow-module-sub-count-bool-false-str` and `workflow-module-subn-count-bool-true-bytes` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `reports/correctness/latest.py`, and `reports/benchmarks/latest.py`;
   - the current owner path already publishes the adjacent `workflow-module-sub-count-bool-true-str` and `workflow-module-subn-count-bool-false-bytes` rows plus the exact `sub()` / `subn()` keyword and `__index__` neighbors, keeping this follow-on bounded to the missing bool complements rather than a new helper family; and
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and `reports/benchmarks/latest.py` already carry the adjacent `module-sub-count-bool-keyword-warm-str` and `module-subn-count-bool-keyword-purged-bytes` workloads on the shared collection/replacement owner path, so this task can stay correctness-only without inventing another benchmark manifest first.
+- 2026-03-22 feature-implementation completed the bounded publication slice on the existing owner path:
+  - added `workflow-module-sub-count-bool-false-str` and `workflow-module-subn-count-bool-true-bytes` to `tests/conformance/fixtures/module_workflow_surface.py`;
+  - aligned the direct-case/publication assertions in `tests/python/test_module_workflow_parity_suite.py` and the representative-case coverage in `tests/conformance/test_combined_correctness_scorecards.py`;
+  - republished `reports/correctness/latest.py`, which now records `1524` total / `1524` passed / `0` unimplemented cases across `114` manifests, with `module.workflow` at `150` total, `module.workflow.str` at `86`, `module.workflow.bytes` at `64`, `module.workflow.module_call` at `83`, and `module.workflow.pattern_call` unchanged at `55`; and
+  - verified with the task-local keyword-helper pytest selector (`165 passed, 1067 deselected`), the narrowed module-workflow harness report (`150/150`), the published scorecard refresh (`1524/1524`), and the full direct gates (`1275 passed, 1 skipped, 2188 subtests passed`).

@@ -1594,17 +1594,17 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     ModuleKeywordCallCase(
-        case_id="module-sub-count-bool-true-str",
-        helper="sub",
-        args=("abc", "x", "abcabc"),
-        kwargs={"count": True},
-        result_kind="value",
-    ),
-    ModuleKeywordCallCase(
         case_id="module-sub-count-bool-false-str",
         helper="sub",
         args=("abc", "x", "abcabc"),
         kwargs={"count": False},
+        result_kind="value",
+    ),
+    ModuleKeywordCallCase(
+        case_id="module-sub-count-bool-true-str",
+        helper="sub",
+        args=("abc", "x", "abcabc"),
+        kwargs={"count": True},
         result_kind="value",
     ),
     ModuleKeywordCallCase(
@@ -3089,9 +3089,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 148
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 150
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 85, "bytes": 63}
+        {"str": 86, "bytes": 64}
     )
     assert len(PATTERN_CASES) == 55
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -3106,7 +3106,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 4,
         }
     )
-    assert len(MODULE_CALL_CASES) == 81
+    assert len(MODULE_CALL_CASES) == 83
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 20,
@@ -3116,8 +3116,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "split": 12,
             "findall": 2,
             "finditer": 2,
-            "sub": 13,
-            "subn": 11,
+            "sub": 14,
+            "subn": 12,
             "escape": 2,
         }
     )
@@ -3440,6 +3440,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-fullmatch-flags-keyword-str",
         "workflow-module-sub-count-keyword-str",
         "workflow-module-sub-count-indexlike-str",
+        "workflow-module-sub-count-bool-false-str",
         "workflow-module-sub-count-bool-true-str",
     )
     assert tuple(
@@ -3456,6 +3457,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-subn-count-keyword-bytes",
         "workflow-module-subn-count-indexlike-bytes",
         "workflow-module-subn-count-bool-false-bytes",
+        "workflow-module-subn-count-bool-true-bytes",
     )
     assert tuple(
         case.case_id for case in published_fixture_cases
@@ -3468,10 +3470,12 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "workflow-module-split-maxsplit-bool-false-bytes",
         "workflow-module-sub-count-keyword-str",
         "workflow-module-sub-count-indexlike-str",
+        "workflow-module-sub-count-bool-false-str",
         "workflow-module-sub-count-bool-true-str",
         "workflow-module-subn-count-keyword-bytes",
         "workflow-module-subn-count-indexlike-bytes",
         "workflow-module-subn-count-bool-false-bytes",
+        "workflow-module-subn-count-bool-true-bytes",
     )
     assert tuple(
         case.case_id for case in selected_direct_cases
@@ -3484,10 +3488,16 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         "module-split-maxsplit-bool-false-bytes",
         "module-sub-count-keyword-str",
         "module-sub-count-indexlike-str",
+        "module-sub-count-bool-false-str",
         "module-sub-count-bool-true-str",
         "module-subn-count-keyword-bytes",
         "module-subn-count-indexlike-bytes",
         "module-subn-count-bool-false-bytes",
+        "module-subn-count-bool-true-bytes",
+    )
+    assert len(published_fixture_cases) == 14
+    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
+        {"str": 6, "bytes": 8}
     )
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.helper for case in published_fixture_cases) == (
@@ -3497,8 +3507,8 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
                 "match": 1,
                 "fullmatch": 1,
                 "split": 3,
-                "sub": 3,
-                "subn": 3,
+                "sub": 4,
+                "subn": 4,
             }
         )
     )
@@ -3538,8 +3548,8 @@ def test_module_keyword_direct_cases_keep_bool_count_complements_balanced_for_fo
             (("count", "bool", True),),
         }
     ) == (
-        ("module-sub-count-bool-true-str", "sub", "abc", (("count", "bool", True),)),
         ("module-sub-count-bool-false-str", "sub", "abc", (("count", "bool", False),)),
+        ("module-sub-count-bool-true-str", "sub", "abc", (("count", "bool", True),)),
         (
             "module-subn-count-bool-false-bytes",
             "subn",

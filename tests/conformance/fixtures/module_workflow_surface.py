@@ -1280,6 +1280,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-count-bool-false-str",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": False
+      },
+      "categories": ["workflow", "sub", "literal", "str", "count", "bool"],
+      "notes": [
+        "Publishes the raw module-level sub() count=False keyword complement beside the already published count=True spelling on the shared module-workflow owner path without dumping the broader coercion matrix."
+      ]
+    },
+    {
       "id": "workflow-module-sub-count-bool-true-str",
       "operation": "module_call",
       "family": "module_sub_workflow",
@@ -1373,6 +1388,33 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "count", "bool"],
       "notes": [
         "Publishes the bounded raw module-level subn() count=False keyword workflow on bytes payloads alongside the adjacent raw module bool-normalization rows."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-bool-true-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": True
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "count", "bool"],
+      "notes": [
+        "Publishes the raw module-level subn() count=True keyword complement beside the already published count=False spelling on the shared module-workflow owner path without dumping the broader coercion matrix."
       ]
     },
     {
