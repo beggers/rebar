@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1537 cases across 114 manifests, with all 1537 passing in the current slice; the benchmark publication covers 882/882 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model slice pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it. |
-| Work queue | `0` ready, `0` in progress, `930` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1537 cases across 114 manifests, with all 1537 passing in the current slice; the benchmark publication covers 885/885 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model benchmark slice on the existing `collection_replacement_boundary.py` owner path, pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it. |
+| Work queue | `0` ready, `0` in progress, `932` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1537 cases across 114 manifests, with all 1537 passing in the current slice; the benchmark publication covers 882/882 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1537 cases across 114 manifests, with all 1537 passing in the current slice; the benchmark publication covers 885/885 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `882` |
-| Workloads with real `rebar` timings | `882` |
+| Published workloads | `885` |
+| Workloads with real `rebar` timings | `885` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model slice pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it.
+- The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model benchmark slice on the existing `collection_replacement_boundary.py` owner path, pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 882 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 885 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
