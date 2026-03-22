@@ -1,8 +1,9 @@
 # RBR-0901: Collapse the grouped-capture published-case flattening mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `PUBLISHED_CASES` flattening tuple from `tests/python/test_grouped_capture_parity_suite.py`, so the grouped-capture owner suite derives its compile, module, pattern, and case-id lookup surfaces directly from the canonical published fixture bundles it already loads.
@@ -48,3 +49,11 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` currently passes (`432 passed in 0.31s`);
   - `bash -lc "! rg -n '^PUBLISHED_CASES = ' tests/python/test_grouped_capture_parity_suite.py"` currently fails exactly on the remaining mirror at line `134`; and
   - `tests/python/test_grouped_capture_parity_suite.py` already keeps `FIXTURE_BUNDLES` plus `FIXTURE_BUNDLES_BY_MANIFEST_ID` as the canonical published grouped-capture ownership path, so the flattened `PUBLISHED_CASES` tuple is a redundant second representation rather than missing owner data.
+
+## Completion
+- Removed the `PUBLISHED_CASES` tuple mirror from `tests/python/test_grouped_capture_parity_suite.py`.
+- Added `_iter_fixture_cases()` and widened `_compile_cases()` to consume an iterable so the compile, module, pattern, and case-id selectors now derive directly from `FIXTURE_BUNDLES` without another cached published-case layer.
+- Kept the published grouped-capture frontier unchanged by preserving the bundle-owned case order for `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `CASES_BY_ID`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py`
+  - `bash -lc "! rg -n '^PUBLISHED_CASES = ' tests/python/test_grouped_capture_parity_suite.py"`

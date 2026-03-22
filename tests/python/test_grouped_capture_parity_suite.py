@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 import re
 
@@ -113,7 +114,12 @@ def _grouped_capture_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
     }
 
 
-def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
+def _iter_fixture_cases() -> Iterator[FixtureCase]:
+    for bundle in FIXTURE_BUNDLES:
+        yield from bundle.cases
+
+
+def _compile_cases(cases: Iterable[FixtureCase]) -> tuple[CompileCase, ...]:
     grouped_cases: dict[tuple[str, int], list[FixtureCase]] = {}
     for case in cases:
         key = (str_case_pattern(case), case.flags or 0)
@@ -131,16 +137,15 @@ def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
     return tuple(compile_cases)
 
 
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-COMPILE_CASES = _compile_cases(PUBLISHED_CASES)
+COMPILE_CASES = _compile_cases(_iter_fixture_cases())
 MODULE_CASES = tuple(
-    case for case in PUBLISHED_CASES if case.operation == "module_call"
+    case for case in _iter_fixture_cases() if case.operation == "module_call"
 )
 PATTERN_CASES = tuple(
-    case for case in PUBLISHED_CASES if case.operation == "pattern_call"
+    case for case in _iter_fixture_cases() if case.operation == "pattern_call"
 )
-CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
-assert len(CASES_BY_ID) == len(PUBLISHED_CASES)
+CASES_BY_ID = {case.case_id: case for case in _iter_fixture_cases()}
+assert len(CASES_BY_ID) == sum(len(bundle.cases) for bundle in FIXTURE_BUNDLES)
 OPTIONAL_GROUP_ABSENT_EXPAND_CASES = (
     OptionalGroupExpandCase(
         id="numbered-module-search-absent",
