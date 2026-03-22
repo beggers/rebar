@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import product
 import re
@@ -481,13 +482,18 @@ def _direct_bytes_follow_on_cases() -> tuple[BranchLocalBackreferenceBytesFollow
     )
 
 
+def _iter_fixture_cases() -> Iterator[FixtureCase]:
+    for bundle in FIXTURE_BUNDLES:
+        yield from bundle.cases
+
+
 SUPPORTED_DIRECT_BYTES_PATTERNS = frozenset(
     case.pattern
     for case in _direct_bytes_follow_on_cases()
     if not case.unsupported_backends
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
+CASES_BY_ID = {case.case_id: case for case in _iter_fixture_cases()}
+assert len(CASES_BY_ID) == sum(len(bundle.cases) for bundle in FIXTURE_BUNDLES)
 COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
     FIXTURE_BUNDLES,
     tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_SPECS),
@@ -496,7 +502,7 @@ _SHARED_WORKFLOW_CASE_IDS = frozenset(
     case.case_id for case in (*MODULE_CASES, *PATTERN_CASES)
 )
 WORKFLOW_CASES = tuple(
-    case for case in PUBLISHED_CASES if case.case_id in _SHARED_WORKFLOW_CASE_IDS
+    case for case in _iter_fixture_cases() if case.case_id in _SHARED_WORKFLOW_CASE_IDS
 )
 
 
