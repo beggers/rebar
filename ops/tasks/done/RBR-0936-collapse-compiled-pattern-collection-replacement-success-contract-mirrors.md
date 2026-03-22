@@ -1,8 +1,9 @@
 # RBR-0936: Collapse compiled-pattern collection/replacement success contract mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached compiled-pattern collection/replacement success mirror table from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the contract section derives its five-row surface directly from the tracked `benchmarks/workloads/collection_replacement_boundary.py` manifest it already validates instead of maintaining a second handwritten `CompiledPatternModuleCollectionReplacementSuccessCase` layer.
@@ -79,3 +80,15 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success or collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured'` currently passes (`18 passed, 565 deselected, 5 subtests passed in 0.28s`);
   - `rg -n '^(class CompiledPatternModuleCollectionReplacementSuccessCase|COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently finds the remaining mirrors at lines `13823` and `13835`; and
   - the task-local manifest-selector probe in Acceptance currently passes (`ok 5`), proving the five-row surface already exists in the tracked benchmark workload manifest without the extra benchmark-test case table.
+
+## Completion
+- Replaced the detached compiled-pattern collection/replacement success mirror layer in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with live `Workload` selectors from `COLLECTION_REPLACEMENT_MANIFEST_PATH`, using `_selected_manifest_workloads(..., include_workload=_is_collection_replacement_compiled_pattern_success_workload)` as the single source of the five-row contract surface.
+- Reworked the contract manifest payload/workload builders, payload round-trip assertions, probe coverage, and callback expectations to derive directly from those selected `Workload` objects while preserving the published row order, the `-contract` suffix order, the same anchor mappings, the same `use_compiled_pattern` / `count` / `maxsplit` / no-`expected_exception` / no-`haystack_text_model` invariants, and the same `str` versus `bytes` payload typing for pattern, haystack, and replacement values.
+- Removed both detached mirror definitions named in the task acceptance criteria:
+  - `CompiledPatternModuleCollectionReplacementSuccessCase`
+  - `COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES`
+- Left `benchmarks/workloads/collection_replacement_boundary.py`, harness code, reports, and other benchmark-contract sections unchanged in this run.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success or collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured'`
+  - `bash -lc "! rg -n '^(class CompiledPatternModuleCollectionReplacementSuccessCase|COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... _selected_manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH, include_workload=_is_collection_replacement_compiled_pattern_success_workload) ... PY`

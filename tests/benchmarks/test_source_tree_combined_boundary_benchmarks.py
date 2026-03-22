@@ -13819,95 +13819,30 @@ def test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argum
     assert last_call[2:] == expected_callback_call[1:]
 
 
-@dataclass(frozen=True)
-class CompiledPatternModuleCollectionReplacementSuccessCase:
-    id: str
-    operation: str
-    cache_mode: str
-    haystack: str
-    replacement: object
-    text_model: str
-    count: int
-    maxsplit: int
-    expected_callback_result: object
-
-
-COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES = (
-    CompiledPatternModuleCollectionReplacementSuccessCase(
-        id="module-split-literal-warm-str-compiled-pattern",
-        operation="module.split",
-        cache_mode="warm",
-        haystack="zzabczzabc",
-        replacement=None,
-        text_model="str",
-        count=0,
-        maxsplit=1,
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleCollectionReplacementSuccessCase(
-        id="module-findall-literal-purged-bytes-compiled-pattern",
-        operation="module.findall",
-        cache_mode="purged",
-        haystack="zabcabc",
-        replacement=None,
-        text_model="bytes",
-        count=0,
-        maxsplit=0,
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleCollectionReplacementSuccessCase(
-        id="module-finditer-literal-warm-str-compiled-pattern",
-        operation="module.finditer",
-        cache_mode="warm",
-        haystack="zabcabc",
-        replacement=None,
-        text_model="str",
-        count=0,
-        maxsplit=0,
-        expected_callback_result=["module-finditer-result"],
-    ),
-    CompiledPatternModuleCollectionReplacementSuccessCase(
-        id="module-sub-literal-warm-str-compiled-pattern",
-        operation="module.sub",
-        cache_mode="warm",
-        haystack="zabcabc",
-        replacement="x",
-        text_model="str",
-        count=1,
-        maxsplit=0,
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleCollectionReplacementSuccessCase(
-        id="module-subn-literal-purged-bytes-compiled-pattern",
-        operation="module.subn",
-        cache_mode="purged",
-        haystack="zabcabc",
-        replacement="x",
-        text_model="bytes",
-        count=1,
-        maxsplit=0,
-        expected_callback_result=("module-result", 0),
-    ),
-)
-
-
 def _compiled_pattern_module_collection_replacement_success_manifest_payload(
-    case: CompiledPatternModuleCollectionReplacementSuccessCase,
+    source_workload: Workload,
 ) -> dict[str, object]:
+    payload = workload_to_payload(source_workload)
     return {
-        "id": f"{case.id}-contract",
-        "bucket": case.operation.replace("module.", "module-"),
-        "family": "module",
-        "operation": case.operation,
-        "pattern": "abc",
-        "haystack": case.haystack,
-        "replacement": case.replacement,
-        "flags": 0,
-        "use_compiled_pattern": True,
-        "count": case.count,
-        "maxsplit": case.maxsplit,
-        "text_model": case.text_model,
-        "cache_mode": case.cache_mode,
+        "id": f"{source_workload.workload_id}-contract",
+        **{
+            key: value
+            for key, value in payload.items()
+            if key
+            not in {
+                "manifest_id",
+                "workload_id",
+                "warmup_iterations",
+                "sample_iterations",
+                "timed_samples",
+                "notes",
+                "smoke",
+                "categories",
+                "syntax_features",
+                "expected_exception",
+                "haystack_text_model",
+            }
+        },
         "timing_scope": "module-helper-call",
         "notes": [
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
@@ -13917,10 +13852,10 @@ def _compiled_pattern_module_collection_replacement_success_manifest_payload(
 
 
 def _compiled_pattern_module_collection_replacement_success_workload(
-    case: CompiledPatternModuleCollectionReplacementSuccessCase,
+    source_workload: Workload,
 ) -> Workload:
     manifest_payload = _compiled_pattern_module_collection_replacement_success_manifest_payload(
-        case
+        source_workload
     )
     return workload_from_payload(
         {
@@ -13937,7 +13872,16 @@ def _compiled_pattern_module_collection_replacement_success_workload(
     )
 
 
-def _compiled_pattern_module_collection_replacement_success_manifest() -> dict[str, object]:
+def _compiled_pattern_module_collection_replacement_success_source_workloads() -> tuple[Workload, ...]:
+    return _selected_manifest_workloads(
+        COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+    )
+
+
+def _compiled_pattern_module_collection_replacement_success_manifest(
+    source_workloads: tuple[Workload, ...],
+) -> dict[str, object]:
     return {
         "schema_version": 1,
         "manifest_id": "collection-replacement-boundary",
@@ -13947,33 +13891,91 @@ def _compiled_pattern_module_collection_replacement_success_manifest() -> dict[s
             "timed_samples": 2,
         },
         "workloads": [
-            _compiled_pattern_module_collection_replacement_success_manifest_payload(case)
-            for case in COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES
+            _compiled_pattern_module_collection_replacement_success_manifest_payload(
+                workload
+            )
+            for workload in source_workloads
         ],
     }
 
 
 def _assert_compiled_pattern_module_collection_replacement_success_payload_round_trip(
-    case: CompiledPatternModuleCollectionReplacementSuccessCase,
+    source_workload: Workload,
     payload: dict[str, object],
     round_tripped: Workload,
 ) -> None:
-    expected_text_type = str if case.text_model == "str" else bytes
+    expected_text_type = str if source_workload.text_model == "str" else bytes
 
     assert payload["use_compiled_pattern"] is True
     assert round_tripped.use_compiled_pattern is True
-    assert payload["count"] == case.count
-    assert round_tripped.count == case.count
-    assert payload["maxsplit"] == case.maxsplit
-    assert round_tripped.maxsplit == case.maxsplit
+    assert payload["count"] == source_workload.count
+    assert round_tripped.count == source_workload.count
+    assert payload["maxsplit"] == source_workload.maxsplit
+    assert round_tripped.maxsplit == source_workload.maxsplit
     assert payload.get("expected_exception") is None
     assert round_tripped.expected_exception is None
     assert payload.get("haystack_text_model") is None
     assert round_tripped.haystack_text_model is None
     assert isinstance(round_tripped.pattern_payload(), expected_text_type)
     assert isinstance(round_tripped.haystack_payload(), expected_text_type)
-    if case.replacement is not None:
+    if source_workload.replacement is not None:
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+def _compiled_pattern_module_collection_replacement_success_expected_callback_result(
+    source_workload: Workload,
+) -> object:
+    if source_workload.operation == "module.subn":
+        return ("module-result", 0)
+    if source_workload.operation == "module.finditer":
+        return ["module-finditer-result"]
+    return "module-result"
+
+
+def _compiled_pattern_module_collection_replacement_success_expected_build_calls(
+    source_workload: Workload,
+) -> list[tuple[object, ...]]:
+    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
+    if source_workload.cache_mode == "purged":
+        return [compile_call, ("purge",)]
+    if source_workload.cache_mode == "warm":
+        return [compile_call]
+    raise AssertionError(
+        "unexpected compiled-pattern collection/replacement success workload "
+        f"cache mode {source_workload.cache_mode!r}"
+    )
+
+
+def _compiled_pattern_module_collection_replacement_success_expected_callback_call(
+    source_workload: Workload,
+) -> tuple[object, ...]:
+    if source_workload.operation == "module.split":
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            source_workload.maxsplit_argument(),
+            source_workload.flags,
+            {},
+        )
+    if source_workload.operation in {"module.findall", "module.finditer"}:
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            source_workload.flags,
+        )
+    if source_workload.operation in {"module.sub", "module.subn"}:
+        return (
+            source_workload.operation,
+            source_workload.replacement_payload(),
+            source_workload.haystack_payload(),
+            source_workload.count_argument(),
+            source_workload.flags,
+            {},
+        )
+    raise AssertionError(
+        "unexpected compiled-pattern collection/replacement success workload "
+        f"operation {source_workload.operation!r}"
+    )
 
 
 def _run_cpython_compiled_pattern_module_collection_replacement_success_workload(
@@ -14023,7 +14025,12 @@ def _run_cpython_compiled_pattern_module_collection_replacement_success_workload
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = _compiled_pattern_module_collection_replacement_success_manifest()
+    source_workloads = (
+        _compiled_pattern_module_collection_replacement_success_source_workloads()
+    )
+    manifest = _compiled_pattern_module_collection_replacement_success_manifest(
+        source_workloads
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -14032,15 +14039,25 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     )
     workloads = load_manifest(manifest_path).workloads
 
+    assert tuple(workload.workload_id for workload in source_workloads) == (
+        "module-split-literal-warm-str-compiled-pattern",
+        "module-findall-literal-purged-bytes-compiled-pattern",
+        "module-finditer-literal-warm-str-compiled-pattern",
+        "module-sub-literal-warm-str-compiled-pattern",
+        "module-subn-literal-purged-bytes-compiled-pattern",
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        f"{workload.workload_id}-contract" for workload in source_workloads
+    )
     assert [workload.use_compiled_pattern for workload in workloads] == [
         True
-    ] * len(COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES)
+    ] * len(source_workloads)
     assert [workload.haystack_text_model for workload in workloads] == [
         None
-    ] * len(COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES)
+    ] * len(source_workloads)
 
-    for case, workload in zip(
-        COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES,
+    for source_workload, workload in zip(
+        source_workloads,
         workloads,
         strict=True,
     ):
@@ -14048,7 +14065,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
         round_tripped = workload_from_payload(payload)
 
         _assert_compiled_pattern_module_collection_replacement_success_payload_round_trip(
-            case,
+            source_workload,
             payload,
             round_tripped,
         )
@@ -14063,7 +14080,9 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = _compiled_pattern_module_collection_replacement_success_manifest()
+    manifest = _compiled_pattern_module_collection_replacement_success_manifest(
+        _compiled_pattern_module_collection_replacement_success_source_workloads()
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -14142,10 +14161,10 @@ def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchor
 
 
 @pytest.mark.parametrize(
-    "case",
+    "source_workload",
     tuple(
-        pytest.param(case, id=case.id)
-        for case in COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_collection_replacement_success_source_workloads()
     ),
 )
 @pytest.mark.parametrize(
@@ -14156,16 +14175,18 @@ def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchor
     ),
 )
 def test_run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_success_workloads(
-    case: CompiledPatternModuleCollectionReplacementSuccessCase,
+    source_workload: Workload,
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_collection_replacement_success_workload(case)
+    workload = _compiled_pattern_module_collection_replacement_success_workload(
+        source_workload
+    )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
     _assert_compiled_pattern_module_collection_replacement_success_payload_round_trip(
-        case,
+        source_workload,
         payload,
         round_tripped,
     )
@@ -14181,55 +14202,41 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
 
 
 @pytest.mark.parametrize(
-    ("case", "expected_build_calls", "expected_callback_call"),
-    (
-        pytest.param(
-            COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES[0],
-            [("compile", "abc", 0)],
-            ("module.split", "zzabczzabc", 1, 0, {}),
-            id="module-split-literal-warm-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES[1],
-            [("compile", b"abc", 0), ("purge",)],
-            ("module.findall", b"zabcabc", 0),
-            id="module-findall-literal-purged-bytes-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES[2],
-            [("compile", "abc", 0)],
-            ("module.finditer", "zabcabc", 0),
-            id="module-finditer-literal-warm-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES[3],
-            [("compile", "abc", 0)],
-            ("module.sub", "x", "zabcabc", 1, 0, {}),
-            id="module-sub-literal-warm-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_CASES[4],
-            [("compile", b"abc", 0), ("purge",)],
-            ("module.subn", b"x", b"zabcabc", 1, 0, {}),
-            id="module-subn-literal-purged-bytes-compiled-pattern",
-        ),
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_collection_replacement_success_source_workloads()
     ),
 )
 def test_compiled_pattern_module_collection_replacement_success_callbacks_precompile_first_argument_before_timing(
-    case: CompiledPatternModuleCollectionReplacementSuccessCase,
-    expected_build_calls: list[tuple[object, ...]],
-    expected_callback_call: tuple[object, ...],
+    source_workload: Workload,
 ) -> None:
+    expected_build_calls = (
+        _compiled_pattern_module_collection_replacement_success_expected_build_calls(
+            source_workload
+        )
+    )
+    expected_callback_call = (
+        _compiled_pattern_module_collection_replacement_success_expected_callback_call(
+            source_workload
+        )
+    )
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_collection_replacement_success_workload(case),
+        _compiled_pattern_module_collection_replacement_success_workload(
+            source_workload
+        ),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() == case.expected_callback_result
+    assert callback() == (
+        _compiled_pattern_module_collection_replacement_success_expected_callback_result(
+            source_workload
+        )
+    )
 
     compiled_pattern = module.compiled_patterns[0]
     last_call = module.calls[-1]
