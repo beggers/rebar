@@ -1,8 +1,9 @@
 # RBR-0907: Collapse the grouped-replacement collection selector mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `GROUPED_REPLACEMENT_COLLECTION_CASE_IDS` tuple from `tests/python/test_fixture_backed_replacement_parity_suite.py`, so the grouped-replacement owner derives its two-row collection subset directly from the canonical `collection-replacement-workflows` bundle it already loads instead of maintaining a second handwritten selector list.
@@ -81,3 +82,11 @@ PY`
 - This stays on the same post-JSON parity-harness simplification track as the recent owner-path cleanup in the same file:
   - `RBR-0857` already removed the remaining named/nested/wider-ranged replacement case-id mirrors while explicitly leaving this collection subset tuple in place because the owner still needed a bounded subset carve-out; and
   - the live collection bundle now has a direct family/category path for that exact two-case carve-out, so this tuple is the next bounded mirror to delete without changing the grouped replacement frontier.
+
+## Completion
+- Removed the `GROUPED_REPLACEMENT_COLLECTION_CASE_IDS` tuple from `tests/python/test_fixture_backed_replacement_parity_suite.py`.
+- Added `_grouped_replacement_collection_case_ids(...)` as the single live selector over loaded collection-bundle rows and routed `_load_surface(...)` plus the grouped-replacement owner-path assertions through it.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py`
+  - `bash -lc "! rg -n '^GROUPED_REPLACEMENT_COLLECTION_CASE_IDS = ' tests/python/test_fixture_backed_replacement_parity_suite.py"`
+  - the task-local live-bundle probe from the acceptance block (`ok`)

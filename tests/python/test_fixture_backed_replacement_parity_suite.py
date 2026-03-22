@@ -104,10 +104,6 @@ OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID = (
 )
 GROUPED_TEMPLATE_CALLABLE_CASE_ID = "module-sub-callable-str"
 GROUPED_TEMPLATE_SELECTED_CASE_ID = "module-sub-grouping-template"
-GROUPED_REPLACEMENT_COLLECTION_CASE_IDS = (
-    GROUPED_TEMPLATE_CALLABLE_CASE_ID,
-    GROUPED_TEMPLATE_SELECTED_CASE_ID,
-)
 GROUPED_REPLACEMENT_COLLECTION_PATTERNS = frozenset({"abc", "(abc)"})
 GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS = Counter(
     {
@@ -934,6 +930,17 @@ def _cases_for_manifest_ids(
     )
 
 
+def _grouped_replacement_collection_case_ids(
+    bundle: FixtureBundle,
+) -> tuple[str, ...]:
+    return tuple(
+        case.case_id
+        for case in bundle.cases
+        if case.family == "grouped_template_replacement_workflow"
+        or "callable-replacement" in case.categories
+    )
+
+
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     if spec.fixture_selector is None:
         raise ValueError(f"{spec.id} is missing a published fixture selector")
@@ -944,17 +951,18 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(bundles)
     if spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID:
         collection_bundle = bundles_by_manifest_id[GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID]
-        selected_collection_case_ids = frozenset(
-            GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
+        selected_collection_case_ids = _grouped_replacement_collection_case_ids(
+            collection_bundle
         )
+        selected_collection_case_id_set = frozenset(selected_collection_case_ids)
         adjusted_collection_bundle = build_selected_fixture_bundle(
             collection_bundle.manifest.path,
-            selected_case_ids=GROUPED_REPLACEMENT_COLLECTION_CASE_IDS,
+            selected_case_ids=selected_collection_case_ids,
             pattern_extractor=spec.pattern_extractor,
             expected_text_models=frozenset(
                 case.text_model or "str"
                 for case in collection_bundle.cases
-                if case.case_id in selected_collection_case_ids
+                if case.case_id in selected_collection_case_id_set
             ),
         )
         adjusted_bundles = tuple(
@@ -1465,8 +1473,15 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
     )
 
     grouped_template_bundle = surface.bundles[0]
+    grouped_template_case_ids = _grouped_replacement_collection_case_ids(
+        grouped_template_bundle
+    )
     assert tuple(case.case_id for case in grouped_template_bundle.cases) == (
-        GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
+        grouped_template_case_ids
+    )
+    assert grouped_template_case_ids == (
+        GROUPED_TEMPLATE_CALLABLE_CASE_ID,
+        GROUPED_TEMPLATE_SELECTED_CASE_ID,
     )
     grouped_template_case = next(
         case
@@ -1533,9 +1548,12 @@ def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixt
         GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID
     ]
     cases_by_id = {case.case_id: case for case in bundle.cases}
+    selected_case_ids = _grouped_replacement_collection_case_ids(bundle)
 
-    assert tuple(case.case_id for case in bundle.cases) == (
-        GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
+    assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
+    assert selected_case_ids == (
+        GROUPED_TEMPLATE_CALLABLE_CASE_ID,
+        GROUPED_TEMPLATE_SELECTED_CASE_ID,
     )
     assert {case_pattern(case) for case in bundle.cases} == (
         GROUPED_REPLACEMENT_COLLECTION_PATTERNS
