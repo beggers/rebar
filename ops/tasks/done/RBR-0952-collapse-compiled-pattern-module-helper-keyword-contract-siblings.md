@@ -1,6 +1,6 @@
 # RBR-0952: Collapse compiled-pattern module-helper keyword contract siblings
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -142,3 +142,7 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword or compiled_pattern_module_helper_keyword_error'` currently passes (`51 passed, 565 deselected, 8 subtests passed`);
   - the selector probe in Verification currently passes (`ok 11 8`), proving both contract surfaces already exist on the live manifest-selected benchmark workload paths; and
   - the negative `rg` check in Verification currently fails only because the duplicated success/error helper families are still present in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, which is the exact cleanup this task queues.
+
+## Completion Note
+- Landed a file-local frozen spec plus shared contract helpers in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, preserving the success and keyword-error selector entry points while deleting the duplicated success/error helper families named in this task.
+- Verified with the targeted pytest slice (`51 passed, 565 deselected, 8 subtests passed`), the negative helper-name `rg` check, and the selector probe (`ok 11 8`).

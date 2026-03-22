@@ -13785,9 +13785,7 @@ def _compiled_pattern_module_helper_keyword_source_workloads() -> tuple[Workload
 def _compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads(
 ) -> tuple[Workload, ...]:
     anchor_ids = (
-        "module-split-maxsplit-keyword-purged-str-compiled-pattern",
-        "module-sub-count-keyword-warm-str-compiled-pattern",
-        "module-subn-count-keyword-purged-bytes-compiled-pattern",
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.precompile_anchor_ids
     )
     selected = tuple(
         workload
@@ -13802,44 +13800,119 @@ def _compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads(
     return selected
 
 
-def _compiled_pattern_module_helper_keyword_manifest_payload(
+@dataclass(frozen=True, slots=True)
+class _CompiledPatternModuleHelperKeywordContractSpec:
+    contract_filename: str
+    expected_source_workload_ids: tuple[str, ...]
+    manifest_timed_samples: int
+    preserve_expected_exception: bool
+    materializes_positional_keyword_field: bool
+    notes: tuple[str, ...] = ()
+    precompile_anchor_ids: tuple[str, ...] = ()
+
+
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+        "categories",
+        "syntax_features",
+        "haystack_text_model",
+    }
+)
+
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC = (
+    _CompiledPatternModuleHelperKeywordContractSpec(
+        contract_filename=(
+            "python_benchmark_compiled_pattern_collection_replacement_keyword_contract.py"
+        ),
+        expected_source_workload_ids=(
+            "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+            "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
+            "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
+            "module-sub-count-keyword-warm-str-compiled-pattern",
+            "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
+            "module-sub-count-bool-keyword-warm-str-compiled-pattern",
+            "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+            "module-subn-count-keyword-purged-bytes-compiled-pattern",
+            "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
+            "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
+            "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+        ),
+        manifest_timed_samples=2,
+        preserve_expected_exception=False,
+        materializes_positional_keyword_field=False,
+        notes=(
+            "Ensures benchmark manifests keep compiled-pattern-first-argument "
+            "collection/replacement keyword carriers unresolved until helper "
+            "invocation.",
+        ),
+        precompile_anchor_ids=(
+            "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+            "module-sub-count-keyword-warm-str-compiled-pattern",
+            "module-subn-count-keyword-purged-bytes-compiled-pattern",
+        ),
+    )
+)
+
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
+    _CompiledPatternModuleHelperKeywordContractSpec(
+        contract_filename=(
+            "python_benchmark_compiled_pattern_collection_replacement_keyword_error_contract.py"
+        ),
+        expected_source_workload_ids=(
+            "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
+            "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
+            "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
+            "module-sub-unexpected-keyword-purged-str-compiled-pattern",
+            "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
+            "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
+            "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
+            "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
+        ),
+        manifest_timed_samples=1,
+        preserve_expected_exception=True,
+        materializes_positional_keyword_field=True,
+    )
+)
+
+
+def _compiled_pattern_module_helper_contract_manifest_payload(
     source_workload: Workload,
+    *,
+    spec: _CompiledPatternModuleHelperKeywordContractSpec,
 ) -> dict[str, object]:
     payload = workload_to_payload(source_workload)
-    return {
+    excluded_fields = _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+    if not spec.preserve_expected_exception:
+        excluded_fields = excluded_fields | {"expected_exception"}
+    manifest_payload: dict[str, object] = {
         "id": f"{source_workload.workload_id}-contract",
         **{
             key: value
             for key, value in payload.items()
-            if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "notes",
-                "smoke",
-                "categories",
-                "syntax_features",
-                "expected_exception",
-                "haystack_text_model",
-            }
+            if key not in excluded_fields
         },
         "timing_scope": "module-helper-call",
-        "notes": [
-            "Ensures benchmark manifests keep compiled-pattern-first-argument "
-            "collection/replacement keyword carriers unresolved until helper "
-            "invocation."
-        ],
     }
+    if spec.notes:
+        manifest_payload["notes"] = list(spec.notes)
+    return manifest_payload
 
 
-def _compiled_pattern_module_helper_keyword_workload(
+def _compiled_pattern_module_helper_contract_workload(
     source_workload: Workload,
+    *,
+    spec: _CompiledPatternModuleHelperKeywordContractSpec,
 ) -> Workload:
-    manifest_payload = _compiled_pattern_module_helper_keyword_manifest_payload(
-        source_workload
+    manifest_payload = _compiled_pattern_module_helper_contract_manifest_payload(
+        source_workload,
+        spec=spec,
     )
     return workload_from_payload(
         {
@@ -13856,8 +13929,10 @@ def _compiled_pattern_module_helper_keyword_workload(
     )
 
 
-def _compiled_pattern_module_helper_keyword_manifest(
+def _compiled_pattern_module_helper_contract_manifest(
     source_workloads: tuple[Workload, ...],
+    *,
+    spec: _CompiledPatternModuleHelperKeywordContractSpec,
 ) -> dict[str, object]:
     return {
         "schema_version": 1,
@@ -13865,21 +13940,31 @@ def _compiled_pattern_module_helper_keyword_manifest(
         "defaults": {
             "warmup_iterations": 1,
             "sample_iterations": 1,
-            "timed_samples": 2,
+            "timed_samples": spec.manifest_timed_samples,
         },
         "workloads": [
-            _compiled_pattern_module_helper_keyword_manifest_payload(workload)
+            _compiled_pattern_module_helper_contract_manifest_payload(
+                workload,
+                spec=spec,
+            )
             for workload in source_workloads
         ],
     }
 
 
-def _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
+def _assert_compiled_pattern_module_helper_contract_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],
     round_tripped: Workload,
+    *,
+    spec: _CompiledPatternModuleHelperKeywordContractSpec,
 ) -> None:
     expected_text_type = str if source_workload.text_model == "str" else bytes
+    expected_exception = (
+        source_workload.expected_exception
+        if spec.preserve_expected_exception
+        else None
+    )
 
     assert payload["use_compiled_pattern"] is True
     assert round_tripped.use_compiled_pattern is True
@@ -13889,8 +13974,8 @@ def _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
     assert round_tripped.maxsplit == source_workload.maxsplit
     assert payload["kwargs"] == source_workload.kwargs
     assert round_tripped.kwargs == source_workload.kwargs
-    assert payload.get("expected_exception") is None
-    assert round_tripped.expected_exception is None
+    assert payload.get("expected_exception") == expected_exception
+    assert round_tripped.expected_exception == expected_exception
     assert payload.get("haystack_text_model") is None
     assert round_tripped.haystack_text_model is None
     assert isinstance(round_tripped.pattern_payload(), expected_text_type)
@@ -13899,12 +13984,25 @@ def _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
     for name, value in source_workload.kwargs.items():
         if type(value) is bool:
+            assert type(payload["kwargs"][name]) is bool
             assert type(round_tripped.kwargs[name]) is bool
 
 
-def _compiled_pattern_module_helper_keyword_expected_field_names(
+def _compiled_pattern_module_helper_contract_expected_field_names(
     source_workload: Workload,
+    *,
+    spec: _CompiledPatternModuleHelperKeywordContractSpec,
 ) -> tuple[str, ...]:
+    if spec.materializes_positional_keyword_field:
+        field_names: list[str] = []
+        positional_keyword_field = _collection_replacement_positional_keyword_field(
+            source_workload
+        )
+        if positional_keyword_field is not None:
+            field_names.append(positional_keyword_field)
+        field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
+        return tuple(field_names)
+
     keyword_parameter = _collection_replacement_keyword_parameter_name(source_workload)
     if keyword_parameter is None:
         raise AssertionError(
@@ -13914,11 +14012,10 @@ def _compiled_pattern_module_helper_keyword_expected_field_names(
     return (f"kwargs.{keyword_parameter}",)
 
 
-def _compiled_pattern_module_helper_keyword_expected_build_calls(
+def _compiled_pattern_module_helper_contract_expected_build_calls(
     source_workload: Workload,
 ) -> list[tuple[object, ...]]:
-    workload = _compiled_pattern_module_helper_keyword_workload(source_workload)
-    compile_call = ("compile", workload.pattern_payload(), workload.flags)
+    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
     if source_workload.cache_mode == "purged":
         return [compile_call, ("purge",)]
     if source_workload.cache_mode == "warm":
@@ -13929,31 +14026,38 @@ def _compiled_pattern_module_helper_keyword_expected_build_calls(
     )
 
 
-def _compiled_pattern_module_helper_keyword_expected_callback_call(
+def _compiled_pattern_module_helper_contract_expected_callback_call(
     source_workload: Workload,
 ) -> tuple[object, ...]:
-    workload = _compiled_pattern_module_helper_keyword_workload(source_workload)
-    if workload.operation == "module.split":
+    if source_workload.operation == "module.split":
         return (
-            workload.operation,
-            workload.haystack_payload(),
-            workload.maxsplit,
-            workload.flags,
-            workload.kwargs,
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            source_workload.maxsplit,
+            source_workload.flags,
+            source_workload.kwargs,
         )
-    if workload.operation in {"module.sub", "module.subn"}:
+    if source_workload.operation in {"module.sub", "module.subn"}:
         return (
-            workload.operation,
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            workload.count,
-            workload.flags,
-            workload.kwargs,
+            source_workload.operation,
+            source_workload.replacement_payload(),
+            source_workload.haystack_payload(),
+            source_workload.count,
+            source_workload.flags,
+            source_workload.kwargs,
         )
     raise AssertionError(
         "unexpected compiled-pattern module helper keyword workload operation "
-        f"{workload.operation!r}"
+        f"{source_workload.operation!r}"
     )
+
+
+def _compiled_pattern_module_helper_contract_expected_callback_result(
+    source_workload: Workload,
+) -> object:
+    if source_workload.operation == "module.subn":
+        return ("module-result", 0)
+    return "module-result"
 
 
 def test_compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements() -> None:
@@ -14004,27 +14108,20 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = _compiled_pattern_module_helper_keyword_source_workloads()
-    manifest = _compiled_pattern_module_helper_keyword_manifest(source_workloads)
+    manifest = _compiled_pattern_module_helper_contract_manifest(
+        source_workloads,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
-        "python_benchmark_compiled_pattern_collection_replacement_keyword_contract.py",
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
     workloads = load_manifest(manifest_path).workloads
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
-        "module-split-maxsplit-keyword-purged-str-compiled-pattern",
-        "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
-        "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
-        "module-sub-count-keyword-warm-str-compiled-pattern",
-        "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
-        "module-sub-count-bool-keyword-warm-str-compiled-pattern",
-        "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
-        "module-subn-count-keyword-purged-bytes-compiled-pattern",
-        "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
-        "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
-        "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_source_workload_ids
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         f"{workload.workload_id}-contract" for workload in source_workloads
@@ -14044,10 +14141,11 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
+        _assert_compiled_pattern_module_helper_contract_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
+            spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
         )
         assert_benchmark_workload_matches_expected_result(
             round_tripped,
@@ -14066,14 +14164,18 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
     monkeypatch,
     source_workload: Workload,
 ) -> None:
-    workload = _compiled_pattern_module_helper_keyword_workload(source_workload)
+    workload = _compiled_pattern_module_helper_contract_workload(
+        source_workload,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+    )
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=run_benchmark_workload_with_cpython(source_workload),
         expected_field_names=(
-            _compiled_pattern_module_helper_keyword_expected_field_names(
-                source_workload
+            _compiled_pattern_module_helper_contract_expected_field_names(
+                source_workload,
+                spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
             )
         ),
     )
@@ -14098,14 +14200,18 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_helper_keyword_workload(source_workload)
+    workload = _compiled_pattern_module_helper_contract_workload(
+        source_workload,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+    )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
+    _assert_compiled_pattern_module_helper_contract_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
     )
 
     probe = run_internal_workload_probe(
@@ -14123,12 +14229,8 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     (
         pytest.param(
             source_workload,
-            _compiled_pattern_module_helper_keyword_expected_build_calls(
-                source_workload
-            ),
-            _compiled_pattern_module_helper_keyword_expected_callback_call(
-                source_workload
-            ),
+            _compiled_pattern_module_helper_contract_expected_build_calls(source_workload),
+            _compiled_pattern_module_helper_contract_expected_callback_call(source_workload),
             id=source_workload.workload_id,
         )
         for source_workload in (
@@ -14145,12 +14247,17 @@ def test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argum
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_helper_keyword_workload(source_workload),
+        _compiled_pattern_module_helper_contract_workload(
+            source_workload,
+            spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+        ),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() in {"module-result", ("module-result", 0)}
+    assert callback() == _compiled_pattern_module_helper_contract_expected_callback_result(
+        source_workload
+    )
 
     compiled_pattern = module.compiled_patterns[0]
     last_call = module.calls[-1]
@@ -16262,163 +16369,11 @@ def test_compiled_pattern_module_wrong_text_model_callbacks_precompile_first_arg
     assert last_call[2:] == expected_callback_call[1:]
 
 
-def _compiled_pattern_module_helper_keyword_error_manifest_payload(
-    source_workload: Workload,
-) -> dict[str, object]:
-    payload = workload_to_payload(source_workload)
-    return {
-        "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "notes",
-                "smoke",
-                "categories",
-                "syntax_features",
-                "haystack_text_model",
-            }
-        },
-        "timing_scope": "module-helper-call",
-    }
-
-
-def _compiled_pattern_module_helper_keyword_error_contract_workload(
-    source_workload: Workload,
-) -> Workload:
-    manifest_payload = _compiled_pattern_module_helper_keyword_error_manifest_payload(
-        source_workload
-    )
-    return workload_from_payload(
-        {
-            "manifest_id": "collection-replacement-boundary",
-            "workload_id": str(manifest_payload["id"]),
-            **{key: value for key, value in manifest_payload.items() if key != "id"},
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
-
-
 def _compiled_pattern_module_helper_keyword_error_source_workloads() -> tuple[Workload, ...]:
     return _selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload=_is_collection_replacement_compiled_pattern_keyword_error_workload,
     )
-
-
-def _compiled_pattern_module_helper_keyword_error_manifest(
-    source_workloads: tuple[Workload, ...],
-) -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": "collection-replacement-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-        },
-        "workloads": [
-            _compiled_pattern_module_helper_keyword_error_manifest_payload(workload)
-            for workload in source_workloads
-        ],
-    }
-
-
-def _assert_compiled_pattern_module_helper_keyword_error_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload["count"] == source_workload.count
-    assert round_tripped.count == source_workload.count
-    assert payload["maxsplit"] == source_workload.maxsplit
-    assert round_tripped.maxsplit == source_workload.maxsplit
-    assert payload["kwargs"] == source_workload.kwargs
-    assert round_tripped.kwargs == source_workload.kwargs
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert payload.get("haystack_text_model") is None
-    assert round_tripped.haystack_text_model is None
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_text_type)
-    if source_workload.replacement is not None:
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
-
-
-def _compiled_pattern_module_helper_keyword_error_expected_field_names(
-    source_workload: Workload,
-) -> tuple[str, ...]:
-    field_names: list[str] = []
-    positional_keyword_field = _collection_replacement_positional_keyword_field(
-        source_workload
-    )
-    if positional_keyword_field is not None:
-        field_names.append(positional_keyword_field)
-    field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
-    return tuple(field_names)
-
-
-def _compiled_pattern_module_helper_keyword_error_expected_build_calls(
-    source_workload: Workload,
-) -> list[tuple[object, ...]]:
-    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
-    if source_workload.cache_mode == "purged":
-        return [compile_call, ("purge",)]
-    if source_workload.cache_mode == "warm":
-        return [compile_call]
-    raise AssertionError(
-        "unexpected compiled-pattern module helper keyword-error workload "
-        f"cache mode {source_workload.cache_mode!r}"
-    )
-
-
-def _compiled_pattern_module_helper_keyword_error_expected_callback_call(
-    source_workload: Workload,
-) -> tuple[object, ...]:
-    if source_workload.operation == "module.split":
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            source_workload.maxsplit,
-            source_workload.flags,
-            source_workload.kwargs,
-        )
-    if source_workload.operation in {"module.sub", "module.subn"}:
-        return (
-            source_workload.operation,
-            source_workload.replacement_payload(),
-            source_workload.haystack_payload(),
-            source_workload.count,
-            source_workload.flags,
-            source_workload.kwargs,
-        )
-    raise AssertionError(
-        "unexpected compiled-pattern module helper keyword-error workload "
-        f"operation {source_workload.operation!r}"
-    )
-
-
-def _compiled_pattern_module_helper_keyword_error_expected_callback_result(
-    source_workload: Workload,
-) -> object:
-    if source_workload.operation == "module.subn":
-        return ("module-result", 0)
-    return "module-result"
 
 
 def _run_cpython_compiled_pattern_module_helper_keyword_workload(
@@ -16457,23 +16412,19 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = _compiled_pattern_module_helper_keyword_error_source_workloads()
-    manifest = _compiled_pattern_module_helper_keyword_error_manifest(source_workloads)
+    manifest = _compiled_pattern_module_helper_contract_manifest(
+        source_workloads,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
+    )
     manifest_path = _write_test_manifest(
         tmp_path,
-        "python_benchmark_compiled_pattern_collection_replacement_keyword_error_contract.py",
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
     workloads = load_manifest(manifest_path).workloads
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
-        "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
-        "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
-        "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
-        "module-sub-unexpected-keyword-purged-str-compiled-pattern",
-        "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
-        "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
-        "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
-        "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_source_workload_ids
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         f"{workload.workload_id}-contract" for workload in source_workloads
@@ -16493,10 +16444,11 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        _assert_compiled_pattern_module_helper_keyword_error_payload_round_trip(
+        _assert_compiled_pattern_module_helper_contract_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
+            spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
         )
 
         with pytest.raises(TypeError) as expected_error:
@@ -16518,8 +16470,9 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     monkeypatch,
     source_workload: Workload,
 ) -> None:
-    workload = _compiled_pattern_module_helper_keyword_error_contract_workload(
-        source_workload
+    workload = _compiled_pattern_module_helper_contract_workload(
+        source_workload,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
     )
     observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
@@ -16534,8 +16487,9 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
             callback()
 
         assert observed_field_names == list(
-            _compiled_pattern_module_helper_keyword_error_expected_field_names(
-                source_workload
+            _compiled_pattern_module_helper_contract_expected_field_names(
+                source_workload,
+                spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
             )
         )
         assert str(observed_error.value) == str(expected_error.value)
@@ -16562,16 +16516,18 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_helper_keyword_error_contract_workload(
-        source_workload
+    workload = _compiled_pattern_module_helper_contract_workload(
+        source_workload,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_compiled_pattern_module_helper_keyword_error_payload_round_trip(
+    _assert_compiled_pattern_module_helper_contract_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
     )
 
     probe = run_internal_workload_probe(
@@ -16892,27 +16848,24 @@ def test_compiled_pattern_module_helper_callbacks_precompile_first_argument_befo
     source_workload: Workload,
 ) -> None:
     expected_build_calls = (
-        _compiled_pattern_module_helper_keyword_error_expected_build_calls(
-            source_workload
-        )
+        _compiled_pattern_module_helper_contract_expected_build_calls(source_workload)
     )
     expected_callback_call = (
-        _compiled_pattern_module_helper_keyword_error_expected_callback_call(
-            source_workload
-        )
+        _compiled_pattern_module_helper_contract_expected_callback_call(source_workload)
     )
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_helper_keyword_error_contract_workload(
-            source_workload
+        _compiled_pattern_module_helper_contract_workload(
+            source_workload,
+            spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
         ),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() == _compiled_pattern_module_helper_keyword_error_expected_callback_result(
+    assert callback() == _compiled_pattern_module_helper_contract_expected_callback_result(
         source_workload
     )
 
