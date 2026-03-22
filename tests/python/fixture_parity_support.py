@@ -534,18 +534,6 @@ def published_fixture_bundles_by_manifest_id(
     return indexed_bundles
 
 
-def published_fixture_bundle_by_manifest_id(
-    bundles: Iterable[FixtureBundle],
-    manifest_id: str,
-) -> FixtureBundle:
-    indexed_bundles = published_fixture_bundles_by_manifest_id(bundles)
-    if manifest_id not in indexed_bundles:
-        raise ValueError(
-            f"published fixture bundles do not contain manifest_id {manifest_id!r}"
-        )
-    return indexed_bundles[manifest_id]
-
-
 def assert_fixture_bundle_contract(
     bundle: FixtureBundle,
     *,

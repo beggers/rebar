@@ -39,7 +39,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_published_fixture_bundles,
-    published_fixture_bundle_by_manifest_id,
     published_fixture_bundles_by_manifest_id,
     str_case_pattern,
 )
@@ -913,11 +912,9 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
         select_correctness_fixture_paths(spec.fixture_selector),
         pattern_extractor=spec.pattern_extractor,
     )
+    bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(bundles)
     if spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID:
-        collection_bundle = published_fixture_bundle_by_manifest_id(
-            bundles,
-            GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
-        )
+        collection_bundle = bundles_by_manifest_id[GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID]
         selected_collection_case_ids = frozenset(
             GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
         )
@@ -940,8 +937,11 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
             else bundle
             for bundle in bundles
         )
+        adjusted_bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(
+            adjusted_bundles
+        )
         bundles = tuple(
-            published_fixture_bundle_by_manifest_id(adjusted_bundles, manifest_id)
+            adjusted_bundles_by_manifest_id[manifest_id]
             for manifest_id in (
                 GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
                 GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
@@ -963,8 +963,9 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
                 f"{tuple(sorted(loaded_manifest_ids))!r} != "
                 f"{tuple(sorted(expected_manifest_ids))!r}"
             )
+        bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(bundles)
         bundles = tuple(
-            published_fixture_bundle_by_manifest_id(bundles, manifest_id)
+            bundles_by_manifest_id[manifest_id]
             for manifest_id in spec.template_expand_manifest_ids
         )
     published_replacement_cases = tuple(
@@ -1451,10 +1452,9 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
     assert "replacement-template" in grouped_template_case.categories
     assert "grouping-dependent" in grouped_template_case.categories
 
-    named_bundle = published_fixture_bundle_by_manifest_id(
-        surface.bundles,
-        GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
-    )
+    named_bundle = GROUPED_REPLACEMENT_TEMPLATE_BUNDLES_BY_MANIFEST_ID[
+        GROUPED_REPLACEMENT_NAMED_MANIFEST_ID
+    ]
     named_case_ids = _expected_selected_replacement_case_ids(
         surface,
         manifest_id=GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
@@ -1472,10 +1472,9 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
         assert "replacement-template" in case.categories
         assert case.text_model == "str"
 
-    nested_group_alternation_bundle = published_fixture_bundle_by_manifest_id(
-        surface.bundles,
-        GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
-    )
+    nested_group_alternation_bundle = GROUPED_REPLACEMENT_TEMPLATE_BUNDLES_BY_MANIFEST_ID[
+        GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID
+    ]
     nested_group_alternation_case_ids = _expected_selected_replacement_case_ids(
         surface,
         manifest_id=GROUPED_REPLACEMENT_NESTED_GROUP_ALTERNATION_MANIFEST_ID,
@@ -1501,10 +1500,9 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
 
 def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixtures(
 ) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles,
-        GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
-    )
+    bundle = GROUPED_REPLACEMENT_TEMPLATE_BUNDLES_BY_MANIFEST_ID[
+        GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID
+    ]
     cases_by_id = {case.case_id: case for case in bundle.cases}
 
     assert tuple(case.case_id for case in bundle.cases) == (
@@ -1526,14 +1524,12 @@ def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixt
 
 
 def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:
-    module_bundle = published_fixture_bundle_by_manifest_id(
-        GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles,
-        GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID,
-    )
-    named_bundle = published_fixture_bundle_by_manifest_id(
-        GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles,
-        GROUPED_REPLACEMENT_NAMED_MANIFEST_ID,
-    )
+    module_bundle = GROUPED_REPLACEMENT_TEMPLATE_BUNDLES_BY_MANIFEST_ID[
+        GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID
+    ]
+    named_bundle = GROUPED_REPLACEMENT_TEMPLATE_BUNDLES_BY_MANIFEST_ID[
+        GROUPED_REPLACEMENT_NAMED_MANIFEST_ID
+    ]
 
     module_case = next(
         case

@@ -35,7 +35,6 @@ from tests.python.fixture_parity_support import (
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     published_fixture_bundles_by_manifest_id,
-    published_fixture_bundle_by_manifest_id,
     record_generated_match_failure,
 )
 BACKTRACKING_BRANCH_TEXT = {
@@ -676,10 +675,10 @@ def test_generated_quantified_alternation_compile_cases_stay_anchored_to_publish
         QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE.manifest.path,
         BACKTRACKING_HEAVY_BUNDLE.manifest.path,
     )
-    assert spec.bundle.manifest.path == published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        spec.bundle.expected_manifest_id,
-    ).manifest.path
+    assert (
+        spec.bundle.manifest.path
+        == FIXTURE_BUNDLES_BY_MANIFEST_ID[spec.bundle.expected_manifest_id].manifest.path
+    )
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == spec.expected_text_models

@@ -29,7 +29,7 @@ from tests.python.fixture_parity_support import (
     case_replacement_argument,
     case_text_argument,
     load_published_fixture_bundles,
-    published_fixture_bundle_by_manifest_id,
+    published_fixture_bundles_by_manifest_id,
     str_case_pattern,
 )
 
@@ -1066,6 +1066,9 @@ COLLECTION_REPLACEMENT_OWNER_BUNDLE, = load_published_fixture_bundles(
     COLLECTION_REPLACEMENT_FIXTURE_PATHS
 )
 FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
+FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
+    FIXTURE_BUNDLES
+)
 PUBLISHED_CALLABLE_CASES = tuple(
     case for bundle in FIXTURE_BUNDLES for case in bundle.cases
 )
@@ -1462,20 +1465,17 @@ def test_published_fixture_bundle_loading_preserves_selector_path_order() -> Non
         )
 
 
-def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures(
+def test_published_fixture_bundle_manifest_map_supports_lookup_and_duplicate_rejection(
 ) -> None:
     bundles = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS[:2])
     manifest_id = bundles[0].manifest.manifest_id
+    bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(bundles)
 
-    assert published_fixture_bundle_by_manifest_id(bundles, manifest_id) is bundles[0]
-
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            "published fixture bundles do not contain manifest_id 'missing-manifest-id'"
-        ),
-    ):
-        published_fixture_bundle_by_manifest_id(bundles, "missing-manifest-id")
+    assert tuple(bundles_by_manifest_id) == (
+        bundles[0].manifest.manifest_id,
+        bundles[1].manifest.manifest_id,
+    )
+    assert bundles_by_manifest_id[manifest_id] is bundles[0]
 
     with pytest.raises(
         ValueError,
@@ -1483,7 +1483,7 @@ def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_cle
             f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
         ),
     ):
-        published_fixture_bundle_by_manifest_id((bundles[0], bundles[0]), manifest_id)
+        published_fixture_bundles_by_manifest_id((bundles[0], bundles[0]))
 
 
 @pytest.mark.parametrize(
@@ -1507,13 +1507,7 @@ def test_callable_replacement_fixture_shape_contract(
         else CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS
     )
 
-    assert (
-        published_fixture_bundle_by_manifest_id(
-            FIXTURE_BUNDLES,
-            bundle.manifest.manifest_id,
-        )
-        is bundle
-    )
+    assert FIXTURE_BUNDLES_BY_MANIFEST_ID[bundle.manifest.manifest_id] is bundle
     assert bundle.manifest.layer == "module_workflow"
     assert bundle.manifest.defaults.get("text_model") == "str"
     assert len(bundle.cases) == sum(expected_operation_helper_counts.values())
@@ -1977,10 +1971,7 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
 def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     manifest_spec: CallableManifestSpec,
 ) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        manifest_spec.manifest_id,
-    )
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_spec.manifest_id]
 
     assert bundle.manifest.manifest_id == manifest_spec.manifest_id
     assert len(bundle.cases) == len(manifest_spec.expected_case_ids)
@@ -2016,10 +2007,7 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
 def test_mixed_text_callable_manifest_partitions_track_pending_or_landed_bytes_cases(
     manifest_spec: CallableManifestSpec,
 ) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        manifest_spec.manifest_id,
-    )
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_spec.manifest_id]
     shared_module_case_ids = frozenset(
         case.case_id
         for case in MODULE_CASES
