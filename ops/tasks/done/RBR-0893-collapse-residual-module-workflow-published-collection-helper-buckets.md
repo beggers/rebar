@@ -1,8 +1,9 @@
 # RBR-0893: Collapse residual module-workflow published collection helper buckets
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the remaining published collection helper-bucket mirrors in `tests/python/test_module_workflow_parity_suite.py`, so the module-workflow collection owner derives its published module/pattern helper slices directly from the live fixture-backed collection cases instead of keeping two extra top-level dictionaries.
@@ -48,3 +49,11 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'literal_collection_suite or literal_collection_direct_test_buckets_cover_selected_frontier or module_collection or pattern_collection or collection_type_error'` currently passes (`15 passed, 1208 deselected`);
   - `rg -n '^PUBLISHED_(MODULE|PATTERN)_COLLECTION_CASES_BY_HELPER = \\{$' tests/python/test_module_workflow_parity_suite.py` currently reports the residual mirrors at lines `1097` and `1105`; and
   - those dictionaries are only used to feed `MODULE_COLLECTION_CASES`, `PATTERN_COLLECTION_CASES`, and `test_literal_collection_direct_test_buckets_cover_selected_frontier()`, which keeps this cleanup bounded to one owner file.
+
+## Completion
+- Deleted `PUBLISHED_MODULE_COLLECTION_CASES_BY_HELPER` and `PUBLISHED_PATTERN_COLLECTION_CASES_BY_HELPER` from `tests/python/test_module_workflow_parity_suite.py`.
+- Added two small fixture-backed selectors, `_published_module_collection_cases_for_helper(...)` and `_published_pattern_collection_cases_for_helper(...)`, and rewired `MODULE_COLLECTION_CASES`, `PATTERN_COLLECTION_CASES`, and `test_literal_collection_direct_test_buckets_cover_selected_frontier()` to use them directly.
+- Preserved the published `split`, `findall`, and `finditer` ordering and left the supplemental direct cases and type-error coverage unchanged.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'literal_collection_suite or literal_collection_direct_test_buckets_cover_selected_frontier or module_collection or pattern_collection or collection_type_error'`
+  - `bash -lc "! rg -n '^PUBLISHED_(MODULE|PATTERN)_COLLECTION_CASES_BY_HELPER = \\{$' tests/python/test_module_workflow_parity_suite.py"`
