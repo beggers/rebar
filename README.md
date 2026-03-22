@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 880/880 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword benchmark publication landed on the Python-path `collection_replacement_boundary.py` surface. |
-| Work queue | `0` ready, `0` in progress, `922` done, `0` blocked |
+| Current milestone | The surviving shared direct bound-pattern frontier is the split-error pair pinned to `re.compile("abc").split("abcabc", 1, maxsplit=1)` / `re.compile(b"abc").split(b"abcabc", missing=1)`; no ready feature follow-on is queued behind it. |
+| Work queue | `0` ready, `0` in progress, `924` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword benchmark publication landed on the Python-path `collection_replacement_boundary.py` surface.
+- The surviving shared direct bound-pattern frontier is the split-error pair pinned to `re.compile("abc").split("abcabc", 1, maxsplit=1)` / `re.compile(b"abc").split(b"abcabc", missing=1)`; no ready feature follow-on is queued behind it.
 
 ### Current Risks
 
