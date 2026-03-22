@@ -1,6 +1,6 @@
 # RBR-0932: Collapse compiled-pattern wrong-text-model contract mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -98,3 +98,12 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_wrong_text_model or compiled_pattern_module_boundary_wrong_text_model or module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured'` currently passes (`27 passed, 554 deselected, 8 subtests passed in 0.43s`);
   - `rg -n '^(class CompiledPatternModuleWrongTextModelCase|COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently finds the remaining mirrors at lines `15479`, `15493`, and `15577`; and
   - the task-local live-selector probe in Acceptance currently passes (`ok 5 3`), proving the tracked benchmark manifests already expose the same bounded collection/replacement and module-boundary wrong-text-model rows without the detached handwritten case table.
+
+## Completion
+- Completed on 2026-03-22.
+- Removed the detached compiled-pattern wrong-text-model case tables from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and replaced them with file-local selectors over `collection_replacement_boundary.py` and `module_boundary.py`.
+- Kept the same five collection/replacement rows and three module-boundary rows, projecting `-contract` workloads directly from manifest-backed `Workload` payloads while preserving `use_compiled_pattern`, haystack text-model fields, expected exceptions, and text-vs-bytes payload typing.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_wrong_text_model or compiled_pattern_module_boundary_wrong_text_model or module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured'`
+  - `bash -lc "! rg -n '^(class CompiledPatternModuleWrongTextModelCase|COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the acceptance selector probe (`ok 5 3`)

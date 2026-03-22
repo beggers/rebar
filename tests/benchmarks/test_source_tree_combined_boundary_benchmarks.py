@@ -15475,179 +15475,28 @@ def test_compiled_pattern_module_boundary_success_callbacks_precompile_first_arg
     assert last_call[2:] == expected_callback_call[1:]
 
 
-@dataclass(frozen=True)
-class CompiledPatternModuleWrongTextModelCase:
-    id: str
-    operation: str
-    cache_mode: str
-    haystack: str
-    haystack_text_model: str
-    replacement: object
-    text_model: str
-    count: int
-    maxsplit: int
-    expected_exception: dict[str, str]
-    expected_callback_result: object
-
-
-COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES = (
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-split-on-bytes-string-purged-str-compiled-pattern",
-        operation="module.split",
-        cache_mode="purged",
-        haystack="zabczz",
-        haystack_text_model="bytes",
-        replacement=None,
-        text_model="str",
-        count=0,
-        maxsplit=1,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a string pattern on a bytes-like object",
-        },
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-sub-on-bytes-string-warm-str-compiled-pattern",
-        operation="module.sub",
-        cache_mode="warm",
-        haystack="zabczz",
-        haystack_text_model="bytes",
-        replacement="x",
-        text_model="str",
-        count=1,
-        maxsplit=0,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a string pattern on a bytes-like object",
-        },
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-subn-on-str-string-purged-bytes-compiled-pattern",
-        operation="module.subn",
-        cache_mode="purged",
-        haystack="zabczz",
-        haystack_text_model="str",
-        replacement="x",
-        text_model="bytes",
-        count=1,
-        maxsplit=0,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a bytes pattern on a string-like object",
-        },
-        expected_callback_result=("module-result", 0),
-    ),
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-findall-on-str-string-purged-bytes-compiled-pattern",
-        operation="module.findall",
-        cache_mode="purged",
-        haystack="zabczz",
-        haystack_text_model="str",
-        replacement=None,
-        text_model="bytes",
-        count=0,
-        maxsplit=0,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a bytes pattern on a string-like object",
-        },
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-finditer-on-bytes-string-warm-str-compiled-pattern",
-        operation="module.finditer",
-        cache_mode="warm",
-        haystack="zabczz",
-        haystack_text_model="bytes",
-        replacement=None,
-        text_model="str",
-        count=0,
-        maxsplit=0,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a string pattern on a bytes-like object",
-        },
-        expected_callback_result=["module-finditer-result"],
-    ),
-)
-
-
-COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES = (
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-search-on-bytes-string-warm-str-compiled-pattern",
-        operation="module.search",
-        cache_mode="warm",
-        haystack="abc",
-        haystack_text_model="bytes",
-        replacement=None,
-        text_model="str",
-        count=0,
-        maxsplit=0,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a string pattern on a bytes-like object",
-        },
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-match-on-str-string-purged-bytes-compiled-pattern",
-        operation="module.match",
-        cache_mode="purged",
-        haystack="abc",
-        haystack_text_model="str",
-        replacement=None,
-        text_model="bytes",
-        count=0,
-        maxsplit=0,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a bytes pattern on a string-like object",
-        },
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleWrongTextModelCase(
-        id="module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
-        operation="module.fullmatch",
-        cache_mode="warm",
-        haystack="abc",
-        haystack_text_model="bytes",
-        replacement=None,
-        text_model="str",
-        count=0,
-        maxsplit=0,
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "cannot use a string pattern on a bytes-like object",
-        },
-        expected_callback_result="module-result",
-    ),
-)
-
-
 def _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
-    case: CompiledPatternModuleWrongTextModelCase,
+    workload: Workload,
     *,
     note_surface: str = "collection/replacement",
 ) -> dict[str, object]:
+    payload = workload_to_payload(workload)
     return {
-        "id": f"{case.id}-contract",
-        "bucket": case.operation.replace("module.", "module-"),
-        "family": "module",
-        "operation": case.operation,
-        "pattern": "abc",
-        "haystack": case.haystack,
-        "replacement": case.replacement,
-        "expected_exception": case.expected_exception,
-        "flags": 0,
-        "use_compiled_pattern": True,
-        "count": case.count,
-        "maxsplit": case.maxsplit,
-        "text_model": case.text_model,
-        "haystack_text_model": case.haystack_text_model,
-        "cache_mode": case.cache_mode,
-        "timing_scope": "module-helper-call",
+        "id": f"{workload.workload_id}-contract",
+        **{
+            key: value
+            for key, value in payload.items()
+            if key
+            not in {
+                "manifest_id",
+                "workload_id",
+                "warmup_iterations",
+                "sample_iterations",
+                "timed_samples",
+                "notes",
+                "smoke",
+            }
+        },
         "notes": [
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
             f"wrong-text-model {note_surface} rows unresolved until helper "
@@ -15657,13 +15506,13 @@ def _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
 
 
 def _compiled_pattern_module_helper_wrong_text_model_workload_for_manifest(
-    case: CompiledPatternModuleWrongTextModelCase,
+    source_workload: Workload,
     *,
     manifest_id: str,
     note_surface: str,
 ) -> Workload:
     manifest_payload = _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
-        case,
+        source_workload,
         note_surface=note_surface,
     )
     return workload_from_payload(
@@ -15682,27 +15531,27 @@ def _compiled_pattern_module_helper_wrong_text_model_workload_for_manifest(
 
 
 def _compiled_pattern_module_helper_wrong_text_model_workload(
-    case: CompiledPatternModuleWrongTextModelCase,
+    source_workload: Workload,
 ) -> Workload:
     return _compiled_pattern_module_helper_wrong_text_model_workload_for_manifest(
-        case,
+        source_workload,
         manifest_id="collection-replacement-boundary",
         note_surface="collection/replacement",
     )
 
 
 def _compiled_pattern_module_boundary_wrong_text_model_workload(
-    case: CompiledPatternModuleWrongTextModelCase,
+    source_workload: Workload,
 ) -> Workload:
     return _compiled_pattern_module_helper_wrong_text_model_workload_for_manifest(
-        case,
+        source_workload,
         manifest_id="module-boundary",
         note_surface="module-boundary",
     )
 
 
 def _compiled_pattern_module_helper_wrong_text_model_manifest(
-    cases: tuple[CompiledPatternModuleWrongTextModelCase, ...],
+    source_workloads: tuple[Workload, ...],
     *,
     manifest_id: str,
     note_surface: str,
@@ -15717,32 +15566,115 @@ def _compiled_pattern_module_helper_wrong_text_model_manifest(
         },
         "workloads": [
             _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
-                case,
+                workload,
                 note_surface=note_surface,
             )
-            for case in cases
+            for workload in source_workloads
         ],
     }
 
 
+def _compiled_pattern_module_helper_wrong_text_model_source_workloads() -> tuple[Workload, ...]:
+    return _selected_manifest_workloads(
+        COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload=_is_collection_replacement_wrong_text_model_workload,
+    )
+
+
+def _compiled_pattern_module_boundary_wrong_text_model_source_workloads() -> tuple[Workload, ...]:
+    return _selected_manifest_workloads(
+        MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
+    )
+
+
 def _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
-    case: CompiledPatternModuleWrongTextModelCase,
+    source_workload: Workload,
     payload: dict[str, object],
     round_tripped: Workload,
 ) -> None:
-    expected_text_type = str if case.text_model == "str" else bytes
-    expected_haystack_type = str if case.haystack_text_model == "str" else bytes
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+    expected_haystack_type = (
+        str if source_workload.haystack_text_model == "str" else bytes
+    )
 
     assert payload["use_compiled_pattern"] is True
     assert round_tripped.use_compiled_pattern is True
-    assert payload["haystack_text_model"] == case.haystack_text_model
-    assert round_tripped.haystack_text_model == case.haystack_text_model
-    assert payload["expected_exception"] == case.expected_exception
-    assert round_tripped.expected_exception == case.expected_exception
+    assert payload["haystack_text_model"] == source_workload.haystack_text_model
+    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
     assert isinstance(round_tripped.pattern_payload(), expected_text_type)
     assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
-    if case.replacement is not None:
+    if source_workload.replacement is not None:
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+def _compiled_pattern_module_helper_wrong_text_model_expected_callback_result(
+    source_workload: Workload,
+) -> object:
+    if source_workload.operation == "module.subn":
+        return ("module-result", 0)
+    if source_workload.operation == "module.finditer":
+        return ["module-finditer-result"]
+    return "module-result"
+
+
+def _compiled_pattern_module_helper_wrong_text_model_expected_build_calls(
+    source_workload: Workload,
+) -> list[tuple[object, ...]]:
+    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
+    if source_workload.cache_mode == "purged":
+        return [compile_call, ("purge",)]
+    if source_workload.cache_mode == "warm":
+        return [compile_call]
+    raise AssertionError(
+        "unexpected compiled-pattern module helper wrong-text-model workload "
+        f"cache mode {source_workload.cache_mode!r}"
+    )
+
+
+def _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
+    source_workload: Workload,
+) -> tuple[object, ...]:
+    if source_workload.operation in {
+        "module.search",
+        "module.match",
+        "module.fullmatch",
+    }:
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            0,
+            {},
+        )
+    if source_workload.operation == "module.split":
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            source_workload.maxsplit_argument(),
+            0,
+            {},
+        )
+    if source_workload.operation in {"module.findall", "module.finditer"}:
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            0,
+        )
+    if source_workload.operation in {"module.sub", "module.subn"}:
+        return (
+            source_workload.operation,
+            source_workload.replacement_payload(),
+            source_workload.haystack_payload(),
+            source_workload.count_argument(),
+            0,
+            {},
+        )
+    raise AssertionError(
+        "unexpected compiled-pattern module helper wrong-text-model workload "
+        f"operation {source_workload.operation!r}"
+    )
 
 
 def _run_cpython_compiled_pattern_module_helper_wrong_text_model_workload(
@@ -15798,8 +15730,9 @@ def _run_cpython_compiled_pattern_module_helper_wrong_text_model_workload(
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
+    source_workloads = _compiled_pattern_module_helper_wrong_text_model_source_workloads()
     manifest = _compiled_pattern_module_helper_wrong_text_model_manifest(
-        COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES,
+        source_workloads,
         manifest_id="collection-replacement-boundary",
         note_surface="collection/replacement",
     )
@@ -15811,16 +15744,25 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     )
     workloads = load_manifest(manifest_path).workloads
 
+    assert tuple(workload.workload_id for workload in source_workloads) == (
+        "module-split-on-bytes-string-purged-str-compiled-pattern",
+        "module-findall-on-str-string-purged-bytes-compiled-pattern",
+        "module-finditer-on-bytes-string-warm-str-compiled-pattern",
+        "module-sub-on-bytes-string-warm-str-compiled-pattern",
+        "module-subn-on-str-string-purged-bytes-compiled-pattern",
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        f"{workload.workload_id}-contract" for workload in source_workloads
+    )
     assert [workload.use_compiled_pattern for workload in workloads] == [
         True
-    ] * len(COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES)
+    ] * len(source_workloads)
     assert [workload.haystack_text_model for workload in workloads] == [
-        case.haystack_text_model
-        for case in COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES
+        workload.haystack_text_model for workload in source_workloads
     ]
 
-    for case, workload in zip(
-        COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES,
+    for source_workload, workload in zip(
+        source_workloads,
         workloads,
         strict=True,
     ):
@@ -15828,7 +15770,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
         round_tripped = workload_from_payload(payload)
 
         _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
-            case,
+            source_workload,
             payload,
             round_tripped,
         )
@@ -15846,8 +15788,9 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
+    source_workloads = _compiled_pattern_module_boundary_wrong_text_model_source_workloads()
     manifest = _compiled_pattern_module_helper_wrong_text_model_manifest(
-        COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES,
+        source_workloads,
         manifest_id="module-boundary",
         note_surface="module-boundary",
     )
@@ -15859,16 +15802,23 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
     )
     workloads = load_manifest(manifest_path).workloads
 
+    assert tuple(workload.workload_id for workload in source_workloads) == (
+        "module-search-on-bytes-string-warm-str-compiled-pattern",
+        "module-match-on-str-string-purged-bytes-compiled-pattern",
+        "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        f"{workload.workload_id}-contract" for workload in source_workloads
+    )
     assert [workload.use_compiled_pattern for workload in workloads] == [
         True
-    ] * len(COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES)
+    ] * len(source_workloads)
     assert [workload.haystack_text_model for workload in workloads] == [
-        case.haystack_text_model
-        for case in COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES
+        workload.haystack_text_model for workload in source_workloads
     ]
 
-    for case, workload in zip(
-        COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES,
+    for source_workload, workload in zip(
+        source_workloads,
         workloads,
         strict=True,
     ):
@@ -15876,7 +15826,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
         round_tripped = workload_from_payload(payload)
 
         _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
-            case,
+            source_workload,
             payload,
             round_tripped,
         )
@@ -15892,10 +15842,10 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
 
 
 @pytest.mark.parametrize(
-    "case",
+    "source_workload",
     tuple(
-        pytest.param(case, id=case.id)
-        for case in COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_helper_wrong_text_model_source_workloads()
     ),
 )
 @pytest.mark.parametrize(
@@ -15906,16 +15856,16 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
     ),
 )
 def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_wrong_text_model_workloads(
-    case: CompiledPatternModuleWrongTextModelCase,
+    source_workload: Workload,
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_helper_wrong_text_model_workload(case)
+    workload = _compiled_pattern_module_helper_wrong_text_model_workload(source_workload)
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
     _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
-        case,
+        source_workload,
         payload,
         round_tripped,
     )
@@ -15931,10 +15881,10 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_wro
 
 
 @pytest.mark.parametrize(
-    "case",
+    "source_workload",
     tuple(
-        pytest.param(case, id=case.id)
-        for case in COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_boundary_wrong_text_model_source_workloads()
     ),
 )
 @pytest.mark.parametrize(
@@ -15945,16 +15895,18 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_wro
     ),
 )
 def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_wrong_text_model_workloads(
-    case: CompiledPatternModuleWrongTextModelCase,
+    source_workload: Workload,
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_boundary_wrong_text_model_workload(case)
+    workload = _compiled_pattern_module_boundary_wrong_text_model_workload(
+        source_workload
+    )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
     _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
-        case,
+        source_workload,
         payload,
         round_tripped,
     )
@@ -15970,55 +15922,37 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_w
 
 
 @pytest.mark.parametrize(
-    ("case", "expected_build_calls", "expected_callback_call"),
-    (
-        pytest.param(
-            COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES[0],
-            [("compile", "abc", 0), ("purge",)],
-            ("module.split", b"zabczz", 1, 0, {}),
-            id="module-split-on-bytes-string-purged-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES[1],
-            [("compile", "abc", 0)],
-            ("module.sub", "x", b"zabczz", 1, 0, {}),
-            id="module-sub-on-bytes-string-warm-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES[2],
-            [("compile", b"abc", 0), ("purge",)],
-            ("module.subn", b"x", "zabczz", 1, 0, {}),
-            id="module-subn-on-str-string-purged-bytes-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES[3],
-            [("compile", b"abc", 0), ("purge",)],
-            ("module.findall", "zabczz", 0),
-            id="module-findall-on-str-string-purged-bytes-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES[4],
-            [("compile", "abc", 0)],
-            ("module.finditer", b"zabczz", 0),
-            id="module-finditer-on-bytes-string-warm-str-compiled-pattern",
-        ),
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_helper_wrong_text_model_source_workloads()
     ),
 )
 def test_compiled_pattern_module_helper_wrong_text_model_callbacks_precompile_first_argument_before_timing(
-    case: CompiledPatternModuleWrongTextModelCase,
-    expected_build_calls: list[tuple[object, ...]],
-    expected_callback_call: tuple[object, ...],
+    source_workload: Workload,
 ) -> None:
+    expected_build_calls = (
+        _compiled_pattern_module_helper_wrong_text_model_expected_build_calls(
+            source_workload
+        )
+    )
+    expected_callback_call = (
+        _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
+            source_workload
+        )
+    )
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_helper_wrong_text_model_workload(case),
+        _compiled_pattern_module_helper_wrong_text_model_workload(source_workload),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() == case.expected_callback_result
+    assert callback() == _compiled_pattern_module_helper_wrong_text_model_expected_callback_result(
+        source_workload
+    )
 
     compiled_pattern = module.compiled_patterns[0]
     last_call = module.calls[-1]
@@ -16028,43 +15962,37 @@ def test_compiled_pattern_module_helper_wrong_text_model_callbacks_precompile_fi
 
 
 @pytest.mark.parametrize(
-    ("case", "expected_build_calls", "expected_callback_call"),
-    (
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES[0],
-            [("compile", "abc", 0)],
-            ("module.search", b"abc", 0, {}),
-            id="module-search-on-bytes-string-warm-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES[1],
-            [("compile", b"abc", 0), ("purge",)],
-            ("module.match", "abc", 0, {}),
-            id="module-match-on-str-string-purged-bytes-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES[2],
-            [("compile", "abc", 0)],
-            ("module.fullmatch", b"abc", 0, {}),
-            id="module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
-        ),
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_compiled_pattern_module_boundary_wrong_text_model_callbacks_precompile_first_argument_before_timing(
-    case: CompiledPatternModuleWrongTextModelCase,
-    expected_build_calls: list[tuple[object, ...]],
-    expected_callback_call: tuple[object, ...],
+    source_workload: Workload,
 ) -> None:
+    expected_build_calls = (
+        _compiled_pattern_module_helper_wrong_text_model_expected_build_calls(
+            source_workload
+        )
+    )
+    expected_callback_call = (
+        _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
+            source_workload
+        )
+    )
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_boundary_wrong_text_model_workload(case),
+        _compiled_pattern_module_boundary_wrong_text_model_workload(source_workload),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() == case.expected_callback_result
+    assert callback() == _compiled_pattern_module_helper_wrong_text_model_expected_callback_result(
+        source_workload
+    )
 
     compiled_pattern = module.compiled_patterns[0]
     last_call = module.calls[-1]
