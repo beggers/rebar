@@ -9,21 +9,21 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1559 cases across 114 manifests, with all 1559 passing in the current slice; the benchmark publication covers 935/935 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1561 cases across 114 manifests, with all 1561 passing in the current slice; the benchmark publication covers 935/935 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives in the feature queue after the latest same-cycle drain.
+- Catch up the bounded direct `Pattern.finditer()` Python-path benchmark trio on the shared `collection-replacement-boundary` owner route; no ready feature follow-on currently survives beyond that slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
 - The published benchmark surface is still bounded at 935 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1559 cases across 114 manifests, all passing, and 935 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1561 cases across 114 manifests, all passing, and 935 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- No ready feature follow-on currently survives in the feature queue after the latest same-cycle drain.
-- No feature tasks are in progress or blocked, and the done queue now holds `982` completed task files in this checkout.
+- `RBR-0983` is queued to catch up the bounded direct `Pattern.finditer()` Python-path benchmark trio on the shared `collection-replacement-boundary` owner route, and no ready feature follow-on currently survives beyond that slice.
+- No feature tasks are in progress or blocked, and the done queue now holds `985` completed task files in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
