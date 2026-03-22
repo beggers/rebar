@@ -1,6 +1,6 @@
 # RBR-0904: Publish the module-workflow `Pattern.sub()`/`Pattern.subn()` bool-count complement pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -73,3 +73,13 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern_sub_count_keyword_argument_calls_match_cpython or pattern-sub-count-bool-false-bytes or pattern-subn-count-bool-true-str'` passed in this run (`4 passed, 1233 deselected`), so no Rust or Python regex-behavior prerequisite is missing for the adjacent direct-`Pattern` replacement keyword owner path;
   - direct publication probes in this run confirmed `workflow-pattern-sub-count-bool-true-bytes` and `workflow-pattern-subn-count-bool-false-str` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, and `reports/correctness/latest.py`; and
   - `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` already carry the adjacent `pattern-sub-count-bool-keyword-purged-bytes` and `pattern-subn-count-bool-keyword-warm-str` workloads on the shared collection/replacement owner path, so this task can stay correctness-only without inventing another benchmark manifest first.
+
+## Completion Notes
+- 2026-03-22: Published `workflow-pattern-sub-count-bool-true-bytes` and `workflow-pattern-subn-count-bool-false-str` on the existing `module_workflow_surface.py` manifest, updated the shared parity assertions plus combined-scorecard representative case table, and regenerated `reports/correctness/latest.py` without touching benchmark files.
+- The direct runtime cases `pattern-sub-count-bool-true-bytes` and `pattern-subn-count-bool-false-str` were already present in `PATTERN_KEYWORD_CALL_CASES` when this run started, so the net publication delta was: direct Pattern keyword helper subset `25 -> 27` rows (`str 14 -> 15`, `bytes 11 -> 12`, `sub 3 -> 4`, `subn 3 -> 4`), full `module.workflow` bundle `152 -> 154`, and full `module.workflow.pattern_call` suite `55 -> 57` with overall helper counts `sub 4 -> 5` and `subn 4 -> 5`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-count-bool-true-bytes or pattern-subn-count-bool-false-str or module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases'` (`5 passed, 1237 deselected`)
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`1279 passed, 1 skipped, 2059 subtests passed`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0904-module-workflow-pattern-sub-subn-bool-count-complement-pair.py` (`154/154` passed)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1528/1528` passed across `114` manifests)
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` after republishing the tracked report (`38 passed, 2059 subtests passed`)

@@ -860,6 +860,33 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-sub-count-bool-true-bytes",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": True
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "bool", "bytes"],
+      "notes": [
+        "Publishes the bool-count complement Pattern.sub count=True workflow on bytes payloads beside the already published count=False Pattern.sub row."
+      ]
+    },
+    {
       "id": "workflow-pattern-subn-count-keyword-str",
       "operation": "pattern_call",
       "family": "bound_subn_workflow",
@@ -887,6 +914,21 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "keyword", "count", "indexlike", "str"],
       "notes": [
         "Publishes the adjacent bound Pattern.subn count=__index__ workflow on str payloads without widening into compiled-pattern module keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-count-bool-false-str",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": False
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "bool", "str"],
+      "notes": [
+        "Publishes the bool-count complement Pattern.subn count=False workflow on str payloads beside the already published count=True Pattern.subn row."
       ]
     },
     {

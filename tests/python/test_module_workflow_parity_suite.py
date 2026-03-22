@@ -3192,11 +3192,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 152
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 154
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 87, "bytes": 65}
+        {"str": 88, "bytes": 66}
     )
-    assert len(PATTERN_CASES) == 55
+    assert len(PATTERN_CASES) == 57
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 16,
@@ -3205,8 +3205,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "findall": 5,
             "finditer": 5,
             "split": 4,
-            "sub": 4,
-            "subn": 4,
+            "sub": 5,
+            "subn": 5,
         }
     )
     assert len(MODULE_CALL_CASES) == 85
@@ -3851,6 +3851,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-split-str-maxsplit-bool-true",
         "workflow-pattern-subn-count-keyword-str",
         "workflow-pattern-subn-count-indexlike-str",
+        "workflow-pattern-subn-count-bool-false-str",
         "workflow-pattern-subn-count-bool-true-str",
     )
     assert tuple(
@@ -3871,6 +3872,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-sub-count-keyword-bytes",
         "workflow-pattern-sub-count-indexlike-bytes",
         "workflow-pattern-sub-count-bool-false-bytes",
+        "workflow-pattern-sub-count-bool-true-bytes",
     )
     assert tuple(
         case.case_id for case in published_fixture_cases
@@ -3897,8 +3899,10 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-sub-count-keyword-bytes",
         "workflow-pattern-sub-count-indexlike-bytes",
         "workflow-pattern-sub-count-bool-false-bytes",
+        "workflow-pattern-sub-count-bool-true-bytes",
         "workflow-pattern-subn-count-keyword-str",
         "workflow-pattern-subn-count-indexlike-str",
+        "workflow-pattern-subn-count-bool-false-str",
         "workflow-pattern-subn-count-bool-true-str",
     )
     assert tuple(
@@ -3926,9 +3930,15 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "pattern-sub-count-keyword-bytes",
         "pattern-sub-count-indexlike-bytes",
         "pattern-sub-count-bool-false-bytes",
+        "pattern-sub-count-bool-true-bytes",
         "pattern-subn-count-keyword-str",
         "pattern-subn-count-indexlike-str",
+        "pattern-subn-count-bool-false-str",
         "pattern-subn-count-bool-true-str",
+    )
+    assert len(published_fixture_cases) == 27
+    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
+        {"str": 15, "bytes": 12}
     )
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.helper for case in published_fixture_cases) == (
@@ -3940,8 +3950,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
                 "findall": 3,
                 "finditer": 3,
                 "split": 3,
-                "sub": 3,
-                "subn": 3,
+                "sub": 4,
+                "subn": 4,
             }
         )
     )
