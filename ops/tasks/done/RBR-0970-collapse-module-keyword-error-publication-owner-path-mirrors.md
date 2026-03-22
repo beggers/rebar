@@ -1,6 +1,6 @@
 # RBR-0970: Collapse module-keyword-error publication owner-path mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -163,3 +163,6 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases'` currently passes (`1 passed, 1432 deselected`);
   - the publication-count probe in Verification currently passes (`ok 13`), proving the live owner path already resolves to the expected 13-row surface with the current text-model and helper counts; and
   - the structural literal-count probe in Verification currently fails only because `tests/python/test_module_workflow_parity_suite.py` still repeats representative raw module keyword-error fixture and direct case ids for the same owner path instead of deriving them from one canonical publication surface.
+
+## Completion Note
+- Landed a file-local `MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS` surface in `tests/python/test_module_workflow_parity_suite.py`, derived the published fixture ids and selected direct cases from it, and verified the task with the requested pytest, publication-count, and structural literal-count probes.
