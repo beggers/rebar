@@ -3844,7 +3844,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("pattern-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 43)
+        self.assertEqual(len(case.target_manifest.workloads), 49)
         wrong_text_model_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
             _is_pattern_boundary_wrong_text_model_workload,
@@ -3856,6 +3856,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         verbose_regression_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
             _is_pattern_verbose_regression_workload,
+        )
+        fullmatch_verbose_regression_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            lambda workload: (
+                _is_pattern_verbose_regression_workload(workload)
+                and workload.operation == "pattern.fullmatch"
+            ),
         )
         keyword_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
@@ -3880,6 +3887,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             verbose_regression_workload_ids,
             _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            fullmatch_verbose_regression_workload_ids,
+            _PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
         )
         self.assertEqual(
             keyword_workload_ids,
@@ -3921,8 +3932,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             + verbose_regression_workload_ids
             + keyword_workload_ids
             + positional_workload_ids,
-            43,
-            expected_total_workload_count=43,
+            49,
+            expected_total_workload_count=49,
         )
 
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
@@ -5283,11 +5294,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 926,
-                "module_workloads": 918,
+                "measured_workloads": 932,
+                "module_workloads": 924,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 926,
+                "total_workloads": 932,
             },
         )
 
@@ -7872,7 +7883,7 @@ _PATTERN_BOUNDED_WILDCARD_CASE_IDS = (
     "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
 )
 
-_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS = (
+_PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
     "pattern-search-verbose-regression-warm-str",
     "pattern-search-verbose-regression-digits-warm-str",
     "pattern-search-verbose-regression-too-many-digits-purged-str",
@@ -7881,13 +7892,41 @@ _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS = (
     "pattern-search-verbose-regression-too-many-digits-purged-bytes",
 )
 
-_PATTERN_VERBOSE_REGRESSION_CASE_IDS = (
+_PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
+    "pattern-fullmatch-verbose-regression-warm-str",
+    "pattern-fullmatch-verbose-regression-alpha-warm-str",
+    "pattern-fullmatch-verbose-regression-lowercase-key-purged-str",
+    "pattern-fullmatch-verbose-regression-warm-bytes",
+    "pattern-fullmatch-verbose-regression-alpha-warm-bytes",
+    "pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes",
+)
+
+_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS = (
+    *_PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
+    *_PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
+)
+
+_PATTERN_SEARCH_VERBOSE_REGRESSION_CASE_IDS = (
     "workflow-pattern-search-str-verbose-regression",
     "workflow-pattern-search-str-verbose-regression-digits",
     "workflow-pattern-search-str-verbose-regression-too-many-digits",
     "workflow-pattern-search-bytes-verbose-regression",
     "workflow-pattern-search-bytes-verbose-regression-digits",
     "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
+)
+
+_PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS = (
+    "workflow-pattern-fullmatch-str-verbose-regression",
+    "workflow-pattern-fullmatch-str-verbose-regression-alpha",
+    "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
+    "workflow-pattern-fullmatch-bytes-verbose-regression",
+    "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
+    "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
+)
+
+_PATTERN_VERBOSE_REGRESSION_CASE_IDS = (
+    *_PATTERN_SEARCH_VERBOSE_REGRESSION_CASE_IDS,
+    *_PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS,
 )
 
 
@@ -7955,7 +7994,11 @@ def _pattern_verbose_regression_correctness_case_signature(
 ) -> tuple[Any, ...] | None:
     if case.case_id not in _PATTERN_VERBOSE_REGRESSION_CASE_IDS:
         return None
-    if case.operation != "pattern_call" or case.kwargs or case.helper != "search":
+    if (
+        case.operation != "pattern_call"
+        or case.kwargs
+        or case.helper not in {"search", "fullmatch"}
+    ):
         return None
     return (
         f"pattern.{case.helper}",
@@ -7988,7 +8031,7 @@ def _pattern_verbose_regression_workload_signature(
 def _is_pattern_verbose_regression_workload(workload: Any) -> bool:
     return (
         workload.workload_id in _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS
-        and workload.operation == "pattern.search"
+        and workload.operation in {"pattern.search", "pattern.fullmatch"}
         and workload.pattern
         == "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"
         and workload.expected_exception is None
@@ -9420,6 +9463,24 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "pattern-search-verbose-regression-too-many-digits-purged-bytes": (
                     "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
+                ),
+                "pattern-fullmatch-verbose-regression-warm-str": (
+                    "workflow-pattern-fullmatch-str-verbose-regression",
+                ),
+                "pattern-fullmatch-verbose-regression-alpha-warm-str": (
+                    "workflow-pattern-fullmatch-str-verbose-regression-alpha",
+                ),
+                "pattern-fullmatch-verbose-regression-lowercase-key-purged-str": (
+                    "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
+                ),
+                "pattern-fullmatch-verbose-regression-warm-bytes": (
+                    "workflow-pattern-fullmatch-bytes-verbose-regression",
+                ),
+                "pattern-fullmatch-verbose-regression-alpha-warm-bytes": (
+                    "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
+                ),
+                "pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes": (
+                    "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
                 ),
             },
         ),

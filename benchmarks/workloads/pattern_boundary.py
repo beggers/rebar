@@ -540,6 +540,188 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-fullmatch-verbose-regression-warm-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "ENV_VAR = 123",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "verbose",
+        "multiline",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.fullmatch helper path that keeps the bounded verbose-regression digit success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-verbose-regression-alpha-warm-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "ENV_VAR   =   ABCD",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "verbose",
+        "multiline",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.fullmatch helper path that keeps the bounded verbose-regression alpha success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-verbose-regression-lowercase-key-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "env_var = 123",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "verbose",
+        "multiline",
+        "purged-cache",
+        "no-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch helper path that keeps the bounded verbose-regression lowercase-key miss row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-verbose-regression-warm-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "ENV_VAR = 123",
+      "flags": 72,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "verbose",
+        "multiline",
+        "bytes",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm precompiled bytes Pattern.fullmatch helper path that keeps the bounded verbose-regression digit success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-verbose-regression-alpha-warm-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "ENV_VAR   =   ABCD",
+      "flags": 72,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "verbose",
+        "multiline",
+        "bytes",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm precompiled bytes Pattern.fullmatch helper path that keeps the bounded verbose-regression alpha success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "env_var = 123",
+      "flags": 72,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "verbose",
+        "multiline",
+        "bytes",
+        "purged-cache",
+        "no-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch helper path that keeps the bounded verbose-regression lowercase-key miss row on the shared pattern-boundary surface."
+      ]
+    },
+    {
       "id": "pattern-search-on-bytes-string-warm-str",
       "bucket": "pattern-search",
       "family": "module",

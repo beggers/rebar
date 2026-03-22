@@ -1,6 +1,6 @@
 ## RBR-0975: Catch up the direct Pattern verbose-regression fullmatch sextet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -80,3 +80,13 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-fullmatch-str-verbose-regression or pattern-fullmatch-str-verbose-regression-alpha or pattern-fullmatch-str-verbose-regression-lowercase-key or pattern-fullmatch-bytes-verbose-regression or pattern-fullmatch-bytes-verbose-regression-alpha or pattern-fullmatch-bytes-verbose-regression-lowercase-key'` currently passes (`30 passed`), so the exact bounded correctness/parity slice is already green in this checkout;
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... Workload.from_dict(...) / workload_to_payload(...) / run_internal_workload_probe(...) synthetic pattern-fullmatch-verbose-regression-warm-str, pattern-fullmatch-verbose-regression-alpha-warm-str, pattern-fullmatch-verbose-regression-lowercase-key-purged-str, pattern-fullmatch-verbose-regression-warm-bytes, pattern-fullmatch-verbose-regression-alpha-warm-bytes, and pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes ... PY` returns `status == "measured"` for both adapters on all six synthetic workloads through the current benchmark harness in this checkout; and
   - `rg -n 'pattern-fullmatch-verbose-regression-warm-str|pattern-fullmatch-verbose-regression-alpha-warm-str|pattern-fullmatch-verbose-regression-lowercase-key-purged-str|pattern-fullmatch-verbose-regression-warm-bytes|pattern-fullmatch-verbose-regression-alpha-warm-bytes|pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes' benchmarks/workloads/pattern_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while `reports/benchmarks/latest.py` still reports `926` total / `926` measured / `0` known gaps overall with `pattern-boundary` fixed at `43` selected / `43` measured / `43` workload-count rows and `module_workloads == 918`.
+
+## Completion Notes
+- Added the six direct-`Pattern` verbose-regression `fullmatch()` workloads to `benchmarks/workloads/pattern_boundary.py` immediately after `pattern-search-verbose-regression-too-many-digits-purged-bytes` and before the wrong-text-model trio, preserving the exact required order and keeping `pattern-boundary` as the only manifest for this slice.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared `pattern-boundary` owner route now expects `49` measured rows, preserves the existing wrong-text-model/bounded-wildcard/keyword/positional subsets, and widens the existing `pattern-boundary-verbose-regression` anchor contract to map the six new workload ids to the six existing `workflow-pattern-fullmatch-*` correctness anchors with callback-result parity enabled.
+- Regenerated the tracked source-tree-shim benchmark publication in `reports/benchmarks/latest.py`; the tracked file now reports `932` total / `932` measured / `0` known gaps across `30` manifests, `924` module workloads, and `pattern-boundary` at `49` selected / `49` measured / `49` workload-count rows.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-fullmatch-str-verbose-regression or pattern-fullmatch-str-verbose-regression-alpha or pattern-fullmatch-str-verbose-regression-lowercase-key or pattern-fullmatch-bytes-verbose-regression or pattern-fullmatch-bytes-verbose-regression-alpha or pattern-fullmatch-bytes-verbose-regression-lowercase-key'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0975-pattern-fullmatch-verbose-regression-sextet.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
