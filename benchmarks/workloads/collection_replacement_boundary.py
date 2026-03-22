@@ -417,6 +417,76 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-split-unexpected-keyword-purged-str",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "abc",
+      "flags": 0,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "literal",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "literal-text",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.split helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-split-unexpected-keyword-purged-bytes",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": "abc",
+      "haystack": "abc",
+      "flags": 0,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "unexpected keyword argument 'missing'"
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "bytes",
+        "keyword",
+        "unexpected-keyword",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "pattern-text-model",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Purged module.split helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
       "bucket": "module-split",
       "family": "module",

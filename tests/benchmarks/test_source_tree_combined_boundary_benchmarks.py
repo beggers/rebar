@@ -3522,7 +3522,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 37)
+        self.assertEqual(len(expected_measured_workload_ids), 39)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5223,11 +5223,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 893,
-                "module_workloads": 885,
+                "measured_workloads": 895,
+                "module_workloads": 887,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 893,
+                "total_workloads": 895,
             },
         )
 
@@ -8401,6 +8401,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-split-duplicate-maxsplit-keyword-purged-str": (
                     "workflow-module-split-duplicate-maxsplit-keyword",
+                ),
+                "module-split-unexpected-keyword-purged-str": (
+                    "workflow-module-split-unexpected-keyword",
+                ),
+                "module-split-unexpected-keyword-purged-bytes": (
+                    "workflow-module-split-unexpected-keyword-bytes",
                 ),
                 "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern": (
                     "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
@@ -12000,6 +12006,49 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
                 ],
             },
             {
+                "id": "module-split-unexpected-keyword-contract-str",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "abc",
+                "flags": 0,
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'missing'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.split unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-split-unexpected-keyword-contract-bytes",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "abc",
+                "flags": 0,
+                "text_model": "bytes",
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'missing'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep bytes module.split unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "module-subn-unexpected-keyword-contract-bytes",
                 "bucket": "module-subn",
                 "family": "module",
@@ -12089,6 +12138,8 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         sub_indexlike_workload,
         subn_indexlike_workload,
         subn_duplicate_workload,
+        split_missing_str_workload,
+        split_missing_bytes_workload,
         subn_missing_workload,
         sub_missing_after_positional_count_workload,
         subn_missing_after_positional_count_workload,
@@ -12223,6 +12274,30 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         match=re.escape("subn() got multiple values for argument 'count'"),
     ):
         run_benchmark_workload_with_cpython(round_tripped_subn_duplicate)
+
+    assert split_missing_str_workload.kwargs == {"missing": 1}
+    round_tripped_split_missing_str = workload_from_payload(
+        workload_to_payload(split_missing_str_workload)
+    )
+    assert round_tripped_split_missing_str.kwargs == {"missing": 1}
+    assert round_tripped_split_missing_str.keyword_arguments() == {"missing": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("split() got an unexpected keyword argument 'missing'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_split_missing_str)
+
+    assert split_missing_bytes_workload.kwargs == {"missing": 1}
+    round_tripped_split_missing_bytes = workload_from_payload(
+        workload_to_payload(split_missing_bytes_workload)
+    )
+    assert round_tripped_split_missing_bytes.kwargs == {"missing": 1}
+    assert round_tripped_split_missing_bytes.keyword_arguments() == {"missing": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("split() got an unexpected keyword argument 'missing'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_split_missing_bytes)
 
     assert subn_missing_workload.kwargs == {"missing": 1}
     round_tripped_subn_missing = workload_from_payload(
@@ -13173,6 +13248,32 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             id="module-subn-duplicate-count-keyword-bytes",
         ),
         pytest.param(
+            "module.split",
+            "abc",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            "str",
+            None,
+            "split() got an unexpected keyword argument 'missing'",
+            ["kwargs.missing"],
+            id="module-split-unexpected-keyword-str",
+        ),
+        pytest.param(
+            "module.split",
+            "abc",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            "bytes",
+            None,
+            "split() got an unexpected keyword argument 'missing'",
+            ["kwargs.missing"],
+            id="module-split-unexpected-keyword-bytes",
+        ),
+        pytest.param(
             "module.subn",
             "abc",
             {"missing": 1},
@@ -13364,6 +13465,8 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
 _MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS = frozenset(
     {
         "module-split-duplicate-maxsplit-keyword-purged-str",
+        "module-split-unexpected-keyword-purged-str",
+        "module-split-unexpected-keyword-purged-bytes",
         "module-sub-duplicate-count-keyword-warm-str",
         "module-sub-unexpected-keyword-purged-str",
         "module-sub-unexpected-keyword-after-positional-count-purged-str",
