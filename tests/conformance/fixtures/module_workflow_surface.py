@@ -2826,6 +2826,22 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-count-alias-keyword-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "use_compiled_pattern": True,
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count_alias": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "unexpected-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level replacement count_alias keyword-name rejection spelling on the shared module-workflow owner path without widening into a broader compiled-pattern replacement-keyword dump."
+      ]
+    },
+    {
       "id": "workflow-module-sub-str-compiled-pattern-on-bytes-string",
       "operation": "module_call",
       "family": "module_sub_workflow",
@@ -3057,6 +3073,34 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword", "compiled-pattern"],
       "notes": [
         "Publishes the adjacent compiled-pattern module-level subn() unexpected keyword rejection spelling with a positional count already supplied on bytes payloads without widening into a broader compiled-pattern keyword dump."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count_alias": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level replacement count_alias keyword-name rejection spelling on bytes payloads on the shared module-workflow owner path without widening into a broader compiled-pattern replacement-keyword dump."
       ]
     },
     {
