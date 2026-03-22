@@ -850,6 +850,31 @@ def test_invalid_match_group_access_errors_match_cpython(
     assert_invalid_match_group_access_parity(observed, expected)
 
 
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+def test_match_metadata_apis_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    default = object()
+
+    assert observed.groups() == expected.groups()
+    assert observed.groups(default) == expected.groups(default)
+    assert observed.groupdict() == expected.groupdict()
+    assert observed.groupdict(default) == expected.groupdict(default)
+    assert observed.lastindex == expected.lastindex
+    assert observed.lastgroup == expected.lastgroup
+
+
 @pytest.mark.parametrize(
     "case",
     OPTIONAL_GROUP_ABSENT_EXPAND_CASES,
