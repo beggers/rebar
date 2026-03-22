@@ -1,8 +1,9 @@
 # RBR-0927: Publish the module-workflow direct `Pattern` collection/replacement wrong-text-model trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the adjacent direct bound-`Pattern` collection/replacement wrong-text-model trio, so the shared owner path publishes the already-landed CPython-visible `TypeError` behavior for `split()` / `sub()` / `subn()` before Python-path benchmark catch-up or another bound-pattern helper family reopens the queue.
@@ -67,3 +68,14 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... re.compile(\"abc\").split(b\"zabczz\") ... rebar.compile(\"abc\").split(b\"zabczz\") ... re.compile(\"abc\").sub(\"x\", b\"zabczz\") ... rebar.compile(\"abc\").sub(\"x\", b\"zabczz\") ... re.compile(b\"abc\").subn(b\"x\", \"zabczz\") ... rebar.compile(b\"abc\").subn(b\"x\", \"zabczz\") ... PY` shows CPython and `rebar` already agree on the exact bounded `TypeError.args`: `(\"cannot use a string pattern on a bytes-like object\",)` for the split/sub str-pattern rows and `(\"cannot use a bytes pattern on a string-like object\",)` for the `subn()` bytes-pattern row;
   - `rg -n 'workflow-pattern-split-str-pattern-on-bytes-string|workflow-pattern-sub-str-pattern-on-bytes-string|workflow-pattern-subn-bytes-pattern-on-str-string' tests/conformance/fixtures/module_workflow_surface.py reports/correctness/latest.py` returned no matches in this run, so the exact direct bound-pattern publication rows are still absent; and
   - `reports/correctness/latest.py` currently reports `1534` total / `1534` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `160`, `module.workflow.str` at `91`, `module.workflow.bytes` at `69`, `module.workflow.module_call` at `85`, and `module.workflow.pattern_call` at `63`.
+
+## Completion
+- Added exactly three `pattern_call` publication rows to `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-pattern-split-str-pattern-on-bytes-string`, `workflow-pattern-sub-str-pattern-on-bytes-string`, and `workflow-pattern-subn-bytes-pattern-on-str-string`, in the required positions beside the existing direct bound-pattern keyword rows and with explicit `wrong-text-model` categories.
+- Extended `tests/python/test_module_workflow_parity_suite.py` with a focused `test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases` selector/assertion path that maps the three published fixture rows back to the landed direct cases in `BOUND_PATTERN_TYPE_ERROR_CASES`, while keeping the existing six-row keyword-error selector unchanged.
+- Updated the module-workflow bundle expectations in `tests/python/test_module_workflow_parity_suite.py` to `163` total rows with `93` `str`, `70` `bytes`, `85` `module_call`, and `66` `pattern_call` rows; the `pattern_call` helper breakdown now carries `split: 7`, `sub: 8`, and `subn: 8`.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` representative coverage and republished `reports/correctness/latest.py`. The tracked published artifact remains in the diff and now reports `1537` total / `1537` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `163`, `module.workflow.str` at `93`, `module.workflow.bytes` at `70`, `module.workflow.module_call` unchanged at `85`, and `module.workflow.pattern_call` at `66`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-str-pattern-on-bytes-string or pattern-sub-str-pattern-on-bytes-string or pattern-subn-bytes-pattern-on-str-string or module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0927-module-workflow-pattern-collection-replacement-wrong-text-model-trio.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

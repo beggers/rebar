@@ -2325,6 +2325,24 @@ def _published_pattern_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
     )
 
 
+def _published_pattern_wrong_text_model_fixture_cases() -> tuple[FixtureCase, ...]:
+    direct_signatures = {
+        _pattern_helper_error_direct_signature(case)
+        for case in BOUND_PATTERN_TYPE_ERROR_CASES
+        if case.case_id
+        in {
+            "pattern-split-str-pattern-on-bytes-string",
+            "pattern-sub-str-pattern-on-bytes-string",
+            "pattern-subn-bytes-pattern-on-str-string",
+        }
+    }
+    return tuple(
+        case
+        for case in PATTERN_CASES
+        if _pattern_keyword_fixture_signature(case) in direct_signatures
+    )
+
+
 # Keep the representative fixture-backed rows small, then use a compact matrix
 # here to prove the helpers keep accepting the broader bool/int/__index__ slice.
 WORKFLOW_NUMERIC_COERCION_VALUES = (
@@ -3422,11 +3440,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 160
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 163
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 91, "bytes": 69}
+        {"str": 93, "bytes": 70}
     )
-    assert len(PATTERN_CASES) == 63
+    assert len(PATTERN_CASES) == 66
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 16,
@@ -3434,9 +3452,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "fullmatch": 11,
             "findall": 5,
             "finditer": 5,
-            "split": 6,
-            "sub": 7,
-            "subn": 7,
+            "split": 7,
+            "sub": 8,
+            "subn": 8,
         }
     )
     assert len(MODULE_CALL_CASES) == 85
@@ -4277,6 +4295,79 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             "split": 2,
             "sub": 2,
             "subn": 2,
+        }
+    )
+    assert tuple(case.helper for case in published_fixture_cases) == tuple(
+        case.helper for case in selected_direct_cases
+    )
+
+    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
+        )
+        assert case_pattern(fixture_case) == direct_case.pattern
+        assert tuple(fixture_case.args) == direct_case.args
+        assert _workflow_keyword_kwargs_signature(
+            fixture_case.kwargs
+        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
+        assert fixture_case.flags == 0
+
+
+def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
+) -> None:
+    published_fixture_cases = _published_pattern_wrong_text_model_fixture_cases()
+    direct_cases_by_signature = {
+        _pattern_helper_error_direct_signature(case): case
+        for case in BOUND_PATTERN_TYPE_ERROR_CASES
+        if case.case_id
+        in {
+            "pattern-split-str-pattern-on-bytes-string",
+            "pattern-sub-str-pattern-on-bytes-string",
+            "pattern-subn-bytes-pattern-on-str-string",
+        }
+    }
+    selected_direct_cases = tuple(
+        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
+        for case in published_fixture_cases
+    )
+
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            published_fixture_cases,
+            "str",
+        )
+    ) == (
+        "workflow-pattern-split-str-pattern-on-bytes-string",
+        "workflow-pattern-sub-str-pattern-on-bytes-string",
+    )
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            published_fixture_cases,
+            "bytes",
+        )
+    ) == ("workflow-pattern-subn-bytes-pattern-on-str-string",)
+    assert tuple(case.case_id for case in published_fixture_cases) == (
+        "workflow-pattern-split-str-pattern-on-bytes-string",
+        "workflow-pattern-sub-str-pattern-on-bytes-string",
+        "workflow-pattern-subn-bytes-pattern-on-str-string",
+    )
+    assert tuple(case.case_id for case in selected_direct_cases) == (
+        "pattern-split-str-pattern-on-bytes-string",
+        "pattern-sub-str-pattern-on-bytes-string",
+        "pattern-subn-bytes-pattern-on-str-string",
+    )
+    assert len(published_fixture_cases) == 3
+    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
+        {"str": 2, "bytes": 1}
+    )
+    assert len(selected_direct_cases) == len(published_fixture_cases)
+    assert Counter(case.helper for case in published_fixture_cases) == Counter(
+        {
+            "split": 1,
+            "sub": 1,
+            "subn": 1,
         }
     )
     assert tuple(case.helper for case in published_fixture_cases) == tuple(

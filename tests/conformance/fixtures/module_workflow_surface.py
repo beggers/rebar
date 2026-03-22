@@ -816,6 +816,24 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-split-str-pattern-on-bytes-string",
+      "operation": "pattern_call",
+      "family": "bound_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        }
+      ],
+      "categories": ["workflow", "split", "literal", "str", "wrong-text-model"],
+      "notes": [
+        "Publishes the direct bound Pattern.split wrong-text-model rejection spelling adjacent to the already-published keyword-carrying and keyword-error rows without widening into a broader bound-pattern helper dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-sub-count-keyword-bytes",
       "operation": "pattern_call",
       "family": "bound_sub_workflow",
@@ -954,6 +972,25 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-sub-str-pattern-on-bytes-string",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": [
+        "x",
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        }
+      ],
+      "categories": ["workflow", "sub", "literal", "str", "wrong-text-model"],
+      "notes": [
+        "Publishes the direct bound Pattern.sub wrong-text-model rejection spelling adjacent to the already-published keyword-carrying and keyword-error rows without widening into a broader bound-pattern helper dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-subn-count-keyword-str",
       "operation": "pattern_call",
       "family": "bound_subn_workflow",
@@ -1066,6 +1103,26 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword"],
       "notes": [
         "Publishes the direct bound Pattern.subn unexpected-keyword rejection spelling beside the adjacent replacement keyword rows without widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-bytes-pattern-on-str-string",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        "zabczz"
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "wrong-text-model"],
+      "notes": [
+        "Publishes the direct bound Pattern.subn wrong-text-model rejection spelling adjacent to the already-published keyword-carrying and keyword-error rows without widening into a broader bound-pattern helper dump."
       ]
     },
     {
