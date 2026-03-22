@@ -4643,9 +4643,24 @@ def test_record_generated_match_failure_runs_follow_on_checks_for_expected_match
     (
         pytest.param("result", ("result",), id="match-result"),
         pytest.param(
+            "convenience",
+            ("result", "convenience"),
+            id="convenience",
+        ),
+        pytest.param(
             "valid-group-access",
             ("result", "convenience", "valid-group-access"),
             id="valid-group-access",
+        ),
+        pytest.param(
+            "invalid-group-access",
+            (
+                "result",
+                "convenience",
+                "valid-group-access",
+                "invalid-group-access",
+            ),
+            id="invalid-group-access",
         ),
     ),
 )
