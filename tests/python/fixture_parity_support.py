@@ -697,6 +697,11 @@ def assert_fixture_bundle_tracks_published_case_frontier(
 ) -> None:
     ordered_selected_case_ids = tuple(selected_case_ids)
     ordered_expected_uncovered_case_ids = tuple(expected_uncovered_case_ids)
+    if not ordered_selected_case_ids:
+        raise AssertionError(
+            f"{bundle.expected_manifest_id} selected_case_ids must not be empty"
+        )
+
     duplicate_selected_case_ids = duplicate_string_ids(ordered_selected_case_ids)
     if duplicate_selected_case_ids:
         raise AssertionError(

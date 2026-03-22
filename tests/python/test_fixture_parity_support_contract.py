@@ -3637,6 +3637,25 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_accepts_selected_a
     )
 
 
+def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_empty_selected_case_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            f"{bundle.expected_manifest_id} selected_case_ids must not be empty"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=(),
+            expected_uncovered_case_ids=published_case_ids,
+        )
+
+
 @pytest.mark.parametrize("duplicate_source", ("selected", "uncovered"))
 def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_duplicate_case_ids(
     tmp_path: pathlib.Path,
