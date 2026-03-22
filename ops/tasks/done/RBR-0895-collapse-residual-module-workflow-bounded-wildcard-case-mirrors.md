@@ -1,8 +1,9 @@
 # RBR-0895: Collapse residual module-workflow bounded-wildcard case mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the remaining bounded-wildcard published-case mirrors in `tests/python/test_module_workflow_parity_suite.py`, so that owner file derives its published bounded-wildcard slices directly from the live fixture-backed module/compile/pattern case inventories instead of keeping five extra top-level tuple constants.
@@ -56,3 +57,11 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard or module_workflow_parity_suite_stays_aligned_with_published_fixture or module_workflow_direct_test_buckets_cover_selected_frontier'` currently passes (`47 passed, 1180 deselected`);
   - `rg -n '^PUBLISHED_BOUNDED_WILDCARD_(RAW_MODULE_HELPER_CASES|COMPILE_CASES|PATTERN_CASES|PATTERN_MATCH_CASES|PATTERN_COLLECTION_CASES) = ' tests/python/test_module_workflow_parity_suite.py` currently reports the five residual top-level mirrors at lines `231`, `344`, `348`, `352`, and `357`; and
   - those mirrors are bounded to one owner file and already feed the direct-bucket check plus the bounded-wildcard compile/pattern parametrizations, so the refactor stays small and local.
+
+## Completion
+- Removed the five `PUBLISHED_BOUNDED_WILDCARD_*` tuple mirrors from `tests/python/test_module_workflow_parity_suite.py`.
+- Added five file-local bounded-wildcard selector functions that derive the same published raw-module, compile, pattern, pattern-match, and pattern-collection slices directly from `MODULE_CALL_CASES`, `COMPILE_CASES_BY_ID`, `PATTERN_CASES_BY_ID`, and the existing bounded-wildcard case-id tuples.
+- Rewired the direct-frontier bucket coverage check, the bounded-wildcard publication/alignment assertions, and the bounded-wildcard compile/pattern parametrizations to use those live selectors while preserving the existing compile order, pattern order, and match-vs-collection split.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard or module_workflow_parity_suite_stays_aligned_with_published_fixture or module_workflow_direct_test_buckets_cover_selected_frontier'`
+  - `bash -lc "! rg -n '^PUBLISHED_BOUNDED_WILDCARD_(RAW_MODULE_HELPER_CASES|COMPILE_CASES|PATTERN_CASES|PATTERN_MATCH_CASES|PATTERN_COLLECTION_CASES) = ' tests/python/test_module_workflow_parity_suite.py"`

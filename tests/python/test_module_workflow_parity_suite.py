@@ -228,13 +228,6 @@ MATCH_HELPER_PATTERN_CASES = tuple(
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
-PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
-    case
-    for case in MODULE_CALL_CASES
-    if not case.use_compiled_pattern
-    and case_pattern(case) == "a.c"
-    and case.helper in {"search", "match", "fullmatch"}
-)
 PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
     case
     for case in PATTERN_CASES
@@ -341,24 +334,44 @@ VERBOSE_BYTES_FULLMATCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
 ]
 
 
-PUBLISHED_BOUNDED_WILDCARD_COMPILE_CASES = tuple(
-    COMPILE_CASES_BY_ID[case_id]
-    for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS
-)
-PUBLISHED_BOUNDED_WILDCARD_PATTERN_CASES = tuple(
-    PATTERN_CASES_BY_ID[case_id]
-    for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS
-)
-PUBLISHED_BOUNDED_WILDCARD_PATTERN_MATCH_CASES = tuple(
-    case
-    for case in PUBLISHED_BOUNDED_WILDCARD_PATTERN_CASES
-    if case.helper in {"search", "match", "fullmatch"}
-)
-PUBLISHED_BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES = tuple(
-    case
-    for case in PUBLISHED_BOUNDED_WILDCARD_PATTERN_CASES
-    if case.helper in {"findall", "finditer"}
-)
+def _published_bounded_wildcard_raw_module_helper_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in MODULE_CALL_CASES
+        if not case.use_compiled_pattern
+        and case_pattern(case) == "a.c"
+        and case.helper in {"search", "match", "fullmatch"}
+    )
+
+
+def _published_bounded_wildcard_compile_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        COMPILE_CASES_BY_ID[case_id]
+        for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS
+    )
+
+
+def _published_bounded_wildcard_pattern_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        PATTERN_CASES_BY_ID[case_id]
+        for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS
+    )
+
+
+def _published_bounded_wildcard_pattern_match_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in _published_bounded_wildcard_pattern_fixture_cases()
+        if case.helper in {"search", "match", "fullmatch"}
+    )
+
+
+def _published_bounded_wildcard_pattern_collection_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in _published_bounded_wildcard_pattern_fixture_cases()
+        if case.helper in {"findall", "finditer"}
+    )
 
 
 def _public_surface_case_contract_token(case: FixtureCase) -> str:
@@ -3031,7 +3044,8 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             "cache": frozenset(case.case_id for case in CACHE_CASES),
             "purge": frozenset(case.case_id for case in PURGE_CASES),
             "bounded-wildcard-module-helper": frozenset(
-                case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+                case.case_id
+                for case in _published_bounded_wildcard_raw_module_helper_fixture_cases()
             ),
             "module-keyword-helper": frozenset(
                 case.case_id for case in _published_module_keyword_fixture_cases()
@@ -3146,8 +3160,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
 
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
     verbose_bytes_pattern = case_pattern(VERBOSE_BYTES_COMPILE_CASE)
-    bounded_wildcard_compile_cases = PUBLISHED_BOUNDED_WILDCARD_COMPILE_CASES
-    bounded_wildcard_pattern_cases = PUBLISHED_BOUNDED_WILDCARD_PATTERN_CASES
+    bounded_wildcard_compile_cases = _published_bounded_wildcard_compile_fixture_cases()
+    bounded_wildcard_pattern_cases = _published_bounded_wildcard_pattern_fixture_cases()
 
     assert all(case.text_model == "str" for case in bounded_wildcard_compile_cases)
     assert tuple(
@@ -3335,6 +3349,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
 
 def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_from_direct_cases(
 ) -> None:
+    published_fixture_cases = _published_bounded_wildcard_raw_module_helper_fixture_cases()
     published_case_signatures = frozenset(
         (
             case.helper,
@@ -3343,7 +3358,7 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
             case.flags,
             case.use_compiled_pattern,
         )
-        for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+        for case in published_fixture_cases
     )
     selected_direct_cases = tuple(
         case
@@ -3359,28 +3374,23 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
     )
 
     assert tuple(
-        case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+        case.case_id for case in published_fixture_cases
     ) == (
         "workflow-module-search-str-bounded-wildcard-ignorecase",
         "workflow-module-match-str-bounded-wildcard-miss",
         "workflow-module-fullmatch-str-bounded-wildcard",
     )
-    assert len(selected_direct_cases) == len(
-        PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
-    )
+    assert len(selected_direct_cases) == len(published_fixture_cases)
     assert tuple(case.case_id for case in selected_direct_cases) == (
         "module-search-ignorecase-bounded-hit",
         "module-match-bounded-miss",
         "module-fullmatch-bounded-hit",
     )
     assert tuple(
-        case.helper for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+        case.helper for case in published_fixture_cases
     ) == tuple(case.helper for case in selected_direct_cases)
 
-    for fixture_case, direct_case in zip(
-        PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES,
-        selected_direct_cases,
-    ):
+    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
         assert direct_case.compiled is False
         assert fixture_case.use_compiled_pattern is False
         assert fixture_case.text_model == "str"
@@ -6223,7 +6233,7 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
 
 @pytest.mark.parametrize(
     "case",
-    PUBLISHED_BOUNDED_WILDCARD_COMPILE_CASES,
+    _published_bounded_wildcard_compile_fixture_cases(),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_compile_metadata_matches_cpython(
@@ -6342,7 +6352,7 @@ def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() ->
 
 @pytest.mark.parametrize(
     "case",
-    PUBLISHED_BOUNDED_WILDCARD_PATTERN_MATCH_CASES,
+    _published_bounded_wildcard_pattern_match_fixture_cases(),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_pattern_match_helpers_match_cpython(
@@ -6368,7 +6378,7 @@ def test_bounded_wildcard_pattern_match_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    PUBLISHED_BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES,
+    _published_bounded_wildcard_pattern_collection_fixture_cases(),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_pattern_collection_helpers_match_cpython(
