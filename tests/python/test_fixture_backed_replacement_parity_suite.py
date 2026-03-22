@@ -2687,33 +2687,119 @@ def test_source_package_pattern_whole_match_template_replacement_matches_cpython
     _assert_pattern_replacement_parity(pattern, replacement, string, count)
 
 
-def test_source_package_literal_replacement_helpers_reject_string_bytes_mismatch() -> None:
-    with pytest.raises(TypeError) as string_pattern_error:
-        rebar.sub("abc", "x", b"abc")
+def _capture_type_error(callback: Callable[[], object]) -> TypeError:
+    with pytest.raises(TypeError) as captured:
+        callback()
+    return captured.value
 
-    assert str(string_pattern_error.value) == (
-        "cannot use a string pattern on a bytes-like object"
+
+def _invoke_literal_replacement_helper(
+    regex_api: object,
+    *,
+    helper: str,
+    use_compiled_pattern: bool,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> object:
+    if use_compiled_pattern:
+        compiled = regex_api.compile(pattern)
+        return getattr(compiled, helper)(replacement, string)
+    return getattr(regex_api, helper)(pattern, replacement, string)
+
+
+@pytest.mark.parametrize("helper", _LITERAL_REPLACEMENT_HELPERS)
+@pytest.mark.parametrize(
+    ("use_compiled_pattern", "pattern", "replacement", "string"),
+    (
+        pytest.param(
+            False,
+            "abc",
+            "x",
+            b"abc",
+            id="module-str-pattern-on-bytes-string",
+        ),
+        pytest.param(
+            False,
+            b"abc",
+            b"x",
+            "abc",
+            id="module-bytes-pattern-on-str-string",
+        ),
+        pytest.param(
+            False,
+            "abc",
+            b"x",
+            "abc",
+            id="module-bytes-replacement-on-str-pattern",
+        ),
+        pytest.param(
+            False,
+            b"abc",
+            "x",
+            b"abc",
+            id="module-str-replacement-on-bytes-pattern",
+        ),
+        pytest.param(
+            True,
+            "abc",
+            "x",
+            b"abc",
+            id="pattern-str-pattern-on-bytes-string",
+        ),
+        pytest.param(
+            True,
+            b"abc",
+            b"x",
+            "abc",
+            id="pattern-bytes-pattern-on-str-string",
+        ),
+        pytest.param(
+            True,
+            "abc",
+            b"x",
+            "abc",
+            id="pattern-bytes-replacement-on-str-pattern",
+        ),
+        pytest.param(
+            True,
+            b"abc",
+            "x",
+            b"abc",
+            id="pattern-str-replacement-on-bytes-pattern",
+        ),
+    ),
+)
+def test_source_package_literal_replacement_helpers_match_cpython_type_errors(
+    helper: str,
+    use_compiled_pattern: bool,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> None:
+    observed_error = _capture_type_error(
+        lambda: _invoke_literal_replacement_helper(
+            rebar,
+            helper=helper,
+            use_compiled_pattern=use_compiled_pattern,
+            pattern=pattern,
+            replacement=replacement,
+            string=string,
+        )
+    )
+    expected_error = _capture_type_error(
+        lambda: _invoke_literal_replacement_helper(
+            re,
+            helper=helper,
+            use_compiled_pattern=use_compiled_pattern,
+            pattern=pattern,
+            replacement=replacement,
+            string=string,
+        )
     )
 
-    with pytest.raises(TypeError) as bytes_pattern_error:
-        rebar.sub(b"abc", b"x", "abc")
-
-    assert str(bytes_pattern_error.value) == (
-        "cannot use a bytes pattern on a string-like object"
-    )
-
-    with pytest.raises(
-        TypeError,
-        match=re.escape("expected str instance, bytes found"),
-    ):
-        rebar.sub("abc", b"x", "abc")
-
-    bytes_pattern = rebar.compile(b"abc")
-    with pytest.raises(
-        TypeError,
-        match=re.escape("expected a bytes-like object, str found"),
-    ):
-        bytes_pattern.sub("x", b"abc")
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
 
 
 def test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation(
