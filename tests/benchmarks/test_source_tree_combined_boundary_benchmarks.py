@@ -9471,14 +9471,7 @@ def test_default_benchmark_published_full_suite_selector_covers_tracked_manifest
 
 @pytest.mark.parametrize(
     "selector",
-    tuple(
-        selector
-        for selector in declared_string_constants_by_suffix(
-            benchmarks,
-            name_suffix="_MANIFEST_SELECTOR",
-        ).values()
-        if selector != PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
-    ),
+    tuple(benchmarks._NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES),
     ids=lambda selector: selector,
 )
 def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants(

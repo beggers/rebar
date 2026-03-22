@@ -4529,18 +4529,13 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         published_fixture_paths = correctness.select_correctness_fixture_paths(
             correctness.PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
         )
-        declared_selectors = tuple(
-            selector
-            for selector in declared_string_constants_by_suffix(
-                correctness,
-                name_suffix="_FIXTURE_SELECTOR",
-            ).values()
-            if selector != correctness.PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+        shared_subset_selectors = tuple(
+            correctness._NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES
         )
 
-        self.assertNotEqual(declared_selectors, ())
+        self.assertNotEqual(shared_subset_selectors, ())
 
-        for selector in declared_selectors:
+        for selector in shared_subset_selectors:
             with self.subTest(selector=selector):
                 selected_paths = correctness.select_correctness_fixture_paths(selector)
                 selected_path_set = set(selected_paths)

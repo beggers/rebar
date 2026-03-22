@@ -74,19 +74,6 @@ class _NonCachingStdlibBackend:
         return re.compile(pattern, flags)
 
 
-def _declared_nondefault_correctness_fixture_selectors() -> tuple[str, ...]:
-    return tuple(
-        sorted(
-            selector
-            for selector in declared_string_constants_by_suffix(
-                correctness,
-                name_suffix="_FIXTURE_SELECTOR",
-            ).values()
-            if selector != PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-        )
-    )
-
-
 def _assert_json_literal_safe(value: object) -> None:
     if value is None or isinstance(value, (bool, int, float, str)):
         return
@@ -685,7 +672,9 @@ def _capture_expand_error(match: object, template: object) -> BaseException:
 
 @pytest.mark.parametrize(
     "selector",
-    _declared_nondefault_correctness_fixture_selectors(),
+    tuple(
+        sorted(correctness._NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES)
+    ),
 )
 def test_shared_correctness_fixture_selectors_resolve_published_paths(
     selector: str,
@@ -789,18 +778,23 @@ def test_declared_correctness_fixture_selectors_match_registry_keys() -> None:
 
 
 def test_declared_nondefault_correctness_fixture_selectors_are_parametrized_once() -> None:
-    declared_nondefault_selectors = set(
-        declared_string_constants_by_suffix(
-            correctness,
-            name_suffix="_FIXTURE_SELECTOR",
-        ).values()
+    declared_nondefault_selectors = tuple(
+        sorted(
+            selector
+            for selector in declared_string_constants_by_suffix(
+                correctness,
+                name_suffix="_FIXTURE_SELECTOR",
+            ).values()
+            if selector != PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+        )
     )
-    declared_nondefault_selectors.remove(PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR)
-    expected_selectors = _declared_nondefault_correctness_fixture_selectors()
+    expected_selectors = tuple(
+        sorted(correctness._NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES)
+    )
 
     assert PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR not in expected_selectors
     assert len(expected_selectors) == len(set(expected_selectors))
-    assert set(expected_selectors) == declared_nondefault_selectors
+    assert expected_selectors == declared_nondefault_selectors
 
 
 def test_published_full_suite_fixture_selector_matches_tracked_fixture_inventory() -> None:

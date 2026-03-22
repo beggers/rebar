@@ -1,8 +1,9 @@
 # RBR-0891: Collapse residual nondefault selector-enumeration mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the remaining owner-test selector enumeration mirrors where tests discover nondefault correctness or benchmark selectors by scanning module constants instead of iterating the harness-owned selector tables directly, so the selector contracts keep one live membership source after `RBR-0885`, `RBR-0887`, and `RBR-0889`.
@@ -61,3 +62,8 @@ Created: 2026-03-22
   - `RBR-0885` moved the benchmark selector registry and owner test onto one declarative nondefault table;
   - `RBR-0887` removed the matching correctness-side canonical membership mirror; and
   - `RBR-0889` removed the residual scorecard helper/report-path pass-throughs, leaving these selector-enumeration mirrors as the next bounded owner-test cleanup.
+
+## Completion
+- Removed `_declared_nondefault_correctness_fixture_selectors()` from `tests/python/test_fixture_parity_support_contract.py` and drove the shared-selector parametrization plus the declared-selector inventory check directly from `correctness._NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES`, keeping the existing alphabetized selector order for that owner test.
+- Switched the shared subset contracts in `tests/conformance/test_combined_correctness_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to iterate directly from the harness-owned nondefault selector tables instead of rescanning declared string constants.
+- Verified with the task's three focused pytest commands plus the two grep absence checks proving the helper and residual selector-enumeration scans are gone.
