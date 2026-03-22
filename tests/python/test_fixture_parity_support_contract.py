@@ -458,11 +458,109 @@ def test_assert_mixed_text_model_case_pairs_returns_str_and_bytes_rows() -> None
     )
 
 
-def test_assert_mixed_text_model_case_pairs_rejects_structural_drift() -> None:
+@pytest.mark.parametrize(
+    ("drift_kind", "expected_message"),
+    (
+        pytest.param(
+            "missing-bytes",
+            "mixed-text-model contract requires str/bytes rows",
+            id="missing-bytes",
+        ),
+        pytest.param(
+            "row-count",
+            "mixed-text-model rows drifted",
+            id="row-count",
+        ),
+        pytest.param(
+            "case-id-pairing",
+            "mixed-text-model case id pairing drifted",
+            id="case-id-pairing",
+        ),
+    ),
+)
+def test_assert_mixed_text_model_case_pairs_rejects_pairing_drift(
+    drift_kind: str,
+    expected_message: str,
+) -> None:
+    bundle = _paired_mixed_text_contract_bundle()
+
+    if drift_kind == "missing-bytes":
+        drifted_bundle = replace(bundle, cases=bundle.cases[:2])
+    elif drift_kind == "row-count":
+        drifted_bundle = replace(bundle, cases=bundle.cases[:-1])
+    elif drift_kind == "case-id-pairing":
+        drifted_bundle = replace(
+            bundle,
+            cases=(
+                bundle.cases[0],
+                bundle.cases[1],
+                replace(
+                    bundle.cases[2],
+                    case_id="synthetic-mixed-module-search-unpaired-bytes",
+                ),
+                bundle.cases[3],
+            ),
+        )
+    else:
+        raise AssertionError(f"unexpected drift_kind {drift_kind!r}")
+
+    with pytest.raises(AssertionError, match=re.escape(expected_message)):
+        assert_mixed_text_model_case_pairs(drifted_bundle)
+
+
+@pytest.mark.parametrize(
+    ("drift_kwargs", "expected_message"),
+    (
+        pytest.param(
+            {"operation": "pattern_call"},
+            "operation drifted",
+            id="operation",
+        ),
+        pytest.param(
+            {"helper": "fullmatch"},
+            "helper drifted",
+            id="helper",
+        ),
+        pytest.param(
+            {"family": "synthetic-mixed-family-drift"},
+            "family drifted",
+            id="family",
+        ),
+        pytest.param(
+            {"use_compiled_pattern": True},
+            "compiled-pattern routing drifted",
+            id="compiled-pattern-routing",
+        ),
+        pytest.param(
+            {"include_pattern_arg": True},
+            "include-pattern routing drifted",
+            id="include-pattern-routing",
+        ),
+        pytest.param(
+            {"kwargs": {"pos": 1}},
+            "kwargs drifted",
+            id="kwargs",
+        ),
+        pytest.param(
+            {"source_kwargs": {"pos": 1}},
+            "source kwargs drifted",
+            id="source-kwargs",
+        ),
+        pytest.param(
+            {"categories": ["workflow", "search", "capturing", "bytes"]},
+            "categories drifted",
+            id="categories",
+        ),
+    ),
+)
+def test_assert_mixed_text_model_case_pairs_rejects_structural_drift(
+    drift_kwargs: dict[str, object],
+    expected_message: str,
+) -> None:
     bundle = _paired_mixed_text_contract_bundle()
     drifted_bytes_case = replace(
         bundle.cases[2],
-        helper="fullmatch",
+        **drift_kwargs,
     )
     drifted_bundle = replace(
         bundle,
@@ -476,7 +574,7 @@ def test_assert_mixed_text_model_case_pairs_rejects_structural_drift() -> None:
 
     with pytest.raises(
         AssertionError,
-        match=re.escape("mixed-text-model structural drifted"),
+        match=re.escape(expected_message),
     ):
         assert_mixed_text_model_case_pairs(drifted_bundle)
 
