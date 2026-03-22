@@ -1,6 +1,6 @@
 ## RBR-0944: Collapse compiled-pattern module-helper keyword-error contract mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -93,3 +93,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error'` currently passes (`25 passed, 577 deselected, 8 subtests passed`)
   - the selector probe in Verification currently passes (`ok 8`), proving the eight-row surface already exists in `benchmarks/workloads/collection_replacement_boundary.py`
   - `bash -lc "! rg -n 'def _compiled_pattern_module_helper_keyword_error_workload\\(|id=\\\"module-split-duplicate-maxsplit-keyword-str-compiled-pattern\\\"|id=\\\"module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern\\\"' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails only because the exact mirror layer is still present at lines `16424`, `16667`, `16772`, `16851`, and `16949`
+
+## Completion Note
+- Replaced the detached compiled-pattern module-helper keyword-error builder and handwritten parameter tuples in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with file-local manifest-selected source workloads plus local contract payload helpers derived from `COLLECTION_REPLACEMENT_MANIFEST_PATH`.
+- Kept the same eight source workload ids and order, generated `-contract` ids from them, preserved `use_compiled_pattern`, `count`/`maxsplit`, `kwargs`, expected exception payloads, `str`/`bytes` typing, and `haystack_text_model is None`, and moved the callback/probe/precompile checks onto that same live manifest-selected surface.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error'`
+  - `bash -lc "! rg -n 'def _compiled_pattern_module_helper_keyword_error_workload\\(|id=\\\"module-split-duplicate-maxsplit-keyword-str-compiled-pattern\\\"|id=\\\"module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern\\\"' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the selector assertion from the task (`ok 8`)
