@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0916` now leads the shared direct bound-pattern replacement frontier by publishing the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword pair on `module_workflow_surface.py`; no ready feature follow-on currently survives behind that correctness-publication slice.
+`RBR-0919` now leads the shared direct bound-pattern replacement frontier by catching up the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword pair on `collection_replacement_boundary.py`; no ready feature follow-on currently survives behind that Python-path benchmark slice.
 
 ## Ordered Work
-1. `RBR-0916` is the active frontier task on the shared direct bound-pattern replacement owner path, publishing `re.compile("abc").sub("x", "abc", missing=1)` and `re.compile(b"abc").subn(b"x", b"abc", missing=1)` into `tests/conformance/fixtures/module_workflow_surface.py` and `reports/correctness/latest.py`; no ready feature follow-on currently survives behind that bounded correctness-publication step.
+1. `RBR-0919` is the active frontier task on the shared direct bound-pattern replacement owner path, benchmarking `re.compile("abc").sub("x", "abc", missing=1)` and `re.compile(b"abc").subn(b"x", b"abc", missing=1)` through `benchmarks/workloads/collection_replacement_boundary.py` and `reports/benchmarks/latest.py`; no ready feature follow-on currently survives behind that bounded Python-path benchmark step.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
