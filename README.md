@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1530 cases across 114 manifests, with all 1530 passing in the current slice; the benchmark publication covers 878/878 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0913` is the surviving follow-on, collapsing the duplicated compiled-pattern collection/replacement success contract manifest mirror in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the published `collection-replacement-boundary` anchor stays single-sourced. |
-| Work queue | `1` ready, `0` in progress, `915` done, `0` blocked |
+| Current milestone | No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite on the shared direct bound-pattern replacement frontier. |
+| Work queue | `0` ready, `0` in progress, `917` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0913` is the surviving follow-on, collapsing the duplicated compiled-pattern collection/replacement success contract manifest mirror in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the published `collection-replacement-boundary` anchor stays single-sourced.
+- No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite on the shared direct bound-pattern replacement frontier.
 
 ### Current Risks
 
