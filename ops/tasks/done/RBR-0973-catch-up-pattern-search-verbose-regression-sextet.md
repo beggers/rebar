@@ -1,6 +1,6 @@
 # RBR-0973: Catch up the direct Pattern verbose-regression search sextet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -80,3 +80,13 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-search-str-verbose-regression or pattern-search-str-verbose-regression-digits or pattern-search-str-verbose-regression-too-many-digits or pattern-search-bytes-verbose-regression or pattern-search-bytes-verbose-regression-digits or pattern-search-bytes-verbose-regression-too-many-digits'` currently passes (`30 passed`), so the exact bounded correctness/parity slice is already green in this checkout;
   - `PYTHONPATH=python python3 - <<'PY' ... Workload.from_dict(...) / workload_to_payload(...) / run_internal_workload_probe(...) synthetic pattern-search-verbose-regression-warm-str, pattern-search-verbose-regression-digits-warm-str, pattern-search-verbose-regression-too-many-digits-purged-str, pattern-search-verbose-regression-warm-bytes, pattern-search-verbose-regression-digits-warm-bytes, and pattern-search-verbose-regression-too-many-digits-purged-bytes ... PY` returns `status == "measured"` for both adapters on all six synthetic workloads through the current benchmark harness in this checkout; and
   - `rg -n 'pattern-search-verbose-regression-warm-str|pattern-search-verbose-regression-digits-warm-str|pattern-search-verbose-regression-too-many-digits-purged-str|pattern-search-verbose-regression-warm-bytes|pattern-search-verbose-regression-digits-warm-bytes|pattern-search-verbose-regression-too-many-digits-purged-bytes' benchmarks/workloads/pattern_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while `reports/benchmarks/latest.py` still reports `920` total / `920` measured / `0` known gaps overall with `pattern-boundary` fixed at `37` selected / `37` measured / `37` workload-count rows and `module_workloads == 912`.
+
+## Completion Notes
+- Added the six direct-`Pattern` verbose-regression `search()` workloads to `benchmarks/workloads/pattern_boundary.py` immediately after `pattern-search-bounded-wildcard-endpos-miss-purged-str` and before the wrong-text-model trio, preserving the exact required order and keeping `pattern-boundary` as the only manifest for this slice.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared `pattern-boundary` owner route now expects `43` measured rows, preserves the existing wrong-text-model/bounded-wildcard/keyword/positional subsets, and adds one `pattern-boundary-verbose-regression` anchor-contract definition mapping the six new workload ids to the six existing `workflow-pattern-search-*` correctness anchors with callback-result parity enabled.
+- Regenerated the tracked source-tree-shim benchmark publication in `reports/benchmarks/latest.py`; the tracked file now reports `926` total / `926` measured / `0` known gaps across `30` manifests, `918` module workloads, and `pattern-boundary` at `43` selected / `43` measured / `43` workload-count rows.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-search-str-verbose-regression or pattern-search-str-verbose-regression-digits or pattern-search-str-verbose-regression-too-many-digits or pattern-search-bytes-verbose-regression or pattern-search-bytes-verbose-regression-digits or pattern-search-bytes-verbose-regression-too-many-digits'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0973-pattern-search-verbose-regression-sextet.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

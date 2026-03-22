@@ -358,6 +358,188 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-search-verbose-regression-warm-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "prefix\nENV_VAR=ABCD\nsuffix",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "verbose",
+        "multiline",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.search helper path that keeps the bounded verbose-regression success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-verbose-regression-digits-warm-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "prefix\nENV_VAR = 123\nsuffix",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "verbose",
+        "multiline",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.search helper path that keeps the bounded verbose-regression digit success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-verbose-regression-too-many-digits-purged-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "prefix\nENV_VAR = 12345\nsuffix",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "verbose",
+        "multiline",
+        "purged-cache",
+        "no-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.search helper path that keeps the bounded verbose-regression too-many-digits miss row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-verbose-regression-warm-bytes",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "prefix\nENV_VAR=ABCD\nsuffix",
+      "flags": 72,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "verbose",
+        "multiline",
+        "bytes",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm bytes precompiled Pattern.search helper path that keeps the bounded verbose-regression success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-verbose-regression-digits-warm-bytes",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "prefix\nENV_VAR = 123\nsuffix",
+      "flags": 72,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "verbose",
+        "multiline",
+        "bytes",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm bytes precompiled Pattern.search helper path that keeps the bounded verbose-regression digit success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-verbose-regression-too-many-digits-purged-bytes",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "haystack": "prefix\nENV_VAR = 12345\nsuffix",
+      "flags": 72,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "verbose",
+        "multiline",
+        "bytes",
+        "purged-cache",
+        "no-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.search helper path that keeps the bounded verbose-regression too-many-digits miss row on the shared pattern-boundary surface."
+      ]
+    },
+    {
       "id": "pattern-search-on-bytes-string-warm-str",
       "bucket": "pattern-search",
       "family": "module",
