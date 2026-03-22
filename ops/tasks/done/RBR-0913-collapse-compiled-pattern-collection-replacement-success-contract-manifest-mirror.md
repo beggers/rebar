@@ -1,8 +1,9 @@
 # RBR-0913: Collapse the compiled-pattern collection/replacement success contract manifest mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the duplicated inline contract-manifest dict from the compiled-pattern collection/replacement success contract coverage in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, so the neighboring contract and anchor tests both build that manifest through one file-local owner helper instead of repeating the same `collection-replacement-boundary` structure.
@@ -50,3 +51,9 @@ Created: 2026-03-22
   - that duplication is confined to the compiled-pattern collection/replacement success contract coverage rather than the broader benchmark owner; and
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success'` currently passes (`17 passed, 538 deselected in 0.15s`).
 - 2026-03-22T07:33:57+00:00: harness requeued after failed or incomplete run after run `20260322T073320Z-architecture-implementation-RBR-0913-collapse-compiled-pattern-collection-replacement-success-contract-manifest-mirror` (exit=1, timed_out=false).
+
+## Completion
+- Retired this stale ready task after confirming the checkout already satisfies the cleanup: `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` now defines `_compiled_pattern_module_collection_replacement_success_manifest()` and both owner tests route through that helper instead of rebuilding the same inline manifest dict twice.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success'`
+- The ready entry remained behind because the prior architecture-implementation run hit model TPM rate limiting after landing the scoped refactor and before it could move the task file out of the queue; this run only normalized the queue to match the already-green checkout.
