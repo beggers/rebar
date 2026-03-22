@@ -236,6 +236,47 @@ class SupplementalReplacementCase:
 
 
 @dataclass(frozen=True)
+class InvalidExpandTemplateCase:
+    case_id: str
+    pattern: TextValue
+    string: TextValue
+    template: TextValue
+    use_compiled_pattern: bool
+
+
+INVALID_EXPAND_TEMPLATE_CASES = (
+    InvalidExpandTemplateCase(
+        case_id="module-str-missing-named-group",
+        pattern="(?P<word>abc)",
+        string="abc",
+        template=r"<\g<missing>>",
+        use_compiled_pattern=False,
+    ),
+    InvalidExpandTemplateCase(
+        case_id="module-str-invalid-numbered-group",
+        pattern="(abc)",
+        string="abc",
+        template=r"\2",
+        use_compiled_pattern=False,
+    ),
+    InvalidExpandTemplateCase(
+        case_id="compiled-str-missing-named-group",
+        pattern="(?P<word>abc)",
+        string="abc",
+        template=r"<\g<missing>>",
+        use_compiled_pattern=True,
+    ),
+    InvalidExpandTemplateCase(
+        case_id="compiled-str-invalid-numbered-group",
+        pattern="(abc)",
+        string="abc",
+        template=r"\2",
+        use_compiled_pattern=True,
+    ),
+)
+
+
+@dataclass(frozen=True)
 class ReplacementParityCase:
     fixture_case: FixtureCase
     unsupported_backends: tuple[str, ...] = ()
@@ -2113,6 +2154,46 @@ def test_replacement_template_match_expand_matches_cpython(
 
     assert type(observed) is type(expected)
     assert observed == expected
+
+
+@pytest.mark.parametrize(
+    "case",
+    INVALID_EXPAND_TEMPLATE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_replacement_template_match_expand_invalid_templates_match_cpython(
+    regex_backend: tuple[str, object],
+    case: InvalidExpandTemplateCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    if case.use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern,
+        )
+        observed_match = observed_pattern.search(case.string)
+        expected_match = expected_pattern.search(case.string)
+    else:
+        observed_match = backend.search(case.pattern, case.string)
+        expected_match = re.search(case.pattern, case.string)
+
+    assert_match_parity(
+        backend_name,
+        observed_match,
+        expected_match,
+        check_regs=True,
+    )
+    assert observed_match is not None
+    assert expected_match is not None
+    assert_match_convenience_api_parity(observed_match, expected_match)
+
+    observed_error = _capture_exception(lambda: observed_match.expand(case.template))
+    expected_error = _capture_exception(lambda: expected_match.expand(case.template))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
 
 
 @pytest.mark.parametrize(
