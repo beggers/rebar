@@ -2491,6 +2491,12 @@ MODULE_KEYWORD_ERROR_CASES = (
         kwargs={"count": 1},
     ),
     ModuleKeywordErrorCase(
+        case_id="module-subn-duplicate-count-keyword-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abc", 1),
+        kwargs={"count": 1},
+    ),
+    ModuleKeywordErrorCase(
         case_id="module-fullmatch-unexpected-keyword",
         helper="fullmatch",
         args=("abc", "abc"),
@@ -2500,6 +2506,12 @@ MODULE_KEYWORD_ERROR_CASES = (
         case_id="module-sub-unexpected-keyword",
         helper="sub",
         args=("abc", "x", "abc"),
+        kwargs={"missing": 1},
+    ),
+    ModuleKeywordErrorCase(
+        case_id="module-subn-unexpected-keyword-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abc"),
         kwargs={"missing": 1},
     ),
 )
