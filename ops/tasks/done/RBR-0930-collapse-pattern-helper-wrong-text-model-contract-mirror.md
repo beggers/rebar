@@ -1,6 +1,6 @@
 # RBR-0930: Collapse pattern-helper wrong-text-model contract mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -76,3 +76,9 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_helper_collection_replacement_wrong_text_model or collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured'` currently passes (`14 passed, 567 deselected, 3 subtests passed in 0.28s`);
   - `rg -n '^(class PatternHelperCollectionReplacementWrongTextModelCase|PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently finds the remaining mirror at lines `12349` and `12363`; and
   - the task-local tracked-manifest probe in Acceptance currently passes (`ok 3`), proving the three-row surface already exists in the tracked benchmark workload manifest without the extra benchmark-test case table.
+
+## Completion Notes
+- 2026-03-22: Replaced the local `PatternHelperCollectionReplacementWrongTextModelCase` mirror in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with file-local projections over `_selected_manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH, include_workload=_is_collection_replacement_pattern_wrong_text_model_workload)`.
+- 2026-03-22: Kept the `-contract` manifest coverage by projecting those selected tracked workloads into a temporary manifest, preserving the `pattern-split-on-bytes-string-warm-str`, `pattern-sub-on-bytes-string-warm-str`, and `pattern-subn-on-str-string-purged-bytes` order and the matching `-contract` ids.
+- 2026-03-22: Preserved the same payload round-trip, anchor-contract, callback-time haystack materialization, internal probe, and precompile-before-timing assertions while deriving expectations from the tracked manifest workloads instead of a detached handwritten case tuple.
+- 2026-03-22: Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_helper_collection_replacement_wrong_text_model or collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured'`, `bash -lc "! rg -n '^(class PatternHelperCollectionReplacementWrongTextModelCase|PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`, and the task-local manifest selector probe from Acceptance (`ok 3`).
