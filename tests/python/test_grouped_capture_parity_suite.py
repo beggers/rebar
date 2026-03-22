@@ -31,13 +31,6 @@ from tests.python.fixture_parity_support import (
 )
 from tests.conftest import duplicate_string_ids
 GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN = r"(ab)c"
-GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER = (
-    "grouped-segment-leading-capture-module-search-str",
-    "grouped-segment-leading-capture-pattern-search-str",
-)
-GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS = frozenset(
-    GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER
-)
 
 
 @dataclass(frozen=True)
@@ -131,6 +124,71 @@ PATTERN_CASES = tuple(
 )
 CASES_BY_ID = {case.case_id: case for case in _iter_fixture_cases()}
 assert len(CASES_BY_ID) == sum(len(bundle.cases) for bundle in FIXTURE_BUNDLES)
+
+
+def _grouped_segment_leading_capture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
+        if "leading-capture" in case.case_id
+    )
+
+
+def _match_group_access_cases() -> tuple[FixtureCase, ...]:
+    return (
+        tuple(GROUPED_MATCH_FIXTURE_BUNDLE.cases[:4])
+        + tuple(
+            case
+            for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("grouped-segment-") and case.operation != "compile"
+        )
+        + tuple(
+            case
+            for case in GROUPED_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("grouped-alternation-")
+            and case.operation != "compile"
+        )
+        + tuple(
+            case
+            for case in NAMED_GROUP_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+        + tuple(
+            case
+            for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("named-grouped-segment-")
+            and case.operation != "compile"
+        )
+        + tuple(
+            case
+            for case in GROUPED_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("named-grouped-alternation-")
+            and case.operation != "compile"
+        )
+        + tuple(
+            case
+            for case in OPTIONAL_GROUP_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("systematic-optional-group-")
+            and "-absent-" in case.case_id
+        )
+        + tuple(
+            case
+            for case in OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+        + tuple(
+            case
+            for case in NESTED_GROUP_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+        + tuple(
+            case
+            for case in NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+    )
+
+
 OPTIONAL_GROUP_ABSENT_EXPAND_CASES = (
     OptionalGroupExpandCase(
         id="numbered-module-search-absent",
@@ -257,40 +315,6 @@ SUPPLEMENTAL_MISS_CASES = (
         pattern_misses=("ad", "accd"),
     ),
 )
-MATCH_GROUP_ACCESS_CASE_IDS = (
-    "grouped-module-search-single-capture-str",
-    "grouped-module-fullmatch-single-capture-str",
-    "grouped-pattern-search-single-capture-str",
-    "grouped-pattern-match-single-capture-str",
-    "grouped-segment-module-search-str",
-    "grouped-segment-leading-capture-module-search-str",
-    "grouped-segment-pattern-fullmatch-str",
-    "grouped-segment-leading-capture-pattern-search-str",
-    "grouped-alternation-module-search-str",
-    "grouped-alternation-pattern-fullmatch-str",
-    "named-group-module-search-metadata-str",
-    "named-group-pattern-search-metadata-str",
-    "named-grouped-segment-module-search-str",
-    "named-grouped-segment-pattern-fullmatch-str",
-    "named-grouped-alternation-module-search-str",
-    "named-grouped-alternation-pattern-fullmatch-str",
-    "systematic-optional-group-numbered-module-search-absent-str",
-    "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
-    "systematic-optional-group-named-module-search-absent-str",
-    "systematic-optional-group-named-pattern-fullmatch-absent-str",
-    "optional-group-alternation-module-search-present-str",
-    "optional-group-alternation-pattern-fullmatch-absent-str",
-    "named-optional-group-alternation-module-search-present-str",
-    "named-optional-group-alternation-pattern-fullmatch-absent-str",
-    "nested-group-module-search-str",
-    "nested-group-pattern-fullmatch-str",
-    "named-nested-group-module-search-str",
-    "named-nested-group-pattern-fullmatch-str",
-    "nested-group-alternation-module-search-str",
-    "nested-group-alternation-pattern-fullmatch-str",
-    "named-nested-group-alternation-module-search-str",
-    "named-nested-group-alternation-pattern-fullmatch-str",
-)
 REGS_PARITY_CASE_IDS = frozenset(
     {
         "grouped-module-search-single-capture-str",
@@ -370,14 +394,12 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
     ),
 )
 
-assert not duplicate_string_ids(MATCH_GROUP_ACCESS_CASE_IDS)
-assert not duplicate_string_ids(GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER)
-MATCH_GROUP_ACCESS_CASES = tuple(
-    CASES_BY_ID[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS
+GROUPED_SEGMENT_LEADING_CAPTURE_CASES = _grouped_segment_leading_capture_cases()
+MATCH_GROUP_ACCESS_CASES = _match_group_access_cases()
+assert not duplicate_string_ids(
+    tuple(case.case_id for case in GROUPED_SEGMENT_LEADING_CAPTURE_CASES)
 )
-GROUPED_SEGMENT_LEADING_CAPTURE_CASES = tuple(
-    CASES_BY_ID[case_id] for case_id in GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER
-)
+assert not duplicate_string_ids(tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES))
 
 
 def _module_call_with_text(regex_api: object, case: FixtureCase, text: str) -> object:
@@ -414,6 +436,12 @@ def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[
 
 
 def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -> None:
+    grouped_segment_leading_capture_case_ids = tuple(
+        case.case_id for case in GROUPED_SEGMENT_LEADING_CAPTURE_CASES
+    )
+    grouped_segment_leading_capture_case_id_set = set(
+        grouped_segment_leading_capture_case_ids
+    )
     grouped_segment_case_ids = frozenset(
         case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
     )
@@ -424,7 +452,7 @@ def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -
     assert direct_test_case_id_buckets["grouped-segment"] == (
         grouped_segment_case_ids
     )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= grouped_segment_case_ids
+    assert grouped_segment_leading_capture_case_id_set <= grouped_segment_case_ids
     assert GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN in {
         case.pattern for case in COMPILE_CASES
     }
@@ -434,15 +462,18 @@ def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -
     assert "grouped-segment-leading-capture-pattern-search-str" in {
         case.case_id for case in PATTERN_CASES
     }
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= set(MATCH_GROUP_ACCESS_CASE_IDS)
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+    assert grouped_segment_leading_capture_case_id_set <= set(
+        case.case_id for case in MATCH_GROUP_ACCESS_CASES
+    )
+    assert grouped_segment_leading_capture_case_id_set.isdisjoint(
         {case.module_case_id for case in SUPPLEMENTAL_MISS_CASES}
     )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+    assert grouped_segment_leading_capture_case_id_set.isdisjoint(
         {case.pattern_case_id for case in SUPPLEMENTAL_MISS_CASES}
     )
-    assert tuple(case.case_id for case in GROUPED_SEGMENT_LEADING_CAPTURE_CASES) == (
-        GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER
+    assert grouped_segment_leading_capture_case_ids == (
+        "grouped-segment-leading-capture-module-search-str",
+        "grouped-segment-leading-capture-pattern-search-str",
     )
 
 
@@ -452,7 +483,58 @@ def test_pattern_bounds_cases_stay_anchored_to_grouped_capture_patterns() -> Non
 
 
 def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> None:
-    assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
+    assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == (
+        tuple(case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.cases[:4])
+        + tuple(
+            case.case_id
+            for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("grouped-segment-") and case.operation != "compile"
+        )
+        + tuple(
+            case.case_id
+            for case in GROUPED_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("grouped-alternation-")
+            and case.operation != "compile"
+        )
+        + tuple(
+            case.case_id
+            for case in NAMED_GROUP_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+        + tuple(
+            case.case_id
+            for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("named-grouped-segment-")
+            and case.operation != "compile"
+        )
+        + tuple(
+            case.case_id
+            for case in GROUPED_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("named-grouped-alternation-")
+            and case.operation != "compile"
+        )
+        + tuple(
+            case.case_id
+            for case in OPTIONAL_GROUP_FIXTURE_BUNDLE.cases
+            if case.case_id.startswith("systematic-optional-group-")
+            and "-absent-" in case.case_id
+        )
+        + tuple(
+            case.case_id
+            for case in OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+        + tuple(
+            case.case_id
+            for case in NESTED_GROUP_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+        + tuple(
+            case.case_id
+            for case in NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE.cases
+            if case.operation != "compile"
+        )
+    )
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
 
 

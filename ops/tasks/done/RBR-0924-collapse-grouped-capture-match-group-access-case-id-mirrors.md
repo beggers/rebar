@@ -1,6 +1,6 @@
 # RBR-0924: Collapse grouped-capture match-group-access case-id mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -168,3 +168,7 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` currently passes (`432 passed in 0.31s`);
   - `rg -n '^(GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER|GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS|MATCH_GROUP_ACCESS_CASE_IDS)\\s*=' tests/python/test_grouped_capture_parity_suite.py` currently finds the remaining mirrors at lines `34`, `38`, and `260`; and
   - the task-local live-selector probe in Acceptance currently passes (`ok 2 32`), proving the suite's existing owner bundles already recover the same leading-capture pair and ordered 32-row match-group-access surface without those cached mirrors.
+
+## Completion
+- 2026-03-22: Removed the three detached case-id mirrors from `tests/python/test_grouped_capture_parity_suite.py` and rebuilt `GROUPED_SEGMENT_LEADING_CAPTURE_CASES` plus `MATCH_GROUP_ACCESS_CASES` directly from the live grouped-capture fixture bundles without changing their ordered surfaces.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py`, the mirror-name grep check, and the task-local live-selector probe (`ok 2 32`).
