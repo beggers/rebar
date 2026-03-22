@@ -196,6 +196,30 @@ class _IndexLike:
         return f"IndexLike({self.value})"
 
 
+class _RecordingIndexLike:
+    """Tracks replacement count coercion calls for __index__ parity checks."""
+
+    def __init__(
+        self,
+        value: int = 1,
+        *,
+        error: BaseException | None = None,
+    ) -> None:
+        self.value = value
+        self.error = error
+        self.calls = 0
+
+    def __index__(self) -> int:
+        self.calls += 1
+        if self.error is not None:
+            raise self.error
+        return self.value
+
+
+class _IndexLikeBoomError(Exception):
+    """Distinct __index__ failure used for replacement count coercion parity."""
+
+
 _INDEXLIKE_ZERO = _IndexLike(0)
 _INDEXLIKE_ONE = _IndexLike(1)
 _INDEXLIKE_TWO = _IndexLike(2)
@@ -2693,6 +2717,14 @@ def _capture_type_error(callback: Callable[[], object]) -> TypeError:
     return captured.value
 
 
+def _capture_exception(callback: Callable[[], object]) -> BaseException:
+    try:
+        callback()
+    except BaseException as exc:
+        return exc
+    raise AssertionError("expected callback to raise")
+
+
 def _invoke_literal_replacement_helper(
     regex_api: object,
     *,
@@ -2800,6 +2832,287 @@ def test_source_package_literal_replacement_helpers_match_cpython_type_errors(
 
     assert type(observed_error) is type(expected_error)
     assert observed_error.args == expected_error.args
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("helper", _LITERAL_REPLACEMENT_HELPERS)
+def test_literal_replacement_count_indexlike_calls___index___once_for_module_helpers(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_value = _RecordingIndexLike(2)
+    expected_value = _RecordingIndexLike(2)
+
+    observed = getattr(backend, helper)(
+        pattern,
+        replacement,
+        string,
+        count=observed_value,
+    )
+    expected = getattr(re, helper)(
+        pattern,
+        replacement,
+        string,
+        count=expected_value,
+    )
+
+    _assert_literal_replacement_result_matches_cpython(
+        backend_name=backend_name,
+        context="module count __index__ call count",
+        helper=helper,
+        pattern=pattern,
+        replacement=replacement,
+        string=string,
+        count=observed_value,
+        observed=observed,
+        expected=expected,
+    )
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("helper", _LITERAL_REPLACEMENT_HELPERS)
+def test_literal_replacement_count_indexlike_calls___index___once_for_pattern_helpers(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+    observed_value = _RecordingIndexLike(2)
+    expected_value = _RecordingIndexLike(2)
+
+    observed = getattr(observed_pattern, helper)(
+        replacement,
+        string,
+        count=observed_value,
+    )
+    expected = getattr(expected_pattern, helper)(
+        replacement,
+        string,
+        count=expected_value,
+    )
+
+    _assert_literal_replacement_result_matches_cpython(
+        backend_name=backend_name,
+        context="pattern count __index__ call count",
+        helper=helper,
+        pattern=pattern,
+        replacement=replacement,
+        string=string,
+        count=observed_value,
+        observed=observed,
+        expected=expected,
+    )
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("helper", _LITERAL_REPLACEMENT_HELPERS)
+def test_literal_replacement_count_indexlike_calls___index___once_for_compiled_pattern_module_helpers(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+    observed_value = _RecordingIndexLike(2)
+    expected_value = _RecordingIndexLike(2)
+
+    observed = getattr(backend, helper)(
+        observed_pattern,
+        replacement,
+        string,
+        count=observed_value,
+    )
+    expected = getattr(re, helper)(
+        expected_pattern,
+        replacement,
+        string,
+        count=expected_value,
+    )
+
+    _assert_literal_replacement_result_matches_cpython(
+        backend_name=backend_name,
+        context="compiled-pattern module count __index__ call count",
+        helper=helper,
+        pattern=pattern,
+        replacement=replacement,
+        string=string,
+        count=observed_value,
+        observed=observed,
+        expected=expected,
+    )
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("helper", _LITERAL_REPLACEMENT_HELPERS)
+def test_literal_replacement_count_indexlike_exceptions_match_cpython_for_module_helpers(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> None:
+    _, backend = regex_backend
+    observed_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for module {helper}")
+    )
+    expected_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for module {helper}")
+    )
+
+    observed_error = _capture_exception(
+        lambda: getattr(backend, helper)(
+            pattern,
+            replacement,
+            string,
+            count=observed_value,
+        )
+    )
+    expected_error = _capture_exception(
+        lambda: getattr(re, helper)(
+            pattern,
+            replacement,
+            string,
+            count=expected_value,
+        )
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("helper", _LITERAL_REPLACEMENT_HELPERS)
+def test_literal_replacement_count_indexlike_exceptions_match_cpython_for_pattern_helpers(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+    observed_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for pattern {helper}")
+    )
+    expected_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for pattern {helper}")
+    )
+
+    observed_error = _capture_exception(
+        lambda: getattr(observed_pattern, helper)(
+            replacement,
+            string,
+            count=observed_value,
+        )
+    )
+    expected_error = _capture_exception(
+        lambda: getattr(expected_pattern, helper)(
+            replacement,
+            string,
+            count=expected_value,
+        )
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("pattern", "replacement", "string"),
+    _LITERAL_REPLACEMENT_COUNT_COERCION_CASES,
+)
+@pytest.mark.parametrize("helper", _LITERAL_REPLACEMENT_HELPERS)
+def test_literal_replacement_count_indexlike_exceptions_match_cpython_for_compiled_pattern_module_helpers(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: TextValue,
+    replacement: TextValue,
+    string: TextValue,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+    observed_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(
+            f"indexlike boom for compiled-pattern module {helper}"
+        )
+    )
+    expected_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(
+            f"indexlike boom for compiled-pattern module {helper}"
+        )
+    )
+
+    observed_error = _capture_exception(
+        lambda: getattr(backend, helper)(
+            observed_pattern,
+            replacement,
+            string,
+            count=observed_value,
+        )
+    )
+    expected_error = _capture_exception(
+        lambda: getattr(re, helper)(
+            expected_pattern,
+            replacement,
+            string,
+            count=expected_value,
+        )
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
 
 
 def test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation(
