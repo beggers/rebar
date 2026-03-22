@@ -1310,21 +1310,6 @@ def assert_pattern_fullmatch_case_parity(
     )
 
 
-def _evaluate_bounded_pattern_case(
-    regex_backend: tuple[str, object],
-    case: object,
-) -> tuple[str, object, re.Match[str] | re.Match[bytes] | None]:
-    backend_name, backend = regex_backend
-    observed_pattern, expected_pattern = compile_with_cpython_parity(
-        backend_name,
-        backend,
-        getattr(case, "pattern"),
-    )
-    observed = invoke_bounded_pattern_case(observed_pattern, case)
-    expected = invoke_bounded_pattern_case(expected_pattern, case)
-    return backend_name, observed, expected
-
-
 def assert_bounded_pattern_case_match_parity(
     regex_backend: tuple[str, object],
     case: object,
@@ -1333,10 +1318,14 @@ def assert_bounded_pattern_case_match_parity(
     check_convenience_api: bool = False,
     check_group_access: bool = False,
 ) -> None:
-    backend_name, observed, expected = _evaluate_bounded_pattern_case(
-        regex_backend,
-        case,
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        getattr(case, "pattern"),
     )
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert_match_result_parity(
         backend_name,
@@ -1358,10 +1347,14 @@ def assert_bounded_pattern_case_no_match_parity(
     *,
     check_regs: bool = False,
 ) -> None:
-    backend_name, observed, expected = _evaluate_bounded_pattern_case(
-        regex_backend,
-        case,
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        getattr(case, "pattern"),
     )
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert_match_result_parity(
         backend_name,

@@ -2567,11 +2567,12 @@ def test_pattern_fullmatch_case_parity_helper_rejects_non_fullmatch_cases(
         )
 
 
-def test_evaluate_bounded_pattern_case_compiles_then_dispatches_observed_and_expected_patterns(
+def test_bounded_pattern_case_match_parity_compiles_then_dispatches_observed_and_expected_patterns(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     compile_calls: list[tuple[object, ...]] = []
     dispatched_patterns: list[tuple[object, object]] = []
+    parity_calls: list[tuple[object, ...]] = []
     observed_pattern = object()
     expected_pattern = object()
     observed_match = object()
@@ -2609,17 +2610,23 @@ def test_evaluate_bounded_pattern_case_compiles_then_dispatches_observed_and_exp
         "invoke_bounded_pattern_case",
         _invoke,
     )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        lambda *args, **kwargs: parity_calls.append(args),
+    )
 
     backend = object()
-    assert fixture_parity_support._evaluate_bounded_pattern_case(
+    assert_bounded_pattern_case_match_parity(
         ("stub-backend", backend),
         case,
-    ) == ("stub-backend", observed_match, expected_match)
+    )
     assert compile_calls == [("stub-backend", backend, "abc", 0, True)]
     assert dispatched_patterns == [
         (observed_pattern, case),
         (expected_pattern, case),
     ]
+    assert parity_calls == [("stub-backend", observed_match, expected_match)]
 
 
 @pytest.mark.parametrize(
