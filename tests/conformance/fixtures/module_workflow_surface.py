@@ -518,6 +518,24 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-search-str-pattern-on-bytes-string",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "categories": ["workflow", "search", "literal", "str", "wrong-text-model"],
+      "notes": [
+        "Publishes the adjacent direct Pattern.search() window wrong-text-model spelling on the shared module-workflow owner path without widening into a broader bound-pattern helper dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-match-str-pos-keyword",
       "operation": "pattern_call",
       "family": "bound_match_workflow",
@@ -571,6 +589,19 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-match-bytes-pattern-on-str-string",
+      "operation": "pattern_call",
+      "family": "bound_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "text_model": "bytes",
+      "args": ["abc"],
+      "categories": ["workflow", "match", "literal", "bytes", "wrong-text-model"],
+      "notes": [
+        "Publishes the adjacent direct Pattern.match() window wrong-text-model spelling on the shared module-workflow owner path without widening into a broader bound-pattern helper dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-fullmatch-bytes-window-keyword",
       "operation": "pattern_call",
       "family": "bound_fullmatch_workflow",
@@ -614,6 +645,24 @@ MANIFEST = {
       "categories": ["workflow", "fullmatch", "literal", "keyword", "window", "indexlike", "bytes"],
       "notes": [
         "Publishes the adjacent bound Pattern.fullmatch pos=/endpos= __index__ workflow on bytes payloads without widening into the remaining Pattern.fullmatch keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "categories": ["workflow", "fullmatch", "literal", "str", "wrong-text-model"],
+      "notes": [
+        "Publishes the adjacent direct Pattern.fullmatch() window wrong-text-model spelling on the shared module-workflow owner path without widening into a broader bound-pattern helper dump."
       ]
     },
     {

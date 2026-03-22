@@ -1,6 +1,6 @@
 # RBR-0963: Publish the direct Pattern window wrong-text-model trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -76,3 +76,9 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... re.compile('abc').search(b'abc') ... rebar.compile('abc').search(b'abc') ... re.compile(b'abc').match('abc') ... rebar.compile(b'abc').match('abc') ... re.compile('abc').fullmatch(b'abc') ... rebar.compile('abc').fullmatch(b'abc') ... PY` shows CPython and `rebar` already agree on the exact bounded `TypeError.args`: `('cannot use a string pattern on a bytes-like object',)` for the `search()` and `fullmatch()` spellings plus `('cannot use a bytes pattern on a string-like object',)` for the `match()` spelling;
   - `rg -n 'workflow-pattern-search-str-pattern-on-bytes-string|workflow-pattern-match-bytes-pattern-on-str-string|workflow-pattern-fullmatch-str-pattern-on-bytes-string' tests/conformance/fixtures/module_workflow_surface.py reports/correctness/latest.py tests/conformance/test_combined_correctness_scorecards.py` currently returns no matches, so the exact publication ids are still absent in this checkout; and
   - `rg -n 'pattern-search-on-bytes-string|pattern-match-on-str-string|pattern-fullmatch-on-bytes-string' benchmarks/workloads/pattern_boundary.py reports/benchmarks/latest.py` currently returns no matches, so a later benchmark catch-up will still be concrete after this correctness publication lands.
+- 2026-03-22 feature-implementation: Added the three direct `Pattern` wrong-text-model `pattern_call` rows to `tests/conformance/fixtures/module_workflow_surface.py`, updated the direct-slice/count parity assertions in `tests/python/test_module_workflow_parity_suite.py`, refreshed representative `module-workflow-surface` scorecard coverage in `tests/conformance/test_combined_correctness_scorecards.py`, and republished `reports/correctness/latest.py` to `1556` total / `1556` passed / `0` unimplemented across `114` manifests. The tracked report now shows `module.workflow` at `182` / `182` / `0`, `module.workflow.str` at `102` / `102` / `0`, `module.workflow.bytes` at `80` / `80` / `0`, `module.workflow.pattern_call` at `73` / `73` / `0`, and `module.workflow.module_call` unchanged at `97` / `97` / `0`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-search-str-pattern-on-bytes-string or pattern-match-bytes-pattern-on-str-string or pattern-fullmatch-str-pattern-on-bytes-string or module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases'` passed (`13 passed`).
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` passed (`1464 passed, 1 skipped, 2086 subtests passed`).
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0963-pattern-window-wrong-text-model-trio.py` passed with `182` total / `182` passed / `0` unimplemented.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` republished the tracked combined scorecard at `1556` total / `1556` passed / `0` unimplemented.

@@ -2430,6 +2430,9 @@ def _published_pattern_wrong_text_model_fixture_cases() -> tuple[FixtureCase, ..
         for case in BOUND_PATTERN_TYPE_ERROR_CASES
         if case.case_id
         in {
+            "pattern-search-str-pattern-on-bytes-string",
+            "pattern-match-bytes-pattern-on-str-string",
+            "pattern-fullmatch-str-pattern-on-bytes-string",
             "pattern-split-str-pattern-on-bytes-string",
             "pattern-sub-str-pattern-on-bytes-string",
             "pattern-subn-bytes-pattern-on-str-string",
@@ -3734,16 +3737,16 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 179
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 182
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 100, "bytes": 79}
+        {"str": 102, "bytes": 80}
     )
-    assert len(PATTERN_CASES) == 70
+    assert len(PATTERN_CASES) == 73
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
-            "search": 16,
-            "match": 6,
-            "fullmatch": 11,
+            "search": 17,
+            "match": 7,
+            "fullmatch": 12,
             "findall": 5,
             "finditer": 5,
             "split": 7,
@@ -4676,6 +4679,9 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
         for case in BOUND_PATTERN_TYPE_ERROR_CASES
         if case.case_id
         in {
+            "pattern-search-str-pattern-on-bytes-string",
+            "pattern-match-bytes-pattern-on-str-string",
+            "pattern-fullmatch-str-pattern-on-bytes-string",
             "pattern-split-str-pattern-on-bytes-string",
             "pattern-sub-str-pattern-on-bytes-string",
             "pattern-subn-bytes-pattern-on-str-string",
@@ -4693,6 +4699,8 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
             "str",
         )
     ) == (
+        "workflow-pattern-search-str-pattern-on-bytes-string",
+        "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
         "workflow-pattern-split-str-pattern-on-bytes-string",
         "workflow-pattern-sub-str-pattern-on-bytes-string",
     )
@@ -4702,24 +4710,36 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
             published_fixture_cases,
             "bytes",
         )
-    ) == ("workflow-pattern-subn-bytes-pattern-on-str-string",)
+    ) == (
+        "workflow-pattern-match-bytes-pattern-on-str-string",
+        "workflow-pattern-subn-bytes-pattern-on-str-string",
+    )
     assert tuple(case.case_id for case in published_fixture_cases) == (
+        "workflow-pattern-search-str-pattern-on-bytes-string",
+        "workflow-pattern-match-bytes-pattern-on-str-string",
+        "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
         "workflow-pattern-split-str-pattern-on-bytes-string",
         "workflow-pattern-sub-str-pattern-on-bytes-string",
         "workflow-pattern-subn-bytes-pattern-on-str-string",
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
+        "pattern-search-str-pattern-on-bytes-string",
+        "pattern-match-bytes-pattern-on-str-string",
+        "pattern-fullmatch-str-pattern-on-bytes-string",
         "pattern-split-str-pattern-on-bytes-string",
         "pattern-sub-str-pattern-on-bytes-string",
         "pattern-subn-bytes-pattern-on-str-string",
     )
-    assert len(published_fixture_cases) == 3
+    assert len(published_fixture_cases) == 6
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 2, "bytes": 1}
+        {"str": 4, "bytes": 2}
     )
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.helper for case in published_fixture_cases) == Counter(
         {
+            "search": 1,
+            "match": 1,
+            "fullmatch": 1,
             "split": 1,
             "sub": 1,
             "subn": 1,
@@ -5829,8 +5849,18 @@ def test_compiled_pattern_workflows_match_cpython(
         case_pattern(case),
         case.flags or 0,
     )
+
+    try:
+        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+    except BaseException as expected_error:  # noqa: BLE001 - parity helper compares exception details.
+        observed_error = _capture_error(
+            lambda: getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+        )
+        assert type(observed_error) is type(expected_error)
+        assert observed_error.args == expected_error.args
+        return
+
     observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
-    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
     assert_match_result_parity(backend_name, observed, expected)
     if expected is None:
