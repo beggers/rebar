@@ -1259,6 +1259,138 @@ class ReadmeReportingTest(unittest.TestCase):
                         scorecard,
                     )
 
+    def test_scorecard_load_unique_record_collection_preserves_record_order(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            manifest_a = temp_path / "manifest_a.py"
+            manifest_b = temp_path / "manifest_b.py"
+            records_by_path = {
+                manifest_a: {
+                    "id": "manifest-a",
+                    "path": temp_path / "published_manifest_a.py",
+                    "case_ids": ("case-a-1", "case-a-2"),
+                },
+                manifest_b: {
+                    "id": "manifest-b",
+                    "path": temp_path / "published_manifest_b.py",
+                    "case_ids": ("case-b-1",),
+                },
+            }
+
+            records = scorecard_io.load_unique_record_collection(
+                (manifest_a, manifest_b),
+                load_record=lambda path: dict(records_by_path[path]),
+                record_id=lambda record: str(record["id"]),
+                record_path=lambda record: pathlib.Path(str(record["path"])),
+                duplicate_record_error=lambda record_id, first_path, second_path: (
+                    f"duplicate record {record_id}: {first_path} vs {second_path}"
+                ),
+                nested_ids=lambda record: tuple(str(case_id) for case_id in record["case_ids"]),
+                duplicate_nested_error=lambda nested_id, first_path, second_path: (
+                    f"duplicate nested {nested_id}: {first_path} vs {second_path}"
+                ),
+            )
+
+            self.assertEqual(
+                [record["id"] for record in records],
+                ["manifest-a", "manifest-b"],
+            )
+            self.assertEqual(
+                [record["path"] for record in records],
+                [
+                    temp_path / "published_manifest_a.py",
+                    temp_path / "published_manifest_b.py",
+                ],
+            )
+
+    def test_scorecard_load_unique_record_collection_rejects_duplicate_record_ids(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            manifest_a = temp_path / "manifest_a.py"
+            manifest_b = temp_path / "manifest_b.py"
+            published_a = temp_path / "published_manifest_a.py"
+            published_b = temp_path / "published_manifest_b.py"
+            records_by_path = {
+                manifest_a: {
+                    "id": "duplicate-manifest",
+                    "path": published_a,
+                    "case_ids": ("case-a-1",),
+                },
+                manifest_b: {
+                    "id": "duplicate-manifest",
+                    "path": published_b,
+                    "case_ids": ("case-b-1",),
+                },
+            }
+
+            with self.assertRaisesRegex(
+                ValueError,
+                re.escape(
+                    f"duplicate record duplicate-manifest: {published_a} vs {published_b}"
+                ),
+            ):
+                scorecard_io.load_unique_record_collection(
+                    (manifest_a, manifest_b),
+                    load_record=lambda path: dict(records_by_path[path]),
+                    record_id=lambda record: str(record["id"]),
+                    record_path=lambda record: pathlib.Path(str(record["path"])),
+                    duplicate_record_error=lambda record_id, first_path, second_path: (
+                        f"duplicate record {record_id}: {first_path} vs {second_path}"
+                    ),
+                    nested_ids=lambda record: tuple(
+                        str(case_id) for case_id in record["case_ids"]
+                    ),
+                    duplicate_nested_error=lambda nested_id, first_path, second_path: (
+                        f"duplicate nested {nested_id}: {first_path} vs {second_path}"
+                    ),
+                )
+
+    def test_scorecard_load_unique_record_collection_rejects_duplicate_nested_ids(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            manifest_a = temp_path / "manifest_a.py"
+            manifest_b = temp_path / "manifest_b.py"
+            published_a = temp_path / "published_manifest_a.py"
+            published_b = temp_path / "published_manifest_b.py"
+            records_by_path = {
+                manifest_a: {
+                    "id": "manifest-a",
+                    "path": published_a,
+                    "case_ids": ("shared-case",),
+                },
+                manifest_b: {
+                    "id": "manifest-b",
+                    "path": published_b,
+                    "case_ids": ("shared-case",),
+                },
+            }
+
+            with self.assertRaisesRegex(
+                ValueError,
+                re.escape(f"duplicate nested shared-case: {published_a} vs {published_b}"),
+            ):
+                scorecard_io.load_unique_record_collection(
+                    (manifest_a, manifest_b),
+                    load_record=lambda path: dict(records_by_path[path]),
+                    record_id=lambda record: str(record["id"]),
+                    record_path=lambda record: pathlib.Path(str(record["path"])),
+                    duplicate_record_error=lambda record_id, first_path, second_path: (
+                        f"duplicate record {record_id}: {first_path} vs {second_path}"
+                    ),
+                    nested_ids=lambda record: tuple(
+                        str(case_id) for case_id in record["case_ids"]
+                    ),
+                    duplicate_nested_error=lambda nested_id, first_path, second_path: (
+                        f"duplicate nested {nested_id}: {first_path} vs {second_path}"
+                    ),
+                )
+
     def test_run_harness_scorecard_loads_python_correctness_reports(self) -> None:
         summary, scorecard = run_harness_scorecard(
             "rebar_harness.correctness",
