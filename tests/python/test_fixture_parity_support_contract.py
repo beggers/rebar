@@ -4905,6 +4905,82 @@ def test_finditer_parity_helper_covers_match_metadata_and_iterator_exhaustion(
     )
 
 
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-finditer"),
+        pytest.param(True, id="pattern-finditer"),
+    ),
+)
+def test_finditer_parity_helper_invokes_match_callback_for_each_match_in_order(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = "abc"
+    text = "zabcabc"
+    callback_pairs: list[tuple[tuple[int, int], tuple[int, int], str, str]] = []
+
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed_iter = observed_pattern.finditer(text)
+        expected_iter = expected_pattern.finditer(text)
+    else:
+        observed_iter = backend.finditer(pattern, text)
+        expected_iter = re.finditer(pattern, text)
+
+    def record_match_pair(
+        observed: object,
+        expected: re.Match[str] | re.Match[bytes],
+    ) -> None:
+        callback_pairs.append(
+            (
+                observed.span(),
+                expected.span(),
+                observed.group(0),
+                expected.group(0),
+            )
+        )
+
+    assert_finditer_parity(
+        backend_name,
+        observed_iter,
+        expected_iter,
+        check_regs=True,
+        match_callback=record_match_pair,
+    )
+
+    assert callback_pairs == [
+        ((1, 4), (1, 4), "abc", "abc"),
+        ((4, 7), (4, 7), "abc", "abc"),
+    ]
+
+
+def test_finditer_parity_helper_propagates_match_callback_failures() -> None:
+    def fail_on_first_match(
+        observed: object,
+        expected: re.Match[str] | re.Match[bytes],
+    ) -> None:
+        raise AssertionError(
+            f"callback drift for {observed.span()} vs {expected.span()}"
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape("callback drift for (0, 3) vs (0, 3)"),
+    ):
+        assert_finditer_parity(
+            "stub-backend",
+            re.finditer("abc", "abc"),
+            re.finditer("abc", "abc"),
+            match_callback=fail_on_first_match,
+        )
+
+
 def test_finditer_parity_helper_rejects_exhausted_non_self_iterables() -> None:
     class _AlreadyExhaustedNonSelfIterator:
         def __iter__(self) -> object:
