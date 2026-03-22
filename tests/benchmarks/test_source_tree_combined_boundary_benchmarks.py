@@ -3567,6 +3567,24 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
+    def test_collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("collection-replacement-boundary")
+        workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_collection_replacement_pattern_wrong_text_model_workload,
+        )
+        self.assertEqual(len(expected_measured_workload_ids), 3)
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "collection-replacement-boundary",
+            expected_measured_workload_ids,
+            workload_count,
+            expected_total_workload_count=workload_count,
+        )
+
     def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured(
         self,
     ) -> None:
@@ -5187,11 +5205,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 882,
-                "module_workloads": 874,
+                "measured_workloads": 885,
+                "module_workloads": 877,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 882,
+                "total_workloads": 885,
             },
         )
 
@@ -6931,6 +6949,108 @@ def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
     )
 
 
+def _pattern_collection_replacement_wrong_text_model_haystack_index(
+    operation: str,
+) -> int:
+    if operation == "pattern.split":
+        return 0
+    if operation in {"pattern.sub", "pattern.subn"}:
+        return 1
+    raise AssertionError(
+        "unexpected direct Pattern collection/replacement wrong-text-model "
+        f"workload operation {operation!r}"
+    )
+
+
+def _collection_replacement_pattern_wrong_text_model_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "pattern_call" or case.kwargs:
+        return None
+    if case.helper not in {"split", "sub", "subn"}:
+        return None
+    operation = f"pattern.{case.helper}"
+    haystack_index = _pattern_collection_replacement_wrong_text_model_haystack_index(
+        operation
+    )
+    case_args = list(case.args)
+    if len(case_args) <= haystack_index:
+        return None
+    haystack = case_args[haystack_index]
+    case_text_model = case.text_model or "str"
+    if case_text_model == "str" and not isinstance(haystack, bytes):
+        return None
+    if case_text_model == "bytes" and not isinstance(haystack, str):
+        return None
+    return (
+        operation,
+        case_pattern(case),
+        freeze_signature_value(case_args),
+        (),
+        case.flags or 0,
+        case_text_model,
+    )
+
+
+def _collection_replacement_pattern_wrong_text_model_workload_args(
+    workload: Any,
+) -> tuple[object, ...]:
+    if workload.operation == "pattern.split":
+        args: list[object] = [workload.haystack_payload()]
+        if workload.maxsplit:
+            args.append(workload.maxsplit_argument())
+        return tuple(args)
+    if workload.operation in {"pattern.sub", "pattern.subn"}:
+        args = [
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+        ]
+        if workload.count:
+            args.append(workload.count_argument())
+        return tuple(args)
+    raise AssertionError(
+        "unexpected direct Pattern collection/replacement wrong-text-model "
+        f"workload operation {workload.operation!r}"
+    )
+
+
+def _collection_replacement_pattern_wrong_text_model_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_collection_replacement_pattern_wrong_text_model_workload(workload):
+        raise AssertionError(
+            "unexpected direct Pattern collection/replacement wrong-text-model "
+            f"workload {workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value(
+            list(
+                _collection_replacement_pattern_wrong_text_model_workload_args(
+                    workload
+                )
+            )
+        ),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_collection_replacement_pattern_wrong_text_model_workload(
+    workload: Any,
+) -> bool:
+    return (
+        getattr(workload, "haystack_text_model", None) is not None
+        and not workload.kwargs
+        and not workload.use_compiled_pattern
+        and workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
+
+
 def _module_workflow_compiled_pattern_compile_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -8445,6 +8565,31 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             _collection_replacement_wrong_text_model_correctness_case_signature
         ),
         workload_signature=_collection_replacement_wrong_text_model_workload_signature,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="pattern-helper-collection-replacement-wrong-text-model",
+        manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            {
+                "pattern-split-on-bytes-string-warm-str": (
+                    "workflow-pattern-split-str-pattern-on-bytes-string",
+                ),
+                "pattern-sub-on-bytes-string-warm-str": (
+                    "workflow-pattern-sub-str-pattern-on-bytes-string",
+                ),
+                "pattern-subn-on-str-string-purged-bytes": (
+                    "workflow-pattern-subn-bytes-pattern-on-str-string",
+                ),
+            },
+        ),
+        include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+        correctness_case_signature=(
+            _collection_replacement_pattern_wrong_text_model_correctness_case_signature
+        ),
+        workload_signature=(
+            _collection_replacement_pattern_wrong_text_model_workload_signature
+        ),
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-keyword-flags",
@@ -12198,6 +12343,377 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
         assert callback_field_names == expected_field_names * 2
     finally:
         re.purge()
+
+
+@dataclass(frozen=True)
+class PatternHelperCollectionReplacementWrongTextModelCase:
+    id: str
+    operation: str
+    cache_mode: str
+    haystack: str
+    haystack_text_model: str
+    replacement: object
+    text_model: str
+    count: int
+    maxsplit: int
+    expected_exception: dict[str, str]
+    expected_callback_result: object
+
+
+PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES = (
+    PatternHelperCollectionReplacementWrongTextModelCase(
+        id="pattern-split-on-bytes-string-warm-str",
+        operation="pattern.split",
+        cache_mode="warm",
+        haystack="zabczz",
+        haystack_text_model="bytes",
+        replacement=None,
+        text_model="str",
+        count=0,
+        maxsplit=0,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+        expected_callback_result="pattern-result",
+    ),
+    PatternHelperCollectionReplacementWrongTextModelCase(
+        id="pattern-sub-on-bytes-string-warm-str",
+        operation="pattern.sub",
+        cache_mode="warm",
+        haystack="zabczz",
+        haystack_text_model="bytes",
+        replacement="x",
+        text_model="str",
+        count=0,
+        maxsplit=0,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+        expected_callback_result="pattern-result",
+    ),
+    PatternHelperCollectionReplacementWrongTextModelCase(
+        id="pattern-subn-on-str-string-purged-bytes",
+        operation="pattern.subn",
+        cache_mode="purged",
+        haystack="zabczz",
+        haystack_text_model="str",
+        replacement="x",
+        text_model="bytes",
+        count=0,
+        maxsplit=0,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a bytes pattern on a string-like object",
+        },
+        expected_callback_result=("pattern-result", 0),
+    ),
+)
+
+
+def _pattern_helper_collection_replacement_wrong_text_model_manifest_payload(
+    case: PatternHelperCollectionReplacementWrongTextModelCase,
+) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "id": f"{case.id}-contract",
+        "bucket": case.operation.replace("pattern.", "pattern-"),
+        "family": "module",
+        "operation": case.operation,
+        "pattern": "abc",
+        "haystack": case.haystack,
+        "expected_exception": case.expected_exception,
+        "flags": 0,
+        "count": case.count,
+        "maxsplit": case.maxsplit,
+        "text_model": case.text_model,
+        "haystack_text_model": case.haystack_text_model,
+        "cache_mode": case.cache_mode,
+        "timing_scope": "pattern-helper-call",
+        "notes": [
+            "Ensures benchmark manifests keep the bounded direct Pattern "
+            "collection/replacement wrong-text-model rows unresolved until "
+            "helper invocation."
+        ],
+    }
+    if case.replacement is not None:
+        payload["replacement"] = case.replacement
+    return payload
+
+
+def _pattern_helper_collection_replacement_wrong_text_model_workload(
+    case: PatternHelperCollectionReplacementWrongTextModelCase,
+) -> Workload:
+    manifest_payload = (
+        _pattern_helper_collection_replacement_wrong_text_model_manifest_payload(
+            case
+        )
+    )
+    return workload_from_payload(
+        {
+            "manifest_id": "collection-replacement-boundary",
+            "workload_id": str(manifest_payload["id"]),
+            **{key: value for key, value in manifest_payload.items() if key != "id"},
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _pattern_helper_collection_replacement_wrong_text_model_manifest() -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "manifest_id": "collection-replacement-boundary",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _pattern_helper_collection_replacement_wrong_text_model_manifest_payload(
+                case
+            )
+            for case in PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES
+        ],
+    }
+
+
+def _assert_pattern_helper_collection_replacement_wrong_text_model_payload_round_trip(
+    case: PatternHelperCollectionReplacementWrongTextModelCase,
+    payload: dict[str, object],
+    round_tripped: Workload,
+) -> None:
+    expected_text_type = str if case.text_model == "str" else bytes
+    expected_haystack_type = str if case.haystack_text_model == "str" else bytes
+
+    assert payload.get("use_compiled_pattern") is None
+    assert round_tripped.use_compiled_pattern is False
+    assert payload["haystack_text_model"] == case.haystack_text_model
+    assert round_tripped.haystack_text_model == case.haystack_text_model
+    assert payload["expected_exception"] == case.expected_exception
+    assert round_tripped.expected_exception == case.expected_exception
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
+    if case.replacement is not None:
+        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+def _run_cpython_pattern_helper_collection_replacement_wrong_text_model_workload(
+    workload: Workload,
+) -> object:
+    helper_name = workload.operation.removeprefix("pattern.")
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+
+    if workload.operation == "pattern.split":
+        return getattr(compiled_pattern, helper_name)(
+            workload.haystack_payload(),
+            workload.maxsplit_argument(),
+        )
+
+    if workload.operation in {"pattern.sub", "pattern.subn"}:
+        return getattr(compiled_pattern, helper_name)(
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+            workload.count_argument(),
+        )
+
+    raise AssertionError(
+        "unexpected direct Pattern collection/replacement wrong-text-model "
+        f"workload operation {workload.operation!r}"
+    )
+
+
+def test_standard_benchmark_manifest_preserves_pattern_collection_replacement_wrong_text_model_rows_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest = _pattern_helper_collection_replacement_wrong_text_model_manifest()
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_pattern_collection_replacement_wrong_text_model_contract.py",
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workloads = load_manifest(manifest_path).workloads
+
+    assert [workload.use_compiled_pattern for workload in workloads] == [
+        False
+    ] * len(PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES)
+    assert [workload.haystack_text_model for workload in workloads] == [
+        case.haystack_text_model
+        for case in PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES
+    ]
+
+    for case, workload in zip(
+        PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES,
+        workloads,
+        strict=True,
+    ):
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        _assert_pattern_helper_collection_replacement_wrong_text_model_payload_round_trip(
+            case,
+            payload,
+            round_tripped,
+        )
+
+        with pytest.raises(TypeError) as expected_error:
+            _run_cpython_pattern_helper_collection_replacement_wrong_text_model_workload(
+                workload
+            )
+        with pytest.raises(TypeError) as observed_error:
+            run_benchmark_workload_with_cpython(round_tripped)
+
+        assert str(observed_error.value) == str(expected_error.value)
+
+
+def test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest = _pattern_helper_collection_replacement_wrong_text_model_manifest()
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_pattern_collection_replacement_wrong_text_model_anchor_contract.py",
+        f"MANIFEST = {manifest!r}\n",
+    )
+    expected_anchor_case_ids = _definition_anchor_expectations(
+        manifest_path,
+        {
+            "pattern-split-on-bytes-string-warm-str-contract": (
+                "workflow-pattern-split-str-pattern-on-bytes-string",
+            ),
+            "pattern-sub-on-bytes-string-warm-str-contract": (
+                "workflow-pattern-sub-str-pattern-on-bytes-string",
+            ),
+            "pattern-subn-on-str-string-purged-bytes-contract": (
+                "workflow-pattern-subn-bytes-pattern-on-str-string",
+            ),
+        },
+    )
+    anchor_case_ids = published_case_ids_by_signature(
+        _collection_replacement_pattern_wrong_text_model_correctness_case_signature
+    )
+
+    assert anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=(
+            _collection_replacement_pattern_wrong_text_model_workload_signature
+        ),
+        include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+    ) == expected_anchor_case_ids
+    assert unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=(
+            _collection_replacement_pattern_wrong_text_model_workload_signature
+        ),
+        include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+    ) == ()
+    assert tuple(
+        (pair.workload_id, pair.case_id)
+        for pair in expected_anchored_workload_case_pairs(
+            manifest_path,
+            expected_anchor_case_ids=expected_anchor_case_ids,
+            include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+        )
+    ) == (
+        (
+            "pattern-split-on-bytes-string-warm-str-contract",
+            "workflow-pattern-split-str-pattern-on-bytes-string",
+        ),
+        (
+            "pattern-sub-on-bytes-string-warm-str-contract",
+            "workflow-pattern-sub-str-pattern-on-bytes-string",
+        ),
+        (
+            "pattern-subn-on-str-string-purged-bytes-contract",
+            "workflow-pattern-subn-bytes-pattern-on-str-string",
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for case in PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES
+    ),
+)
+def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time(
+    monkeypatch,
+    case: PatternHelperCollectionReplacementWrongTextModelCase,
+) -> None:
+    workload = _pattern_helper_collection_replacement_wrong_text_model_workload(case)
+    observed_workload_ids: list[str] = []
+    original_haystack_payload = benchmarks.Workload.haystack_payload
+
+    def record_haystack_payload(self: Workload) -> object:
+        observed_workload_ids.append(self.workload_id)
+        return original_haystack_payload(self)
+
+    monkeypatch.setattr(
+        benchmarks.Workload,
+        "haystack_payload",
+        record_haystack_payload,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_workload_ids == []
+
+        with pytest.raises(
+            TypeError,
+            match=re.escape(case.expected_exception["message_substring"]),
+        ):
+            callback()
+
+        assert observed_workload_ids == [workload.workload_id]
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    "case",
+    tuple(
+        pytest.param(case, id=case.id)
+        for case in PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_pattern_helper_collection_replacement_wrong_text_model_workloads(
+    case: PatternHelperCollectionReplacementWrongTextModelCase,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    workload = _pattern_helper_collection_replacement_wrong_text_model_workload(case)
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    _assert_pattern_helper_collection_replacement_wrong_text_model_payload_round_trip(
+        case,
+        payload,
+        round_tripped,
+    )
+
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
 
 
 @pytest.mark.parametrize(
@@ -16072,6 +16588,30 @@ class _RecordingBenchmarkCompiledPattern:
         self._calls.append(("pattern.search", haystack, args, kwargs))
         return "pattern-result"
 
+    def split(self, haystack: object, *args: object, **kwargs: object) -> object:
+        self._calls.append(("pattern.split", haystack, args, kwargs))
+        return "pattern-result"
+
+    def sub(
+        self,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        self._calls.append(("pattern.sub", repl, string, args, kwargs))
+        return "pattern-result"
+
+    def subn(
+        self,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        self._calls.append(("pattern.subn", repl, string, args, kwargs))
+        return ("pattern-result", 0)
+
 
 class _RecordingBenchmarkModule:
     def __init__(
@@ -16482,6 +17022,47 @@ def test_pattern_helper_cache_modes_preserve_expected_compile_and_purge_order(
     assert module.calls == [*expected_build_calls, *expected_callback_calls]
 
 
+@pytest.mark.parametrize(
+    ("case", "expected_build_calls", "expected_callback_call"),
+    (
+        pytest.param(
+            PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES[0],
+            [("compile", "abc", 0)],
+            ("pattern.split", b"zabczz", (0,), {}),
+            id="pattern-split-on-bytes-string-warm-str",
+        ),
+        pytest.param(
+            PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES[1],
+            [("compile", "abc", 0)],
+            ("pattern.sub", "x", b"zabczz", (0,), {}),
+            id="pattern-sub-on-bytes-string-warm-str",
+        ),
+        pytest.param(
+            PATTERN_HELPER_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CASES[2],
+            [("compile", b"abc", 0), ("purge",)],
+            ("pattern.subn", b"x", "zabczz", (0,), {}),
+            id="pattern-subn-on-str-string-purged-bytes",
+        ),
+    ),
+)
+def test_pattern_helper_collection_replacement_wrong_text_model_callbacks_precompile_before_timing(
+    case: PatternHelperCollectionReplacementWrongTextModelCase,
+    expected_build_calls: list[tuple[object, ...]],
+    expected_callback_call: tuple[object, ...],
+) -> None:
+    module = _RecordingBenchmarkModule()
+    callback = build_callable(
+        module,
+        "re",
+        _pattern_helper_collection_replacement_wrong_text_model_workload(case),
+    )
+
+    assert module.calls == expected_build_calls
+    assert len(module.compiled_patterns) == 1
+    assert callback() == case.expected_callback_result
+    assert module.calls[-1] == expected_callback_call
+
+
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -16742,6 +17323,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
         "manifest_id",
         "operation",
         "use_compiled_pattern",
+        "kwargs_payload",
         "text_model",
         "haystack_text_model",
         "expected_exception",
@@ -16752,6 +17334,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             "python-benchmark-invalid-haystack-text-model-contract",
             "module.sub",
             True,
+            {},
             "str",
             "bytes",
             {
@@ -16769,6 +17352,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             "collection-replacement-boundary",
             "module.search",
             False,
+            {},
             "str",
             "bytes",
             {
@@ -16786,6 +17370,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             "module-boundary",
             "module.sub",
             True,
+            {},
             "str",
             "bytes",
             {
@@ -16803,6 +17388,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             "collection-replacement-boundary",
             "module.sub",
             True,
+            {},
             "str",
             "str",
             {
@@ -16819,6 +17405,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             "collection-replacement-boundary",
             "module.sub",
             True,
+            {},
             "str",
             "bytes",
             None,
@@ -16832,6 +17419,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             "collection-replacement-boundary",
             "module.sub",
             True,
+            {},
             "str",
             "utf-16",
             {
@@ -16844,6 +17432,42 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
             ),
             id="invalid-override-model",
         ),
+        pytest.param(
+            "collection-replacement-boundary",
+            "pattern.findall",
+            False,
+            {},
+            "bytes",
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "cannot use a bytes pattern on a string-like object",
+            },
+            re.escape(
+                "benchmark workload haystack_text_model currently only supports "
+                "direct Pattern.split()/Pattern.sub()/Pattern.subn() positional "
+                "helper workloads"
+            ),
+            id="pattern-operation-scope",
+        ),
+        pytest.param(
+            "collection-replacement-boundary",
+            "pattern.split",
+            False,
+            {"maxsplit": 1},
+            "str",
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "cannot use a string pattern on a bytes-like object",
+            },
+            re.escape(
+                "benchmark workload haystack_text_model currently only supports "
+                "direct Pattern.split()/Pattern.sub()/Pattern.subn() positional "
+                "helper workloads"
+            ),
+            id="pattern-keyword-carrier-not-supported",
+        ),
     ),
 )
 def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_payload_entry_points(
@@ -16851,11 +17475,13 @@ def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_
     manifest_id: str,
     operation: str,
     use_compiled_pattern: bool,
+    kwargs_payload: dict[str, object],
     text_model: str,
     haystack_text_model: str,
     expected_exception: dict[str, str] | None,
     error_pattern: str,
 ) -> None:
+    bucket = operation.replace(".", "-")
     manifest_source = f"""
     MANIFEST = {{
         "schema_version": 1,
@@ -16863,7 +17489,7 @@ def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_
         "workloads": [
             {{
                 "id": "module-sub-invalid-haystack-text-model-contract",
-                "bucket": "module-sub",
+                "bucket": {bucket!r},
                 "family": "module",
                 "operation": {operation!r},
                 "pattern": "abc",
@@ -16874,6 +17500,7 @@ def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_
                 "use_compiled_pattern": {use_compiled_pattern!r},
                 "count": 1,
                 "maxsplit": 0,
+                "kwargs": {kwargs_payload!r},
                 "text_model": {text_model!r},
                 "haystack_text_model": {haystack_text_model!r},
                 "cache_mode": "warm",
@@ -16897,7 +17524,7 @@ def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_
             {
                 "manifest_id": manifest_id,
                 "workload_id": "module-sub-invalid-haystack-text-model-contract",
-                "bucket": "module-sub",
+                "bucket": bucket,
                 "family": "module",
                 "operation": operation,
                 "pattern": "abc",
@@ -16908,6 +17535,7 @@ def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_
                 "use_compiled_pattern": use_compiled_pattern,
                 "count": 1,
                 "maxsplit": 0,
+                "kwargs": kwargs_payload,
                 "text_model": text_model,
                 "haystack_text_model": haystack_text_model,
                 "cache_mode": "warm",

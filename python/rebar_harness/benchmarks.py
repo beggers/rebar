@@ -213,6 +213,7 @@ class Workload:
             manifest_id=manifest_id,
             operation=operation,
             use_compiled_pattern=use_compiled_pattern,
+            kwargs=kwargs,
             text_model=text_model,
             haystack_text_model=haystack_text_model,
             expected_exception=expected_exception,
@@ -524,6 +525,9 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS = frozenset(
         "module.subn",
     }
 )
+_COLLECTION_REPLACEMENT_PATTERN_WRONG_TEXT_MODEL_OPERATIONS = frozenset(
+    {"pattern.split", "pattern.sub", "pattern.subn"}
+)
 _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS = frozenset(
     {"module.search", "module.match", "module.fullmatch"}
 )
@@ -823,6 +827,7 @@ def validate_haystack_text_model_override(
     manifest_id: str,
     operation: str,
     use_compiled_pattern: bool,
+    kwargs: dict[str, Any],
     text_model: str,
     haystack_text_model: str | None,
     expected_exception: dict[str, Any] | None,
@@ -838,19 +843,37 @@ def validate_haystack_text_model_override(
         )
 
     if manifest_id == "collection-replacement-boundary":
-        allowed_operations = _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS
-        operation_description = (
-            "compiled-pattern module.split/module.findall/module.finditer/"
-            "module.sub/module.subn workloads"
-        )
+        if operation.startswith("module."):
+            operation_description = (
+                "compiled-pattern module.split/module.findall/module.finditer/"
+                "module.sub/module.subn workloads"
+            )
+            supports_operation = (
+                use_compiled_pattern
+                and operation in _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS
+            )
+        else:
+            operation_description = (
+                "direct Pattern.split()/Pattern.sub()/Pattern.subn() positional "
+                "helper workloads"
+            )
+            supports_operation = (
+                not use_compiled_pattern
+                and not kwargs
+                and operation
+                in _COLLECTION_REPLACEMENT_PATTERN_WRONG_TEXT_MODEL_OPERATIONS
+            )
     else:
-        allowed_operations = _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS
         operation_description = (
             "compiled-pattern module.search/module.match/module.fullmatch "
             "workloads on the `module-boundary` manifest"
         )
+        supports_operation = (
+            use_compiled_pattern
+            and operation in _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS
+        )
 
-    if operation not in allowed_operations or not use_compiled_pattern:
+    if not supports_operation:
         raise ValueError(
             "benchmark workload haystack_text_model currently only supports "
             f"{operation_description}"
@@ -1493,7 +1516,11 @@ def helper_callable(module: Any, workload: Workload) -> Any:
 
 def pattern_helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
-    haystack = workload.haystack_payload()
+    static_haystack = (
+        None
+        if workload.haystack_text_model is not None
+        else workload.haystack_payload()
+    )
     uses_positional_window = workload.pos is not None or workload.endpos is not None
     uses_keyword_arguments = bool(workload.kwargs)
     duplicate_keyword_field = _expected_duplicate_pattern_helper_keyword_field(workload)
@@ -1502,6 +1529,11 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
         return module.compile(pattern, workload.flags)
 
     def invoke(compiled: Any) -> object:
+        resolved_haystack = (
+            static_haystack
+            if static_haystack is not None
+            else workload.haystack_payload()
+        )
         if (
             uses_positional_window
             and workload.operation not in _PATTERN_HELPER_WINDOW_OPERATIONS
@@ -1521,7 +1553,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             )
 
         def window_call_args() -> tuple[Any, ...]:
-            args: list[Any] = [haystack]
+            args: list[Any] = [resolved_haystack]
             if uses_positional_window:
                 args.append(workload.pos_argument())
             if workload.endpos is not None:
@@ -1535,56 +1567,76 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
 
         if workload.operation == "pattern.search":
             if uses_keyword_arguments:
-                return compiled.search(haystack, **keyword_call_kwargs())
+                return compiled.search(
+                    resolved_haystack,
+                    **keyword_call_kwargs(),
+                )
             return compiled.search(*window_call_args())
         if workload.operation == "pattern.match":
             if uses_keyword_arguments:
-                return compiled.match(haystack, **keyword_call_kwargs())
+                return compiled.match(
+                    resolved_haystack,
+                    **keyword_call_kwargs(),
+                )
             if uses_positional_window:
                 return compiled.match(*window_call_args())
-            return compiled.match(haystack)
+            return compiled.match(resolved_haystack)
         if workload.operation == "pattern.fullmatch":
             if uses_keyword_arguments:
-                return compiled.fullmatch(haystack, **keyword_call_kwargs())
+                return compiled.fullmatch(
+                    resolved_haystack,
+                    **keyword_call_kwargs(),
+                )
             return compiled.fullmatch(*window_call_args())
         if workload.operation == "pattern.split":
             if uses_keyword_arguments:
                 if duplicate_keyword_field == "maxsplit":
                     return compiled.split(
-                        haystack,
+                        resolved_haystack,
                         workload.maxsplit_argument(),
                         **keyword_call_kwargs(),
                     )
-                return compiled.split(haystack, **keyword_call_kwargs())
+                return compiled.split(
+                    resolved_haystack,
+                    **keyword_call_kwargs(),
+                )
             return compiled.split(
-                haystack,
+                resolved_haystack,
                 workload.maxsplit_argument(),
             )
         if workload.operation == "pattern.findall":
             if uses_keyword_arguments:
-                return compiled.findall(haystack, **keyword_call_kwargs())
+                return compiled.findall(
+                    resolved_haystack,
+                    **keyword_call_kwargs(),
+                )
             return compiled.findall(*window_call_args())
         if workload.operation == "pattern.finditer":
             if uses_keyword_arguments:
-                return list(compiled.finditer(haystack, **keyword_call_kwargs()))
+                return list(
+                    compiled.finditer(
+                        resolved_haystack,
+                        **keyword_call_kwargs(),
+                    )
+                )
             return list(compiled.finditer(*window_call_args()))
         if workload.operation == "pattern.sub":
             if uses_keyword_arguments:
                 if duplicate_keyword_field == "count":
                     return compiled.sub(
                         workload.replacement_payload(),
-                        haystack,
+                        resolved_haystack,
                         workload.count_argument(),
                         **keyword_call_kwargs(),
                     )
                 return compiled.sub(
                     workload.replacement_payload(),
-                    haystack,
+                    resolved_haystack,
                     **keyword_call_kwargs(),
                 )
             return compiled.sub(
                 workload.replacement_payload(),
-                haystack,
+                resolved_haystack,
                 workload.count_argument(),
             )
         if workload.operation == "pattern.subn":
@@ -1592,18 +1644,18 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
                 if duplicate_keyword_field == "count":
                     return compiled.subn(
                         workload.replacement_payload(),
-                        haystack,
+                        resolved_haystack,
                         workload.count_argument(),
                         **keyword_call_kwargs(),
                     )
                 return compiled.subn(
                     workload.replacement_payload(),
-                    haystack,
+                    resolved_haystack,
                     **keyword_call_kwargs(),
                 )
             return compiled.subn(
                 workload.replacement_payload(),
-                haystack,
+                resolved_haystack,
                 workload.count_argument(),
             )
         raise ValueError(f"unsupported pattern helper operation {workload.operation!r}")

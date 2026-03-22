@@ -1947,6 +1947,40 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-split-on-bytes-string-warm-str",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "zabczz",
+      "flags": 0,
+      "maxsplit": 0,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "literal",
+        "wrong-text-model",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "literal-text",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.split helper path that keeps the bounded wrong-text-model TypeError on bytes haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",
@@ -2255,6 +2289,41 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-on-bytes-string-warm-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "count": 0,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "literal",
+        "wrong-text-model",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "literal-text",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.sub helper path that keeps the bounded wrong-text-model TypeError on bytes haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-subn-count-indexlike-positional-warm-str",
       "bucket": "pattern-subn",
       "family": "module",
@@ -2502,6 +2571,41 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes precompiled Pattern.subn helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-on-str-string-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "count": 0,
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a bytes pattern on a string-like object"
+      },
+      "text_model": "bytes",
+      "haystack_text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "wrong-text-model",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Purged precompiled Pattern.subn helper path that keeps the bounded wrong-text-model TypeError on str haystacks on the shared collection/replacement benchmark surface."
       ]
     },
     {
