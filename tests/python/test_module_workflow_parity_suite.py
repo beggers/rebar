@@ -162,18 +162,6 @@ MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
 )
 MODULE_WORKFLOW_MANIFEST_ID = "module-workflow-surface"
 MATCH_BEHAVIOR_MANIFEST_ID = "match-behavior-smoke"
-MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS = (
-    "workflow-compile-str-bounded-wildcard",
-    "workflow-compile-str-bounded-wildcard-ignorecase",
-)
-MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS = (
-    "workflow-pattern-search-str-bounded-wildcard-ignorecase",
-    "workflow-pattern-match-str-bounded-wildcard",
-    "workflow-pattern-fullmatch-str-bounded-wildcard",
-    "workflow-pattern-findall-str-bounded-wildcard",
-    "workflow-pattern-finditer-str-bounded-wildcard",
-    "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
-)
 
 
 def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
@@ -199,7 +187,6 @@ MODULE_WORKFLOW_FIXTURE_PATH = MODULE_WORKFLOW_BUNDLE.manifest.path
 MATCH_BEHAVIOR_FIXTURE_PATH = MATCH_BEHAVIOR_BUNDLE.manifest.path
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
-COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
 NOFLAG_COMPILE_CASES = tuple(
     case for case in COMPILE_CASES if (case.flags or 0) == 0
 )
@@ -307,18 +294,22 @@ def _published_bounded_wildcard_raw_module_helper_fixture_cases() -> tuple[Fixtu
     )
 
 
-def _published_bounded_wildcard_compile_fixture_cases() -> tuple[FixtureCase, ...]:
+def _published_bounded_wildcard_fixture_cases(
+    cases: tuple[FixtureCase, ...],
+) -> tuple[FixtureCase, ...]:
     return tuple(
-        COMPILE_CASES_BY_ID[case_id]
-        for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS
+        case
+        for case in cases
+        if case.text_model == "str" and case_pattern(case) == "a.c"
     )
+
+
+def _published_bounded_wildcard_compile_fixture_cases() -> tuple[FixtureCase, ...]:
+    return _published_bounded_wildcard_fixture_cases(COMPILE_CASES)
 
 
 def _published_bounded_wildcard_pattern_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        PATTERN_CASES_BY_ID[case_id]
-        for case_id in MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS
-    )
+    return _published_bounded_wildcard_fixture_cases(PATTERN_CASES)
 
 
 def _published_bounded_wildcard_pattern_match_fixture_cases() -> tuple[FixtureCase, ...]:
@@ -3271,8 +3262,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         VERBOSE_BYTES_COMPILE_CASE_ID,
         MULTILINE_BYTES_COMPILE_CASE_ID,
     } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
+    bounded_wildcard_pattern_case_ids = tuple(
+        case.case_id for case in _published_bounded_wildcard_pattern_fixture_cases()
+    )
     assert {
-        *MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS,
+        *bounded_wildcard_pattern_case_ids,
         "workflow-pattern-search-str-verbose-regression",
         "workflow-pattern-search-str-verbose-regression-digits",
         "workflow-pattern-search-str-verbose-regression-too-many-digits",

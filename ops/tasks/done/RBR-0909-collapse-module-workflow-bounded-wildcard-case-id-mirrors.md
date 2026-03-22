@@ -1,8 +1,9 @@
 # RBR-0909: Collapse module-workflow bounded-wildcard case-id mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS` and `MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS` tuples from `tests/python/test_module_workflow_parity_suite.py`, so the bounded-wildcard compile and pattern subsets derive directly from the canonical `module-workflow-surface` bundle rows the owner file already loads instead of maintaining two handwritten case-id mirrors.
@@ -91,3 +92,11 @@ PY`
   - `RBR-0897` removed the module-workflow pattern keyword fixture mirror;
   - `RBR-0903` removed duplicate correctness selector contracts from the grouped-capture owner path; and
   - `RBR-0907` removed the grouped-replacement collection selector mirror, leaving these bounded-wildcard case-id tuples as the next small owner-local mirrors to delete in the live module-workflow parity suite.
+
+## Completion
+- Removed `MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS` and `MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS` from `tests/python/test_module_workflow_parity_suite.py`.
+- Added one live bounded-wildcard selector over loaded fixture rows and routed the compile/pattern subset helpers plus the bundle-contract check through that owner data path.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`
+  - `bash -lc "! rg -n '^MODULE_WORKFLOW_BOUNDED_WILDCARD_(COMPILE|PATTERN)_CASE_IDS = ' tests/python/test_module_workflow_parity_suite.py"`
+  - the task-local live-bundle probe from the acceptance block (`ok`)
