@@ -974,6 +974,61 @@ Verified with `pytest -q`.
         self.assertEqual(state["queue_counts"]["done"], 504)
         self.assertFalse(rebar_ops.agent_is_due(reporting, state))
 
+    def test_reporting_same_cycle_refresh_skips_task_heavy_cycles(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        reporting = rebar_ops.AgentSpec(
+            name="reporting",
+            kind="reporting_worker",
+            description="",
+            enabled=True,
+            cycle_order=70,
+            spec_path=REPO_ROOT / "ops" / "agents" / "reporting.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "reporting.md",
+            dispatch={"mode": "interval", "interval_seconds": 3600},
+            codex={},
+        )
+        task_result = rebar_ops.RunResult(
+            agent_name="feature-implementation",
+            agent_kind="task_worker",
+            run_id="run-1",
+            exit_code=0,
+            timed_out=False,
+            run_dir=REPO_ROOT,
+            task_initial_path="ops/tasks/in_progress/example.md",
+            task_final_path="ops/tasks/done/example.md",
+            task_final_status="done",
+        )
+
+        self.assertFalse(
+            rebar_ops.reporting_needs_same_cycle_refresh(
+                reporting,
+                [{"changed_files": ["reports/correctness/latest.py"]}],
+                [task_result],
+            )
+        )
+
+    def test_reporting_same_cycle_refresh_keeps_quiet_cycle_report_sync(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        reporting = rebar_ops.AgentSpec(
+            name="reporting",
+            kind="reporting_worker",
+            description="",
+            enabled=True,
+            cycle_order=70,
+            spec_path=REPO_ROOT / "ops" / "agents" / "reporting.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "reporting.md",
+            dispatch={"mode": "interval", "interval_seconds": 3600},
+            codex={},
+        )
+
+        self.assertTrue(
+            rebar_ops.reporting_needs_same_cycle_refresh(
+                reporting,
+                [{"changed_files": ["reports/correctness/latest.py"]}],
+                [],
+            )
+        )
+
 
 class ReadmeReportingTest(unittest.TestCase):
     def test_correctness_cli_rejects_legacy_tracked_json_path(self) -> None:

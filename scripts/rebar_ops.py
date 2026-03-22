@@ -1886,10 +1886,15 @@ def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = 
 def reporting_needs_same_cycle_refresh(
     agent: AgentSpec,
     commit_actions: list[dict[str, Any]],
+    prior_results: list[RunResult],
 ) -> bool:
     if agent.kind != "reporting_worker":
         return False
     if str(agent.dispatch.get("mode", "every_cycle")) != "interval":
+        return False
+    if any(result.agent_kind == "task_worker" for result in prior_results):
+        # Let interval-based reporting catch up on the next pass instead of
+        # stretching task-heavy cycles past the runtime budget.
         return False
     for action in commit_actions:
         changed_files = action.get("changed_files", [])
@@ -3005,7 +3010,11 @@ def run_cycle(
     skipped_dirty_autocommit_agents: list[str] = []
     forced = force_agents or set()
     for agent in agents:
-        same_cycle_reporting_refresh = reporting_needs_same_cycle_refresh(agent, commit_actions)
+        same_cycle_reporting_refresh = reporting_needs_same_cycle_refresh(
+            agent,
+            commit_actions,
+            results,
+        )
         if same_cycle_reporting_refresh and agent_in_environment_backoff(agent, loop_state):
             same_cycle_reporting_refresh = False
         force = (
