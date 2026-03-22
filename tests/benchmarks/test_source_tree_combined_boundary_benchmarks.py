@@ -3802,7 +3802,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("pattern-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 16)
+        self.assertEqual(len(case.target_manifest.workloads), 18)
         keyword_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
             _is_pattern_keyword_window_workload,
@@ -3816,6 +3816,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (
                 "pattern-search-pos-keyword-warm-str",
                 "pattern-match-pos-keyword-purged-str",
+                "pattern-match-window-indexlike-purged-bytes",
                 "pattern-fullmatch-window-keyword-purged-bytes",
                 "pattern-findall-bool-window-keyword-warm-str",
                 "pattern-finditer-window-indexlike-purged-bytes",
@@ -3826,6 +3827,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (
                 "pattern-search-pos-indexlike-positional-warm-str",
                 "pattern-search-endpos-indexlike-positional-purged-bytes",
+                "pattern-match-window-indexlike-positional-purged-bytes",
                 "pattern-fullmatch-window-indexlike-positional-purged-bytes",
                 "pattern-findall-window-indexlike-positional-warm-str",
                 "pattern-finditer-window-indexlike-positional-purged-bytes",
@@ -3835,8 +3837,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case,
             "pattern-boundary",
             keyword_workload_ids + positional_workload_ids,
-            16,
-            expected_total_workload_count=16,
+            18,
+            expected_total_workload_count=18,
         )
 
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
@@ -5174,11 +5176,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 868,
-                "module_workloads": 860,
+                "measured_workloads": 870,
+                "module_workloads": 862,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 868,
+                "total_workloads": 870,
             },
         )
 
@@ -6974,6 +6976,24 @@ _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
 }
 
 
+def _compiled_pattern_module_compile_keyword_kwargs_signature(
+    kwargs: dict[str, object],
+) -> tuple[tuple[str, str, object], ...]:
+    signature: list[tuple[str, str, object]] = []
+    for name, value in sorted(kwargs.items()):
+        if isinstance(value, bool):
+            signature.append((name, "bool", value))
+            continue
+        if isinstance(value, re.RegexFlag) and int(value) == 0:
+            signature.append((name, "noflag", 0))
+            continue
+        if isinstance(value, int):
+            signature.append((name, "int", int(value)))
+            continue
+        signature.append((name, type(value).__name__, repr(value)))
+    return tuple(signature)
+
+
 def _workload_matches_expected_exception(
     workload: Any,
     *,
@@ -6994,7 +7014,10 @@ def _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature
         return None
     if case.helper != "compile" or case.args:
         return None
-    if _module_workflow_keyword_kwargs_signature(case.kwargs) != keyword_signature:
+    if (
+        _compiled_pattern_module_compile_keyword_kwargs_signature(case.kwargs)
+        != keyword_signature
+    ):
         return None
     if case.pattern not in allowed_patterns:
         return None
@@ -7055,7 +7078,7 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
         )
         and workload.pattern in allowed_patterns
         and workload.flags == 0
-        and _module_workflow_keyword_kwargs_signature(workload.kwargs)
+        and _compiled_pattern_module_compile_keyword_kwargs_signature(workload.kwargs)
         == keyword_signature
     )
 
@@ -7451,7 +7474,7 @@ def _pattern_window_positional_indexlike_correctness_case_signature(
 ) -> tuple[Any, ...] | None:
     if case.operation != "pattern_call" or case.kwargs:
         return None
-    if case.helper not in {"search", "fullmatch", "findall", "finditer"}:
+    if case.helper not in {"search", "match", "fullmatch", "findall", "finditer"}:
         return None
     if not any(hasattr(argument, "__index__") for argument in case.args):
         return None
@@ -7468,6 +7491,7 @@ def _pattern_window_positional_indexlike_workload_args(
 ) -> tuple[object, ...]:
     if workload.operation not in {
         "pattern.search",
+        "pattern.match",
         "pattern.fullmatch",
         "pattern.findall",
         "pattern.finditer",
@@ -7508,6 +7532,7 @@ def _is_pattern_window_positional_indexlike_workload(workload: Any) -> bool:
     return (
         workload.operation in {
             "pattern.search",
+            "pattern.match",
             "pattern.fullmatch",
             "pattern.findall",
             "pattern.finditer",
@@ -8690,6 +8715,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-search-endpos-indexlike-positional-purged-bytes": (
                     "workflow-pattern-search-bytes-endpos-indexlike-positional",
                 ),
+                "pattern-match-window-indexlike-positional-purged-bytes": (
+                    "workflow-pattern-match-bytes-window-indexlike-positional",
+                ),
                 "pattern-fullmatch-window-indexlike-positional-purged-bytes": (
                     "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
                 ),
@@ -8719,6 +8747,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "pattern-match-pos-keyword-purged-str": (
                     "workflow-pattern-match-str-pos-keyword",
+                ),
+                "pattern-match-window-indexlike-purged-bytes": (
+                    "workflow-pattern-match-bytes-window-indexlike",
                 ),
                 "pattern-fullmatch-window-keyword-purged-bytes": (
                     "workflow-pattern-fullmatch-bytes-window-keyword",

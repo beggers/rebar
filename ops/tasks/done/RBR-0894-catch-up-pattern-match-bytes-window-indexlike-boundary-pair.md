@@ -1,6 +1,6 @@
 # RBR-0894: Catch up the bound `Pattern.match()` bytes window `__index__` boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -64,3 +64,12 @@ Created: 2026-03-22
   - `benchmarks/workloads/pattern_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` currently publish the adjacent `pattern-match-pos-keyword-purged-str`, `pattern-fullmatch-window-keyword-purged-bytes`, `pattern-finditer-window-indexlike-purged-bytes`, `pattern-fullmatch-window-indexlike-positional-purged-bytes`, and `pattern-finditer-window-indexlike-positional-purged-bytes` rows, but no exact `pattern-match-window-indexlike-purged-bytes` or `pattern-match-window-indexlike-positional-purged-bytes` workloads;
   - `reports/benchmarks/latest.py` currently reports `REPORT["summary"]["total_workloads"] == 868`, `REPORT["summary"]["measured_workloads"] == 868`, `REPORT["summary"]["known_gap_count"] == 0`, and `REPORT["summary"]["module_workloads"] == 860`, with `REPORT["manifests"]["pattern-boundary"]` at `16` selected / `16` measured / `0` known gaps; and
   - the shared source-tree benchmark contract already carries the `pattern-window-keyword` and `pattern-window-positional-indexlike` anchor families on the `pattern-boundary` manifest, so this follow-on remains a publication-only benchmark catch-up slice rather than a missing harness prerequisite.
+
+## Completion
+- Added `pattern-match-window-indexlike-purged-bytes` and `pattern-match-window-indexlike-positional-purged-bytes` to `benchmarks/workloads/pattern_boundary.py` at the required keyword and positional insertion points, kept the existing `pattern-boundary` owner path, and updated the shared `pattern-window-keyword` / `pattern-window-positional-indexlike` benchmark anchor expectations on `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `870` total workloads, `870` measured workloads, `0` known gaps, `862` module workloads, and `pattern-boundary` at `18` selected / `18` measured workloads with both new `Pattern.match()` bytes window `__index__` rows published as measured timings.
+- The required completion gate uncovered an existing duplicate-anchor expectation in the compiled-pattern `module.compile(..., flags=...)` benchmark contract path after `re.NOFLAG` correctness cases landed. The shared benchmark test helper now distinguishes explicit integer-zero keywords from explicit `re.NOFLAG` correctness anchors so the existing one-workload-to-one-anchor contract stays green without widening the benchmark surface.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` -> `545 passed, 3 skipped, 1491 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0894-pattern-match-bytes-window-indexlike-boundary-pair.py` -> `18` total / `18` measured / `0` known gaps
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` -> `870` total / `870` measured / `0` known gaps

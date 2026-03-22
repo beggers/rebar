@@ -242,6 +242,48 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-match-window-indexlike-purged-bytes",
+      "bucket": "pattern-match",
+      "family": "module",
+      "operation": "pattern.match",
+      "pattern": "abc",
+      "haystack": "zabc",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "pos": {
+          "type": "indexlike",
+          "value": 1
+        },
+        "endpos": {
+          "type": "indexlike",
+          "value": 4
+        }
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "match",
+        "bytes",
+        "purged-cache",
+        "keyword",
+        "window",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-match",
+        "pattern-text-model",
+        "pattern-window-pos",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes match helper path that keeps the Pattern.match pos=/endpos= __index__ keyword carriers on the shared pattern-boundary surface."
+      ]
+    },
+    {
       "id": "pattern-fullmatch-window-keyword-purged-bytes",
       "bucket": "pattern-fullmatch",
       "family": "module",
@@ -417,6 +459,45 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache bytes search helper path that keeps endpos-backed positional __index__ timing on the shared Pattern.search benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-match-window-indexlike-positional-purged-bytes",
+      "bucket": "pattern-match",
+      "family": "module",
+      "operation": "pattern.match",
+      "pattern": "abc",
+      "haystack": "zabc",
+      "flags": 0,
+      "pos": {
+        "type": "indexlike",
+        "value": 1
+      },
+      "endpos": {
+        "type": "indexlike",
+        "value": 4
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "match",
+        "bytes",
+        "purged-cache",
+        "positional-window",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-match",
+        "pattern-text-model",
+        "pattern-window-pos",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes match helper path that keeps Pattern.match positional pos/endpos __index__ timing on the shared boundary surface."
       ]
     },
     {
