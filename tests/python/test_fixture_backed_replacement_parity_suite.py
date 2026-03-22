@@ -30,6 +30,7 @@ from tests.python.fixture_parity_support import (
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_mixed_text_model_case_pairs,
     assert_placeholder_message_contains,
     assert_valid_match_group_access_parity,
     build_selected_fixture_bundle,
@@ -1680,12 +1681,9 @@ def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surf
 ) -> None:
     bundle = MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE
     surface = OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE
-    str_case_ids = frozenset(
-        case.case_id for case in bundle.cases if case.text_model == "str"
-    )
-    bytes_case_ids = frozenset(
-        case.case_id for case in bundle.cases if case.text_model == "bytes"
-    )
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    str_case_ids = frozenset(case.case_id for case in str_cases)
+    bytes_case_ids = frozenset(case.case_id for case in bytes_cases)
     expected_module_case_ids = frozenset(
         case.case_id
         for case in fixture_cases_for_operation((bundle,), "module_call")
@@ -1715,11 +1713,6 @@ def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surf
         if case.manifest_id == bundle.expected_manifest_id
     )
 
-    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
-    assert len(str_case_ids) == len(bytes_case_ids) == 8
-    assert bytes_case_ids == {
-        f"{case_id.removesuffix('-str')}-bytes" for case_id in str_case_ids
-    }
     assert shared_module_case_ids == expected_module_case_ids
     assert shared_pattern_case_ids == expected_pattern_case_ids
     assert shared_match_group_access_case_ids == str_case_ids | bytes_case_ids
@@ -1730,12 +1723,9 @@ def test_broader_range_open_ended_replacement_manifest_routes_bytes_rows_through
 ) -> None:
     bundle = BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE
     surface = OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE
-    ordered_str_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "str"
-    )
-    ordered_bytes_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "bytes"
-    )
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    ordered_str_case_ids = tuple(case.case_id for case in str_cases)
+    ordered_bytes_case_ids = tuple(case.case_id for case in bytes_cases)
     expected_module_case_ids = frozenset(
         case.case_id
         for case in fixture_cases_for_operation((bundle,), "module_call")
@@ -1760,13 +1750,8 @@ def test_broader_range_open_ended_replacement_manifest_routes_bytes_rows_through
         if case.manifest_id == bundle.expected_manifest_id
     )
 
-    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
-    )
-    assert len(ordered_str_case_ids) == len(ordered_bytes_case_ids) == 8
-    assert ordered_bytes_case_ids == tuple(
-        f"{case_id.removesuffix('-str')}-bytes" for case_id in ordered_str_case_ids
     )
     assert shared_module_case_ids == expected_module_case_ids
     assert shared_pattern_case_ids == expected_pattern_case_ids
@@ -1780,12 +1765,9 @@ def test_broader_range_wider_ranged_repeat_replacement_manifest_keeps_mixed_text
     manifest_id = NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID
     bundle = BROADER_RANGE_WIDER_RANGED_REPEAT_MIXED_TEXT_REPLACEMENT_BUNDLE
     surface = GROUPED_REPLACEMENT_TEMPLATE_SURFACE
-    ordered_str_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "str"
-    )
-    ordered_bytes_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "bytes"
-    )
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    ordered_str_case_ids = tuple(case.case_id for case in str_cases)
+    ordered_bytes_case_ids = tuple(case.case_id for case in bytes_cases)
     expected_selected_case_ids = _expected_selected_replacement_case_ids(
         surface,
         manifest_id=manifest_id,
@@ -1797,15 +1779,10 @@ def test_broader_range_wider_ranged_repeat_replacement_manifest_keeps_mixed_text
         case.case_id for case in fixture_cases_for_operation((bundle,), "pattern_call")
     )
 
-    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
     )
     assert tuple(case.case_id for case in bundle.cases) == expected_selected_case_ids
-    assert len(ordered_str_case_ids) == len(ordered_bytes_case_ids) == 8
-    assert ordered_bytes_case_ids == tuple(
-        f"{case_id.removesuffix('-str')}-bytes" for case_id in ordered_str_case_ids
-    )
     assert tuple(
         case.case_id
         for case in surface.replacement_cases
@@ -1850,12 +1827,9 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
         )
     )
     (bundle,) = surface.bundles
-    expected_selected_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "str"
-    )
-    expected_uncovered_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "bytes"
-    )
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    expected_selected_case_ids = tuple(case.case_id for case in str_cases)
+    expected_uncovered_case_ids = tuple(case.case_id for case in bytes_cases)
     expected_module_case_ids = tuple(
         case.case_id
         for case in fixture_cases_for_operation((bundle,), "module_call")
@@ -1872,7 +1846,6 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
         if case.text_model == "str" and "replacement-template" in case.categories
     )
 
-    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
     assert tuple(case.case_id for case in surface.replacement_cases) == (
         expected_selected_case_ids
     )
@@ -1915,12 +1888,9 @@ def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> No
         )
     )
     (bundle,) = surface.bundles
-    expected_selected_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "str"
-    )
-    expected_uncovered_case_ids = tuple(
-        case.case_id for case in bundle.cases if case.text_model == "bytes"
-    )
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    expected_selected_case_ids = tuple(case.case_id for case in str_cases)
+    expected_uncovered_case_ids = tuple(case.case_id for case in bytes_cases)
     expected_module_case_ids = tuple(
         case.case_id
         for case in fixture_cases_for_operation((bundle,), "module_call")
@@ -1932,7 +1902,6 @@ def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> No
         if case.text_model == "str"
     )
 
-    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
     assert tuple(case.case_id for case in surface.replacement_cases) == (
         expected_selected_case_ids
     )
@@ -1974,6 +1943,7 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
         )
     )
     (bundle,) = surface.bundles
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
     expected_case_ids = tuple(case.case_id for case in bundle.cases)
     expected_module_case_ids = tuple(
         case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
@@ -1982,7 +1952,7 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
         case.case_id for case in fixture_cases_for_operation((bundle,), "pattern_call")
     )
 
-    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
+    assert tuple(case.case_id for case in str_cases + bytes_cases) == expected_case_ids
     assert tuple(case.case_id for case in surface.replacement_cases) == expected_case_ids
     assert Counter((case.operation, case.helper) for case in surface.replacement_cases) == (
         MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS

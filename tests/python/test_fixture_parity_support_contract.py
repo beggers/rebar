@@ -43,6 +43,7 @@ from tests.python.fixture_parity_support import (
     assert_module_search_case_parity,
     assert_match_parity,
     assert_match_result_parity,
+    assert_mixed_text_model_case_pairs,
     assert_pattern_parity,
     assert_pattern_fullmatch_case_parity,
     assert_value_parity,
@@ -343,6 +344,66 @@ def _load_bundle_loader_contract_mixed_bundle(tmp_path: pathlib.Path) -> Fixture
     )
 
 
+def _paired_mixed_text_contract_bundle() -> FixtureBundle:
+    manifest = FixtureManifest(
+        path=pathlib.Path("synthetic_paired_mixed_text_contract.py"),
+        manifest_id="synthetic-paired-mixed-text-contract",
+        layer="module_workflow",
+        suite_id="synthetic.paired.mixed.text.contract",
+        schema_version=1,
+        defaults={},
+        cases=[],
+    )
+    paired_cases = (
+        replace(
+            SYNTHETIC_MODULE_PATTERN_CASE,
+            case_id="synthetic-mixed-module-search-str",
+            manifest_id=manifest.manifest_id,
+            suite_id=manifest.suite_id,
+            layer=manifest.layer,
+            family=manifest.manifest_id,
+            categories=["workflow", "search", "literal", "str"],
+        ),
+        replace(
+            SYNTHETIC_COMPILED_PATTERN_CASE,
+            case_id="synthetic-mixed-pattern-search-str",
+            manifest_id=manifest.manifest_id,
+            suite_id=manifest.suite_id,
+            layer=manifest.layer,
+            family=manifest.manifest_id,
+            categories=["workflow", "search", "literal", "str"],
+        ),
+        replace(
+            SYNTHETIC_MODULE_BYTES_SEARCH_CASE,
+            case_id="synthetic-mixed-module-search-bytes",
+            manifest_id=manifest.manifest_id,
+            suite_id=manifest.suite_id,
+            layer=manifest.layer,
+            family=manifest.manifest_id,
+            categories=["workflow", "search", "literal", "bytes"],
+        ),
+        replace(
+            SYNTHETIC_COMPILED_PATTERN_CASE,
+            case_id="synthetic-mixed-pattern-search-bytes",
+            manifest_id=manifest.manifest_id,
+            suite_id=manifest.suite_id,
+            layer=manifest.layer,
+            family=manifest.manifest_id,
+            pattern="abc",
+            text_model="bytes",
+            categories=["workflow", "search", "literal", "bytes"],
+            source_args=[b"zzabczz"],
+            args=[b"zzabczz"],
+        ),
+    )
+    return build_fixture_bundle(
+        manifest,
+        paired_cases,
+        pattern_extractor=case_pattern,
+        expected_text_models=frozenset({"bytes", "str"}),
+    )
+
+
 def test_build_fixture_bundle_derives_patterns_and_operation_counts_from_cases(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -381,6 +442,44 @@ def test_build_fixture_bundle_derives_patterns_and_operation_counts_from_cases(
         expected_fixture_path=mixed_path,
         expected_ordered_case_ids=tuple(case.case_id for case in bundle_cases),
     )
+
+
+def test_assert_mixed_text_model_case_pairs_returns_str_and_bytes_rows() -> None:
+    bundle = _paired_mixed_text_contract_bundle()
+
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+
+    assert tuple(case.case_id for case in str_cases) == (
+        "synthetic-mixed-module-search-str",
+        "synthetic-mixed-pattern-search-str",
+    )
+    assert tuple(case.case_id for case in bytes_cases) == (
+        "synthetic-mixed-module-search-bytes",
+        "synthetic-mixed-pattern-search-bytes",
+    )
+
+
+def test_assert_mixed_text_model_case_pairs_rejects_structural_drift() -> None:
+    bundle = _paired_mixed_text_contract_bundle()
+    drifted_bytes_case = replace(
+        bundle.cases[2],
+        helper="fullmatch",
+    )
+    drifted_bundle = replace(
+        bundle,
+        cases=(
+            bundle.cases[0],
+            bundle.cases[1],
+            drifted_bytes_case,
+            bundle.cases[3],
+        ),
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape("mixed-text-model structural drifted"),
+    ):
+        assert_mixed_text_model_case_pairs(drifted_bundle)
 
 
 def test_build_fixture_bundle_requires_pattern_extractor_without_explicit_patterns(

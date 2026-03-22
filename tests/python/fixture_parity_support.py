@@ -544,6 +544,93 @@ def assert_fixture_bundle_contract(
     )
 
 
+def assert_mixed_text_model_case_pairs(
+    bundle: FixtureBundle,
+) -> tuple[tuple[FixtureCase, ...], tuple[FixtureCase, ...]]:
+    manifest_id = bundle.expected_manifest_id
+    actual_text_models = {case.text_model for case in bundle.cases}
+    if actual_text_models != {"bytes", "str"}:
+        raise AssertionError(
+            f"{manifest_id} mixed-text-model contract requires str/bytes rows, got "
+            f"{tuple(sorted(actual_text_models))}"
+        )
+
+    str_cases = tuple(case for case in bundle.cases if case.text_model == "str")
+    bytes_cases = tuple(case for case in bundle.cases if case.text_model == "bytes")
+    if len(str_cases) != len(bytes_cases):
+        raise AssertionError(
+            f"{manifest_id} mixed-text-model rows drifted; "
+            f"str row count {len(str_cases)} != bytes row count {len(bytes_cases)}"
+        )
+
+    expected_bytes_case_ids = tuple(
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in str_cases
+    )
+    actual_bytes_case_ids = tuple(case.case_id for case in bytes_cases)
+    if actual_bytes_case_ids != expected_bytes_case_ids:
+        raise AssertionError(
+            f"{manifest_id} mixed-text-model case id pairing drifted; "
+            f"expected bytes case ids {expected_bytes_case_ids}, "
+            f"got {actual_bytes_case_ids}"
+        )
+
+    drift_messages: list[str] = []
+    for str_case, bytes_case in zip(str_cases, bytes_cases):
+        if str_case.operation != bytes_case.operation:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} operation drifted: "
+                f"{str_case.operation!r} != {bytes_case.operation!r}"
+            )
+        if str_case.helper != bytes_case.helper:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} helper drifted: "
+                f"{str_case.helper!r} != {bytes_case.helper!r}"
+            )
+        if str_case.family != bytes_case.family:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} family drifted: "
+                f"{str_case.family!r} != {bytes_case.family!r}"
+            )
+        if str_case.use_compiled_pattern != bytes_case.use_compiled_pattern:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} compiled-pattern routing drifted"
+            )
+        if str_case.include_pattern_arg != bytes_case.include_pattern_arg:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} include-pattern routing drifted"
+            )
+        if str_case.kwargs != bytes_case.kwargs:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} kwargs drifted: "
+                f"{str_case.kwargs!r} != {bytes_case.kwargs!r}"
+            )
+        if str_case.source_kwargs != bytes_case.source_kwargs:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} source kwargs drifted: "
+                f"{str_case.source_kwargs!r} != {bytes_case.source_kwargs!r}"
+            )
+
+        str_categories = tuple(
+            category for category in str_case.categories if category != "str"
+        )
+        bytes_categories = tuple(
+            category for category in bytes_case.categories if category != "bytes"
+        )
+        if str_categories != bytes_categories:
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} categories drifted: "
+                f"{str_categories!r} != {bytes_categories!r}"
+            )
+
+    if drift_messages:
+        raise AssertionError(
+            f"{manifest_id} mixed-text-model structural drifted; "
+            + "; ".join(drift_messages)
+        )
+
+    return str_cases, bytes_cases
+
+
 def assert_direct_bytes_follow_on_bundle_routing(
     bundle: FixtureBundle,
     *,
