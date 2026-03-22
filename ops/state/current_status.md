@@ -22,8 +22,9 @@ Published correctness covers 1543 cases across 114 manifests, with all 1543 pass
 The published correctness slice now covers 1543 cases across 114 manifests, all passing, and 889 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- Live task counts in this checkout are `0` ready, `0` in progress, `942` done, and `0` blocked.
-- No ready feature follow-on currently survives in this checkout.
+- Live task counts in this checkout are `1` ready, `0` in progress, `943` done, and `0` blocked.
+- `RBR-0941` is queued on the raw module `subn()` bytes duplicate-count / unexpected-keyword benchmark pair through the existing `collection-replacement-boundary` owner path.
+- No ready feature follow-on currently survives behind that queued task.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
