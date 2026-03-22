@@ -1545,6 +1545,116 @@ def test_fixture_manifest_loader_rejects_duplicate_ids(
         load_fixture_manifests([first_path, second_path])
 
 
+def test_load_fixture_manifests_preserves_requested_path_order(
+    tmp_path: pathlib.Path,
+) -> None:
+    first_path = _write_fixture_module(
+        tmp_path,
+        "ordered_fixture_manifest_a.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "ordered-correctness-manifest-a",
+            "cases": [
+                {
+                    "id": "ordered-correctness-case-a",
+                    "pattern": "abc",
+                },
+            ],
+        }
+        """,
+    )
+    second_path = _write_fixture_module(
+        tmp_path,
+        "ordered_fixture_manifest_b.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "ordered-correctness-manifest-b",
+            "cases": [
+                {
+                    "id": "ordered-correctness-case-b",
+                    "pattern": "def",
+                },
+            ],
+        }
+        """,
+    )
+
+    manifests = load_fixture_manifests([second_path, first_path])
+
+    assert [manifest.path for manifest in manifests] == [second_path, first_path]
+    assert [manifest.manifest_id for manifest in manifests] == [
+        "ordered-correctness-manifest-b",
+        "ordered-correctness-manifest-a",
+    ]
+    assert [manifest.cases[0].case_id for manifest in manifests] == [
+        "ordered-correctness-case-b",
+        "ordered-correctness-case-a",
+    ]
+
+
+def test_published_fixture_manifests_cache_clear_reloads_current_default_fixture_paths(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    first_path = _write_fixture_module(
+        tmp_path,
+        "cached_fixture_manifest_a.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "cached-correctness-manifest-a",
+            "cases": [
+                {
+                    "id": "cached-correctness-case-a",
+                    "pattern": "abc",
+                },
+            ],
+        }
+        """,
+    )
+    second_path = _write_fixture_module(
+        tmp_path,
+        "cached_fixture_manifest_b.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "cached-correctness-manifest-b",
+            "cases": [
+                {
+                    "id": "cached-correctness-case-b",
+                    "pattern": "def",
+                },
+            ],
+        }
+        """,
+    )
+    requested_paths = (second_path, first_path)
+    loader_calls: list[tuple[pathlib.Path, ...]] = []
+    real_load_fixture_manifests = correctness.load_fixture_manifests
+
+    def _recording_loader(paths: tuple[pathlib.Path, ...]) -> list[FixtureManifest]:
+        loader_calls.append(tuple(paths))
+        return real_load_fixture_manifests(paths)
+
+    monkeypatch.setattr(correctness, "DEFAULT_FIXTURE_PATHS", requested_paths)
+    monkeypatch.setattr(correctness, "load_fixture_manifests", _recording_loader)
+    correctness.published_fixture_manifests.cache_clear()
+    try:
+        manifests = published_fixture_manifests()
+
+        assert tuple(manifest.path for manifest in manifests) == requested_paths
+        assert tuple(manifest.manifest_id for manifest in manifests) == (
+            "cached-correctness-manifest-b",
+            "cached-correctness-manifest-a",
+        )
+        assert published_fixture_manifests() is manifests
+        assert loader_calls == [requested_paths]
+    finally:
+        correctness.published_fixture_manifests.cache_clear()
+
+
 def test_direct_test_case_id_bucket_helper_accepts_exact_selected_frontier_coverage(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
