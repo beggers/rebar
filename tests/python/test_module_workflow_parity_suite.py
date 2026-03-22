@@ -498,7 +498,7 @@ class CompiledPatternModuleHelperCase:
 
 
 @dataclass(frozen=True)
-class CompiledPatternModuleHelperErrorCase:
+class PatternHelperErrorCase:
     case_id: str
     helper: str
     pattern: str | bytes
@@ -671,13 +671,7 @@ class _IndexLikeBoomError(Exception):
 
 
 @dataclass(frozen=True)
-class EscapeCompatibleInputCase:
-    case_id: str
-    input_factory: Callable[[], object]
-
-
-@dataclass(frozen=True)
-class EscapeInvalidInputCase:
+class EscapeInputCase:
     case_id: str
     input_factory: Callable[[], object]
 
@@ -699,14 +693,6 @@ class CollectionPatternCase:
     string: str | bytes
     extra_args: tuple[object, ...] = ()
     flags: int = 0
-
-
-@dataclass(frozen=True)
-class BoundPatternTypeErrorCase:
-    case_id: str
-    helper: str
-    pattern: str | bytes
-    args: tuple[object, ...]
 
 
 @dataclass(frozen=True)
@@ -787,7 +773,7 @@ def _invoke_fixture_collection_helper(
 
 def _invoke_bound_pattern_helper(
     pattern: object,
-    case: BoundPatternTypeErrorCase,
+    case: PatternHelperErrorCase,
 ) -> object:
     return getattr(pattern, case.helper)(*case.args)
 
@@ -1279,37 +1265,37 @@ BOUNDED_WILDCARD_MODULE_COLLECTION_CASES = (
     ),
 )
 BOUND_PATTERN_TYPE_ERROR_CASES = (
-    BoundPatternTypeErrorCase(
+    PatternHelperErrorCase(
         case_id="pattern-search-str-pattern-on-bytes-string",
         helper="search",
         pattern="abc",
         args=(b"abc",),
     ),
-    BoundPatternTypeErrorCase(
+    PatternHelperErrorCase(
         case_id="pattern-match-bytes-pattern-on-str-string",
         helper="match",
         pattern=b"abc",
         args=("abc",),
     ),
-    BoundPatternTypeErrorCase(
+    PatternHelperErrorCase(
         case_id="pattern-fullmatch-str-pattern-on-bytes-string",
         helper="fullmatch",
         pattern="abc",
         args=(b"abc",),
     ),
-    BoundPatternTypeErrorCase(
+    PatternHelperErrorCase(
         case_id="pattern-split-str-pattern-on-bytes-string",
         helper="split",
         pattern="abc",
         args=(b"zabczz",),
     ),
-    BoundPatternTypeErrorCase(
+    PatternHelperErrorCase(
         case_id="pattern-sub-str-pattern-on-bytes-string",
         helper="sub",
         pattern="abc",
         args=("x", b"zabczz"),
     ),
-    BoundPatternTypeErrorCase(
+    PatternHelperErrorCase(
         case_id="pattern-subn-bytes-pattern-on-str-string",
         helper="subn",
         pattern=b"abc",
@@ -1473,49 +1459,49 @@ COMPILED_PATTERN_MODULE_HELPER_CASES = (
     ),
 )
 COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-search-str-on-bytes-string",
         helper="search",
         pattern="abc",
         args=(b"abc",),
     ),
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-match-bytes-on-str-string",
         helper="match",
         pattern=b"abc",
         args=("abc",),
     ),
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-fullmatch-str-on-bytes-string",
         helper="fullmatch",
         pattern="abc",
         args=(b"abc",),
     ),
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-split-str-on-bytes-string",
         helper="split",
         pattern="abc",
         args=(b"zabczz", 1),
     ),
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-findall-bytes-on-str-string",
         helper="findall",
         pattern=b"abc",
         args=("zabczz",),
     ),
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-finditer-str-on-bytes-string",
         helper="finditer",
         pattern="abc",
         args=(b"zabczz",),
     ),
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-sub-str-on-bytes-string",
         helper="sub",
         pattern="abc",
         args=("x", b"zabczz", 1),
     ),
-    CompiledPatternModuleHelperErrorCase(
+    PatternHelperErrorCase(
         case_id="compiled-pattern-subn-bytes-on-str-string",
         helper="subn",
         pattern=b"abc",
@@ -2670,61 +2656,61 @@ COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
 # Exercise CPython-supported input shapes that are easy to miss when escape()
 # only appears to support plain str and bytes inputs.
 ESCAPE_COMPATIBLE_INPUT_CASES = (
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="str-subclass",
         input_factory=lambda: _EscapeStrSubclass("a-b.c"),
     ),
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="bytes-subclass",
         input_factory=lambda: _EscapeBytesSubclass(b"a-b.c"),
     ),
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="bytearray",
         input_factory=lambda: bytearray(b"a-b.c"),
     ),
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="memoryview",
         input_factory=lambda: memoryview(b"a-b.c"),
     ),
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="memoryview-bytearray",
         input_factory=lambda: memoryview(bytearray(b"a-b.c")),
     ),
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="memoryview-contiguous-slice",
         input_factory=lambda: memoryview(b"0a-b.c1")[1:-1],
     ),
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="array-B",
         input_factory=lambda: array("B", b"a-b.c"),
     ),
-    EscapeCompatibleInputCase(
+    EscapeInputCase(
         case_id="array-b",
         input_factory=lambda: array("b", b"a-b.c"),
     ),
 )
 ESCAPE_INVALID_INPUT_CASES = (
-    EscapeInvalidInputCase(
+    EscapeInputCase(
         case_id="int",
         input_factory=lambda: 123,
     ),
-    EscapeInvalidInputCase(
+    EscapeInputCase(
         case_id="none",
         input_factory=lambda: None,
     ),
-    EscapeInvalidInputCase(
+    EscapeInputCase(
         case_id="object",
         input_factory=object,
     ),
-    EscapeInvalidInputCase(
+    EscapeInputCase(
         case_id="list",
         input_factory=lambda: ["a-b.c"],
     ),
-    EscapeInvalidInputCase(
+    EscapeInputCase(
         case_id="dict",
         input_factory=lambda: {"pattern": "a-b.c"},
     ),
-    EscapeInvalidInputCase(
+    EscapeInputCase(
         case_id="memoryview-noncontiguous-slice",
         input_factory=lambda: memoryview(b"0a-b.c1")[1:-1:2],
     ),
@@ -5240,7 +5226,7 @@ def test_module_helpers_reject_flags_for_compiled_patterns_like_cpython(
 )
 def test_module_helpers_preserve_compiled_pattern_type_errors_like_cpython(
     regex_backend: tuple[str, object],
-    case: CompiledPatternModuleHelperErrorCase,
+    case: PatternHelperErrorCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
@@ -5737,7 +5723,7 @@ def test_escape_workflows_match_cpython(
 )
 def test_escape_accepts_cpython_compatible_input_shapes(
     regex_backend: tuple[str, object],
-    case: EscapeCompatibleInputCase,
+    case: EscapeInputCase,
 ) -> None:
     _, backend = regex_backend
     raw = case.input_factory()
@@ -5782,7 +5768,7 @@ def test_escape_matches_cpython_across_deterministic_bytes_corpus(
 )
 def test_escape_rejects_invalid_input_shapes_like_cpython(
     regex_backend: tuple[str, object],
-    case: EscapeInvalidInputCase,
+    case: EscapeInputCase,
 ) -> None:
     _, backend = regex_backend
     raw = case.input_factory()
@@ -7295,7 +7281,7 @@ def test_collection_helper_type_errors_match_cpython(
 )
 def test_bound_pattern_helper_type_errors_match_cpython(
     regex_backend: tuple[str, object],
-    case: BoundPatternTypeErrorCase,
+    case: PatternHelperErrorCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern, expected_pattern = compile_with_cpython_parity(
