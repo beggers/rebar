@@ -1323,6 +1323,13 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
         kwargs={"missing": 1},
     ),
     PatternHelperErrorCase(
+        case_id="pattern-sub-unexpected-keyword-after-positional-count-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abc", 1),
+        kwargs={"missing": 1},
+    ),
+    PatternHelperErrorCase(
         case_id="pattern-subn-duplicate-count-keyword-bytes",
         helper="subn",
         pattern=b"abc",
@@ -1334,6 +1341,13 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
         helper="subn",
         pattern=b"abc",
         args=(b"x", b"abc"),
+        kwargs={"missing": 1},
+    ),
+    PatternHelperErrorCase(
+        case_id="pattern-subn-unexpected-keyword-after-positional-count-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abc", 1),
         kwargs={"missing": 1},
     ),
 )
@@ -2590,9 +2604,21 @@ MODULE_KEYWORD_ERROR_CASES = (
         kwargs={"missing": 1},
     ),
     ModuleKeywordErrorCase(
+        case_id="module-sub-unexpected-keyword-after-positional-count",
+        helper="sub",
+        args=("abc", "x", "abc", 1),
+        kwargs={"missing": 1},
+    ),
+    ModuleKeywordErrorCase(
         case_id="module-subn-unexpected-keyword-bytes",
         helper="subn",
         args=(b"abc", b"x", b"abc"),
+        kwargs={"missing": 1},
+    ),
+    ModuleKeywordErrorCase(
+        case_id="module-subn-unexpected-keyword-after-positional-count-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abc", 1),
         kwargs={"missing": 1},
     ),
 )
@@ -2824,10 +2850,24 @@ COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
         kwargs={"missing": 1},
     ),
     CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abc", 1),
+        kwargs={"missing": 1},
+    ),
+    CompiledPatternModuleKeywordErrorCase(
         case_id="compiled-pattern-subn-unexpected-keyword-bytes",
         helper="subn",
         pattern=b"abc",
         args=(b"x", b"abc"),
+        kwargs={"missing": 1},
+    ),
+    CompiledPatternModuleKeywordErrorCase(
+        case_id="compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abc", 1),
         kwargs={"missing": 1},
     ),
 )
