@@ -1,3 +1,5 @@
+import re
+
 _INDEX_ONE = {"type": "indexlike", "value": 1}
 _INDEX_TWO = {"type": "indexlike", "value": 2}
 _INDEX_FOUR = {"type": "indexlike", "value": 4}
@@ -1539,6 +1541,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-noflag-str-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": re.NOFLAG
+      },
+      "categories": ["workflow", "compile", "named-group", "str", "compiled-pattern", "flags", "noflag"],
+      "notes": [
+        "Publishes the compiled-pattern module-level named-group compile() explicit NOFLAG spelling on the shared owner path without broadening into the default, integer-zero, bool-false, or nonzero-flag rejection slices."
+      ]
+    },
+    {
       "id": "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
       "operation": "module_call",
       "family": "compile_workflow",
@@ -1701,6 +1718,22 @@ MANIFEST = {
       "categories": ["workflow", "compile", "named-group", "bytes", "compiled-pattern"],
       "notes": [
         "Publishes the adjacent bytes named-group module-level compile() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": re.NOFLAG
+      },
+      "categories": ["workflow", "compile", "named-group", "bytes", "compiled-pattern", "flags", "noflag"],
+      "notes": [
+        "Publishes the bytes named-group explicit NOFLAG compiled-pattern module-level compile() keyword singleton on the shared module-workflow owner path without broadening into the default, integer-zero, bool-false, or nonzero-flag rejection slices."
       ]
     },
     {

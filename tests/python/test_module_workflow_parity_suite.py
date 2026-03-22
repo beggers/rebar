@@ -292,6 +292,9 @@ def _workflow_keyword_kwargs_signature(
         if isinstance(value, bool):
             signature.append((name, "bool", value))
             continue
+        if isinstance(value, re.RegexFlag) and int(value) == 0:
+            signature.append((name, "regexflag", 0))
+            continue
         if isinstance(value, int):
             signature.append((name, "int", int(value)))
             continue
@@ -2324,6 +2327,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         kwargs={"flags": False},
     ),
     CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-compile-flags-noflag-str-named-group",
+        helper="compile",
+        pattern=r"(?P<word>abc)",
+        args=(),
+        kwargs={"flags": re.NOFLAG},
+    ),
+    CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-compile-flags-int-zero-str-named-group",
         helper="compile",
         pattern=r"(?P<word>abc)",
@@ -2350,6 +2360,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         pattern=b"abc",
         args=(),
         kwargs={"flags": False},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-compile-flags-noflag-bytes-named-group",
+        helper="compile",
+        pattern=rb"(?P<word>abc)",
+        args=(),
+        kwargs={"flags": re.NOFLAG},
     ),
     CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-compile-flags-int-zero-bytes-named-group",
@@ -3022,9 +3039,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 142
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 144
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 83, "bytes": 59}
+        {"str": 84, "bytes": 60}
     )
     assert len(PATTERN_CASES) == 53
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -3039,10 +3056,10 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 4,
         }
     )
-    assert len(MODULE_CALL_CASES) == 77
+    assert len(MODULE_CALL_CASES) == 79
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
-            "compile": 16,
+            "compile": 18,
             "search": 7,
             "match": 5,
             "fullmatch": 7,
@@ -4061,6 +4078,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-compile-flags-bool-false-str-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
         "workflow-module-compile-str-compiled-pattern-named-group",
+        "workflow-module-compile-flags-noflag-str-compiled-pattern-named-group",
         "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
         "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
         "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
@@ -4097,6 +4115,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
         "workflow-module-compile-bytes-compiled-pattern-named-group",
+        "workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group",
         "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
         "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
         "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
@@ -4117,7 +4136,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 52
+    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 54
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == (
@@ -4126,6 +4145,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-compile-flags-bool-false-str-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
         "workflow-module-compile-str-compiled-pattern-named-group",
+        "workflow-module-compile-flags-noflag-str-compiled-pattern-named-group",
         "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
         "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
         "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
@@ -4137,6 +4157,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
         "workflow-module-compile-bytes-compiled-pattern-named-group",
+        "workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group",
         "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
         "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
         "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
@@ -4182,6 +4203,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-compile-flags-bool-false-str",
         "compiled-pattern-compile-flags-ignorecase-str",
         "compiled-pattern-compile-str-named-group",
+        "compiled-pattern-compile-flags-noflag-str-named-group",
         "compiled-pattern-compile-flags-int-zero-str-named-group",
         "compiled-pattern-compile-flags-bool-false-str-named-group",
         "compiled-pattern-compile-flags-ignorecase-str-named-group",
@@ -4193,6 +4215,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-compile-flags-bool-false-bytes",
         "compiled-pattern-compile-flags-ignorecase-bytes",
         "compiled-pattern-compile-bytes-named-group",
+        "compiled-pattern-compile-flags-noflag-bytes-named-group",
         "compiled-pattern-compile-flags-int-zero-bytes-named-group",
         "compiled-pattern-compile-flags-bool-false-bytes-named-group",
         "compiled-pattern-compile-flags-ignorecase-bytes-named-group",
@@ -4409,6 +4432,18 @@ def test_workflow_keyword_kwargs_signature_distinguishes_bool_int_and_indexlike(
     )
     assert _workflow_keyword_kwargs_signature({"pos": 1}) != (
         _workflow_keyword_kwargs_signature({"pos": _INDEX_ONE})
+    )
+
+
+def test_workflow_keyword_kwargs_signature_preserves_explicit_noflag_carrier() -> None:
+    assert _workflow_keyword_kwargs_signature({"flags": re.NOFLAG}) == (
+        ("flags", "regexflag", 0),
+    )
+    assert _workflow_keyword_kwargs_signature({"flags": re.NOFLAG}) != (
+        _workflow_keyword_kwargs_signature({"flags": 0})
+    )
+    assert _workflow_keyword_kwargs_signature({"flags": re.NOFLAG}) != (
+        _workflow_keyword_kwargs_signature({"flags": False})
     )
 
 

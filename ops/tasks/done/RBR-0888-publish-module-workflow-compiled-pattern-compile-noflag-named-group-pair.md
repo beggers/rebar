@@ -1,6 +1,6 @@
 # RBR-0888: Publish the module-workflow compiled-pattern compile explicit-NOFLAG named-group pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -66,3 +66,14 @@ Created: 2026-03-22
   - direct publication probes in this run confirmed `workflow-module-compile-flags-noflag-str-compiled-pattern-named-group` and `workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - the current `_workflow_keyword_kwargs_signature(...)` helper in `tests/python/test_module_workflow_parity_suite.py` still normalizes `RegexFlag(0)` through the generic integer branch, so this task must first preserve the explicit `NOFLAG` carrier on the shared publication path instead of pretending the new rows are already distinguishable from the existing integer-zero pair; and
   - no distinct benchmark follow-on currently survives for this exact spelling because the shared benchmark keyword route already normalizes zero-valued `flags=` carriers onto the published integer-zero workloads.
+
+## Completion
+- Landed the shared owner-path refinement in `tests/python/test_module_workflow_parity_suite.py`, teaching `_workflow_keyword_kwargs_signature(...)` to preserve the explicit zero-valued `RegexFlag` carrier and adding the matching direct named-group `compiled-pattern` `flags=re.NOFLAG` compile cases for both `str` and `bytes`.
+- Added exactly two `module_call` rows to `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-module-compile-flags-noflag-str-compiled-pattern-named-group` and `workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group`, each pinned to the existing `(?P<word>abc)` compiled-pattern `compile()` anchor with explicit `kwargs={"flags": re.NOFLAG}`.
+- Refreshed `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked report now shows `1518` total / `1518` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `144`, `module.workflow.str` at `84`, `module.workflow.bytes` at `60`, `module.workflow.module_call` at `79`, and `module.workflow.pattern_call` unchanged at `53`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython and named and noflag'` -> `4 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` -> `1262 passed, 1 skipped, 2182 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0888-module-workflow-compiled-pattern-compile-noflag-named-group-pair.py` -> `144` executed / `144` passed
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> republished the tracked combined scorecard at the `1518` / `1518` / `0` totals above
+- Benchmark manifests and benchmark publications were left unchanged in this run, as required.
