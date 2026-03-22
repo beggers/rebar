@@ -1,6 +1,6 @@
 # RBR-0934: Collapse compiled-pattern module.compile success contract mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -94,3 +94,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_success or module_boundary_manifest_keeps_compiled_pattern_compile_literal_success_rows_measured or module_boundary_manifest_keeps_compiled_pattern_compile_named_group_success_rows_measured'` currently passes (`14 passed, 569 deselected in 0.15s`);
   - `rg -n '^(class CompiledPatternModuleCompileSuccessCase|COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently finds the remaining mirrors at lines `14242` and `14250`; and
   - the task-local manifest-selector probe in Acceptance currently passes (`ok 2 2`), proving the four-row surface already exists in the tracked benchmark workload manifest without the extra benchmark-test case table.
+
+## Completion
+- 2026-03-22: Replaced the detached compiled-pattern `module.compile` success case dataclass/table in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with live source-workload selection from `MODULE_BOUNDARY_MANIFEST_PATH`, reusing the existing literal/named-group selectors plus `workload_to_payload(...)` / `workload_from_payload(...)` to project the four `-contract` rows directly from the tracked manifest.
+- Preserved the four-row order, the `-contract` ids, the anchor mappings, the round-trip payload expectations, and the callback/probe behavior while following the same in-file source-workload pattern already used by the compiled-pattern wrong-text-model contract section.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_success or module_boundary_manifest_keeps_compiled_pattern_compile_literal_success_rows_measured or module_boundary_manifest_keeps_compiled_pattern_compile_named_group_success_rows_measured'`
+  - `bash -lc "! rg -n '^(class CompiledPatternModuleCompileSuccessCase|COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... PY` selector probe asserting the literal and named-group workload ids still resolve to the same two-row sequences (`ok 2 2`)
