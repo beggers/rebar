@@ -2310,6 +2310,8 @@ def _published_pattern_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
         for case in BOUND_PATTERN_TYPE_ERROR_CASES
         if case.case_id
         in {
+            "pattern-split-duplicate-maxsplit-keyword-str",
+            "pattern-split-unexpected-keyword-bytes",
             "pattern-sub-duplicate-count-keyword-str",
             "pattern-sub-unexpected-keyword-str",
             "pattern-subn-duplicate-count-keyword-bytes",
@@ -3412,11 +3414,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 158
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 160
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 90, "bytes": 68}
+        {"str": 91, "bytes": 69}
     )
-    assert len(PATTERN_CASES) == 61
+    assert len(PATTERN_CASES) == 63
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 16,
@@ -3424,7 +3426,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "fullmatch": 11,
             "findall": 5,
             "finditer": 5,
-            "split": 4,
+            "split": 6,
             "sub": 7,
             "subn": 7,
         }
@@ -4209,6 +4211,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
         for case in BOUND_PATTERN_TYPE_ERROR_CASES
         if case.case_id
         in {
+            "pattern-split-duplicate-maxsplit-keyword-str",
+            "pattern-split-unexpected-keyword-bytes",
             "pattern-sub-duplicate-count-keyword-str",
             "pattern-sub-unexpected-keyword-str",
             "pattern-subn-duplicate-count-keyword-bytes",
@@ -4227,6 +4231,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             "str",
         )
     ) == (
+        "workflow-pattern-split-duplicate-maxsplit-keyword-str",
         "workflow-pattern-sub-duplicate-count-keyword-str",
         "workflow-pattern-sub-unexpected-keyword-str",
     )
@@ -4237,25 +4242,31 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             "bytes",
         )
     ) == (
+        "workflow-pattern-split-unexpected-keyword-bytes",
         "workflow-pattern-subn-duplicate-count-keyword-bytes",
         "workflow-pattern-subn-unexpected-keyword-bytes",
     )
     assert tuple(case.case_id for case in published_fixture_cases) == (
+        "workflow-pattern-split-duplicate-maxsplit-keyword-str",
+        "workflow-pattern-split-unexpected-keyword-bytes",
         "workflow-pattern-sub-duplicate-count-keyword-str",
         "workflow-pattern-sub-unexpected-keyword-str",
         "workflow-pattern-subn-duplicate-count-keyword-bytes",
         "workflow-pattern-subn-unexpected-keyword-bytes",
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
+        "pattern-split-duplicate-maxsplit-keyword-str",
+        "pattern-split-unexpected-keyword-bytes",
         "pattern-sub-duplicate-count-keyword-str",
         "pattern-sub-unexpected-keyword-str",
         "pattern-subn-duplicate-count-keyword-bytes",
         "pattern-subn-unexpected-keyword-bytes",
     )
-    assert len(published_fixture_cases) == 4
+    assert len(published_fixture_cases) == 6
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.helper for case in published_fixture_cases) == Counter(
         {
+            "split": 2,
             "sub": 2,
             "subn": 2,
         }

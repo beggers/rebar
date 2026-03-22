@@ -128,6 +128,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-pattern-split-str-maxsplit-keyword",
             "workflow-pattern-split-str-maxsplit-indexlike",
             "workflow-pattern-split-str-maxsplit-bool-true",
+            "workflow-pattern-split-duplicate-maxsplit-keyword-str",
+            "workflow-pattern-split-unexpected-keyword-bytes",
             "workflow-pattern-sub-count-keyword-bytes",
             "workflow-pattern-sub-count-indexlike-bytes",
             "workflow-pattern-sub-count-bool-false-bytes",

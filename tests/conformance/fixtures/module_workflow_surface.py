@@ -779,6 +779,43 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-split-duplicate-maxsplit-keyword-str",
+      "operation": "pattern_call",
+      "family": "bound_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": ["abcabc", 1],
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "duplicate-keyword", "str"],
+      "notes": [
+        "Publishes the direct bound Pattern.split duplicate-maxsplit rejection spelling beside the already published direct maxsplit carriers and replacement keyword-error rows without widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
+      "id": "workflow-pattern-split-unexpected-keyword-bytes",
+      "operation": "pattern_call",
+      "family": "bound_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "split", "literal", "bytes", "unexpected-keyword"],
+      "notes": [
+        "Publishes the direct bound Pattern.split unexpected-keyword rejection spelling beside the already published direct maxsplit carriers and replacement keyword-error rows without widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-sub-count-keyword-bytes",
       "operation": "pattern_call",
       "family": "bound_sub_workflow",

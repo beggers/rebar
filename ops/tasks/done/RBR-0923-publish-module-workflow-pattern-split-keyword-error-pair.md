@@ -1,8 +1,9 @@
 # RBR-0923: Publish the module-workflow `Pattern.split()` keyword-error pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier immediately after `RBR-0921` by publishing the exact direct `Pattern.split()` duplicate-`maxsplit=` / unexpected-keyword rejection pair on the shared bound-pattern error owner path, while leaving the Python-path benchmark frontier unchanged in this run because the benchmark catch-up should follow the corrected published slice rather than outrun it.
@@ -74,3 +75,14 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-duplicate-maxsplit-keyword-str or pattern-split-unexpected-keyword-bytes'` is green in this checkout, so the direct `Pattern.split()` owner path already exposes the exact bounded error pair that this task needs to publish;
   - `rg -n 'workflow-pattern-split-duplicate-maxsplit-keyword-str|workflow-pattern-split-unexpected-keyword-bytes' tests/conformance benchmarks/workloads reports tests/benchmarks` returned no matches in this run, so the exact direct bound-pattern publication and benchmark rows are still absent; and
   - `reports/correctness/latest.py` currently reports `1532` total / `1532` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `158`, `module.workflow.str` at `90`, `module.workflow.bytes` at `68`, `module.workflow.module_call` at `85`, and `module.workflow.pattern_call` at `61`.
+
+## Completion
+- Added `workflow-pattern-split-duplicate-maxsplit-keyword-str` and `workflow-pattern-split-unexpected-keyword-bytes` to `tests/conformance/fixtures/module_workflow_surface.py` on the existing direct bound `Pattern.split()` owner path, in the required order immediately after `workflow-pattern-split-str-maxsplit-bool-true` and before the adjacent `Pattern.sub()` / `Pattern.subn()` keyword rows.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the published bound-pattern keyword-error selector now maps the exact six-row direct slice, while keeping the published bound-pattern keyword-helper subset at `27` rows and the published positional `__index__` subset at `9` rows. The module-workflow bundle assertions now track `160` total rows with `91` `str`, `69` `bytes`, `85` `module_call`, and `63` `pattern_call` rows, and the published `pattern_call` helper breakdown now carries `split: 6`, `sub: 7`, and `subn: 7`.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` to treat the two new `module-workflow-surface` rows as representative pattern-call cases, then regenerated `reports/correctness/latest.py`. The tracked published artifact now reports `1534` total / `1534` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `160`, `module.workflow.str` at `91`, `module.workflow.bytes` at `69`, `module.workflow.module_call` unchanged at `85`, and `module.workflow.pattern_call` at `63`. The tracked report now contains both new case ids.
+- Left benchmark manifests, benchmark reports, README text, and implementation files unchanged in this run.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-duplicate-maxsplit-keyword-str or pattern-split-unexpected-keyword-bytes or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0923-module-workflow-pattern-split-keyword-error-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
