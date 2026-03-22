@@ -3522,7 +3522,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 33)
+        self.assertEqual(len(expected_measured_workload_ids), 35)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5223,11 +5223,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 889,
-                "module_workloads": 881,
+                "measured_workloads": 891,
+                "module_workloads": 883,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 889,
+                "total_workloads": 891,
             },
         )
 
@@ -8458,6 +8458,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-count-indexlike-keyword-purged-bytes": (
                     "workflow-module-subn-count-indexlike-bytes",
+                ),
+                "module-subn-duplicate-count-keyword-warm-bytes": (
+                    "workflow-module-subn-duplicate-count-keyword-bytes",
+                ),
+                "module-subn-unexpected-keyword-purged-bytes": (
+                    "workflow-module-subn-unexpected-keyword-bytes",
                 ),
                 "module-subn-count-keyword-purged-bytes-compiled-pattern": (
                     "workflow-module-subn-count-keyword-bytes-compiled-pattern",
@@ -11963,6 +11969,53 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
                     "Ensures benchmark manifests keep module.subn keyword __index__ carriers unresolved until helper invocation."
                 ],
             },
+            {
+                "id": "module-subn-duplicate-count-keyword-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "flags": 0,
+                "count": 1,
+                "text_model": "bytes",
+                "kwargs": {
+                    "count": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "multiple values for argument 'count'",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn duplicate count= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-unexpected-keyword-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "flags": 0,
+                "text_model": "bytes",
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'missing'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
         ],
     }
     """
@@ -11982,6 +12035,8 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         split_indexlike_workload,
         sub_indexlike_workload,
         subn_indexlike_workload,
+        subn_duplicate_workload,
+        subn_missing_workload,
     ) = load_manifest(manifest_path).workloads
 
     assert split_workload.kwargs == {"maxsplit": 1}
@@ -12100,12 +12155,39 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         2,
     )
 
+    assert subn_duplicate_workload.count == 1
+    assert subn_duplicate_workload.kwargs == {"count": 1}
+    round_tripped_subn_duplicate = workload_from_payload(
+        workload_to_payload(subn_duplicate_workload)
+    )
+    assert round_tripped_subn_duplicate.count == 1
+    assert round_tripped_subn_duplicate.kwargs == {"count": 1}
+    assert round_tripped_subn_duplicate.keyword_arguments() == {"count": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("subn() got multiple values for argument 'count'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_subn_duplicate)
+
+    assert subn_missing_workload.kwargs == {"missing": 1}
+    round_tripped_subn_missing = workload_from_payload(
+        workload_to_payload(subn_missing_workload)
+    )
+    assert round_tripped_subn_missing.kwargs == {"missing": 1}
+    assert round_tripped_subn_missing.keyword_arguments() == {"missing": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("subn() got an unexpected keyword argument 'missing'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_subn_missing)
+
 
 def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
     monkeypatch,
     workload: Workload,
     *,
-    expected_result: object,
+    expected_result: object | None,
+    expected_exception_message: str | None = None,
     expected_field_names: list[str] | tuple[str, ...],
 ) -> None:
     observed_field_names: list[str] = []
@@ -12126,8 +12208,14 @@ def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_c
         callback = build_callable(re, "re", workload)
         assert observed_field_names == []
 
-        assert callback() == expected_result
-        assert callback() == expected_result
+        if expected_exception_message is None:
+            assert callback() == expected_result
+            assert callback() == expected_result
+        else:
+            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
+                callback()
+            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
+                callback()
 
         assert observed_field_names == list(expected_field_names) * 2
     finally:
@@ -12853,8 +12941,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
         "haystack",
         "kwargs_payload",
         "replacement",
+        "count",
+        "maxsplit",
         "text_model",
         "expected_result",
+        "expected_exception_message",
         "expected_field_names",
     ),
     (
@@ -12863,8 +12954,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "zabczabc",
             {"maxsplit": 1},
             None,
+            0,
+            0,
             "bytes",
             [b"z", b"zabc"],
+            None,
             ["kwargs.maxsplit"],
             id="module-split-maxsplit-int",
         ),
@@ -12873,8 +12967,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "abcabc",
             {"count": 1},
             "x",
+            0,
+            0,
             "str",
             "xabc",
+            None,
             ["kwargs.count"],
             id="module-sub-count-int",
         ),
@@ -12883,8 +12980,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "abcabc",
             {"count": 1},
             "x",
+            0,
+            0,
             "bytes",
             (b"xabc", 1),
+            None,
             ["kwargs.count"],
             id="module-subn-count-int",
         ),
@@ -12893,8 +12993,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "zabcabcabc",
             {"maxsplit": {"type": "indexlike", "value": 2}},
             None,
+            0,
+            0,
             "bytes",
             [b"z", b"", b"abc"],
+            None,
             ["kwargs.maxsplit"],
             id="module-split-maxsplit-indexlike",
         ),
@@ -12903,8 +13006,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "abcabcabc",
             {"count": {"type": "indexlike", "value": 2}},
             "x",
+            0,
+            0,
             "str",
             "xxabc",
+            None,
             ["kwargs.count"],
             id="module-sub-count-indexlike",
         ),
@@ -12913,8 +13019,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "abcabcabc",
             {"count": {"type": "indexlike", "value": 2}},
             "x",
+            0,
+            0,
             "bytes",
             (b"xxabc", 2),
+            None,
             ["kwargs.count"],
             id="module-subn-count-indexlike",
         ),
@@ -12923,8 +13032,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "zabcabc",
             {"maxsplit": True},
             None,
+            0,
+            0,
             "str",
             ["z", "abc"],
+            None,
             ["kwargs.maxsplit"],
             id="module-split-maxsplit-bool",
         ),
@@ -12933,8 +13045,11 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "abcabc",
             {"count": False},
             "x",
+            0,
+            0,
             "bytes",
             b"xx",
+            None,
             ["kwargs.count"],
             id="module-sub-count-bool",
         ),
@@ -12943,10 +13058,39 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             "abcabc",
             {"count": True},
             "x",
+            0,
+            0,
             "str",
             ("xabc", 1),
+            None,
             ["kwargs.count"],
             id="module-subn-count-bool",
+        ),
+        pytest.param(
+            "module.subn",
+            "abc",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            "bytes",
+            None,
+            "subn() got multiple values for argument 'count'",
+            ["count", "kwargs.count"],
+            id="module-subn-duplicate-count-keyword-bytes",
+        ),
+        pytest.param(
+            "module.subn",
+            "abc",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            "bytes",
+            None,
+            "subn() got an unexpected keyword argument 'missing'",
+            ["kwargs.missing"],
+            id="module-subn-unexpected-keyword-bytes",
         ),
     ),
 )
@@ -12956,8 +13100,11 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
     haystack: str,
     kwargs_payload: dict[str, object],
     replacement: object,
+    count: int,
+    maxsplit: int,
     text_model: str,
-    expected_result: object,
+    expected_result: object | None,
+    expected_exception_message: str | None,
     expected_field_names: list[str],
 ) -> None:
     workload = workload_from_payload(
@@ -12971,9 +13118,17 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
             "haystack": haystack,
             "replacement": replacement,
             "flags": 0,
-            "count": 0,
-            "maxsplit": 0,
+            "count": count,
+            "maxsplit": maxsplit,
             "kwargs": kwargs_payload,
+            "expected_exception": (
+                None
+                if expected_exception_message is None
+                else {
+                    "type": "TypeError",
+                    "message_substring": expected_exception_message,
+                }
+            ),
             "text_model": text_model,
             "cache_mode": "purged",
             "timing_scope": "module-helper-call",
@@ -12990,6 +13145,7 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
         monkeypatch,
         workload,
         expected_result=expected_result,
+        expected_exception_message=expected_exception_message,
         expected_field_names=expected_field_names,
     )
 

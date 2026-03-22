@@ -1,8 +1,9 @@
 # RBR-0941: Catch up the raw module `subn()` keyword-error bytes boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Extend the published Python-path `collection_replacement_boundary.py` benchmark surface with the exact raw module-level `subn()` bytes duplicate-count and unexpected-keyword rejection pair that `RBR-0939` just published on the shared `module-workflow-surface` correctness path, while keeping this work on the existing module-helper collection/replacement keyword owner route and limiting the run to the exact missing benchmark rows plus the matching shared benchmark assertions.
@@ -63,3 +64,14 @@ Created: 2026-03-22
   - `rg -nP 'module-subn-duplicate-count-keyword-warm-bytes(?!-compiled-pattern)|module-subn-unexpected-keyword-purged-bytes(?!-compiled-pattern)' benchmarks/workloads tests/benchmarks reports/benchmarks` returned no matches in this run, so the exact raw module workload ids are still absent while the compiled-pattern variants remain the only published `subn()` keyword-error benchmark rows on this owner path;
   - `reports/correctness/latest.py` currently reports `1543` total / `1543` passed / `0` unimplemented across `114` manifests; and
   - `reports/benchmarks/latest.py` currently reports `889` total / `889` measured / `0` known gaps overall, with `collection-replacement-boundary` at `81` selected / `81` measured / `0` known gaps.
+
+## Completion
+- Added `module-subn-duplicate-count-keyword-warm-bytes` and `module-subn-unexpected-keyword-purged-bytes` to `benchmarks/workloads/collection_replacement_boundary.py` in the required slot between `module-subn-count-indexlike-keyword-purged-bytes` and `module-subn-count-keyword-purged-bytes-compiled-pattern`.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` on the existing shared contract path: the `collection-replacement-keyword` anchor map now includes both raw module `subn()` bytes ids, the module keyword measured-row expectation moved from `33` to `35`, the collection-replacement manifest moved from `81` measured rows to `83`, and the combined full-suite summary moved from `889` / `889` / `0` to `891` / `891` / `0` with `883` module workloads.
+- Extended the existing raw module keyword contract coverage in the same benchmark test file so the manifest round-trip checks and callback-time numeric materialization checks now cover the new raw module `subn()` bytes duplicate-count and unexpected-keyword rows without introducing another owner path.
+- Republished `reports/benchmarks/latest.py`. The tracked artifact remains in the diff and now reports `891` total workloads, `891` measured workloads, `0` known gaps, `883` module workloads, and `collection-replacement-boundary` at `83` selected / `83` measured / `0` known gaps; both new raw module `subn()` bytes rows publish with `status == "measured"`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module-subn-duplicate-count-keyword-bytes or module-subn-unexpected-keyword-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured or standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation or module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0941-raw-module-subn-keyword-error-bytes-boundary-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
