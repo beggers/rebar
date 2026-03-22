@@ -3844,7 +3844,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("pattern-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 23)
+        self.assertEqual(len(case.target_manifest.workloads), 27)
         wrong_text_model_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
             _is_pattern_boundary_wrong_text_model_workload,
@@ -3869,11 +3869,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             keyword_workload_ids,
             (
                 "pattern-search-pos-keyword-warm-str",
+                "pattern-search-bool-endpos-keyword-warm-str",
                 "pattern-search-endpos-keyword-purged-bytes",
+                "pattern-search-pos-indexlike-keyword-warm-str",
                 "pattern-search-endpos-indexlike-keyword-purged-bytes",
                 "pattern-match-pos-keyword-purged-str",
+                "pattern-match-bool-pos-keyword-purged-str",
                 "pattern-match-window-indexlike-purged-bytes",
                 "pattern-fullmatch-window-keyword-purged-bytes",
+                "pattern-fullmatch-window-indexlike-keyword-purged-bytes",
                 "pattern-findall-bool-window-keyword-warm-str",
                 "pattern-finditer-window-indexlike-purged-bytes",
             ),
@@ -3895,8 +3899,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             wrong_text_model_workload_ids
             + keyword_workload_ids
             + positional_workload_ids,
-            23,
-            expected_total_workload_count=23,
+            27,
+            expected_total_workload_count=27,
         )
 
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
@@ -5257,11 +5261,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 906,
-                "module_workloads": 898,
+                "measured_workloads": 910,
+                "module_workloads": 902,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 906,
+                "total_workloads": 910,
             },
         )
 
@@ -9140,8 +9144,14 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-search-pos-keyword-warm-str": (
                     "workflow-pattern-search-str-pos-keyword",
                 ),
+                "pattern-search-bool-endpos-keyword-warm-str": (
+                    "workflow-pattern-search-str-bool-endpos-keyword",
+                ),
                 "pattern-search-endpos-keyword-purged-bytes": (
                     "workflow-pattern-search-bytes-endpos-keyword",
+                ),
+                "pattern-search-pos-indexlike-keyword-warm-str": (
+                    "workflow-pattern-search-str-pos-indexlike",
                 ),
                 "pattern-search-endpos-indexlike-keyword-purged-bytes": (
                     "workflow-pattern-search-bytes-endpos-indexlike",
@@ -9149,11 +9159,17 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-match-pos-keyword-purged-str": (
                     "workflow-pattern-match-str-pos-keyword",
                 ),
+                "pattern-match-bool-pos-keyword-purged-str": (
+                    "workflow-pattern-match-str-bool-pos-keyword",
+                ),
                 "pattern-match-window-indexlike-purged-bytes": (
                     "workflow-pattern-match-bytes-window-indexlike",
                 ),
                 "pattern-fullmatch-window-keyword-purged-bytes": (
                     "workflow-pattern-fullmatch-bytes-window-keyword",
+                ),
+                "pattern-fullmatch-window-indexlike-keyword-purged-bytes": (
+                    "workflow-pattern-fullmatch-bytes-window-indexlike",
                 ),
                 "pattern-findall-bool-window-keyword-warm-str": (
                     "workflow-pattern-findall-str-bool-window-keyword",
@@ -11220,6 +11236,23 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
                 ],
             },
             {
+                "id": "pattern-search-bool-endpos-keyword-contract-str",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "z",
+                "haystack": "zabcabc",
+                "text_model": "str",
+                "kwargs": {
+                    "endpos": True,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.search bool-backed endpos= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-search-endpos-keyword-contract-bytes",
                 "bucket": "pattern-search",
                 "family": "module",
@@ -11234,6 +11267,26 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
                 "timing_scope": "pattern-helper-call",
                 "notes": [
                     "Ensures benchmark manifests keep Pattern.search endpos= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-search-pos-indexlike-keyword-contract-str",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "text_model": "str",
+                "kwargs": {
+                    "pos": {
+                        "type": "indexlike",
+                        "value": 2,
+                    },
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.search pos= __index__ keyword carriers unresolved until helper invocation."
                 ],
             },
             {
@@ -11270,6 +11323,23 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
                 "timing_scope": "pattern-helper-call",
                 "notes": [
                     "Ensures benchmark manifests keep Pattern.match keyword pos carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-match-bool-pos-keyword-contract-str",
+                "bucket": "pattern-match",
+                "family": "module",
+                "operation": "pattern.match",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "text_model": "str",
+                "kwargs": {
+                    "pos": True,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.match bool-backed pos= keyword carriers unresolved until helper invocation."
                 ],
             },
             {
@@ -11312,6 +11382,30 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
                 "timing_scope": "pattern-helper-call",
                 "notes": [
                     "Ensures benchmark manifests keep Pattern.fullmatch keyword pos/endpos carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-fullmatch-window-indexlike-keyword-contract-bytes",
+                "bucket": "pattern-fullmatch",
+                "family": "module",
+                "operation": "pattern.fullmatch",
+                "pattern": "abc",
+                "haystack": "zabc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "pos": {
+                        "type": "indexlike",
+                        "value": 1,
+                    },
+                    "endpos": {
+                        "type": "indexlike",
+                        "value": 4,
+                    },
+                },
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.fullmatch keyword pos/endpos indexlike carriers unresolved until helper invocation."
                 ],
             },
             {
@@ -11366,11 +11460,15 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
     )
     (
         search_pos_workload,
+        search_bool_endpos_workload,
         search_endpos_workload,
+        search_pos_indexlike_workload,
         search_endpos_indexlike_workload,
         match_pos_workload,
+        match_bool_pos_workload,
         match_window_workload,
         fullmatch_window_workload,
+        fullmatch_window_indexlike_workload,
         findall_window_workload,
         finditer_window_workload,
     ) = load_manifest(manifest_path).workloads
@@ -11390,6 +11488,27 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
         check_regs=True,
     )
 
+    assert search_bool_endpos_workload.pos is None
+    assert search_bool_endpos_workload.endpos is None
+    assert search_bool_endpos_workload.kwargs == {"endpos": True}
+    assert type(search_bool_endpos_workload.kwargs["endpos"]) is bool
+    round_tripped_search_bool_endpos = workload_from_payload(
+        workload_to_payload(search_bool_endpos_workload)
+    )
+    assert round_tripped_search_bool_endpos.kwargs == {"endpos": True}
+    assert type(round_tripped_search_bool_endpos.kwargs["endpos"]) is bool
+    materialized_search_bool_endpos_kwargs = (
+        round_tripped_search_bool_endpos.keyword_arguments()
+    )
+    assert materialized_search_bool_endpos_kwargs == {"endpos": True}
+    assert materialized_search_bool_endpos_kwargs["endpos"] is True
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_search_bool_endpos),
+        re.compile("z").search("zabcabc", endpos=True),
+        check_regs=True,
+    )
+
     assert search_endpos_workload.pos is None
     assert search_endpos_workload.endpos is None
     assert search_endpos_workload.kwargs == {"endpos": 4}
@@ -11402,6 +11521,31 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
         "stdlib",
         run_benchmark_workload_with_cpython(round_tripped_search_endpos),
         re.compile(b"abc").search(b"zabcabc", endpos=4),
+        check_regs=True,
+    )
+
+    assert search_pos_indexlike_workload.pos is None
+    assert search_pos_indexlike_workload.endpos is None
+    assert search_pos_indexlike_workload.kwargs == {
+        "pos": {"type": "indexlike", "value": 2}
+    }
+    round_tripped_search_pos_indexlike = workload_from_payload(
+        workload_to_payload(search_pos_indexlike_workload)
+    )
+    assert round_tripped_search_pos_indexlike.kwargs == {
+        "pos": {"type": "indexlike", "value": 2}
+    }
+    materialized_search_pos_indexlike_kwargs = (
+        round_tripped_search_pos_indexlike.keyword_arguments()
+    )
+    assert materialized_search_pos_indexlike_kwargs["pos"].__index__() == 2
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_search_pos_indexlike),
+        re.compile("abc").search(
+            "zabcabc",
+            pos=materialized_search_pos_indexlike_kwargs["pos"],
+        ),
         check_regs=True,
     )
 
@@ -11445,6 +11589,27 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
         check_regs=True,
     )
 
+    assert match_bool_pos_workload.pos is None
+    assert match_bool_pos_workload.endpos is None
+    assert match_bool_pos_workload.kwargs == {"pos": True}
+    assert type(match_bool_pos_workload.kwargs["pos"]) is bool
+    round_tripped_match_bool_pos = workload_from_payload(
+        workload_to_payload(match_bool_pos_workload)
+    )
+    assert round_tripped_match_bool_pos.kwargs == {"pos": True}
+    assert type(round_tripped_match_bool_pos.kwargs["pos"]) is bool
+    materialized_match_bool_pos_kwargs = (
+        round_tripped_match_bool_pos.keyword_arguments()
+    )
+    assert materialized_match_bool_pos_kwargs == {"pos": True}
+    assert materialized_match_bool_pos_kwargs["pos"] is True
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(round_tripped_match_bool_pos),
+        re.compile("abc").match("zabcabc", pos=True),
+        check_regs=True,
+    )
+
     assert match_window_workload.pos is None
     assert match_window_workload.endpos is None
     assert match_window_workload.kwargs == {
@@ -11482,6 +11647,37 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
         "stdlib",
         run_benchmark_workload_with_cpython(round_tripped_fullmatch),
         re.compile(b"abc").fullmatch(b"zabc", pos=1, endpos=4),
+        check_regs=True,
+    )
+
+    assert fullmatch_window_indexlike_workload.pos is None
+    assert fullmatch_window_indexlike_workload.endpos is None
+    assert fullmatch_window_indexlike_workload.kwargs == {
+        "endpos": {"type": "indexlike", "value": 4},
+        "pos": {"type": "indexlike", "value": 1},
+    }
+    round_tripped_fullmatch_window_indexlike = workload_from_payload(
+        workload_to_payload(fullmatch_window_indexlike_workload)
+    )
+    assert round_tripped_fullmatch_window_indexlike.kwargs == {
+        "endpos": {"type": "indexlike", "value": 4},
+        "pos": {"type": "indexlike", "value": 1},
+    }
+    materialized_fullmatch_window_indexlike_kwargs = (
+        round_tripped_fullmatch_window_indexlike.keyword_arguments()
+    )
+    assert materialized_fullmatch_window_indexlike_kwargs["pos"].__index__() == 1
+    assert materialized_fullmatch_window_indexlike_kwargs["endpos"].__index__() == 4
+    assert_match_result_parity(
+        "stdlib",
+        run_benchmark_workload_with_cpython(
+            round_tripped_fullmatch_window_indexlike
+        ),
+        re.compile(b"abc").fullmatch(
+            b"zabc",
+            pos=materialized_fullmatch_window_indexlike_kwargs["pos"],
+            endpos=materialized_fullmatch_window_indexlike_kwargs["endpos"],
+        ),
         check_regs=True,
     )
 
@@ -11536,55 +11732,182 @@ def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptor
         )
 
 
+@pytest.mark.parametrize(
+    (
+        "workload_payload",
+        "expected_field_names",
+        "expected_index_calls",
+        "expected_result",
+    ),
+    (
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-fullmatch-window-indexlike-keyword-contract-bytes",
+                "bucket": "pattern-fullmatch",
+                "family": "module",
+                "operation": "pattern.fullmatch",
+                "pattern": "abc",
+                "haystack": "zabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": {"type": "indexlike", "value": 1},
+                    "endpos": {"type": "indexlike", "value": 4},
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [("kwargs.pos", 1), ("kwargs.endpos", 4)],
+            re.compile(b"abc").fullmatch(b"zabc", pos=1, endpos=4),
+            id="pattern-fullmatch-window-indexlike-keyword-bytes",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-finditer-window-indexlike-keyword-contract-bytes",
+                "bucket": "pattern-finditer",
+                "family": "module",
+                "operation": "pattern.finditer",
+                "pattern": "abc",
+                "haystack": "zabcabcabcz",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": {"type": "indexlike", "value": 1},
+                    "endpos": {"type": "indexlike", "value": 7},
+                },
+                "text_model": "bytes",
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [("kwargs.pos", 1), ("kwargs.endpos", 7)],
+            list(re.compile(b"abc").finditer(b"zabcabcabcz", pos=1, endpos=7)),
+            id="pattern-finditer-window-indexlike-keyword-bytes",
+        ),
+    ),
+)
 def test_pattern_helper_keyword_kwargs_materialize_at_callback_time(
     monkeypatch,
+    workload_payload,
+    expected_field_names,
+    expected_index_calls,
+    expected_result,
 ) -> None:
-    workload = workload_from_payload(
-        {
-            "manifest_id": "python-benchmark-pattern-keyword-window-contract",
-            "workload_id": "pattern-finditer-window-indexlike-keyword-contract-bytes",
-            "bucket": "pattern-finditer",
-            "family": "module",
-            "operation": "pattern.finditer",
-            "pattern": "abc",
-            "haystack": "zabcabcabcz",
-            "flags": 0,
-            "count": 0,
-            "maxsplit": 0,
-            "kwargs": {
-                "pos": {"type": "indexlike", "value": 1},
-                "endpos": {"type": "indexlike", "value": 7},
-            },
-            "text_model": "bytes",
-            "cache_mode": "warm",
-            "timing_scope": "pattern-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
+    workload = workload_from_payload(workload_payload)
+    observed_field_names: list[str] = []
+    index_calls: list[tuple[str, int]] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    class _RecordingIndexLike:
+        def __init__(self, field_name: str, value: int) -> None:
+            self.field_name = field_name
+            self.value = value
+
+        def __index__(self) -> int:
+            index_calls.append((self.field_name, self.value))
+            return self.value
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        normalized = benchmarks.normalize_numeric_workload_argument(
+            value,
+            field_name=field_name,
+        )
+        if isinstance(normalized, dict) and normalized.get("type") == "indexlike":
+            return _RecordingIndexLike(field_name, int(normalized["value"]))
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
     )
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
         callback = build_callable(re, "re", workload)
         assert observed_field_names == []
 
-        observed_matches = callback()
+        observed_result = callback()
 
-        assert observed_field_names == ["kwargs.endpos", "kwargs.pos"]
-        assert len(observed_matches) == 2
+        assert observed_field_names == expected_field_names
+        assert index_calls == expected_index_calls
+        if workload.operation == "pattern.finditer":
+            assert len(observed_result) == len(expected_result) == 2
+            for observed_match, expected_match in zip(
+                observed_result,
+                expected_result,
+                strict=True,
+            ):
+                assert_match_result_parity(
+                    "stdlib",
+                    observed_match,
+                    expected_match,
+                    check_regs=True,
+                )
+        else:
+            assert_match_result_parity(
+                "stdlib",
+                observed_result,
+                expected_result,
+                check_regs=True,
+            )
     finally:
         re.purge()
 
 
 @pytest.mark.parametrize(
-    ("workload_payload", "expected_match", "expected_field_names", "expect_index_call"),
+    ("workload_payload", "expected_match", "expected_field_names", "expected_index_calls"),
     (
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-search-bool-endpos-keyword-contract-str",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "z",
+                "haystack": "zabcabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {"endpos": True},
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            re.compile("z").search("zabcabc", endpos=True),
+            ["kwargs.endpos"],
+            [],
+            id="pattern-search-bool-endpos-keyword-str",
+        ),
         pytest.param(
             {
                 "manifest_id": "python-benchmark-pattern-keyword-window-contract",
@@ -11611,8 +11934,39 @@ def test_pattern_helper_keyword_kwargs_materialize_at_callback_time(
             },
             re.compile(b"abc").search(b"zabcabc", endpos=4),
             ["kwargs.endpos"],
-            False,
+            [],
             id="pattern-search-endpos-keyword-bytes",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-search-pos-indexlike-keyword-contract-str",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": {"type": "indexlike", "value": 2},
+                },
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            re.compile("abc").search("zabcabc", pos=2),
+            ["kwargs.pos"],
+            [2],
+            id="pattern-search-pos-indexlike-keyword-str",
         ),
         pytest.param(
             {
@@ -11642,7 +11996,7 @@ def test_pattern_helper_keyword_kwargs_materialize_at_callback_time(
             },
             re.compile(b"abc").search(b"zabcabc", endpos=4),
             ["kwargs.endpos"],
-            True,
+            [4],
             id="pattern-search-endpos-indexlike-bytes",
         ),
     ),
@@ -11652,7 +12006,7 @@ def test_pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_e
     workload_payload,
     expected_match,
     expected_field_names,
-    expect_index_call,
+    expected_index_calls,
 ) -> None:
     workload = workload_from_payload(workload_payload)
     observed_field_names: list[str] = []
@@ -11673,11 +12027,7 @@ def test_pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_e
             value,
             field_name=field_name,
         )
-        if (
-            field_name == "kwargs.endpos"
-            and isinstance(normalized, dict)
-            and normalized.get("type") == "indexlike"
-        ):
+        if isinstance(normalized, dict) and normalized.get("type") == "indexlike":
             return _RecordingIndexLike(int(normalized["value"]))
         return original_materialize(value, field_name=field_name)
 
@@ -11695,7 +12045,7 @@ def test_pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_e
         observed_match = callback()
 
         assert observed_field_names == expected_field_names
-        assert index_calls == ([4] if expect_index_call else [])
+        assert index_calls == expected_index_calls
         assert_match_result_parity(
             "stdlib",
             observed_match,

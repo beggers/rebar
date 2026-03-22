@@ -307,6 +307,39 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-search-bool-endpos-keyword-warm-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "z",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "text_model": "str",
+      "kwargs": {
+        "endpos": True
+      },
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "literal",
+        "warm-cache",
+        "keyword",
+        "endpos",
+        "bool",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "literal-text",
+        "pattern-window-endpos"
+      ],
+      "notes": [
+        "Warm precompiled search helper path that keeps the bool-backed Pattern.search endpos= keyword carrier on the shared pattern-boundary surface."
+      ]
+    },
+    {
       "id": "pattern-search-endpos-keyword-purged-bytes",
       "bucket": "pattern-search",
       "family": "module",
@@ -337,6 +370,42 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache bytes search helper path that keeps the Pattern.search endpos= keyword carrier on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-search-pos-indexlike-keyword-warm-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "text_model": "str",
+      "kwargs": {
+        "pos": {
+          "type": "indexlike",
+          "value": 2
+        }
+      },
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "literal",
+        "warm-cache",
+        "keyword",
+        "pos",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "literal-text",
+        "pattern-window-pos"
+      ],
+      "notes": [
+        "Warm precompiled search helper path that keeps the Pattern.search pos= __index__ keyword carrier on the shared pattern-boundary surface."
       ]
     },
     {
@@ -406,6 +475,40 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache match helper path that keeps the Pattern.match pos= keyword carrier on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-match-bool-pos-keyword-purged-str",
+      "bucket": "pattern-match",
+      "family": "module",
+      "operation": "pattern.match",
+      "pattern": "abc",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "text_model": "str",
+      "kwargs": {
+        "pos": True
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "match",
+        "literal",
+        "purged-cache",
+        "keyword",
+        "pos",
+        "bool",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-match",
+        "literal-text",
+        "pattern-window-pos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache match helper path that keeps the bool-backed Pattern.match pos= keyword carrier on the shared pattern-boundary surface."
       ]
     },
     {
@@ -483,6 +586,48 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache bytes fullmatch helper path that keeps the Pattern.fullmatch pos=/endpos= keyword carriers on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-window-indexlike-keyword-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "abc",
+      "haystack": "zabc",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "pos": {
+          "type": "indexlike",
+          "value": 1
+        },
+        "endpos": {
+          "type": "indexlike",
+          "value": 4
+        }
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "bytes",
+        "purged-cache",
+        "keyword",
+        "window",
+        "indexlike",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "pattern-window-pos",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes fullmatch helper path that keeps the Pattern.fullmatch pos=/endpos= __index__ keyword carriers on the shared pattern-boundary surface."
       ]
     },
     {
