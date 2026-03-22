@@ -13192,22 +13192,9 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
         re.purge()
 
 
-@pytest.mark.parametrize(
-    "source_workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _pattern_helper_keyword_error_source_workloads()
-    ),
-)
-@pytest.mark.parametrize(
-    ("import_name", "adapter_name"),
-    (
-        pytest.param("re", "cpython.re", id="cpython"),
-        pytest.param("rebar", "rebar", id="rebar"),
-    ),
-)
-def test_run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads(
+def _assert_keyword_error_workload_probe_measured(
     source_workload: Workload,
+    *,
     import_name: str,
     adapter_name: str,
 ) -> None:
@@ -13229,6 +13216,32 @@ def test_run_internal_workload_probe_measures_pattern_helper_keyword_error_workl
 
     assert probe["status"] == "measured"
     assert probe["median_ns"] > 0
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _pattern_helper_keyword_error_source_workloads()
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads(
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    _assert_keyword_error_workload_probe_measured(
+        source_workload,
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
 
 
 def _pattern_collection_replacement_wrong_text_model_expected_callback_result(
@@ -13900,24 +13913,11 @@ def test_run_internal_workload_probe_measures_module_helper_keyword_error_worklo
     import_name: str,
     adapter_name: str,
 ) -> None:
-    payload = workload_to_payload(source_workload)
-    round_tripped = workload_from_payload(payload)
-
-    assert payload["workload_id"] == source_workload.workload_id
-    assert round_tripped.workload_id == source_workload.workload_id
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert payload["kwargs"] == source_workload.kwargs
-    assert round_tripped.kwargs == source_workload.kwargs
-
-    probe = run_internal_workload_probe(
-        workload_payload=json.dumps(payload, sort_keys=True),
+    _assert_keyword_error_workload_probe_measured(
+        source_workload,
         import_name=import_name,
         adapter_name=adapter_name,
     )
-
-    assert probe["status"] == "measured"
-    assert probe["median_ns"] > 0
 
 
 def _is_collection_replacement_compiled_pattern_module_helper_keyword_workload(
