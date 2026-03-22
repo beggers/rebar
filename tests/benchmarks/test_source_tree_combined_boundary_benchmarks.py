@@ -14678,53 +14678,82 @@ _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
 )
 
 
-def _compiled_pattern_module_success_manifest_payload(
+_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+    }
+)
+_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
+    _COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    | {
+        "categories",
+        "syntax_features",
+        "expected_exception",
+        "haystack_text_model",
+    }
+)
+
+
+def _compiled_pattern_module_contract_note(
+    *,
+    note_label: str,
+    note_surface: str,
+) -> str:
+    return (
+        "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
+        f"{note_label} {note_surface} rows unresolved until helper invocation."
+    )
+
+
+def _compiled_pattern_module_contract_manifest_payload(
     source_workload: Workload,
     *,
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+    note_label: str,
+    note_surface: str,
+    excluded_fields: frozenset[str],
+    timing_scope: str | None = None,
 ) -> dict[str, object]:
     payload = workload_to_payload(source_workload)
-    return {
+    manifest_payload = {
         "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "notes",
-                "smoke",
-                "categories",
-                "syntax_features",
-                "expected_exception",
-                "haystack_text_model",
-            }
-        },
-        "timing_scope": "module-helper-call",
+        **{key: value for key, value in payload.items() if key not in excluded_fields},
         "notes": [
-            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
-            f"successful {owner_spec.note_surface} rows unresolved until helper "
-            "invocation."
+            _compiled_pattern_module_contract_note(
+                note_label=note_label,
+                note_surface=note_surface,
+            )
         ],
     }
+    if timing_scope is not None:
+        manifest_payload["timing_scope"] = timing_scope
+    return manifest_payload
 
 
-def _compiled_pattern_module_success_workload(
+def _compiled_pattern_module_contract_workload(
     source_workload: Workload,
     *,
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+    contract_manifest_id: str,
+    note_label: str,
+    note_surface: str,
+    excluded_fields: frozenset[str],
+    timing_scope: str | None = None,
 ) -> Workload:
-    manifest_payload = _compiled_pattern_module_success_manifest_payload(
+    manifest_payload = _compiled_pattern_module_contract_manifest_payload(
         source_workload,
-        owner_spec=owner_spec,
+        note_label=note_label,
+        note_surface=note_surface,
+        excluded_fields=excluded_fields,
+        timing_scope=timing_scope,
     )
     return workload_from_payload(
         {
-            "manifest_id": owner_spec.contract_manifest_id,
+            "manifest_id": contract_manifest_id,
             "workload_id": str(manifest_payload["id"]),
             **{key: value for key, value in manifest_payload.items() if key != "id"},
             "warmup_iterations": 1,
@@ -14737,44 +14766,56 @@ def _compiled_pattern_module_success_workload(
     )
 
 
-def _compiled_pattern_module_success_source_workloads(
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+def _compiled_pattern_module_contract_source_workloads(
+    *,
+    manifest_path: pathlib.Path,
+    include_workload_selectors: tuple[Callable[[Any], bool], ...],
+    expected_source_workload_ids: tuple[str, ...],
+    drift_label: str,
 ) -> tuple[Workload, ...]:
     source_workloads = tuple(
         workload
-        for include_workload in owner_spec.include_workload_selectors
+        for include_workload in include_workload_selectors
         for workload in _selected_manifest_workloads(
-            owner_spec.manifest_path,
+            manifest_path,
             include_workload=include_workload,
         )
     )
-    if tuple(workload.workload_id for workload in source_workloads) != (
-        owner_spec.expected_source_workload_ids
+    if (
+        tuple(workload.workload_id for workload in source_workloads)
+        != expected_source_workload_ids
     ):
         raise AssertionError(
-            "compiled-pattern module success source workloads drifted from the "
-            f"{owner_spec.case_id} owner-spec surface"
+            "compiled-pattern module contract source workloads drifted from the "
+            f"{drift_label}"
         )
     return source_workloads
 
 
-def _compiled_pattern_module_success_manifest(
+def _compiled_pattern_module_contract_manifest(
     source_workloads: tuple[Workload, ...],
     *,
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+    contract_manifest_id: str,
+    note_label: str,
+    note_surface: str,
+    excluded_fields: frozenset[str],
+    timing_scope: str | None = None,
 ) -> dict[str, object]:
     return {
         "schema_version": 1,
-        "manifest_id": owner_spec.contract_manifest_id,
+        "manifest_id": contract_manifest_id,
         "defaults": {
             "warmup_iterations": 1,
             "sample_iterations": 1,
             "timed_samples": 2,
         },
         "workloads": [
-            _compiled_pattern_module_success_manifest_payload(
+            _compiled_pattern_module_contract_manifest_payload(
                 workload,
-                owner_spec=owner_spec,
+                note_label=note_label,
+                note_surface=note_surface,
+                excluded_fields=excluded_fields,
+                timing_scope=timing_scope,
             )
             for workload in source_workloads
         ],
@@ -14811,10 +14852,10 @@ def _assert_compiled_pattern_module_success_payload_round_trip(
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
 
 
-def _compiled_pattern_module_success_expected_build_calls(
+def _compiled_pattern_module_contract_expected_build_calls(
     source_workload: Workload,
     *,
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+    label: str,
 ) -> list[tuple[object, ...]]:
     compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
     if source_workload.cache_mode == "purged":
@@ -14822,9 +14863,25 @@ def _compiled_pattern_module_success_expected_build_calls(
     if source_workload.cache_mode == "warm":
         return [compile_call]
     raise AssertionError(
-        "unexpected compiled-pattern "
-        f"{owner_spec.case_id} success workload cache mode "
+        f"unexpected compiled-pattern {label} workload cache mode "
         f"{source_workload.cache_mode!r}"
+    )
+
+
+def _compiled_pattern_module_contract_source_workload_params(
+    owner_specs: tuple[object, ...],
+    *,
+    source_workloads: Callable[[object], tuple[Workload, ...]],
+    param_id: Callable[[object], str],
+) -> tuple[object, ...]:
+    return tuple(
+        pytest.param(
+            owner_spec,
+            source_workload,
+            id=f"{param_id(owner_spec)}-{source_workload.workload_id}",
+        )
+        for owner_spec in owner_specs
+        for source_workload in source_workloads(owner_spec)
     )
 
 
@@ -14839,10 +14896,19 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     tmp_path: pathlib.Path,
     owner_spec: CompiledPatternModuleSuccessOwnerSpec,
 ) -> None:
-    source_workloads = _compiled_pattern_module_success_source_workloads(owner_spec)
-    manifest = _compiled_pattern_module_success_manifest(
+    source_workloads = _compiled_pattern_module_contract_source_workloads(
+        manifest_path=owner_spec.manifest_path,
+        include_workload_selectors=owner_spec.include_workload_selectors,
+        expected_source_workload_ids=owner_spec.expected_source_workload_ids,
+        drift_label=f"{owner_spec.case_id} owner-spec surface",
+    )
+    manifest = _compiled_pattern_module_contract_manifest(
         source_workloads,
-        owner_spec=owner_spec,
+        contract_manifest_id=owner_spec.contract_manifest_id,
+        note_label="successful",
+        note_surface=owner_spec.note_surface,
+        excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+        timing_scope="module-helper-call",
     )
 
     manifest_path = _write_test_manifest(
@@ -14888,11 +14954,19 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = _compiled_pattern_module_success_manifest(
-        _compiled_pattern_module_success_source_workloads(
-            _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+    owner_spec = _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+    manifest = _compiled_pattern_module_contract_manifest(
+        _compiled_pattern_module_contract_source_workloads(
+            manifest_path=owner_spec.manifest_path,
+            include_workload_selectors=owner_spec.include_workload_selectors,
+            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
+            drift_label=f"{owner_spec.case_id} owner-spec surface",
         ),
-        owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+        contract_manifest_id=owner_spec.contract_manifest_id,
+        note_label="successful",
+        note_surface=owner_spec.note_surface,
+        excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+        timing_scope="module-helper-call",
     )
 
     manifest_path = _write_test_manifest(
@@ -14971,21 +15045,18 @@ def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchor
     )
 
 
-def _compiled_pattern_module_success_probe_params() -> tuple[object, ...]:
-    return tuple(
-        pytest.param(
-            owner_spec,
-            workload,
-            id=f"{owner_spec.case_id}-{workload.workload_id}",
-        )
-        for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
-        for workload in _compiled_pattern_module_success_source_workloads(owner_spec)
-    )
-
-
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_success_probe_params(),
+    _compiled_pattern_module_contract_source_workload_params(
+        _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
+        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
+            manifest_path=owner_spec.manifest_path,
+            include_workload_selectors=owner_spec.include_workload_selectors,
+            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
+            drift_label=f"{owner_spec.case_id} owner-spec surface",
+        ),
+        param_id=lambda owner_spec: owner_spec.case_id,
+    ),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -15000,9 +15071,13 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_success_workload(
+    workload = _compiled_pattern_module_contract_workload(
         source_workload,
-        owner_spec=owner_spec,
+        contract_manifest_id=owner_spec.contract_manifest_id,
+        note_label="successful",
+        note_surface=owner_spec.note_surface,
+        excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+        timing_scope="module-helper-call",
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -15026,24 +15101,37 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_success_probe_params(),
+    _compiled_pattern_module_contract_source_workload_params(
+        _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
+        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
+            manifest_path=owner_spec.manifest_path,
+            include_workload_selectors=owner_spec.include_workload_selectors,
+            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
+            drift_label=f"{owner_spec.case_id} owner-spec surface",
+        ),
+        param_id=lambda owner_spec: owner_spec.case_id,
+    ),
 )
 def test_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing(
     owner_spec: CompiledPatternModuleSuccessOwnerSpec,
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = _compiled_pattern_module_success_expected_build_calls(
+    expected_build_calls = _compiled_pattern_module_contract_expected_build_calls(
         source_workload,
-        owner_spec=owner_spec,
+        label=f"{owner_spec.case_id} success",
     )
     expected_callback_call = owner_spec.expected_callback_call(source_workload)
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_success_workload(
+        _compiled_pattern_module_contract_workload(
             source_workload,
-            owner_spec=owner_spec,
+            contract_manifest_id=owner_spec.contract_manifest_id,
+            note_label="successful",
+            note_surface=owner_spec.note_surface,
+            excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+            timing_scope="module-helper-call",
         ),
     )
 
@@ -15806,17 +15894,23 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_
     assert last_call[1] is compiled_pattern
     assert last_call[2:] == (contract_case.callback_flags(source_workload),)
 
+
 def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = _compiled_pattern_module_success_manifest(
+    owner_spec = _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
+    manifest = _compiled_pattern_module_contract_manifest(
         _selected_manifest_workloads(
             MODULE_BOUNDARY_MANIFEST_PATH,
             include_workload=(
                 _is_module_workflow_compiled_pattern_verbose_bytes_success_workload
             ),
         ),
-        owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+        contract_manifest_id=owner_spec.contract_manifest_id,
+        note_label="successful",
+        note_surface=owner_spec.note_surface,
+        excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+        timing_scope="module-helper-call",
     )
 
     manifest_path = _write_test_manifest(
@@ -15868,36 +15962,6 @@ def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchor
             "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
         ),
     )
-
-
-def _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
-    workload: Workload,
-    *,
-    note_surface: str = "collection/replacement",
-) -> dict[str, object]:
-    payload = workload_to_payload(workload)
-    return {
-        "id": f"{workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "notes",
-                "smoke",
-            }
-        },
-        "notes": [
-            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
-            f"wrong-text-model {note_surface} rows unresolved until helper "
-            "invocation."
-        ],
-    }
 
 
 @dataclass(frozen=True)
@@ -15955,79 +16019,6 @@ def _compiled_pattern_module_wrong_text_model_owner_param_id(
     )
 
 
-def _compiled_pattern_module_wrong_text_model_source_workloads(
-    owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
-) -> tuple[Workload, ...]:
-    return _selected_manifest_workloads(
-        owner_spec.manifest_path,
-        include_workload=owner_spec.include_workload,
-    )
-
-
-def _compiled_pattern_module_wrong_text_model_workload(
-    source_workload: Workload,
-    *,
-    owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
-) -> Workload:
-    manifest_payload = _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
-        source_workload,
-        note_surface=owner_spec.note_surface,
-    )
-    return workload_from_payload(
-        {
-            "manifest_id": owner_spec.contract_manifest_id,
-            "workload_id": str(manifest_payload["id"]),
-            **{key: value for key, value in manifest_payload.items() if key != "id"},
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
-
-
-def _compiled_pattern_module_wrong_text_model_manifest(
-    source_workloads: tuple[Workload, ...],
-    *,
-    owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
-) -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": owner_spec.contract_manifest_id,
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
-                workload,
-                note_surface=owner_spec.note_surface,
-            )
-            for workload in source_workloads
-        ],
-    }
-
-
-def _compiled_pattern_module_wrong_text_model_source_workload_params() -> tuple[object, ...]:
-    return tuple(
-        pytest.param(
-            owner_spec,
-            source_workload,
-            id=(
-                f"{_compiled_pattern_module_wrong_text_model_owner_param_id(owner_spec)}-"
-                f"{source_workload.workload_id}"
-            ),
-        )
-        for owner_spec in COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_OWNER_SPECS
-        for source_workload in _compiled_pattern_module_wrong_text_model_source_workloads(
-            owner_spec
-        )
-    )
-
-
 def _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],
@@ -16058,20 +16049,6 @@ def _compiled_pattern_module_helper_wrong_text_model_expected_callback_result(
     if source_workload.operation == "module.finditer":
         return ["module-finditer-result"]
     return "module-result"
-
-
-def _compiled_pattern_module_helper_wrong_text_model_expected_build_calls(
-    source_workload: Workload,
-) -> list[tuple[object, ...]]:
-    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
-    if source_workload.cache_mode == "purged":
-        return [compile_call, ("purge",)]
-    if source_workload.cache_mode == "warm":
-        return [compile_call]
-    raise AssertionError(
-        "unexpected compiled-pattern module helper wrong-text-model workload "
-        f"cache mode {source_workload.cache_mode!r}"
-    )
 
 
 def _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
@@ -16181,12 +16158,18 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_wrong_tex
     owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = _compiled_pattern_module_wrong_text_model_source_workloads(
-        owner_spec
+    source_workloads = _compiled_pattern_module_contract_source_workloads(
+        manifest_path=owner_spec.manifest_path,
+        include_workload_selectors=(owner_spec.include_workload,),
+        expected_source_workload_ids=owner_spec.expected_source_workload_ids,
+        drift_label="wrong-text-model owner-spec surface",
     )
-    manifest = _compiled_pattern_module_wrong_text_model_manifest(
+    manifest = _compiled_pattern_module_contract_manifest(
         source_workloads,
-        owner_spec=owner_spec,
+        contract_manifest_id=owner_spec.contract_manifest_id,
+        note_label="wrong-text-model",
+        note_surface=owner_spec.note_surface,
+        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     )
 
     manifest_path = _write_test_manifest(
@@ -16236,7 +16219,16 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_wrong_tex
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_wrong_text_model_source_workload_params(),
+    _compiled_pattern_module_contract_source_workload_params(
+        COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_OWNER_SPECS,
+        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
+            manifest_path=owner_spec.manifest_path,
+            include_workload_selectors=(owner_spec.include_workload,),
+            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
+            drift_label="wrong-text-model owner-spec surface",
+        ),
+        param_id=_compiled_pattern_module_wrong_text_model_owner_param_id,
+    ),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -16251,9 +16243,12 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_wrong_text
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_wrong_text_model_workload(
+    workload = _compiled_pattern_module_contract_workload(
         source_workload,
-        owner_spec=owner_spec,
+        contract_manifest_id=owner_spec.contract_manifest_id,
+        note_label="wrong-text-model",
+        note_surface=owner_spec.note_surface,
+        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -16276,16 +16271,24 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_wrong_text
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_wrong_text_model_source_workload_params(),
+    _compiled_pattern_module_contract_source_workload_params(
+        COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_OWNER_SPECS,
+        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
+            manifest_path=owner_spec.manifest_path,
+            include_workload_selectors=(owner_spec.include_workload,),
+            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
+            drift_label="wrong-text-model owner-spec surface",
+        ),
+        param_id=_compiled_pattern_module_wrong_text_model_owner_param_id,
+    ),
 )
 def test_compiled_pattern_module_wrong_text_model_callbacks_precompile_first_argument_before_timing(
     owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = (
-        _compiled_pattern_module_helper_wrong_text_model_expected_build_calls(
-            source_workload
-        )
+    expected_build_calls = _compiled_pattern_module_contract_expected_build_calls(
+        source_workload,
+        label="module helper wrong-text-model",
     )
     expected_callback_call = (
         _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
@@ -16296,9 +16299,12 @@ def test_compiled_pattern_module_wrong_text_model_callbacks_precompile_first_arg
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_wrong_text_model_workload(
+        _compiled_pattern_module_contract_workload(
             source_workload,
-            owner_spec=owner_spec,
+            contract_manifest_id=owner_spec.contract_manifest_id,
+            note_label="wrong-text-model",
+            note_surface=owner_spec.note_surface,
+            excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         ),
     )
 
