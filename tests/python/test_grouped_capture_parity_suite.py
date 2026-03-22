@@ -80,16 +80,6 @@ OPTIONAL_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
 OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
     "optional-group-alternation-workflows"
 ]
-GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES = (
-    ("grouped-match", GROUPED_MATCH_FIXTURE_BUNDLE),
-    ("named-group", NAMED_GROUP_FIXTURE_BUNDLE),
-    ("grouped-segment", GROUPED_SEGMENT_FIXTURE_BUNDLE),
-    ("grouped-alternation", GROUPED_ALTERNATION_FIXTURE_BUNDLE),
-    ("optional-group", OPTIONAL_GROUP_FIXTURE_BUNDLE),
-    ("optional-group-alternation", OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE),
-    ("nested-group", NESTED_GROUP_FIXTURE_BUNDLE),
-    ("nested-group-alternation", NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE),
-)
 
 
 def _iter_fixture_cases() -> Iterator[FixtureCase]:
@@ -446,8 +436,10 @@ def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -
         case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
     )
     direct_test_case_id_buckets = {
-        bucket_label: frozenset(case.case_id for case in bundle.cases)
-        for bucket_label, bundle in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
+        bundle.manifest.manifest_id.removesuffix("-workflows"): frozenset(
+            case.case_id for case in bundle.cases
+        )
+        for bundle in FIXTURE_BUNDLES
     }
     assert direct_test_case_id_buckets["grouped-segment"] == (
         grouped_segment_case_ids
@@ -705,19 +697,22 @@ def test_published_case_frontier_helper_reports_uncovered_order_drift() -> None:
 
 def test_grouped_capture_direct_test_buckets_cover_selected_frontier() -> None:
     direct_test_case_id_buckets = {
-        bucket_label: frozenset(case.case_id for case in bundle.cases)
-        for bucket_label, bundle in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
+        bundle.manifest.manifest_id.removesuffix("-workflows"): frozenset(
+            case.case_id for case in bundle.cases
+        )
+        for bundle in FIXTURE_BUNDLES
     }
 
     assert tuple(direct_test_case_id_buckets) == tuple(
-        bucket_label for bucket_label, _ in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
+        bundle.manifest.manifest_id.removesuffix("-workflows")
+        for bundle in FIXTURE_BUNDLES
     )
 
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         direct_test_case_id_buckets,
         selected_case_ids=tuple(
             case.case_id
-            for _, bundle in GROUPED_CAPTURE_DIRECT_TEST_BUNDLE_ENTRIES
+            for bundle in FIXTURE_BUNDLES
             for case in bundle.cases
         ),
         coverage_label="grouped capture direct-test case-id buckets",
