@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1530 cases across 114 manifests, with all 1530 passing in the current slice; the benchmark publication covers 878/878 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite on the shared direct bound-pattern replacement frontier. |
-| Work queue | `0` ready, `0` in progress, `917` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 878/878 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword publication landed. |
+| Work queue | `0` ready, `0` in progress, `920` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1530` |
-| Passing in published slice | `1530` |
+| Published cases | `1532` |
+| Passing in published slice | `1532` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1530 cases across 114 manifests, with all 1530 passing in the current slice; the benchmark publication covers 878/878 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 878/878 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite on the shared direct bound-pattern replacement frontier.
+- No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword publication landed.
 
 ### Current Risks
 
