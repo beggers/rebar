@@ -2405,57 +2405,21 @@ PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
 )
 
 
-def _module_keyword_direct_signature(
-    case: ModuleKeywordCallCase | ModuleKeywordErrorCase,
-) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-    pattern, *args = case.args
-    return (
-        case.helper,
-        pattern,
-        tuple(args),
-        _workflow_keyword_kwargs_signature(case.kwargs),
-        "bytes" if isinstance(pattern, bytes) else "str",
-    )
-
-
-def _module_keyword_fixture_signature(
-    case: FixtureCase,
-) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-    return (
-        case.helper,
-        case_pattern(case),
-        tuple(case.args),
-        _workflow_keyword_kwargs_signature(case.kwargs),
-        case.text_model,
-    )
-
-
 def _published_module_keyword_owner_path_fixture_cases(
     rows: tuple[ModuleKeywordOwnerPathRow, ...],
 ) -> tuple[FixtureCase, ...]:
-    fixture_cases_by_signature = {
-        _module_keyword_fixture_signature(case): case
+    fixture_cases_by_id = {
+        case.case_id: case
         for case in MODULE_CALL_CASES
         if not case.use_compiled_pattern
     }
-    return tuple(
-        fixture_cases_by_signature[_module_keyword_direct_signature(row.direct_case)]
-        for row in rows
-    )
+    return tuple(fixture_cases_by_id[row.fixture_case_id] for row in rows)
 
 
 def _selected_module_keyword_owner_path_direct_cases(
     rows: tuple[ModuleKeywordOwnerPathRow, ...],
-    published_fixture_cases: tuple[FixtureCase, ...],
 ) -> tuple[ModuleKeywordCallCase | ModuleKeywordErrorCase, ...]:
-    direct_cases_by_signature = {
-        _module_keyword_direct_signature(row.direct_case): row.direct_case
-        for row in rows
-    }
-    return tuple(
-        direct_cases_by_signature[_module_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
-    )
+    return tuple(row.direct_case for row in rows)
 
 
 def _module_positional_indexlike_direct_signature(
@@ -4562,7 +4526,6 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
     )
     selected_direct_cases = _selected_module_keyword_owner_path_direct_cases(
         MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-        published_fixture_cases,
     )
 
     assert tuple(
@@ -4743,7 +4706,6 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
     )
     selected_direct_cases = _selected_module_keyword_owner_path_direct_cases(
         MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
-        published_fixture_cases
     )
 
     assert tuple(
