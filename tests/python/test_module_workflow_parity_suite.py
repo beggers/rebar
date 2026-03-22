@@ -3436,6 +3436,65 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
     )
 
 
+def test_compiled_pattern_module_keyword_frontier_keeps_after_positional_count_cases_direct_only(
+) -> None:
+    direct_cases_by_id = {
+        case.case_id: case for case in COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES
+    }
+    direct_only_case_ids = (
+        "compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
+        "compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+    )
+    adjacent_published_case_ids = (
+        "compiled-pattern-sub-unexpected-keyword-str",
+        "compiled-pattern-subn-unexpected-keyword-bytes",
+    )
+
+    direct_only_cases = tuple(
+        direct_cases_by_id[case_id] for case_id in direct_only_case_ids
+    )
+    adjacent_published_cases = tuple(
+        direct_cases_by_id[case_id] for case_id in adjacent_published_case_ids
+    )
+    published_fixture_signatures = {
+        _compiled_pattern_module_helper_fixture_signature(case)
+        for case in _published_compiled_pattern_module_helper_fixture_cases()
+    }
+
+    assert tuple(case.case_id for case in direct_only_cases) == direct_only_case_ids
+    assert {
+        _compiled_pattern_module_helper_direct_signature(case)
+        for case in direct_only_cases
+    } == {
+        (
+            "sub",
+            "abc",
+            ("x", "abc", 1),
+            0,
+            True,
+            (("missing", "int", 1),),
+            "str",
+        ),
+        (
+            "subn",
+            b"abc",
+            (b"x", b"abc", 1),
+            0,
+            True,
+            (("missing", "int", 1),),
+            "bytes",
+        ),
+    }
+    assert not {
+        _compiled_pattern_module_helper_direct_signature(case)
+        for case in direct_only_cases
+    } & published_fixture_signatures
+    assert {
+        _compiled_pattern_module_helper_direct_signature(case)
+        for case in adjacent_published_cases
+    } <= published_fixture_signatures
+
+
 def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
     assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
     assert (
