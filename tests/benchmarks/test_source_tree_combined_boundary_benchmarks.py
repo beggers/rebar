@@ -13287,6 +13287,22 @@ def _compiled_pattern_module_compile_success_workload(
     )
 
 
+def _compiled_pattern_module_compile_success_manifest() -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "manifest_id": "module-boundary",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _compiled_pattern_module_compile_success_manifest_payload(case)
+            for case in COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES
+        ],
+    }
+
+
 def _assert_compiled_pattern_module_compile_success_payload_round_trip(
     case: CompiledPatternModuleCompileSuccessCase,
     payload: dict[str, object],
@@ -13327,19 +13343,7 @@ def _compiled_pattern_module_compile_success_expected_build_calls(
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_compile_success_manifest_payload(case)
-            for case in COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES
-        ],
-    }
+    manifest = _compiled_pattern_module_compile_success_manifest()
 
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -13377,19 +13381,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
 def test_compiled_pattern_module_compile_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_compile_success_manifest_payload(case)
-            for case in COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CASES
-        ],
-    }
+    manifest = _compiled_pattern_module_compile_success_manifest()
 
     manifest_path = _write_test_manifest(
         tmp_path,
