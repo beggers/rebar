@@ -1,8 +1,9 @@
 # RBR-0887: Collapse correctness canonical selector membership mirror onto harness-owned subsets
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Delete the remaining handwritten canonical selector-membership mirror in `tests/python/test_fixture_parity_support_contract.py` by expressing the parser-parity and public-surface membership checks directly against the harness-owned nondefault selector table, so the correctness-side selector contract stops carrying a second filename registry after the adjacent benchmark-side cleanup in `RBR-0885`.
@@ -60,7 +61,12 @@ PY`
   - `/home/ubuntu/rebar/.rebar/runtime/dashboard.md` reports `tracked_json_blob_count: 0` and `tracked_json_blob_delta: 0`;
   - `git ls-files '*.json' | wc -l` returned `0`; and
   - `rg --files -g '*.json' | wc -l` returned `0`.
-- This exact cleanup is still live in the current checkout:
-  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'shared_correctness_fixture_selectors_resolve_published_paths or canonical_published_subset_selectors_keep_explicit_membership_contract or declared_correctness_fixture_selectors_match_registry_keys or declared_nondefault_correctness_fixture_selectors_are_parametrized_once'` currently passes (`23 passed, 287 deselected in 0.09s`);
-  - `bash -lc "! rg -n '^CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS =' tests/python/test_fixture_parity_support_contract.py"` currently fails because the mirrored table is still present at line 261; and
-  - the adjacent benchmark-side mirror removal already landed in `RBR-0885`, so this is the matching correctness-side follow-on rather than a new cleanup lane.
+- The cleanup landed in this run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'shared_correctness_fixture_selectors_resolve_published_paths or canonical_published_subset_selectors_keep_explicit_membership_contract or declared_correctness_fixture_selectors_match_registry_keys or declared_nondefault_correctness_fixture_selectors_are_parametrized_once'` passes (`23 passed, 287 deselected`);
+  - `bash -lc "! rg -n '^CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS =' tests/python/test_fixture_parity_support_contract.py"` now succeeds because the mirrored table is gone; and
+  - the adjacent benchmark-side mirror removal already landed in `RBR-0885`, so this run closes the matching correctness-side follow-on rather than opening a new cleanup lane.
+
+## Completion
+- Removed `CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS` from `tests/python/test_fixture_parity_support_contract.py` and kept the parser-parity and public-surface membership contract asserted directly through `correctness._NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES`.
+- Preserved the published-full-suite ordering check by asserting the selected canonical subset still resolves in published inventory order before matching the live selector registry and resolved fixture paths.
+- Verified with the task-required focused pytest command, the direct Python registry assertions for the parser/public selectors, and the grep absence check for the deleted mirrored table.

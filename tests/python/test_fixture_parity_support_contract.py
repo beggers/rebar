@@ -258,25 +258,6 @@ def _write_bundle_loader_contract_duplicate_fixture_module(
     )
 
 
-CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS = (
-    pytest.param(
-        PARSER_PARITY_FIXTURE_SELECTOR,
-        (
-            "parser_matrix.py",
-            "conditional_group_exists_assertion_diagnostics.py",
-        ),
-        id=PARSER_PARITY_FIXTURE_SELECTOR,
-    ),
-    pytest.param(
-        PUBLIC_SURFACE_FIXTURE_SELECTOR,
-        (
-            "public_api_surface.py",
-            "exported_symbol_surface.py",
-            "pattern_object_surface.py",
-        ),
-        id=PUBLIC_SURFACE_FIXTURE_SELECTOR,
-    ),
-)
 def _load_published_fixture_bundle(
     fixture_path: pathlib.Path,
     *,
@@ -665,13 +646,21 @@ def test_shared_correctness_fixture_selectors_resolve_published_paths(
 
 
 @pytest.mark.parametrize(
-    ("selector", "expected_filenames"),
-    CANONICAL_PUBLISHED_SUBSET_SELECTOR_EXPECTATIONS,
+    "selector",
+    (
+        PARSER_PARITY_FIXTURE_SELECTOR,
+        PUBLIC_SURFACE_FIXTURE_SELECTOR,
+    ),
+    ids=lambda selector: selector,
 )
 def test_canonical_published_subset_selectors_keep_explicit_membership_contract(
     selector: str,
-    expected_filenames: tuple[str, ...],
 ) -> None:
+    expected_filenames = (
+        correctness._NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES[
+            selector
+        ]
+    )
     published_full_suite_paths = select_correctness_fixture_paths(
         PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
     )
