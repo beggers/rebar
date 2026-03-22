@@ -2289,7 +2289,7 @@ PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
 
 
 def _module_keyword_direct_signature(
-    case: ModuleKeywordCallCase,
+    case: ModuleKeywordCallCase | ModuleKeywordErrorCase,
 ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
     pattern, *args = case.args
     return (
@@ -2310,19 +2310,6 @@ def _module_keyword_fixture_signature(
         tuple(case.args),
         _workflow_keyword_kwargs_signature(case.kwargs),
         case.text_model,
-    )
-
-
-def _module_keyword_error_direct_signature(
-    case: ModuleKeywordErrorCase,
-) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-    pattern, *args = case.args
-    return (
-        case.helper,
-        pattern,
-        tuple(args),
-        _workflow_keyword_kwargs_signature(case.kwargs),
-        "bytes" if isinstance(pattern, bytes) else "str",
     )
 
 
@@ -2375,7 +2362,7 @@ def _published_module_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
     }
     return tuple(
         fixture_cases_by_signature[
-            _module_keyword_error_direct_signature(direct_cases_by_id[case_id])
+            _module_keyword_direct_signature(direct_cases_by_id[case_id])
         ]
         for case_id in published_direct_case_ids
     )
@@ -4730,21 +4717,10 @@ def test_module_workflow_surface_publishes_module_positional_indexlike_slice_fro
 
 def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases(
 ) -> None:
-    def direct_signature(
-        case: ModuleKeywordErrorCase,
-    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-        pattern, *args = case.args
-        return (
-            case.helper,
-            pattern,
-            tuple(args),
-            _workflow_keyword_kwargs_signature(case.kwargs),
-            "bytes" if isinstance(pattern, bytes) else "str",
-        )
-
     published_fixture_cases = _published_module_keyword_error_fixture_cases()
     direct_cases_by_signature = {
-        direct_signature(case): case for case in MODULE_KEYWORD_ERROR_CASES
+        _module_keyword_direct_signature(case): case
+        for case in MODULE_KEYWORD_ERROR_CASES
     }
     selected_direct_cases = tuple(
         direct_cases_by_signature[
