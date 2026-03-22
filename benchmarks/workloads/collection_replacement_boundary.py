@@ -2143,6 +2143,43 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-unexpected-keyword-warm-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "'missing' is an invalid keyword argument for sub()"
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "literal",
+        "keyword",
+        "unexpected-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "literal-text",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.sub helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-subn-count-indexlike-positional-warm-str",
       "bucket": "pattern-subn",
       "family": "module",
@@ -2353,6 +2390,43 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes precompiled Pattern.subn helper path that keeps the bounded duplicate count= keyword rejection on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-unexpected-keyword-warm-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abc",
+      "flags": 0,
+      "kwargs": {
+        "missing": 1
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "'missing' is an invalid keyword argument for subn()"
+      },
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "keyword",
+        "unexpected-keyword",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "unexpected-keyword-error"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.subn helper path that keeps the bounded unexpected keyword rejection on the shared collection/replacement benchmark surface."
       ]
     },
     {

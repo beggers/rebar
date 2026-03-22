@@ -475,6 +475,9 @@ _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION = {
 _PATTERN_HELPER_KEYWORD_OPERATIONS = frozenset(
     _PATTERN_HELPER_KEYWORD_FIELDS_BY_OPERATION
 )
+_PATTERN_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS = frozenset(
+    {"pattern.sub", "pattern.subn"}
+)
 _PATTERN_HELPER_DUPLICATE_KEYWORD_POSITIONAL_LIMITS = {
     "pattern.split": 2,
     "pattern.sub": 3,
@@ -577,8 +580,12 @@ def normalize_keyword_workload_arguments(
     if unknown_keys:
         if (
             expected_exception is not None
-            and operation
-            in _MODULE_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS
+            and (
+                operation
+                in _MODULE_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS
+                or operation
+                in _PATTERN_HELPER_EXPECTED_EXCEPTION_KEYWORD_PASSTHROUGH_OPERATIONS
+            )
         ):
             return {
                 key: normalize_numeric_workload_argument(

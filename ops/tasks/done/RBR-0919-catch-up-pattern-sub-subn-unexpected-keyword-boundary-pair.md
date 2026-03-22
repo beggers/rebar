@@ -1,8 +1,9 @@
 # RBR-0919: Catch up the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Extend the published Python-path `collection_replacement_boundary.py` benchmark surface with the exact direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword rejection pair that `RBR-0916` just published on the shared `module-workflow-surface` correctness path, reusing the existing direct-`Pattern` collection/replacement keyword owner route instead of widening correctness again, inventing another benchmark family, or jumping ahead to direct `Pattern.split()` duplicate-`maxsplit=` publication.
@@ -64,3 +65,15 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... re.compile(\"abc\").sub(\"x\", \"abc\", missing=1) ... rebar.compile(\"abc\").sub(\"x\", \"abc\", missing=1) ... re.compile(b\"abc\").subn(b\"x\", b\"abc\", missing=1) ... rebar.compile(b\"abc\").subn(b\"x\", b\"abc\", missing=1) ... PY` confirms CPython and `rebar` now agree on the exact direct `TypeError.args`: `(\"'missing' is an invalid keyword argument for sub()\",)` and `(\"'missing' is an invalid keyword argument for subn()\",)`;
   - `rg -n 'pattern-sub-unexpected-keyword|pattern-subn-unexpected-keyword' benchmarks/workloads tests/benchmarks reports/benchmarks` returned no matches in this run, so the exact direct-`Pattern` benchmark workloads are still absent; and
   - `reports/benchmarks/latest.py` currently reports `878` total / `878` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 870` and `REPORT["manifests"]["collection-replacement-boundary"]` still at `70` selected workloads / `70` measured / `0` known gaps.
+
+## Completion
+- Added the exact direct-`Pattern` benchmark rows to `benchmarks/workloads/collection_replacement_boundary.py`: `pattern-sub-unexpected-keyword-warm-str` immediately after `pattern-sub-duplicate-count-keyword-warm-str`, and `pattern-subn-unexpected-keyword-warm-bytes` immediately after `pattern-subn-duplicate-count-keyword-warm-bytes`, both pinned to the landed direct `TypeError` spellings from `RBR-0916`.
+- Extended the shared `collection-replacement-keyword` benchmark-to-correctness mapping in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with anchors `workflow-pattern-sub-unexpected-keyword-str` and `workflow-pattern-subn-unexpected-keyword-bytes`, moved the direct `Pattern` keyword measured-row expectation from `13` to `15`, and updated the combined publication expectation to `880` total / `880` measured / `0` known gaps with `872` module workloads.
+- Tightened the adjacent benchmark harness validation in `python/rebar_harness/benchmarks.py` just enough to let direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword rows with expected exceptions survive manifest/payload validation, and added narrow benchmark-side regression coverage so those direct error rows keep round-tripping, materializing `kwargs.missing` at callback time, and matching CPython’s exact exception text.
+- Republished `reports/benchmarks/latest.py`; the tracked report file remains in the diff and now reports `collection-replacement-boundary` at `72` selected / `72` measured / `0` known gaps, with the combined summary at `880` total / `880` measured / `0` known gaps and `REPORT["summary"]["module_workloads"] == 872`. The new `pattern-sub-unexpected-keyword-warm-str` and `pattern-subn-unexpected-keyword-warm-bytes` rows both publish real `rebar` timings with `status == "measured"`.
+- Updated `ops/state/backlog.md` and `ops/state/current_status.md` so the tracked frontier no longer claims `RBR-0919` is still active after this benchmark publication landed.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-unexpected-keyword-str or pattern-subn-unexpected-keyword-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_keyword or collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0919-pattern-sub-subn-unexpected-keyword-boundary-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 878/878 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword publication landed. |
-| Work queue | `0` ready, `0` in progress, `920` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 880/880 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword benchmark publication landed on the Python-path `collection_replacement_boundary.py` surface. |
+| Work queue | `0` ready, `0` in progress, `922` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 878/878 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1532 cases across 114 manifests, with all 1532 passing in the current slice; the benchmark publication covers 880/880 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `878` |
-| Workloads with real `rebar` timings | `878` |
+| Published workloads | `880` |
+| Workloads with real `rebar` timings | `880` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword publication landed.
+- No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword benchmark publication landed on the Python-path `collection_replacement_boundary.py` surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 878 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 880 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today

@@ -3519,7 +3519,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="pattern.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 13)
+        self.assertEqual(len(expected_measured_workload_ids), 15)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5180,11 +5180,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 878,
-                "module_workloads": 870,
+                "measured_workloads": 880,
+                "module_workloads": 872,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 878,
+                "total_workloads": 880,
             },
         )
 
@@ -6473,10 +6473,17 @@ def _collection_replacement_has_expected_unexpected_keyword_error(
     if expected_exception is None or expected_exception.get("type") != "TypeError":
         return False
     message_substring = expected_exception.get("message_substring")
-    return (
-        isinstance(message_substring, str)
-        and "unexpected keyword argument 'missing'" in message_substring
-    )
+    if not isinstance(message_substring, str):
+        return False
+    if "unexpected keyword argument 'missing'" in message_substring:
+        return True
+    if workload.operation.startswith("pattern."):
+        helper_name = workload.operation.removeprefix("pattern.")
+        return (
+            message_substring
+            == f"'missing' is an invalid keyword argument for {helper_name}()"
+        )
+    return False
 
 
 def _module_workflow_positional_args_signature(
@@ -8326,6 +8333,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-sub-duplicate-count-keyword-warm-str": (
                     "workflow-pattern-sub-duplicate-count-keyword-str",
                 ),
+                "pattern-sub-unexpected-keyword-warm-str": (
+                    "workflow-pattern-sub-unexpected-keyword-str",
+                ),
                 "pattern-subn-count-keyword-warm-str": (
                     "workflow-pattern-subn-count-keyword-str",
                 ),
@@ -8340,6 +8350,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "pattern-subn-duplicate-count-keyword-warm-bytes": (
                     "workflow-pattern-subn-duplicate-count-keyword-bytes",
+                ),
+                "pattern-subn-unexpected-keyword-warm-bytes": (
+                    "workflow-pattern-subn-unexpected-keyword-bytes",
                 ),
             },
         ),
@@ -11208,6 +11221,27 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                 ],
             },
             {
+                "id": "pattern-sub-unexpected-keyword-contract-str",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "'missing' is an invalid keyword argument for sub()",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.sub unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-subn-count-keyword-contract-str",
                 "bucket": "pattern-subn",
                 "family": "module",
@@ -11242,6 +11276,28 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
                 ],
             },
             {
+                "id": "pattern-subn-unexpected-keyword-contract-bytes",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "missing": 1,
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "'missing' is an invalid keyword argument for subn()",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.subn unexpected-keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
                 "id": "pattern-split-maxsplit-bool-keyword-contract-str",
                 "bucket": "pattern-split",
                 "family": "module",
@@ -11270,8 +11326,10 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         split_workload,
         sub_workload,
         sub_bool_workload,
+        sub_missing_workload,
         subn_workload,
         subn_bool_workload,
+        subn_missing_workload,
         split_bool_workload,
     ) = load_manifest(manifest_path).workloads
 
@@ -11299,6 +11357,18 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     assert materialized_sub_bool_kwargs["count"] is False
     assert run_benchmark_workload_with_cpython(round_tripped_sub_bool) == b"xx"
 
+    assert sub_missing_workload.kwargs == {"missing": 1}
+    round_tripped_sub_missing = workload_from_payload(
+        workload_to_payload(sub_missing_workload)
+    )
+    assert round_tripped_sub_missing.kwargs == {"missing": 1}
+    assert round_tripped_sub_missing.keyword_arguments() == {"missing": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("'missing' is an invalid keyword argument for sub()"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_sub_missing)
+
     assert subn_workload.kwargs == {"count": 1}
     round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
     assert round_tripped_subn.kwargs == {"count": 1}
@@ -11319,6 +11389,18 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         "xabc",
         1,
     )
+
+    assert subn_missing_workload.kwargs == {"missing": 1}
+    round_tripped_subn_missing = workload_from_payload(
+        workload_to_payload(subn_missing_workload)
+    )
+    assert round_tripped_subn_missing.kwargs == {"missing": 1}
+    assert round_tripped_subn_missing.keyword_arguments() == {"missing": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("'missing' is an invalid keyword argument for subn()"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_subn_missing)
 
     assert split_bool_workload.kwargs == {"maxsplit": True}
     assert type(split_bool_workload.kwargs["maxsplit"]) is bool
@@ -11675,6 +11757,23 @@ def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_c
         re.purge()
 
 
+def _run_cpython_pattern_helper_keyword_error_workload(workload: Workload) -> object:
+    helper_name = workload.operation.removeprefix("pattern.")
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+
+    if workload.operation in {"pattern.sub", "pattern.subn"}:
+        return getattr(compiled_pattern, helper_name)(
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+            **dict(workload.kwargs),
+        )
+
+    raise AssertionError(
+        "unexpected pattern helper keyword-error workload operation "
+        f"{workload.operation!r}"
+    )
+
+
 @pytest.mark.parametrize(
     (
         "operation",
@@ -11790,6 +11889,93 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
         expected_result=expected_result,
         expected_field_names=expected_field_names,
     )
+
+
+@pytest.mark.parametrize(
+    ("operation", "text_model", "expected_exception"),
+    (
+        pytest.param(
+            "pattern.sub",
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "'missing' is an invalid keyword argument for sub()",
+            },
+            id="pattern-sub-unexpected-keyword",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "'missing' is an invalid keyword argument for subn()",
+            },
+            id="pattern-subn-unexpected-keyword",
+        ),
+    ),
+)
+def test_pattern_helper_collection_replacement_unexpected_keyword_callbacks_match_cpython_exceptions(
+    monkeypatch,
+    operation: str,
+    text_model: str,
+    expected_exception: dict[str, str],
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-pattern-collection-replacement-keyword-contract",
+            "workload_id": f"{operation}-unexpected-keyword-materialization-contract",
+            "bucket": operation.replace("pattern.", "pattern-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": "abc",
+            "replacement": "x",
+            "expected_exception": expected_exception,
+            "flags": 0,
+            "count": 0,
+            "maxsplit": 0,
+            "kwargs": {"missing": 1},
+            "text_model": text_model,
+            "cache_mode": "warm",
+            "timing_scope": "pattern-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        for _ in range(2):
+            with pytest.raises(TypeError) as expected_error:
+                _run_cpython_pattern_helper_keyword_error_workload(workload)
+            with pytest.raises(TypeError) as observed_error:
+                callback()
+
+            assert str(observed_error.value) == str(expected_error.value)
+
+        assert observed_field_names == ["kwargs.missing", "kwargs.missing"]
+    finally:
+        re.purge()
 
 
 @pytest.mark.parametrize(
