@@ -1061,21 +1061,30 @@ COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
 (COLLECTION_REPLACEMENT_BUNDLE,) = load_published_fixture_bundles(
     COLLECTION_REPLACEMENT_FIXTURE_PATHS
 )
-PUBLISHED_COLLECTION_FIXTURE_CASES = tuple(
-    case
-    for case in COLLECTION_REPLACEMENT_BUNDLE.cases
-    if case.helper in _COLLECTION_FRONTIER_HELPERS
-)
-PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES = tuple(
-    case
-    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
-    if not _is_collection_type_error_fixture_case(case)
-)
-PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES = tuple(
-    case
-    for case in PUBLISHED_COLLECTION_FIXTURE_CASES
-    if _is_collection_type_error_fixture_case(case)
-)
+
+
+def _published_collection_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in COLLECTION_REPLACEMENT_BUNDLE.cases
+        if case.helper in _COLLECTION_FRONTIER_HELPERS
+    )
+
+
+def _published_collection_success_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in _published_collection_fixture_cases()
+        if not _is_collection_type_error_fixture_case(case)
+    )
+
+
+def _published_collection_type_error_fixture_cases() -> tuple[FixtureCase, ...]:
+    return tuple(
+        case
+        for case in _published_collection_fixture_cases()
+        if _is_collection_type_error_fixture_case(case)
+    )
 
 
 def _published_module_collection_cases_for_helper(
@@ -1083,7 +1092,7 @@ def _published_module_collection_cases_for_helper(
 ) -> tuple[CollectionModuleCase, ...]:
     return tuple(
         _module_collection_case_from_fixture(case)
-        for case in PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES
+        for case in _published_collection_success_fixture_cases()
         if case.operation == "module_call" and case.helper == helper
     )
 
@@ -1093,7 +1102,7 @@ def _published_pattern_collection_cases_for_helper(
 ) -> tuple[CollectionPatternCase, ...]:
     return tuple(
         _pattern_collection_case_from_fixture(case)
-        for case in PUBLISHED_COLLECTION_SUCCESS_FIXTURE_CASES
+        for case in _published_collection_success_fixture_cases()
         if case.operation == "pattern_call" and case.helper == helper
     )
 
@@ -6276,7 +6285,7 @@ def test_literal_collection_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         COLLECTION_REPLACEMENT_BUNDLE,
         selected_case_ids=tuple(
-            case.case_id for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+            case.case_id for case in _published_collection_fixture_cases()
         ),
         expected_uncovered_case_ids=tuple(
             case.case_id
@@ -6315,17 +6324,17 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
             ),
             "module-type-error": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES
+                for case in _published_collection_type_error_fixture_cases()
                 if case.operation == "module_call"
             ),
             "pattern-type-error": frozenset(
                 case.case_id
-                for case in PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES
+                for case in _published_collection_type_error_fixture_cases()
                 if case.operation == "pattern_call"
             ),
         },
         selected_case_ids=tuple(
-            case.case_id for case in PUBLISHED_COLLECTION_FIXTURE_CASES
+            case.case_id for case in _published_collection_fixture_cases()
         ),
         coverage_label="literal collection direct-test case-id buckets",
     )
@@ -7203,7 +7212,7 @@ def test_literal_match_matrix_pattern_helpers_match_cpython_with_windows(
 
 @pytest.mark.parametrize(
     "case",
-    PUBLISHED_COLLECTION_TYPE_ERROR_FIXTURE_CASES,
+    _published_collection_type_error_fixture_cases(),
     ids=lambda case: case.case_id,
 )
 def test_collection_helper_type_errors_match_cpython(
