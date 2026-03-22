@@ -3,7 +3,7 @@ from __future__ import annotations
 from array import array
 from collections.abc import Callable
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from itertools import product
 import json
 import os
@@ -494,6 +494,7 @@ class PatternHelperErrorCase:
     helper: str
     pattern: str | bytes
     args: tuple[object, ...]
+    kwargs: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -766,7 +767,7 @@ def _invoke_bound_pattern_helper(
     pattern: object,
     case: PatternHelperErrorCase,
 ) -> object:
-    return getattr(pattern, case.helper)(*case.args)
+    return getattr(pattern, case.helper)(*case.args, **case.kwargs)
 
 
 _LITERAL_COLLECTION_MATRIX_ALPHABET = "ab"
@@ -1291,6 +1292,20 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
         helper="subn",
         pattern=b"abc",
         args=(b"x", "zabczz"),
+    ),
+    PatternHelperErrorCase(
+        case_id="pattern-sub-duplicate-count-keyword-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abc", 1),
+        kwargs={"count": 1},
+    ),
+    PatternHelperErrorCase(
+        case_id="pattern-subn-duplicate-count-keyword-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abc", 1),
+        kwargs={"count": 1},
     ),
 )
 COLLECTION_UNSUPPORTED_CASES = (

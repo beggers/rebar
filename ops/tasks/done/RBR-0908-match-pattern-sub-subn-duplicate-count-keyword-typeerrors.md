@@ -1,8 +1,9 @@
 # RBR-0908: Match direct `Pattern.sub()` / `Pattern.subn()` duplicate `count=` keyword `TypeError`s
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Land the missing CPython-compatible duplicate-`count=` `TypeError` behavior for the exact direct `Pattern.sub()` / `Pattern.subn()` pair adjacent to `RBR-0906`, so the next correctness-publication slice can reuse the existing direct bound-pattern replacement owner path instead of publishing against mismatched diagnostics.
@@ -46,3 +47,12 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-sub-duplicate-count-keyword-str or compiled-pattern-subn-duplicate-count-keyword-bytes or compiled-pattern-sub-unexpected-keyword-str or compiled-pattern-subn-unexpected-keyword-bytes'` passed in this run (`8 passed, 1234 deselected`), so the adjacent compiled-pattern-first-argument owner path is already green and does not need to be reopened here;
   - direct publication probes in this run confirmed there are still no `workflow-pattern-sub-duplicate-...` or `workflow-pattern-subn-duplicate-...` correctness rows and no direct bound-pattern duplicate-keyword benchmark rows, so publication and benchmark follow-ons should wait until this behavior matches CPython first; and
   - `python/rebar/__init__.py` currently defines `Pattern.sub()` / `Pattern.subn()` with fixed Python signatures, which is why Python-level argument binding leaks the wrong duplicate-keyword diagnostics before the shared replacement logic runs.
+
+## Completion
+- Patched `python/rebar/__init__.py` so direct bound `Pattern.sub()` / `Pattern.subn()` calls resolve `count` through a tiny manual argument shim before the replacement logic runs, producing CPython-matching duplicate-`count=` `TypeError.args` for the exact direct `sub()` / `subn()` pair while leaving the existing success-path replacement execution intact.
+- Extended `tests/python/test_module_workflow_parity_suite.py` on the shared bound-pattern error owner path by teaching `PatternHelperErrorCase` and `_invoke_bound_pattern_helper(...)` to carry keyword arguments, then added `pattern-sub-duplicate-count-keyword-str` and `pattern-subn-duplicate-count-keyword-bytes`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-duplicate-count-keyword-str or pattern-subn-duplicate-count-keyword-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bound_pattern_helper_type_errors_match_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-sub-duplicate-count-keyword-str or compiled-pattern-subn-duplicate-count-keyword-bytes'`
+- Published correctness and benchmark artifacts were intentionally left unchanged in this run; `reports/correctness/latest.py` and `reports/benchmarks/latest.py` were not regenerated.

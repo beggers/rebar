@@ -163,6 +163,7 @@ _NATIVE_CALLABLE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
     }
 )
 _MATCH_FALLBACK_UNSUPPORTED = object()
+_PATTERN_REPLACEMENT_COUNT_UNSET = object()
 
 
 def _raise_placeholder(helper_name: str) -> object:
@@ -279,7 +280,20 @@ class Pattern:
             return self._raise_placeholder("finditer")
         return _run_literal_finditer(self, string, pos=pos, endpos=endpos)
 
-    def sub(self, repl: object, string: object, count: int = 0) -> object:
+    def sub(
+        self,
+        repl: object,
+        string: object,
+        *args: object,
+        count: object = _PATTERN_REPLACEMENT_COUNT_UNSET,
+        **kwargs: object,
+    ) -> object:
+        count = _resolve_bound_pattern_replacement_count(
+            "sub",
+            args,
+            count=count,
+            kwargs=kwargs,
+        )
         compatible_replacement = _ensure_literal_replacement_payload(
             self.pattern,
             repl,
@@ -294,7 +308,20 @@ class Pattern:
             return self._raise_placeholder("sub")
         return _run_literal_sub(self, repl, string, count=count)
 
-    def subn(self, repl: object, string: object, count: int = 0) -> object:
+    def subn(
+        self,
+        repl: object,
+        string: object,
+        *args: object,
+        count: object = _PATTERN_REPLACEMENT_COUNT_UNSET,
+        **kwargs: object,
+    ) -> object:
+        count = _resolve_bound_pattern_replacement_count(
+            "subn",
+            args,
+            count=count,
+            kwargs=kwargs,
+        )
         compatible_replacement = _ensure_literal_replacement_payload(
             self.pattern,
             repl,
@@ -311,6 +338,41 @@ class Pattern:
 
 
 Pattern.__module__ = "re"
+
+
+def _resolve_bound_pattern_replacement_count(
+    method_name: str,
+    extra_args: tuple[object, ...],
+    *,
+    count: object,
+    kwargs: dict[str, object],
+) -> object:
+    if len(extra_args) > 1:
+        raise TypeError(
+            f"Pattern.{method_name}() takes from 3 to 4 positional arguments "
+            f"but {len(extra_args) + 3} were given"
+        )
+
+    if extra_args and count is not _PATTERN_REPLACEMENT_COUNT_UNSET:
+        raise TypeError(
+            f"{method_name}() takes at most 3 arguments "
+            f"({2 + len(extra_args) + 1 + len(kwargs)} given)"
+        )
+
+    if kwargs:
+        unexpected_keyword = next(iter(kwargs))
+        raise TypeError(
+            f"Pattern.{method_name}() got an unexpected keyword argument "
+            f"{unexpected_keyword!r}"
+        )
+
+    if extra_args:
+        return extra_args[0]
+
+    if count is _PATTERN_REPLACEMENT_COUNT_UNSET:
+        return 0
+
+    return count
 
 
 class Match:
