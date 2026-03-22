@@ -32,7 +32,6 @@ from rebar_harness.correctness import (
 )
 from tests.conftest import PYTHON_SOURCE
 from tests.python import conftest as python_conftest
-from tests.python.conftest import _unsupported_backend_skip_reason
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     IndexLike as _IndexLike,
@@ -5298,56 +5297,63 @@ def test_match_behavior_supplemental_bytes_cases_cover_missing_module_paths() ->
     )
 
 
-def test_unsupported_backend_skip_reason_ignores_requests_without_callspec() -> None:
-    request = SimpleNamespace(node=SimpleNamespace())
+def test_regex_backend_fixture_ignores_requests_without_callspec() -> None:
+    request = SimpleNamespace(param="stdlib", node=SimpleNamespace())
 
-    assert _unsupported_backend_skip_reason(request, "rebar") is None
+    assert python_conftest.regex_backend.__wrapped__(request) == ("stdlib", re)
 
 
-def test_unsupported_backend_skip_reason_preserves_case_param_compatibility() -> None:
+def test_regex_backend_fixture_preserves_case_param_compatibility() -> None:
     request = _request_with_backend_params(
         case=BackendFixtureContractCase(
             unsupported_backends=("rebar",),
             unsupported_backend_reason="case-style reason",
         )
     )
+    request.param = "rebar"
 
-    assert _unsupported_backend_skip_reason(request, "rebar") == "case-style reason"
+    with pytest.raises(pytest.skip.Exception, match="case-style reason"):
+        python_conftest.regex_backend.__wrapped__(request)
 
 
-def test_unsupported_backend_skip_reason_supports_nonstandard_case_param_names() -> None:
+def test_regex_backend_fixture_supports_nonstandard_case_param_names() -> None:
     request = _request_with_backend_params(
         supplemental_case=BackendFixtureContractCase(
             unsupported_backends=("rebar",),
             unsupported_backend_reason="supplemental reason",
         )
     )
+    request.param = "rebar"
 
-    assert _unsupported_backend_skip_reason(request, "rebar") == "supplemental reason"
+    with pytest.raises(pytest.skip.Exception, match="supplemental reason"):
+        python_conftest.regex_backend.__wrapped__(request)
 
 
-def test_unsupported_backend_skip_reason_ignores_unrelated_params() -> None:
+def test_regex_backend_fixture_ignores_unrelated_params() -> None:
     request = _request_with_backend_params(
         text="abc",
         flags=0,
         supplemental_case=BackendFixtureContractCase(unsupported_backends=("stdlib",)),
     )
+    request.param = "rebar"
 
-    assert _unsupported_backend_skip_reason(request, "rebar") is None
+    assert python_conftest.regex_backend.__wrapped__(request) == ("rebar", rebar)
 
 
-def test_unsupported_backend_skip_reason_defaults_missing_reason() -> None:
+def test_regex_backend_fixture_defaults_missing_reason() -> None:
     request = _request_with_backend_params(
         supplemental_case=BackendFixtureContractCase(unsupported_backends=("rebar",))
     )
+    request.param = "rebar"
 
-    assert (
-        _unsupported_backend_skip_reason(request, "rebar")
-        == "rebar backend unsupported for this parity case"
-    )
+    with pytest.raises(
+        pytest.skip.Exception,
+        match="rebar backend unsupported for this parity case",
+    ):
+        python_conftest.regex_backend.__wrapped__(request)
 
 
-def test_unsupported_backend_skip_reason_rejects_multiple_param_sources() -> None:
+def test_regex_backend_fixture_rejects_multiple_param_sources() -> None:
     request = _request_with_backend_params(
         case=BackendFixtureContractCase(
             unsupported_backends=("rebar",),
@@ -5358,12 +5364,13 @@ def test_unsupported_backend_skip_reason_rejects_multiple_param_sources() -> Non
             unsupported_backend_reason="secondary reason",
         ),
     )
+    request.param = "rebar"
 
     with pytest.raises(
         AssertionError,
         match="multiple parametrized values declare unsupported_backends",
     ):
-        _unsupported_backend_skip_reason(request, "rebar")
+        python_conftest.regex_backend.__wrapped__(request)
 
 
 def test_workflow_keyword_kwargs_signature_distinguishes_bool_int_and_indexlike() -> None:
