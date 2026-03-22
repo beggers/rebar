@@ -172,6 +172,14 @@ class CaseIdBoundedPatternCase:
 
 
 @dataclass(frozen=True)
+class PatternTraceCase:
+    id: str
+    pattern: str | bytes
+    search_text: str | bytes
+    fullmatch_text: str | bytes
+
+
+@dataclass(frozen=True)
 class FixtureBundle:
     manifest: FixtureManifest
     cases: tuple[FixtureCase, ...]

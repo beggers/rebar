@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    PatternTraceCase as OpenEndedTraceCase,
     SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -62,14 +63,6 @@ OPEN_ENDED_BACKTRACKING_BRANCH_BYTES = {
     branch: text.encode("ascii")
     for branch, text in OPEN_ENDED_BACKTRACKING_BRANCH_TEXT.items()
 }
-
-
-@dataclass(frozen=True)
-class OpenEndedTraceCase:
-    id: str
-    pattern: str | bytes
-    search_text: str | bytes
-    fullmatch_text: str | bytes
 
 
 FIXTURE_BUNDLES = load_published_fixture_bundles(

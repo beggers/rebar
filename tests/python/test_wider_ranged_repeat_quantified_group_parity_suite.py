@@ -16,6 +16,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     BoundedPatternCase,
     FixtureBundle,
+    PatternTraceCase as BacktrackingTraceCase,
     SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -53,14 +54,6 @@ class DirectBytesFollowOnSpec:
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
-
-
-@dataclass(frozen=True)
-class BacktrackingTraceCase:
-    id: str
-    pattern: str
-    search_text: str
-    fullmatch_text: str
 
 FIXTURE_BUNDLES = load_published_fixture_bundles(
     select_correctness_fixture_paths(COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR)

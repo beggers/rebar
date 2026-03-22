@@ -15,6 +15,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
+    PatternTraceCase as BacktrackingTraceCase,
     SupplementalCase,
     WRAPPER_PAIRS,
     assert_direct_bytes_follow_on_bundle_routing,
@@ -43,14 +44,6 @@ BACKTRACKING_BRANCH_TEXT = {
 }
 ZERO_REPETITION_NO_MATCH_TEXT = "ad"
 OVERLAP_TAIL_NO_MATCH_TEXT = "abccd"
-
-
-@dataclass(frozen=True)
-class BacktrackingTraceCase:
-    id: str
-    pattern: str
-    search_text: str
-    fullmatch_text: str
 
 
 @dataclass(frozen=True)
