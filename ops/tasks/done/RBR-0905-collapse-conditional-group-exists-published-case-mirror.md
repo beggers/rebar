@@ -1,8 +1,9 @@
 # RBR-0905: Collapse the conditional-group-exists published-case mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `PUBLISHED_CASES` flattening tuple from `tests/python/test_conditional_group_exists_parity_suite.py`, so the conditional parity owner derives its case-id lookup surface directly from the canonical published fixture bundles it already loads.
@@ -47,3 +48,10 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py` currently passes (`530 passed in 0.45s`);
   - `bash -lc "! rg -n '^PUBLISHED_CASES = ' tests/python/test_conditional_group_exists_parity_suite.py"` currently fails exactly on the remaining mirror at line `64`; and
   - `tests/python/test_conditional_group_exists_parity_suite.py` already keeps `FIXTURE_BUNDLES` and `FIXTURE_BUNDLES_BY_MANIFEST_ID` as the canonical published conditional ownership path, so the flattened `PUBLISHED_CASES` tuple is a redundant second representation rather than missing owner data.
+
+## Completion
+- Removed the `PUBLISHED_CASES` tuple mirror from `tests/python/test_conditional_group_exists_parity_suite.py`.
+- Added `_iter_fixture_cases()` and rebuilt `CASES_BY_ID` directly from the live `FIXTURE_BUNDLES` stream, leaving the existing bundle slices and `MATCH_API_CASES` selection unchanged.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py`
+  - `bash -lc "! rg -n '^PUBLISHED_CASES = ' tests/python/test_conditional_group_exists_parity_suite.py"`

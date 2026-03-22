@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import product
 import re
@@ -61,7 +62,6 @@ FIXTURE_BUNDLES = load_published_fixture_bundles(
     select_correctness_fixture_paths(CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR),
     pattern_extractor=str_case_pattern,
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
     FIXTURE_BUNDLES
 )
@@ -71,7 +71,14 @@ QUANTIFIED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
 QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
     "conditional-group-exists-quantified-alternation-workflows"
 ]
-CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
+
+
+def _iter_fixture_cases() -> Iterator[FixtureCase]:
+    for bundle in FIXTURE_BUNDLES:
+        yield from bundle.cases
+
+
+CASES_BY_ID = {case.case_id: case for case in _iter_fixture_cases()}
 CONDITIONAL_VARIANT_ORDER = {
     "plain": 0,
     "no-else": 1,
