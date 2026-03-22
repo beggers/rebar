@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice.
+`RBR-0910` is the surviving follow-on on the shared direct bound-pattern replacement frontier, publishing the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair on the existing `module-workflow-surface` correctness path before Python-path benchmark catch-up or adjacent direct bound-pattern unexpected-keyword / `split()` duplicate-`maxsplit=` follow-ons reopen that replacement-keyword error slice.
 
 ## Ordered Work
-1. `RBR-0908` fixes `re.compile("abc").sub("x", "abc", 1, count=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, count=1)` in `python/rebar/__init__.py` and `tests/python/test_module_workflow_parity_suite.py`, reusing the existing direct bound-pattern replacement owner path so the next slice can publish or benchmark those diagnostics against real CPython-matching behavior instead of widening into unexpected-keyword or split-duplicate follow-ons first.
+1. `RBR-0910` publishes `re.compile("abc").sub("x", "abc", 1, count=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, count=1)` in `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, reusing the shared direct bound-pattern error owner path so the same replacement-keyword diagnostics reach the tracked correctness surface before Python-path benchmark catch-up or adjacent unexpected-keyword / split-duplicate follow-ons widen the frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
