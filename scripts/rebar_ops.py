@@ -2086,7 +2086,11 @@ def commit_link_label_summary(label: str) -> str:
     if "/" not in cleaned and not cleaned.startswith("test_"):
         return cleaned
 
-    label_path = Path(cleaned)
+    return commit_path_summary(cleaned)
+
+
+def commit_path_summary(path_text: str) -> str:
+    label_path = Path(path_text)
     stem = label_path.stem or label_path.name
     if stem == "__init__":
         stem = label_path.parent.name or stem
@@ -2095,6 +2099,19 @@ def commit_link_label_summary(label: str) -> str:
     if not stem:
         return cleaned
     return stem[:1].upper() + stem[1:]
+
+
+def summarize_commit_repo_paths(text: str) -> str:
+    pattern = re.compile(rf"{re.escape(str(REPO_ROOT))}/\S+")
+
+    def replace(match: re.Match[str]) -> str:
+        token = match.group(0)
+        path_text = token.rstrip(".,:;")
+        trailing = token[len(path_text) :]
+        summary = commit_path_summary(relpath(Path(path_text)))
+        return f"{summary}{trailing}"
+
+    return pattern.sub(replace, text)
 
 
 def commit_summary_text(text: str) -> str | None:
@@ -2129,6 +2146,7 @@ def commit_summary_text(text: str) -> str | None:
             lambda match: commit_link_label_summary(match.group(1)),
             line,
         )
+        line = summarize_commit_repo_paths(line)
         while True:
             emphasized = re.fullmatch(r"(\*\*|__|\*|_)(.+?)\1", line)
             if emphasized is None:

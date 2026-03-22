@@ -386,6 +386,35 @@ Verified with `python -m unittest`.
             "Removed one JSON blob and simplified the benchmark loader",
         )
 
+    def test_commit_summary_text_summarizes_leading_absolute_repo_path(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            f"""**Changed**
+- {REPO_ROOT / "tests" / "python" / "test_fixture_parity_support_contract.py"} no longer defines `_declared_nondefault_correctness_fixture_selectors()`.
+
+**Verified**
+- `pytest -q`
+"""
+        )
+
+        self.assertEqual(
+            summary,
+            "Fixture parity support contract no longer defines _declared_nondefault_correctness_fixture_selectors()",
+        )
+
+    def test_commit_summary_text_summarizes_inline_absolute_repo_paths(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            f"Updated {REPO_ROOT / 'README.md'} and {REPO_ROOT / 'ops' / 'state' / 'current_status.md'} for one reporting coherence fix."
+        )
+
+        self.assertEqual(
+            summary,
+            "Updated README and Current status for one reporting coherence fix",
+        )
+
     def test_owner_routed_task_claims_select_only_matching_owner(self) -> None:
         rebar_ops = load_rebar_ops_module()
         with tempfile.TemporaryDirectory() as temp_dir:
