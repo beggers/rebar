@@ -427,17 +427,23 @@ def _build_optional_group_conditional_branch_cases() -> (
 
 OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASES = _build_optional_group_conditional_branch_cases()
 
-MATCH_API_CASE_IDS = (
-    "conditional-group-exists-quantified-module-search-present-str",
-    "conditional-group-exists-quantified-module-fullmatch-absent-str",
-    "named-conditional-group-exists-quantified-module-search-present-str",
-    "named-conditional-group-exists-quantified-module-fullmatch-absent-str",
-    "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
-    "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
-    "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
-    "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
-)
-MATCH_API_CASES = tuple(CASES_BY_ID[case_id] for case_id in MATCH_API_CASE_IDS)
+def _select_match_api_cases() -> tuple[FixtureCase, ...]:
+    return (
+        tuple(
+            case
+            for case in QUANTIFIED_MODULE_CASES
+            if case.manifest_id == "conditional-group-exists-quantified-workflows"
+        )
+        + tuple(
+            case
+            for case in QUANTIFIED_PATTERN_CASES
+            if case.manifest_id
+            == "conditional-group-exists-quantified-alternation-workflows"
+        )
+    )
+
+
+MATCH_API_CASES = _select_match_api_cases()
 
 # Preserve the extra module.fullmatch mixed-iteration checks that only lived in
 # the superseded singleton files and were never promoted into scorecard fixtures.
@@ -678,7 +684,16 @@ def test_pattern_bounds_cases_stay_anchored_to_published_conditional_patterns() 
 
 
 def test_match_api_cases_remain_published_quantified_conditional_matches() -> None:
-    assert tuple(case.case_id for case in MATCH_API_CASES) == MATCH_API_CASE_IDS
+    assert tuple(case.case_id for case in MATCH_API_CASES) == (
+        "conditional-group-exists-quantified-module-search-present-str",
+        "conditional-group-exists-quantified-module-fullmatch-absent-str",
+        "named-conditional-group-exists-quantified-module-search-present-str",
+        "named-conditional-group-exists-quantified-module-fullmatch-absent-str",
+        "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+        "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+        "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+        "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+    )
     assert {case.text_model for case in MATCH_API_CASES} == {"str"}
 
 

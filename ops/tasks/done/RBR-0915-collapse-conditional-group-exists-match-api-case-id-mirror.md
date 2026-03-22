@@ -1,6 +1,6 @@
 # RBR-0915: Collapse the conditional-group-exists match-api case-id mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -75,3 +75,8 @@ PY`
 - This stays on the same owner-local mirror cleanup path as the recent conditional and grouped-capture work:
   - `RBR-0905` removed the broader `PUBLISHED_CASES` flattening mirror from this same conditional parity owner; and
   - `RBR-0911` removed direct test bucket wrapper mirrors from the grouped-capture owner instead of adding another shared abstraction layer.
+
+## Completion
+- Replaced the detached `MATCH_API_CASE_IDS` mirror in `tests/python/test_conditional_group_exists_parity_suite.py` with a tiny `_select_match_api_cases()` helper that rebuilds `MATCH_API_CASES` directly from the live `QUANTIFIED_MODULE_CASES` and `QUANTIFIED_PATTERN_CASES` slices.
+- Kept the match-api publication assertion structural-only by checking the live selected case ids inline against the existing ordered eight-case expectation.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py`, `bash -lc "! rg -n '^MATCH_API_CASE_IDS = \\(' tests/python/test_conditional_group_exists_parity_suite.py"`, and the task-local quantified-slice probe from Acceptance (`ok`).
