@@ -2467,6 +2467,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         kwargs={"count": _INDEX_TWO},
     ),
     CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-sub-count-bool-false-str",
+        helper="sub",
+        pattern="abc",
+        args=("x", "abcabc"),
+        kwargs={"count": False},
+    ),
+    CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-sub-count-bool-true-str",
         helper="sub",
         pattern="abc",
@@ -2493,6 +2500,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         pattern=b"abc",
         args=(b"x", b"abcabc"),
         kwargs={"count": False},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-subn-count-bool-true-bytes",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"abcabc"),
+        kwargs={"count": True},
     ),
 )
 COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
@@ -4361,6 +4375,50 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
             fixture_case.kwargs
         ) == _workflow_keyword_kwargs_signature(getattr(direct_case, "kwargs", {}))
         assert fixture_case.flags == getattr(direct_case, "flags", 0)
+
+
+def test_compiled_pattern_module_keyword_bool_count_direct_cases_cover_complements(
+) -> None:
+    assert {
+        (
+            case.case_id,
+            case.helper,
+            "bytes" if isinstance(case.pattern, bytes) else "str",
+            _workflow_keyword_kwargs_signature(case.kwargs),
+        )
+        for case in COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES
+        if case.helper in {"sub", "subn"}
+        and _workflow_keyword_kwargs_signature(case.kwargs)
+        in {
+            (("count", "bool", False),),
+            (("count", "bool", True),),
+        }
+    } == {
+        (
+            "compiled-pattern-sub-count-bool-false-str",
+            "sub",
+            "str",
+            (("count", "bool", False),),
+        ),
+        (
+            "compiled-pattern-sub-count-bool-true-str",
+            "sub",
+            "str",
+            (("count", "bool", True),),
+        ),
+        (
+            "compiled-pattern-subn-count-bool-false-bytes",
+            "subn",
+            "bytes",
+            (("count", "bool", False),),
+        ),
+        (
+            "compiled-pattern-subn-count-bool-true-bytes",
+            "subn",
+            "bytes",
+            (("count", "bool", True),),
+        ),
+    }
 
 
 def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:
