@@ -4774,6 +4774,20 @@ def test_finditer_parity_helper_rejects_match_count_drift() -> None:
         )
 
 
+def test_finditer_parity_helper_rejects_extra_match_after_shared_prefix() -> None:
+    matches = tuple(re.finditer("abc", "abcabc"))
+
+    with pytest.raises(
+        AssertionError,
+        match="stub-backend finditer yielded a different number of matches than CPython",
+    ):
+        assert_finditer_parity(
+            "stub-backend",
+            iter(matches),
+            iter(matches[:1]),
+        )
+
+
 def test_placeholder_message_contains_accepts_substring_match() -> None:
     fixture_parity_support.assert_placeholder_message_contains(
         NotImplementedError("native helper placeholder search"),
@@ -4835,3 +4849,25 @@ def test_match_result_parity_accepts_shared_bytes_no_match_paths(
     assert observed is None
     assert expected is None
     assert_match_result_parity(backend_name, observed, expected)
+
+
+def test_match_result_parity_rejects_unexpected_match_when_cpython_has_none() -> None:
+    with pytest.raises(AssertionError):
+        assert_match_result_parity(
+            "stub-backend",
+            re.search("abc", "abc"),
+            None,
+        )
+
+
+def test_match_result_parity_rejects_missing_match_when_cpython_matches() -> None:
+    expected = re.search("abc", "abc")
+
+    assert expected is not None
+
+    with pytest.raises(AssertionError):
+        assert_match_result_parity(
+            "stub-backend",
+            None,
+            expected,
+        )
