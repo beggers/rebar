@@ -2926,6 +2926,58 @@ def test_selected_fixture_bundle_contract_supports_expected_case_ids_and_fixture
     )
 
 
+def test_selected_fixture_bundle_preserves_explicit_expected_case_id_metadata(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    selected_case_ids = (
+        "bundle-loader-contract-pattern-search-str",
+        "bundle-loader-contract-compile-str",
+    )
+    explicit_expected_case_ids = frozenset(selected_case_ids)
+
+    bundle = build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=selected_case_ids,
+        pattern_extractor=str_case_pattern,
+        expected_case_ids=explicit_expected_case_ids,
+    )
+
+    assert bundle.expected_case_ids is explicit_expected_case_ids
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=str_path,
+        expected_ordered_case_ids=selected_case_ids,
+    )
+
+
+def test_selected_fixture_bundle_preserves_explicit_expected_text_model_metadata(
+    tmp_path: pathlib.Path,
+) -> None:
+    _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    selected_case_ids = (
+        "bundle-loader-contract-mixed-pattern-fullmatch-bytes",
+        "bundle-loader-contract-mixed-module-search-str",
+    )
+    explicit_expected_text_models = frozenset({"bytes", "str"})
+
+    bundle = build_selected_fixture_bundle(
+        mixed_path,
+        selected_case_ids=selected_case_ids,
+        pattern_extractor=case_pattern,
+        expected_text_models=explicit_expected_text_models,
+    )
+
+    assert bundle.expected_text_models is explicit_expected_text_models
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=mixed_path,
+        expected_ordered_case_ids=selected_case_ids,
+    )
+
+
 def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_field(
     tmp_path: pathlib.Path,
 ) -> None:
