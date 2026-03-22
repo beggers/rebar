@@ -2402,6 +2402,40 @@ WORKFLOW_INDEXLIKE_INVOCATION_CASES = (
     *WORKFLOW_KEYWORD_NUMERIC_COERCION_CASES,
     *WORKFLOW_POSITIONAL_INDEXLIKE_COERCION_CASES,
 )
+# Keep the published compiled-pattern keyword rows representative, then use a
+# tiny differential matrix here to prove the broader coercion contract stays in
+# lockstep with CPython.
+COMPILED_PATTERN_MODULE_KEYWORD_NUMERIC_COERCION_CASES = (
+    WorkflowNumericCoercionCase(
+        case_id="compiled-pattern-module-split-maxsplit-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.split(
+            regex_api.compile(b"abc"),
+            b"abcabcabc",
+            maxsplit=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="compiled-pattern-module-sub-count-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.sub(
+            regex_api.compile(b"abc"),
+            b"x",
+            b"abcabcabc",
+            count=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
+        case_id="compiled-pattern-module-subn-count-keyword-coercion",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.subn(
+            regex_api.compile("abc"),
+            "x",
+            "abcabcabc",
+            count=value,
+        ),
+    ),
+)
 MODULE_KEYWORD_ERROR_CASES = (
     ModuleKeywordErrorCase(
         case_id="module-search-duplicate-flags-keyword",
@@ -5691,6 +5725,81 @@ def test_compiled_pattern_module_keyword_argument_calls_match_cpython(
         return
 
     assert_value_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_KEYWORD_NUMERIC_COERCION_CASES,
+    ids=lambda case: case.case_id,
+)
+@pytest.mark.parametrize("value", WORKFLOW_NUMERIC_COERCION_VALUES)
+def test_compiled_pattern_module_keyword_numeric_coercion_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: WorkflowNumericCoercionCase,
+    value: object,
+) -> None:
+    backend_name, backend = regex_backend
+    observed = case.call(backend, value)
+    expected = case.call(re, value)
+
+    _assert_workflow_numeric_coercion_result_parity(
+        backend_name,
+        observed,
+        expected,
+        result_kind=case.result_kind,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_KEYWORD_NUMERIC_COERCION_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_compiled_pattern_module_keyword_indexlike_arguments_call___index___once(
+    regex_backend: tuple[str, object],
+    case: WorkflowNumericCoercionCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_value = _RecordingIndexLike()
+    expected_value = _RecordingIndexLike()
+
+    observed = case.call(backend, observed_value)
+    expected = case.call(re, expected_value)
+
+    _assert_workflow_numeric_coercion_result_parity(
+        backend_name,
+        observed,
+        expected,
+        result_kind=case.result_kind,
+    )
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_KEYWORD_NUMERIC_COERCION_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_compiled_pattern_module_keyword_indexlike_exceptions_propagate_unchanged(
+    regex_backend: tuple[str, object],
+    case: WorkflowNumericCoercionCase,
+) -> None:
+    _, backend = regex_backend
+    observed_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for {case.case_id}")
+    )
+    expected_value = _RecordingIndexLike(
+        error=_IndexLikeBoomError(f"indexlike boom for {case.case_id}")
+    )
+
+    observed_error = _capture_error(lambda: case.call(backend, observed_value))
+    expected_error = _capture_error(lambda: case.call(re, expected_value))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+    assert observed_value.calls == 1
+    assert expected_value.calls == 1
 
 
 @pytest.mark.parametrize(
