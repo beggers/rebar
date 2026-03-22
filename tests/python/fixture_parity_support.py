@@ -233,36 +233,6 @@ class FixtureBundle:
         return self.manifest.manifest_id
 
 
-def build_fixture_bundle(
-    manifest: FixtureManifest,
-    cases: tuple[FixtureCase, ...],
-    *,
-    pattern_extractor: Callable[[FixtureCase], str | bytes] | None = None,
-    expected_patterns: frozenset[str | bytes] | None = None,
-    expected_operation_helper_counts: Counter[tuple[str, str | None]] | None = None,
-    expected_case_ids: frozenset[str] | None = None,
-    expected_text_models: frozenset[str] | None = None,
-) -> FixtureBundle:
-    if expected_patterns is None:
-        if pattern_extractor is None:
-            raise ValueError(
-                "pattern_extractor is required when expected_patterns is not provided"
-            )
-        expected_patterns = frozenset(pattern_extractor(case) for case in cases)
-    if expected_operation_helper_counts is None:
-        expected_operation_helper_counts = Counter(
-            (case.operation, case.helper) for case in cases
-        )
-    return FixtureBundle(
-        manifest=manifest,
-        cases=cases,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-        expected_case_ids=expected_case_ids,
-        expected_text_models=expected_text_models,
-    )
-
-
 def build_selected_fixture_bundle(
     fixture_path: pathlib.Path,
     *,
@@ -315,10 +285,13 @@ def build_selected_fixture_bundle(
             case.text_model or "str" for case in bundle_cases
         )
 
-    return build_fixture_bundle(
+    return FixtureBundle(
         manifest,
         bundle_cases,
-        pattern_extractor=pattern_extractor,
+        expected_patterns=frozenset(pattern_extractor(case) for case in bundle_cases),
+        expected_operation_helper_counts=Counter(
+            (case.operation, case.helper) for case in bundle_cases
+        ),
         expected_case_ids=expected_case_ids,
         expected_text_models=expected_text_models,
     )

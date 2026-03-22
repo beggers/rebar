@@ -47,7 +47,6 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     assert_value_parity,
     assert_valid_match_group_access_parity,
-    build_fixture_bundle,
     build_selected_fixture_bundle,
     case_pattern,
     case_replacement_argument,
@@ -398,51 +397,14 @@ def _paired_mixed_text_contract_bundle() -> FixtureBundle:
             args=[b"zzabczz"],
         ),
     )
-    return build_fixture_bundle(
-        manifest,
-        paired_cases,
-        pattern_extractor=case_pattern,
+    return FixtureBundle(
+        manifest=manifest,
+        cases=paired_cases,
+        expected_patterns=frozenset(case_pattern(case) for case in paired_cases),
+        expected_operation_helper_counts=Counter(
+            (case.operation, case.helper) for case in paired_cases
+        ),
         expected_text_models=frozenset({"bytes", "str"}),
-    )
-
-
-def test_build_fixture_bundle_derives_patterns_and_operation_counts_from_cases(
-    tmp_path: pathlib.Path,
-) -> None:
-    _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    manifest = load_fixture_manifest(mixed_path)
-    bundle_cases = (
-        manifest.cases[3],
-        manifest.cases[1],
-        manifest.cases[0],
-    )
-    expected_case_ids = frozenset(case.case_id for case in bundle_cases)
-
-    bundle = build_fixture_bundle(
-        manifest,
-        bundle_cases,
-        pattern_extractor=case_pattern,
-        expected_case_ids=expected_case_ids,
-        expected_text_models=frozenset({"bytes", "str"}),
-    )
-
-    assert bundle.manifest is manifest
-    assert bundle.cases == bundle_cases
-    assert bundle.expected_patterns == frozenset({r"a(bc|de){1,}d", rb"a(bc|de){1,}d"})
-    assert bundle.expected_operation_helper_counts == Counter(
-        {
-            ("pattern_call", "fullmatch"): 1,
-            ("module_call", "search"): 1,
-            ("compile", None): 1,
-        }
-    )
-    assert bundle.expected_case_ids == expected_case_ids
-    assert bundle.expected_text_models == frozenset({"bytes", "str"})
-    assert_fixture_bundle_contract(
-        bundle,
-        pattern_extractor=case_pattern,
-        expected_fixture_path=mixed_path,
-        expected_ordered_case_ids=tuple(case.case_id for case in bundle_cases),
     )
 
 
@@ -595,26 +557,6 @@ def test_assert_mixed_text_model_case_pairs_rejects_structural_drift(
         match=re.escape(expected_message),
     ):
         assert_mixed_text_model_case_pairs(drifted_bundle)
-
-
-def test_build_fixture_bundle_requires_pattern_extractor_without_explicit_patterns(
-    tmp_path: pathlib.Path,
-) -> None:
-    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    manifest = load_fixture_manifest(str_path)
-
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            "pattern_extractor is required when expected_patterns is not provided"
-        ),
-    ):
-        build_fixture_bundle(
-            manifest,
-            tuple(manifest.cases[:1]),
-        )
-
-
 SYNTHETIC_CASE_PATTERN = r"(?P<word>abc)"
 SYNTHETIC_PATTERN_HELPER_CASE = FixtureCase(
     case_id="synthetic-pattern-helper-case",
