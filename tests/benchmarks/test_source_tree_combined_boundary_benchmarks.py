@@ -15223,138 +15223,36 @@ def test_compiled_pattern_module_compile_keyword_callbacks_precompile_first_argu
     assert last_call[2:] == (case.kwargs_payload["flags"],)
 
 
-@dataclass(frozen=True)
-class CompiledPatternModuleBoundarySuccessCase:
-    id: str
-    operation: str
-    pattern: str
-    flags: int
-    cache_mode: str
-    haystack: str
-    text_model: str
-    expected_callback_result: object
-
-
 _VERBOSE_REGRESSION_PATTERN = (
     r"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $"
 )
 _VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
-_VERBOSE_REGRESSION_PATTERN_BYTES = _VERBOSE_REGRESSION_PATTERN.encode("latin-1")
-
-
-COMPILED_PATTERN_MODULE_BOUNDARY_LITERAL_SUCCESS_CASES = (
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-search-literal-warm-hit-str-compiled-pattern",
-        operation="module.search",
-        pattern="abc",
-        flags=0,
-        cache_mode="warm",
-        haystack="zabczz",
-        text_model="str",
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-match-literal-warm-hit-str-compiled-pattern",
-        operation="module.match",
-        pattern="abc",
-        flags=0,
-        cache_mode="warm",
-        haystack="abcdef",
-        text_model="str",
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
-        operation="module.fullmatch",
-        pattern="abc",
-        flags=0,
-        cache_mode="purged",
-        haystack="abc",
-        text_model="bytes",
-        expected_callback_result="module-result",
-    ),
-)
-
-
-COMPILED_PATTERN_MODULE_BOUNDARY_BOUNDED_WILDCARD_SUCCESS_CASES = (
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
-        operation="module.search",
-        pattern="a.c",
-        flags=2,
-        cache_mode="warm",
-        haystack="ABC",
-        text_model="str",
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
-        operation="module.match",
-        pattern="a.c",
-        flags=0,
-        cache_mode="warm",
-        haystack="abc",
-        text_model="str",
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
-        operation="module.fullmatch",
-        pattern="a.c",
-        flags=0,
-        cache_mode="purged",
-        haystack="abc",
-        text_model="str",
-        expected_callback_result="module-result",
-    ),
-)
-
-
-COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES = (
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
-        operation="module.search",
-        pattern=_VERBOSE_REGRESSION_PATTERN,
-        flags=_VERBOSE_REGRESSION_FLAGS,
-        cache_mode="warm",
-        haystack="prefix\nENV_VAR=ABCD\nsuffix",
-        text_model="bytes",
-        expected_callback_result="module-result",
-    ),
-    CompiledPatternModuleBoundarySuccessCase(
-        id="module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
-        operation="module.fullmatch",
-        pattern=_VERBOSE_REGRESSION_PATTERN,
-        flags=_VERBOSE_REGRESSION_FLAGS,
-        cache_mode="purged",
-        haystack="ENV_VAR = 123",
-        text_model="bytes",
-        expected_callback_result="module-result",
-    ),
-)
-
-
-COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES = (
-    COMPILED_PATTERN_MODULE_BOUNDARY_LITERAL_SUCCESS_CASES
-    + COMPILED_PATTERN_MODULE_BOUNDARY_BOUNDED_WILDCARD_SUCCESS_CASES
-    + COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES
-)
 
 
 def _compiled_pattern_module_boundary_success_manifest_payload(
-    case: CompiledPatternModuleBoundarySuccessCase,
+    source_workload: Workload,
 ) -> dict[str, object]:
+    payload = workload_to_payload(source_workload)
     return {
-        "id": f"{case.id}-contract",
-        "bucket": case.operation.replace("module.", "module-"),
-        "family": "module",
-        "operation": case.operation,
-        "pattern": case.pattern,
-        "haystack": case.haystack,
-        "flags": case.flags,
-        "use_compiled_pattern": True,
-        "text_model": case.text_model,
-        "cache_mode": case.cache_mode,
+        "id": f"{source_workload.workload_id}-contract",
+        **{
+            key: value
+            for key, value in payload.items()
+            if key
+            not in {
+                "manifest_id",
+                "workload_id",
+                "warmup_iterations",
+                "sample_iterations",
+                "timed_samples",
+                "notes",
+                "smoke",
+                "categories",
+                "syntax_features",
+                "expected_exception",
+                "haystack_text_model",
+            }
+        },
         "timing_scope": "module-helper-call",
         "notes": [
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
@@ -15364,9 +15262,11 @@ def _compiled_pattern_module_boundary_success_manifest_payload(
 
 
 def _compiled_pattern_module_boundary_success_workload(
-    case: CompiledPatternModuleBoundarySuccessCase,
+    source_workload: Workload,
 ) -> Workload:
-    manifest_payload = _compiled_pattern_module_boundary_success_manifest_payload(case)
+    manifest_payload = _compiled_pattern_module_boundary_success_manifest_payload(
+        source_workload
+    )
     return workload_from_payload(
         {
             "manifest_id": "module-boundary",
@@ -15382,8 +15282,28 @@ def _compiled_pattern_module_boundary_success_workload(
     )
 
 
+def _compiled_pattern_module_boundary_success_source_workloads() -> tuple[Workload, ...]:
+    literal_workloads = _selected_manifest_workloads(
+        MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
+    )
+    bounded_wildcard_workloads = _selected_manifest_workloads(
+        MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload=_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+    )
+    verbose_bytes_workloads = _selected_manifest_workloads(
+        MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+    )
+    return (
+        *literal_workloads,
+        *bounded_wildcard_workloads,
+        *verbose_bytes_workloads,
+    )
+
+
 def _compiled_pattern_module_boundary_success_manifest(
-    cases: tuple[CompiledPatternModuleBoundarySuccessCase, ...],
+    source_workloads: tuple[Workload, ...],
 ) -> dict[str, object]:
     return {
         "schema_version": 1,
@@ -15394,29 +15314,70 @@ def _compiled_pattern_module_boundary_success_manifest(
             "timed_samples": 2,
         },
         "workloads": [
-            _compiled_pattern_module_boundary_success_manifest_payload(case)
-            for case in cases
+            _compiled_pattern_module_boundary_success_manifest_payload(workload)
+            for workload in source_workloads
         ],
     }
 
 
 def _assert_compiled_pattern_module_boundary_success_payload_round_trip(
-    case: CompiledPatternModuleBoundarySuccessCase,
+    source_workload: Workload,
     payload: dict[str, object],
     round_tripped: Workload,
 ) -> None:
-    expected_text_type = str if case.text_model == "str" else bytes
+    expected_text_type = str if source_workload.text_model == "str" else bytes
 
     assert payload["use_compiled_pattern"] is True
     assert round_tripped.use_compiled_pattern is True
-    assert payload["flags"] == case.flags
-    assert round_tripped.flags == case.flags
+    assert payload["flags"] == source_workload.flags
+    assert round_tripped.flags == source_workload.flags
     assert payload.get("expected_exception") is None
     assert round_tripped.expected_exception is None
     assert payload.get("haystack_text_model") is None
     assert round_tripped.haystack_text_model is None
     assert isinstance(round_tripped.pattern_payload(), expected_text_type)
     assert isinstance(round_tripped.haystack_payload(), expected_text_type)
+
+
+def _compiled_pattern_module_boundary_success_expected_build_calls(
+    source_workload: Workload,
+) -> list[tuple[object, ...]]:
+    build_calls: list[tuple[object, ...]] = [
+        (
+            "compile",
+            source_workload.pattern_payload(),
+            source_workload.flags,
+        )
+    ]
+    if source_workload.cache_mode == "purged":
+        build_calls.append(("purge",))
+        return build_calls
+    if source_workload.cache_mode == "warm":
+        return build_calls
+    raise AssertionError(
+        "unexpected compiled-pattern module-boundary success workload cache mode "
+        f"{source_workload.cache_mode!r}"
+    )
+
+
+def _compiled_pattern_module_boundary_success_expected_callback_call(
+    source_workload: Workload,
+) -> tuple[object, ...]:
+    if source_workload.operation in {
+        "module.search",
+        "module.match",
+        "module.fullmatch",
+    }:
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            0,
+            {},
+        )
+    raise AssertionError(
+        "unexpected compiled-pattern module-boundary success workload operation "
+        f"{source_workload.operation!r}"
+    )
 
 
 def _run_cpython_compiled_pattern_module_boundary_success_workload(
@@ -15435,9 +15396,8 @@ def _run_cpython_compiled_pattern_module_boundary_success_workload(
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_success_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = _compiled_pattern_module_boundary_success_manifest(
-        COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES
-    )
+    source_workloads = _compiled_pattern_module_boundary_success_source_workloads()
+    manifest = _compiled_pattern_module_boundary_success_manifest(source_workloads)
 
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -15446,15 +15406,28 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
     )
     workloads = load_manifest(manifest_path).workloads
 
+    assert tuple(workload.workload_id for workload in source_workloads) == (
+        "module-search-literal-warm-hit-str-compiled-pattern",
+        "module-match-literal-warm-hit-str-compiled-pattern",
+        "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+        "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
+        "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
+        "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
+        "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+        "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        f"{workload.workload_id}-contract" for workload in source_workloads
+    )
     assert [workload.use_compiled_pattern for workload in workloads] == [
         True
-    ] * len(COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES)
+    ] * len(source_workloads)
     assert [workload.haystack_text_model for workload in workloads] == [
         None
-    ] * len(COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES)
+    ] * len(source_workloads)
 
-    for case, workload in zip(
-        COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES,
+    for source_workload, workload in zip(
+        source_workloads,
         workloads,
         strict=True,
     ):
@@ -15462,7 +15435,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
         round_tripped = workload_from_payload(payload)
 
         _assert_compiled_pattern_module_boundary_success_payload_round_trip(
-            case,
+            source_workload,
             payload,
             round_tripped,
         )
@@ -15476,7 +15449,12 @@ def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchor
     tmp_path: pathlib.Path,
 ) -> None:
     manifest = _compiled_pattern_module_boundary_success_manifest(
-        COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES
+        _selected_manifest_workloads(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            include_workload=(
+                _is_module_workflow_compiled_pattern_verbose_bytes_success_workload
+            ),
+        )
     )
 
     manifest_path = _write_test_manifest(
@@ -15531,10 +15509,10 @@ def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchor
 
 
 @pytest.mark.parametrize(
-    "case",
+    "source_workload",
     tuple(
-        pytest.param(case, id=case.id)
-        for case in COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_boundary_success_source_workloads()
     ),
 )
 @pytest.mark.parametrize(
@@ -15545,16 +15523,16 @@ def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchor
     ),
 )
 def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_success_workloads(
-    case: CompiledPatternModuleBoundarySuccessCase,
+    source_workload: Workload,
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_boundary_success_workload(case)
+    workload = _compiled_pattern_module_boundary_success_workload(source_workload)
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
     _assert_compiled_pattern_module_boundary_success_payload_round_trip(
-        case,
+        source_workload,
         payload,
         round_tripped,
     )
@@ -15570,76 +15548,33 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_s
 
 
 @pytest.mark.parametrize(
-    ("case", "expected_build_calls", "expected_callback_call"),
-    (
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[0],
-            [("compile", "abc", 0)],
-            ("module.search", "zabczz", 0, {}),
-            id="module-search-literal-warm-hit-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[1],
-            [("compile", "abc", 0)],
-            ("module.match", "abcdef", 0, {}),
-            id="module-match-literal-warm-hit-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[2],
-            [("compile", b"abc", 0), ("purge",)],
-            ("module.fullmatch", b"abc", 0, {}),
-            id="module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[3],
-            [("compile", "a.c", 2)],
-            ("module.search", "ABC", 0, {}),
-            id="module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[4],
-            [("compile", "a.c", 0)],
-            ("module.match", "abc", 0, {}),
-            id="module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[5],
-            [("compile", "a.c", 0), ("purge",)],
-            ("module.fullmatch", "abc", 0, {}),
-            id="module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[6],
-            [("compile", _VERBOSE_REGRESSION_PATTERN_BYTES, _VERBOSE_REGRESSION_FLAGS)],
-            ("module.search", b"prefix\nENV_VAR=ABCD\nsuffix", 0, {}),
-            id="module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
-        ),
-        pytest.param(
-            COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES[7],
-            [
-                ("compile", _VERBOSE_REGRESSION_PATTERN_BYTES, _VERBOSE_REGRESSION_FLAGS),
-                ("purge",),
-            ],
-            ("module.fullmatch", b"ENV_VAR = 123", 0, {}),
-            id="module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
-        ),
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _compiled_pattern_module_boundary_success_source_workloads()
     ),
 )
 def test_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing(
-    case: CompiledPatternModuleBoundarySuccessCase,
-    expected_build_calls: list[tuple[object, ...]],
-    expected_callback_call: tuple[object, ...],
+    source_workload: Workload,
 ) -> None:
+    expected_build_calls = _compiled_pattern_module_boundary_success_expected_build_calls(
+        source_workload
+    )
+    expected_callback_call = (
+        _compiled_pattern_module_boundary_success_expected_callback_call(
+            source_workload
+        )
+    )
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_boundary_success_workload(case),
+        _compiled_pattern_module_boundary_success_workload(source_workload),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() == case.expected_callback_result
+    assert callback() == "module-result"
 
     compiled_pattern = module.compiled_patterns[0]
     last_call = module.calls[-1]

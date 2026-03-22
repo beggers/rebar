@@ -1,6 +1,6 @@
 # RBR-0938: Collapse compiled-pattern module-boundary success contract mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -92,5 +92,8 @@ PY`
   - `rg --files -g '*.json' | wc -l` returned `0`.
 - The mirror target is concrete in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_boundary_success or module_boundary_manifest_keeps_compiled_pattern_module_compile or module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured'` currently passes (`29 passed, 563 deselected, 25 subtests passed`);
-  - `rg -n '^(class CompiledPatternModuleBoundarySuccessCase|COMPILED_PATTERN_MODULE_BOUNDARY_LITERAL_SUCCESS_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_BOUNDED_WILDCARD_SUCCESS_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently finds the remaining mirrors at lines `15227`, `15245`, `15279`, `15313`, and `15337`; and
+  - `rg -n '^(class CompiledPatternModuleBoundarySuccessCase|COMPILED_PATTERN_MODULE_BOUNDARY_LITERAL_SUCCESS_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_BOUNDED_WILDCARD_SUCCESS_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_CASES|COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` now returns no matches; and
   - the task-local selector probe in Acceptance currently passes (`ok 8`), proving the eight-row surface already exists in the tracked module-boundary workload manifest without the extra benchmark-test case tables.
+
+## Completion Note
+- 2026-03-22: Replaced the detached compiled-pattern module-boundary success case tables with live source-workload selectors over `benchmarks/workloads/module_boundary.py`, kept the eight workload ids and `-contract` ids in the same order, preserved the payload round-trip and verbose-bytes anchor checks, and reworked the callback expectations to derive from the selected manifest workloads instead of tuple-indexed mirror cases. Verified with the targeted pytest command, the mirror-name grep returning no matches, and the selector probe returning `ok 8`.
