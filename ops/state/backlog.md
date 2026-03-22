@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives on the shared direct bound-pattern replacement frontier after the direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword benchmark publication landed on `collection_replacement_boundary.py`.
+No ready feature follow-on currently survives beyond the shared direct bound-pattern split-error frontier pinned to `re.compile("abc").split("abcabc", 1, maxsplit=1)` / `re.compile(b"abc").split(b"abcabc", missing=1)`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the shared direct bound-pattern replacement owner path after the exact `re.compile("abc").sub("x", "abc", missing=1)` / `re.compile(b"abc").subn(b"x", b"abc", missing=1)` pair landed on `benchmarks/workloads/collection_replacement_boundary.py` and `reports/benchmarks/latest.py`.
+1. No ready feature follow-on currently survives on the shared direct bound-pattern split-error owner path beyond the exact `re.compile("abc").split("abcabc", 1, maxsplit=1)` / `re.compile(b"abc").split(b"abcabc", missing=1)` pair.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
