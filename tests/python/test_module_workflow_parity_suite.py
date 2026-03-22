@@ -1821,6 +1821,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-sub-count-bool-true-bytes",
+        helper="sub",
+        pattern=b"abc",
+        args=(b"x", b"abcabc"),
+        kwargs={"count": True},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-subn-count-keyword-str",
         helper="subn",
         pattern="abc",
@@ -1842,6 +1850,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         pattern="abc",
         args=("x", "abcabc"),
         kwargs={"count": True},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
+        case_id="pattern-subn-count-bool-false-str",
+        helper="subn",
+        pattern="abc",
+        args=("x", "abcabc"),
+        kwargs={"count": False},
         result_kind="value",
     ),
 )
@@ -3946,6 +3962,50 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
             fixture_case.kwargs
         ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
         assert fixture_case.flags == 0
+
+
+def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on(
+) -> None:
+    assert tuple(
+        (
+            case.case_id,
+            case.helper,
+            case.pattern,
+            _workflow_keyword_kwargs_signature(case.kwargs),
+        )
+        for case in PATTERN_KEYWORD_CALL_CASES
+        if _workflow_keyword_kwargs_signature(case.kwargs)
+        in {
+            (("count", "bool", False),),
+            (("count", "bool", True),),
+        }
+        and case.helper in {"sub", "subn"}
+    ) == (
+        (
+            "pattern-sub-count-bool-false-bytes",
+            "sub",
+            b"abc",
+            (("count", "bool", False),),
+        ),
+        (
+            "pattern-sub-count-bool-true-bytes",
+            "sub",
+            b"abc",
+            (("count", "bool", True),),
+        ),
+        (
+            "pattern-subn-count-bool-true-str",
+            "subn",
+            "abc",
+            (("count", "bool", True),),
+        ),
+        (
+            "pattern-subn-count-bool-false-str",
+            "subn",
+            "abc",
+            (("count", "bool", False),),
+        ),
+    )
 
 
 def test_pattern_positional_indexlike_direct_cases_remain_balanced_for_follow_on() -> None:
