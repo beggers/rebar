@@ -62,6 +62,24 @@ TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
 
+def _record_numeric_materialization_fields(
+    monkeypatch: pytest.MonkeyPatch,
+) -> list[str]:
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+    return observed_field_names
+
+
 def _assert_benchmark_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],
@@ -10630,18 +10648,7 @@ def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper
             "smoke": False,
         }
     )
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -11355,18 +11362,7 @@ def test_pattern_helper_keyword_kwargs_materialize_at_callback_time(
             "smoke": False,
         }
     )
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -12358,18 +12354,7 @@ def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_c
     expected_exception_message: str | None = None,
     expected_field_names: list[str] | tuple[str, ...],
 ) -> None:
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -12730,19 +12715,8 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
         expected_exception=expected_exception,
         text_model=text_model,
     )
-    observed_field_names: list[str] = []
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
     callback_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
 
     re.purge()
     try:
@@ -13424,18 +13398,7 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
             "smoke": False,
         }
     )
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     helper_name = operation.removeprefix("module.")
     expected_result = getattr(re, helper_name)(
@@ -13528,18 +13491,7 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
     monkeypatch,
     source_workload: Workload,
 ) -> None:
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -15211,18 +15163,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
     source_workload: Workload,
 ) -> None:
     workload = _compiled_pattern_module_compile_keyword_workload(source_workload)
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -16475,18 +16416,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     workload = _compiled_pattern_module_helper_keyword_error_contract_workload(
         source_workload
     )
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
