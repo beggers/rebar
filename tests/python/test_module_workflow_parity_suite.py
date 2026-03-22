@@ -2314,7 +2314,9 @@ def _module_keyword_fixture_signature(
     )
 
 
-def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
+def _published_module_keyword_owner_path_fixture_cases(
+    rows: tuple[ModuleKeywordOwnerPathRow, ...],
+) -> tuple[FixtureCase, ...]:
     fixture_cases_by_signature = {
         _module_keyword_fixture_signature(case): case
         for case in MODULE_CALL_CASES
@@ -2322,45 +2324,51 @@ def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
     }
     return tuple(
         fixture_cases_by_signature[_module_keyword_direct_signature(row.direct_case)]
-        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+        for row in rows
+    )
+
+
+def _selected_module_keyword_owner_path_direct_cases(
+    rows: tuple[ModuleKeywordOwnerPathRow, ...],
+    published_fixture_cases: tuple[FixtureCase, ...],
+) -> tuple[ModuleKeywordCallCase | ModuleKeywordErrorCase, ...]:
+    direct_cases_by_signature = {
+        _module_keyword_direct_signature(row.direct_case): row.direct_case
+        for row in rows
+    }
+    return tuple(
+        direct_cases_by_signature[_module_keyword_fixture_signature(case)]
+        for case in published_fixture_cases
+    )
+
+
+def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
+    return _published_module_keyword_owner_path_fixture_cases(
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
 
 
 def _selected_module_keyword_direct_cases(
     published_fixture_cases: tuple[FixtureCase, ...],
-) -> tuple[ModuleKeywordCallCase, ...]:
-    direct_cases_by_signature = {
-        _module_keyword_direct_signature(row.direct_case): row.direct_case
-        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    }
-    return tuple(
-        direct_cases_by_signature[_module_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
+) -> tuple[ModuleKeywordCallCase | ModuleKeywordErrorCase, ...]:
+    return _selected_module_keyword_owner_path_direct_cases(
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        published_fixture_cases,
     )
 
 
 def _published_module_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
-    fixture_cases_by_signature = {
-        _module_keyword_fixture_signature(case): case
-        for case in MODULE_CALL_CASES
-        if not case.use_compiled_pattern
-    }
-    return tuple(
-        fixture_cases_by_signature[_module_keyword_direct_signature(row.direct_case)]
-        for row in MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
+    return _published_module_keyword_owner_path_fixture_cases(
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
     )
 
 
 def _selected_module_keyword_error_direct_cases(
     published_fixture_cases: tuple[FixtureCase, ...],
-) -> tuple[ModuleKeywordErrorCase, ...]:
-    direct_cases_by_signature = {
-        _module_keyword_direct_signature(row.direct_case): row.direct_case
-        for row in MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
-    }
-    return tuple(
-        direct_cases_by_signature[_module_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
+) -> tuple[ModuleKeywordCallCase | ModuleKeywordErrorCase, ...]:
+    return _selected_module_keyword_owner_path_direct_cases(
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
+        published_fixture_cases,
     )
 
 

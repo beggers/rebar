@@ -1,6 +1,6 @@
 # RBR-0972: Collapse module-keyword owner-path helper siblings
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -103,4 +103,8 @@ PY`
 - The duplication target is concrete in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases or module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases or module_workflow_direct_test_buckets_cover_selected_frontier'` currently passes (`3 passed, 1430 deselected`);
   - the combined publication-contract probe in Verification currently passes (`ok 14 13`), proving both module-keyword publication slices already resolve to the expected live owner-path surfaces; and
-  - the structural probe in Verification currently fails only because the four module-keyword owner-path sibling helpers still duplicate the same row/signature resolution pattern instead of sharing one file-local helper path.
+  - the structural probe in Verification now passes because the four module-keyword owner-path sibling helpers have been collapsed behind one file-local published-fixture resolver and one file-local selected-direct-case resolver.
+
+## Completion
+- Replaced the four sibling module-keyword owner-path helpers in `tests/python/test_module_workflow_parity_suite.py` with one shared published-fixture resolver and one shared selected-direct-case resolver, both still driven by the existing success and keyword-error owner-path row tables.
+- Verified the targeted module-keyword publication tests stay green, the published success/error slices still resolve to `14` and `13` fixture cases with the required text-model and helper splits, and the structural string-count probe now passes.
