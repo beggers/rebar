@@ -513,7 +513,14 @@ class CompiledPatternCompileCase:
 class CompiledPatternModuleHelperOwnerPathRow:
     fixture_case_id: str
     direct_case_id: str
-    text_model: str
+
+    @property
+    def direct_case(self) -> object:
+        return _COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID[self.direct_case_id]
+
+    @property
+    def text_model(self) -> str:
+        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
 
 
 @dataclass(frozen=True)
@@ -2548,312 +2555,250 @@ COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS = (
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-str-compiled-pattern",
         direct_case_id="compiled-pattern-compile-str-literal",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-noflag-str-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-noflag-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-int-zero-str-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-int-zero-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-bool-false-str-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-bool-false-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-ignorecase-str-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-ignorecase-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-str-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-str-named-group",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-noflag-str-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-noflag-str-named-group",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-int-zero-str-named-group",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-bool-false-str-named-group",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-ignorecase-str-named-group",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-search-str-compiled-pattern",
         direct_case_id="compiled-pattern-search-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-search-str-compiled-pattern-on-bytes-string",
         direct_case_id="compiled-pattern-search-str-on-bytes-string",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-match-str-compiled-pattern",
         direct_case_id="compiled-pattern-match-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-compile-bytes-literal",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-noflag-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-noflag-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-int-zero-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-bool-false-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-compile-flags-ignorecase-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-bytes-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-bytes-named-group",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-noflag-bytes-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-noflag-bytes-named-group",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-int-zero-bytes-named-group",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-bool-false-bytes-named-group",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
         direct_case_id="compiled-pattern-compile-flags-ignorecase-bytes-named-group",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-fullmatch-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-fullmatch-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-match-bytes-compiled-pattern-on-str-string",
         direct_case_id="compiled-pattern-match-bytes-on-str-string",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
         direct_case_id="compiled-module-search-ignorecase-bounded-hit",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-match-str-bounded-wildcard-compiled-pattern",
         direct_case_id="compiled-module-match-bounded-hit",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
         direct_case_id="compiled-module-fullmatch-bounded-hit",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
         direct_case_id="compiled-pattern-fullmatch-str-on-bytes-string",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-search-bytes-verbose-regression-compiled-pattern",
         direct_case_id="compiled-pattern-search-bytes-verbose-regression",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
         direct_case_id="compiled-pattern-fullmatch-bytes-verbose-regression",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-split-str-compiled-pattern",
         direct_case_id="compiled-pattern-split-str-maxsplit",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-split-maxsplit-keyword-str-compiled-pattern",
         direct_case_id="compiled-pattern-split-maxsplit-keyword-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-split-maxsplit-indexlike-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-split-maxsplit-bool-false-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
         direct_case_id="compiled-pattern-split-duplicate-maxsplit-keyword-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-split-unexpected-keyword-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-split-str-compiled-pattern-on-bytes-string",
         direct_case_id="compiled-pattern-split-str-on-bytes-string",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-findall-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-findall-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-findall-bytes-compiled-pattern-on-str-string",
         direct_case_id="compiled-pattern-findall-bytes-on-str-string",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-finditer-str-compiled-pattern",
         direct_case_id="compiled-pattern-finditer-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-finditer-str-compiled-pattern-on-bytes-string",
         direct_case_id="compiled-pattern-finditer-str-on-bytes-string",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-str-count",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-count-keyword-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-count-keyword-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-count-indexlike-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-sub-count-indexlike-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-count-bool-true-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-count-bool-true-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-count-bool-false-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-count-bool-false-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-duplicate-count-keyword-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-unexpected-keyword-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-unexpected-keyword-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-count-alias-keyword-str-compiled-pattern",
         direct_case_id="compiled-pattern-sub-count-alias-keyword-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-sub-str-compiled-pattern-on-bytes-string",
         direct_case_id="compiled-pattern-sub-str-on-bytes-string",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-bytes-count",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-count-keyword-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-count-keyword-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-count-indexlike-str-compiled-pattern",
         direct_case_id="compiled-pattern-subn-count-indexlike-str",
-        text_model="str",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-count-bool-false-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-count-bool-false-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-count-bool-true-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-count-bool-true-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-duplicate-count-keyword-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-unexpected-keyword-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
         direct_case_id="compiled-pattern-subn-count-alias-keyword-bytes",
-        text_model="bytes",
     ),
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-subn-bytes-compiled-pattern-on-str-string",
         direct_case_id="compiled-pattern-subn-bytes-on-str-string",
-        text_model="bytes",
     ),
 )
 
@@ -2867,29 +2812,10 @@ def _compiled_pattern_module_helper_owner_path_fixture_case_ids(
         if text_model is None or row.text_model == text_model
     )
 
-
-def _compiled_pattern_module_helper_owner_path_selected_direct_cases() -> tuple[object, ...]:
-    direct_cases_by_id = {
-        case.case_id: case
-        for case in (
-            *COMPILED_PATTERN_COMPILE_CASES,
-            *COMPILED_PATTERN_MODULE_HELPER_CASES,
-            *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
-            *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
-            *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
-            *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
-        )
-    }
-    return tuple(
-        direct_cases_by_id[row.direct_case_id]
-        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
-    )
-
-
 def _published_compiled_pattern_module_helper_fixture_cases() -> tuple[FixtureCase, ...]:
     direct_signatures = {
-        _compiled_pattern_module_helper_direct_signature(case)
-        for case in _compiled_pattern_module_helper_owner_path_selected_direct_cases()
+        _compiled_pattern_module_helper_direct_signature(row.direct_case)
+        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
     }
     return tuple(
         case
@@ -3739,6 +3665,19 @@ COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
         kwargs={"count_alias": 1},
     ),
 )
+
+_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID = {
+    case.case_id: case
+    for case in (
+        *COMPILED_PATTERN_COMPILE_CASES,
+        *COMPILED_PATTERN_MODULE_HELPER_CASES,
+        *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
+        *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
+        *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
+        *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+    )
+}
+
 # Exercise CPython-supported input shapes that are easy to miss when escape()
 # only appears to support plain str and bytes inputs.
 ESCAPE_COMPATIBLE_INPUT_CASES = (
@@ -5424,7 +5363,9 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
     published_fixture_cases = _published_compiled_pattern_module_helper_fixture_cases()
-    selected_direct_cases = _compiled_pattern_module_helper_owner_path_selected_direct_cases()
+    selected_direct_cases = tuple(
+        row.direct_case for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+    )
 
     assert tuple(
         case.case_id
@@ -5463,7 +5404,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == tuple(
-        row.direct_case_id for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+        row.direct_case.case_id for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
     )
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert tuple(
@@ -5479,7 +5420,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         selected_direct_cases,
     ):
         assert fixture_case.case_id == row.fixture_case_id
-        assert direct_case.case_id == row.direct_case_id
+        assert direct_case is row.direct_case
         assert fixture_case.use_compiled_pattern is True
         assert fixture_case.text_model == row.text_model
         assert (
