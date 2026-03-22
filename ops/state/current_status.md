@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1528 cases across 114 manifests, with all 1528 passing in the current slice; the benchmark publication covers 874/874 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0906` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair up on the tracked Python-path benchmark surface through the existing pattern replacement keyword owner path.
+- `RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1528 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0906` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair up on the tracked Python-path benchmark surface through the existing pattern replacement keyword owner path.
+- `RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0906` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair up on the tracked Python-path benchmark surface through the existing pattern replacement keyword owner path.
+`RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice.
 
 ## Ordered Work
-1. `RBR-0906` catches `re.compile(b"abc").sub(b"x", b"abcabc", count=True)` and `re.compile("abc").subn("x", "abcabc", count=False)` up on `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing direct-`Pattern` replacement keyword owner path instead of widening into another benchmark family or a larger keyword matrix.
+1. `RBR-0908` fixes `re.compile("abc").sub("x", "abc", 1, count=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, count=1)` in `python/rebar/__init__.py` and `tests/python/test_module_workflow_parity_suite.py`, reusing the existing direct bound-pattern replacement owner path so the next slice can publish or benchmark those diagnostics against real CPython-matching behavior instead of widening into unexpected-keyword or split-duplicate follow-ons first.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
