@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives in the feature queue beyond the single active ready task.
+No ready feature follow-on currently survives in the feature queue.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives in the feature queue beyond the single active ready task.
+1. No ready feature follow-on currently survives in the feature queue.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
