@@ -18,6 +18,7 @@ from tests.python.fixture_parity_support import (
     FixtureBundle,
     PatternTraceCase as BacktrackingTraceCase,
     SupplementalCase,
+    assert_mixed_text_model_case_pairs,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_bounded_pattern_case_match_parity,
@@ -52,6 +53,15 @@ class DirectBytesFollowOnSpec:
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
+
+
+@dataclass(frozen=True)
+class MixedTextModelBundleSpec:
+    id: str
+    bundle: FixtureBundle
+    expected_fixture_filename: str
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+
 
 FIXTURE_BUNDLES = tuple(
     build_selected_fixture_bundle(path, pattern_extractor=case_pattern)
@@ -312,6 +322,83 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
 )
+MIXED_TEXT_MODEL_BUNDLE_SPECS = (
+    MixedTextModelBundleSpec(
+        id="broader-range-conditional",
+        bundle=BROADER_RANGE_CONDITIONAL_BUNDLE,
+        expected_fixture_filename=(
+            "broader_range_wider_ranged_repeat_quantified_group_"
+            "alternation_conditional_workflows.py"
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 4,
+                ("module_call", "search"): 12,
+                ("pattern_call", "fullmatch"): 12,
+            }
+        ),
+    ),
+    MixedTextModelBundleSpec(
+        id="broader-range-backtracking-heavy",
+        bundle=BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
+        expected_fixture_filename=(
+            "broader_range_wider_ranged_repeat_quantified_group_"
+            "alternation_backtracking_heavy_workflows.py"
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 4,
+                ("module_call", "search"): 10,
+                ("pattern_call", "fullmatch"): 14,
+            }
+        ),
+    ),
+    MixedTextModelBundleSpec(
+        id="nested-broader-range-alternation",
+        bundle=NESTED_BROADER_RANGE_ALTERNATION_BUNDLE,
+        expected_fixture_filename=(
+            "nested_broader_range_wider_ranged_repeat_quantified_group_"
+            "alternation_workflows.py"
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 4,
+                ("module_call", "search"): 8,
+                ("pattern_call", "fullmatch"): 16,
+            }
+        ),
+    ),
+    MixedTextModelBundleSpec(
+        id="nested-broader-range-conditional",
+        bundle=NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE,
+        expected_fixture_filename=(
+            "nested_broader_range_wider_ranged_repeat_quantified_group_"
+            "alternation_conditional_workflows.py"
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 4,
+                ("module_call", "search"): 12,
+                ("pattern_call", "fullmatch"): 12,
+            }
+        ),
+    ),
+    MixedTextModelBundleSpec(
+        id="nested-broader-range-backtracking-heavy",
+        bundle=NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
+        expected_fixture_filename=(
+            "nested_broader_range_wider_ranged_repeat_quantified_group_"
+            "alternation_backtracking_heavy_workflows.py"
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 4,
+                ("module_call", "search"): 10,
+                ("pattern_call", "fullmatch"): 14,
+            }
+        ),
+    ),
+)
 
 
 # Keep the shared manifest contract honest, but route the published bytes slices
@@ -478,54 +565,40 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
 
 
-def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() -> None:
-    bundle = BROADER_RANGE_CONDITIONAL_BUNDLE
+@pytest.mark.parametrize(
+    "spec",
+    MIXED_TEXT_MODEL_BUNDLE_SPECS,
+    ids=lambda spec: spec.id,
+)
+def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract(
+    spec: MixedTextModelBundleSpec,
+) -> None:
+    bundle = spec.bundle
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
 
-    assert bundle.manifest.manifest_id == (
-        "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-    )
     assert bundle.expected_case_ids is None
     assert bundle.expected_text_models == frozenset({"bytes", "str"})
-    assert bundle.expected_patterns == frozenset(
+    assert len(str_cases) == len(bytes_cases) == (
+        sum(spec.expected_operation_helper_counts.values()) // 2
+    )
+    assert Counter((case.operation, case.helper) for case in str_cases) == Counter(
         {
-            r"a((bc|de){1,4})?(?(1)d|e)",
-            r"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
-            rb"a((bc|de){1,4})?(?(1)d|e)",
-            rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+            (operation, helper): count // 2
+            for (operation, helper), count in spec.expected_operation_helper_counts.items()
         }
     )
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == Counter(
+    assert Counter((case.operation, case.helper) for case in bytes_cases) == Counter(
         {
-            ("compile", None): 4,
-            ("module_call", "search"): 12,
-            ("pattern_call", "fullmatch"): 12,
+            (operation, helper): count // 2
+            for (operation, helper), count in spec.expected_operation_helper_counts.items()
         }
     )
-    assert {
-        isinstance(case_pattern(case), str)
-        for case in bundle.cases
-        if case.text_model == "str"
-    } == {True}
-    assert {
-        isinstance(case_pattern(case), bytes)
-        for case in bundle.cases
-        if case.text_model == "bytes"
-    } == {True}
-
-    str_case_ids = frozenset(
-        case.case_id for case in bundle.cases if case.text_model == "str"
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        spec.expected_operation_helper_counts
     )
-    bytes_case_ids = frozenset(
-        case.case_id for case in bundle.cases if case.text_model == "bytes"
-    )
-
-    assert len(str_case_ids) == len(bytes_case_ids) == 14
-    assert bytes_case_ids == {
-        f"{case_id.removesuffix('-str')}-bytes" for case_id in str_case_ids
-    }
-    assert bundle.manifest.path.name == (
-        "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
-    )
+    assert {isinstance(case_pattern(case), str) for case in str_cases} == {True}
+    assert {isinstance(case_pattern(case), bytes) for case in bytes_cases} == {True}
+    assert bundle.manifest.path.name == spec.expected_fixture_filename
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
