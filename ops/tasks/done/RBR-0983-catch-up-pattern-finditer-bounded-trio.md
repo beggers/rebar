@@ -1,6 +1,6 @@
 ## RBR-0983: Catch up the direct Pattern `finditer()` bounded trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -64,3 +64,13 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-finditer-str-bounded or pattern-finditer-str-bounded-no-match or pattern-finditer-bytes-bounded or literal_collection_direct_test_buckets_cover_selected_frontier'` currently passes (`23 passed`), so the exact bounded direct parity slice is already green in this checkout;
   - `rg -n 'pattern-finditer-(bounded-warm-str|bounded-no-match-warm-str|bounded-purged-bytes)|pattern-finditer-(str-bounded|str-bounded-no-match|bytes-bounded)' benchmarks/workloads/collection_replacement_boundary.py reports/benchmarks/latest.py tests/conformance/fixtures/collection_replacement_workflows.py reports/correctness/latest.py` currently finds only the three published correctness case ids in `tests/conformance/fixtures/collection_replacement_workflows.py` and `reports/correctness/latest.py`, confirming the benchmark workload ids are still absent from the published Python-path benchmark surface; and
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... synthetic Workload.from_dict(...) / workload_to_payload(...) / run_internal_workload_probe(...) for pattern-finditer-bounded-warm-str, pattern-finditer-bounded-no-match-warm-str, and pattern-finditer-bounded-purged-bytes ... PY` returns `status == "measured"` for both adapters on all three synthetic workloads through the current benchmark harness in this checkout.
+
+## Completion
+- Added the three bounded direct-`Pattern.finditer()` workloads to `benchmarks/workloads/collection_replacement_boundary.py` in the required slot and order.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the matching zero-gap manifest assertion, owner-route anchor contract, and published full-suite summary expectations.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `938` total / `938` measured / `0` known gaps across `30` manifests, with `930` module workloads and `99` selected/measured rows for `collection-replacement-boundary`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-finditer-str-bounded or pattern-finditer-str-bounded-no-match or pattern-finditer-bytes-bounded or literal_collection_direct_test_buckets_cover_selected_frontier'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0983-pattern-finditer-bounded-trio.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
