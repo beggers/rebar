@@ -2629,47 +2629,27 @@ COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS = (
 )
 
 
-def _compiled_pattern_module_helper_owner_path_rows(
-    text_model: str | None = None,
-) -> tuple[CompiledPatternModuleHelperOwnerPathRow, ...]:
-    if text_model is None:
-        return COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
-    return tuple(
-        row
-        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
-        if row.text_model == text_model
-    )
-
-
 def _compiled_pattern_module_helper_owner_path_fixture_case_ids(
     text_model: str | None = None,
 ) -> tuple[str, ...]:
     return tuple(
         row.fixture_case_id
-        for row in _compiled_pattern_module_helper_owner_path_rows(text_model)
-    )
-
-
-def _compiled_pattern_module_helper_owner_path_direct_case_ids() -> tuple[str, ...]:
-    return tuple(
-        row.direct_case_id for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
-    )
-
-
-def _compiled_pattern_module_helper_owner_path_direct_cases() -> tuple[object, ...]:
-    return (
-        *COMPILED_PATTERN_COMPILE_CASES,
-        *COMPILED_PATTERN_MODULE_HELPER_CASES,
-        *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
-        *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
-        *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
-        *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+        if text_model is None or row.text_model == text_model
     )
 
 
 def _compiled_pattern_module_helper_owner_path_selected_direct_cases() -> tuple[object, ...]:
     direct_cases_by_id = {
-        case.case_id: case for case in _compiled_pattern_module_helper_owner_path_direct_cases()
+        case.case_id: case
+        for case in (
+            *COMPILED_PATTERN_COMPILE_CASES,
+            *COMPILED_PATTERN_MODULE_HELPER_CASES,
+            *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
+            *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
+            *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
+            *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+        )
     }
     return tuple(
         direct_cases_by_id[row.direct_case_id]
@@ -5390,7 +5370,9 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     ) == _compiled_pattern_module_helper_owner_path_fixture_case_ids()
     assert tuple(
         case.case_id for case in selected_direct_cases
-    ) == _compiled_pattern_module_helper_owner_path_direct_case_ids()
+    ) == tuple(
+        row.direct_case_id for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+    )
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert tuple(
         case.helper for case in published_fixture_cases
