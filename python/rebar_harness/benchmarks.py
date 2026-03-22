@@ -214,6 +214,8 @@ class Workload:
             manifest_id=manifest_id,
             operation=operation,
             use_compiled_pattern=use_compiled_pattern,
+            pos=pos,
+            endpos=endpos,
             kwargs=kwargs,
             text_model=text_model,
             haystack_text_model=haystack_text_model,
@@ -529,6 +531,9 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_OPERATIONS = frozenset(
 _COLLECTION_REPLACEMENT_PATTERN_WRONG_TEXT_MODEL_OPERATIONS = frozenset(
     {"pattern.split", "pattern.sub", "pattern.subn"}
 )
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS = frozenset(
+    {"pattern.search", "pattern.match", "pattern.fullmatch"}
+)
 _COMPILED_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS = frozenset(
     {"module.search", "module.match", "module.fullmatch"}
 )
@@ -828,6 +833,8 @@ def validate_haystack_text_model_override(
     manifest_id: str,
     operation: str,
     use_compiled_pattern: bool,
+    pos: Any | None,
+    endpos: Any | None,
     kwargs: dict[str, Any],
     text_model: str,
     haystack_text_model: str | None,
@@ -836,11 +843,16 @@ def validate_haystack_text_model_override(
     if haystack_text_model is None:
         return
 
-    if manifest_id not in {"collection-replacement-boundary", "module-boundary"}:
+    if manifest_id not in {
+        "collection-replacement-boundary",
+        "module-boundary",
+        "pattern-boundary",
+    }:
         raise ValueError(
             "benchmark workload haystack_text_model is only supported on the "
             "`collection-replacement-boundary` manifest and the bounded "
-            "`module-boundary` compiled-pattern wrong-text-model trio"
+            "`module-boundary` compiled-pattern wrong-text-model trio plus the "
+            "bounded `pattern-boundary` direct Pattern search/match/fullmatch trio"
         )
 
     if manifest_id == "collection-replacement-boundary":
@@ -864,6 +876,18 @@ def validate_haystack_text_model_override(
                 and operation
                 in _COLLECTION_REPLACEMENT_PATTERN_WRONG_TEXT_MODEL_OPERATIONS
             )
+    elif manifest_id == "pattern-boundary":
+        operation_description = (
+            "direct Pattern.search()/Pattern.match()/Pattern.fullmatch() "
+            "positional helper workloads on the `pattern-boundary` manifest"
+        )
+        supports_operation = (
+            not use_compiled_pattern
+            and pos is None
+            and endpos is None
+            and not kwargs
+            and operation in _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OPERATIONS
+        )
     else:
         operation_description = (
             "compiled-pattern module.search/module.match/module.fullmatch "

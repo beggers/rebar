@@ -179,6 +179,103 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-search-on-bytes-string-warm-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "flags": 0,
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "literal",
+        "wrong-text-model",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "literal-text",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.search helper path that keeps the bounded wrong-text-model TypeError on bytes haystacks on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-match-on-str-string-purged-bytes",
+      "bucket": "pattern-match",
+      "family": "module",
+      "operation": "pattern.match",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a bytes pattern on a string-like object"
+      },
+      "flags": 0,
+      "text_model": "bytes",
+      "haystack_text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "match",
+        "bytes",
+        "wrong-text-model",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-match",
+        "pattern-text-model",
+        "wrong-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.match helper path that keeps the bounded wrong-text-model TypeError on str haystacks on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-on-bytes-string-warm-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "abc",
+      "haystack": "abc",
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "cannot use a string pattern on a bytes-like object"
+      },
+      "flags": 0,
+      "text_model": "str",
+      "haystack_text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "literal",
+        "wrong-text-model",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "literal-text",
+        "wrong-text-model"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.fullmatch helper path that keeps the bounded wrong-text-model TypeError on bytes haystacks on the shared pattern-boundary surface."
+      ]
+    },
+    {
       "id": "pattern-search-pos-keyword-warm-str",
       "bucket": "pattern-search",
       "family": "module",
