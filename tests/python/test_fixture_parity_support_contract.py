@@ -2284,11 +2284,24 @@ def test_optional_match_case_parity_runs_baseline_match_parity_before_optional_c
         "assert_invalid_match_group_access_parity",
         record_call("invalid-group-access"),
     )
+    observed_match = object()
+    expected_match = object()
 
-    fixture_parity_support._assert_optional_match_case_parity(
-        "rebar",
-        object(),
-        object(),
+    class _RecordingBackend:
+        def search(self, *args: object, **kwargs: object) -> object:
+            return observed_match
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "re",
+        SimpleNamespace(search=lambda *args, **kwargs: expected_match),
+    )
+
+    assert_fixture_case_optional_match_parity(
+        ("rebar", _RecordingBackend()),
+        SYNTHETIC_MODULE_PATTERN_CASE,
+        expected_helper="search",
+        compile_pattern=False,
         check_regs=True,
         check_convenience_api=check_convenience_api,
         check_group_access=check_group_access,
@@ -2327,11 +2340,32 @@ def test_optional_match_case_parity_returns_early_for_shared_no_match(
         "assert_invalid_match_group_access_parity",
         _unexpected_helper,
     )
+    no_match_case = replace(
+        SYNTHETIC_MODULE_PATTERN_CASE,
+        case_id="synthetic-module-pattern-str-no-match-early-return",
+        source_args=[SYNTHETIC_CASE_PATTERN, "zzzzz"],
+        args=[SYNTHETIC_CASE_PATTERN, "zzzzz"],
+    )
 
-    fixture_parity_support._assert_optional_match_case_parity(
-        "stub-backend",
-        None,
-        None,
+    class _RecordingBackend:
+        def search(
+            self,
+            *args: object,
+            **kwargs: object,
+        ) -> re.Match[str] | None:
+            return None
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "re",
+        SimpleNamespace(search=lambda *args, **kwargs: None),
+    )
+
+    assert_fixture_case_optional_match_parity(
+        ("stub-backend", _RecordingBackend()),
+        no_match_case,
+        expected_helper="search",
+        compile_pattern=False,
         check_regs=True,
         check_convenience_api=True,
         check_group_access=True,
@@ -2340,7 +2374,7 @@ def test_optional_match_case_parity_returns_early_for_shared_no_match(
     assert helper_calls == []
 
 
-def test_evaluate_fixture_case_optional_match_keeps_raw_module_calls_on_module_helper_surface(
+def test_fixture_case_optional_match_parity_helper_keeps_raw_module_calls_on_module_helper_surface(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     observed_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
@@ -2369,26 +2403,20 @@ def test_evaluate_fixture_case_optional_match_keeps_raw_module_calls_on_module_h
         SimpleNamespace(search=_expected_search),
     )
 
-    backend_name, observed, expected = fixture_parity_support._evaluate_fixture_case_optional_match(
+    assert_fixture_case_optional_match_parity(
         ("stub-backend", _RecordingBackend()),
         SYNTHETIC_MODULE_PATTERN_CASE,
         expected_helper="search",
         compile_pattern=False,
-    )
-
-    expected_args = tuple(SYNTHETIC_MODULE_PATTERN_CASE.module_call_args())
-    assert backend_name == "stub-backend"
-    assert observed_calls == [(expected_args, {})]
-    assert expected_calls == [(expected_args, {})]
-    assert_match_result_parity(
-        "stub-backend",
-        observed,
-        expected,
         check_regs=True,
     )
 
+    expected_args = tuple(SYNTHETIC_MODULE_PATTERN_CASE.module_call_args())
+    assert observed_calls == [(expected_args, {})]
+    assert expected_calls == [(expected_args, {})]
 
-def test_evaluate_fixture_case_optional_match_routes_compiled_module_calls_through_compiled_pattern_argument(
+
+def test_fixture_case_optional_match_parity_helper_routes_compiled_module_calls_through_compiled_pattern_argument(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     compile_calls: list[tuple[object, ...]] = []
@@ -2428,14 +2456,14 @@ def test_evaluate_fixture_case_optional_match_routes_compiled_module_calls_throu
     )
 
     backend = _RecordingBackend()
-    backend_name, observed, expected = fixture_parity_support._evaluate_fixture_case_optional_match(
+    assert_fixture_case_optional_match_parity(
         ("stub-backend", backend),
         SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
         expected_helper="search",
         compile_pattern=False,
+        check_regs=True,
     )
 
-    assert backend_name == "stub-backend"
     assert compile_calls == [
         ("stub-backend", backend, SYNTHETIC_CASE_PATTERN, 0, True)
     ]
@@ -2459,15 +2487,9 @@ def test_evaluate_fixture_case_optional_match_routes_compiled_module_calls_throu
             {},
         )
     ]
-    assert_match_result_parity(
-        "stub-backend",
-        observed,
-        expected,
-        check_regs=True,
-    )
 
 
-def test_evaluate_fixture_case_optional_match_routes_pattern_calls_through_compiled_patterns(
+def test_fixture_case_optional_match_parity_helper_routes_pattern_calls_through_compiled_patterns(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     compile_calls: list[tuple[object, ...]] = []
@@ -2497,14 +2519,14 @@ def test_evaluate_fixture_case_optional_match_routes_pattern_calls_through_compi
     monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
 
     backend = object()
-    backend_name, observed, expected = fixture_parity_support._evaluate_fixture_case_optional_match(
+    assert_fixture_case_optional_match_parity(
         ("stub-backend", backend),
         SYNTHETIC_FULLMATCH_PATTERN_CASE,
         expected_helper="fullmatch",
         compile_pattern=True,
+        check_regs=True,
     )
 
-    assert backend_name == "stub-backend"
     assert compile_calls == [
         (
             "stub-backend",
@@ -2515,22 +2537,6 @@ def test_evaluate_fixture_case_optional_match_routes_pattern_calls_through_compi
         )
     ]
     assert observed_calls == [(tuple(SYNTHETIC_FULLMATCH_PATTERN_CASE.args), {})]
-    assert_match_result_parity(
-        "stub-backend",
-        observed,
-        expected,
-        check_regs=True,
-    )
-
-
-def test_evaluate_fixture_case_optional_match_rejects_helper_drift() -> None:
-    with pytest.raises(AssertionError):
-        fixture_parity_support._evaluate_fixture_case_optional_match(
-            ("stub-backend", object()),
-            SYNTHETIC_FULLMATCH_PATTERN_CASE,
-            expected_helper="search",
-            compile_pattern=True,
-        )
 
 
 @pytest.mark.parametrize(

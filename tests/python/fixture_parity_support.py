@@ -1296,41 +1296,16 @@ def assert_placeholder_message_contains(
     assert expected_fragment in str(error)
 
 
-def _assert_optional_match_case_parity(
-    backend_name: str,
-    observed: object,
-    expected: re.Match[str] | re.Match[bytes] | None,
-    *,
-    check_regs: bool = False,
-    check_convenience_api: bool = False,
-    check_group_access: bool = False,
-) -> None:
-    if expected is None:
-        assert observed is None
-        return
-
-    assert observed is not None
-    assert_match_parity(
-        backend_name,
-        observed,
-        expected,
-        check_regs=check_regs,
-    )
-
-    if check_convenience_api:
-        assert_match_convenience_api_parity(observed, expected)
-    if check_group_access:
-        assert_valid_match_group_access_parity(observed, expected)
-        assert_invalid_match_group_access_parity(observed, expected)
-
-
-def _evaluate_fixture_case_optional_match(
+def assert_fixture_case_optional_match_parity(
     regex_backend: tuple[str, object],
     case: FixtureCase,
     *,
     expected_helper: str,
     compile_pattern: bool,
-) -> tuple[str, object, re.Match[str] | re.Match[bytes] | None]:
+    check_regs: bool = False,
+    check_convenience_api: bool = False,
+    check_group_access: bool = False,
+) -> None:
     backend_name, backend = regex_backend
     assert case.helper == expected_helper
 
@@ -1350,42 +1325,35 @@ def _evaluate_fixture_case_optional_match(
                 *case.module_call_args(expected_target),
                 **case.kwargs,
             )
-            return backend_name, observed, expected
+        else:
+            observed = getattr(observed_target, expected_helper)(
+                *case.args,
+                **case.kwargs,
+            )
+            expected = getattr(expected_target, expected_helper)(
+                *case.args,
+                **case.kwargs,
+            )
     else:
-        observed_target = backend
-        expected_target = re
-
-    observed = getattr(observed_target, expected_helper)(*case.args, **case.kwargs)
-    expected = getattr(expected_target, expected_helper)(*case.args, **case.kwargs)
-    return backend_name, observed, expected
-
-
-def assert_fixture_case_optional_match_parity(
-    regex_backend: tuple[str, object],
-    case: FixtureCase,
-    *,
-    expected_helper: str,
-    compile_pattern: bool,
-    check_regs: bool = False,
-    check_convenience_api: bool = False,
-    check_group_access: bool = False,
-) -> None:
-    backend_name, observed, expected = _evaluate_fixture_case_optional_match(
-        regex_backend,
-        case,
-        expected_helper=expected_helper,
-        compile_pattern=compile_pattern,
-    )
+        observed = getattr(backend, expected_helper)(*case.args, **case.kwargs)
+        expected = getattr(re, expected_helper)(*case.args, **case.kwargs)
 
     assert (observed is None) == (expected is None)
-    _assert_optional_match_case_parity(
+    if expected is None:
+        return
+
+    assert observed is not None
+    assert_match_parity(
         backend_name,
         observed,
         expected,
         check_regs=check_regs,
-        check_convenience_api=check_convenience_api,
-        check_group_access=check_group_access,
     )
+    if check_convenience_api:
+        assert_match_convenience_api_parity(observed, expected)
+    if check_group_access:
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 def assert_bounded_pattern_case_match_parity(
