@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1528 cases across 114 manifests, with all 1528 passing in the current slice; the benchmark publication covers 874/874 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0906` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair up on the tracked Python-path benchmark surface through the existing pattern replacement keyword owner path. |
-| Work queue | `1` ready, `0` in progress, `908` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1528 cases across 114 manifests, with all 1528 passing in the current slice; the benchmark publication covers 876/876 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice. |
+| Work queue | `1` ready, `0` in progress, `910` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1528 cases across 114 manifests, with all 1528 passing in the current slice; the benchmark publication covers 874/874 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1528 cases across 114 manifests, with all 1528 passing in the current slice; the benchmark publication covers 876/876 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `874` |
-| Workloads with real `rebar` timings | `874` |
+| Published workloads | `876` |
+| Workloads with real `rebar` timings | `876` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0906` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair up on the tracked Python-path benchmark surface through the existing pattern replacement keyword owner path.
+- `RBR-0908` is the surviving follow-on on the shared direct bound-pattern replacement frontier, landing CPython-compatible duplicate-`count=` `TypeError` parity for the exact `Pattern.sub()` / `Pattern.subn()` pair before correctness publication or Python-path benchmark catch-up reopens that replacement-keyword error slice.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 874 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 876 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
