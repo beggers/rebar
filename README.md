@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 864/864 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0884` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument named-group explicit `flags=False` `compile()` pair up on the shared Python-path `module_boundary.py` surface once the named-group explicit `flags=0` pair lands, instead of reopening named-group `IGNORECASE` rejections, `NOFLAG` spellings, or another benchmark family. |
-| Work queue | `1` ready, `0` in progress, `886` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 866/866 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0886` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument named-group explicit `flags=IGNORECASE` `compile()` rejection pair up on the shared Python-path `module_boundary.py` surface once the named-group explicit `flags=False` pair lands, instead of reopening `NOFLAG` spellings or another benchmark family. |
+| Work queue | `1` ready, `0` in progress, `888` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 864/864 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1516 cases across 114 manifests, with all 1516 passing in the current slice; the benchmark publication covers 866/866 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `864` |
-| Workloads with real `rebar` timings | `864` |
+| Published workloads | `866` |
+| Workloads with real `rebar` timings | `866` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0884` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the first adjacent compiled-pattern-first-argument named-group explicit `flags=False` `compile()` pair up on the shared Python-path `module_boundary.py` surface once the named-group explicit `flags=0` pair lands, instead of reopening named-group `IGNORECASE` rejections, `NOFLAG` spellings, or another benchmark family.
+- `RBR-0886` is the surviving follow-on on the existing `module-workflow-surface` frontier, adding the next compiled-pattern-first-argument named-group `compile(..., flags=IGNORECASE)` rejection pair to the shared Python-path `module_boundary.py` benchmark surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 864 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 866 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
