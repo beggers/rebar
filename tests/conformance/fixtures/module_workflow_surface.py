@@ -548,6 +548,29 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-match-bytes-window-indexlike",
+      "operation": "pattern_call",
+      "family": "bound_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabc"
+        }
+      ],
+      "kwargs": {
+        "pos": _INDEX_ONE,
+        "endpos": _INDEX_FOUR
+      },
+      "categories": ["workflow", "match", "literal", "keyword", "window", "indexlike", "bytes"],
+      "notes": [
+        "Publishes the remaining bound Pattern.match pos=/endpos= __index__ workflow on bytes payloads without widening into the already published str keyword rows or neighboring bound helper slices."
+      ]
+    },
+    {
       "id": "workflow-pattern-fullmatch-bytes-window-keyword",
       "operation": "pattern_call",
       "family": "bound_fullmatch_workflow",
@@ -912,6 +935,27 @@ MANIFEST = {
       "categories": ["workflow", "search", "literal", "endpos", "bytes"],
       "notes": [
         "Publishes the bytes bound Pattern.search positional endpos __index__ workflow already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-match-bytes-window-indexlike-positional",
+      "operation": "pattern_call",
+      "family": "bound_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabc"
+        },
+        _INDEX_ONE,
+        _INDEX_FOUR
+      ],
+      "categories": ["workflow", "match", "literal", "window", "bytes"],
+      "notes": [
+        "Publishes the bound Pattern.match positional pos/endpos __index__ workflow on bytes payloads already anchored on the shared module-workflow owner path."
       ]
     },
     {

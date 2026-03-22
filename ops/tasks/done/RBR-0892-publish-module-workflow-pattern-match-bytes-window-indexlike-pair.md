@@ -1,6 +1,6 @@
 # RBR-0892: Publish the module-workflow `Pattern.match()` bytes window `__index__` pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -66,3 +66,13 @@ Created: 2026-03-22
   - direct publication probes in this run confirmed `workflow-pattern-match-bytes-window-indexlike` and `workflow-pattern-match-bytes-window-indexlike-positional` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and the published case inventories in `tests/python/test_module_workflow_parity_suite.py`;
   - `benchmarks/workloads/pattern_boundary.py` and `reports/benchmarks/latest.py` currently publish adjacent pattern-window keyword and positional rows, but no exact bytes `Pattern.match()` window `__index__` keyword or positional workloads; and
   - once `RBR-0890` lands, this bytes pair is the next exact unpublished owner-path neighbor on the shared bound-`Pattern` window surface.
+
+## Completion Note
+- Added the two missing `module-workflow-surface` fixture rows for bytes bound-`Pattern.match()` window `__index__` keyword and positional spellings, keeping them on the existing shared owner path and leaving benchmark artifacts unchanged.
+- Updated the shared parity/publication expectations in `tests/python/test_module_workflow_parity_suite.py` and `tests/conformance/test_combined_correctness_scorecards.py` to publish the pair and the new `148` / `85` / `63` / `81` / `55` module-workflow counts.
+- Regenerated `reports/correctness/latest.py`; the tracked publication now reports `1522` total cases, `1522` passed, `0` unimplemented, `114` manifests, and includes both new case ids.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-match-window-indexlike-bytes or pattern-match-window-indexlike-positional-bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0892-module-workflow-pattern-match-bytes-window-indexlike-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

@@ -247,6 +247,7 @@ PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
         "workflow-pattern-search-bytes-endpos-indexlike",
         "workflow-pattern-match-str-pos-keyword",
         "workflow-pattern-match-str-bool-pos-keyword",
+        "workflow-pattern-match-bytes-window-indexlike",
         "workflow-pattern-fullmatch-bytes-window-keyword",
         "workflow-pattern-fullmatch-bytes-window-indexlike",
         "workflow-pattern-findall-str-window-keyword",
@@ -3057,15 +3058,15 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 146
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 148
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 85, "bytes": 61}
+        {"str": 85, "bytes": 63}
     )
-    assert len(PATTERN_CASES) == 53
+    assert len(PATTERN_CASES) == 55
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 16,
-            "match": 4,
+            "match": 6,
             "fullmatch": 11,
             "findall": 5,
             "finditer": 5,
@@ -3117,6 +3118,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
         "workflow-pattern-match-str-pos-keyword",
         "workflow-pattern-match-str-bool-pos-keyword",
+        "workflow-pattern-match-bytes-window-indexlike",
         "workflow-pattern-fullmatch-str-verbose-regression",
         "workflow-pattern-fullmatch-str-verbose-regression-alpha",
         "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
@@ -3705,6 +3707,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
     ) == (
         "workflow-pattern-search-bytes-endpos-keyword",
         "workflow-pattern-search-bytes-endpos-indexlike",
+        "workflow-pattern-match-bytes-window-indexlike",
         "workflow-pattern-fullmatch-bytes-window-keyword",
         "workflow-pattern-fullmatch-bytes-window-indexlike",
         "workflow-pattern-finditer-bytes-window-keyword",
@@ -3724,6 +3727,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-search-bytes-endpos-indexlike",
         "workflow-pattern-match-str-pos-keyword",
         "workflow-pattern-match-str-bool-pos-keyword",
+        "workflow-pattern-match-bytes-window-indexlike",
         "workflow-pattern-fullmatch-bytes-window-keyword",
         "workflow-pattern-fullmatch-bytes-window-indexlike",
         "workflow-pattern-findall-str-window-keyword",
@@ -3752,6 +3756,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "pattern-search-endpos-indexlike-bytes",
         "pattern-match-pos-keyword-str",
         "pattern-match-bool-pos-keyword-str",
+        "pattern-match-window-indexlike-bytes",
         "pattern-fullmatch-window-keyword-bytes",
         "pattern-fullmatch-window-indexlike-bytes",
         "pattern-findall-window-keyword-str",
@@ -3775,7 +3780,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         Counter(
             {
                 "search": 5,
-                "match": 2,
+                "match": 3,
                 "fullmatch": 2,
                 "findall": 3,
                 "finditer": 3,
@@ -3946,6 +3951,7 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
         )
     ) == (
         "workflow-pattern-search-bytes-endpos-indexlike-positional",
+        "workflow-pattern-match-bytes-window-indexlike-positional",
         "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
         "workflow-pattern-finditer-bytes-window-indexlike-positional",
         "workflow-pattern-sub-count-indexlike-positional-bytes",
@@ -3955,6 +3961,7 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
     ) == (
         "workflow-pattern-search-str-pos-indexlike-positional",
         "workflow-pattern-search-bytes-endpos-indexlike-positional",
+        "workflow-pattern-match-bytes-window-indexlike-positional",
         "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
         "workflow-pattern-findall-str-window-indexlike-positional",
         "workflow-pattern-finditer-bytes-window-indexlike-positional",
@@ -3965,6 +3972,7 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
     assert tuple(case.case_id for case in selected_direct_cases) == (
         "pattern-search-pos-indexlike-positional-str",
         "pattern-search-endpos-indexlike-positional-bytes",
+        "pattern-match-window-indexlike-positional-bytes",
         "pattern-fullmatch-window-indexlike-positional-bytes",
         "pattern-findall-window-indexlike-positional-str",
         "pattern-finditer-window-indexlike-positional-bytes",
@@ -3978,6 +3986,7 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
     ) == Counter(
         {
             "search": 2,
+            "match": 1,
             "fullmatch": 1,
             "findall": 1,
             "finditer": 1,
