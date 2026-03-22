@@ -1,6 +1,6 @@
 # RBR-0958: Collapse compiled-pattern helper keyword contract test siblings
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -119,3 +119,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_keyword or compiled_pattern_module_helper_keyword or compiled_pattern_module_helper_callbacks_precompile_first_argument_before_timing'` currently passes (`69 passed, 563 deselected, 10 subtests passed`);
   - the selector probe in Verification currently passes (`ok 11 10 3`), proving the success, keyword-error, and success-precompile-anchor surfaces already exist directly on the live manifest-selected path; and
   - the `rg -n` pattern in Verification currently finds the six paired duplicate test bodies named in this task, which is the exact cleanup this task queues.
+
+## Completion
+- Replaced the six duplicated success-versus-keyword-error compiled-pattern helper keyword tests in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with one shared file-local contract surface backed by `_CompiledPatternModuleHelperKeywordContractSurface` plus three parameterized tests for manifest preservation, internal probes, and precompile-first callbacks.
+- Preserved the existing success, keyword-error, and precompile-anchor selectors and kept the targeted keyword materialization and exact-`TypeError` callback assertions intact.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_keyword or compiled_pattern_module_helper_keyword or compiled_pattern_module_helper_callbacks_precompile_first_argument_before_timing'`
+  - `bash -lc "! rg -n 'test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_rows_until_helper_invocation|test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_error_rows_until_helper_invocation|test_run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_workloads|test_run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_error_workloads|test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argument_before_timing|test_compiled_pattern_module_helper_callbacks_precompile_first_argument_before_timing' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ...` selector contract probe (`ok 11 10 3`)
