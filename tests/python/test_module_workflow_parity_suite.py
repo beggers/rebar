@@ -2327,6 +2327,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         kwargs={"flags": False},
     ),
     CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-compile-flags-noflag-str",
+        helper="compile",
+        pattern="abc",
+        args=(),
+        kwargs={"flags": re.NOFLAG},
+    ),
+    CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-compile-flags-noflag-str-named-group",
         helper="compile",
         pattern=r"(?P<word>abc)",
@@ -2360,6 +2367,13 @@ COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
         pattern=b"abc",
         args=(),
         kwargs={"flags": False},
+    ),
+    CompiledPatternModuleKeywordCallCase(
+        case_id="compiled-pattern-compile-flags-noflag-bytes",
+        helper="compile",
+        pattern=b"abc",
+        args=(),
+        kwargs={"flags": re.NOFLAG},
     ),
     CompiledPatternModuleKeywordCallCase(
         case_id="compiled-pattern-compile-flags-noflag-bytes-named-group",
