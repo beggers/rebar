@@ -90,14 +90,6 @@ HELPERS = ("search", "match", "fullmatch")
 BODY_ATOMS = ("b", "c", "e")
 FAILURE_PREVIEW_LIMIT = 20
 STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
-SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS = (
-    "named-backreference-module-search-str",
-    "named-backreference-pattern-search-str",
-    "numbered-backreference-module-search-str",
-    "numbered-backreference-pattern-search-str",
-    "numbered-backreference-segment-module-search-str",
-    "numbered-backreference-prefix-pattern-search-str",
-)
 
 
 FIXTURE_BUNDLES = tuple(
@@ -489,6 +481,15 @@ def _iter_fixture_cases() -> Iterator[FixtureCase]:
         yield from bundle.cases
 
 
+def _simple_backreference_workflow_case_ids() -> tuple[str, ...]:
+    return tuple(
+        case.case_id
+        for bundle in WHOLE_MANIFEST_BACKREFERENCE_BUNDLES
+        for case in bundle.cases
+        if case.operation != "compile"
+    )
+
+
 SUPPORTED_DIRECT_BYTES_PATTERNS = frozenset(
     case.pattern
     for case in _direct_bytes_follow_on_cases()
@@ -500,11 +501,14 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_SPECS),
 )
-_SHARED_WORKFLOW_CASE_IDS = frozenset(
-    case.case_id for case in (*MODULE_CASES, *PATTERN_CASES)
-)
+
+
+def _shared_workflow_case_ids() -> frozenset[str]:
+    return frozenset(case.case_id for case in (*MODULE_CASES, *PATTERN_CASES))
+
+
 WORKFLOW_CASES = tuple(
-    case for case in _iter_fixture_cases() if case.case_id in _SHARED_WORKFLOW_CASE_IDS
+    case for case in _iter_fixture_cases() if case.case_id in _shared_workflow_case_ids()
 )
 
 
@@ -520,14 +524,14 @@ MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
     }
 )
 MATCH_CONVENIENCE_CASE_IDS = frozenset(
-    SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS
+    _simple_backreference_workflow_case_ids()
 ) | frozenset(
     case.case_id
     for case in WORKFLOW_CASES
     if case.manifest_id in MATCH_CONVENIENCE_MANIFEST_IDS and case.operation != "compile"
 )
 MATCH_GROUP_ACCESS_CASE_IDS = (
-    *SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS,
+    *_simple_backreference_workflow_case_ids(),
     "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
     "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
     "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",

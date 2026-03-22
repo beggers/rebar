@@ -1,8 +1,9 @@
 # RBR-0922: Collapse branch-local backreference workflow case-id mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached `SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS` tuple and `_SHARED_WORKFLOW_CASE_IDS` set from `tests/python/test_branch_local_backreference_parity_suite.py`, so the branch-local owner derives those same case selections directly from the live whole-manifest bundles and the already-built module/pattern buckets instead of caching second copies of the same ids.
@@ -79,3 +80,12 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` currently passes (`561 passed in 0.81s`);
   - `rg -n '^(SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS|_SHARED_WORKFLOW_CASE_IDS)\\s*=' tests/python/test_branch_local_backreference_parity_suite.py` currently finds the remaining mirrors at lines `93` and `503`; and
   - the task-local live-selector probe in Acceptance currently passes (`ok 6 78`), proving the suite's existing whole-manifest bundles plus module/pattern buckets already recover the same simple workflow slice and ordered shared workflow surface without those cached mirrors.
+
+## Completion
+- Deleted `SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS` and `_SHARED_WORKFLOW_CASE_IDS` from `tests/python/test_branch_local_backreference_parity_suite.py`.
+- Replaced both mirrors with tiny file-local live selectors over `WHOLE_MANIFEST_BACKREFERENCE_BUNDLES`, `MODULE_CASES`, and `PATTERN_CASES`, preserving the same six simple workflow ids and the same 78-row ordered shared workflow frontier.
+- Kept `WORKFLOW_CASES`, `MATCH_CONVENIENCE_CASE_IDS`, and `MATCH_GROUP_ACCESS_CASE_IDS` on the same case surface and ordering without introducing another cached id mirror.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py`
+  - `bash -lc "! rg -n '^(SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS|_SHARED_WORKFLOW_CASE_IDS)\\s*=' tests/python/test_branch_local_backreference_parity_suite.py"`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... PY`
