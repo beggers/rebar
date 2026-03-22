@@ -6666,70 +6666,29 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
     )
 
 
-def _collection_replacement_duplicate_keyword_field(
+def _collection_replacement_expected_keyword_field(
     workload: Any,
 ) -> str | None:
-    expected_exception = workload.expected_exception
-    if expected_exception is None or expected_exception.get("type") != "TypeError":
-        return None
-    message_substring = expected_exception.get("message_substring")
-    if not isinstance(message_substring, str):
-        return None
-    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
-    if keyword_parameter is None:
-        return None
-    if (
-        keyword_parameter in workload.kwargs
-        and f"multiple values for argument '{keyword_parameter}'"
-        in message_substring
-    ):
-        return keyword_parameter
-    if workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}:
-        positional_limit = {
-            "pattern.split": 2,
-            "pattern.sub": 3,
-            "pattern.subn": 3,
-        }[workload.operation]
-        helper_name = workload.operation.removeprefix("pattern.")
-        expected_message = (
-            f"{helper_name}() takes at most {positional_limit} arguments "
-            f"({positional_limit + 1} given)"
+    if workload.operation.startswith("module."):
+        return (
+            benchmarks._expected_duplicate_module_helper_keyword_field(workload)
+            or benchmarks._expected_positional_module_helper_keyword_field(workload)
         )
-        if expected_message in message_substring:
-            return keyword_parameter
+    if workload.operation.startswith("pattern."):
+        return benchmarks._expected_pattern_helper_positional_keyword_field(workload)
     return None
 
 
 def _collection_replacement_positional_keyword_field(
     workload: Any,
 ) -> str | None:
-    duplicate_keyword_field = _collection_replacement_duplicate_keyword_field(workload)
-    if duplicate_keyword_field is not None:
-        return duplicate_keyword_field
-
-    expected_exception = workload.expected_exception
-    if (
-        not workload.operation.startswith("module.")
-        or not workload.kwargs
-        or expected_exception is None
-        or expected_exception.get("type") != "TypeError"
-    ):
+    expected_keyword_field = _collection_replacement_expected_keyword_field(workload)
+    if expected_keyword_field is None:
         return None
-
     keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
-    positional_payload = _collection_replacement_parameter_payload(workload)
-    if (
-        keyword_parameter is None
-        or positional_payload is None
-        or (
-            type(positional_payload) is not bool
-            and not _is_encoded_indexlike_payload(positional_payload)
-            and positional_payload == 0
-        )
-    ):
+    if expected_keyword_field != keyword_parameter:
         return None
-
-    return keyword_parameter
+    return expected_keyword_field
 
 
 def _collection_replacement_keyword_correctness_case_signature(
@@ -6815,7 +6774,7 @@ def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
         return False
     if keyword_names[0] == keyword_parameter:
         return True
-    if _collection_replacement_duplicate_keyword_field(workload) is not None:
+    if _collection_replacement_expected_keyword_field(workload) is not None:
         return True
     return _collection_replacement_has_expected_unexpected_keyword_error(workload)
 
