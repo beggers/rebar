@@ -12426,6 +12426,17 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         expected_field_names=("kwargs.count",),
     ),
     CompiledPatternModuleKeywordCarrierCase(
+        id="module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+        operation="module.sub",
+        cache_mode="warm",
+        haystack="abcabc",
+        kwargs_payload={"count": False},
+        replacement="x",
+        text_model="str",
+        expected_result="xx",
+        expected_field_names=("kwargs.count",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
         id="module-subn-count-keyword-purged-bytes-compiled-pattern",
         operation="module.subn",
         cache_mode="purged",
@@ -12456,6 +12467,17 @@ COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES = (
         replacement="x",
         text_model="bytes",
         expected_result=(b"xx", 2),
+        expected_field_names=("kwargs.count",),
+    ),
+    CompiledPatternModuleKeywordCarrierCase(
+        id="module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+        operation="module.subn",
+        cache_mode="purged",
+        haystack="abcabc",
+        kwargs_payload={"count": True},
+        replacement="x",
+        text_model="bytes",
+        expected_result=(b"xabc", 1),
         expected_field_names=("kwargs.count",),
     ),
 )
@@ -12509,6 +12531,15 @@ def _compiled_pattern_module_helper_keyword_workload(
     )
 
 
+def _compiled_pattern_module_keyword_carrier_case(
+    case_id: str,
+) -> CompiledPatternModuleKeywordCarrierCase:
+    for case in COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES:
+        if case.id == case_id:
+            return case
+    raise AssertionError(f"unknown compiled-pattern module keyword carrier case {case_id!r}")
+
+
 def _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
     case: CompiledPatternModuleKeywordCarrierCase,
     payload: dict[str, object],
@@ -12521,6 +12552,50 @@ def _assert_compiled_pattern_module_helper_keyword_payload_round_trip(
     for name, value in case.kwargs_payload.items():
         if type(value) is bool:
             assert type(round_tripped.kwargs[name]) is bool
+
+
+def test_compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements() -> None:
+    assert {
+        (
+            case.id,
+            case.operation,
+            case.text_model,
+            case.kwargs_payload["count"],
+            case.expected_result,
+        )
+        for case in COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES
+        if case.operation in {"module.sub", "module.subn"}
+        and type(case.kwargs_payload.get("count")) is bool
+    } == {
+        (
+            "module-sub-count-bool-keyword-warm-str-compiled-pattern",
+            "module.sub",
+            "str",
+            True,
+            "xabc",
+        ),
+        (
+            "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+            "module.sub",
+            "str",
+            False,
+            "xx",
+        ),
+        (
+            "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
+            "module.subn",
+            "bytes",
+            False,
+            (b"xx", 2),
+        ),
+        (
+            "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+            "module.subn",
+            "bytes",
+            True,
+            (b"xabc", 1),
+        ),
+    }
 
 
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_rows_until_helper_invocation(
@@ -12650,19 +12725,25 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     ("case", "expected_build_calls", "expected_callback_call"),
     (
         pytest.param(
-            COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[0],
+            _compiled_pattern_module_keyword_carrier_case(
+                "module-split-maxsplit-keyword-purged-str-compiled-pattern"
+            ),
             [("compile", "abc", 0), ("purge",)],
             ("module.split", "zabczabc", 0, 0, {"maxsplit": 1}),
             id="module-split-maxsplit-keyword-purged-str-compiled-pattern",
         ),
         pytest.param(
-            COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[3],
+            _compiled_pattern_module_keyword_carrier_case(
+                "module-sub-count-keyword-warm-str-compiled-pattern"
+            ),
             [("compile", "abc", 0)],
             ("module.sub", "x", "abcabc", 0, 0, {"count": 1}),
             id="module-sub-count-keyword-warm-str-compiled-pattern",
         ),
         pytest.param(
-            COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES[6],
+            _compiled_pattern_module_keyword_carrier_case(
+                "module-subn-count-keyword-purged-bytes-compiled-pattern"
+            ),
             [("compile", b"abc", 0), ("purge",)],
             ("module.subn", b"x", b"abcabc", 0, 0, {"count": 1}),
             id="module-subn-count-keyword-purged-bytes-compiled-pattern",
