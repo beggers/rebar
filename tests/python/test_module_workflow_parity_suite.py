@@ -3053,9 +3053,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 144
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 146
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 84, "bytes": 60}
+        {"str": 85, "bytes": 61}
     )
     assert len(PATTERN_CASES) == 53
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -3070,10 +3070,10 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 4,
         }
     )
-    assert len(MODULE_CALL_CASES) == 79
+    assert len(MODULE_CALL_CASES) == 81
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
-            "compile": 18,
+            "compile": 20,
             "search": 7,
             "match": 5,
             "fullmatch": 7,
@@ -4088,6 +4088,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         )
     ) == (
         "workflow-module-compile-str-compiled-pattern",
+        "workflow-module-compile-flags-noflag-str-compiled-pattern",
         "workflow-module-compile-flags-int-zero-str-compiled-pattern",
         "workflow-module-compile-flags-bool-false-str-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
@@ -4125,6 +4126,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         )
     ) == (
         "workflow-module-compile-bytes-compiled-pattern",
+        "workflow-module-compile-flags-noflag-bytes-compiled-pattern",
         "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
         "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
@@ -4150,11 +4152,12 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 54
+    assert len(PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES) == 56
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == (
         "workflow-module-compile-str-compiled-pattern",
+        "workflow-module-compile-flags-noflag-str-compiled-pattern",
         "workflow-module-compile-flags-int-zero-str-compiled-pattern",
         "workflow-module-compile-flags-bool-false-str-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
@@ -4167,6 +4170,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-search-str-compiled-pattern-on-bytes-string",
         "workflow-module-match-str-compiled-pattern",
         "workflow-module-compile-bytes-compiled-pattern",
+        "workflow-module-compile-flags-noflag-bytes-compiled-pattern",
         "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
         "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
         "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
@@ -4213,6 +4217,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         case.case_id for case in selected_direct_cases
     ) == (
         "compiled-pattern-compile-str-literal",
+        "compiled-pattern-compile-flags-noflag-str",
         "compiled-pattern-compile-flags-int-zero-str",
         "compiled-pattern-compile-flags-bool-false-str",
         "compiled-pattern-compile-flags-ignorecase-str",
@@ -4225,6 +4230,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-search-str-on-bytes-string",
         "compiled-pattern-match-str",
         "compiled-pattern-compile-bytes-literal",
+        "compiled-pattern-compile-flags-noflag-bytes",
         "compiled-pattern-compile-flags-int-zero-bytes",
         "compiled-pattern-compile-flags-bool-false-bytes",
         "compiled-pattern-compile-flags-ignorecase-bytes",

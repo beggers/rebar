@@ -1484,6 +1484,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-flags-noflag-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "helper": "compile",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": re.NOFLAG
+      },
+      "categories": ["workflow", "compile", "literal", "str", "compiled-pattern", "flags", "noflag"],
+      "notes": [
+        "Publishes the compiled-pattern module-level literal str compile() explicit NOFLAG spelling on the shared owner path without broadening into the default, integer-zero, bool-false, named-group, or nonzero-flag rejection slices."
+      ]
+    },
+    {
       "id": "workflow-module-compile-flags-int-zero-str-compiled-pattern",
       "operation": "module_call",
       "family": "compile_workflow",
@@ -1657,6 +1672,22 @@ MANIFEST = {
       "categories": ["workflow", "compile", "literal", "bytes", "compiled-pattern"],
       "notes": [
         "Publishes the exact literal bytes module-level compile() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-compile-flags-noflag-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "helper": "compile",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "flags": re.NOFLAG
+      },
+      "categories": ["workflow", "compile", "literal", "bytes", "compiled-pattern", "flags", "noflag"],
+      "notes": [
+        "Publishes the compiled-pattern module-level literal bytes compile() explicit NOFLAG spelling on the shared owner path without broadening into the default, integer-zero, bool-false, named-group, or nonzero-flag rejection slices."
       ]
     },
     {

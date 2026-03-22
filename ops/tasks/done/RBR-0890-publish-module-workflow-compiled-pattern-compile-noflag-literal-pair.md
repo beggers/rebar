@@ -1,6 +1,6 @@
 # RBR-0890: Publish the module-workflow compiled-pattern compile explicit-NOFLAG literal pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -67,3 +67,14 @@ Created: 2026-03-22
   - direct publication probes in this run confirmed `workflow-module-compile-flags-noflag-str-compiled-pattern` and `workflow-module-compile-flags-noflag-bytes-compiled-pattern` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - `benchmarks/workloads/module_boundary.py` and `reports/benchmarks/latest.py` still publish no distinct `NOFLAG` literal benchmark rows, which is intentional because the benchmark keyword path already normalizes zero-valued `flags=` carriers onto the measured integer-zero route; and
   - if `RBR-0888` has not landed yet, stop and finish that prerequisite first so this follow-on can reuse the shared `RegexFlag(0)` signature distinction instead of reintroducing it here.
+
+## Completion Note
+- Added the two missing published module-workflow fixture rows for literal compiled-pattern `compile(..., flags=re.NOFLAG)` on the `str` and `bytes` paths, keeping their order directly after the default literal compiled-pattern rows and before the explicit integer-zero neighbors.
+- Updated the shared module-workflow parity expectations and combined scorecard manifest expectations to include those rows and the new `146`/`85`/`61`/`81` owner-path counts.
+- Regenerated `reports/correctness/latest.py`; the tracked publication now reports `1520` total cases, `1520` passed, `0` unimplemented, `114` manifests, and includes both new module-workflow case ids.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython and literal'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0890-module-workflow-compiled-pattern-compile-noflag-literal-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Benchmark manifests and `reports/benchmarks/latest.py` were intentionally left unchanged in this task.
