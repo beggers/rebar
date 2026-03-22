@@ -25,10 +25,10 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_valid_match_group_access_parity,
+    build_selected_fixture_bundle,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
-    load_published_fixture_bundles,
     published_fixture_bundles_by_manifest_id,
     str_case_pattern,
 )
@@ -1062,10 +1062,12 @@ def _pending_rebar_bytes_patterns() -> frozenset[bytes]:
     )
 
 COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID = "module-sub-callable-str"
-COLLECTION_REPLACEMENT_OWNER_BUNDLE, = load_published_fixture_bundles(
-    COLLECTION_REPLACEMENT_FIXTURE_PATHS
+COLLECTION_REPLACEMENT_OWNER_BUNDLE = build_selected_fixture_bundle(
+    COLLECTION_REPLACEMENT_FIXTURE_PATHS[0]
 )
-FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
+FIXTURE_BUNDLES = tuple(
+    build_selected_fixture_bundle(path) for path in CALLABLE_FIXTURE_PATHS
+)
 FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
     FIXTURE_BUNDLES
 )
@@ -1450,7 +1452,7 @@ def test_callable_replacement_selector_tracks_published_callable_manifests() -> 
 def test_published_fixture_bundle_loading_preserves_selector_path_order() -> None:
     fixture_paths = tuple(reversed(CALLABLE_FIXTURE_PATHS[:2]))
 
-    bundles = load_published_fixture_bundles(fixture_paths)
+    bundles = tuple(build_selected_fixture_bundle(path) for path in fixture_paths)
 
     assert tuple(bundle.manifest.path for bundle in bundles) == fixture_paths
     for bundle in bundles:
@@ -1466,7 +1468,9 @@ def test_published_fixture_bundle_loading_preserves_selector_path_order() -> Non
 
 def test_published_fixture_bundle_manifest_map_supports_lookup_and_duplicate_rejection(
 ) -> None:
-    bundles = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS[:2])
+    bundles = tuple(
+        build_selected_fixture_bundle(path) for path in CALLABLE_FIXTURE_PATHS[:2]
+    )
     manifest_id = bundles[0].manifest.manifest_id
     bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(bundles)
 

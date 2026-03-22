@@ -21,7 +21,6 @@ from tests.python.fixture_parity_support import (
     build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
-    load_published_fixture_bundles,
     published_fixture_bundles_by_manifest_id,
 )
 
@@ -32,8 +31,9 @@ KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS = (
     "bytes-literal-success",
 )
 
-OWNER_FIXTURE_BUNDLES = load_published_fixture_bundles(
-    select_correctness_fixture_paths(PARSER_PARITY_FIXTURE_SELECTOR)
+OWNER_FIXTURE_BUNDLES = tuple(
+    build_selected_fixture_bundle(path)
+    for path in select_correctness_fixture_paths(PARSER_PARITY_FIXTURE_SELECTOR)
 )
 OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
     OWNER_FIXTURE_BUNDLES

@@ -38,7 +38,6 @@ from tests.python.fixture_parity_support import (
     case_text_argument,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    load_published_fixture_bundles,
     published_fixture_bundles_by_manifest_id,
     str_case_pattern,
 )
@@ -968,9 +967,12 @@ def _grouped_replacement_collection_case_ids(
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     if spec.fixture_selector is None:
         raise ValueError(f"{spec.id} is missing a published fixture selector")
-    bundles = load_published_fixture_bundles(
-        select_correctness_fixture_paths(spec.fixture_selector),
-        pattern_extractor=spec.pattern_extractor,
+    bundles = tuple(
+        build_selected_fixture_bundle(
+            path,
+            pattern_extractor=spec.pattern_extractor,
+        )
+        for path in select_correctness_fixture_paths(spec.fixture_selector)
     )
     bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(bundles)
     if spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID:
@@ -2275,11 +2277,9 @@ def test_negative_replacement_counts_short_circuit_like_cpython(
 
 
 def test_sorted_compile_patterns_supports_mixed_text_models() -> None:
-    (bundle,) = load_published_fixture_bundles(
-        (
-            CORRECTNESS_FIXTURES_ROOT
-            / "open_ended_quantified_group_alternation_workflows.py",
-        ),
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT
+        / "open_ended_quantified_group_alternation_workflows.py",
         pattern_extractor=case_pattern,
     )
 

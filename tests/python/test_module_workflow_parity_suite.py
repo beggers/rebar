@@ -45,10 +45,10 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     assert_placeholder_message_contains,
     assert_value_parity,
+    build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    load_published_fixture_bundles,
     published_fixture_bundles_by_manifest_id,
 )
 
@@ -168,8 +168,9 @@ def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
 
 
-MODULE_WORKFLOW_SURFACE_BUNDLES = load_published_fixture_bundles(
-    MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
+MODULE_WORKFLOW_SURFACE_BUNDLES = tuple(
+    build_selected_fixture_bundle(path)
+    for path in MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
 )
 assert {bundle.manifest.path for bundle in MODULE_WORKFLOW_SURFACE_BUNDLES} == set(
     MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
@@ -391,9 +392,12 @@ NON_INSTANTIABLE_EXPORTS = (
 PUBLIC_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
     PUBLIC_SURFACE_FIXTURE_SELECTOR
 )
-PUBLIC_SURFACE_BUNDLES = load_published_fixture_bundles(
-    PUBLIC_SURFACE_FIXTURE_PATHS,
-    pattern_extractor=_public_surface_case_contract_token,
+PUBLIC_SURFACE_BUNDLES = tuple(
+    build_selected_fixture_bundle(
+        path,
+        pattern_extractor=_public_surface_case_contract_token,
+    )
+    for path in PUBLIC_SURFACE_FIXTURE_PATHS
 )
 PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
     PUBLIC_SURFACE_BUNDLES
@@ -1046,8 +1050,8 @@ def _is_collection_type_error_fixture_case(case: FixtureCase) -> bool:
 COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
     COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
 )
-(COLLECTION_REPLACEMENT_BUNDLE,) = load_published_fixture_bundles(
-    COLLECTION_REPLACEMENT_FIXTURE_PATHS
+COLLECTION_REPLACEMENT_BUNDLE = build_selected_fixture_bundle(
+    COLLECTION_REPLACEMENT_FIXTURE_PATHS[0]
 )
 
 

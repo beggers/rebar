@@ -22,9 +22,9 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
+    build_selected_fixture_bundle,
     compile_with_cpython_parity,
     invoke_bounded_pattern_case,
-    load_published_fixture_bundles,
     published_fixture_bundles_by_manifest_id,
     str_case_pattern,
     workflow_result_with_cpython_parity,
@@ -64,9 +64,9 @@ class OptionalGroupExpandCase:
     expected_expansion: str
 
 
-FIXTURE_BUNDLES = load_published_fixture_bundles(
-    select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR),
-    pattern_extractor=str_case_pattern,
+FIXTURE_BUNDLES = tuple(
+    build_selected_fixture_bundle(path, pattern_extractor=str_case_pattern)
+    for path in select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR)
 )
 FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(FIXTURE_BUNDLES)
 GROUPED_MATCH_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID["grouped-match-workflows"]

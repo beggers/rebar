@@ -316,21 +316,20 @@ def _assert_zero_flag_keyword_carrier(
     assert materialized_value == 0
 
 
-def _load_published_fixture_bundle(
+def _load_full_fixture_bundle(
     fixture_path: pathlib.Path,
     *,
     pattern_extractor: Callable[[FixtureCase], str | bytes] = case_pattern,
 ) -> FixtureBundle:
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles(
-        (fixture_path,),
+    return build_selected_fixture_bundle(
+        fixture_path,
         pattern_extractor=pattern_extractor,
     )
-    return bundle
 
 
 def _load_bundle_loader_contract_str_bundle(tmp_path: pathlib.Path) -> FixtureBundle:
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    return _load_published_fixture_bundle(
+    return _load_full_fixture_bundle(
         str_path,
         pattern_extractor=str_case_pattern,
     )
@@ -338,7 +337,7 @@ def _load_bundle_loader_contract_str_bundle(tmp_path: pathlib.Path) -> FixtureBu
 
 def _load_bundle_loader_contract_mixed_bundle(tmp_path: pathlib.Path) -> FixtureBundle:
     _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    return _load_published_fixture_bundle(
+    return _load_full_fixture_bundle(
         mixed_path,
         pattern_extractor=case_pattern,
     )
@@ -2703,8 +2702,8 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    str_bundle, mixed_bundle = fixture_parity_support.load_published_fixture_bundles(
-        (str_path, mixed_path)
+    str_bundle, mixed_bundle = tuple(
+        build_selected_fixture_bundle(path) for path in (str_path, mixed_path)
     )
 
     assert tuple(bundle.manifest.path.name for bundle in (str_bundle, mixed_bundle)) == (
@@ -2754,7 +2753,7 @@ def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_fi
 ) -> None:
     field_names = {field.name for field in fields(FixtureBundle)}
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    bundle = _load_published_fixture_bundle(
+    bundle = _load_full_fixture_bundle(
         str_path,
         pattern_extractor=str_case_pattern,
     )
@@ -2764,13 +2763,11 @@ def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_fi
     assert bundle.expected_manifest_id == bundle.manifest.manifest_id
 
 
-def test_load_published_fixture_bundles_derives_full_manifest_contracts_in_input_order(
+def test_full_manifest_bundle_builds_contracts_in_input_order(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    bundles = fixture_parity_support.load_published_fixture_bundles(
-        (mixed_path, str_path)
-    )
+    bundles = tuple(build_selected_fixture_bundle(path) for path in (mixed_path, str_path))
     mixed_bundle, str_bundle = bundles
 
     assert tuple(bundle.expected_manifest_id for bundle in bundles) == (
@@ -2812,21 +2809,21 @@ def test_load_published_fixture_bundles_derives_full_manifest_contracts_in_input
     )
 
 
-def test_load_published_fixture_bundles_custom_pattern_extractor_only_changes_expected_patterns(
+def test_full_manifest_bundle_custom_pattern_extractor_only_changes_expected_patterns(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
 
-    default_bundles = fixture_parity_support.load_published_fixture_bundles(
-        (mixed_path, str_path)
+    default_bundles = tuple(
+        build_selected_fixture_bundle(path) for path in (mixed_path, str_path)
     )
 
     def _case_id_pattern(case: FixtureCase) -> str:
         return case.case_id
 
-    custom_bundles = fixture_parity_support.load_published_fixture_bundles(
-        (mixed_path, str_path),
-        pattern_extractor=_case_id_pattern,
+    custom_bundles = tuple(
+        build_selected_fixture_bundle(path, pattern_extractor=_case_id_pattern)
+        for path in (mixed_path, str_path)
     )
 
     assert tuple(bundle.expected_manifest_id for bundle in custom_bundles) == tuple(
@@ -2869,8 +2866,8 @@ def test_published_fixture_bundles_by_manifest_id_returns_requested_bundles(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    bundles = fixture_parity_support.load_published_fixture_bundles(
-        (str_path, mixed_path)
+    bundles = tuple(
+        build_selected_fixture_bundle(path) for path in (str_path, mixed_path)
     )
 
     bundles_by_manifest_id = fixture_parity_support.published_fixture_bundles_by_manifest_id(
@@ -2889,7 +2886,7 @@ def test_published_fixture_bundles_by_manifest_id_rejects_duplicate_manifest_ids
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((str_path,))
+    bundle = build_selected_fixture_bundle(str_path)
 
     with pytest.raises(
         ValueError,
@@ -2908,7 +2905,7 @@ def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buc
     fixture_path = (
         CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
     )
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((fixture_path,))
+    bundle = build_selected_fixture_bundle(fixture_path)
     compile_cases, module_cases, pattern_cases = (
         fixture_parity_support.partition_direct_bytes_follow_on_case_buckets(
             (bundle,),
@@ -2941,7 +2938,7 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_bytes_left_in_gene
     fixture_path = (
         CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
     )
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((fixture_path,))
+    bundle = build_selected_fixture_bundle(fixture_path)
     compile_cases = fixture_cases_for_operation((bundle,), "compile")
     module_cases = tuple(
         case
@@ -2983,7 +2980,7 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_unexpected_str_row
     fixture_path = (
         CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
     )
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((fixture_path,))
+    bundle = build_selected_fixture_bundle(fixture_path)
     cases_by_operation = {
         bucket_operation: tuple(
             case
@@ -3020,7 +3017,7 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows()
     fixture_path = (
         CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
     )
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((fixture_path,))
+    bundle = build_selected_fixture_bundle(fixture_path)
     compile_cases = tuple(
         case
         for case in fixture_cases_for_operation((bundle,), "compile")
@@ -3055,7 +3052,7 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows()
 def test_assert_direct_bytes_follow_on_bundle_routing_rejects_str_only_manifest_bundle(
 ) -> None:
     fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((fixture_path,))
+    bundle = build_selected_fixture_bundle(fixture_path)
 
     with pytest.raises(
         AssertionError,
@@ -3077,7 +3074,7 @@ def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_byte
     fixture_path = (
         CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
     )
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((fixture_path,))
+    bundle = build_selected_fixture_bundle(fixture_path)
     compile_cases, module_cases, pattern_cases = (
         fixture_parity_support.partition_direct_bytes_follow_on_case_buckets(
             (bundle,),
@@ -3108,8 +3105,9 @@ def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes
         CORRECTNESS_FIXTURES_ROOT
         / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
     )
-    follow_on_bundle, preserved_bundle = fixture_parity_support.load_published_fixture_bundles(
-        (follow_on_fixture_path, preserved_fixture_path)
+    follow_on_bundle, preserved_bundle = tuple(
+        build_selected_fixture_bundle(path)
+        for path in (follow_on_fixture_path, preserved_fixture_path)
     )
 
     compile_cases, module_cases, pattern_cases = (
@@ -3156,8 +3154,9 @@ def test_direct_test_case_id_buckets_for_follow_on_bundles_keeps_shared_and_byte
         CORRECTNESS_FIXTURES_ROOT
         / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
     )
-    follow_on_bundle, preserved_bundle = fixture_parity_support.load_published_fixture_bundles(
-        (follow_on_fixture_path, preserved_fixture_path)
+    follow_on_bundle, preserved_bundle = tuple(
+        build_selected_fixture_bundle(path)
+        for path in (follow_on_fixture_path, preserved_fixture_path)
     )
 
     compile_cases, module_cases, pattern_cases = (
@@ -3189,7 +3188,7 @@ def test_published_bytes_texts_by_pattern_separates_search_and_fullmatch_rows(
     fixture_path = (
         CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
     )
-    (bundle,) = fixture_parity_support.load_published_fixture_bundles((fixture_path,))
+    bundle = build_selected_fixture_bundle(fixture_path)
     compile_cases, module_cases, pattern_cases = (
         fixture_parity_support.partition_direct_bytes_follow_on_case_buckets(
             (bundle,),
@@ -3332,8 +3331,8 @@ def test_assert_fixture_bundle_contract_rejects_contract_drift(
     drift_kind: str,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    str_bundle, mixed_bundle = fixture_parity_support.load_published_fixture_bundles(
-        (str_path, mixed_path)
+    str_bundle, mixed_bundle = tuple(
+        build_selected_fixture_bundle(path) for path in (str_path, mixed_path)
     )
 
     bundle: FixtureBundle
@@ -3540,11 +3539,11 @@ def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
     assert fixture_cases_for_operation((mixed_bundle, str_bundle), "cache_workflow") == ()
 
 
-def test_load_published_fixture_bundles_full_manifest_sets_str_text_model_expectation(
+def test_full_manifest_bundle_sets_str_text_model_expectation(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    bundle = _load_published_fixture_bundle(
+    bundle = _load_full_fixture_bundle(
         str_path,
         pattern_extractor=str_case_pattern,
     )

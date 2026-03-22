@@ -500,20 +500,6 @@ def direct_test_case_id_buckets_for_follow_on_bundles(
     return dict(bucket_entries)
 
 
-def load_published_fixture_bundles(
-    fixture_paths: Iterable[pathlib.Path],
-    *,
-    pattern_extractor: Callable[[FixtureCase], str | bytes] = case_pattern,
-) -> tuple[FixtureBundle, ...]:
-    return tuple(
-        build_selected_fixture_bundle(
-            path,
-            pattern_extractor=pattern_extractor,
-        )
-        for path in fixture_paths
-    )
-
-
 def published_fixture_bundles_by_manifest_id(
     bundles: Iterable[FixtureBundle],
 ) -> dict[str, FixtureBundle]:
