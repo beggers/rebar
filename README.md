@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1526 cases across 114 manifests, with all 1526 passing in the current slice; the benchmark publication covers 872/872 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0902` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact raw module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface through the existing collection/replacement keyword owner path. |
-| Work queue | `1` ready, `0` in progress, `904` done, `0` blocked |
+| Current milestone | `RBR-0904` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, publishing the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair on the tracked module-workflow correctness surface through the existing pattern replacement keyword owner path. |
+| Work queue | `1` ready, `0` in progress, `906` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,8 +35,8 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `872` |
-| Workloads with real `rebar` timings | `872` |
+| Published workloads | `874` |
+| Workloads with real `rebar` timings | `874` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0902` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact raw module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface through the existing collection/replacement keyword owner path.
+- `RBR-0904` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, publishing the exact direct `Pattern.sub()` / `Pattern.subn()` bool-count complement pair on the tracked module-workflow correctness surface through the existing pattern replacement keyword owner path.
 
 ### Current Risks
 
