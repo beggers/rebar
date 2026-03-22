@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1520 cases across 114 manifests, with all 1520 passing in the current slice; the benchmark publication covers 868/868 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0892` is the surviving `module-workflow-surface` follow-on: publish the remaining bytes bound-`Pattern.match()` window `__index__` keyword/positional pair on the shared correctness surface while leaving the benchmark frontier unchanged in this run.
+- `RBR-0894` is the surviving `module-workflow-surface` follow-on: catch the bytes bound-`Pattern.match()` window `__index__` keyword/positional pair up on the shared Python-path `pattern_boundary.py` benchmark surface once `RBR-0892` lands the matching correctness anchors.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1520 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0892` is the surviving `module-workflow-surface` follow-on: publish the remaining bytes bound-`Pattern.match()` window `__index__` keyword/positional pair on the shared correctness surface while leaving the benchmark frontier unchanged in this run.
+- `RBR-0894` is the surviving `module-workflow-surface` follow-on: catch the bytes bound-`Pattern.match()` window `__index__` keyword/positional pair up on the shared Python-path `pattern_boundary.py` benchmark surface once `RBR-0892` lands the matching correctness anchors.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

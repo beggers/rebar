@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0892` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the remaining bytes bound-`Pattern.match()` window `__index__` keyword and positional pair on the shared correctness surface while leaving the Python-path benchmark frontier unchanged in this run.
+`RBR-0894` is the surviving follow-on on the existing `module-workflow-surface` frontier, catching the newly published bytes bound-`Pattern.match()` window `__index__` keyword and positional pair up on the shared Python-path `pattern_boundary.py` benchmark surface without widening the correctness frontier again in the same run.
 
 ## Ordered Work
-1. `RBR-0892` publishes the remaining bytes bound-`Pattern.match()` window `__index__` keyword and positional pair on `tests/conformance/fixtures/module_workflow_surface.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, without widening the benchmark surface in the same run.
+1. `RBR-0894` catches the bytes bound-`Pattern.match()` window `__index__` keyword and positional pair up on `benchmarks/workloads/pattern_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing `pattern-window-keyword` and `pattern-window-positional-indexlike` owner paths after `RBR-0892` lands the matching correctness anchors.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
