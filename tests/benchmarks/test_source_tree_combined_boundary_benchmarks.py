@@ -13037,74 +13037,7 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
         re.purge()
 
 
-def _pattern_helper_collection_replacement_wrong_text_model_manifest_payload(
-    workload: Workload,
-) -> dict[str, object]:
-    payload = workload_to_payload(workload)
-    return {
-        "id": f"{workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "smoke",
-            }
-        },
-    }
-
-
-def _pattern_helper_collection_replacement_wrong_text_model_workloads() -> tuple[Workload, ...]:
-    return _selected_manifest_workloads(
-        COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
-    )
-
-
-def _pattern_helper_collection_replacement_wrong_text_model_manifest() -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": "collection-replacement-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _pattern_helper_collection_replacement_wrong_text_model_manifest_payload(
-                workload
-            )
-            for workload in _pattern_helper_collection_replacement_wrong_text_model_workloads()
-        ],
-    }
-
-
-def _assert_pattern_helper_collection_replacement_wrong_text_model_payload_round_trip(
-    workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if workload.text_model == "str" else bytes
-    expected_haystack_type = str if workload.haystack_text_model == "str" else bytes
-
-    assert payload.get("use_compiled_pattern") is None
-    assert round_tripped.use_compiled_pattern is False
-    assert payload["haystack_text_model"] == workload.haystack_text_model
-    assert round_tripped.haystack_text_model == workload.haystack_text_model
-    assert payload["expected_exception"] == workload.expected_exception
-    assert round_tripped.expected_exception == workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
-    if workload.replacement is not None:
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
-
-
-def _pattern_helper_collection_replacement_wrong_text_model_expected_callback_result(
+def _pattern_collection_replacement_wrong_text_model_expected_callback_result(
     workload: Workload,
 ) -> object:
     if workload.operation == "pattern.subn":
@@ -13112,7 +13045,7 @@ def _pattern_helper_collection_replacement_wrong_text_model_expected_callback_re
     return "pattern-result"
 
 
-def _pattern_helper_collection_replacement_wrong_text_model_expected_build_calls(
+def _pattern_collection_replacement_wrong_text_model_expected_build_calls(
     workload: Workload,
 ) -> list[tuple[object, ...]]:
     compile_call = ("compile", workload.pattern_payload(), workload.flags)
@@ -13126,7 +13059,7 @@ def _pattern_helper_collection_replacement_wrong_text_model_expected_build_calls
     )
 
 
-def _pattern_helper_collection_replacement_wrong_text_model_expected_callback_call(
+def _pattern_collection_replacement_wrong_text_model_expected_callback_call(
     workload: Workload,
 ) -> tuple[object, ...]:
     if workload.operation == "pattern.split":
@@ -13150,7 +13083,7 @@ def _pattern_helper_collection_replacement_wrong_text_model_expected_callback_ca
     )
 
 
-def _run_cpython_pattern_helper_collection_replacement_wrong_text_model_workload(
+def _run_cpython_pattern_collection_replacement_wrong_text_model_workload(
     workload: Workload,
 ) -> object:
     helper_name = workload.operation.removeprefix("pattern.")
@@ -13175,64 +13108,15 @@ def _run_cpython_pattern_helper_collection_replacement_wrong_text_model_workload
     )
 
 
-def test_standard_benchmark_manifest_preserves_pattern_collection_replacement_wrong_text_model_rows_until_helper_invocation(
-    tmp_path: pathlib.Path,
-) -> None:
-    source_workloads = _pattern_helper_collection_replacement_wrong_text_model_workloads()
-    manifest = _pattern_helper_collection_replacement_wrong_text_model_manifest()
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_pattern_collection_replacement_wrong_text_model_contract.py",
-        f"MANIFEST = {manifest!r}\n",
-    )
-    workloads = load_manifest(manifest_path).workloads
-
-    assert tuple(workload.workload_id for workload in source_workloads) == (
-        "pattern-split-on-bytes-string-warm-str",
-        "pattern-sub-on-bytes-string-warm-str",
-        "pattern-subn-on-str-string-purged-bytes",
-    )
-    assert tuple(workload.workload_id for workload in workloads) == (
-        "pattern-split-on-bytes-string-warm-str-contract",
-        "pattern-sub-on-bytes-string-warm-str-contract",
-        "pattern-subn-on-str-string-purged-bytes-contract",
-    )
-    assert [workload.use_compiled_pattern for workload in workloads] == [
-        False
-    ] * len(source_workloads)
-    assert [workload.haystack_text_model for workload in workloads] == [
-        workload.haystack_text_model for workload in source_workloads
-    ]
-
-    for source_workload, workload in zip(
-        source_workloads,
-        workloads,
-        strict=True,
-    ):
-        payload = workload_to_payload(workload)
-        round_tripped = workload_from_payload(payload)
-
-        _assert_pattern_helper_collection_replacement_wrong_text_model_payload_round_trip(
-            source_workload,
-            payload,
-            round_tripped,
-        )
-
-        with pytest.raises(TypeError) as expected_error:
-            _run_cpython_pattern_helper_collection_replacement_wrong_text_model_workload(
-                workload
-            )
-        with pytest.raises(TypeError) as observed_error:
-            run_benchmark_workload_with_cpython(round_tripped)
-
-        assert str(observed_error.value) == str(expected_error.value)
-
-
 def test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = _pattern_helper_collection_replacement_wrong_text_model_workloads()
-    manifest = _pattern_helper_collection_replacement_wrong_text_model_manifest()
+    owner_spec = _PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC
+    source_workloads = _wrong_text_model_source_workloads(owner_spec)
+    manifest = _wrong_text_model_contract_manifest(
+        source_workloads,
+        owner_spec=owner_spec,
+    )
     manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_pattern_collection_replacement_wrong_text_model_anchor_contract.py",
@@ -13302,7 +13186,10 @@ def test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchor
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _pattern_helper_collection_replacement_wrong_text_model_workloads()
+        for workload in _selected_manifest_workloads(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+        )
     ),
 )
 def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time(
@@ -13336,44 +13223,6 @@ def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materia
         assert observed_workload_ids == [workload.workload_id]
     finally:
         re.purge()
-
-
-@pytest.mark.parametrize(
-    "workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _pattern_helper_collection_replacement_wrong_text_model_workloads()
-    ),
-)
-@pytest.mark.parametrize(
-    ("import_name", "adapter_name"),
-    (
-        pytest.param("re", "cpython.re", id="cpython"),
-        pytest.param("rebar", "rebar", id="rebar"),
-    ),
-)
-def test_run_internal_workload_probe_measures_pattern_helper_collection_replacement_wrong_text_model_workloads(
-    workload: Workload,
-    import_name: str,
-    adapter_name: str,
-) -> None:
-    payload = workload_to_payload(workload)
-    round_tripped = workload_from_payload(payload)
-
-    _assert_pattern_helper_collection_replacement_wrong_text_model_payload_round_trip(
-        workload,
-        payload,
-        round_tripped,
-    )
-
-    probe = run_internal_workload_probe(
-        workload_payload=json.dumps(payload, sort_keys=True),
-        import_name=import_name,
-        adapter_name=adapter_name,
-    )
-
-    assert probe["status"] == "measured"
-    assert probe["median_ns"] > 0
 
 
 @pytest.mark.parametrize(
@@ -15965,83 +15814,36 @@ def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchor
 
 
 @dataclass(frozen=True)
-class CompiledPatternModuleWrongTextModelOwnerSpec:
+class WrongTextModelOwnerSpec:
+    case_id: str
     manifest_path: pathlib.Path
-    include_workload: Callable[[Any], bool]
+    include_workload_selectors: tuple[Callable[[Any], bool], ...]
     contract_manifest_id: str
-    note_surface: str
     contract_filename_stem: str
     expected_source_workload_ids: tuple[str, ...]
+    use_compiled_pattern: bool
+    timing_scope: str
+    excluded_fields: frozenset[str]
+    note_surface: str | None
+    expected_callback_result: Callable[[Workload], object]
+    expected_callback_call: Callable[[Workload], tuple[object, ...]]
+    expected_build_calls: Callable[[Workload], list[tuple[object, ...]]]
+    run_cpython_workload: Callable[[Workload], object]
 
 
-COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_OWNER_SPECS = (
-    CompiledPatternModuleWrongTextModelOwnerSpec(
-        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=_is_collection_replacement_wrong_text_model_workload,
-        contract_manifest_id="collection-replacement-boundary",
-        note_surface="collection/replacement",
-        contract_filename_stem=(
-            "compiled_pattern_collection_replacement_wrong_text_model"
-        ),
-        expected_source_workload_ids=(
-            "module-split-on-bytes-string-purged-str-compiled-pattern",
-            "module-findall-on-str-string-purged-bytes-compiled-pattern",
-            "module-finditer-on-bytes-string-warm-str-compiled-pattern",
-            "module-sub-on-bytes-string-warm-str-compiled-pattern",
-            "module-subn-on-str-string-purged-bytes-compiled-pattern",
-        ),
-    ),
-    CompiledPatternModuleWrongTextModelOwnerSpec(
-        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
-        contract_manifest_id="module-boundary",
-        note_surface="module-boundary",
-        contract_filename_stem="compiled_pattern_module_boundary_wrong_text_model",
-        expected_source_workload_ids=(
-            "module-search-on-bytes-string-warm-str-compiled-pattern",
-            "module-match-on-str-string-purged-bytes-compiled-pattern",
-            "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
-        ),
-    ),
+_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "smoke",
+    }
 )
 
 
-def _compiled_pattern_module_wrong_text_model_owner_param_id(
-    owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
-) -> str:
-    if owner_spec.contract_manifest_id == "collection-replacement-boundary":
-        return "compiled_pattern_module_helper_wrong_text_model"
-    if owner_spec.contract_manifest_id == "module-boundary":
-        return "compiled_pattern_module_boundary_wrong_text_model"
-    raise AssertionError(
-        "unexpected compiled-pattern module wrong-text-model owner spec "
-        f"{owner_spec.contract_manifest_id!r}"
-    )
-
-
-def _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_haystack_type = (
-        str if source_workload.haystack_text_model == "str" else bytes
-    )
-
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload["haystack_text_model"] == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
-    if source_workload.replacement is not None:
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
-
-
-def _compiled_pattern_module_helper_wrong_text_model_expected_callback_result(
+def _compiled_pattern_wrong_text_model_expected_callback_result(
     source_workload: Workload,
 ) -> object:
     if source_workload.operation == "module.subn":
@@ -16051,7 +15853,7 @@ def _compiled_pattern_module_helper_wrong_text_model_expected_callback_result(
     return "module-result"
 
 
-def _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
+def _compiled_pattern_wrong_text_model_expected_callback_call(
     source_workload: Workload,
 ) -> tuple[object, ...]:
     if source_workload.operation in {
@@ -16094,7 +15896,7 @@ def _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
     )
 
 
-def _run_cpython_compiled_pattern_module_helper_wrong_text_model_workload(
+def _run_cpython_compiled_pattern_wrong_text_model_workload(
     workload: Workload,
 ) -> object:
     compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
@@ -16144,34 +15946,262 @@ def _run_cpython_compiled_pattern_module_helper_wrong_text_model_workload(
     )
 
 
+def _wrong_text_model_owner_param_id(
+    owner_spec: WrongTextModelOwnerSpec,
+) -> str:
+    return owner_spec.case_id
+
+
+def _wrong_text_model_source_workloads(
+    owner_spec: WrongTextModelOwnerSpec,
+) -> tuple[Workload, ...]:
+    source_workloads = tuple(
+        workload
+        for include_workload in owner_spec.include_workload_selectors
+        for workload in _selected_manifest_workloads(
+            owner_spec.manifest_path,
+            include_workload=include_workload,
+        )
+    )
+    if (
+        tuple(workload.workload_id for workload in source_workloads)
+        != owner_spec.expected_source_workload_ids
+    ):
+        raise AssertionError(
+            "wrong-text-model contract source workloads drifted from the "
+            f"{owner_spec.case_id} owner-spec surface"
+        )
+    return source_workloads
+
+
+def _wrong_text_model_contract_manifest_payload(
+    source_workload: Workload,
+    *,
+    owner_spec: WrongTextModelOwnerSpec,
+) -> dict[str, object]:
+    payload = workload_to_payload(source_workload)
+    manifest_payload = {
+        "id": f"{source_workload.workload_id}-contract",
+        **{
+            key: value
+            for key, value in payload.items()
+            if key not in owner_spec.excluded_fields
+        },
+        "timing_scope": owner_spec.timing_scope,
+    }
+    if owner_spec.note_surface is not None:
+        manifest_payload["notes"] = [
+            _compiled_pattern_module_contract_note(
+                note_label="wrong-text-model",
+                note_surface=owner_spec.note_surface,
+            )
+        ]
+    return manifest_payload
+
+
+def _wrong_text_model_contract_workload(
+    source_workload: Workload,
+    *,
+    owner_spec: WrongTextModelOwnerSpec,
+) -> Workload:
+    manifest_payload = _wrong_text_model_contract_manifest_payload(
+        source_workload,
+        owner_spec=owner_spec,
+    )
+    return workload_from_payload(
+        {
+            "manifest_id": owner_spec.contract_manifest_id,
+            "workload_id": str(manifest_payload["id"]),
+            **{key: value for key, value in manifest_payload.items() if key != "id"},
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _wrong_text_model_contract_manifest(
+    source_workloads: tuple[Workload, ...],
+    *,
+    owner_spec: WrongTextModelOwnerSpec,
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "manifest_id": owner_spec.contract_manifest_id,
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _wrong_text_model_contract_manifest_payload(
+                workload,
+                owner_spec=owner_spec,
+            )
+            for workload in source_workloads
+        ],
+    }
+
+
+def _assert_wrong_text_model_payload_round_trip(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+    *,
+    owner_spec: WrongTextModelOwnerSpec,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+    expected_haystack_type = (
+        str if source_workload.haystack_text_model == "str" else bytes
+    )
+
+    if owner_spec.use_compiled_pattern:
+        assert payload["use_compiled_pattern"] is True
+    else:
+        assert payload.get("use_compiled_pattern") is None
+    assert round_tripped.use_compiled_pattern is owner_spec.use_compiled_pattern
+    assert payload["timing_scope"] == owner_spec.timing_scope
+    assert round_tripped.timing_scope == owner_spec.timing_scope
+    assert payload["haystack_text_model"] == source_workload.haystack_text_model
+    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
+    if source_workload.replacement is not None:
+        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
+    case_id="pattern_helper_collection_replacement_wrong_text_model",
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload_selectors=(
+        _is_collection_replacement_pattern_wrong_text_model_workload,
+    ),
+    contract_manifest_id="collection-replacement-boundary",
+    contract_filename_stem="pattern_collection_replacement_wrong_text_model",
+    expected_source_workload_ids=(
+        "pattern-split-on-bytes-string-warm-str",
+        "pattern-sub-on-bytes-string-warm-str",
+        "pattern-subn-on-str-string-purged-bytes",
+    ),
+    use_compiled_pattern=False,
+    timing_scope="pattern-helper-call",
+    excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
+    note_surface=None,
+    expected_callback_result=(
+        _pattern_collection_replacement_wrong_text_model_expected_callback_result
+    ),
+    expected_callback_call=(
+        _pattern_collection_replacement_wrong_text_model_expected_callback_call
+    ),
+    expected_build_calls=(
+        _pattern_collection_replacement_wrong_text_model_expected_build_calls
+    ),
+    run_cpython_workload=_run_cpython_pattern_collection_replacement_wrong_text_model_workload,
+)
+
+_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
+    WrongTextModelOwnerSpec(
+        case_id="compiled_pattern_module_helper_wrong_text_model",
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_collection_replacement_wrong_text_model_workload,
+        ),
+        contract_manifest_id="collection-replacement-boundary",
+        contract_filename_stem=(
+            "compiled_pattern_collection_replacement_wrong_text_model"
+        ),
+        expected_source_workload_ids=(
+            "module-split-on-bytes-string-purged-str-compiled-pattern",
+            "module-findall-on-str-string-purged-bytes-compiled-pattern",
+            "module-finditer-on-bytes-string-warm-str-compiled-pattern",
+            "module-sub-on-bytes-string-warm-str-compiled-pattern",
+            "module-subn-on-str-string-purged-bytes-compiled-pattern",
+        ),
+        use_compiled_pattern=True,
+        timing_scope="module-helper-call",
+        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        note_surface="collection/replacement",
+        expected_callback_result=_compiled_pattern_wrong_text_model_expected_callback_result,
+        expected_callback_call=_compiled_pattern_wrong_text_model_expected_callback_call,
+        expected_build_calls=lambda workload: _compiled_pattern_module_contract_expected_build_calls(
+            workload,
+            label="module helper wrong-text-model",
+        ),
+        run_cpython_workload=_run_cpython_compiled_pattern_wrong_text_model_workload,
+    )
+)
+
+_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = (
+    WrongTextModelOwnerSpec(
+        case_id="compiled_pattern_module_boundary_wrong_text_model",
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_module_workflow_compiled_pattern_wrong_text_model_workload,
+        ),
+        contract_manifest_id="module-boundary",
+        contract_filename_stem="compiled_pattern_module_boundary_wrong_text_model",
+        expected_source_workload_ids=(
+            "module-search-on-bytes-string-warm-str-compiled-pattern",
+            "module-match-on-str-string-purged-bytes-compiled-pattern",
+            "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+        ),
+        use_compiled_pattern=True,
+        timing_scope="module-helper-call",
+        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        note_surface="module-boundary",
+        expected_callback_result=_compiled_pattern_wrong_text_model_expected_callback_result,
+        expected_callback_call=_compiled_pattern_wrong_text_model_expected_callback_call,
+        expected_build_calls=lambda workload: _compiled_pattern_module_contract_expected_build_calls(
+            workload,
+            label="module helper wrong-text-model",
+        ),
+        run_cpython_workload=_run_cpython_compiled_pattern_wrong_text_model_workload,
+    )
+)
+
+WRONG_TEXT_MODEL_OWNER_SPECS = (
+    _PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC,
+    _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC,
+    _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC,
+)
+
+
+def _wrong_text_model_source_workload_params() -> tuple[object, ...]:
+    return tuple(
+        pytest.param(
+            owner_spec,
+            source_workload,
+            id=f"{owner_spec.case_id}-{source_workload.workload_id}",
+        )
+        for owner_spec in WRONG_TEXT_MODEL_OWNER_SPECS
+        for source_workload in _wrong_text_model_source_workloads(owner_spec)
+    )
+
+
 @pytest.mark.parametrize(
     "owner_spec",
     tuple(
         pytest.param(
-            spec,
-            id=_compiled_pattern_module_wrong_text_model_owner_param_id(spec),
+            owner_spec,
+            id=_wrong_text_model_owner_param_id(owner_spec),
         )
-        for spec in COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_OWNER_SPECS
+        for owner_spec in WRONG_TEXT_MODEL_OWNER_SPECS
     ),
 )
-def test_standard_benchmark_manifest_preserves_compiled_pattern_module_wrong_text_model_rows_until_helper_invocation(
-    owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
+def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation(
+    owner_spec: WrongTextModelOwnerSpec,
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = _compiled_pattern_module_contract_source_workloads(
-        manifest_path=owner_spec.manifest_path,
-        include_workload_selectors=(owner_spec.include_workload,),
-        expected_source_workload_ids=owner_spec.expected_source_workload_ids,
-        drift_label="wrong-text-model owner-spec surface",
-    )
-    manifest = _compiled_pattern_module_contract_manifest(
+    source_workloads = _wrong_text_model_source_workloads(owner_spec)
+    manifest = _wrong_text_model_contract_manifest(
         source_workloads,
-        contract_manifest_id=owner_spec.contract_manifest_id,
-        note_label="wrong-text-model",
-        note_surface=owner_spec.note_surface,
-        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        owner_spec=owner_spec,
     )
-
     manifest_path = _write_test_manifest(
         tmp_path,
         f"python_benchmark_{owner_spec.contract_filename_stem}_contract.py",
@@ -16187,7 +16217,10 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_wrong_tex
         for workload_id in owner_spec.expected_source_workload_ids
     )
     assert [workload.use_compiled_pattern for workload in workloads] == [
-        True
+        owner_spec.use_compiled_pattern
+    ] * len(source_workloads)
+    assert [workload.timing_scope for workload in workloads] == [
+        owner_spec.timing_scope
     ] * len(source_workloads)
     assert [workload.haystack_text_model for workload in workloads] == [
         workload.haystack_text_model for workload in source_workloads
@@ -16201,16 +16234,15 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_wrong_tex
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
+        _assert_wrong_text_model_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
+            owner_spec=owner_spec,
         )
 
         with pytest.raises(TypeError) as expected_error:
-            _run_cpython_compiled_pattern_module_helper_wrong_text_model_workload(
-                workload
-            )
+            owner_spec.run_cpython_workload(workload)
         with pytest.raises(TypeError) as observed_error:
             run_benchmark_workload_with_cpython(round_tripped)
 
@@ -16219,16 +16251,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_wrong_tex
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_contract_source_workload_params(
-        COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_OWNER_SPECS,
-        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
-            manifest_path=owner_spec.manifest_path,
-            include_workload_selectors=(owner_spec.include_workload,),
-            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
-            drift_label="wrong-text-model owner-spec surface",
-        ),
-        param_id=_compiled_pattern_module_wrong_text_model_owner_param_id,
-    ),
+    _wrong_text_model_source_workload_params(),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -16237,26 +16260,24 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_wrong_tex
         pytest.param("rebar", "rebar", id="rebar"),
     ),
 )
-def test_run_internal_workload_probe_measures_compiled_pattern_module_wrong_text_model_workloads(
-    owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
+def test_run_internal_workload_probe_measures_wrong_text_model_contract_workloads(
+    owner_spec: WrongTextModelOwnerSpec,
     source_workload: Workload,
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_contract_workload(
+    workload = _wrong_text_model_contract_workload(
         source_workload,
-        contract_manifest_id=owner_spec.contract_manifest_id,
-        note_label="wrong-text-model",
-        note_surface=owner_spec.note_surface,
-        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        owner_spec=owner_spec,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
+    _assert_wrong_text_model_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
+        owner_spec=owner_spec,
     )
 
     probe = run_internal_workload_probe(
@@ -16271,54 +16292,36 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_wrong_text
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_contract_source_workload_params(
-        COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_OWNER_SPECS,
-        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
-            manifest_path=owner_spec.manifest_path,
-            include_workload_selectors=(owner_spec.include_workload,),
-            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
-            drift_label="wrong-text-model owner-spec surface",
-        ),
-        param_id=_compiled_pattern_module_wrong_text_model_owner_param_id,
-    ),
+    _wrong_text_model_source_workload_params(),
 )
-def test_compiled_pattern_module_wrong_text_model_callbacks_precompile_first_argument_before_timing(
-    owner_spec: CompiledPatternModuleWrongTextModelOwnerSpec,
+def test_wrong_text_model_callbacks_preserve_precompile_contract(
+    owner_spec: WrongTextModelOwnerSpec,
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = _compiled_pattern_module_contract_expected_build_calls(
-        source_workload,
-        label="module helper wrong-text-model",
-    )
-    expected_callback_call = (
-        _compiled_pattern_module_helper_wrong_text_model_expected_callback_call(
-            source_workload
-        )
-    )
+    expected_build_calls = owner_spec.expected_build_calls(source_workload)
+    expected_callback_call = owner_spec.expected_callback_call(source_workload)
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_contract_workload(
+        _wrong_text_model_contract_workload(
             source_workload,
-            contract_manifest_id=owner_spec.contract_manifest_id,
-            note_label="wrong-text-model",
-            note_surface=owner_spec.note_surface,
-            excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+            owner_spec=owner_spec,
         ),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() == _compiled_pattern_module_helper_wrong_text_model_expected_callback_result(
-        source_workload
-    )
+    assert callback() == owner_spec.expected_callback_result(source_workload)
 
-    compiled_pattern = module.compiled_patterns[0]
-    last_call = module.calls[-1]
-    assert last_call[0] == expected_callback_call[0]
-    assert last_call[1] is compiled_pattern
-    assert last_call[2:] == expected_callback_call[1:]
+    if owner_spec.use_compiled_pattern:
+        compiled_pattern = module.compiled_patterns[0]
+        last_call = module.calls[-1]
+        assert last_call[0] == expected_callback_call[0]
+        assert last_call[1] is compiled_pattern
+        assert last_call[2:] == expected_callback_call[1:]
+    else:
+        assert module.calls[-1] == expected_callback_call
 
 
 @pytest.mark.parametrize(
@@ -16707,44 +16710,6 @@ def test_pattern_helper_cache_modes_preserve_expected_compile_and_purge_order(
     assert module.calls == expected_build_calls
     assert callback() == "pattern-result"
     assert module.calls == [*expected_build_calls, *expected_callback_calls]
-
-
-@pytest.mark.parametrize(
-    "workload",
-    tuple(
-        pytest.param(
-            workload,
-            id=workload.workload_id,
-        )
-        for workload in _pattern_helper_collection_replacement_wrong_text_model_workloads()
-    ),
-)
-def test_pattern_helper_collection_replacement_wrong_text_model_callbacks_precompile_before_timing(
-    workload: Workload,
-) -> None:
-    module = _RecordingBenchmarkModule()
-    callback = build_callable(
-        module,
-        "re",
-        workload,
-    )
-
-    assert module.calls == (
-        _pattern_helper_collection_replacement_wrong_text_model_expected_build_calls(
-            workload
-        )
-    )
-    assert len(module.compiled_patterns) == 1
-    assert callback() == (
-        _pattern_helper_collection_replacement_wrong_text_model_expected_callback_result(
-            workload
-        )
-    )
-    assert module.calls[-1] == (
-        _pattern_helper_collection_replacement_wrong_text_model_expected_callback_call(
-            workload
-        )
-    )
 
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(

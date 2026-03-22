@@ -1,6 +1,6 @@
 # RBR-0960: Collapse wrong-text-model contract siblings
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -145,3 +145,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_wrong_text_model or pattern_helper_collection_replacement_wrong_text_model'` currently passes (`39 passed, 593 deselected`);
   - the selector probe in Verification currently passes (`ok 5 3 3`), proving the three live wrong-text-model surfaces already exist directly on the tracked manifest-selected workload paths; and
   - the negative `rg` check in Verification currently fails because the duplicated helper/test names named in this task are still present in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, which is the exact cleanup this task queues.
+
+## Completion
+- Replaced the duplicated direct-`Pattern` and compiled-pattern-module wrong-text-model helper stacks in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with one file-local `WrongTextModelOwnerSpec` contract surface that covers the direct pattern collection/replacement path plus the two compiled-pattern owner paths.
+- Collapsed the manifest-preservation, internal-probe, and precompile-first callback tests onto shared parametrized wrong-text-model contract bodies while keeping the direct-`Pattern` anchor and haystack-materialization assertions explicit.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_wrong_text_model or pattern_helper_collection_replacement_wrong_text_model'` (`14 passed, 618 deselected`)
+  - the negative `rg` check from this task, which now returns no matches
+  - the selector probe from this task, which now prints `ok 5 3 3`
