@@ -18182,6 +18182,64 @@ def test_standard_benchmark_manifest_rejects_missing_and_non_dict_manifest_value
             load_manifest(manifest_path)
 
 
+def test_benchmark_workload_value_normalization_recursively_preserves_literals_and_stringifies_mapping_keys(
+) -> None:
+    assert benchmarks.normalize_workload_value(
+        {
+            1: [
+                {"flag": True, 2: None},
+                3,
+            ],
+            False: {
+                "message": "ok",
+                4: 1.5,
+            },
+        }
+    ) == {
+        "1": [
+            {"flag": True, "2": None},
+            3,
+        ],
+        "False": {
+            "message": "ok",
+            "4": 1.5,
+        },
+    }
+
+
+def test_benchmark_workload_value_normalization_rejects_non_literal_containers() -> None:
+    with pytest.raises(
+        ValueError,
+        match=re.escape("unsupported workload value ('unexpected',)"),
+    ):
+        benchmarks.normalize_workload_value(("unexpected",))
+
+
+@pytest.mark.parametrize(
+    ("raw_expected_exception", "expected_normalized"),
+    (
+        pytest.param(
+            {"type": 404},
+            {"type": "404"},
+            id="type-only",
+        ),
+        pytest.param(
+            {"type": "TypeError", "message_substring": 17},
+            {"type": "TypeError", "message_substring": "17"},
+            id="type-and-message",
+        ),
+    ),
+)
+def test_benchmark_expected_exception_normalization_stringifies_scalar_fields(
+    raw_expected_exception: dict[str, object],
+    expected_normalized: dict[str, str],
+) -> None:
+    assert (
+        benchmarks.normalize_expected_exception(raw_expected_exception)
+        == expected_normalized
+    )
+
+
 @pytest.mark.parametrize(
     ("invalid_expected_exception", "error_pattern"),
     (
