@@ -1739,6 +1739,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "include_pattern_arg": True,
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        1
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "count", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level subn() positional-count plus unexpected-keyword rejection on bytes payloads without widening into a broader raw module keyword-error matrix."
+      ]
+    },
+    {
       "id": "workflow-module-split-maxsplit-indexlike-positional-bytes",
       "operation": "module_call",
       "family": "module_split_workflow",
@@ -1876,6 +1905,22 @@ MANIFEST = {
       "categories": ["workflow", "sub", "literal", "str", "unexpected-keyword"],
       "notes": [
         "Publishes the adjacent raw module-level sub() unexpected keyword rejection already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-unexpected-keyword-after-positional-count",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "include_pattern_arg": True,
+      "args": ["x", "abc", 1],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "count", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level sub() positional-count plus unexpected keyword rejection already anchored on the shared module-workflow owner path."
       ]
     },
     {
