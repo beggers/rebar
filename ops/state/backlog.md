@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0912` is the surviving follow-on on the shared direct bound-pattern replacement frontier, catching the exact `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair up on the existing `collection_replacement_boundary.py` Python-path benchmark surface before adjacent direct bound-pattern unexpected-keyword or `split()` duplicate-`maxsplit=` publication follow-ons reopen that replacement-keyword error slice.
+No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite on the shared direct bound-pattern replacement frontier.
 
 ## Ordered Work
-1. `RBR-0912` catches up `re.compile("abc").sub("x", "abc", 1, count=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, count=1)` in `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the shared collection/replacement keyword benchmark owner path so the same direct bound-pattern duplicate-`count=` diagnostics reach the tracked Python-path benchmark surface before adjacent unexpected-keyword or split-duplicate publication follow-ons widen the frontier.
+1. No ready feature follow-on currently survives behind the active direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword parity prerequisite, so the next frontier addition should be derived from the live replacement-error surface again once that bounded implementation slice lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
