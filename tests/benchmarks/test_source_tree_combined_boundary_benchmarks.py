@@ -15217,6 +15217,30 @@ def _compiled_pattern_module_boundary_wrong_text_model_workload(
     )
 
 
+def _compiled_pattern_module_helper_wrong_text_model_manifest(
+    cases: tuple[CompiledPatternModuleWrongTextModelCase, ...],
+    *,
+    manifest_id: str,
+    note_surface: str,
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "manifest_id": manifest_id,
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
+                case,
+                note_surface=note_surface,
+            )
+            for case in cases
+        ],
+    }
+
+
 def _assert_compiled_pattern_module_helper_wrong_text_model_payload_round_trip(
     case: CompiledPatternModuleWrongTextModelCase,
     payload: dict[str, object],
@@ -15290,19 +15314,11 @@ def _run_cpython_compiled_pattern_module_helper_wrong_text_model_workload(
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = {
-        "schema_version": 1,
-        "manifest_id": "collection-replacement-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_helper_wrong_text_model_manifest_payload(case)
-            for case in COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES
-        ],
-    }
+    manifest = _compiled_pattern_module_helper_wrong_text_model_manifest(
+        COMPILED_PATTERN_MODULE_WRONG_TEXT_MODEL_CASES,
+        manifest_id="collection-replacement-boundary",
+        note_surface="collection/replacement",
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -15346,22 +15362,11 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_helper_wrong_text_model_manifest_payload(
-                case,
-                note_surface="module-boundary",
-            )
-            for case in COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES
-        ],
-    }
+    manifest = _compiled_pattern_module_helper_wrong_text_model_manifest(
+        COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_CASES,
+        manifest_id="module-boundary",
+        note_surface="module-boundary",
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
