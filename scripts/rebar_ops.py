@@ -653,6 +653,23 @@ def task_state_entry(task_state: dict[str, Any], task_name: str) -> dict[str, An
     return entry
 
 
+def reconcile_task_state_with_filesystem(task_state: dict[str, Any]) -> int:
+    changed = 0
+    seen_at = utcnow()
+    for task_name, item in task_queue_index().items():
+        actual_status = item["status"]
+        entry = task_state_entry(task_state, task_name)
+        if entry.get("current_status") == actual_status:
+            continue
+        entry["current_status"] = actual_status
+        entry["last_seen_at"] = seen_at
+        entry["last_action"] = "reconciled_from_filesystem"
+        if actual_status == "done":
+            entry["requeue_count"] = 0
+        changed += 1
+    return changed
+
+
 def load_readme_reporting_config(config: dict[str, Any]) -> dict[str, Any]:
     reporting_cfg = config.get("reporting", {})
     path = resolve_repo_path(
@@ -2961,6 +2978,7 @@ def run_cycle(
     paths = runtime_paths(config)
     ensure_runtime_dirs(paths)
     task_state = load_task_state(paths)
+    reconcile_task_state_with_filesystem(task_state)
     user_ask_actions = reroute_misplaced_user_asks()
     stale_actions = recover_stale_in_progress_tasks(config, task_state)
 
@@ -3184,8 +3202,11 @@ def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:
 def cmd_report(config: dict[str, Any], output_format: str) -> int:
     refresh_published_correctness_scorecard()
     sync_readme_status(config)
-    report = build_report(config)
     paths = runtime_paths(config)
+    task_state = load_task_state(paths)
+    if reconcile_task_state_with_filesystem(task_state):
+        write_json(paths["task_state"], task_state)
+    report = build_report(config)
     rendered = render_markdown_report(report)
     write_json(paths["dashboard_json"], report)
     write_text(paths["dashboard_markdown"], rendered)
