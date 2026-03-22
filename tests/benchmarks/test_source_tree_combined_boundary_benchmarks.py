@@ -14376,8 +14376,68 @@ def test_compiled_pattern_module_helper_keyword_callbacks_precompile_first_argum
     assert last_call[2:] == expected_callback_call[1:]
 
 
-def _compiled_pattern_module_collection_replacement_success_manifest_payload(
+@dataclass(frozen=True)
+class CompiledPatternModuleSuccessOwnerSpec:
+    manifest_path: pathlib.Path
+    include_workload_selectors: tuple[Callable[[Any], bool], ...]
+    contract_manifest_id: str
+    contract_filename: str
+    note_surface: str
+    expected_source_workload_ids: tuple[str, ...]
+
+
+_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
+    CompiledPatternModuleSuccessOwnerSpec(
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_collection_replacement_compiled_pattern_success_workload,
+        ),
+        contract_manifest_id="collection-replacement-boundary",
+        contract_filename=(
+            "python_benchmark_compiled_pattern_collection_replacement_success_contract.py"
+        ),
+        note_surface="collection/replacement",
+        expected_source_workload_ids=(
+            "module-split-literal-warm-str-compiled-pattern",
+            "module-findall-literal-purged-bytes-compiled-pattern",
+            "module-finditer-literal-warm-str-compiled-pattern",
+            "module-sub-literal-warm-str-compiled-pattern",
+            "module-subn-literal-purged-bytes-compiled-pattern",
+        ),
+    )
+)
+
+_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC = (
+    CompiledPatternModuleSuccessOwnerSpec(
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_module_workflow_compiled_pattern_literal_success_workload,
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+        ),
+        contract_manifest_id="module-boundary",
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_boundary_success_contract.py"
+        ),
+        note_surface="module-boundary",
+        expected_source_workload_ids=(
+            "module-search-literal-warm-hit-str-compiled-pattern",
+            "module-match-literal-warm-hit-str-compiled-pattern",
+            "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+            "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
+            "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
+            "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
+            "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+            "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
+        ),
+    )
+)
+
+
+def _compiled_pattern_module_success_manifest_payload(
     source_workload: Workload,
+    *,
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
 ) -> dict[str, object]:
     payload = workload_to_payload(source_workload)
     return {
@@ -14403,20 +14463,24 @@ def _compiled_pattern_module_collection_replacement_success_manifest_payload(
         "timing_scope": "module-helper-call",
         "notes": [
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
-            "successful collection/replacement rows unresolved until helper invocation."
+            f"successful {owner_spec.note_surface} rows unresolved until helper "
+            "invocation."
         ],
     }
 
 
-def _compiled_pattern_module_collection_replacement_success_workload(
+def _compiled_pattern_module_success_workload(
     source_workload: Workload,
+    *,
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
 ) -> Workload:
-    manifest_payload = _compiled_pattern_module_collection_replacement_success_manifest_payload(
-        source_workload
+    manifest_payload = _compiled_pattern_module_success_manifest_payload(
+        source_workload,
+        owner_spec=owner_spec,
     )
     return workload_from_payload(
         {
-            "manifest_id": "collection-replacement-boundary",
+            "manifest_id": owner_spec.contract_manifest_id,
             "workload_id": str(manifest_payload["id"]),
             **{key: value for key, value in manifest_payload.items() if key != "id"},
             "warmup_iterations": 1,
@@ -14429,27 +14493,36 @@ def _compiled_pattern_module_collection_replacement_success_workload(
     )
 
 
-def _compiled_pattern_module_collection_replacement_success_source_workloads() -> tuple[Workload, ...]:
-    return _selected_manifest_workloads(
-        COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+def _compiled_pattern_module_success_source_workloads(
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+) -> tuple[Workload, ...]:
+    return tuple(
+        workload
+        for include_workload in owner_spec.include_workload_selectors
+        for workload in _selected_manifest_workloads(
+            owner_spec.manifest_path,
+            include_workload=include_workload,
+        )
     )
 
 
-def _compiled_pattern_module_collection_replacement_success_manifest(
+def _compiled_pattern_module_success_manifest(
     source_workloads: tuple[Workload, ...],
+    *,
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
 ) -> dict[str, object]:
     return {
         "schema_version": 1,
-        "manifest_id": "collection-replacement-boundary",
+        "manifest_id": owner_spec.contract_manifest_id,
         "defaults": {
             "warmup_iterations": 1,
             "sample_iterations": 1,
             "timed_samples": 2,
         },
         "workloads": [
-            _compiled_pattern_module_collection_replacement_success_manifest_payload(
-                workload
+            _compiled_pattern_module_success_manifest_payload(
+                workload,
+                owner_spec=owner_spec,
             )
             for workload in source_workloads
         ],
@@ -14582,26 +14655,23 @@ def _run_cpython_compiled_pattern_module_collection_replacement_success_workload
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = (
-        _compiled_pattern_module_collection_replacement_success_source_workloads()
+    source_workloads = _compiled_pattern_module_success_source_workloads(
+        _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
     )
-    manifest = _compiled_pattern_module_collection_replacement_success_manifest(
-        source_workloads
+    manifest = _compiled_pattern_module_success_manifest(
+        source_workloads,
+        owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
     )
 
     manifest_path = _write_test_manifest(
         tmp_path,
-        "python_benchmark_compiled_pattern_collection_replacement_success_contract.py",
+        _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC.contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
     workloads = load_manifest(manifest_path).workloads
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
-        "module-split-literal-warm-str-compiled-pattern",
-        "module-findall-literal-purged-bytes-compiled-pattern",
-        "module-finditer-literal-warm-str-compiled-pattern",
-        "module-sub-literal-warm-str-compiled-pattern",
-        "module-subn-literal-purged-bytes-compiled-pattern",
+        _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC.expected_source_workload_ids
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         f"{workload.workload_id}-contract" for workload in source_workloads
@@ -14637,8 +14707,11 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = _compiled_pattern_module_collection_replacement_success_manifest(
-        _compiled_pattern_module_collection_replacement_success_source_workloads()
+    manifest = _compiled_pattern_module_success_manifest(
+        _compiled_pattern_module_success_source_workloads(
+            _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+        ),
+        owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
     )
 
     manifest_path = _write_test_manifest(
@@ -14721,7 +14794,9 @@ def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchor
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_collection_replacement_success_source_workloads()
+        for workload in _compiled_pattern_module_success_source_workloads(
+            _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+        )
     ),
 )
 @pytest.mark.parametrize(
@@ -14736,8 +14811,9 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_collection_replacement_success_workload(
-        source_workload
+    workload = _compiled_pattern_module_success_workload(
+        source_workload,
+        owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -14762,7 +14838,9 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_collection_replacement_success_source_workloads()
+        for workload in _compiled_pattern_module_success_source_workloads(
+            _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+        )
     ),
 )
 def test_compiled_pattern_module_collection_replacement_success_callbacks_precompile_first_argument_before_timing(
@@ -14782,8 +14860,9 @@ def test_compiled_pattern_module_collection_replacement_success_callbacks_precom
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_collection_replacement_success_workload(
-            source_workload
+        _compiled_pattern_module_success_workload(
+            source_workload,
+            owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
         ),
     )
 
@@ -15680,97 +15759,6 @@ _VERBOSE_REGRESSION_PATTERN = (
 _VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
 
 
-def _compiled_pattern_module_boundary_success_manifest_payload(
-    source_workload: Workload,
-) -> dict[str, object]:
-    payload = workload_to_payload(source_workload)
-    return {
-        "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "notes",
-                "smoke",
-                "categories",
-                "syntax_features",
-                "expected_exception",
-                "haystack_text_model",
-            }
-        },
-        "timing_scope": "module-helper-call",
-        "notes": [
-            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
-            "successful module-boundary rows unresolved until helper invocation."
-        ],
-    }
-
-
-def _compiled_pattern_module_boundary_success_workload(
-    source_workload: Workload,
-) -> Workload:
-    manifest_payload = _compiled_pattern_module_boundary_success_manifest_payload(
-        source_workload
-    )
-    return workload_from_payload(
-        {
-            "manifest_id": "module-boundary",
-            "workload_id": str(manifest_payload["id"]),
-            **{key: value for key, value in manifest_payload.items() if key != "id"},
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
-
-
-def _compiled_pattern_module_boundary_success_source_workloads() -> tuple[Workload, ...]:
-    literal_workloads = _selected_manifest_workloads(
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
-    )
-    bounded_wildcard_workloads = _selected_manifest_workloads(
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-    )
-    verbose_bytes_workloads = _selected_manifest_workloads(
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
-    )
-    return (
-        *literal_workloads,
-        *bounded_wildcard_workloads,
-        *verbose_bytes_workloads,
-    )
-
-
-def _compiled_pattern_module_boundary_success_manifest(
-    source_workloads: tuple[Workload, ...],
-) -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_boundary_success_manifest_payload(workload)
-            for workload in source_workloads
-        ],
-    }
-
-
 def _assert_compiled_pattern_module_boundary_success_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],
@@ -15847,25 +15835,23 @@ def _run_cpython_compiled_pattern_module_boundary_success_workload(
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_success_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = _compiled_pattern_module_boundary_success_source_workloads()
-    manifest = _compiled_pattern_module_boundary_success_manifest(source_workloads)
+    source_workloads = _compiled_pattern_module_success_source_workloads(
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
+    )
+    manifest = _compiled_pattern_module_success_manifest(
+        source_workloads,
+        owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+    )
 
     manifest_path = _write_test_manifest(
         tmp_path,
-        "python_benchmark_compiled_pattern_module_boundary_success_contract.py",
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC.contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
     workloads = load_manifest(manifest_path).workloads
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
-        "module-search-literal-warm-hit-str-compiled-pattern",
-        "module-match-literal-warm-hit-str-compiled-pattern",
-        "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
-        "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
-        "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
-        "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
-        "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
-        "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC.expected_source_workload_ids
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         f"{workload.workload_id}-contract" for workload in source_workloads
@@ -15899,13 +15885,14 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_boundary_
 def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
-    manifest = _compiled_pattern_module_boundary_success_manifest(
+    manifest = _compiled_pattern_module_success_manifest(
         _selected_manifest_workloads(
             MODULE_BOUNDARY_MANIFEST_PATH,
             include_workload=(
                 _is_module_workflow_compiled_pattern_verbose_bytes_success_workload
             ),
-        )
+        ),
+        owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
     )
 
     manifest_path = _write_test_manifest(
@@ -15963,7 +15950,9 @@ def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchor
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_boundary_success_source_workloads()
+        for workload in _compiled_pattern_module_success_source_workloads(
+            _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
+        )
     ),
 )
 @pytest.mark.parametrize(
@@ -15978,7 +15967,10 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_s
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_boundary_success_workload(source_workload)
+    workload = _compiled_pattern_module_success_workload(
+        source_workload,
+        owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+    )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
@@ -16002,7 +15994,9 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_boundary_s
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_boundary_success_source_workloads()
+        for workload in _compiled_pattern_module_success_source_workloads(
+            _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
+        )
     ),
 )
 def test_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing(
@@ -16020,7 +16014,10 @@ def test_compiled_pattern_module_boundary_success_callbacks_precompile_first_arg
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_boundary_success_workload(source_workload),
+        _compiled_pattern_module_success_workload(
+            source_workload,
+            owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+        ),
     )
 
     assert module.calls == expected_build_calls
