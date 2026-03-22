@@ -1,6 +1,6 @@
 # RBR-0971: Catch up the direct Pattern bounded-wildcard sextet
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
 
@@ -80,3 +80,8 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-search-str-bounded-wildcard-ignorecase or pattern-match-str-bounded-wildcard or pattern-fullmatch-str-bounded-wildcard or pattern-findall-str-bounded-wildcard or pattern-finditer-str-bounded-wildcard or pattern-search-str-bounded-wildcard-endpos-miss'` currently passes (`20 passed`), so the exact bounded correctness/parity slice is already green in this checkout;
   - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... workload_from_payload(...) / workload_to_payload(...) / run_internal_workload_probe(...) synthetic pattern-search-bounded-wildcard-ignorecase-probe, pattern-match-bounded-wildcard-probe, pattern-fullmatch-bounded-wildcard-probe, pattern-findall-bounded-wildcard-probe, pattern-finditer-bounded-wildcard-probe, and pattern-search-bounded-wildcard-endpos-miss-probe ... PY` returns `status == "measured"` for both adapters on all six synthetic workloads through the current benchmark harness in this checkout; and
   - `rg -n 'pattern-search-bounded-wildcard-ignorecase-warm-str|pattern-match-bounded-wildcard-warm-str|pattern-fullmatch-bounded-wildcard-purged-str|pattern-findall-bounded-wildcard-warm-str|pattern-finditer-bounded-wildcard-purged-str|pattern-search-bounded-wildcard-endpos-miss-purged-str' benchmarks/workloads/pattern_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while `reports/benchmarks/latest.py` still reports `914` total / `914` measured / `0` known gaps overall with `pattern-boundary` fixed at `31` selected / `31` measured / `31` workload-count rows and `module_workloads == 906`.
+
+## Completion
+- Added the six direct-`Pattern` bounded-wildcard workloads to `benchmarks/workloads/pattern_boundary.py` in the required slot and order, keeping the work on the existing `pattern-boundary` manifest.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the bounded-wildcard subset check, one new standard anchor-contract definition, and updated published summary expectations.
+- Regenerated `reports/benchmarks/latest.py`; the tracked report now shows `920` total workloads, `920` measured workloads, `0` known gaps, `912` module workloads, and `pattern-boundary` at `37` selected / `37` measured / `37` workload-count rows with all six new bounded-wildcard ids marked `measured`.

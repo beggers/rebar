@@ -3844,10 +3844,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case("pattern-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 31)
+        self.assertEqual(len(case.target_manifest.workloads), 37)
         wrong_text_model_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
             _is_pattern_boundary_wrong_text_model_workload,
+        )
+        bounded_wildcard_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_pattern_bounded_wildcard_workload,
         )
         keyword_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
@@ -3864,6 +3868,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-match-on-str-string-purged-bytes",
                 "pattern-fullmatch-on-bytes-string-warm-str",
             ),
+        )
+        self.assertEqual(
+            bounded_wildcard_workload_ids,
+            _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS,
         )
         self.assertEqual(
             keyword_workload_ids,
@@ -3901,10 +3909,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case,
             "pattern-boundary",
             wrong_text_model_workload_ids
+            + bounded_wildcard_workload_ids
             + keyword_workload_ids
             + positional_workload_ids,
-            31,
-            expected_total_workload_count=31,
+            37,
+            expected_total_workload_count=37,
         )
 
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
@@ -5265,11 +5274,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 914,
-                "module_workloads": 906,
+                "measured_workloads": 920,
+                "module_workloads": 912,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 914,
+                "total_workloads": 920,
             },
         )
 
@@ -6181,7 +6190,6 @@ def published_case_ids_by_signature(
         signature: tuple(sorted(case_ids))
         for signature, case_ids in case_ids_by_signature.items()
     }
-
 
 @cache
 def published_cases_by_id() -> dict[str, Any]:
@@ -7837,6 +7845,84 @@ def _is_pattern_keyword_window_workload(workload: Any) -> bool:
     )
 
 
+_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS = (
+    "pattern-search-bounded-wildcard-ignorecase-warm-str",
+    "pattern-match-bounded-wildcard-warm-str",
+    "pattern-fullmatch-bounded-wildcard-purged-str",
+    "pattern-findall-bounded-wildcard-warm-str",
+    "pattern-finditer-bounded-wildcard-purged-str",
+    "pattern-search-bounded-wildcard-endpos-miss-purged-str",
+)
+
+_PATTERN_BOUNDED_WILDCARD_CASE_IDS = (
+    "workflow-pattern-search-str-bounded-wildcard-ignorecase",
+    "workflow-pattern-match-str-bounded-wildcard",
+    "workflow-pattern-fullmatch-str-bounded-wildcard",
+    "workflow-pattern-findall-str-bounded-wildcard",
+    "workflow-pattern-finditer-str-bounded-wildcard",
+    "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
+)
+
+
+def _pattern_bounded_wildcard_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.case_id not in _PATTERN_BOUNDED_WILDCARD_CASE_IDS:
+        return None
+    if case.operation != "pattern_call" or case.kwargs:
+        return None
+    if case.helper not in {"search", "match", "fullmatch", "findall", "finditer"}:
+        return None
+    return (
+        f"pattern.{case.helper}",
+        case_pattern(case),
+        freeze_signature_value(case.serialized_args()),
+        (),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _pattern_bounded_wildcard_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_pattern_bounded_wildcard_workload(workload):
+        raise AssertionError(
+            "unexpected pattern bounded-wildcard workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value(
+            list(_pattern_window_positional_indexlike_workload_args(workload))
+        ),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_pattern_bounded_wildcard_workload(workload: Any) -> bool:
+    return (
+        workload.workload_id in _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS
+        and workload.operation in {
+            "pattern.search",
+            "pattern.match",
+            "pattern.fullmatch",
+            "pattern.findall",
+            "pattern.finditer",
+        }
+        and workload.pattern == "a.c"
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+        and workload.text_model == "str"
+        and workload.pos is not None
+        and workload.endpos is not None
+        and not workload.kwargs
+    )
+
+
 def _pattern_boundary_wrong_text_model_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -9198,6 +9284,39 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         include_workload=_is_pattern_keyword_window_workload,
         correctness_case_signature=_pattern_keyword_window_correctness_case_signature,
         workload_signature=_pattern_keyword_window_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="pattern-boundary-bounded-wildcard",
+        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            PATTERN_BOUNDARY_MANIFEST_PATH,
+            {
+                "pattern-search-bounded-wildcard-ignorecase-warm-str": (
+                    "workflow-pattern-search-str-bounded-wildcard-ignorecase",
+                ),
+                "pattern-match-bounded-wildcard-warm-str": (
+                    "workflow-pattern-match-str-bounded-wildcard",
+                ),
+                "pattern-fullmatch-bounded-wildcard-purged-str": (
+                    "workflow-pattern-fullmatch-str-bounded-wildcard",
+                ),
+                "pattern-findall-bounded-wildcard-warm-str": (
+                    "workflow-pattern-findall-str-bounded-wildcard",
+                ),
+                "pattern-finditer-bounded-wildcard-purged-str": (
+                    "workflow-pattern-finditer-str-bounded-wildcard",
+                ),
+                "pattern-search-bounded-wildcard-endpos-miss-purged-str": (
+                    "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
+                ),
+            },
+        ),
+        include_workload=_is_pattern_bounded_wildcard_workload,
+        correctness_case_signature=(
+            _pattern_bounded_wildcard_correctness_case_signature
+        ),
+        workload_signature=_pattern_bounded_wildcard_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(

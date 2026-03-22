@@ -179,6 +179,185 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-search-bounded-wildcard-ignorecase-warm-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "a.c",
+      "haystack": "zaBczz",
+      "flags": 2,
+      "text_model": "str",
+      "pos": 1,
+      "endpos": 5,
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "wildcard",
+        "bounded",
+        "ignorecase",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "wildcard-single-dot",
+        "ignorecase-flag"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.search helper path that keeps the bounded IGNORECASE single-dot windowed success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-match-bounded-wildcard-warm-str",
+      "bucket": "pattern-match",
+      "family": "module",
+      "operation": "pattern.match",
+      "pattern": "a.c",
+      "haystack": "zabcaxc",
+      "flags": 0,
+      "text_model": "str",
+      "pos": 1,
+      "endpos": 4,
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "match",
+        "wildcard",
+        "bounded",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-match",
+        "wildcard-single-dot"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.match helper path that keeps the bounded single-dot windowed success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-bounded-wildcard-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a.c",
+      "haystack": "zaxcz",
+      "flags": 0,
+      "text_model": "str",
+      "pos": 1,
+      "endpos": 4,
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "fullmatch",
+        "wildcard",
+        "bounded",
+        "purged-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "wildcard-single-dot",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch helper path that keeps the bounded single-dot windowed success row on the shared pattern-boundary surface."
+      ]
+    },
+    {
+      "id": "pattern-findall-bounded-wildcard-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "a.c",
+      "haystack": "zabcaxcz",
+      "flags": 0,
+      "text_model": "str",
+      "pos": 1,
+      "endpos": 7,
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "findall",
+        "wildcard",
+        "bounded",
+        "warm-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "wildcard-single-dot"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.findall helper path that keeps the bounded single-dot windowed success row on the shared pattern-boundary manifest."
+      ]
+    },
+    {
+      "id": "pattern-finditer-bounded-wildcard-purged-str",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "a.c",
+      "haystack": "zabcaxcx",
+      "flags": 0,
+      "text_model": "str",
+      "pos": 1,
+      "endpos": 7,
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "finditer",
+        "wildcard",
+        "bounded",
+        "purged-cache",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "wildcard-single-dot",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.finditer helper path that keeps the bounded single-dot windowed success row on the shared pattern-boundary manifest."
+      ]
+    },
+    {
+      "id": "pattern-search-bounded-wildcard-endpos-miss-purged-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "a.c",
+      "haystack": "zabc",
+      "flags": 0,
+      "text_model": "str",
+      "pos": 1,
+      "endpos": 3,
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "search",
+        "wildcard",
+        "bounded",
+        "purged-cache",
+        "no-match"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "wildcard-single-dot",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.search helper path that keeps the bounded single-dot endpos miss row on the shared pattern-boundary surface."
+      ]
+    },
+    {
       "id": "pattern-search-on-bytes-string-warm-str",
       "bucket": "pattern-search",
       "family": "module",
