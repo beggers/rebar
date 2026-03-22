@@ -3747,6 +3747,53 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                     self.assertEqual(observation["result"], expected_result)
                     self.assertIsNone(observation["exception"])
 
+    def test_normalize_pattern_metadata_preserves_bytes_payloads_and_sorts_groupindex(
+        self,
+    ) -> None:
+        compiled = re.compile(rb"(?P<zeta>a)(?P<alpha>b)")
+
+        self.assertEqual(
+            correctness.normalize_pattern_value(compiled.pattern),
+            {
+                "encoding": "latin-1",
+                "value": "(?P<zeta>a)(?P<alpha>b)",
+            },
+        )
+        self.assertEqual(
+            correctness.normalize_pattern_metadata(compiled),
+            {
+                "pattern": {
+                    "encoding": "latin-1",
+                    "value": "(?P<zeta>a)(?P<alpha>b)",
+                },
+                "flags": compiled.flags,
+                "groups": 2,
+                "groupindex": {"alpha": 2, "zeta": 1},
+                "pattern_type": "bytes",
+            },
+        )
+
+    def test_normalize_pattern_object_metadata_adds_compiled_type_details(
+        self,
+    ) -> None:
+        compiled = re.compile(r"(?P<zeta>a)(?P<alpha>b)")
+
+        self.assertEqual(
+            correctness.normalize_pattern_object_metadata(compiled),
+            {
+                "pattern": r"(?P<zeta>a)(?P<alpha>b)",
+                "flags": compiled.flags,
+                "groups": 2,
+                "groupindex": {"alpha": 2, "zeta": 1},
+                "pattern_type": "str",
+                "compiled_type": {
+                    "module": type(compiled).__module__,
+                    "qualname": type(compiled).__qualname__,
+                    "repr": repr(type(compiled)),
+                },
+            },
+        )
+
     def test_normalize_match_metadata_preserves_bytes_named_capture_shape(self) -> None:
         match = re.search(rb"(?P<outer>(ab)?)(?P<inner>c)", b"zabc")
 
