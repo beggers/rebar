@@ -2399,23 +2399,35 @@ def _published_pattern_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
     )
 
 
-def _published_pattern_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
+_PATTERN_KEYWORD_ERROR_CASE_IDS = (
+    "pattern-split-duplicate-maxsplit-keyword-str",
+    "pattern-split-unexpected-keyword-bytes",
+    "pattern-sub-duplicate-count-keyword-str",
+    "pattern-sub-unexpected-keyword-str",
+    "pattern-sub-unexpected-keyword-after-positional-count-str",
+    "pattern-sub-count-alias-keyword-str",
+    "pattern-subn-duplicate-count-keyword-bytes",
+    "pattern-subn-unexpected-keyword-bytes",
+    "pattern-subn-unexpected-keyword-after-positional-count-bytes",
+    "pattern-subn-count-alias-keyword-bytes",
+)
+_PATTERN_WRONG_TEXT_MODEL_CASE_IDS = (
+    "pattern-search-str-pattern-on-bytes-string",
+    "pattern-match-bytes-pattern-on-str-string",
+    "pattern-fullmatch-str-pattern-on-bytes-string",
+    "pattern-split-str-pattern-on-bytes-string",
+    "pattern-sub-str-pattern-on-bytes-string",
+    "pattern-subn-bytes-pattern-on-str-string",
+)
+
+
+def _published_pattern_type_error_fixture_cases(
+    case_ids: tuple[str, ...],
+) -> tuple[FixtureCase, ...]:
     direct_signatures = {
         _pattern_helper_error_direct_signature(case)
         for case in BOUND_PATTERN_TYPE_ERROR_CASES
-        if case.case_id
-        in {
-            "pattern-split-duplicate-maxsplit-keyword-str",
-            "pattern-split-unexpected-keyword-bytes",
-            "pattern-sub-duplicate-count-keyword-str",
-            "pattern-sub-unexpected-keyword-str",
-            "pattern-sub-unexpected-keyword-after-positional-count-str",
-            "pattern-sub-count-alias-keyword-str",
-            "pattern-subn-duplicate-count-keyword-bytes",
-            "pattern-subn-unexpected-keyword-bytes",
-            "pattern-subn-unexpected-keyword-after-positional-count-bytes",
-            "pattern-subn-count-alias-keyword-bytes",
-        }
+        if case.case_id in case_ids
     }
     return tuple(
         case
@@ -2424,24 +2436,18 @@ def _published_pattern_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
     )
 
 
-def _published_pattern_wrong_text_model_fixture_cases() -> tuple[FixtureCase, ...]:
-    direct_signatures = {
-        _pattern_helper_error_direct_signature(case)
+def _selected_pattern_type_error_direct_cases(
+    published_fixture_cases: tuple[FixtureCase, ...],
+    case_ids: tuple[str, ...],
+):
+    direct_cases_by_signature = {
+        _pattern_helper_error_direct_signature(case): case
         for case in BOUND_PATTERN_TYPE_ERROR_CASES
-        if case.case_id
-        in {
-            "pattern-search-str-pattern-on-bytes-string",
-            "pattern-match-bytes-pattern-on-str-string",
-            "pattern-fullmatch-str-pattern-on-bytes-string",
-            "pattern-split-str-pattern-on-bytes-string",
-            "pattern-sub-str-pattern-on-bytes-string",
-            "pattern-subn-bytes-pattern-on-str-string",
-        }
+        if case.case_id in case_ids
     }
     return tuple(
-        case
-        for case in PATTERN_CASES
-        if _pattern_keyword_fixture_signature(case) in direct_signatures
+        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
+        for case in published_fixture_cases
     )
 
 
@@ -4573,27 +4579,12 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
 
 def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_keyword_error_fixture_cases()
-    direct_cases_by_signature = {
-        _pattern_helper_error_direct_signature(case): case
-        for case in BOUND_PATTERN_TYPE_ERROR_CASES
-        if case.case_id
-        in {
-            "pattern-split-duplicate-maxsplit-keyword-str",
-            "pattern-split-unexpected-keyword-bytes",
-            "pattern-sub-duplicate-count-keyword-str",
-            "pattern-sub-unexpected-keyword-str",
-            "pattern-sub-unexpected-keyword-after-positional-count-str",
-            "pattern-sub-count-alias-keyword-str",
-            "pattern-subn-duplicate-count-keyword-bytes",
-            "pattern-subn-unexpected-keyword-bytes",
-            "pattern-subn-unexpected-keyword-after-positional-count-bytes",
-            "pattern-subn-count-alias-keyword-bytes",
-        }
-    }
-    selected_direct_cases = tuple(
-        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
+    published_fixture_cases = _published_pattern_type_error_fixture_cases(
+        _PATTERN_KEYWORD_ERROR_CASE_IDS
+    )
+    selected_direct_cases = _selected_pattern_type_error_direct_cases(
+        published_fixture_cases,
+        _PATTERN_KEYWORD_ERROR_CASE_IDS,
     )
 
     assert tuple(
@@ -4673,23 +4664,12 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
 
 def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_wrong_text_model_fixture_cases()
-    direct_cases_by_signature = {
-        _pattern_helper_error_direct_signature(case): case
-        for case in BOUND_PATTERN_TYPE_ERROR_CASES
-        if case.case_id
-        in {
-            "pattern-search-str-pattern-on-bytes-string",
-            "pattern-match-bytes-pattern-on-str-string",
-            "pattern-fullmatch-str-pattern-on-bytes-string",
-            "pattern-split-str-pattern-on-bytes-string",
-            "pattern-sub-str-pattern-on-bytes-string",
-            "pattern-subn-bytes-pattern-on-str-string",
-        }
-    }
-    selected_direct_cases = tuple(
-        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
-        for case in published_fixture_cases
+    published_fixture_cases = _published_pattern_type_error_fixture_cases(
+        _PATTERN_WRONG_TEXT_MODEL_CASE_IDS
+    )
+    selected_direct_cases = _selected_pattern_type_error_direct_cases(
+        published_fixture_cases,
+        _PATTERN_WRONG_TEXT_MODEL_CASE_IDS,
     )
 
     assert tuple(
