@@ -1,6 +1,6 @@
 ## RBR-0956: Collapse compiled-pattern module.compile contract siblings
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -160,3 +160,6 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_success or compiled_pattern_module_compile_keyword'` currently passes (`75 passed, 549 deselected, 18 subtests passed`);
   - the selector probe in Verification currently passes (`ok 4 6`), proving the live compile-success surface plus the six keyword case groups already exist directly on the tracked manifest-selected workload path; and
   - the negative `rg` check in Verification currently fails only because the duplicate compile-success and compile-keyword helper/test names called out in this task are still present in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+
+## Completion Note
+- 2026-03-22: Replaced the sibling compile-success and compile-keyword contract stacks with one file-local compile-contract surface in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, kept `_compiled_pattern_module_compile_success_source_workloads()`, `COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS`, and `_compiled_pattern_module_compile_keyword_source_workloads()` as the selector entry points, preserved the success-versus-keyword callback semantics, and verified with the focused pytest slice (`75 passed, 549 deselected, 18 subtests passed`), the negative `rg` check, and the selector probe (`ok 4 6`).

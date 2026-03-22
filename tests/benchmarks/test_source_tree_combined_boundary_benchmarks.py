@@ -14912,314 +14912,132 @@ def test_compiled_pattern_module_collection_replacement_success_and_compiled_pat
     assert last_call[2:] == expected_callback_call[1:]
 
 
-def _compiled_pattern_module_compile_success_manifest_payload(
-    source_workload: Workload,
-) -> dict[str, object]:
-    payload = workload_to_payload(source_workload)
-    return {
-        "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "notes",
-                "smoke",
-            }
-        },
-        "timing_scope": "module-helper-call",
-        "notes": [
+_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+    }
+)
+
+
+@dataclass(frozen=True)
+class CompiledPatternModuleCompileContractCase:
+    case_id: str
+    source_selectors: tuple[Callable[[Any], bool], ...]
+    contract_filename: str
+    anchor_contract_filename: str
+    expected_anchor_pairs: tuple[tuple[str, str], ...]
+
+    def source_workloads(self) -> tuple[Workload, ...]:
+        source_workloads = tuple(
+            workload
+            for selector in self.source_selectors
+            for workload in _selected_manifest_workloads(
+                MODULE_BOUNDARY_MANIFEST_PATH,
+                include_workload=selector,
+            )
+        )
+        expected_source_workload_ids = tuple(
+            workload_id.removesuffix("-contract")
+            for workload_id, _case_id in self.expected_anchor_pairs
+        )
+        if tuple(workload.workload_id for workload in source_workloads) != (
+            expected_source_workload_ids
+        ):
+            raise AssertionError(
+                "compiled-pattern module.compile success rows drifted from the "
+                f"{self.case_id} contract surface"
+            )
+        return source_workloads
+
+    def manifest_excluded_fields(self) -> frozenset[str]:
+        return _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS
+
+    def note(self) -> str:
+        return (
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
             "module.compile rows unresolved until helper invocation."
-        ],
-    }
+        )
+
+    def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
+        return _module_workflow_compiled_pattern_compile_correctness_case_signature(
+            case
+        )
+
+    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
+        return _module_workflow_compiled_pattern_compile_workload_signature(workload)
+
+    def include_workload(self, workload: Any) -> bool:
+        return _is_module_workflow_compiled_pattern_compile_workload(workload)
+
+    def assert_payload_round_trip(
+        self,
+        source_workload: Workload,
+        payload: dict[str, object],
+        round_tripped: Workload,
+    ) -> None:
+        expected_text_type = str if source_workload.text_model == "str" else bytes
+
+        assert payload["use_compiled_pattern"] is True
+        assert round_tripped.use_compiled_pattern is True
+        assert payload["flags"] == source_workload.flags
+        assert round_tripped.flags == source_workload.flags
+        assert payload.get("expected_exception") == source_workload.expected_exception
+        assert round_tripped.expected_exception == source_workload.expected_exception
+        assert payload.get("haystack_text_model") == source_workload.haystack_text_model
+        assert round_tripped.haystack_text_model == source_workload.haystack_text_model
+        assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+
+    def run_cpython_workload(self, workload: Workload) -> object:
+        compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+        return re.compile(compiled_pattern, workload.flags)
+
+    def callback_flags(self, source_workload: Workload) -> object:
+        return source_workload.flags
 
 
-def _compiled_pattern_module_compile_success_workload(
-    source_workload: Workload,
-) -> Workload:
-    manifest_payload = _compiled_pattern_module_compile_success_manifest_payload(
-        source_workload
+_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE = (
+    CompiledPatternModuleCompileContractCase(
+        case_id="success",
+        source_selectors=(
+            _is_module_workflow_compiled_pattern_compile_literal_success_workload,
+            _is_module_workflow_compiled_pattern_compile_named_group_success_workload,
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-str-compiled-pattern",
+            ),
+            (
+                "module-compile-literal-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-bytes-compiled-pattern",
+            ),
+            (
+                "module-compile-named-group-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-named-group-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-bytes-compiled-pattern-named-group",
+            ),
+        ),
     )
-    return workload_from_payload(
-        {
-            "manifest_id": "module-boundary",
-            "workload_id": str(manifest_payload["id"]),
-            **{key: value for key, value in manifest_payload.items() if key != "id"},
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
+)
 
 
 def _compiled_pattern_module_compile_success_source_workloads() -> tuple[Workload, ...]:
-    literal_workloads = _selected_manifest_workloads(
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=_is_module_workflow_compiled_pattern_compile_literal_success_workload,
-    )
-    named_group_workloads = _selected_manifest_workloads(
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=_is_module_workflow_compiled_pattern_compile_named_group_success_workload,
-    )
-    return (*literal_workloads, *named_group_workloads)
-
-
-def _compiled_pattern_module_compile_success_manifest(
-    source_workloads: tuple[Workload, ...],
-) -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_compile_success_manifest_payload(workload)
-            for workload in source_workloads
-        ],
-    }
-
-
-def _assert_compiled_pattern_module_compile_success_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload["flags"] == source_workload.flags
-    assert round_tripped.flags == source_workload.flags
-    assert payload.get("expected_exception") == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert payload.get("haystack_text_model") == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-
-
-def _run_cpython_compiled_pattern_module_compile_success_workload(
-    workload: Workload,
-) -> object:
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return re.compile(compiled_pattern, workload.flags)
-
-
-def _compiled_pattern_module_compile_success_expected_build_calls(
-    source_workload: Workload,
-) -> list[tuple[object, ...]]:
-    build_calls: list[tuple[object, ...]] = [
-        (
-            "compile",
-            source_workload.pattern_payload(),
-            source_workload.flags,
-        )
-    ]
-    if source_workload.cache_mode == "purged":
-        build_calls.append(("purge",))
-    return build_calls
-
-
-def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_rows_until_helper_invocation(
-    tmp_path: pathlib.Path,
-) -> None:
-    source_workloads = _compiled_pattern_module_compile_success_source_workloads()
-    manifest = _compiled_pattern_module_compile_success_manifest(source_workloads)
-
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_compiled_pattern_module_compile_success_contract.py",
-        f"MANIFEST = {manifest!r}\n",
-    )
-    workloads = load_manifest(manifest_path).workloads
-
-    assert tuple(workload.workload_id for workload in source_workloads) == (
-        "module-compile-literal-warm-str-compiled-pattern",
-        "module-compile-literal-purged-bytes-compiled-pattern",
-        "module-compile-named-group-warm-str-compiled-pattern",
-        "module-compile-named-group-purged-bytes-compiled-pattern",
-    )
-    assert tuple(workload.workload_id for workload in workloads) == tuple(
-        f"{workload.workload_id}-contract" for workload in source_workloads
-    )
-    assert [workload.use_compiled_pattern for workload in workloads] == [
-        True
-    ] * len(source_workloads)
-    assert [workload.haystack_text_model for workload in workloads] == [
-        workload.haystack_text_model for workload in source_workloads
-    ]
-
-    for source_workload, workload in zip(
-        source_workloads,
-        workloads,
-        strict=True,
-    ):
-        payload = workload_to_payload(workload)
-        round_tripped = workload_from_payload(payload)
-
-        _assert_compiled_pattern_module_compile_success_payload_round_trip(
-            source_workload,
-            payload,
-            round_tripped,
-        )
-        assert_benchmark_workload_matches_expected_result(
-            round_tripped,
-            _run_cpython_compiled_pattern_module_compile_success_workload(workload),
-        )
-
-
-def test_compiled_pattern_module_compile_success_rows_stay_anchored_to_published_correctness_cases(
-    tmp_path: pathlib.Path,
-) -> None:
-    manifest = _compiled_pattern_module_compile_success_manifest(
-        _compiled_pattern_module_compile_success_source_workloads()
-    )
-
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_compiled_pattern_module_compile_success_anchor_contract.py",
-        f"MANIFEST = {manifest!r}\n",
-    )
-    expected_anchor_case_ids = _definition_anchor_expectations(
-        manifest_path,
-        {
-            "module-compile-literal-warm-str-compiled-pattern-contract": (
-                "workflow-module-compile-str-compiled-pattern",
-            ),
-            "module-compile-literal-purged-bytes-compiled-pattern-contract": (
-                "workflow-module-compile-bytes-compiled-pattern",
-            ),
-            "module-compile-named-group-warm-str-compiled-pattern-contract": (
-                "workflow-module-compile-str-compiled-pattern-named-group",
-            ),
-            "module-compile-named-group-purged-bytes-compiled-pattern-contract": (
-                "workflow-module-compile-bytes-compiled-pattern-named-group",
-            ),
-        },
-    )
-    anchor_case_ids = published_case_ids_by_signature(
-        _module_workflow_compiled_pattern_compile_correctness_case_signature
-    )
-
-    assert anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_module_workflow_compiled_pattern_compile_workload_signature,
-        include_workload=_is_module_workflow_compiled_pattern_compile_workload,
-    ) == expected_anchor_case_ids
-    assert unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_module_workflow_compiled_pattern_compile_workload_signature,
-        include_workload=_is_module_workflow_compiled_pattern_compile_workload,
-    ) == ()
-    assert tuple(
-        (pair.workload_id, pair.case_id)
-        for pair in expected_anchored_workload_case_pairs(
-            manifest_path,
-            expected_anchor_case_ids=expected_anchor_case_ids,
-            include_workload=_is_module_workflow_compiled_pattern_compile_workload,
-        )
-    ) == (
-        (
-            "module-compile-literal-warm-str-compiled-pattern-contract",
-            "workflow-module-compile-str-compiled-pattern",
-        ),
-        (
-            "module-compile-literal-purged-bytes-compiled-pattern-contract",
-            "workflow-module-compile-bytes-compiled-pattern",
-        ),
-        (
-            "module-compile-named-group-warm-str-compiled-pattern-contract",
-            "workflow-module-compile-str-compiled-pattern-named-group",
-        ),
-        (
-            "module-compile-named-group-purged-bytes-compiled-pattern-contract",
-            "workflow-module-compile-bytes-compiled-pattern-named-group",
-        ),
-    )
-
-
-@pytest.mark.parametrize(
-    "source_workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_compile_success_source_workloads()
-    ),
-)
-@pytest.mark.parametrize(
-    ("import_name", "adapter_name"),
-    (
-        pytest.param("re", "cpython.re", id="cpython"),
-        pytest.param("rebar", "rebar", id="rebar"),
-    ),
-)
-def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_success_workloads(
-    source_workload: Workload,
-    import_name: str,
-    adapter_name: str,
-) -> None:
-    workload = _compiled_pattern_module_compile_success_workload(source_workload)
-    payload = workload_to_payload(workload)
-    round_tripped = workload_from_payload(payload)
-
-    _assert_compiled_pattern_module_compile_success_payload_round_trip(
-        source_workload,
-        payload,
-        round_tripped,
-    )
-
-    probe = run_internal_workload_probe(
-        workload_payload=json.dumps(payload, sort_keys=True),
-        import_name=import_name,
-        adapter_name=adapter_name,
-    )
-
-    assert probe["status"] == "measured"
-    assert probe["median_ns"] > 0
-
-
-@pytest.mark.parametrize(
-    "source_workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_compile_success_source_workloads()
-    ),
-)
-def test_compiled_pattern_module_compile_success_callbacks_precompile_first_argument_before_timing(
-    source_workload: Workload,
-) -> None:
-    expected_build_calls = _compiled_pattern_module_compile_success_expected_build_calls(
-        source_workload
-    )
-    module = _RecordingBenchmarkModule()
-    callback = build_callable(
-        module,
-        "re",
-        _compiled_pattern_module_compile_success_workload(source_workload),
-    )
-
-    assert module.calls == expected_build_calls
-    assert len(module.compiled_patterns) == 1
-
-    compiled_pattern = module.compiled_patterns[0]
-    assert callback() is compiled_pattern
-
-    last_call = module.calls[-1]
-    assert last_call[0] == "compile"
-    assert last_call[1] is compiled_pattern
-    assert last_call[2:] == (source_workload.flags,)
+    return _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE.source_workloads()
 
 
 @dataclass(frozen=True)
@@ -15256,6 +15074,70 @@ class CompiledPatternModuleCompileKeywordCaseGroup:
             allowed_patterns=self.allowed_patterns,
             expected_exception=self.expected_exception,
         )
+
+    @property
+    def case_id(self) -> str:
+        return self.group_id
+
+    def source_workloads(self) -> tuple[Workload, ...]:
+        source_workloads = _selected_manifest_workloads(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            include_workload=self.selector,
+        )
+        expected_source_workload_ids = tuple(
+            workload_id.removesuffix("-contract")
+            for workload_id, _case_id in self.expected_anchor_pairs
+        )
+        if tuple(workload.workload_id for workload in source_workloads) != (
+            expected_source_workload_ids
+        ):
+            raise AssertionError(
+                "compiled-pattern module.compile keyword rows drifted from the "
+                f"{self.group_id} contract surface"
+            )
+        return source_workloads
+
+    def manifest_excluded_fields(self) -> frozenset[str]:
+        return _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS | {
+            "categories",
+            "syntax_features",
+        }
+
+    def note(self) -> str:
+        return (
+            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
+            "module.compile flags= keyword rows unresolved until helper invocation."
+        )
+
+    def assert_payload_round_trip(
+        self,
+        source_workload: Workload,
+        payload: dict[str, object],
+        round_tripped: Workload,
+    ) -> None:
+        expected_text_type = str if source_workload.text_model == "str" else bytes
+        expected_keyword_value = source_workload.keyword_arguments()["flags"]
+
+        assert payload["use_compiled_pattern"] is True
+        assert round_tripped.use_compiled_pattern is True
+        assert payload["flags"] == source_workload.flags
+        assert round_tripped.flags == source_workload.flags
+        assert payload["kwargs"] == source_workload.kwargs
+        assert round_tripped.kwargs == source_workload.kwargs
+        assert type(payload["kwargs"]["flags"]) is type(expected_keyword_value)
+        assert type(round_tripped.kwargs["flags"]) is type(expected_keyword_value)
+        assert payload.get("expected_exception") == source_workload.expected_exception
+        assert round_tripped.expected_exception == source_workload.expected_exception
+        assert payload.get("haystack_text_model") is None
+        assert round_tripped.haystack_text_model is None
+        assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+
+    def run_cpython_workload(self, workload: Workload) -> object:
+        compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+        return re.compile(compiled_pattern, **workload.keyword_arguments())
+
+    def callback_flags(self, source_workload: Workload) -> object:
+        return source_workload.keyword_arguments()["flags"]
 
 COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
     CompiledPatternModuleCompileKeywordCaseGroup(
@@ -15405,8 +15287,11 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
 )
 
 
-def _compiled_pattern_module_compile_keyword_manifest_payload(
+def _compiled_pattern_module_compile_contract_manifest_payload(
     source_workload: Workload,
+    *,
+    contract_case: CompiledPatternModuleCompileContractCase
+    | CompiledPatternModuleCompileKeywordCaseGroup,
 ) -> dict[str, object]:
     payload = workload_to_payload(source_workload)
     return {
@@ -15415,31 +15300,22 @@ def _compiled_pattern_module_compile_keyword_manifest_payload(
             key: value
             for key, value in payload.items()
             if key
-            not in {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "notes",
-                "smoke",
-                "categories",
-                "syntax_features",
-            }
+            not in contract_case.manifest_excluded_fields()
         },
         "timing_scope": "module-helper-call",
-        "notes": [
-            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
-            "module.compile flags= keyword rows unresolved until helper invocation."
-        ],
+        "notes": [contract_case.note()],
     }
 
 
-def _compiled_pattern_module_compile_keyword_workload(
+def _compiled_pattern_module_compile_contract_workload(
     source_workload: Workload,
+    *,
+    contract_case: CompiledPatternModuleCompileContractCase
+    | CompiledPatternModuleCompileKeywordCaseGroup,
 ) -> Workload:
-    manifest_payload = _compiled_pattern_module_compile_keyword_manifest_payload(
-        source_workload
+    manifest_payload = _compiled_pattern_module_compile_contract_manifest_payload(
+        source_workload,
+        contract_case=contract_case,
     )
     return workload_from_payload(
         {
@@ -15456,38 +15332,11 @@ def _compiled_pattern_module_compile_keyword_workload(
     )
 
 
-def _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_keyword_value = source_workload.keyword_arguments()["flags"]
-
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload["flags"] == source_workload.flags
-    assert round_tripped.flags == source_workload.flags
-    assert payload["kwargs"] == source_workload.kwargs
-    assert round_tripped.kwargs == source_workload.kwargs
-    assert type(payload["kwargs"]["flags"]) is type(expected_keyword_value)
-    assert type(round_tripped.kwargs["flags"]) is type(expected_keyword_value)
-    assert payload.get("expected_exception") == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert payload.get("haystack_text_model") is None
-    assert round_tripped.haystack_text_model is None
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-
-
-def _run_cpython_compiled_pattern_module_compile_keyword_workload(
-    workload: Workload,
-) -> object:
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return re.compile(compiled_pattern, **workload.keyword_arguments())
-
-
-def _compiled_pattern_module_compile_keyword_manifest(
+def _compiled_pattern_module_compile_contract_manifest(
     source_workloads: tuple[Workload, ...],
+    *,
+    contract_case: CompiledPatternModuleCompileContractCase
+    | CompiledPatternModuleCompileKeywordCaseGroup,
 ) -> dict[str, object]:
     return {
         "schema_version": 1,
@@ -15498,7 +15347,10 @@ def _compiled_pattern_module_compile_keyword_manifest(
             "timed_samples": 2,
         },
         "workloads": [
-            _compiled_pattern_module_compile_keyword_manifest_payload(workload)
+            _compiled_pattern_module_compile_contract_manifest_payload(
+                workload,
+                contract_case=contract_case,
+            )
             for workload in source_workloads
         ],
     }
@@ -15507,26 +15359,22 @@ def _compiled_pattern_module_compile_keyword_manifest(
 def _compiled_pattern_module_compile_keyword_source_workloads() -> tuple[Workload, ...]:
     source_workloads: list[Workload] = []
     for case_group in COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS:
-        source_workloads.extend(
-            _selected_manifest_workloads(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                include_workload=case_group.selector,
-            )
-        )
+        source_workloads.extend(case_group.source_workloads())
     return tuple(source_workloads)
 
 
-def _compiled_pattern_module_compile_keyword_expected_build_calls(
+def _compiled_pattern_module_compile_contract_expected_build_calls(
     source_workload: Workload,
 ) -> list[tuple[object, ...]]:
-    workload = _compiled_pattern_module_compile_keyword_workload(source_workload)
-    build_calls: list[tuple[object, ...]] = [("compile", workload.pattern_payload(), workload.flags)]
+    build_calls: list[tuple[object, ...]] = [
+        ("compile", source_workload.pattern_payload(), source_workload.flags)
+    ]
     if source_workload.cache_mode == "purged":
         return [*build_calls, ("purge",)]
     if source_workload.cache_mode == "warm":
         return build_calls
     raise AssertionError(
-        "unexpected compiled-pattern module.compile keyword workload cache mode "
+        "unexpected compiled-pattern module.compile contract workload cache mode "
         f"{source_workload.cache_mode!r}"
     )
 
@@ -15541,33 +15389,60 @@ def _expected_exception_instance(
     return exception_type(expected_exception["message_substring"])
 
 
-@pytest.mark.parametrize(
-    "case_group",
-    COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS,
-    ids=lambda case_group: case_group.group_id,
+_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
+    _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE,
+    *COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS,
 )
-def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_keyword_rows_until_helper_invocation(
-    tmp_path: pathlib.Path,
-    case_group: CompiledPatternModuleCompileKeywordCaseGroup,
-) -> None:
-    source_workloads = _selected_manifest_workloads(
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=case_group.selector,
+
+
+def _compiled_pattern_module_compile_contract_params() -> tuple[object, ...]:
+    return tuple(
+        pytest.param(
+            contract_case,
+            source_workload,
+            id=f"{contract_case.case_id}-{source_workload.workload_id}",
+        )
+        for contract_case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for source_workload in contract_case.source_workloads()
     )
-    manifest = _compiled_pattern_module_compile_keyword_manifest(source_workloads)
+
+
+def _compiled_pattern_module_compile_keyword_params() -> tuple[object, ...]:
+    return tuple(
+        pytest.param(case_group, source_workload, id=source_workload.workload_id)
+        for case_group in COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS
+        for source_workload in case_group.source_workloads()
+    )
+
+
+@pytest.mark.parametrize(
+    "contract_case",
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+    ids=lambda contract_case: contract_case.case_id,
+)
+def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation(
+    tmp_path: pathlib.Path,
+    contract_case: CompiledPatternModuleCompileContractCase
+    | CompiledPatternModuleCompileKeywordCaseGroup,
+) -> None:
+    source_workloads = contract_case.source_workloads()
+    manifest = _compiled_pattern_module_compile_contract_manifest(
+        source_workloads,
+        contract_case=contract_case,
+    )
     manifest_path = _write_test_manifest(
         tmp_path,
-        case_group.contract_filename,
+        contract_case.contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
     workloads = load_manifest(manifest_path).workloads
 
     assert tuple(workload.workload_id for workload in source_workloads) == tuple(
         workload_id.removesuffix("-contract")
-        for workload_id, _case_id in case_group.expected_anchor_pairs
+        for workload_id, _case_id in contract_case.expected_anchor_pairs
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
-        workload_id for workload_id, _case_id in case_group.expected_anchor_pairs
+        workload_id for workload_id, _case_id in contract_case.expected_anchor_pairs
     )
     assert [workload.use_compiled_pattern for workload in workloads] == [
         True
@@ -15584,7 +15459,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_k
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
+        contract_case.assert_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
@@ -15592,9 +15467,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_k
         if source_workload.expected_exception is None:
             assert_benchmark_workload_matches_expected_result(
                 round_tripped,
-                _run_cpython_compiled_pattern_module_compile_keyword_workload(
-                    workload
-                ),
+                contract_case.run_cpython_workload(workload),
             )
             continue
 
@@ -15605,77 +15478,77 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_k
             type(expected_exception),
             match=source_workload.expected_exception["message_substring"],
         ) as expected_error:
-            _run_cpython_compiled_pattern_module_compile_keyword_workload(workload)
+            contract_case.run_cpython_workload(workload)
         with pytest.raises(type(expected_error.value)) as observed_error:
             run_benchmark_workload_with_cpython(round_tripped)
         assert str(observed_error.value) == str(expected_error.value)
 
 
 @pytest.mark.parametrize(
-    "case_group",
-    COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS,
-    ids=lambda case_group: case_group.group_id,
+    "contract_case",
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+    ids=lambda contract_case: contract_case.case_id,
 )
-def test_compiled_pattern_module_compile_keyword_rows_stay_anchored_to_published_correctness_cases(
+def test_compiled_pattern_module_compile_success_and_keyword_contract_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
-    case_group: CompiledPatternModuleCompileKeywordCaseGroup,
+    contract_case: CompiledPatternModuleCompileContractCase
+    | CompiledPatternModuleCompileKeywordCaseGroup,
 ) -> None:
-    manifest = _compiled_pattern_module_compile_keyword_manifest(
-        _selected_manifest_workloads(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            include_workload=case_group.selector,
-        )
+    manifest = _compiled_pattern_module_compile_contract_manifest(
+        contract_case.source_workloads(),
+        contract_case=contract_case,
     )
     manifest_path = _write_test_manifest(
         tmp_path,
-        case_group.anchor_contract_filename,
+        contract_case.anchor_contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
     expected_anchor_case_ids = _definition_anchor_expectations(
         manifest_path,
         {
             workload_id: (case_id,)
-            for workload_id, case_id in case_group.expected_anchor_pairs
+            for workload_id, case_id in contract_case.expected_anchor_pairs
         },
     )
     anchor_case_ids = published_case_ids_by_signature(
-        case_group.correctness_case_signature
+        contract_case.correctness_case_signature
     )
 
     assert anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=case_group.workload_signature,
-        include_workload=case_group.include_workload,
+        workload_signature=contract_case.workload_signature,
+        include_workload=contract_case.include_workload,
     ) == expected_anchor_case_ids
     assert unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=case_group.workload_signature,
-        include_workload=case_group.include_workload,
+        workload_signature=contract_case.workload_signature,
+        include_workload=contract_case.include_workload,
     ) == ()
     assert tuple(
         (pair.workload_id, pair.case_id)
         for pair in expected_anchored_workload_case_pairs(
             manifest_path,
             expected_anchor_case_ids=expected_anchor_case_ids,
-            include_workload=case_group.include_workload,
+            include_workload=contract_case.include_workload,
         )
-    ) == case_group.expected_anchor_pairs
+    ) == contract_case.expected_anchor_pairs
 
 
 @pytest.mark.parametrize(
-    "source_workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_compile_keyword_source_workloads()
-    ),
+    ("case_group", "source_workload"),
+    _compiled_pattern_module_compile_keyword_params(),
 )
 def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time(
     monkeypatch,
+    case_group: CompiledPatternModuleCompileKeywordCaseGroup,
     source_workload: Workload,
 ) -> None:
-    workload = _compiled_pattern_module_compile_keyword_workload(source_workload)
+    workload = _compiled_pattern_module_compile_contract_workload(
+        source_workload,
+        contract_case=case_group,
+    )
     observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
@@ -15702,11 +15575,8 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 
 
 @pytest.mark.parametrize(
-    "source_workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_compile_keyword_source_workloads()
-    ),
+    ("contract_case", "source_workload"),
+    _compiled_pattern_module_compile_contract_params(),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -15715,16 +15585,21 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
         pytest.param("rebar", "rebar", id="rebar"),
     ),
 )
-def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_keyword_workloads(
+def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads(
+    contract_case: CompiledPatternModuleCompileContractCase
+    | CompiledPatternModuleCompileKeywordCaseGroup,
     source_workload: Workload,
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_compile_keyword_workload(source_workload)
+    workload = _compiled_pattern_module_compile_contract_workload(
+        source_workload,
+        contract_case=contract_case,
+    )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
+    contract_case.assert_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
@@ -15741,16 +15616,15 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_ke
 
 
 @pytest.mark.parametrize(
-    "source_workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_compile_keyword_source_workloads()
-    ),
+    ("contract_case", "source_workload"),
+    _compiled_pattern_module_compile_contract_params(),
 )
-def test_compiled_pattern_module_compile_keyword_callbacks_precompile_first_argument_before_timing(
+def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing(
+    contract_case: CompiledPatternModuleCompileContractCase
+    | CompiledPatternModuleCompileKeywordCaseGroup,
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = _compiled_pattern_module_compile_keyword_expected_build_calls(
+    expected_build_calls = _compiled_pattern_module_compile_contract_expected_build_calls(
         source_workload
     )
     compile_exception = (
@@ -15762,7 +15636,10 @@ def test_compiled_pattern_module_compile_keyword_callbacks_precompile_first_argu
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_compile_keyword_workload(source_workload),
+        _compiled_pattern_module_compile_contract_workload(
+            source_workload,
+            contract_case=contract_case,
+        ),
     )
 
     assert module.calls == expected_build_calls
@@ -15781,7 +15658,7 @@ def test_compiled_pattern_module_compile_keyword_callbacks_precompile_first_argu
     last_call = module.calls[-1]
     assert last_call[0] == "compile"
     assert last_call[1] is compiled_pattern
-    assert last_call[2:] == (source_workload.keyword_arguments()["flags"],)
+    assert last_call[2:] == (contract_case.callback_flags(source_workload),)
 
 def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
@@ -17720,18 +17597,23 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
 
 
 @pytest.mark.parametrize(
-    "source_workload",
+    ("case_group", "source_workload"),
     tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_compile_keyword_source_workloads()
-        if workload.expected_exception
+        pytest.param(case_group, source_workload, id=source_workload.workload_id)
+        for case_group in COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS
+        for source_workload in case_group.source_workloads()
+        if source_workload.expected_exception
     ),
 )
 def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows(
     tmp_path: pathlib.Path,
+    case_group: CompiledPatternModuleCompileKeywordCaseGroup,
     source_workload: Workload,
 ) -> None:
-    manifest = _compiled_pattern_module_compile_keyword_manifest((source_workload,))
+    manifest = _compiled_pattern_module_compile_contract_manifest(
+        (source_workload,),
+        contract_case=case_group,
+    )
     manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_compiled_pattern_module_compile_ignorecase_validation_contract.py",
@@ -17741,7 +17623,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
+    case_group.assert_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
