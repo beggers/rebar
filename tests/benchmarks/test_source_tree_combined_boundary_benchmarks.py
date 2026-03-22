@@ -2616,24 +2616,6 @@ def relative_manifest_path(path: pathlib.Path) -> str:
     return str(path.relative_to(REPO_ROOT))
 
 
-def run_source_tree_benchmark_scorecard(
-    manifest_paths: Iterable[pathlib.Path],
-    *,
-    smoke: bool = False,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    command = []
-    for manifest_path in manifest_paths:
-        command.extend(("--manifest", str(manifest_path)))
-    if smoke:
-        command.append("--smoke")
-
-    return run_harness_scorecard(
-        "rebar_harness.benchmarks",
-        command,
-        report_name="benchmarks.json",
-    )
-
-
 def ordered_operations(workloads: list[Workload]) -> list[str]:
     operations: list[str] = []
     for workload in workloads:
@@ -3306,8 +3288,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         expected_measured_workload_count: int,
         expected_total_workload_count: int | None = None,
     ) -> None:
-        _, scorecard = run_source_tree_benchmark_scorecard(
-            [case.target_manifest.path]
+        _, scorecard = run_harness_scorecard(
+            "rebar_harness.benchmarks",
+            ["--manifest", str(case.target_manifest.path)],
+            report_name="benchmarks.json",
         )
         manifest_summary = scorecard["manifests"][manifest_id]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -4760,8 +4744,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             0,
         )
 
-        _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"]
+        _, scorecard = run_harness_scorecard(
+            "rebar_harness.benchmarks",
+            [
+                "--manifest",
+                str(REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"),
+            ],
+            report_name="benchmarks.json",
         )
 
         manifest_summary = scorecard["manifests"]["regression-matrix"]
@@ -4805,8 +4794,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(manifest_id=target_manifest_id):
                 case = source_tree_combined_case(target_manifest_id)
                 manifest_expectation = case.manifest_expectation
-                summary, scorecard = run_source_tree_benchmark_scorecard(
-                    [manifest.path for manifest in case.manifests],
+                summary, scorecard = run_harness_scorecard(
+                    "rebar_harness.benchmarks",
+                    [
+                        argument
+                        for manifest in case.manifests
+                        for argument in ("--manifest", str(manifest.path))
+                    ],
+                    report_name="benchmarks.json",
                 )
 
                 assert_source_tree_benchmark_contract(
@@ -4881,8 +4876,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         for manifest_id in source_tree_combined_slice_manifest_ids():
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
-                _, scorecard = run_source_tree_benchmark_scorecard(
-                    [manifest.path for manifest in case.manifests]
+                _, scorecard = run_harness_scorecard(
+                    "rebar_harness.benchmarks",
+                    [
+                        argument
+                        for manifest in case.manifests
+                        for argument in ("--manifest", str(manifest.path))
+                    ],
+                    report_name="benchmarks.json",
                 )
 
                 manifest_summary = scorecard["manifests"][manifest_id]
@@ -4972,8 +4973,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         shape_expectation = source_tree_combined_manifest_shape_expectation(
             WIDER_RANGED_REPEAT_MANIFEST_ID
         )
-        _, scorecard = run_source_tree_benchmark_scorecard(
-            [manifest.path for manifest in case.manifests]
+        _, scorecard = run_harness_scorecard(
+            "rebar_harness.benchmarks",
+            [
+                argument
+                for manifest in case.manifests
+                for argument in ("--manifest", str(manifest.path))
+            ],
+            report_name="benchmarks.json",
         )
 
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
@@ -5708,9 +5715,18 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         for case_id in source_tree_scorecard_case_ids():
             with self.subTest(case_id=case_id):
                 case = source_tree_scorecard_case(case_id)
-                summary, scorecard = run_source_tree_benchmark_scorecard(
-                    [manifest.path for manifest in case.manifests],
-                    smoke=case.selection_mode == "smoke",
+                command = [
+                    argument
+                    for manifest in case.manifests
+                    for argument in ("--manifest", str(manifest.path))
+                ]
+                if case.selection_mode == "smoke":
+                    command.append("--smoke")
+
+                summary, scorecard = run_harness_scorecard(
+                    "rebar_harness.benchmarks",
+                    command,
+                    report_name="benchmarks.json",
                 )
 
                 assert_source_tree_benchmark_contract(
