@@ -221,22 +221,6 @@ def _build_generated_quantified_branch_local_candidate_texts(
     )
 
 
-GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPEC_BY_MANIFEST_ID = {
-    spec.bundle.expected_manifest_id: spec
-    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
-}
-GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
-    spec.bundle.expected_manifest_id: _build_generated_quantified_branch_local_candidate_texts(
-        spec.candidate_body_atoms,
-        spec.candidate_suffixes,
-        spec.candidate_lengths,
-    )
-    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
-}
-GENERATED_BYTES_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
-    manifest_id: tuple(text.encode("ascii") for text in texts)
-    for manifest_id, texts in GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID.items()
-}
 GENERATED_QUANTIFIED_BRANCH_LOCAL_COMPILE_CASES = tuple(
     case
     for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
@@ -244,17 +228,29 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_COMPILE_CASES = tuple(
 )
 
 
+def _generated_quantified_branch_local_spec(
+    manifest_id: str,
+) -> GeneratedQuantifiedBranchLocalParitySpec:
+    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS:
+        if spec.bundle.expected_manifest_id == manifest_id:
+            return spec
+    raise AssertionError(
+        f"unexpected generated branch-local manifest id {manifest_id!r}"
+    )
+
+
 def _generated_branch_local_candidate_texts(
     spec: GeneratedQuantifiedBranchLocalParitySpec,
     case: FixtureCase,
 ) -> tuple[str | bytes, ...]:
+    texts = _build_generated_quantified_branch_local_candidate_texts(
+        spec.candidate_body_atoms,
+        spec.candidate_suffixes,
+        spec.candidate_lengths,
+    )
     if case.text_model == "bytes":
-        return GENERATED_BYTES_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
-            spec.bundle.expected_manifest_id
-        ]
-    return GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
-        spec.bundle.expected_manifest_id
-    ]
+        return tuple(text.encode("ascii") for text in texts)
+    return texts
 
 
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
@@ -1086,9 +1082,19 @@ def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_publis
     spec: GeneratedQuantifiedBranchLocalParitySpec,
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
-    candidate_texts = GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
-        spec.bundle.expected_manifest_id
-    ]
+    candidate_texts = _build_generated_quantified_branch_local_candidate_texts(
+        spec.candidate_body_atoms,
+        spec.candidate_suffixes,
+        spec.candidate_lengths,
+    )
+    expected_candidate_count = (
+        len(WRAPPER_PAIRS)
+        * len(spec.candidate_suffixes)
+        * sum(
+            len(spec.candidate_body_atoms) ** length
+            for length in spec.candidate_lengths
+        )
+    )
 
     assert tuple(
         generated_spec.bundle.manifest.path
@@ -1108,13 +1114,8 @@ def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_publis
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == spec.expected_text_models
-    assert len(candidate_texts) == len(
-        _build_generated_quantified_branch_local_candidate_texts(
-            spec.candidate_body_atoms,
-            spec.candidate_suffixes,
-            spec.candidate_lengths,
-        )
-    )
+    assert len(candidate_texts) == expected_candidate_count
+    assert len(candidate_texts) == len(set(candidate_texts))
 
 
 def test_branch_local_backreference_parity_suite_tracks_published_case_frontier() -> None:
@@ -1278,7 +1279,7 @@ def test_generated_quantified_branch_local_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    spec = GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPEC_BY_MANIFEST_ID[case.manifest_id]
+    spec = _generated_quantified_branch_local_spec(case.manifest_id)
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
     observed_pattern, expected_pattern = compile_with_cpython_parity(
