@@ -631,6 +631,79 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-findall-window-keyword-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabcabcz",
+      "flags": 0,
+      "kwargs": {
+        "pos": 1,
+        "endpos": 7
+      },
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "findall",
+        "literal",
+        "warm-cache",
+        "keyword",
+        "window",
+        "collection"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "literal-text",
+        "pattern-window-pos",
+        "pattern-window-endpos"
+      ],
+      "notes": [
+        "Warm precompiled findall helper path that keeps the Pattern.findall pos=/endpos= keyword carriers on the shared pattern-boundary manifest."
+      ]
+    },
+    {
+      "id": "pattern-findall-window-indexlike-keyword-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabcabcabcz",
+      "flags": 0,
+      "kwargs": {
+        "pos": {
+          "type": "indexlike",
+          "value": 1
+        },
+        "endpos": {
+          "type": "indexlike",
+          "value": 7
+        }
+      },
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "findall",
+        "literal",
+        "warm-cache",
+        "keyword",
+        "window",
+        "indexlike",
+        "collection"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "literal-text",
+        "pattern-window-pos",
+        "pattern-window-endpos"
+      ],
+      "notes": [
+        "Warm precompiled findall helper path that keeps the Pattern.findall pos=/endpos= __index__ keyword carriers on the shared pattern-boundary manifest."
+      ]
+    },
+    {
       "id": "pattern-findall-bool-window-keyword-warm-str",
       "bucket": "pattern-findall",
       "family": "module",
@@ -662,6 +735,41 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled findall helper path that keeps the bool-backed Pattern.findall pos=/endpos= keyword carriers on the shared pattern-boundary manifest."
+      ]
+    },
+    {
+      "id": "pattern-finditer-window-keyword-purged-bytes",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "abc",
+      "haystack": "zabcabcz",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "pos": 1,
+        "endpos": 7
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "finditer",
+        "bytes",
+        "purged-cache",
+        "keyword",
+        "window",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "pattern-text-model",
+        "pattern-window-pos",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes finditer helper path that keeps the Pattern.finditer pos=/endpos= keyword carriers on the shared pattern-boundary manifest."
       ]
     },
     {
@@ -704,6 +812,42 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache bytes finditer helper path that keeps the Pattern.finditer pos=/endpos= __index__ keyword carriers on the shared pattern-boundary manifest."
+      ]
+    },
+    {
+      "id": "pattern-finditer-bool-window-keyword-purged-bytes",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "abc",
+      "haystack": "zabcabcz",
+      "flags": 0,
+      "text_model": "bytes",
+      "kwargs": {
+        "pos": True,
+        "endpos": 7
+      },
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "finditer",
+        "bytes",
+        "purged-cache",
+        "keyword",
+        "window",
+        "bool",
+        "single-match"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "pattern-text-model",
+        "pattern-window-pos",
+        "pattern-window-endpos",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes finditer helper path that keeps the bool-backed Pattern.finditer pos=/endpos= keyword carriers on the shared pattern-boundary manifest."
       ]
     },
     {
