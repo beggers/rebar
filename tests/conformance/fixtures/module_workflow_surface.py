@@ -1682,6 +1682,63 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-subn-duplicate-count-keyword-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "include_pattern_arg": True,
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        1
+      ],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "count", "duplicate-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level subn() duplicate count= keyword rejection on bytes payloads without widening into the later positional-count plus extra-keyword follow-on."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-unexpected-keyword-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "include_pattern_arg": True,
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module-level subn() unexpected-keyword rejection on bytes payloads without widening into the later positional-count plus extra-keyword follow-on."
+      ]
+    },
+    {
       "id": "workflow-module-split-maxsplit-indexlike-positional-bytes",
       "operation": "module_call",
       "family": "module_split_workflow",

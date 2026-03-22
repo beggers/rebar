@@ -2061,6 +2061,19 @@ def _module_keyword_fixture_signature(
     )
 
 
+def _module_keyword_error_direct_signature(
+    case: ModuleKeywordErrorCase,
+) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
+    pattern, *args = case.args
+    return (
+        case.helper,
+        pattern,
+        tuple(args),
+        _workflow_keyword_kwargs_signature(case.kwargs),
+        "bytes" if isinstance(pattern, bytes) else "str",
+    )
+
+
 def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
     direct_signatures = {
         _module_keyword_direct_signature(case) for case in MODULE_KEYWORD_CALL_CASES
@@ -2074,12 +2087,26 @@ def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
 
 
 def _published_module_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
+    published_direct_case_ids = (
+        "module-search-duplicate-flags-keyword",
+        "module-split-duplicate-maxsplit-keyword",
+        "module-sub-duplicate-count-keyword",
+        "module-fullmatch-unexpected-keyword",
+        "module-sub-unexpected-keyword",
+        "module-subn-duplicate-count-keyword-bytes",
+        "module-subn-unexpected-keyword-bytes",
+    )
+    direct_cases_by_id = {case.case_id: case for case in MODULE_KEYWORD_ERROR_CASES}
+    fixture_cases_by_signature = {
+        _module_keyword_fixture_signature(case): case
         for case in MODULE_CALL_CASES
         if not case.use_compiled_pattern
-        and case.text_model == "str"
-        and {"duplicate-keyword", "unexpected-keyword"} & set(case.categories)
+    }
+    return tuple(
+        fixture_cases_by_signature[
+            _module_keyword_error_direct_signature(direct_cases_by_id[case_id])
+        ]
+        for case_id in published_direct_case_ids
     )
 
 
@@ -3480,9 +3507,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 167
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 169
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 95, "bytes": 72}
+        {"str": 95, "bytes": 74}
     )
     assert len(PATTERN_CASES) == 68
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -3497,7 +3524,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 9,
         }
     )
-    assert len(MODULE_CALL_CASES) == 87
+    assert len(MODULE_CALL_CASES) == 89
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 20,
@@ -3508,7 +3535,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "findall": 2,
             "finditer": 2,
             "sub": 16,
-            "subn": 14,
+            "subn": 16,
             "escape": 2,
         }
     )
@@ -4074,21 +4101,43 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "workflow-module-sub-duplicate-count-keyword",
         "workflow-module-fullmatch-unexpected-keyword",
         "workflow-module-sub-unexpected-keyword",
+        "workflow-module-subn-duplicate-count-keyword-bytes",
+        "workflow-module-subn-unexpected-keyword-bytes",
     )
     assert tuple(
         case.case_id for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "str",
         )
-    ) == tuple(case.case_id for case in published_fixture_cases)
+    ) == (
+        "workflow-module-search-duplicate-flags-keyword",
+        "workflow-module-split-duplicate-maxsplit-keyword",
+        "workflow-module-sub-duplicate-count-keyword",
+        "workflow-module-fullmatch-unexpected-keyword",
+        "workflow-module-sub-unexpected-keyword",
+    )
+    assert tuple(
+        case.case_id for case in _fixture_cases_for_text_model(
+            published_fixture_cases,
+            "bytes",
+        )
+    ) == (
+        "workflow-module-subn-duplicate-count-keyword-bytes",
+        "workflow-module-subn-unexpected-keyword-bytes",
+    )
     assert tuple(case.case_id for case in selected_direct_cases) == (
         "module-search-duplicate-flags-keyword",
         "module-split-duplicate-maxsplit-keyword",
         "module-sub-duplicate-count-keyword",
         "module-fullmatch-unexpected-keyword",
         "module-sub-unexpected-keyword",
+        "module-subn-duplicate-count-keyword-bytes",
+        "module-subn-unexpected-keyword-bytes",
     )
     assert len(selected_direct_cases) == len(published_fixture_cases)
+    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
+        {"str": 5, "bytes": 2}
+    )
     assert Counter(
         case.helper for case in published_fixture_cases
     ) == Counter(
@@ -4097,6 +4146,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
             "split": 1,
             "sub": 2,
             "fullmatch": 1,
+            "subn": 2,
         }
     )
     assert tuple(case.helper for case in published_fixture_cases) == tuple(
@@ -4107,7 +4157,9 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         direct_pattern, *direct_args = direct_case.args
         assert fixture_case.include_pattern_arg is True
         assert fixture_case.use_compiled_pattern is False
-        assert fixture_case.text_model == "str"
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_pattern, bytes) else "str"
+        )
         assert case_pattern(fixture_case) == direct_pattern
         assert tuple(fixture_case.args) == tuple(direct_args)
         assert _workflow_keyword_kwargs_signature(

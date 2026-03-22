@@ -1,8 +1,9 @@
 # RBR-0939: Publish the module-workflow module `subn()` keyword-error bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the missing raw module-level `subn()` bytes keyword-error pair, publishing the exact duplicate-count and unexpected-keyword rejections that the shared owner path already exercises directly before the later positional-count-plus-extra-keyword follow-on or another owner family widens the queue.
@@ -79,3 +80,14 @@ Created: 2026-03-22
   - `rg -n 'module-subn-duplicate-count-keyword-warm-bytes|module-subn-unexpected-keyword-purged-bytes' benchmarks/workloads/collection_replacement_boundary.py reports/benchmarks/latest.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned no matches in this run, so the matching Python-path benchmark catch-up is also still queued behind this publication step;
   - `reports/correctness/latest.py` currently reports `1541` total / `1541` passed / `0` unimplemented across `114` manifests; and
   - `reports/benchmarks/latest.py` currently reports `889` total / `889` measured / `0` known gaps across `30` manifests, so this run stays on correctness publication instead of skipping ahead to benchmark-only changes.
+
+## Completion
+- Added `workflow-module-subn-duplicate-count-keyword-bytes` and `workflow-module-subn-unexpected-keyword-bytes` to `tests/conformance/fixtures/module_workflow_surface.py` at the required raw module `subn()` insertion points on the existing manifest.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared `module-keyword-error` publication path stays anchored to the exact seven direct owner cases in order, with a `str` subset of `5`, a `bytes` subset of `2`, `module-workflow-surface` at `169` total rows, and raw `module_call` coverage at `89`.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the tracked combined scorecard must include the new raw module `subn()` bytes keyword-error ids in the `module-workflow-surface` representative publication slice.
+- Republished `reports/correctness/latest.py`. The tracked artifact remains in the diff and now reports `1543` total / `1543` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `169`, `module.workflow.bytes` at `74`, `module.workflow.str` at `95`, `module.workflow.module_call` at `89`, and both new raw module case ids present.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module-subn-duplicate-count-keyword-bytes or module-subn-unexpected-keyword-bytes or module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0939-module-workflow-module-subn-keyword-error-bytes-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
