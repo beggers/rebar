@@ -8003,7 +8003,7 @@ def _pattern_verbose_regression_correctness_case_signature(
     return (
         f"pattern.{case.helper}",
         case_pattern(case),
-        freeze_signature_value(case.serialized_args()),
+        freeze_signature_value(list(case.args)),
         (),
         case.flags or 0,
         case.text_model or "str",
