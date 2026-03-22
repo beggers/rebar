@@ -1,8 +1,9 @@
 # RBR-0910: Publish the module-workflow `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier immediately after `RBR-0908` by publishing the exact direct `Pattern.sub()` / `Pattern.subn()` duplicate-`count=` keyword rejection pair on the shared bound-pattern error owner path, while leaving the Python-path benchmark frontier unchanged in this run because the runtime parity prerequisite still drains first.
@@ -71,3 +72,14 @@ Created: 2026-03-22
   - `rg 'workflow-pattern-sub-duplicate-count-keyword-str|workflow-pattern-subn-duplicate-count-keyword-bytes' tests/conformance/fixtures/module_workflow_surface.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py tests/python/test_module_workflow_parity_suite.py` returned no matches in this run, so the exact direct bound-pattern publication rows are still absent;
   - `reports/correctness/latest.py` currently reports `1528` total / `1528` passed / `0` unimplemented across `114` manifests, with `module.workflow` still at `154` / `154` / `0`; and
   - `tests/python/test_module_workflow_parity_suite.py` currently keeps the direct bound-pattern keyword-helper publication slice at `27` rows while the shared bound-pattern error owner path still covers only the wrong-text-model cases, so the next bounded publication step is the duplicate-`count=` error pair rather than another helper family.
+
+## Completion
+- Added exactly two `pattern_call` publication rows to `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-pattern-sub-duplicate-count-keyword-str` and `workflow-pattern-subn-duplicate-count-keyword-bytes`, in the required positions beside the existing bound replacement keyword rows.
+- Extended `tests/python/test_module_workflow_parity_suite.py` with a focused `_published_pattern_keyword_error_fixture_cases()` selector and a direct bound-pattern keyword-error publication assertion that maps only the two landed duplicate-`count=` rows back to `pattern-sub-duplicate-count-keyword-str` and `pattern-subn-duplicate-count-keyword-bytes`, while keeping the existing 27-row helper slice and 9-row positional `__index__` slice unchanged.
+- Updated the module-workflow bundle expectations in `tests/python/test_module_workflow_parity_suite.py` to `156` total rows, `89` `str`, `67` `bytes`, `59` `pattern_call`, and `sub: 6` / `subn: 6`, without widening into unexpected-keyword or `split()` duplicate-`maxsplit=` publication.
+- Refreshed `tests/conformance/test_combined_correctness_scorecards.py` representative coverage and republished `reports/correctness/latest.py`; the tracked report on disk now shows `1530` total / `1530` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `156`, `module.workflow.str` at `89`, `module.workflow.bytes` at `67`, `module.workflow.module_call` unchanged at `85`, and `module.workflow.pattern_call` at `59`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-duplicate-count-keyword-str or pattern-subn-duplicate-count-keyword-bytes or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0910-module-workflow-pattern-sub-subn-duplicate-count-keyword-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

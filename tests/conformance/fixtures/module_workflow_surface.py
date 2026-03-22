@@ -887,6 +887,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-sub-duplicate-count-keyword-str",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abc", 1],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "duplicate-keyword", "str"],
+      "notes": [
+        "Publishes the direct bound Pattern.sub duplicate-count rejection spelling beside the adjacent replacement keyword rows without widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-subn-count-keyword-str",
       "operation": "pattern_call",
       "family": "bound_subn_workflow",
@@ -944,6 +959,34 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "keyword", "count", "bool", "str"],
       "notes": [
         "Publishes the bounded Pattern.subn count=True workflow on str payloads alongside the adjacent Pattern.sub bool keyword row."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-duplicate-count-keyword-bytes",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        1
+      ],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "duplicate-keyword", "bytes"],
+      "notes": [
+        "Publishes the direct bound Pattern.subn duplicate-count rejection spelling beside the adjacent replacement keyword rows without widening into a broader bound-pattern keyword-error dump."
       ]
     },
     {

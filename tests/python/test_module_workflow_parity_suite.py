@@ -2170,9 +2170,38 @@ def _pattern_keyword_fixture_signature(
     )
 
 
+def _pattern_helper_error_direct_signature(
+    case: PatternHelperErrorCase,
+) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
+    return (
+        case.helper,
+        case.pattern,
+        tuple(case.args),
+        _workflow_keyword_kwargs_signature(case.kwargs),
+        "bytes" if isinstance(case.pattern, bytes) else "str",
+    )
+
+
 def _published_pattern_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
     direct_signatures = {
         _pattern_keyword_direct_signature(case) for case in PATTERN_KEYWORD_CALL_CASES
+    }
+    return tuple(
+        case
+        for case in PATTERN_CASES
+        if _pattern_keyword_fixture_signature(case) in direct_signatures
+    )
+
+
+def _published_pattern_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
+    direct_signatures = {
+        _pattern_helper_error_direct_signature(case)
+        for case in BOUND_PATTERN_TYPE_ERROR_CASES
+        if case.case_id
+        in {
+            "pattern-sub-duplicate-count-keyword-str",
+            "pattern-subn-duplicate-count-keyword-bytes",
+        }
     }
     return tuple(
         case
@@ -3232,11 +3261,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 154
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 156
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 88, "bytes": 66}
+        {"str": 89, "bytes": 67}
     )
-    assert len(PATTERN_CASES) == 57
+    assert len(PATTERN_CASES) == 59
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 16,
@@ -3245,8 +3274,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "findall": 5,
             "finditer": 5,
             "split": 4,
-            "sub": 5,
-            "subn": 5,
+            "sub": 6,
+            "subn": 6,
         }
     )
     assert len(MODULE_CALL_CASES) == 85
@@ -3316,9 +3345,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-sub-count-keyword-bytes",
         "workflow-pattern-sub-count-indexlike-bytes",
         "workflow-pattern-sub-count-bool-false-bytes",
+        "workflow-pattern-sub-duplicate-count-keyword-str",
         "workflow-pattern-subn-count-keyword-str",
         "workflow-pattern-subn-count-indexlike-str",
         "workflow-pattern-subn-count-bool-true-str",
+        "workflow-pattern-subn-duplicate-count-keyword-bytes",
     } <= {case.case_id for case in PATTERN_CASES}
 
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
@@ -4006,6 +4037,69 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         published_fixture_cases,
         selected_direct_cases,
     ):
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
+        )
+        assert case_pattern(fixture_case) == direct_case.pattern
+        assert tuple(fixture_case.args) == direct_case.args
+        assert _workflow_keyword_kwargs_signature(
+            fixture_case.kwargs
+        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
+        assert fixture_case.flags == 0
+
+
+def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
+) -> None:
+    published_fixture_cases = _published_pattern_keyword_error_fixture_cases()
+    direct_cases_by_signature = {
+        _pattern_helper_error_direct_signature(case): case
+        for case in BOUND_PATTERN_TYPE_ERROR_CASES
+        if case.case_id
+        in {
+            "pattern-sub-duplicate-count-keyword-str",
+            "pattern-subn-duplicate-count-keyword-bytes",
+        }
+    }
+    selected_direct_cases = tuple(
+        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
+        for case in published_fixture_cases
+    )
+
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            published_fixture_cases,
+            "str",
+        )
+    ) == ("workflow-pattern-sub-duplicate-count-keyword-str",)
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            published_fixture_cases,
+            "bytes",
+        )
+    ) == ("workflow-pattern-subn-duplicate-count-keyword-bytes",)
+    assert tuple(case.case_id for case in published_fixture_cases) == (
+        "workflow-pattern-sub-duplicate-count-keyword-str",
+        "workflow-pattern-subn-duplicate-count-keyword-bytes",
+    )
+    assert tuple(case.case_id for case in selected_direct_cases) == (
+        "pattern-sub-duplicate-count-keyword-str",
+        "pattern-subn-duplicate-count-keyword-bytes",
+    )
+    assert len(published_fixture_cases) == 2
+    assert len(selected_direct_cases) == len(published_fixture_cases)
+    assert Counter(case.helper for case in published_fixture_cases) == Counter(
+        {
+            "sub": 1,
+            "subn": 1,
+        }
+    )
+    assert tuple(case.helper for case in published_fixture_cases) == tuple(
+        case.helper for case in selected_direct_cases
+    )
+
+    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
         assert fixture_case.text_model == (
             "bytes" if isinstance(direct_case.pattern, bytes) else "str"
         )
