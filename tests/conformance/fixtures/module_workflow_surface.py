@@ -902,6 +902,21 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-sub-unexpected-keyword-str",
+      "operation": "pattern_call",
+      "family": "bound_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abc"],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "unexpected-keyword"],
+      "notes": [
+        "Publishes the direct bound Pattern.sub unexpected-keyword rejection spelling beside the adjacent replacement keyword rows without widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
       "id": "workflow-pattern-subn-count-keyword-str",
       "operation": "pattern_call",
       "family": "bound_subn_workflow",
@@ -987,6 +1002,33 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "keyword", "count", "duplicate-keyword", "bytes"],
       "notes": [
         "Publishes the direct bound Pattern.subn duplicate-count rejection spelling beside the adjacent replacement keyword rows without widening into a broader bound-pattern keyword-error dump."
+      ]
+    },
+    {
+      "id": "workflow-pattern-subn-unexpected-keyword-bytes",
+      "operation": "pattern_call",
+      "family": "bound_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        }
+      ],
+      "kwargs": {
+        "missing": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword"],
+      "notes": [
+        "Publishes the direct bound Pattern.subn unexpected-keyword rejection spelling beside the adjacent replacement keyword rows without widening into a broader bound-pattern keyword-error dump."
       ]
     },
     {

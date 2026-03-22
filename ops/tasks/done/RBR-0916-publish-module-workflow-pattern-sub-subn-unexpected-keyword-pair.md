@@ -1,8 +1,9 @@
 # RBR-0916: Publish the module-workflow `Pattern.sub()` / `Pattern.subn()` unexpected-keyword pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier immediately after `RBR-0914` by publishing the exact direct `Pattern.sub()` / `Pattern.subn()` unexpected-keyword rejection pair on the shared bound-pattern error owner path, while leaving the Python-path benchmark frontier unchanged in this run because the benchmark catch-up should follow the corrected published slice rather than outrun it.
@@ -72,3 +73,14 @@ Created: 2026-03-22
   - `rg -n 'workflow-pattern-sub-unexpected-keyword|workflow-pattern-subn-unexpected-keyword' tests/conformance benchmarks/workloads reports tests/benchmarks` returned no matches in this run, so the exact direct bound-pattern publication and benchmark rows are still absent;
   - `reports/correctness/latest.py` currently reports `1530` total / `1530` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `156`, `module.workflow.str` at `89`, `module.workflow.bytes` at `67`, `module.workflow.module_call` at `85`, and `module.workflow.pattern_call` at `59`; and
   - `reports/benchmarks/latest.py` already reports `878` total / `878` measured / `0` known gaps across `30` manifests, so this run stays on the correctness-publication step instead of skipping ahead to another benchmark-only refresh.
+
+## Completion
+- Added exactly two `pattern_call` publication rows to `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-pattern-sub-unexpected-keyword-str` and `workflow-pattern-subn-unexpected-keyword-bytes`, in the required positions beside the existing direct bound-pattern replacement keyword-error rows.
+- Extended `tests/python/test_module_workflow_parity_suite.py` so the focused direct bound-pattern keyword-error publication selector now maps exactly four rows back to the landed runtime direct cases: the existing duplicate-`count=` pair plus the new unexpected-keyword pair, while keeping the 27-row helper subset and 9-row positional `__index__` subset unchanged.
+- Updated the module-workflow bundle expectations in `tests/python/test_module_workflow_parity_suite.py` to `158` total rows with `90` `str`, `68` `bytes`, `61` `pattern_call`, and `sub: 7` / `subn: 7`, leaving `module_call` unchanged at `85`.
+- Refreshed `tests/conformance/test_combined_correctness_scorecards.py` representative coverage and republished `reports/correctness/latest.py`; the tracked report file remains in the diff and now reports `1532` total / `1532` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `158`, `module.workflow.str` at `90`, `module.workflow.bytes` at `68`, `module.workflow.module_call` unchanged at `85`, and `module.workflow.pattern_call` at `61`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-sub-unexpected-keyword-str or pattern-subn-unexpected-keyword-bytes or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0916-module-workflow-pattern-sub-subn-unexpected-keyword-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

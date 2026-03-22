@@ -2229,7 +2229,9 @@ def _published_pattern_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
         if case.case_id
         in {
             "pattern-sub-duplicate-count-keyword-str",
+            "pattern-sub-unexpected-keyword-str",
             "pattern-subn-duplicate-count-keyword-bytes",
+            "pattern-subn-unexpected-keyword-bytes",
         }
     }
     return tuple(
@@ -3302,11 +3304,11 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 156
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 158
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 89, "bytes": 67}
+        {"str": 90, "bytes": 68}
     )
-    assert len(PATTERN_CASES) == 59
+    assert len(PATTERN_CASES) == 61
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {
             "search": 16,
@@ -3315,8 +3317,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "findall": 5,
             "finditer": 5,
             "split": 4,
-            "sub": 6,
-            "subn": 6,
+            "sub": 7,
+            "subn": 7,
         }
     )
     assert len(MODULE_CALL_CASES) == 85
@@ -3387,10 +3389,12 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-sub-count-indexlike-bytes",
         "workflow-pattern-sub-count-bool-false-bytes",
         "workflow-pattern-sub-duplicate-count-keyword-str",
+        "workflow-pattern-sub-unexpected-keyword-str",
         "workflow-pattern-subn-count-keyword-str",
         "workflow-pattern-subn-count-indexlike-str",
         "workflow-pattern-subn-count-bool-true-str",
         "workflow-pattern-subn-duplicate-count-keyword-bytes",
+        "workflow-pattern-subn-unexpected-keyword-bytes",
     } <= {case.case_id for case in PATTERN_CASES}
 
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
@@ -4098,7 +4102,9 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
         if case.case_id
         in {
             "pattern-sub-duplicate-count-keyword-str",
+            "pattern-sub-unexpected-keyword-str",
             "pattern-subn-duplicate-count-keyword-bytes",
+            "pattern-subn-unexpected-keyword-bytes",
         }
     }
     selected_direct_cases = tuple(
@@ -4112,28 +4118,38 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             published_fixture_cases,
             "str",
         )
-    ) == ("workflow-pattern-sub-duplicate-count-keyword-str",)
+    ) == (
+        "workflow-pattern-sub-duplicate-count-keyword-str",
+        "workflow-pattern-sub-unexpected-keyword-str",
+    )
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == ("workflow-pattern-subn-duplicate-count-keyword-bytes",)
+    ) == (
+        "workflow-pattern-subn-duplicate-count-keyword-bytes",
+        "workflow-pattern-subn-unexpected-keyword-bytes",
+    )
     assert tuple(case.case_id for case in published_fixture_cases) == (
         "workflow-pattern-sub-duplicate-count-keyword-str",
+        "workflow-pattern-sub-unexpected-keyword-str",
         "workflow-pattern-subn-duplicate-count-keyword-bytes",
+        "workflow-pattern-subn-unexpected-keyword-bytes",
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
         "pattern-sub-duplicate-count-keyword-str",
+        "pattern-sub-unexpected-keyword-str",
         "pattern-subn-duplicate-count-keyword-bytes",
+        "pattern-subn-unexpected-keyword-bytes",
     )
-    assert len(published_fixture_cases) == 2
+    assert len(published_fixture_cases) == 4
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.helper for case in published_fixture_cases) == Counter(
         {
-            "sub": 1,
-            "subn": 1,
+            "sub": 2,
+            "subn": 2,
         }
     )
     assert tuple(case.helper for case in published_fixture_cases) == tuple(
