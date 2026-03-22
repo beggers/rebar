@@ -1,8 +1,9 @@
 # RBR-0940: Collapse compiled-pattern module.compile keyword case mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached compiled-pattern `module.compile(..., flags=...)` keyword case tables from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the contract section derives its twelve-row surface directly from the tracked `benchmarks/workloads/module_boundary.py` manifest it already validates instead of maintaining a second handwritten keyword-case layer.
@@ -137,3 +138,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_keyword or module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_rows_measured'` currently passes (`52 passed, 540 deselected, 26 subtests passed`);
   - `rg -n '^(class CompiledPatternModuleCompileKeywordCase|COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_NAMED_GROUP_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_NAMED_GROUP_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_ALL_KEYWORD_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently finds the remaining mirrors; and
   - the selector probe in Acceptance currently passes (`ok 6`), proving the twelve-row surface already exists in `benchmarks/workloads/module_boundary.py` without the extra keyword-case tables.
+
+## Completion
+- Reworked `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the compiled-pattern `module.compile(..., flags=...)` contract rows now derive from `_selected_manifest_workloads(MODULE_BOUNDARY_MANIFEST_PATH, include_workload=...)` with the existing six selector functions instead of the deleted handwritten keyword-case tuples.
+- Kept the six group-local contract filenames, anchor filenames, expected anchor pairs, keyword signatures, and ignorecase rejection expectations unchanged while switching the contract/payload/probe/callback coverage to parameterize over live `Workload` objects from the tracked manifest.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_keyword or module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_rows_measured'`
+  - `bash -lc "! rg -n '^(class CompiledPatternModuleCompileKeywordCase|COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_NAMED_GROUP_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_NAMED_GROUP_KEYWORD_CASES|COMPILED_PATTERN_MODULE_COMPILE_ALL_KEYWORD_CASES)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the selector-order probe from the acceptance block (`ok 6`)
