@@ -2915,6 +2915,91 @@ def test_bounded_pattern_case_match_parity_compiles_then_dispatches_observed_and
     assert parity_calls == [("stub-backend", observed_match, expected_match)]
 
 
+def test_bounded_pattern_case_match_parity_skips_follow_on_checks_for_expected_no_match(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    compile_calls: list[tuple[object, ...]] = []
+    dispatched_patterns: list[tuple[object, object]] = []
+    helper_calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
+    observed_pattern = object()
+    expected_pattern = object()
+    case = SimpleNamespace(
+        pattern="abc",
+        helper="fullmatch",
+        string="abcx",
+        bounds=(0, 4),
+    )
+
+    def _compile(
+        backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+        *,
+        check_cache_identity: bool = True,
+    ) -> tuple[object, object]:
+        compile_calls.append(
+            (backend_name, backend, pattern, flags, check_cache_identity)
+        )
+        return observed_pattern, expected_pattern
+
+    def _invoke(compiled_pattern: object, routed_case: object) -> None:
+        dispatched_patterns.append((compiled_pattern, routed_case))
+        return None
+
+    def _record_call(name: str):
+        def recorder(*args: object, **kwargs: object) -> None:
+            helper_calls.append((name, args, dict(kwargs)))
+
+        return recorder
+
+    monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "invoke_bounded_pattern_case",
+        _invoke,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        _record_call("match-result"),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        _record_call("convenience"),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        _record_call("valid-group-access"),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        _record_call("invalid-group-access"),
+    )
+
+    backend = object()
+    assert_bounded_pattern_case_match_parity(
+        ("stub-backend", backend),
+        case,
+        expect_match=False,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+    assert compile_calls == [("stub-backend", backend, "abc", 0, True)]
+    assert dispatched_patterns == [
+        (observed_pattern, case),
+        (expected_pattern, case),
+    ]
+    assert helper_calls == [
+        ("match-result", ("stub-backend", None, None), {"check_regs": True})
+    ]
+
+
 @pytest.mark.parametrize(
     "case",
     (
