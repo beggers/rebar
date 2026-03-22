@@ -1,8 +1,9 @@
 # RBR-0897: Collapse the module-workflow pattern-keyword fixture mirror
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the remaining published pattern-keyword fixture mirror in `tests/python/test_module_workflow_parity_suite.py`, so the owner file derives that published slice directly from the live pattern-keyword direct cases plus the fixture-backed `PATTERN_CASES` inventory instead of keeping one extra top-level tuple constant.
@@ -49,3 +50,11 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern_keyword or module_workflow_direct_test_buckets_cover_selected_frontier or module_workflow_parity_suite_stays_aligned_with_published_fixture'` currently passes (`53 passed, 1179 deselected`);
   - `rg -n '^PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = ' tests/python/test_module_workflow_parity_suite.py` currently reports the residual mirror at line `231`; and
   - the same owner file already derives the neighboring module-keyword and positional-indexlike published slices from direct-case signatures, so this pattern-keyword mirror can be removed without introducing another abstraction layer.
+
+## Completion
+- Removed the `PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES` tuple mirror from `tests/python/test_module_workflow_parity_suite.py`.
+- Added a file-local pattern-keyword signature path plus `_published_pattern_keyword_fixture_cases()` so the owner file now derives the published pattern-keyword fixture slice directly from `PATTERN_KEYWORD_CALL_CASES` and `PATTERN_CASES`.
+- Rewired `test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases()` to use the live selector for its ordering, `str` / `bytes` partition, helper-count, and fixture-to-direct alignment checks without changing the published frontier.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern_keyword or module_workflow_direct_test_buckets_cover_selected_frontier or module_workflow_parity_suite_stays_aligned_with_published_fixture'`
+  - `bash -lc "! rg -n '^PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = ' tests/python/test_module_workflow_parity_suite.py"`

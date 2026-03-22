@@ -228,38 +228,6 @@ MATCH_HELPER_PATTERN_CASES = tuple(
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
-PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
-    case
-    for case in PATTERN_CASES
-    if case.case_id
-    in {
-        "workflow-pattern-search-str-pos-keyword",
-        "workflow-pattern-search-str-bool-endpos-keyword",
-        "workflow-pattern-search-bytes-endpos-keyword",
-        "workflow-pattern-search-str-pos-indexlike",
-        "workflow-pattern-search-bytes-endpos-indexlike",
-        "workflow-pattern-match-str-pos-keyword",
-        "workflow-pattern-match-str-bool-pos-keyword",
-        "workflow-pattern-match-bytes-window-indexlike",
-        "workflow-pattern-fullmatch-bytes-window-keyword",
-        "workflow-pattern-fullmatch-bytes-window-indexlike",
-        "workflow-pattern-findall-str-window-keyword",
-        "workflow-pattern-findall-str-window-indexlike",
-        "workflow-pattern-findall-str-bool-window-keyword",
-        "workflow-pattern-finditer-bytes-window-keyword",
-        "workflow-pattern-finditer-bytes-window-indexlike",
-        "workflow-pattern-finditer-bytes-bool-window-keyword",
-        "workflow-pattern-split-str-maxsplit-keyword",
-        "workflow-pattern-split-str-maxsplit-indexlike",
-        "workflow-pattern-split-str-maxsplit-bool-true",
-        "workflow-pattern-sub-count-keyword-bytes",
-        "workflow-pattern-sub-count-indexlike-bytes",
-        "workflow-pattern-sub-count-bool-false-bytes",
-        "workflow-pattern-subn-count-keyword-str",
-        "workflow-pattern-subn-count-indexlike-str",
-        "workflow-pattern-subn-count-bool-true-str",
-    }
-)
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
@@ -2084,6 +2052,41 @@ def _published_pattern_positional_indexlike_fixture_cases() -> tuple[FixtureCase
     )
 
 
+def _pattern_keyword_direct_signature(
+    case: PatternKeywordCallCase,
+) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
+    return (
+        case.helper,
+        case.pattern,
+        tuple(case.args),
+        _workflow_keyword_kwargs_signature(case.kwargs),
+        "bytes" if isinstance(case.pattern, bytes) else "str",
+    )
+
+
+def _pattern_keyword_fixture_signature(
+    case: FixtureCase,
+) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
+    return (
+        case.helper,
+        case_pattern(case),
+        tuple(case.args),
+        _workflow_keyword_kwargs_signature(case.kwargs),
+        case.text_model,
+    )
+
+
+def _published_pattern_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
+    direct_signatures = {
+        _pattern_keyword_direct_signature(case) for case in PATTERN_KEYWORD_CALL_CASES
+    }
+    return tuple(
+        case
+        for case in PATTERN_CASES
+        if _pattern_keyword_fixture_signature(case) in direct_signatures
+    )
+
+
 # Keep the representative fixture-backed rows small, then use a compact matrix
 # here to prove the helpers keep accepting the broader bool/int/__index__ slice.
 WORKFLOW_NUMERIC_COERCION_VALUES = (
@@ -3705,37 +3708,20 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
 
 def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
 ) -> None:
-    def direct_signature(
-        case: PatternKeywordCallCase,
-    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
-        return (
-            case.helper,
-            case.pattern,
-            tuple(case.args),
-            _workflow_keyword_kwargs_signature(case.kwargs),
-            "bytes" if isinstance(case.pattern, bytes) else "str",
-        )
-
     direct_cases_by_signature = {
-        direct_signature(case): case for case in PATTERN_KEYWORD_CALL_CASES
+        _pattern_keyword_direct_signature(case): case
+        for case in PATTERN_KEYWORD_CALL_CASES
     }
+    published_fixture_cases = _published_pattern_keyword_fixture_cases()
     selected_direct_cases = tuple(
-        direct_cases_by_signature[
-            (
-                case.helper,
-                case_pattern(case),
-                tuple(case.args),
-                _workflow_keyword_kwargs_signature(case.kwargs),
-                case.text_model,
-            )
-        ]
-        for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
+        direct_cases_by_signature[_pattern_keyword_fixture_signature(case)]
+        for case in published_fixture_cases
     )
 
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
-            PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES,
+            published_fixture_cases,
             "str",
         )
     ) == (
@@ -3757,7 +3743,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
-            PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES,
+            published_fixture_cases,
             "bytes",
         )
     ) == (
@@ -3774,7 +3760,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "workflow-pattern-sub-count-bool-false-bytes",
     )
     assert tuple(
-        case.case_id for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
+        case.case_id for case in published_fixture_cases
     ) == (
         "workflow-pattern-search-str-pos-keyword",
         "workflow-pattern-search-str-bool-endpos-keyword",
@@ -3831,8 +3817,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         "pattern-subn-count-indexlike-str",
         "pattern-subn-count-bool-true-str",
     )
-    assert len(selected_direct_cases) == len(PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES)
-    assert Counter(case.helper for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES) == (
+    assert len(selected_direct_cases) == len(published_fixture_cases)
+    assert Counter(case.helper for case in published_fixture_cases) == (
         Counter(
             {
                 "search": 5,
@@ -3847,11 +3833,11 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         )
     )
     assert tuple(
-        case.helper for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
+        case.helper for case in published_fixture_cases
     ) == tuple(case.helper for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(
-        PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES,
+        published_fixture_cases,
         selected_direct_cases,
     ):
         assert fixture_case.text_model == (
