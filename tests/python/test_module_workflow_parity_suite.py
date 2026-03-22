@@ -3190,9 +3190,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 150
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 152
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 86, "bytes": 64}
+        {"str": 87, "bytes": 65}
     )
     assert len(PATTERN_CASES) == 55
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -3207,7 +3207,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 4,
         }
     )
-    assert len(MODULE_CALL_CASES) == 83
+    assert len(MODULE_CALL_CASES) == 85
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 20,
@@ -3217,8 +3217,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "split": 12,
             "findall": 2,
             "finditer": 2,
-            "sub": 14,
-            "subn": 12,
+            "sub": 15,
+            "subn": 13,
             "escape": 2,
         }
     )
@@ -4218,6 +4218,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-sub-str-compiled-pattern",
         "workflow-module-sub-count-keyword-str-compiled-pattern",
         "workflow-module-sub-count-bool-true-str-compiled-pattern",
+        "workflow-module-sub-count-bool-false-str-compiled-pattern",
         "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
         "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern-on-bytes-string",
@@ -4253,11 +4254,28 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-bytes-compiled-pattern",
         "workflow-module-subn-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
+        "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
         "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
-    assert len(published_fixture_cases) == 56
+    assert len(published_fixture_cases) == 58
+    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
+        {"str": 31, "bytes": 27}
+    )
+    assert Counter(case.helper for case in published_fixture_cases) == Counter(
+        {
+            "compile": 20,
+            "search": 4,
+            "match": 3,
+            "fullmatch": 4,
+            "split": 7,
+            "findall": 2,
+            "finditer": 2,
+            "sub": 8,
+            "subn": 8,
+        }
+    )
     assert tuple(
         case.case_id for case in published_fixture_cases
     ) == (
@@ -4307,6 +4325,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-sub-count-keyword-str-compiled-pattern",
         "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
         "workflow-module-sub-count-bool-true-str-compiled-pattern",
+        "workflow-module-sub-count-bool-false-str-compiled-pattern",
         "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
         "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern-on-bytes-string",
@@ -4314,6 +4333,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-subn-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-count-indexlike-str-compiled-pattern",
         "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
+        "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
         "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
         "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
@@ -4367,6 +4387,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-sub-count-keyword-str",
         "compiled-pattern-sub-count-indexlike-bytes",
         "compiled-pattern-sub-count-bool-true-str",
+        "compiled-pattern-sub-count-bool-false-str",
         "compiled-pattern-sub-duplicate-count-keyword-str",
         "compiled-pattern-sub-unexpected-keyword-str",
         "compiled-pattern-sub-str-on-bytes-string",
@@ -4374,6 +4395,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-subn-count-keyword-bytes",
         "compiled-pattern-subn-count-indexlike-str",
         "compiled-pattern-subn-count-bool-false-bytes",
+        "compiled-pattern-subn-count-bool-true-bytes",
         "compiled-pattern-subn-duplicate-count-keyword-bytes",
         "compiled-pattern-subn-unexpected-keyword-bytes",
         "compiled-pattern-subn-bytes-on-str-string",

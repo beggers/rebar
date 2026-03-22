@@ -1,8 +1,9 @@
 # RBR-0898: Publish the module-workflow compiled-pattern module `sub()`/`subn()` bool-count complement pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier after `RBR-0896` by publishing the adjacent compiled-pattern module-level bool-count complement pair that the current runtime already executes with CPython parity, while leaving the Python-path benchmark frontier unchanged in this run because the shared collection/replacement benchmark owner already times the adjacent compiled-pattern module `sub()` / `subn()` bool keyword carriers on the same route.
@@ -72,5 +73,16 @@ Created: 2026-03-22
 - 2026-03-22 feature-planning probes confirm this follow-on is concrete from the landed runtime frontier while the publication path still lacks the exact pair:
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.sub(rebar.compile(\"abc\"), \"x\", \"abcabc\", count=False) ... rebar.subn(rebar.compile(b\"abc\"), b\"x\", b\"abcabc\", count=True) ... PY` matched stdlib `re` for both exact calls in this run;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled_pattern_module_keyword_argument_calls_match_cpython and (sub-count-bool-true-str or subn-count-bool-false-bytes)'` passed in this run (`4 passed, 1228 deselected`), so no Rust or Python regex-behavior prerequisite is missing for the adjacent compiled-pattern bool keyword owner path;
-  - direct publication probes in this run confirmed `compiled-pattern-sub-count-bool-false-str`, `compiled-pattern-subn-count-bool-true-bytes`, `workflow-module-sub-count-bool-false-str-compiled-pattern`, and `workflow-module-subn-count-bool-true-bytes-compiled-pattern` are still absent from `tests/python/test_module_workflow_parity_suite.py`, `tests/conformance/fixtures/module_workflow_surface.py`, `reports/correctness/latest.py`, and `reports/benchmarks/latest.py`; and
+  - direct publication probes in this run confirmed the published fixture/report pair still lacked `workflow-module-sub-count-bool-false-str-compiled-pattern` and `workflow-module-subn-count-bool-true-bytes-compiled-pattern`, while `compiled-pattern-sub-count-bool-false-str` and `compiled-pattern-subn-count-bool-true-bytes` were already present on the direct owner path in `tests/python/test_module_workflow_parity_suite.py`; and
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and `reports/benchmarks/latest.py` already carry the adjacent `module-sub-count-bool-keyword-warm-str-compiled-pattern` and `module-subn-count-bool-keyword-purged-bytes-compiled-pattern` workloads on the shared collection/replacement owner path, so this task can stay correctness-only without inventing another benchmark manifest first.
+
+## Completion
+- Added the two missing compiled-pattern `module_call` publication rows to `tests/conformance/fixtures/module_workflow_surface.py` in the required order: `workflow-module-sub-count-bool-false-str-compiled-pattern` and `workflow-module-subn-count-bool-true-bytes-compiled-pattern`.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the published compiled-pattern module-helper assertions now cover the 58-row compiled-pattern subset, the 152-row `module-workflow-surface` bundle, and the 85-row `module_call` slice; the direct bool-count owner-path cases were already present when this run started, so this run only had to publish the missing fixture/report half of the pair.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the combined tracked scorecard now treats both new compiled-pattern rows as representative `module-workflow-surface` module-call cases.
+- Regenerated `reports/correctness/latest.py`; the tracked artifact now reports `1526` total / `1526` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `152`, `module.workflow.str` at `87`, `module.workflow.bytes` at `65`, `module.workflow.module_call` at `85`, and `module.workflow.pattern_call` unchanged at `55`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled-pattern-sub-count-bool-false-str or compiled-pattern-subn-count-bool-true-bytes or module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases or compiled_pattern_module_keyword_argument_calls_match_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0898-module-workflow-compiled-pattern-module-sub-subn-bool-count-complement-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

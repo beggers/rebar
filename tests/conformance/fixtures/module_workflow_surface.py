@@ -2313,6 +2313,22 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-sub-count-bool-false-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "use_compiled_pattern": True,
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count": False
+      },
+      "categories": ["workflow", "sub", "literal", "keyword", "count", "bool", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the bool-count complement spelling beside the already published compiled-pattern module-level sub() count=True keyword workflow on str payloads without widening into the remaining compiled-pattern keyword matrix."
+      ]
+    },
+    {
       "id": "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_sub_workflow",
@@ -2462,6 +2478,34 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "keyword", "count", "bool", "bytes", "compiled-pattern"],
       "notes": [
         "Publishes the bounded compiled-pattern module-level subn() count=False keyword workflow on bytes payloads alongside the adjacent compiled-pattern replacement bool rows."
+      ]
+    },
+    {
+      "id": "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count": True
+      },
+      "categories": ["workflow", "subn", "literal", "keyword", "count", "bool", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the bool-count complement spelling beside the already published compiled-pattern module-level subn() count=False keyword workflow on bytes payloads without widening into the remaining compiled-pattern keyword matrix."
       ]
     },
     {
