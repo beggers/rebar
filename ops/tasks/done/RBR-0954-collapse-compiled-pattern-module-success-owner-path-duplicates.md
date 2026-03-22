@@ -1,6 +1,6 @@
 # RBR-0954: Collapse compiled-pattern module success owner-path duplicates
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -127,3 +127,6 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success or compiled_pattern_module_boundary_success'` currently passes (`42 passed, 582 deselected`);
   - the owner-surface probe in Verification currently passes (`ok 5 8`), proving both success surfaces already exist directly on the live manifest-selected workload path; and
   - the negative `rg` check in Verification currently fails only because the duplicate success helper/test layer named in this task is still present in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+
+## Completion Note
+- Landed a file-local owner-spec cleanup in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`: the collection/replacement and module-boundary compiled-pattern success paths now share one owner-spec-driven payload/build/probe/callback test surface, the duplicate helper/test names called out in this task are gone, the source workload ids still resolve to the same 5-row and 8-row owner surfaces in the same order, and the targeted pytest/rg/owner-surface checks all pass in this checkout.
