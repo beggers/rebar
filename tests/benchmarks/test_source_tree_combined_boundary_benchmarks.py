@@ -3534,7 +3534,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 27)
+        self.assertEqual(len(expected_measured_workload_ids), 29)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -11607,6 +11607,39 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
     )
 
 
+def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    monkeypatch,
+    workload: Workload,
+    *,
+    expected_result: object,
+    expected_field_names: list[str] | tuple[str, ...],
+) -> None:
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        assert callback() == expected_result
+        assert callback() == expected_result
+
+        assert observed_field_names == list(expected_field_names) * 2
+    finally:
+        re.purge()
+
+
 @pytest.mark.parametrize(
     (
         "operation",
@@ -11716,30 +11749,12 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             "smoke": False,
         }
     )
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result=expected_result,
+        expected_field_names=expected_field_names,
     )
-
-    re.purge()
-    try:
-        callback = build_callable(re, "re", workload)
-        assert observed_field_names == []
-
-        observed_result = callback()
-
-        assert observed_field_names == expected_field_names
-        assert observed_result == expected_result
-    finally:
-        re.purge()
 
 
 @pytest.mark.parametrize(
@@ -11881,30 +11896,12 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
             "smoke": False,
         }
     )
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result=expected_result,
+        expected_field_names=expected_field_names,
     )
-
-    re.purge()
-    try:
-        callback = build_callable(re, "re", workload)
-        assert observed_field_names == []
-
-        observed_result = callback()
-
-        assert observed_field_names == expected_field_names
-        assert observed_result == expected_result
-    finally:
-        re.purge()
 
 
 @pytest.mark.parametrize(
@@ -12662,30 +12659,12 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
     case: CompiledPatternModuleKeywordCarrierCase,
 ) -> None:
     workload = _compiled_pattern_module_helper_keyword_workload(case)
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result=case.expected_result,
+        expected_field_names=case.expected_field_names,
     )
-
-    re.purge()
-    try:
-        callback = build_callable(re, "re", workload)
-        assert observed_field_names == []
-
-        observed_result = callback()
-
-        assert observed_field_names == list(case.expected_field_names)
-        assert observed_result == case.expected_result
-    finally:
-        re.purge()
 
 
 @pytest.mark.parametrize(
