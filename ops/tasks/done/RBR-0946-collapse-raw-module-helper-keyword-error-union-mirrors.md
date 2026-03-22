@@ -1,8 +1,9 @@
 # RBR-0946: Collapse raw module-helper keyword-error union mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached raw module-helper keyword-error case layer from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the callback and internal-probe coverage derives from the same seven live workload rows already published across `benchmarks/workloads/module_boundary.py` and `benchmarks/workloads/collection_replacement_boundary.py` instead of maintaining a second handwritten tuple-and-builder surface.
@@ -117,3 +118,8 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module_helper_workflow_keyword_error or run_internal_workload_probe_measures_module_helper_keyword_error_workloads'` currently passes (`24 passed, 582 deselected`)
   - the selector probe in Verification currently passes (`ok 7`), proving the seven-row surface already exists across the tracked manifests
   - `bash -lc "! rg -n 'def _module_helper_keyword_error_probe_workload\\(|id=\\\"module-search-duplicate-flags-keyword\\\"|id=\\\"module-subn-unexpected-keyword-after-positional-count-bytes\\\"' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails only because the detached mirror layer is still present at lines `13212`, `13399`, `13533`, `13607`, `13671`, and `13755`
+
+## Completion
+- 2026-03-22: Replaced the detached raw module-helper keyword-error builder and handwritten tuple blocks in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with live manifest selectors over `MODULE_BOUNDARY_MANIFEST_PATH` and `COLLECTION_REPLACEMENT_MANIFEST_PATH`, keeping the combined seven-row source surface pinned to the published workload ids already tracked in those manifests.
+- Parameterized both keyword-error callback/probe tests over live `Workload` objects, derived the callback field-name expectations from the selected workloads, and reused the existing benchmark execution helpers for direct CPython exception parity instead of the deleted handwritten lambda table.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module_helper_workflow_keyword_error or run_internal_workload_probe_measures_module_helper_keyword_error_workloads'`, `bash -lc "! rg -n 'def _module_helper_keyword_error_probe_workload\\(|id=\\\"module-search-duplicate-flags-keyword\\\"|id=\\\"module-subn-unexpected-keyword-after-positional-count-bytes\\\"' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`, and the task’s selector probe snippet (`ok 7`).

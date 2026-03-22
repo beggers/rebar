@@ -13209,7 +13209,7 @@ def test_run_internal_workload_probe_measures_pattern_helper_collection_replacem
             None,
             "subn() got an unexpected keyword argument 'missing'",
             ["count", "kwargs.missing"],
-            id="module-subn-unexpected-keyword-after-positional-count-bytes",
+            id="module-helper-subn-unexpected-keyword-after-positional-count-bytes",
         ),
     ),
 )
@@ -13361,220 +13361,70 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
         re.purge()
 
 
+_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS = frozenset(
+    {
+        "module-split-duplicate-maxsplit-keyword-purged-str",
+        "module-sub-duplicate-count-keyword-warm-str",
+        "module-sub-unexpected-keyword-purged-str",
+        "module-sub-unexpected-keyword-after-positional-count-purged-str",
+        "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
+    }
+)
+
+
+def _is_collection_replacement_module_helper_keyword_error_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_collection_replacement_keyword_workload(workload)
+        and not workload.use_compiled_pattern
+        and workload.operation in {"module.split", "module.sub", "module.subn"}
+        and workload.expected_exception is not None
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.workload_id
+        in _MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+    )
+
+
+def _module_helper_keyword_error_source_workloads() -> tuple[Workload, ...]:
+    return _selected_manifest_workloads(
+        MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload=_is_module_workflow_keyword_error_workload,
+    ) + _selected_manifest_workloads(
+        COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload=(
+            _is_collection_replacement_module_helper_keyword_error_workload
+        ),
+    )
+
+
+def _module_helper_keyword_error_expected_field_names(
+    source_workload: Workload,
+) -> tuple[str, ...]:
+    if _is_module_workflow_keyword_error_workload(source_workload):
+        return tuple(f"kwargs.{name}" for name in source_workload.kwargs)
+
+    field_names: list[str] = []
+    positional_keyword_field = _collection_replacement_positional_keyword_field(
+        source_workload
+    )
+    if positional_keyword_field is not None:
+        field_names.append(positional_keyword_field)
+    field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
+    return tuple(field_names)
+
+
 @pytest.mark.parametrize(
-    (
-        "operation",
-        "cache_mode",
-        "haystack",
-        "kwargs_payload",
-        "replacement",
-        "count",
-        "maxsplit",
-        "expected_exception",
-        "text_model",
-        "expected_direct_exception",
-        "expected_field_names",
-    ),
-    (
-        pytest.param(
-            "module.search",
-            "warm",
-            "abc",
-            {"flags": 0},
-            None,
-            0,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "multiple values for argument 'flags'",
-            },
-            "str",
-            lambda workload: re.search(
-                workload.pattern_payload(),
-                workload.haystack_payload(),
-                workload.flags,
-                flags=0,
-            ),
-            ["kwargs.flags"],
-            id="module-search-duplicate-flags-keyword",
-        ),
-        pytest.param(
-            "module.fullmatch",
-            "purged",
-            "abc",
-            {"missing": 1},
-            None,
-            0,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "str",
-            lambda workload: re.fullmatch(
-                workload.pattern_payload(),
-                workload.haystack_payload(),
-                missing=1,
-            ),
-            ["kwargs.missing"],
-            id="module-fullmatch-unexpected-keyword",
-        ),
-        pytest.param(
-            "module.split",
-            "purged",
-            "abc",
-            {"maxsplit": 1},
-            None,
-            0,
-            1,
-            {
-                "type": "TypeError",
-                "message_substring": "multiple values for argument 'maxsplit'",
-            },
-            "str",
-            lambda workload: re.split(
-                workload.pattern_payload(),
-                workload.haystack_payload(),
-                workload.maxsplit,
-                maxsplit=1,
-            ),
-            ["maxsplit", "kwargs.maxsplit"],
-            id="module-split-duplicate-maxsplit-keyword",
-        ),
-        pytest.param(
-            "module.sub",
-            "warm",
-            "abc",
-            {"count": 1},
-            "x",
-            1,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "multiple values for argument 'count'",
-            },
-            "str",
-            lambda workload: re.sub(
-                workload.pattern_payload(),
-                workload.replacement_payload(),
-                workload.haystack_payload(),
-                workload.count,
-                count=1,
-            ),
-            ["count", "kwargs.count"],
-            id="module-sub-duplicate-count-keyword",
-        ),
-        pytest.param(
-            "module.sub",
-            "purged",
-            "abc",
-            {"missing": 1},
-            "x",
-            0,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "str",
-            lambda workload: re.sub(
-                workload.pattern_payload(),
-                workload.replacement_payload(),
-                workload.haystack_payload(),
-                missing=1,
-            ),
-            ["kwargs.missing"],
-            id="module-sub-unexpected-keyword",
-        ),
-        pytest.param(
-            "module.sub",
-            "purged",
-            "abc",
-            {"missing": 1},
-            "x",
-            1,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "str",
-            lambda workload: re.sub(
-                workload.pattern_payload(),
-                workload.replacement_payload(),
-                workload.haystack_payload(),
-                workload.count,
-                missing=1,
-            ),
-            ["count", "kwargs.missing"],
-            id="module-sub-unexpected-keyword-after-positional-count",
-        ),
-        pytest.param(
-            "module.subn",
-            "purged",
-            "abc",
-            {"missing": 1},
-            "x",
-            1,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "bytes",
-            lambda workload: re.subn(
-                workload.pattern_payload(),
-                workload.replacement_payload(),
-                workload.haystack_payload(),
-                workload.count,
-                missing=1,
-            ),
-            ["count", "kwargs.missing"],
-            id="module-subn-unexpected-keyword-after-positional-count-bytes",
-        ),
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _module_helper_keyword_error_source_workloads()
     ),
 )
 def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions(
     monkeypatch,
-    operation: str,
-    cache_mode: str,
-    haystack: str,
-    kwargs_payload: dict[str, object],
-    replacement: object,
-    count: object,
-    maxsplit: object,
-    expected_exception: dict[str, str],
-    text_model: str,
-    expected_direct_exception,
-    expected_field_names: list[str],
+    source_workload: Workload,
 ) -> None:
-    workload = workload_from_payload(
-        {
-            "manifest_id": "python-benchmark-module-workflow-keyword-errors-contract",
-            "workload_id": f"{operation}-keyword-error-materialization-contract",
-            "bucket": operation.replace("module.", "module-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": "abc",
-            "haystack": haystack,
-            "replacement": replacement,
-            "expected_exception": expected_exception,
-            "flags": 0,
-            "count": count,
-            "maxsplit": maxsplit,
-            "kwargs": kwargs_payload,
-            "text_model": text_model,
-            "cache_mode": cache_mode,
-            "timing_scope": "module-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
     observed_field_names: list[str] = []
     original_materialize = benchmarks.materialize_numeric_workload_argument
 
@@ -13590,170 +13440,27 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
 
     re.purge()
     try:
-        callback = build_callable(re, "re", workload)
+        callback = build_callable(re, "re", source_workload)
         assert observed_field_names == []
 
         with pytest.raises(TypeError) as expected_error:
-            expected_direct_exception(workload)
+            run_benchmark_workload_with_cpython(source_workload)
+        observed_field_names.clear()
         with pytest.raises(TypeError) as observed_error:
             callback()
 
-        assert observed_field_names == expected_field_names
+        assert observed_field_names == list(
+            _module_helper_keyword_error_expected_field_names(source_workload)
+        )
         assert str(observed_error.value) == str(expected_error.value)
     finally:
         re.purge()
 
-
-def _module_helper_keyword_error_probe_workload(
-    *,
-    operation: str,
-    cache_mode: str,
-    kwargs_payload: dict[str, object],
-    replacement: object,
-    count: object,
-    maxsplit: object,
-    expected_exception: dict[str, str],
-    text_model: str,
-) -> Workload:
-    return workload_from_payload(
-        {
-            "manifest_id": "python-benchmark-module-helper-keyword-error-probe-contract",
-            "workload_id": f"{operation}-keyword-error-probe-contract",
-            "bucket": operation.replace("module.", "module-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": "abc",
-            "haystack": "abc",
-            "replacement": replacement,
-            "expected_exception": expected_exception,
-            "flags": 0,
-            "count": count,
-            "maxsplit": maxsplit,
-            "kwargs": kwargs_payload,
-            "text_model": text_model,
-            "cache_mode": cache_mode,
-            "timing_scope": "module-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
-
-
 @pytest.mark.parametrize(
-    (
-        "operation",
-        "cache_mode",
-        "kwargs_payload",
-        "replacement",
-        "count",
-        "maxsplit",
-        "expected_exception",
-        "text_model",
-    ),
-    (
-        pytest.param(
-            "module.search",
-            "warm",
-            {"flags": 0},
-            None,
-            0,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "multiple values for argument 'flags'",
-            },
-            "str",
-            id="module-search-duplicate-flags-keyword",
-        ),
-        pytest.param(
-            "module.fullmatch",
-            "warm",
-            {"missing": 1},
-            None,
-            0,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "str",
-            id="module-fullmatch-unexpected-keyword",
-        ),
-        pytest.param(
-            "module.split",
-            "purged",
-            {"maxsplit": 1},
-            None,
-            0,
-            1,
-            {
-                "type": "TypeError",
-                "message_substring": "multiple values for argument 'maxsplit'",
-            },
-            "str",
-            id="module-split-duplicate-maxsplit-keyword",
-        ),
-        pytest.param(
-            "module.sub",
-            "warm",
-            {"count": 1},
-            "x",
-            1,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "multiple values for argument 'count'",
-            },
-            "str",
-            id="module-sub-duplicate-count-keyword",
-        ),
-        pytest.param(
-            "module.sub",
-            "purged",
-            {"missing": 1},
-            "x",
-            0,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "str",
-            id="module-sub-unexpected-keyword",
-        ),
-        pytest.param(
-            "module.sub",
-            "purged",
-            {"missing": 1},
-            "x",
-            1,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "str",
-            id="module-sub-unexpected-keyword-after-positional-count",
-        ),
-        pytest.param(
-            "module.subn",
-            "purged",
-            {"missing": 1},
-            "x",
-            1,
-            0,
-            {
-                "type": "TypeError",
-                "message_substring": "unexpected keyword argument 'missing'",
-            },
-            "bytes",
-            id="module-subn-unexpected-keyword-after-positional-count-bytes",
-        ),
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _module_helper_keyword_error_source_workloads()
     ),
 )
 @pytest.mark.parametrize(
@@ -13764,34 +13471,19 @@ def _module_helper_keyword_error_probe_workload(
     ),
 )
 def test_run_internal_workload_probe_measures_module_helper_keyword_error_workloads(
-    operation: str,
-    cache_mode: str,
-    kwargs_payload: dict[str, object],
-    replacement: object,
-    count: object,
-    maxsplit: object,
-    expected_exception: dict[str, str],
-    text_model: str,
+    source_workload: Workload,
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _module_helper_keyword_error_probe_workload(
-        operation=operation,
-        cache_mode=cache_mode,
-        kwargs_payload=kwargs_payload,
-        replacement=replacement,
-        count=count,
-        maxsplit=maxsplit,
-        expected_exception=expected_exception,
-        text_model=text_model,
-    )
-    payload = workload_to_payload(workload)
+    payload = workload_to_payload(source_workload)
     round_tripped = workload_from_payload(payload)
 
-    assert payload["expected_exception"] == expected_exception
-    assert round_tripped.expected_exception == expected_exception
-    assert payload["kwargs"] == kwargs_payload
-    assert round_tripped.kwargs == kwargs_payload
+    assert payload["workload_id"] == source_workload.workload_id
+    assert round_tripped.workload_id == source_workload.workload_id
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert payload["kwargs"] == source_workload.kwargs
+    assert round_tripped.kwargs == source_workload.kwargs
 
     probe = run_internal_workload_probe(
         workload_payload=json.dumps(payload, sort_keys=True),
