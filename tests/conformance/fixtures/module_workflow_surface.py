@@ -1768,6 +1768,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-subn-count-alias-keyword-bytes",
+      "operation": "module_call",
+      "family": "module_subn_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "include_pattern_arg": True,
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "kwargs": {
+        "count_alias": 1
+      },
+      "categories": ["workflow", "subn", "literal", "bytes", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module replacement count_alias keyword-name rejection spelling on bytes payloads on the shared module-workflow owner path without widening into a broader replacement-keyword dump."
+      ]
+    },
+    {
       "id": "workflow-module-split-maxsplit-indexlike-positional-bytes",
       "operation": "module_call",
       "family": "module_split_workflow",
@@ -1960,6 +1988,22 @@ MANIFEST = {
       "categories": ["workflow", "sub", "literal", "str", "count", "unexpected-keyword"],
       "notes": [
         "Publishes the adjacent raw module-level sub() positional-count plus unexpected keyword rejection already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-count-alias-keyword",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "include_pattern_arg": True,
+      "args": ["x", "abcabc"],
+      "kwargs": {
+        "count_alias": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "unexpected-keyword"],
+      "notes": [
+        "Publishes the adjacent raw module replacement count_alias keyword-name rejection spelling on the shared module-workflow owner path without widening into a broader replacement-keyword dump."
       ]
     },
     {

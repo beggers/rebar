@@ -184,6 +184,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-fullmatch-unexpected-keyword",
             "workflow-module-sub-unexpected-keyword",
             "workflow-module-sub-unexpected-keyword-after-positional-count",
+            "workflow-module-sub-count-alias-keyword",
             "workflow-module-subn-duplicate-count-keyword-bytes",
             "workflow-module-subn-unexpected-keyword-bytes",
             "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",

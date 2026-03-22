@@ -2178,9 +2178,11 @@ def _published_module_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
         "module-fullmatch-unexpected-keyword",
         "module-sub-unexpected-keyword",
         "module-sub-unexpected-keyword-after-positional-count",
+        "module-sub-count-alias-keyword",
         "module-subn-duplicate-count-keyword-bytes",
         "module-subn-unexpected-keyword-bytes",
         "module-subn-unexpected-keyword-after-positional-count-bytes",
+        "module-subn-count-alias-keyword-bytes",
     )
     direct_cases_by_id = {case.case_id: case for case in MODULE_KEYWORD_ERROR_CASES}
     fixture_cases_by_signature = {
@@ -2750,6 +2752,12 @@ MODULE_KEYWORD_ERROR_CASES = (
         kwargs={"missing": 1},
     ),
     ModuleKeywordErrorCase(
+        case_id="module-sub-count-alias-keyword",
+        helper="sub",
+        args=("abc", "x", "abcabc"),
+        kwargs={"count_alias": 1},
+    ),
+    ModuleKeywordErrorCase(
         case_id="module-subn-unexpected-keyword-bytes",
         helper="subn",
         args=(b"abc", b"x", b"abc"),
@@ -2760,6 +2768,12 @@ MODULE_KEYWORD_ERROR_CASES = (
         helper="subn",
         args=(b"abc", b"x", b"abc", 1),
         kwargs={"missing": 1},
+    ),
+    ModuleKeywordErrorCase(
+        case_id="module-subn-count-alias-keyword-bytes",
+        helper="subn",
+        args=(b"abc", b"x", b"abcabc"),
+        kwargs={"count_alias": 1},
     ),
 )
 COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
@@ -3655,9 +3669,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 173
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 175
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 97, "bytes": 76}
+        {"str": 98, "bytes": 77}
     )
     assert len(PATTERN_CASES) == 68
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -3672,7 +3686,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 9,
         }
     )
-    assert len(MODULE_CALL_CASES) == 93
+    assert len(MODULE_CALL_CASES) == 95
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "compile": 20,
@@ -3682,8 +3696,8 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "split": 14,
             "findall": 2,
             "finditer": 2,
-            "sub": 17,
-            "subn": 17,
+            "sub": 18,
+            "subn": 18,
             "escape": 2,
         }
     )
@@ -4252,9 +4266,11 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "workflow-module-fullmatch-unexpected-keyword",
         "workflow-module-sub-unexpected-keyword",
         "workflow-module-sub-unexpected-keyword-after-positional-count",
+        "workflow-module-sub-count-alias-keyword",
         "workflow-module-subn-duplicate-count-keyword-bytes",
         "workflow-module-subn-unexpected-keyword-bytes",
         "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
+        "workflow-module-subn-count-alias-keyword-bytes",
     )
     assert tuple(
         case.case_id for case in _fixture_cases_for_text_model(
@@ -4269,6 +4285,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "workflow-module-fullmatch-unexpected-keyword",
         "workflow-module-sub-unexpected-keyword",
         "workflow-module-sub-unexpected-keyword-after-positional-count",
+        "workflow-module-sub-count-alias-keyword",
     )
     assert tuple(
         case.case_id for case in _fixture_cases_for_text_model(
@@ -4280,6 +4297,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "workflow-module-subn-duplicate-count-keyword-bytes",
         "workflow-module-subn-unexpected-keyword-bytes",
         "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
+        "workflow-module-subn-count-alias-keyword-bytes",
     )
     assert tuple(case.case_id for case in selected_direct_cases) == (
         "module-search-duplicate-flags-keyword",
@@ -4290,13 +4308,15 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         "module-fullmatch-unexpected-keyword",
         "module-sub-unexpected-keyword",
         "module-sub-unexpected-keyword-after-positional-count",
+        "module-sub-count-alias-keyword",
         "module-subn-duplicate-count-keyword-bytes",
         "module-subn-unexpected-keyword-bytes",
         "module-subn-unexpected-keyword-after-positional-count-bytes",
+        "module-subn-count-alias-keyword-bytes",
     )
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 7, "bytes": 4}
+        {"str": 8, "bytes": 5}
     )
     assert Counter(
         case.helper for case in published_fixture_cases
@@ -4304,9 +4324,9 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         {
             "search": 1,
             "split": 3,
-            "sub": 3,
+            "sub": 4,
             "fullmatch": 1,
-            "subn": 3,
+            "subn": 4,
         }
     )
     assert tuple(case.helper for case in published_fixture_cases) == tuple(
