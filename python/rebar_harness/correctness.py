@@ -1166,46 +1166,6 @@ def build_suite_summary(
     }
 
 
-def build_layer_summaries(case_results: list[dict[str, Any]]) -> dict[str, Any]:
-    layers: dict[str, Any] = {}
-    for layer in _sorted_unique_strings(result["layer"] for result in case_results):
-        layer_cases = [result for result in case_results if result["layer"] == layer]
-        layers[layer] = {
-            "manifest_ids": _sorted_unique_strings(result["manifest_id"] for result in layer_cases),
-            "suite_ids": _sorted_unique_strings(result["suite_id"] for result in layer_cases),
-            "case_count": len(layer_cases),
-            "families": _sorted_unique_strings(result["family"] for result in layer_cases),
-            "operations": _sorted_unique_strings(result["operation"] for result in layer_cases),
-            "text_models": _sorted_unique_strings(result.get("text_model") for result in layer_cases),
-            "summary": build_summary(layer_cases),
-            "diagnostics": build_diagnostics_summary(layer_cases),
-        }
-    return layers
-
-
-def build_family_summaries(case_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    summaries: list[dict[str, Any]] = []
-    for family in _sorted_unique_strings(result["family"] for result in case_results):
-        family_cases = [result for result in case_results if result["family"] == family]
-        summaries.append(
-            {
-                "id": family,
-                "case_count": len(family_cases),
-                "layers": _sorted_unique_strings(
-                    result["layer"] for result in family_cases
-                ),
-                "operations": _sorted_unique_strings(
-                    result["operation"] for result in family_cases
-                ),
-                "text_models": _sorted_unique_strings(
-                    result.get("text_model") for result in family_cases
-                ),
-                "summary": build_summary(family_cases),
-            }
-        )
-    return summaries
-
-
 def determine_phase(layer_summaries: dict[str, Any]) -> str:
     active_layers = [layer for layer in PHASE_ORDER if layer in layer_summaries]
     if not active_layers:
@@ -1286,7 +1246,40 @@ def build_scorecard(
     case_results: list[dict[str, Any]],
 ) -> dict[str, Any]:
     summary = build_summary(case_results)
-    layers = build_layer_summaries(case_results)
+    layers: dict[str, Any] = {}
+    for layer in _sorted_unique_strings(result["layer"] for result in case_results):
+        layer_cases = [result for result in case_results if result["layer"] == layer]
+        layers[layer] = {
+            "manifest_ids": _sorted_unique_strings(result["manifest_id"] for result in layer_cases),
+            "suite_ids": _sorted_unique_strings(result["suite_id"] for result in layer_cases),
+            "case_count": len(layer_cases),
+            "families": _sorted_unique_strings(result["family"] for result in layer_cases),
+            "operations": _sorted_unique_strings(result["operation"] for result in layer_cases),
+            "text_models": _sorted_unique_strings(result.get("text_model") for result in layer_cases),
+            "summary": build_summary(layer_cases),
+            "diagnostics": build_diagnostics_summary(layer_cases),
+        }
+
+    families: list[dict[str, Any]] = []
+    for family in _sorted_unique_strings(result["family"] for result in case_results):
+        family_cases = [result for result in case_results if result["family"] == family]
+        families.append(
+            {
+                "id": family,
+                "case_count": len(family_cases),
+                "layers": _sorted_unique_strings(
+                    result["layer"] for result in family_cases
+                ),
+                "operations": _sorted_unique_strings(
+                    result["operation"] for result in family_cases
+                ),
+                "text_models": _sorted_unique_strings(
+                    result.get("text_model") for result in family_cases
+                ),
+                "summary": build_summary(family_cases),
+            }
+        )
+
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "suite": "correctness",
@@ -1303,7 +1296,7 @@ def build_scorecard(
         "layers": layers,
         "diagnostics": build_diagnostics_summary(case_results),
         "suites": build_suite_summaries(manifests, case_results),
-        "families": build_family_summaries(case_results),
+        "families": families,
         "cases": case_results,
     }
 
