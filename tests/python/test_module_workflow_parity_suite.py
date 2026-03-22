@@ -2102,30 +2102,13 @@ PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
 )
 
 
-def _pattern_keyword_publication_owner_path_rows(
-    text_model: str | None = None,
-) -> tuple[PatternKeywordPublicationOwnerPathRow, ...]:
-    return tuple(
-        row
-        for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-        if text_model is None or row.text_model == text_model
-    )
-
-
 def _pattern_keyword_publication_owner_path_fixture_case_ids(
     text_model: str | None = None,
 ) -> tuple[str, ...]:
     return tuple(
         row.fixture_case_id
-        for row in _pattern_keyword_publication_owner_path_rows(text_model)
-    )
-
-
-def _pattern_keyword_publication_owner_path_selected_direct_cases(
-) -> tuple[PatternKeywordCallCase, ...]:
-    return tuple(
-        row.direct_case
         for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+        if text_model is None or row.text_model == text_model
     )
 
 
@@ -4860,8 +4843,8 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == tuple(
-        case.case_id
-        for case in _pattern_keyword_publication_owner_path_selected_direct_cases()
+        row.direct_case.case_id
+        for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
     assert len(published_fixture_cases) == 27
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
