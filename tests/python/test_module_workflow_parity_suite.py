@@ -2458,36 +2458,6 @@ def _selected_module_keyword_owner_path_direct_cases(
     )
 
 
-def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
-    return _published_module_keyword_owner_path_fixture_cases(
-        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    )
-
-
-def _selected_module_keyword_direct_cases(
-    published_fixture_cases: tuple[FixtureCase, ...],
-) -> tuple[ModuleKeywordCallCase | ModuleKeywordErrorCase, ...]:
-    return _selected_module_keyword_owner_path_direct_cases(
-        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-        published_fixture_cases,
-    )
-
-
-def _published_module_keyword_error_fixture_cases() -> tuple[FixtureCase, ...]:
-    return _published_module_keyword_owner_path_fixture_cases(
-        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
-    )
-
-
-def _selected_module_keyword_error_direct_cases(
-    published_fixture_cases: tuple[FixtureCase, ...],
-) -> tuple[ModuleKeywordCallCase | ModuleKeywordErrorCase, ...]:
-    return _selected_module_keyword_owner_path_direct_cases(
-        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
-        published_fixture_cases,
-    )
-
-
 def _module_positional_indexlike_direct_signature(
     case: ModulePositionalIndexLikeCallCase,
 ) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
@@ -4198,13 +4168,19 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
                 for case in _published_bounded_wildcard_raw_module_helper_fixture_cases()
             ),
             "module-keyword-helper": frozenset(
-                case.case_id for case in _published_module_keyword_fixture_cases()
+                case.case_id
+                for case in _published_module_keyword_owner_path_fixture_cases(
+                    MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+                )
             ),
             "module-positional-indexlike-helper": frozenset(
                 case.case_id for case in _published_module_positional_indexlike_fixture_cases()
             ),
             "module-keyword-error": frozenset(
-                case.case_id for case in _published_module_keyword_error_fixture_cases()
+                case.case_id
+                for case in _published_module_keyword_owner_path_fixture_cases(
+                    MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
+                )
             ),
             "compiled-module-helper": frozenset(
                 case.case_id
@@ -4644,8 +4620,13 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
 def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_module_keyword_fixture_cases()
-    selected_direct_cases = _selected_module_keyword_direct_cases(published_fixture_cases)
+    published_fixture_cases = _published_module_keyword_owner_path_fixture_cases(
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+    )
+    selected_direct_cases = _selected_module_keyword_owner_path_direct_cases(
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        published_fixture_cases,
+    )
 
     assert tuple(
         case.case_id
@@ -4820,8 +4801,11 @@ def test_module_workflow_surface_publishes_module_positional_indexlike_slice_fro
 
 def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_module_keyword_error_fixture_cases()
-    selected_direct_cases = _selected_module_keyword_error_direct_cases(
+    published_fixture_cases = _published_module_keyword_owner_path_fixture_cases(
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
+    )
+    selected_direct_cases = _selected_module_keyword_owner_path_direct_cases(
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
         published_fixture_cases
     )
 
@@ -4852,6 +4836,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         row.direct_case.case_id
         for row in MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
     )
+    assert len(published_fixture_cases) == 13
     assert len(selected_direct_cases) == len(published_fixture_cases)
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
         {"str": 8, "bytes": 5}

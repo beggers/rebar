@@ -1,6 +1,6 @@
 # RBR-0978: Collapse module keyword owner-path wrapper helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
 
@@ -103,3 +103,7 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases or module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases or module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or module_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on or pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on'` currently passes (`5 passed, 1434 deselected`);
   - the generic-owner-path probe in Verification currently passes (`ok`), proving the generic helpers already preserve the live 14-row and 13-row module keyword slices without the thin wrappers; and
   - `rg -n '^def _published_module_keyword_fixture_cases\\(|^def _selected_module_keyword_direct_cases\\(|^def _published_module_keyword_error_fixture_cases\\(|^def _selected_module_keyword_error_direct_cases\\(' tests/python/test_module_workflow_parity_suite.py` currently finds the dedicated wrapper definitions at lines `2461`, `2467`, `2476`, and `2482`, so the structural no-match check will fail until this cleanup lands.
+
+## Completion
+- Removed the four thin module-keyword wrapper helpers from `tests/python/test_module_workflow_parity_suite.py` and switched the live call sites over to `_published_module_keyword_owner_path_fixture_cases(...)` and `_selected_module_keyword_owner_path_direct_cases(...)` with the canonical success and keyword-error row tuples.
+- Verified the targeted parity tests still pass, the generic owner-path probe still resolves the expected `14` and `13` published slices in the required order, and the structural `rg` check now returns no wrapper-definition matches.
