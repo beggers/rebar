@@ -15,6 +15,7 @@ import sys
 import tempfile
 import textwrap
 from types import SimpleNamespace
+from typing import Protocol
 
 import pytest
 
@@ -589,6 +590,13 @@ class PatternPositionalIndexLikeCallCase:
     args: tuple[object, ...]
     result_kind: str
     flags: int = 0
+
+
+class _OwnerPathRow(Protocol):
+    fixture_case_id: str
+
+    @property
+    def text_model(self) -> str: ...
 
 
 @dataclass(frozen=True)
@@ -2011,8 +2019,8 @@ MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
 )
 
 
-def _module_keyword_owner_path_fixture_case_ids(
-    rows: tuple[ModuleKeywordOwnerPathRow, ...],
+def _owner_path_fixture_case_ids(
+    rows: tuple[_OwnerPathRow, ...],
     text_model: str | None = None,
 ) -> tuple[str, ...]:
     return tuple(
@@ -2300,18 +2308,6 @@ PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
         strict=True,
     )
 )
-
-
-def _pattern_keyword_publication_owner_path_fixture_case_ids(
-    text_model: str | None = None,
-) -> tuple[str, ...]:
-    return tuple(
-        row.fixture_case_id
-        for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-        if text_model is None or row.text_model == text_model
-    )
-
-
 PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES = (
     *PATTERN_KEYWORD_CALL_CASES[21:23],
     *PATTERN_KEYWORD_CALL_CASES[25:27],
@@ -2839,17 +2835,6 @@ COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS = (
         direct_case_id="compiled-pattern-subn-bytes-on-str-string",
     ),
 )
-
-
-def _compiled_pattern_module_helper_owner_path_fixture_case_ids(
-    text_model: str | None = None,
-) -> tuple[str, ...]:
-    return tuple(
-        row.fixture_case_id
-        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
-        if text_model is None or row.text_model == text_model
-    )
-
 def _published_compiled_pattern_module_helper_fixture_cases() -> tuple[FixtureCase, ...]:
     direct_signatures = {
         _compiled_pattern_module_helper_direct_signature(row.direct_case)
@@ -2932,19 +2917,6 @@ def _published_pattern_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
         for case in PATTERN_CASES
         if _pattern_keyword_fixture_signature(case) in direct_signatures
     )
-
-
-def _pattern_type_error_owner_path_fixture_case_ids(
-    rows: tuple[PatternTypeErrorOwnerPathRow, ...],
-    text_model: str | None = None,
-) -> tuple[str, ...]:
-    return tuple(
-        row.fixture_case_id
-        for row in rows
-        if text_model is None or row.text_model == text_model
-    )
-
-
 def _pattern_type_error_owner_path_direct_case_ids(
     rows: tuple[PatternTypeErrorOwnerPathRow, ...],
 ) -> tuple[str, ...]:
@@ -4411,7 +4383,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         "workflow-pattern-search-str-verbose-regression",
         "workflow-pattern-search-str-verbose-regression-digits",
         "workflow-pattern-search-str-verbose-regression-too-many-digits",
-        *_pattern_keyword_publication_owner_path_fixture_case_ids(),
+        *_owner_path_fixture_case_ids(PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS),
         "workflow-pattern-search-bytes-verbose-regression",
         "workflow-pattern-search-bytes-verbose-regression-digits",
         "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
@@ -4681,7 +4653,7 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
             published_fixture_cases,
             "str",
         )
-    ) == _module_keyword_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
         "str",
     )
@@ -4691,13 +4663,13 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
             published_fixture_cases,
             "bytes",
         )
-    ) == _module_keyword_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
         "bytes",
     )
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == _module_keyword_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
     assert tuple(
@@ -4855,7 +4827,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
 
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == _module_keyword_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
     )
     assert tuple(
@@ -4863,7 +4835,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
             published_fixture_cases,
             "str",
         )
-    ) == _module_keyword_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
         "str",
     )
@@ -4872,7 +4844,7 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
             published_fixture_cases,
             "bytes",
         )
-    ) == _module_keyword_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
         "bytes",
     )
@@ -4932,17 +4904,23 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
             published_fixture_cases,
             "str",
         )
-    ) == _pattern_keyword_publication_owner_path_fixture_case_ids("str")
+    ) == _owner_path_fixture_case_ids(
+        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        "str",
+    )
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == _pattern_keyword_publication_owner_path_fixture_case_ids("bytes")
+    ) == _owner_path_fixture_case_ids(
+        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        "bytes",
+    )
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == _pattern_keyword_publication_owner_path_fixture_case_ids()
+    ) == _owner_path_fixture_case_ids(PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS)
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == tuple(
@@ -5003,7 +4981,7 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             published_fixture_cases,
             "str",
         )
-    ) == _pattern_type_error_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
         "str",
     )
@@ -5013,12 +4991,12 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
             published_fixture_cases,
             "bytes",
         )
-    ) == _pattern_type_error_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
         "bytes",
     )
     assert tuple(case.case_id for case in published_fixture_cases) == (
-        _pattern_type_error_owner_path_fixture_case_ids(
+        _owner_path_fixture_case_ids(
             _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
         )
     )
@@ -5068,7 +5046,7 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
             published_fixture_cases,
             "str",
         )
-    ) == _pattern_type_error_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
         "str",
     )
@@ -5078,12 +5056,12 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
             published_fixture_cases,
             "bytes",
         )
-    ) == _pattern_type_error_owner_path_fixture_case_ids(
+    ) == _owner_path_fixture_case_ids(
         _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
         "bytes",
     )
     assert tuple(case.case_id for case in published_fixture_cases) == (
-        _pattern_type_error_owner_path_fixture_case_ids(
+        _owner_path_fixture_case_ids(
             _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
         )
     )
@@ -5365,14 +5343,20 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
             published_fixture_cases,
             "str",
         )
-    ) == _compiled_pattern_module_helper_owner_path_fixture_case_ids("str")
+    ) == _owner_path_fixture_case_ids(
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+        "str",
+    )
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == _compiled_pattern_module_helper_owner_path_fixture_case_ids("bytes")
+    ) == _owner_path_fixture_case_ids(
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+        "bytes",
+    )
     assert len(published_fixture_cases) == 62
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
         {"str": 33, "bytes": 29}
@@ -5392,7 +5376,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     )
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == _compiled_pattern_module_helper_owner_path_fixture_case_ids()
+    ) == _owner_path_fixture_case_ids(COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS)
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == tuple(
