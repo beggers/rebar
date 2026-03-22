@@ -1006,6 +1006,42 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": False
+      },
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "bool",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "compiled-pattern-first-argument",
+        "keyword-count"
+      ],
+      "notes": [
+        "Warm module.sub helper path that keeps the bounded compiled-pattern-first-argument bool count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-on-bytes-string-warm-str-compiled-pattern",
       "bucket": "module-sub",
       "family": "module",
@@ -1455,6 +1491,42 @@ MANIFEST = {
       "use_compiled_pattern": True,
       "kwargs": {
         "count": False
+      },
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "compiled-pattern",
+        "count",
+        "keyword",
+        "bool",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "compiled-pattern-first-argument",
+        "keyword-count"
+      ],
+      "notes": [
+        "Purged module.subn helper path that keeps the bounded compiled-pattern-first-argument bool count= keyword workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "use_compiled_pattern": True,
+      "kwargs": {
+        "count": True
       },
       "text_model": "bytes",
       "cache_mode": "purged",

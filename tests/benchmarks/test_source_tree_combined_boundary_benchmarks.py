@@ -5176,11 +5176,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 870,
-                "module_workloads": 862,
+                "measured_workloads": 872,
+                "module_workloads": 864,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 870,
+                "total_workloads": 872,
             },
         )
 
@@ -8237,6 +8237,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-sub-count-bool-keyword-warm-str-compiled-pattern": (
                     "workflow-module-sub-count-bool-true-str-compiled-pattern",
                 ),
+                "module-sub-count-bool-false-keyword-warm-str-compiled-pattern": (
+                    "workflow-module-sub-count-bool-false-str-compiled-pattern",
+                ),
                 "module-sub-duplicate-count-keyword-warm-str": (
                     "workflow-module-sub-duplicate-count-keyword",
                 ),
@@ -8266,6 +8269,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-count-bool-keyword-purged-bytes-compiled-pattern": (
                     "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
+                ),
+                "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
                 ),
                 "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern": (
                     "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",

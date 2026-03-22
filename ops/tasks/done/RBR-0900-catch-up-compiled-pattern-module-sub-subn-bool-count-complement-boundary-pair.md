@@ -1,8 +1,9 @@
 # RBR-0900: Catch up the compiled-pattern module `sub()`/`subn()` bool-count complement boundary pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Extend the published Python-path `collection_replacement_boundary.py` benchmark surface with the exact compiled-pattern-first-argument bool-count complement pair that `RBR-0898` publishes on the shared `module-workflow-surface` correctness path, reusing the existing compiled-pattern keyword-carrier owner route instead of widening the correctness surface again, inventing another benchmark family, or reopening unrelated collection/replacement helpers.
@@ -63,3 +64,15 @@ Created: 2026-03-22
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword'` passed in this run (`39 passed, 509 deselected`), so the shared compiled-pattern keyword-carrier benchmark owner path is already green before widening the exact bool-count complement spellings;
   - `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` currently publish only `module-sub-count-bool-keyword-warm-str-compiled-pattern` anchored to `workflow-module-sub-count-bool-true-str-compiled-pattern` and `module-subn-count-bool-keyword-purged-bytes-compiled-pattern` anchored to `workflow-module-subn-count-bool-false-bytes-compiled-pattern`, not the exact `count=False` / `count=True` complement rows queued here; and
   - `reports/benchmarks/latest.py` currently reports `REPORT["summary"]["total_workloads"] == 870`, `REPORT["summary"]["measured_workloads"] == 870`, `REPORT["summary"]["known_gap_count"] == 0`, and `REPORT["summary"]["module_workloads"] == 862`, with `REPORT["manifests"]["collection-replacement-boundary"]` at `62` selected / `62` measured / `0` known gaps.
+
+## Completion
+- Added the two missing compiled-pattern-first-argument bool-count complement workloads to `benchmarks/workloads/collection_replacement_boundary.py` in the required positions:
+  - `module-sub-count-bool-false-keyword-warm-str-compiled-pattern`
+  - `module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern`
+- Finished the shared benchmark-suite wiring in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` by mapping those workload ids to `workflow-module-sub-count-bool-false-str-compiled-pattern` and `workflow-module-subn-count-bool-true-bytes-compiled-pattern`, and by updating the published full-suite summary expectation to `872` total / `872` measured / `0` known gaps with `864` module workloads.
+- Republished `reports/benchmarks/latest.py`; the tracked report now records `collection-replacement-boundary` at `64` selected / `64` measured / `0` known gaps, keeps the manifest path unchanged, and exposes both new workload ids with `status == "measured"`. The combined tracked summary now reports `872` total / `872` measured / `0` known gaps across `30` manifests, with `864` module workloads, `8` parser workloads, and `8` regression workloads.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword'` (`44 passed, 511 deselected`)
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'` (`1 passed, 554 deselected`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0900-compiled-pattern-module-sub-subn-bool-count-complement-boundary-pair.py` (`64` measured / `0` known gaps)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (`872` measured / `0` known gaps)
