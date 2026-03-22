@@ -526,20 +526,9 @@ class ModuleKeywordCallCase:
 
 
 @dataclass(frozen=True)
-class ModuleKeywordPublicationOwnerPathRow:
+class ModuleKeywordOwnerPathRow:
     fixture_case_id: str
-    direct_case: ModuleKeywordCallCase
-
-    @property
-    def text_model(self) -> str:
-        pattern = self.direct_case.args[0]
-        return "bytes" if isinstance(pattern, bytes) else "str"
-
-
-@dataclass(frozen=True)
-class ModuleKeywordErrorPublicationOwnerPathRow:
-    fixture_case_id: str
-    direct_case: ModuleKeywordErrorCase
+    direct_case: ModuleKeywordCallCase | ModuleKeywordErrorCase
 
     @property
     def text_model(self) -> str:
@@ -1875,7 +1864,7 @@ MODULE_KEYWORD_CALL_CASES = (
     ),
 )
 MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
-    ModuleKeywordPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -1902,12 +1891,13 @@ MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
 )
 
 
-def _module_keyword_publication_owner_path_fixture_case_ids(
+def _module_keyword_owner_path_fixture_case_ids(
+    rows: tuple[ModuleKeywordOwnerPathRow, ...],
     text_model: str | None = None,
 ) -> tuple[str, ...]:
     return tuple(
         row.fixture_case_id
-        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+        for row in rows
         if text_model is None or row.text_model == text_model
     )
 
@@ -3314,69 +3304,59 @@ MODULE_KEYWORD_ERROR_CASES = (
     MODULE_SUBN_COUNT_ALIAS_KEYWORD_BYTES_ERROR_CASE,
 ) = MODULE_KEYWORD_ERROR_CASES
 MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS = (
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-search-duplicate-flags-keyword",
         MODULE_SEARCH_DUPLICATE_FLAGS_KEYWORD_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-split-duplicate-maxsplit-keyword",
         MODULE_SPLIT_DUPLICATE_MAXSPLIT_KEYWORD_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-split-unexpected-keyword",
         MODULE_SPLIT_UNEXPECTED_KEYWORD_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-split-unexpected-keyword-bytes",
         MODULE_SPLIT_UNEXPECTED_KEYWORD_BYTES_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-sub-duplicate-count-keyword",
         MODULE_SUB_DUPLICATE_COUNT_KEYWORD_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-fullmatch-unexpected-keyword",
         MODULE_FULLMATCH_UNEXPECTED_KEYWORD_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-sub-unexpected-keyword",
         MODULE_SUB_UNEXPECTED_KEYWORD_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-sub-unexpected-keyword-after-positional-count",
         MODULE_SUB_UNEXPECTED_KEYWORD_AFTER_POSITIONAL_COUNT_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-sub-count-alias-keyword",
         MODULE_SUB_COUNT_ALIAS_KEYWORD_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-subn-duplicate-count-keyword-bytes",
         MODULE_SUBN_DUPLICATE_COUNT_KEYWORD_BYTES_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-subn-unexpected-keyword-bytes",
         MODULE_SUBN_UNEXPECTED_KEYWORD_BYTES_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
         MODULE_SUBN_UNEXPECTED_KEYWORD_AFTER_POSITIONAL_COUNT_BYTES_ERROR_CASE,
     ),
-    ModuleKeywordErrorPublicationOwnerPathRow(
+    ModuleKeywordOwnerPathRow(
         "workflow-module-subn-count-alias-keyword-bytes",
         MODULE_SUBN_COUNT_ALIAS_KEYWORD_BYTES_ERROR_CASE,
     ),
 )
-
-
-def _module_keyword_error_publication_owner_path_fixture_case_ids(
-    text_model: str | None = None,
-) -> tuple[str, ...]:
-    return tuple(
-        row.fixture_case_id
-        for row in MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
-        if text_model is None or row.text_model == text_model
-    )
 
 
 COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES = (
@@ -4645,17 +4625,25 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
             published_fixture_cases,
             "str",
         )
-    ) == _module_keyword_publication_owner_path_fixture_case_ids("str")
+    ) == _module_keyword_owner_path_fixture_case_ids(
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        "str",
+    )
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == _module_keyword_publication_owner_path_fixture_case_ids("bytes")
+    ) == _module_keyword_owner_path_fixture_case_ids(
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        "bytes",
+    )
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == _module_keyword_publication_owner_path_fixture_case_ids()
+    ) == _module_keyword_owner_path_fixture_case_ids(
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+    )
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == tuple(
@@ -4811,19 +4799,27 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
 
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == _module_keyword_error_publication_owner_path_fixture_case_ids()
+    ) == _module_keyword_owner_path_fixture_case_ids(
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
+    )
     assert tuple(
         case.case_id for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "str",
         )
-    ) == _module_keyword_error_publication_owner_path_fixture_case_ids("str")
+    ) == _module_keyword_owner_path_fixture_case_ids(
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
+        "str",
+    )
     assert tuple(
         case.case_id for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == _module_keyword_error_publication_owner_path_fixture_case_ids("bytes")
+    ) == _module_keyword_owner_path_fixture_case_ids(
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
+        "bytes",
+    )
     assert tuple(case.case_id for case in selected_direct_cases) == tuple(
         row.direct_case.case_id
         for row in MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
