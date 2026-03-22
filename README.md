@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1524 cases across 114 manifests, with all 1524 passing in the current slice; the benchmark publication covers 870/870 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0898` is the surviving follow-on on the existing `module-workflow-surface` frontier, publishing the compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the shared correctness surface while leaving the shared collection/replacement benchmark frontier unchanged. |
-| Work queue | `1` ready, `0` in progress, `900` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1526 cases across 114 manifests, with all 1526 passing in the current slice; the benchmark publication covers 870/870 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0900` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface once the matching correctness anchors have landed. |
+| Work queue | `1` ready, `0` in progress, `902` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1524` |
-| Passing in published slice | `1524` |
+| Published cases | `1526` |
+| Passing in published slice | `1526` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1524 cases across 114 manifests, with all 1524 passing in the current slice; the benchmark publication covers 870/870 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1526 cases across 114 manifests, with all 1526 passing in the current slice; the benchmark publication covers 870/870 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0898` is the surviving `module-workflow-surface` follow-on: publish the compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the shared correctness surface while leaving the shared collection/replacement benchmark frontier unchanged.
+- `RBR-0900` is the surviving follow-on on the shared `module-workflow-surface` / `collection-replacement-boundary` frontier, catching up the exact compiled-pattern module-level `sub()` / `subn()` bool-count complement pair on the tracked Python-path benchmark surface once the matching correctness anchors have landed.
 
 ### Current Risks
 
