@@ -2415,6 +2415,14 @@ WORKFLOW_KEYWORD_NUMERIC_COERCION_CASES = (
         ),
     ),
     WorkflowNumericCoercionCase(
+        case_id="pattern-split-maxsplit-keyword-coercion-bytes",
+        result_kind="value",
+        call=lambda regex_api, value: regex_api.compile(b"abc").split(
+            b"zabcabcabc",
+            maxsplit=value,
+        ),
+    ),
+    WorkflowNumericCoercionCase(
         case_id="pattern-sub-count-keyword-coercion",
         result_kind="value",
         call=lambda regex_api, value: regex_api.compile(b"abc").sub(
