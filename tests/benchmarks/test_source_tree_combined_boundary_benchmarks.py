@@ -3540,7 +3540,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 41)
+        self.assertEqual(len(expected_measured_workload_ids), 43)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3558,7 +3558,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_compiled_pattern_keyword_error_workload,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 8)
+        self.assertEqual(len(expected_measured_workload_ids), 10)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5243,11 +5243,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 899,
-                "module_workloads": 891,
+                "measured_workloads": 901,
+                "module_workloads": 893,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 899,
+                "total_workloads": 901,
             },
         )
 
@@ -8484,6 +8484,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern": (
                     "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
                 ),
+                "module-sub-count-alias-keyword-purged-str-compiled-pattern": (
+                    "workflow-module-sub-count-alias-keyword-str-compiled-pattern",
+                ),
                 "module-subn-count-keyword-purged-bytes": (
                     "workflow-module-subn-count-keyword-bytes",
                 ),
@@ -8528,6 +8531,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern": (
                     "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
+                ),
+                "module-subn-count-alias-keyword-purged-bytes-compiled-pattern": (
+                    "workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
                 ),
                 "pattern-split-maxsplit-keyword-warm-str": (
                     "workflow-pattern-split-str-maxsplit-keyword",
@@ -13981,9 +13987,11 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
             "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
             "module-sub-unexpected-keyword-purged-str-compiled-pattern",
             "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
+            "module-sub-count-alias-keyword-purged-str-compiled-pattern",
             "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
             "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
             "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
+            "module-subn-count-alias-keyword-purged-bytes-compiled-pattern",
         ),
         manifest_timed_samples=1,
         preserve_expected_exception=True,
