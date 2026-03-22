@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives beyond the shared direct bound-pattern collection/replacement wrong-text-model benchmark frontier on the existing `collection_replacement_boundary.py` owner path, pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`.
+No ready feature follow-on currently survives beyond the shared direct bound-pattern collection/replacement unexpected-keyword-after-positional-count correctness frontier on the existing `module_workflow_surface.py` owner path, pinned to `re.compile("abc").sub("x", "abc", 1, missing=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, missing=1)`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the shared direct bound-pattern collection/replacement wrong-text-model benchmark owner path beyond the exact `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")` slice, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`.
+1. No ready feature follow-on currently survives on the shared direct bound-pattern collection/replacement unexpected-keyword-after-positional-count correctness owner path beyond the exact `re.compile("abc").sub("x", "abc", 1, missing=1)` / `re.compile(b"abc").subn(b"x", b"abc", 1, missing=1)` slice.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

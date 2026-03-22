@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1537 cases across 114 manifests, with all 1537 passing in the current slice; the benchmark publication covers 885/885 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model benchmark slice on the existing `collection_replacement_boundary.py` owner path, pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it.
+- The surviving shared direct bound-pattern frontier is the collection/replacement unexpected-keyword-after-positional-count correctness slice on the existing `module_workflow_surface.py` owner path, pinned to `re.compile("abc").sub("x", "abc", 1, missing=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, missing=1)`; no ready feature follow-on is queued behind it.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -20,6 +20,11 @@ Published correctness covers 1537 cases across 114 manifests, with all 1537 pass
 
 ## Compatibility Heuristic
 The published correctness slice now covers 1537 cases across 114 manifests, all passing, and 885 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+
+## Queue Frontier
+- Live task counts in this checkout are `1` ready, `0` in progress, `933` done, and `0` blocked.
+- The active ready feature task is `RBR-0931`, which reopens the shared direct bound-pattern collection/replacement owner path on `tests/conformance/fixtures/module_workflow_surface.py` for the exact `Pattern.sub()` / `Pattern.subn()` unexpected-keyword-after-positional-count publication pair: `re.compile("abc").sub("x", "abc", 1, missing=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, missing=1)`.
+- No ready feature follow-on currently survives behind that one-task frontier.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -329,7 +334,7 @@ The published correctness slice now covers 1537 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving shared direct bound-pattern frontier is the collection/replacement wrong-text-model benchmark slice on the existing `collection_replacement_boundary.py` owner path, pinned to `re.compile("abc").split(b"zabczz")` / `re.compile("abc").sub("x", b"zabczz")`, with the adjacent bytes-pattern owner-path check at `re.compile(b"abc").subn(b"x", "zabczz")`; no ready feature follow-on is queued behind it.
+- The surviving shared direct bound-pattern frontier is the collection/replacement unexpected-keyword-after-positional-count correctness slice on the existing `module_workflow_surface.py` owner path, pinned to `re.compile("abc").sub("x", "abc", 1, missing=1)` and `re.compile(b"abc").subn(b"x", b"abc", 1, missing=1)`; no ready feature follow-on is queued behind it.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
