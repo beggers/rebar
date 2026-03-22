@@ -3534,7 +3534,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 29)
+        self.assertEqual(len(expected_measured_workload_ids), 31)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5176,11 +5176,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 872,
-                "module_workloads": 864,
+                "measured_workloads": 874,
+                "module_workloads": 866,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 872,
+                "total_workloads": 874,
             },
         )
 
@@ -8225,6 +8225,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-sub-count-bool-keyword-warm-str": (
                     "workflow-module-sub-count-bool-true-str",
                 ),
+                "module-sub-count-bool-false-keyword-warm-str": (
+                    "workflow-module-sub-count-bool-false-str",
+                ),
                 "module-sub-count-indexlike-keyword-warm-str": (
                     "workflow-module-sub-count-indexlike-str",
                 ),
@@ -8257,6 +8260,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-subn-count-bool-keyword-purged-bytes": (
                     "workflow-module-subn-count-bool-false-bytes",
+                ),
+                "module-subn-count-bool-true-keyword-purged-bytes": (
+                    "workflow-module-subn-count-bool-true-bytes",
                 ),
                 "module-subn-count-indexlike-keyword-purged-bytes": (
                     "workflow-module-subn-count-indexlike-bytes",
