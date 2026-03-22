@@ -526,6 +526,17 @@ class ModuleKeywordCallCase:
 
 
 @dataclass(frozen=True)
+class ModuleKeywordPublicationOwnerPathRow:
+    fixture_case_id: str
+    direct_case: ModuleKeywordCallCase
+
+    @property
+    def text_model(self) -> str:
+        pattern = self.direct_case.args[0]
+        return "bytes" if isinstance(pattern, bytes) else "str"
+
+
+@dataclass(frozen=True)
 class ModulePositionalIndexLikeCallCase:
     case_id: str
     helper: str
@@ -1822,6 +1833,44 @@ MODULE_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
 )
+MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
+    ModuleKeywordPublicationOwnerPathRow(
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+    )
+    for fixture_case_id, direct_case in zip(
+        (
+            "workflow-module-search-flags-keyword-str",
+            "workflow-module-match-flags-keyword-bytes",
+            "workflow-module-fullmatch-flags-keyword-str",
+            "workflow-module-split-maxsplit-keyword-bytes",
+            "workflow-module-split-maxsplit-indexlike-bytes",
+            "workflow-module-split-maxsplit-bool-false-bytes",
+            "workflow-module-sub-count-keyword-str",
+            "workflow-module-sub-count-indexlike-str",
+            "workflow-module-sub-count-bool-false-str",
+            "workflow-module-sub-count-bool-true-str",
+            "workflow-module-subn-count-keyword-bytes",
+            "workflow-module-subn-count-indexlike-bytes",
+            "workflow-module-subn-count-bool-false-bytes",
+            "workflow-module-subn-count-bool-true-bytes",
+        ),
+        MODULE_KEYWORD_CALL_CASES,
+        strict=True,
+    )
+)
+
+
+def _module_keyword_publication_owner_path_fixture_case_ids(
+    text_model: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        row.fixture_case_id
+        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+        if text_model is None or row.text_model == text_model
+    )
+
+
 MODULE_POSITIONAL_INDEXLIKE_CALL_CASES = (
     ModulePositionalIndexLikeCallCase(
         case_id="module-split-maxsplit-indexlike-positional-bytes",
@@ -2248,14 +2297,27 @@ def _module_keyword_error_direct_signature(
 
 
 def _published_module_keyword_fixture_cases() -> tuple[FixtureCase, ...]:
-    direct_signatures = {
-        _module_keyword_direct_signature(case) for case in MODULE_KEYWORD_CALL_CASES
-    }
-    return tuple(
-        case
+    fixture_cases_by_signature = {
+        _module_keyword_fixture_signature(case): case
         for case in MODULE_CALL_CASES
         if not case.use_compiled_pattern
-        and _module_keyword_fixture_signature(case) in direct_signatures
+    }
+    return tuple(
+        fixture_cases_by_signature[_module_keyword_direct_signature(row.direct_case)]
+        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+    )
+
+
+def _selected_module_keyword_direct_cases(
+    published_fixture_cases: tuple[FixtureCase, ...],
+) -> tuple[ModuleKeywordCallCase, ...]:
+    direct_cases_by_signature = {
+        _module_keyword_direct_signature(row.direct_case): row.direct_case
+        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+    }
+    return tuple(
+        direct_cases_by_signature[_module_keyword_fixture_signature(case)]
+        for case in published_fixture_cases
     )
 
 
@@ -4470,16 +4532,8 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
 def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases(
 ) -> None:
-    direct_cases_by_signature = {
-        _module_keyword_direct_signature(case): case for case in MODULE_KEYWORD_CALL_CASES
-    }
     published_fixture_cases = _published_module_keyword_fixture_cases()
-    selected_direct_cases = tuple(
-        direct_cases_by_signature[
-            _module_keyword_fixture_signature(case)
-        ]
-        for case in published_fixture_cases
-    )
+    selected_direct_cases = _selected_module_keyword_direct_cases(published_fixture_cases)
 
     assert tuple(
         case.case_id
@@ -4487,65 +4541,22 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
             published_fixture_cases,
             "str",
         )
-    ) == (
-        "workflow-module-search-flags-keyword-str",
-        "workflow-module-fullmatch-flags-keyword-str",
-        "workflow-module-sub-count-keyword-str",
-        "workflow-module-sub-count-indexlike-str",
-        "workflow-module-sub-count-bool-false-str",
-        "workflow-module-sub-count-bool-true-str",
-    )
+    ) == _module_keyword_publication_owner_path_fixture_case_ids("str")
     assert tuple(
         case.case_id
         for case in _fixture_cases_for_text_model(
             published_fixture_cases,
             "bytes",
         )
-    ) == (
-        "workflow-module-match-flags-keyword-bytes",
-        "workflow-module-split-maxsplit-keyword-bytes",
-        "workflow-module-split-maxsplit-indexlike-bytes",
-        "workflow-module-split-maxsplit-bool-false-bytes",
-        "workflow-module-subn-count-keyword-bytes",
-        "workflow-module-subn-count-indexlike-bytes",
-        "workflow-module-subn-count-bool-false-bytes",
-        "workflow-module-subn-count-bool-true-bytes",
-    )
+    ) == _module_keyword_publication_owner_path_fixture_case_ids("bytes")
     assert tuple(
         case.case_id for case in published_fixture_cases
-    ) == (
-        "workflow-module-search-flags-keyword-str",
-        "workflow-module-match-flags-keyword-bytes",
-        "workflow-module-fullmatch-flags-keyword-str",
-        "workflow-module-split-maxsplit-keyword-bytes",
-        "workflow-module-split-maxsplit-indexlike-bytes",
-        "workflow-module-split-maxsplit-bool-false-bytes",
-        "workflow-module-sub-count-keyword-str",
-        "workflow-module-sub-count-indexlike-str",
-        "workflow-module-sub-count-bool-false-str",
-        "workflow-module-sub-count-bool-true-str",
-        "workflow-module-subn-count-keyword-bytes",
-        "workflow-module-subn-count-indexlike-bytes",
-        "workflow-module-subn-count-bool-false-bytes",
-        "workflow-module-subn-count-bool-true-bytes",
-    )
+    ) == _module_keyword_publication_owner_path_fixture_case_ids()
     assert tuple(
         case.case_id for case in selected_direct_cases
-    ) == (
-        "module-search-flags-keyword-str",
-        "module-match-flags-keyword-bytes",
-        "module-fullmatch-flags-keyword-str",
-        "module-split-maxsplit-keyword-bytes",
-        "module-split-maxsplit-indexlike-bytes",
-        "module-split-maxsplit-bool-false-bytes",
-        "module-sub-count-keyword-str",
-        "module-sub-count-indexlike-str",
-        "module-sub-count-bool-false-str",
-        "module-sub-count-bool-true-str",
-        "module-subn-count-keyword-bytes",
-        "module-subn-count-indexlike-bytes",
-        "module-subn-count-bool-false-bytes",
-        "module-subn-count-bool-true-bytes",
+    ) == tuple(
+        row.direct_case.case_id
+        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
     )
     assert len(published_fixture_cases) == 14
     assert Counter(case.text_model for case in published_fixture_cases) == Counter(
