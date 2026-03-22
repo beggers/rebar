@@ -22,7 +22,7 @@ Published correctness covers 1547 cases across 114 manifests, with all 1547 pass
 The published correctness slice now covers 1547 cases across 114 manifests, all passing, and 893 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- Live task counts in this checkout are `0` ready, `0` in progress, `948` done, and `0` blocked.
+- Live task counts in this checkout are `1` ready, `0` in progress, `949` done, and `0` blocked.
 - No ready feature follow-on currently survives in the feature queue after the latest same-cycle drain.
 
 ## What Exists
