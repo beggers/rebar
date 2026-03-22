@@ -1,8 +1,9 @@
 # RBR-0942: Collapse compiled-pattern module-helper keyword carrier mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-22
+Completed: 2026-03-22
 
 ## Goal
 - Remove the detached compiled-pattern collection/replacement keyword carrier case table from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so this contract section derives its eleven-row surface directly from the tracked `benchmarks/workloads/collection_replacement_boundary.py` manifest it already validates instead of maintaining a second handwritten `CompiledPatternModuleKeywordCarrierCase` layer.
@@ -114,3 +115,11 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword and not keyword_error'` currently passes (`26 passed, 568 deselected`);
   - `rg -n '^(class CompiledPatternModuleKeywordCarrierCase|COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES|def _compiled_pattern_module_keyword_carrier_case)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently finds the remaining mirrors at lines `13598`, `13610`, and `13783`; and
   - the task-local manifest-selector probe in Acceptance currently passes (`ok 11`), proving the eleven-row surface already exists in the tracked collection/replacement workload manifest without the extra handwritten case table.
+
+## Completion
+- Replaced the detached compiled-pattern module-helper keyword carrier class/table in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with manifest-selected live workloads sourced from `COLLECTION_REPLACEMENT_MANIFEST_PATH` plus an in-file selector that keeps the exact eleven compiled-pattern-first-argument keyword-carrier rows.
+- Reworked the contract helpers and tests in that file so the generated `-contract` workloads, payload round-trip checks, bool-count complement coverage, callback-time keyword materialization checks, probe coverage, and precompile-first anchor checks all operate on manifest-selected `Workload` objects instead of a handwritten mirror layer.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword and not keyword_error'`
+  - `bash -lc "! rg -n '^(class CompiledPatternModuleKeywordCarrierCase|COMPILED_PATTERN_MODULE_KEYWORD_CARRIER_CASES|def _compiled_pattern_module_keyword_carrier_case)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - the task-local manifest-selector probe from Acceptance, which still resolved the expected eleven workload ids and printed `ok 11`
