@@ -1478,6 +1478,32 @@ def normalize_report_run(paths: dict[str, Path], raw_run: dict[str, Any]) -> dic
     return record
 
 
+def nonzero_exit_anomaly(
+    *,
+    agent_name: Any,
+    agent_kind: Any,
+    run_id: Any,
+    exit_code: int,
+    timed_out: Any,
+    task_final_status: Any,
+) -> dict[str, Any]:
+    severity = "error"
+    if agent_kind == "task_worker" and task_final_status == "done":
+        # A task worker can finish durable work before the final response stream drops.
+        severity = "warning"
+    anomaly = {
+        "type": "agent_nonzero_exit",
+        "severity": severity,
+        "agent_name": agent_name,
+        "run_id": run_id,
+        "exit_code": exit_code,
+        "timed_out": timed_out,
+    }
+    if task_final_status is not None:
+        anomaly["task_final_status"] = task_final_status
+    return anomaly
+
+
 def build_report_anomalies(
     last_cycle_runs: list[dict[str, Any]],
     recovery_actions: list[dict[str, Any]],
@@ -1493,14 +1519,14 @@ def build_report_anomalies(
         exit_code = item.get("exit_code")
         if isinstance(exit_code, int) and exit_code != 0:
             anomalies.append(
-                {
-                    "type": "agent_nonzero_exit",
-                    "severity": "error",
-                    "agent_name": item.get("agent_name"),
-                    "run_id": item.get("run_id"),
-                    "exit_code": exit_code,
-                    "timed_out": item.get("timed_out"),
-                }
+                nonzero_exit_anomaly(
+                    agent_name=item.get("agent_name"),
+                    agent_kind=item.get("agent_kind"),
+                    run_id=item.get("run_id"),
+                    exit_code=exit_code,
+                    timed_out=item.get("timed_out"),
+                    task_final_status=item.get("task_final_status"),
+                )
             )
         environment_issue = item.get("environment_issue")
         if environment_issue is not None:
@@ -2578,14 +2604,14 @@ def build_anomalies(
     for result in results:
         if result.exit_code != 0:
             anomalies.append(
-                {
-                    "type": "agent_nonzero_exit",
-                    "severity": "error",
-                    "agent_name": result.agent_name,
-                    "run_id": result.run_id,
-                    "exit_code": result.exit_code,
-                    "timed_out": result.timed_out,
-                }
+                nonzero_exit_anomaly(
+                    agent_name=result.agent_name,
+                    agent_kind=result.agent_kind,
+                    run_id=result.run_id,
+                    exit_code=result.exit_code,
+                    timed_out=result.timed_out,
+                    task_final_status=result.task_final_status,
+                )
             )
         if result.environment_issue is not None:
             anomalies.append(

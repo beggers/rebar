@@ -70,6 +70,70 @@ def _match_summary_line(pattern: re.Pattern[str], line: str) -> dict[str, int]:
 
 
 class OpsHarnessTest(unittest.TestCase):
+    def test_build_anomalies_downgrades_nonzero_done_task_worker_to_warning(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        result = rebar_ops.RunResult(
+            agent_name="feature-implementation",
+            agent_kind="task_worker",
+            run_id="run-1",
+            exit_code=1,
+            timed_out=False,
+            run_dir=REPO_ROOT,
+            task_initial_path=REPO_ROOT / "ops" / "tasks" / "in_progress" / "example.md",
+            task_final_path=REPO_ROOT / "ops" / "tasks" / "done" / "example.md",
+            task_final_status="done",
+        )
+
+        anomalies = rebar_ops.build_anomalies([result], [], [], {})
+
+        self.assertEqual(
+            anomalies,
+            [
+                {
+                    "type": "agent_nonzero_exit",
+                    "severity": "warning",
+                    "agent_name": "feature-implementation",
+                    "run_id": "run-1",
+                    "exit_code": 1,
+                    "timed_out": False,
+                    "task_final_status": "done",
+                }
+            ],
+        )
+
+    def test_build_report_anomalies_keeps_nonzero_done_task_worker_as_warning(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        anomalies = rebar_ops.build_report_anomalies(
+            [
+                {
+                    "agent_name": "feature-implementation",
+                    "agent_kind": "task_worker",
+                    "run_id": "run-1",
+                    "exit_code": 1,
+                    "timed_out": False,
+                    "task_final_status": "done",
+                }
+            ],
+            [],
+            [],
+            {},
+        )
+
+        self.assertEqual(
+            anomalies,
+            [
+                {
+                    "type": "agent_nonzero_exit",
+                    "severity": "warning",
+                    "agent_name": "feature-implementation",
+                    "run_id": "run-1",
+                    "exit_code": 1,
+                    "timed_out": False,
+                    "task_final_status": "done",
+                }
+            ],
+        )
+
     def test_dispatch_policies_match_the_current_specialist_mix(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
