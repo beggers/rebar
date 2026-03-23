@@ -1,6 +1,6 @@
 # RBR-1000: Catch up the direct `Pattern.sub()` / `Pattern.subn()` bytes single-match/repeated pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,9 @@ Created: 2026-03-23
   - `rg -n 'pattern-sub-bytes-single-match-purged-bytes|pattern-subn-bytes-repeated-purged-bytes' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while `rg -n 'pattern-sub-bytes-single-match|pattern-subn-bytes-repeated' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py reports/correctness/latest.py` finds both published correctness anchors, confirming the benchmark ids are still absent from the tracked Python-path benchmark surface;
   - a direct synthetic workload probe through `rebar_harness.benchmarks.Workload.from_dict(...)`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` returns `status == "measured"` for both adapters on both hypothetical workloads `pattern-sub-bytes-single-match-purged-bytes` and `pattern-subn-bytes-repeated-purged-bytes`; and
   - `reports/benchmarks/latest.py` currently reports `945` total / `945` measured / `0` known gaps overall, with `collection-replacement-boundary` at `106` selected / `106` measured / `106` workload-count rows and smoke workload ids `module-split-literal-warm-str` plus `pattern-subn-literal-purged-bytes`.
+- 2026-03-23 completion:
+  - added `pattern-sub-bytes-single-match-purged-bytes` and `pattern-subn-bytes-repeated-purged-bytes` to `benchmarks/workloads/collection_replacement_boundary.py` in the required positions without changing the smoke workload set;
+  - widened the shared owner-path benchmark assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to the six direct literal replacement ids/anchors, kept callback-result parity enabled, and moved the manifest expectation from `106` to `108` rows;
+  - verified the narrow parity subset (`2 passed`) and the targeted benchmark assertions (`2 passed, 6 subtests passed`);
+  - regenerated the temporary manifest-local report at `.rebar/tmp/rbr-1000-pattern-replacement-bytes-single-match-repeated-pair.py` with `108` total / `108` measured; and
+  - republished the tracked `reports/benchmarks/latest.py`, which now records `947` total / `947` measured / `0` known gaps overall, `939` module workloads, `398` purged workloads, and `collection-replacement-boundary` at `108` selected / `108` measured / `108` workload-count rows.

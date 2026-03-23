@@ -2756,6 +2756,36 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-bytes-single-match-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "bytes",
+        "single-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes precompiled Pattern.sub helper path that keeps the bounded literal single-match replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",
@@ -3594,6 +3624,36 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled Pattern.subn helper path that keeps the bounded literal repeated-match replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-bytes-repeated-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "repeated-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes precompiled Pattern.subn helper path that keeps the bounded literal repeated-match replacement workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {
