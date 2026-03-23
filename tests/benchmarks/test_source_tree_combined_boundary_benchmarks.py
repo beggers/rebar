@@ -6346,6 +6346,22 @@ def _synthetic_workload(
     return SimpleNamespace(workload_id=workload_id, signature=signature, include=include)
 
 
+def _synthetic_manifest_loader(
+    _: pathlib.Path,
+    *,
+    workloads: tuple[object, ...],
+) -> SimpleNamespace:
+    return _synthetic_manifest(workloads=workloads)
+
+
+def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
+    return workload.signature
+
+
+def _synthetic_workload_is_included(workload: Any) -> bool:
+    return workload.include
+
+
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
     return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
 
@@ -20111,18 +20127,16 @@ def test_anchored_and_unanchored_workload_helpers_follow_signatures_and_filters(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest(workloads=workloads),
+        partial(_synthetic_manifest_loader, workloads=workloads),
     )
 
     anchor_case_ids = {("shared",): ("case-a", "case-b")}
-    workload_signature = lambda workload: workload.signature
-    include_workload = lambda workload: workload.include
 
     assert support.anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=workload_signature,
-        include_workload=include_workload,
+        workload_signature=_synthetic_workload_signature,
+        include_workload=_synthetic_workload_is_included,
     ) == {
         ("synthetic_boundary.py", "anchored"): ("case-a", "case-b"),
         ("synthetic_boundary.py", "unanchored"): (),
@@ -20130,8 +20144,8 @@ def test_anchored_and_unanchored_workload_helpers_follow_signatures_and_filters(
     assert support.unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=workload_signature,
-        include_workload=include_workload,
+        workload_signature=_synthetic_workload_signature,
+        include_workload=_synthetic_workload_is_included,
     ) == ("unanchored",)
 
 
@@ -20145,7 +20159,7 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest(workloads=(workload,)),
+        partial(_synthetic_manifest_loader, workloads=(workload,)),
     )
     monkeypatch.setattr(support, "published_cases_by_id", lambda: {"case-1": case})
 
@@ -20185,12 +20199,11 @@ def test_manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries(
     monkeypatch.setattr(support, "published_cases_by_id", lambda: {"case-1": case})
 
     anchor_case_ids = {("shared",): ("case-1",)}
-    workload_signature = lambda workload: workload.signature
 
     assert support.anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=workload_signature,
+        workload_signature=_synthetic_workload_signature,
     ) == {
         ("synthetic_boundary.py", "anchored"): ("case-1",),
         ("synthetic_boundary.py", "unanchored"): (),
@@ -20198,7 +20211,7 @@ def test_manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries(
     assert support.unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=workload_signature,
+        workload_signature=_synthetic_workload_signature,
     ) == ("unanchored",)
     assert support.expected_anchored_workload_case_pairs(
         manifest_path,
@@ -20224,8 +20237,9 @@ def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest(
-            workloads=(_synthetic_workload("anchored", ("shared",)),)
+        partial(
+            _synthetic_manifest_loader,
+            workloads=(_synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(
