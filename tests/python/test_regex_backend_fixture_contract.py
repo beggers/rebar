@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from types import SimpleNamespace
 
 import pytest
@@ -222,6 +223,59 @@ def test_regex_backend_skips_only_for_matching_backend_when_param_values_target_
                     unsupported_backend_reason="stdlib-only fixture gap",
                 ),
                 "text": _BackendCase(
+                    unsupported_backends=("rebar",),
+                    unsupported_backend_reason="rebar-only fixture gap",
+                ),
+            },
+        )
+
+
+@pytest.mark.parametrize("backend_param", ("stdlib", "rebar"))
+def test_regex_backend_skips_both_backends_when_single_param_disables_both(
+    backend_param: str,
+) -> None:
+    with pytest.raises(pytest.skip.Exception, match="shared fixture gap"):
+        _invoke_regex_backend(
+            backend_param,
+            parametrized_values={
+                "case": _BackendCase(
+                    unsupported_backends=("stdlib", "rebar"),
+                    unsupported_backend_reason="shared fixture gap",
+                ),
+            },
+        )
+
+
+@pytest.mark.parametrize(
+    ("backend_param", "expected_matching_param_names"),
+    (
+        pytest.param("stdlib", ("case", "text"), id="stdlib"),
+        pytest.param("rebar", ("case", "payload"), id="rebar"),
+    ),
+)
+def test_regex_backend_rejects_overlapping_backend_specific_and_shared_disables(
+    backend_param: str,
+    expected_matching_param_names: tuple[str, str],
+) -> None:
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "multiple parametrized values declare unsupported_backends for "
+            f"'{backend_param}': {expected_matching_param_names!r}"
+        ),
+    ):
+        _invoke_regex_backend(
+            backend_param,
+            parametrized_values={
+                "case": _BackendCase(
+                    unsupported_backends=("stdlib", "rebar"),
+                    unsupported_backend_reason="shared fixture gap",
+                ),
+                "text": _BackendCase(
+                    unsupported_backends=("stdlib",),
+                    unsupported_backend_reason="stdlib-only fixture gap",
+                ),
+                "payload": _BackendCase(
                     unsupported_backends=("rebar",),
                     unsupported_backend_reason="rebar-only fixture gap",
                 ),
