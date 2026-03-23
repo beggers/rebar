@@ -1,6 +1,6 @@
 # RBR-1063: Catch up the direct `Pattern.subn()` bytes no-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,13 @@ Created: 2026-03-23
   - `_direct_literal_replacement_publication_case_ids(surface="pattern", selection="unpublished")` currently returns `("pattern-subn-str-single-match", "pattern-subn-str-no-match", "pattern-subn-bytes-no-match")`, confirming the exact adjacent correctness anchor on the shared owner route once `RBR-1061` lands;
   - `rg -n 'pattern-subn-bytes-no-match-purged-bytes' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` returned no matches in this run, confirming the exact benchmark workload id is still absent from the tracked owner-path surfaces; and
   - `_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"].workload_case_pairs` in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently jumps from `pattern-subn-bytes-negative-count-purged-bytes` back to the next owner family, confirming the exact adjacent benchmark publication gap on the shared owner path.
+
+## Completion
+- Added `pattern-subn-bytes-no-match-purged-bytes` to `benchmarks/workloads/collection_replacement_boundary.py` on the existing direct-pattern literal replacement route, anchored to `pattern-subn-bytes-no-match`.
+- Extended the shared collection/replacement benchmark assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the pattern literal replacement route now publishes 18 measured rows in the required order and no longer leaves an explicit direct-pattern literal replacement benchmark gap.
+- Regenerated `reports/benchmarks/latest.py` on the tracked source-tree-shim path and verified the tracked publication now reports `974` total / `974` measured / `0` known gaps across `30` manifests, with `module_workloads == 966`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 421, "warm": 449}`, and `collection-replacement-boundary` at `135` selected / `135` measured / `0` known gaps / `135` workloads; the new workload publishes with `status == "measured"`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and bytes-no-match'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1063-pattern-subn-bytes-no-match.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

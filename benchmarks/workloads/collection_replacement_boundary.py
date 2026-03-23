@@ -4425,6 +4425,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-subn-bytes-no-match-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zzz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes precompiled Pattern.subn helper path that keeps the bounded literal no-match replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-subn-grouped-template-warm-str",
       "bucket": "pattern-subn",
       "family": "module",

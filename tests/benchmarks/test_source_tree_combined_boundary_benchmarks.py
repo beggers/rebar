@@ -3755,19 +3755,19 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
         workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
+        selected_measured_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
             _is_collection_replacement_pattern_literal_replacement_workload,
         )
         self.assertEqual(
-            expected_measured_workload_ids,
+            selected_measured_workload_ids,
             _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"].workload_ids(),
         )
-        self.assertEqual(len(expected_measured_workload_ids), 17)
+        self.assertEqual(len(selected_measured_workload_ids), 18)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
-            expected_measured_workload_ids,
+            selected_measured_workload_ids,
             workload_count,
             expected_total_workload_count=workload_count,
         )
@@ -3861,7 +3861,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             unbenchmarked_case_ids,
-            ("pattern-subn-bytes-no-match",),
+            (),
         )
 
     def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured(
@@ -5483,11 +5483,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 973,
-                "module_workloads": 965,
+                "measured_workloads": 974,
+                "module_workloads": 966,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 973,
+                "total_workloads": 974,
             },
         )
 
@@ -8367,6 +8367,10 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
             (
                 "pattern-subn-bytes-negative-count-purged-bytes",
                 "pattern-subn-bytes-negative-count",
+            ),
+            (
+                "pattern-subn-bytes-no-match-purged-bytes",
+                "pattern-subn-bytes-no-match",
             ),
         ),
         expected_operation="pattern_call",
