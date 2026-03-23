@@ -1,6 +1,6 @@
 # RBR-1101: Collapse parametrize id lambdas in grouped-capture parity suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -50,3 +50,9 @@ Created: 2026-03-23
   - `rg -n 'ids=lambda' tests/python/test_grouped_capture_parity_suite.py` returned the remaining inline id adapters at lines `536`, `576`, `722`, `732`, `753`, `766`, `793`, `817`, `835`, `853`, `881`, `905`, `921`, `943`, and `962` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` returned `496 passed` in this run.
+
+## Completion
+- Replaced every remaining file-local `ids=lambda ...` adapter in `tests/python/test_grouped_capture_parity_suite.py` with named same-file helpers, preserving the existing collected ids for grouped-segment leading-capture rows, fixture-bundle rows, compile rows, module/pattern parity rows, supplemental miss rows, bounded-window rows, match-group-access rows, and optional-group expand rows.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py`
+  - `bash -lc "! rg -n 'ids=lambda' tests/python/test_grouped_capture_parity_suite.py"`
