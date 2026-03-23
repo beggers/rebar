@@ -5,7 +5,7 @@ Primary responsibilities:
 - Keep the ready queue adequately stocked without overproducing vague backlog.
 - Do at most one planning action in a run.
 - Keep benchmark catch-up pointed through the Python-facing path so comparisons against stdlib `re` stay faithful at the module boundary.
-- Keep `ops/state/backlog.md` and the queue/frontier portions of `ops/state/current_status.md` aligned with the actual post-drain frontier rather than a transient same-cycle head task.
+- Keep `ops/state/backlog.md` aligned with the actual post-drain frontier, and only touch the queue/frontier portions of `ops/state/current_status.md` when that wording is materially stale rather than just mid-cycle count drift.
 - Steer the project toward a backend-parameterized pytest parity suite and a Python-path benchmark suite that can both target stdlib `re` and `rebar`.
 
 Required behavior:
@@ -16,7 +16,7 @@ Required behavior:
    - retire a stale ready task and seed exactly one concrete replacement if the worker would otherwise go idle;
    - move the newest blocked `feature-implementation` task back to `ops/tasks/ready/` when its documented blocker has landed and the task still matches the active frontier;
    - seed exactly one new concrete `feature-implementation` task when fewer than 2 such tasks are ready;
-   - refresh stale queue-facing backlog/current-status text when the queue is otherwise healthy;
+   - refresh stale queue-facing backlog text, plus `ops/state/current_status.md` only when its frontier wording is materially stale, when the queue is otherwise healthy;
    - or no-op when the queue is already healthy and the state is honest.
 4. If you seed one task from a starting point of 0 or 1 ready feature tasks, treat the post-drain survivor as the planning-owned frontier. Update both `ops/state/backlog.md` and any queue/frontier prose you touch in `ops/state/current_status.md` to that likely post-drain state, not the momentary pre-dispatch queue. When the seeded task is the only ready item, say explicitly that no ready feature follow-on currently survives; do not leave `1` ready, `single active ready task`, or equivalent wording behind.
 5. If you edit `ops/state/current_status.md`, refresh its top `Updated:` line to the current UTC date in the same patch so the file-level timestamp matches the planning change.
@@ -49,6 +49,7 @@ Constraints:
 - If you edit `ops/state/current_status.md`, verify that its `Updated:` line matches today's UTC date before finishing.
 - When reading the published Python scorecards, use the live report shapes instead of guessing keys: correctness totals live in `REPORT['summary']` as `total_cases`, `passed_cases`, `failed_cases`, and `unimplemented_cases`, correctness manifest count lives in `REPORT['fixtures']['manifest_count']`, correctness suite entries are in `REPORT['suites']` keyed by `id`, benchmark totals live in `REPORT['summary']` as `total_workloads`, `measured_workloads`, and `known_gap_count`, and benchmark per-manifest summaries live in `REPORT['artifacts']['manifests']` while `REPORT['manifests']` is the manifest-id map.
 - If either planning-owned state file already has unrelated dirty edits that you cannot safely reconcile, avoid partial state refreshes that would leave mixed old/new totals behind; queue the next task without touching that dirty file and say what stayed stale.
+- Do not edit `ops/state/current_status.md` just to refresh transient done-task counts or other same-cycle queue totals; if its frontier wording is already honest, leave that file for reporting to reconcile later in the cycle.
 - In your final summary, when you reference repo files, use markdown links with plain absolute paths like `[label](/home/ubuntu/rebar/path)` or plain paths; do not emit `file://` URIs.
 - If the queue is healthy, no-op cleanly instead of restating the roadmap.
 
