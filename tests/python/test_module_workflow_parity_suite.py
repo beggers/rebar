@@ -2581,6 +2581,65 @@ def _assert_positional_indexlike_publication_contract(
     return published_fixture_cases, selected_direct_cases
 
 
+_NonCompiledPublicationDirectCase = (
+    ModuleKeywordCallCase
+    | ModuleKeywordErrorCase
+    | PatternKeywordCallCase
+    | PatternHelperErrorCase
+    | ModulePositionalIndexLikeCallCase
+    | PatternPositionalIndexLikeCallCase
+)
+
+
+def _noncompiled_publication_direct_case_pattern_and_args(
+    case: _NonCompiledPublicationDirectCase,
+) -> tuple[str | bytes, tuple[object, ...]]:
+    if isinstance(
+        case,
+        (
+            PatternKeywordCallCase,
+            PatternHelperErrorCase,
+            PatternPositionalIndexLikeCallCase,
+        ),
+    ):
+        return case.pattern, case.args
+    pattern, *args = case.args
+    return pattern, tuple(args)
+
+
+def _assert_noncompiled_publication_direct_case_field_alignment(
+    published_fixture_cases: tuple[FixtureCase, ...],
+    selected_direct_cases: tuple[_NonCompiledPublicationDirectCase, ...],
+    *,
+    keyword_arguments: bool,
+    include_pattern_arg: bool | None = None,
+    use_compiled_pattern: bool | None = None,
+) -> None:
+    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
+        direct_pattern, direct_args = _noncompiled_publication_direct_case_pattern_and_args(
+            direct_case
+        )
+        if include_pattern_arg is not None:
+            assert fixture_case.include_pattern_arg is include_pattern_arg
+        if use_compiled_pattern is not None:
+            assert fixture_case.use_compiled_pattern is use_compiled_pattern
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_pattern, bytes) else "str"
+        )
+        assert case_pattern(fixture_case) == direct_pattern
+        if keyword_arguments:
+            assert tuple(fixture_case.args) == direct_args
+            assert _workflow_keyword_kwargs_signature(
+                fixture_case.kwargs
+            ) == _workflow_keyword_kwargs_signature(getattr(direct_case, "kwargs"))
+        else:
+            assert _workflow_positional_args_signature(tuple(fixture_case.args)) == (
+                _workflow_positional_args_signature(direct_args)
+            )
+            assert fixture_case.kwargs == {}
+        assert fixture_case.flags == 0
+
+
 def _compiled_pattern_module_helper_direct_case_helper(
     case: object,
 ) -> str:
@@ -4620,21 +4679,12 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         )
     )
 
-    for fixture_case, direct_case in zip(
+    _assert_noncompiled_publication_direct_case_field_alignment(
         published_fixture_cases,
         selected_direct_cases,
-    ):
-        direct_pattern, *direct_args = direct_case.args
-        assert fixture_case.use_compiled_pattern is False
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_pattern, bytes) else "str"
-        )
-        assert case_pattern(fixture_case) == direct_pattern
-        assert tuple(fixture_case.args) == tuple(direct_args)
-        assert _workflow_keyword_kwargs_signature(
-            fixture_case.kwargs
-        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
-        assert fixture_case.flags == 0
+        keyword_arguments=True,
+        use_compiled_pattern=False,
+    )
 
 
 def test_module_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on(
@@ -4700,19 +4750,13 @@ def test_module_workflow_surface_publishes_module_positional_indexlike_slice_fro
         )
     )
 
-    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
-        direct_pattern, *direct_args = direct_case.args
-        assert fixture_case.include_pattern_arg is True
-        assert fixture_case.use_compiled_pattern is False
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_pattern, bytes) else "str"
-        )
-        assert case_pattern(fixture_case) == direct_pattern
-        assert _workflow_positional_args_signature(tuple(fixture_case.args)) == (
-            _workflow_positional_args_signature(tuple(direct_args))
-        )
-        assert fixture_case.kwargs == {}
-        assert fixture_case.flags == 0
+    _assert_noncompiled_publication_direct_case_field_alignment(
+        published_fixture_cases,
+        selected_direct_cases,
+        keyword_arguments=False,
+        include_pattern_arg=True,
+        use_compiled_pattern=False,
+    )
 
 
 def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases(
@@ -4735,19 +4779,13 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
         )
     )
 
-    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
-        direct_pattern, *direct_args = direct_case.args
-        assert fixture_case.include_pattern_arg is True
-        assert fixture_case.use_compiled_pattern is False
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_pattern, bytes) else "str"
-        )
-        assert case_pattern(fixture_case) == direct_pattern
-        assert tuple(fixture_case.args) == tuple(direct_args)
-        assert _workflow_keyword_kwargs_signature(
-            fixture_case.kwargs
-        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
-        assert fixture_case.flags == 0
+    _assert_noncompiled_publication_direct_case_field_alignment(
+        published_fixture_cases,
+        selected_direct_cases,
+        keyword_arguments=True,
+        include_pattern_arg=True,
+        use_compiled_pattern=False,
+    )
 
 
 def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
@@ -4773,19 +4811,11 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
         )
     )
 
-    for fixture_case, direct_case in zip(
+    _assert_noncompiled_publication_direct_case_field_alignment(
         published_fixture_cases,
         selected_direct_cases,
-    ):
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
-        )
-        assert case_pattern(fixture_case) == direct_case.pattern
-        assert tuple(fixture_case.args) == direct_case.args
-        assert _workflow_keyword_kwargs_signature(
-            fixture_case.kwargs
-        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
-        assert fixture_case.flags == 0
+        keyword_arguments=True,
+    )
 
 
 def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
@@ -4805,16 +4835,11 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
         )
     )
 
-    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
-        )
-        assert case_pattern(fixture_case) == direct_case.pattern
-        assert tuple(fixture_case.args) == direct_case.args
-        assert _workflow_keyword_kwargs_signature(
-            fixture_case.kwargs
-        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
-        assert fixture_case.flags == 0
+    _assert_noncompiled_publication_direct_case_field_alignment(
+        published_fixture_cases,
+        selected_direct_cases,
+        keyword_arguments=True,
+    )
 
 
 def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
@@ -4838,16 +4863,11 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
         )
     )
 
-    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
-        )
-        assert case_pattern(fixture_case) == direct_case.pattern
-        assert tuple(fixture_case.args) == direct_case.args
-        assert _workflow_keyword_kwargs_signature(
-            fixture_case.kwargs
-        ) == _workflow_keyword_kwargs_signature(direct_case.kwargs)
-        assert fixture_case.flags == 0
+    _assert_noncompiled_publication_direct_case_field_alignment(
+        published_fixture_cases,
+        selected_direct_cases,
+        keyword_arguments=True,
+    )
 
 
 def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on(
@@ -5044,16 +5064,11 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
         )
     )
 
-    for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
-        )
-        assert case_pattern(fixture_case) == direct_case.pattern
-        assert _workflow_positional_args_signature(tuple(fixture_case.args)) == (
-            _workflow_positional_args_signature(direct_case.args)
-        )
-        assert fixture_case.kwargs == {}
-        assert fixture_case.flags == 0
+    _assert_noncompiled_publication_direct_case_field_alignment(
+        published_fixture_cases,
+        selected_direct_cases,
+        keyword_arguments=False,
+    )
 
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(

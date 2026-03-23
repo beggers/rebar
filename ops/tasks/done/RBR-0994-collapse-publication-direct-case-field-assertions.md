@@ -1,6 +1,6 @@
 ## RBR-0994: Collapse publication direct-case field assertions
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -208,3 +208,8 @@ for i, line in enumerate(text, start=1):
     if "for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):" in line:
         print(i)
 PY` currently reports repeated open-coded loops at lines `4703`, `4738`, `4808`, `4841`, and `5047`, while the companion publication tests at `4645` and `4771` carry the same shape through a multi-line `zip(...)` call.
+
+## Completion
+- Added `_assert_noncompiled_publication_direct_case_field_alignment(...)` to `tests/python/test_module_workflow_parity_suite.py` so the seven non-compiled owner-path and positional publication slices share one file-local field-alignment assertion path.
+- Repointed the seven scoped publication tests through that helper while preserving the existing per-slice contracts for `text_model`, pattern identity, args or positional signatures, kwargs signatures, `include_pattern_arg`, `use_compiled_pattern`, and `flags`.
+- Verified with the focused pytest selection from this task (`7 passed, 1444 deselected`) and the explicit publication-contract probe (`ok`).
