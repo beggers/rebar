@@ -1,6 +1,6 @@
 ## RBR-1049: Collapse compiled-pattern success and wrong-text-model module-helper routes
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -70,3 +70,7 @@ Created: 2026-03-23
   - `CompiledPatternModuleSuccessOwnerSpec.expected_callback_result(...)` and `.expected_callback_call(...)` still hold the success-side compiled-pattern routing at lines `16310` and `16324`;
   - `WrongTextModelOwnerSpec.expected_callback_result(...)`, `.expected_callback_call(...)`, and `.run_cpython_workload(...)` still hold the wrong-text-model compiled-pattern routing at lines `17464`, `17515`, and `17593`; and
   - the focused pytest slice in Verification already passes (`87 passed, 634 deselected in 0.19s`), so the acceptance surface is isolated from unrelated drift.
+
+## Completion Note
+- 2026-03-23: Added one shared `_compiled_pattern_module_helper_route(...)` plus `_run_compiled_pattern_module_helper_workload_with_cpython(...)` in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and repointed the compiled-pattern success and wrong-text-model owner specs through that same file-local route for callback results, callback calls, and wrong-text-model CPython helper dispatch.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_workloads or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing or standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract'` (`87 passed, 634 deselected`).

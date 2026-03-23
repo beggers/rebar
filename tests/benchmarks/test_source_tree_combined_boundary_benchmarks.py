@@ -16308,71 +16308,19 @@ class CompiledPatternModuleSuccessOwnerSpec:
         )
 
     def expected_callback_result(self, source_workload: Workload) -> object:
-        if self.case_id == "collection-replacement":
-            if source_workload.operation == "module.subn":
-                return ("module-result", 0)
-            if source_workload.operation == "module.finditer":
-                return ["module-finditer-result"]
-            return "module-result"
-        if self.case_id == "module-boundary":
-            return "module-result"
-        raise AssertionError(
-            "unexpected compiled-pattern module success owner-spec callback-result "
-            f"case {self.case_id!r}"
-        )
+        return _compiled_pattern_module_helper_route(
+            source_workload,
+            collection_replacement_callback_flags=source_workload.flags,
+        ).callback_result
 
     def expected_callback_call(
         self,
         source_workload: Workload,
     ) -> tuple[object, ...]:
-        if self.case_id == "collection-replacement":
-            if source_workload.operation == "module.split":
-                return (
-                    source_workload.operation,
-                    source_workload.haystack_payload(),
-                    source_workload.maxsplit_argument(),
-                    source_workload.flags,
-                    {},
-                )
-            if source_workload.operation in {"module.findall", "module.finditer"}:
-                return (
-                    source_workload.operation,
-                    source_workload.haystack_payload(),
-                    source_workload.flags,
-                )
-            if source_workload.operation in {"module.sub", "module.subn"}:
-                return (
-                    source_workload.operation,
-                    source_workload.replacement_payload(),
-                    source_workload.haystack_payload(),
-                    source_workload.count_argument(),
-                    source_workload.flags,
-                    {},
-                )
-            raise AssertionError(
-                "unexpected compiled-pattern collection/replacement success "
-                f"workload operation {source_workload.operation!r}"
-            )
-        if self.case_id == "module-boundary":
-            if source_workload.operation in {
-                "module.search",
-                "module.match",
-                "module.fullmatch",
-            }:
-                return (
-                    source_workload.operation,
-                    source_workload.haystack_payload(),
-                    0,
-                    {},
-                )
-            raise AssertionError(
-                "unexpected compiled-pattern module-boundary success workload "
-                f"operation {source_workload.operation!r}"
-            )
-        raise AssertionError(
-            "unexpected compiled-pattern module success owner-spec callback-call "
-            f"case {self.case_id!r}"
-        )
+        return _compiled_pattern_module_helper_route(
+            source_workload,
+            collection_replacement_callback_flags=source_workload.flags,
+        ).callback_call
 
 
 _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
@@ -16507,6 +16455,134 @@ def _assert_compiled_pattern_module_success_payload_round_trip(
         and source_workload.replacement is not None
     ):
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+@dataclass(frozen=True)
+class _CompiledPatternModuleHelperRoute:
+    callback_result: object
+    callback_call: tuple[object, ...]
+    cpython_call_args: tuple[object, ...]
+    materialize_cpython_result: bool = False
+
+
+def _compiled_pattern_module_helper_route(
+    workload: Workload,
+    *,
+    collection_replacement_callback_flags: int,
+) -> _CompiledPatternModuleHelperRoute:
+    if workload.operation in {
+        "module.search",
+        "module.match",
+        "module.fullmatch",
+    }:
+        return _CompiledPatternModuleHelperRoute(
+            callback_result="module-result",
+            callback_call=(
+                workload.operation,
+                workload.haystack_payload(),
+                0,
+                {},
+            ),
+            cpython_call_args=(
+                workload.haystack_payload(),
+                workload.flags,
+            ),
+        )
+    if workload.operation == "module.split":
+        return _CompiledPatternModuleHelperRoute(
+            callback_result="module-result",
+            callback_call=(
+                workload.operation,
+                workload.haystack_payload(),
+                workload.maxsplit_argument(),
+                collection_replacement_callback_flags,
+                {},
+            ),
+            cpython_call_args=(
+                workload.haystack_payload(),
+                workload.maxsplit_argument(),
+            ),
+        )
+    if workload.operation == "module.findall":
+        return _CompiledPatternModuleHelperRoute(
+            callback_result="module-result",
+            callback_call=(
+                workload.operation,
+                workload.haystack_payload(),
+                collection_replacement_callback_flags,
+            ),
+            cpython_call_args=(
+                workload.haystack_payload(),
+                workload.flags,
+            ),
+        )
+    if workload.operation == "module.finditer":
+        return _CompiledPatternModuleHelperRoute(
+            callback_result=["module-finditer-result"],
+            callback_call=(
+                workload.operation,
+                workload.haystack_payload(),
+                collection_replacement_callback_flags,
+            ),
+            cpython_call_args=(
+                workload.haystack_payload(),
+                workload.flags,
+            ),
+            materialize_cpython_result=True,
+        )
+    if workload.operation == "module.sub":
+        return _CompiledPatternModuleHelperRoute(
+            callback_result="module-result",
+            callback_call=(
+                workload.operation,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count_argument(),
+                collection_replacement_callback_flags,
+                {},
+            ),
+            cpython_call_args=(
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count_argument(),
+            ),
+        )
+    if workload.operation == "module.subn":
+        return _CompiledPatternModuleHelperRoute(
+            callback_result=("module-result", 0),
+            callback_call=(
+                workload.operation,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count_argument(),
+                collection_replacement_callback_flags,
+                {},
+            ),
+            cpython_call_args=(
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count_argument(),
+            ),
+        )
+    raise AssertionError(
+        "unexpected compiled-pattern module helper workload operation "
+        f"{workload.operation!r}"
+    )
+
+
+def _run_compiled_pattern_module_helper_workload_with_cpython(
+    workload: Workload,
+) -> object:
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+    route = _compiled_pattern_module_helper_route(
+        workload,
+        collection_replacement_callback_flags=0,
+    )
+    helper = getattr(re, workload.operation.removeprefix("module."))
+    result = helper(compiled_pattern, *route.cpython_call_args)
+    if route.materialize_cpython_result:
+        return list(result)
+    return result
 
 
 def _contract_source_workload_params(
@@ -17463,11 +17539,10 @@ class WrongTextModelOwnerSpec:
 
     def expected_callback_result(self, source_workload: Workload) -> object:
         if self.use_compiled_pattern:
-            if source_workload.operation == "module.subn":
-                return ("module-result", 0)
-            if source_workload.operation == "module.finditer":
-                return ["module-finditer-result"]
-            return "module-result"
+            return _compiled_pattern_module_helper_route(
+                source_workload,
+                collection_replacement_callback_flags=0,
+            ).callback_result
 
         route = self._direct_pattern_route_label()
         if route == "collection/replacement":
@@ -17517,44 +17592,10 @@ class WrongTextModelOwnerSpec:
         source_workload: Workload,
     ) -> tuple[object, ...]:
         if self.use_compiled_pattern:
-            if source_workload.operation in {
-                "module.search",
-                "module.match",
-                "module.fullmatch",
-            }:
-                return (
-                    source_workload.operation,
-                    source_workload.haystack_payload(),
-                    0,
-                    {},
-                )
-            if source_workload.operation == "module.split":
-                return (
-                    source_workload.operation,
-                    source_workload.haystack_payload(),
-                    source_workload.maxsplit_argument(),
-                    0,
-                    {},
-                )
-            if source_workload.operation in {"module.findall", "module.finditer"}:
-                return (
-                    source_workload.operation,
-                    source_workload.haystack_payload(),
-                    0,
-                )
-            if source_workload.operation in {"module.sub", "module.subn"}:
-                return (
-                    source_workload.operation,
-                    source_workload.replacement_payload(),
-                    source_workload.haystack_payload(),
-                    source_workload.count_argument(),
-                    0,
-                    {},
-                )
-            raise AssertionError(
-                "unexpected compiled-pattern module helper wrong-text-model "
-                f"workload operation {source_workload.operation!r}"
-            )
+            return _compiled_pattern_module_helper_route(
+                source_workload,
+                collection_replacement_callback_flags=0,
+            ).callback_call
 
         route = self._direct_pattern_route_label()
         if route == "collection/replacement":
@@ -17592,54 +17633,8 @@ class WrongTextModelOwnerSpec:
 
     def run_cpython_workload(self, workload: Workload) -> object:
         if self.use_compiled_pattern:
-            compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-            helper_name = workload.operation.removeprefix("module.")
-
-            if workload.operation in {
-                "module.search",
-                "module.match",
-                "module.fullmatch",
-            }:
-                return getattr(re, helper_name)(
-                    compiled_pattern,
-                    workload.haystack_payload(),
-                    workload.flags,
-                )
-
-            if workload.operation == "module.split":
-                return getattr(re, helper_name)(
-                    compiled_pattern,
-                    workload.haystack_payload(),
-                    workload.maxsplit_argument(),
-                )
-
-            if workload.operation == "module.findall":
-                return getattr(re, helper_name)(
-                    compiled_pattern,
-                    workload.haystack_payload(),
-                    workload.flags,
-                )
-
-            if workload.operation == "module.finditer":
-                return list(
-                    getattr(re, helper_name)(
-                        compiled_pattern,
-                        workload.haystack_payload(),
-                        workload.flags,
-                    )
-                )
-
-            if workload.operation in {"module.sub", "module.subn"}:
-                return getattr(re, helper_name)(
-                    compiled_pattern,
-                    workload.replacement_payload(),
-                    workload.haystack_payload(),
-                    workload.count_argument(),
-                )
-
-            raise AssertionError(
-                "unexpected compiled-pattern module helper wrong-text-model "
-                f"workload operation {workload.operation!r}"
+            return _run_compiled_pattern_module_helper_workload_with_cpython(
+                workload
             )
 
         route = self._direct_pattern_route_label()
