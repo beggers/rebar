@@ -1,6 +1,6 @@
 # RBR-1058: Collapse the compiled-pattern `module.compile` success contract singleton
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,7 @@ Created: 2026-03-23
   - `_CompiledPatternModuleCompileSuccessOwnerSpec` still sits at line `7565`;
   - `_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_SOURCE_SELECTORS` and `_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_EXPECTED_ANCHOR_PAIRS` still sit at lines `7664` and `7668`; and
   - `_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE` still sits at line `17224`.
+
+## Completion
+- Collapsed the compiled-pattern `module.compile` success contract singleton plumbing into the existing success owner-spec lane in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, leaving the combined `case_id="success"` contract shape and both literal/named-group slices intact while deleting the standalone selector, anchor-pair, and contract-case constants.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_rows_measured or standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_compile_success_and_keyword_contract_rows_stay_anchored_to_published_correctness_cases or compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing'` (`75 passed, 647 deselected, 18 subtests passed`) and `bash -lc \"! rg -n '^_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_(SOURCE_SELECTORS|EXPECTED_ANCHOR_PAIRS|CONTRACT_CASE)\\\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py\"`.

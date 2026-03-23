@@ -7594,6 +7594,9 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
     def expected_anchor_workload_ids(self) -> tuple[str, ...]:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
+    def source_selector(self) -> Callable[[Any], bool]:
+        return self.includes_workload
+
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
         return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
@@ -7659,16 +7662,6 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS = (
             ),
         ),
     ),
-)
-
-_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_SOURCE_SELECTORS = tuple(
-    owner_spec.includes_workload
-    for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
-)
-_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_EXPECTED_ANCHOR_PAIRS = tuple(
-    anchor_pair
-    for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
-    for anchor_pair in owner_spec.expected_anchor_pairs
 )
 
 
@@ -17220,21 +17213,6 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE = (
     )
 )
 
-
-_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE = (
-    CompiledPatternModuleCompileContractCase(
-        route=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE,
-        case_id="success",
-        source_selectors=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_SOURCE_SELECTORS,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_contract.py"
-        ),
-        anchor_contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_anchor_contract.py"
-        ),
-        expected_anchor_pairs=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_EXPECTED_ANCHOR_PAIRS,
-    )
-)
 COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
     *(
         owner_spec.contract_case()
@@ -17253,7 +17231,25 @@ def _expected_exception_instance(
 
 
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
-    _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE,
+    CompiledPatternModuleCompileContractCase(
+        route=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE,
+        case_id="success",
+        source_selectors=tuple(
+            owner_spec.source_selector()
+            for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_anchor_contract.py"
+        ),
+        expected_anchor_pairs=tuple(
+            anchor_pair
+            for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
+            for anchor_pair in owner_spec.expected_anchor_pairs
+        ),
+    ),
     *COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS,
 )
 
