@@ -1,6 +1,6 @@
 ## RBR-1035: Collapse source-tree contract source-workload routes
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,8 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently defines `_compiled_pattern_module_contract_source_workloads(...)` at line `16565`, `CompiledPatternModuleCompileContractCase.source_workloads()` at line `16943`, `_wrong_text_model_source_workloads(...)` at line `17749`, and `_wrong_text_model_source_workload_params()` at line `17920`;
   - the targeted pytest slice in Verification currently passes (`150 passed, 570 deselected in 0.28s`); and
   - the negative `rg` check in Verification currently fails only because those exact duplicated source-workload helper names are still present.
+
+## Completion
+- 2026-03-23: Replaced the duplicated source-workload selection loops with one local `_contract_source_workloads(...)` helper, moved the compiled-pattern success-owner and wrong-text-model owner routes onto `source_workloads()` methods, and kept `CompiledPatternModuleCompileContractCase.source_workloads()` on the same selector order and drift wording through that shared helper.
+- 2026-03-23: Reused one local `_contract_source_workload_params(...)` path for the affected parametrized tests and updated the remaining wrong-text-model anchor and haystack-text-model validation call sites to use the owner-spec method route.
+- 2026-03-23: Verification passed with `150 passed, 570 deselected` for the targeted pytest slice, and the negative `rg` check confirmed the removed helper definitions no longer exist in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.

@@ -15084,7 +15084,7 @@ def test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchor
     tmp_path: pathlib.Path,
 ) -> None:
     owner_spec = _PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC
-    source_workloads = _wrong_text_model_source_workloads(owner_spec)
+    source_workloads = owner_spec.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
         spec=_wrong_text_model_contract_builder_spec(owner_spec),
@@ -16377,6 +16377,17 @@ class CompiledPatternModuleSuccessOwnerSpec:
     expected_callback_result: Callable[[Workload], object]
     expected_callback_call: Callable[[Workload], tuple[object, ...]]
 
+    def source_workloads(self) -> tuple[Workload, ...]:
+        return _contract_source_workloads(
+            manifest_path=self.manifest_path,
+            include_workload_selectors=self.include_workload_selectors,
+            expected_source_workload_ids=self.expected_source_workload_ids,
+            drift_message=(
+                "compiled-pattern module contract source workloads drifted from the "
+                f"{self.case_id} owner-spec surface"
+            ),
+        )
+
 
 def _compiled_pattern_module_collection_replacement_success_callback_result(
     source_workload: Workload,
@@ -16562,12 +16573,12 @@ def _compiled_pattern_module_success_contract_builder_spec(
     )
 
 
-def _compiled_pattern_module_contract_source_workloads(
+def _contract_source_workloads(
     *,
     manifest_path: pathlib.Path,
     include_workload_selectors: tuple[Callable[[Any], bool], ...],
     expected_source_workload_ids: tuple[str, ...],
-    drift_label: str,
+    drift_message: str,
 ) -> tuple[Workload, ...]:
     source_workloads = tuple(
         workload
@@ -16581,10 +16592,7 @@ def _compiled_pattern_module_contract_source_workloads(
         tuple(workload.workload_id for workload in source_workloads)
         != expected_source_workload_ids
     ):
-        raise AssertionError(
-            "compiled-pattern module contract source workloads drifted from the "
-            f"{drift_label}"
-        )
+        raise AssertionError(drift_message)
     return source_workloads
 
 
@@ -16651,7 +16659,7 @@ def _compiled_pattern_module_contract_expected_build_calls(
     )
 
 
-def _compiled_pattern_module_contract_source_workload_params(
+def _contract_source_workload_params(
     owner_specs: tuple[object, ...],
     *,
     source_workloads: Callable[[object], tuple[Workload, ...]],
@@ -16679,12 +16687,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     tmp_path: pathlib.Path,
     owner_spec: CompiledPatternModuleSuccessOwnerSpec,
 ) -> None:
-    source_workloads = _compiled_pattern_module_contract_source_workloads(
-        manifest_path=owner_spec.manifest_path,
-        include_workload_selectors=owner_spec.include_workload_selectors,
-        expected_source_workload_ids=owner_spec.expected_source_workload_ids,
-        drift_label=f"{owner_spec.case_id} owner-spec surface",
-    )
+    source_workloads = owner_spec.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
         spec=_compiled_pattern_module_success_contract_builder_spec(owner_spec),
@@ -16735,12 +16738,7 @@ def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchor
 ) -> None:
     owner_spec = _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
     manifest = _source_tree_contract_manifest(
-        _compiled_pattern_module_contract_source_workloads(
-            manifest_path=owner_spec.manifest_path,
-            include_workload_selectors=owner_spec.include_workload_selectors,
-            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
-            drift_label=f"{owner_spec.case_id} owner-spec surface",
-        ),
+        owner_spec.source_workloads(),
         spec=_compiled_pattern_module_success_contract_builder_spec(owner_spec),
     )
 
@@ -16822,14 +16820,9 @@ def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchor
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_contract_source_workload_params(
+    _contract_source_workload_params(
         _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
-        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
-            manifest_path=owner_spec.manifest_path,
-            include_workload_selectors=owner_spec.include_workload_selectors,
-            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
-            drift_label=f"{owner_spec.case_id} owner-spec surface",
-        ),
+        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
         param_id=lambda owner_spec: owner_spec.case_id,
     ),
 )
@@ -16872,14 +16865,9 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _compiled_pattern_module_contract_source_workload_params(
+    _contract_source_workload_params(
         _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
-        source_workloads=lambda owner_spec: _compiled_pattern_module_contract_source_workloads(
-            manifest_path=owner_spec.manifest_path,
-            include_workload_selectors=owner_spec.include_workload_selectors,
-            expected_source_workload_ids=owner_spec.expected_source_workload_ids,
-            drift_label=f"{owner_spec.case_id} owner-spec surface",
-        ),
+        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
         param_id=lambda owner_spec: owner_spec.case_id,
     ),
 )
@@ -16937,31 +16925,26 @@ class CompiledPatternModuleCompileContractCase:
     allowed_patterns: tuple[str, ...] = ()
     expected_exception: dict[str, str] | None = None
 
+    def expected_source_workload_ids(self) -> tuple[str, ...]:
+        return tuple(
+            workload_id.removesuffix("-contract")
+            for workload_id, _case_id in self.expected_anchor_pairs
+        )
+
     def _uses_keyword_flags(self) -> bool:
         return self.keyword_signature is not None
 
     def source_workloads(self) -> tuple[Workload, ...]:
-        source_workloads = tuple(
-            workload
-            for selector in self.source_selectors
-            for workload in _selected_manifest_workloads(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                include_workload=selector,
-            )
-        )
-        expected_source_workload_ids = tuple(
-            workload_id.removesuffix("-contract")
-            for workload_id, _case_id in self.expected_anchor_pairs
-        )
-        if tuple(workload.workload_id for workload in source_workloads) != (
-            expected_source_workload_ids
-        ):
-            contract_surface = "keyword" if self._uses_keyword_flags() else "success"
-            raise AssertionError(
+        contract_surface = "keyword" if self._uses_keyword_flags() else "success"
+        return _contract_source_workloads(
+            manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+            include_workload_selectors=self.source_selectors,
+            expected_source_workload_ids=self.expected_source_workload_ids(),
+            drift_message=(
                 f"compiled-pattern module.compile {contract_surface} rows drifted from the "
                 f"{self.case_id} contract surface"
-            )
-        return source_workloads
+            ),
+        )
 
     def manifest_excluded_fields(self) -> frozenset[str]:
         if self._uses_keyword_flags():
@@ -17316,8 +17299,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
     workloads = load_manifest(manifest_path).workloads
 
     assert tuple(workload.workload_id for workload in source_workloads) == tuple(
-        workload_id.removesuffix("-contract")
-        for workload_id, _case_id in contract_case.expected_anchor_pairs
+        contract_case.expected_source_workload_ids()
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         workload_id for workload_id, _case_id in contract_case.expected_anchor_pairs
@@ -17624,6 +17606,17 @@ class WrongTextModelOwnerSpec:
     expected_build_calls: Callable[[Workload], list[tuple[object, ...]]]
     run_cpython_workload: Callable[[Workload], object]
 
+    def source_workloads(self) -> tuple[Workload, ...]:
+        return _contract_source_workloads(
+            manifest_path=self.manifest_path,
+            include_workload_selectors=self.include_workload_selectors,
+            expected_source_workload_ids=self.expected_source_workload_ids,
+            drift_message=(
+                "wrong-text-model contract source workloads drifted from the "
+                f"{self.case_id} owner-spec surface"
+            ),
+        )
+
 
 _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
     {
@@ -17746,26 +17739,6 @@ def _wrong_text_model_owner_param_id(
     return owner_spec.case_id
 
 
-def _wrong_text_model_source_workloads(
-    owner_spec: WrongTextModelOwnerSpec,
-) -> tuple[Workload, ...]:
-    source_workloads = tuple(
-        workload
-        for include_workload in owner_spec.include_workload_selectors
-        for workload in _selected_manifest_workloads(
-            owner_spec.manifest_path,
-            include_workload=include_workload,
-        )
-    )
-    if (
-        tuple(workload.workload_id for workload in source_workloads)
-        != owner_spec.expected_source_workload_ids
-    ):
-        raise AssertionError(
-            "wrong-text-model contract source workloads drifted from the "
-            f"{owner_spec.case_id} owner-spec surface"
-        )
-    return source_workloads
 def _assert_wrong_text_model_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],
@@ -17917,18 +17890,6 @@ WRONG_TEXT_MODEL_OWNER_SPECS = (
 )
 
 
-def _wrong_text_model_source_workload_params() -> tuple[object, ...]:
-    return tuple(
-        pytest.param(
-            owner_spec,
-            source_workload,
-            id=f"{owner_spec.case_id}-{source_workload.workload_id}",
-        )
-        for owner_spec in WRONG_TEXT_MODEL_OWNER_SPECS
-        for source_workload in _wrong_text_model_source_workloads(owner_spec)
-    )
-
-
 @pytest.mark.parametrize(
     "owner_spec",
     tuple(
@@ -17943,7 +17904,7 @@ def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helpe
     owner_spec: WrongTextModelOwnerSpec,
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = _wrong_text_model_source_workloads(owner_spec)
+    source_workloads = owner_spec.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
         spec=_wrong_text_model_contract_builder_spec(owner_spec),
@@ -17997,7 +17958,11 @@ def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helpe
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _wrong_text_model_source_workload_params(),
+    _contract_source_workload_params(
+        WRONG_TEXT_MODEL_OWNER_SPECS,
+        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
+        param_id=_wrong_text_model_owner_param_id,
+    ),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -18038,7 +18003,11 @@ def test_run_internal_workload_probe_measures_wrong_text_model_contract_workload
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _wrong_text_model_source_workload_params(),
+    _contract_source_workload_params(
+        WRONG_TEXT_MODEL_OWNER_SPECS,
+        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
+        param_id=_wrong_text_model_owner_param_id,
+    ),
 )
 def test_wrong_text_model_callbacks_preserve_precompile_contract(
     owner_spec: WrongTextModelOwnerSpec,
@@ -18790,9 +18759,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _wrong_text_model_source_workloads(
-            _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC
-        )
+        for workload in _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC.source_workloads()
     ),
 )
 def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio(
