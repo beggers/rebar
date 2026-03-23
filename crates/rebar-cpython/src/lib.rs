@@ -38,6 +38,7 @@ use rebar_core::{
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
     quantified_nested_capture_find_spans_bytes as core_quantified_nested_capture_find_spans_bytes,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
+    quantified_nested_group_alternation_find_spans_bytes as core_quantified_nested_group_alternation_find_spans_bytes,
     quantified_nested_group_alternation_branch_local_backreference_find_spans_str as core_quantified_nested_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_group_alternation_find_spans_str as core_quantified_nested_group_alternation_find_spans_str,
     CapturedMatchSpan, CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
@@ -654,6 +655,36 @@ fn boundary_quantified_nested_group_alternation_finditer(
     Vec<Vec<Option<(usize, usize)>>>,
 ) {
     let outcome = core_quantified_nested_group_alternation_find_spans_str(
+        pattern, flags, string, pos, endpos,
+    );
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_quantified_nested_group_alternation_finditer_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome = core_quantified_nested_group_alternation_find_spans_bytes(
         pattern, flags, string, pos, endpos,
     );
     (
@@ -1734,6 +1765,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?)?;
     module.add_function(wrap_pyfunction!(
         boundary_quantified_nested_group_alternation_finditer,
+        module
+    )?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_quantified_nested_group_alternation_finditer_bytes,
         module
     )?)?;
     module.add_function(wrap_pyfunction!(

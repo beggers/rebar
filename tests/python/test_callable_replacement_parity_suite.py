@@ -2715,6 +2715,78 @@ def test_quantified_nested_group_callable_bytes_pattern_matches_cpython(
 
 
 @pytest.mark.parametrize(
+    ("helper", "count", "string", "expected"),
+    (
+        pytest.param("sub", 0, b"zzabdzz", b"zzbxzz", id="sub-group-1"),
+        pytest.param(
+            "subn",
+            1,
+            b"zzabccdacbbdzz",
+            (b"zz<c>acbbdzz", 1),
+            id="subn-count-one-group-2",
+        ),
+    ),
+)
+def test_quantified_nested_group_alternation_callable_bytes_module_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+    string: bytes,
+    expected: bytes | tuple[bytes, int],
+) -> None:
+    _, backend = regex_backend
+    pattern = rb"a((b|c)+)d"
+    replacement = (
+        (lambda match: match.group(1) + b"x")
+        if helper == "sub"
+        else (lambda match: b"<" + match.group(2) + b">")
+    )
+
+    observed = getattr(backend, helper)(pattern, replacement, string, count=count)
+    expected_result = getattr(re, helper)(pattern, replacement, string, count=count)
+
+    assert observed == expected_result
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
+    ("helper", "count", "string", "expected"),
+    (
+        pytest.param("sub", 0, b"zzabccdzz", b"zzbccxzz", id="sub-outer"),
+        pytest.param(
+            "subn",
+            1,
+            b"zzabccdzz",
+            (b"zz<c>zz", 1),
+            id="subn-count-one-inner",
+        ),
+    ),
+)
+def test_quantified_nested_group_alternation_callable_bytes_pattern_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+    string: bytes,
+    expected: bytes | tuple[bytes, int],
+) -> None:
+    _, backend = regex_backend
+    pattern = rb"a(?P<outer>(?P<inner>b|c)+)d"
+    replacement = (
+        (lambda match: match.group("outer") + b"x")
+        if helper == "sub"
+        else (lambda match: b"<" + match.group("inner") + b">")
+    )
+
+    observed_target = backend.compile(pattern)
+    expected_target = re.compile(pattern)
+    observed = getattr(observed_target, helper)(replacement, string, count=count)
+    expected_result = getattr(expected_target, helper)(replacement, string, count=count)
+
+    assert observed == expected_result
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
     ("helper", "count", "pattern", "string"),
     (
         pytest.param("sub", 0, "(abc)", "abcabc", id="str-sub"),
