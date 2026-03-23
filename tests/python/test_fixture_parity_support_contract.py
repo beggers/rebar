@@ -5751,6 +5751,96 @@ def test_finditer_parity_helper_invokes_match_callback_for_each_match_in_order(
     ]
 
 
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-finditer"),
+        pytest.param(True, id="pattern-finditer"),
+    ),
+)
+def test_finditer_parity_helper_covers_bytes_match_metadata_and_iterator_exhaustion(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = b"abc"
+    text = b"zabcabc"
+
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed_iter = observed_pattern.finditer(text)
+        expected_iter = expected_pattern.finditer(text)
+    else:
+        observed_iter = backend.finditer(pattern, text)
+        expected_iter = re.finditer(pattern, text)
+
+    assert_finditer_parity(
+        backend_name,
+        observed_iter,
+        expected_iter,
+        check_regs=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-finditer"),
+        pytest.param(True, id="pattern-finditer"),
+    ),
+)
+def test_finditer_parity_helper_invokes_match_callback_for_each_bytes_match_in_order(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = b"abc"
+    text = b"zabcabc"
+    callback_pairs: list[tuple[tuple[int, int], tuple[int, int], bytes, bytes]] = []
+
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed_iter = observed_pattern.finditer(text)
+        expected_iter = expected_pattern.finditer(text)
+    else:
+        observed_iter = backend.finditer(pattern, text)
+        expected_iter = re.finditer(pattern, text)
+
+    def record_match_pair(
+        observed: object,
+        expected: re.Match[str] | re.Match[bytes],
+    ) -> None:
+        callback_pairs.append(
+            (
+                observed.span(),
+                expected.span(),
+                observed.group(0),
+                expected.group(0),
+            )
+        )
+
+    assert_finditer_parity(
+        backend_name,
+        observed_iter,
+        expected_iter,
+        check_regs=True,
+        match_callback=record_match_pair,
+    )
+
+    assert callback_pairs == [
+        ((1, 4), (1, 4), b"abc", b"abc"),
+        ((4, 7), (4, 7), b"abc", b"abc"),
+    ]
+
+
 def test_finditer_parity_helper_propagates_match_callback_failures() -> None:
     def fail_on_first_match(
         observed: object,
