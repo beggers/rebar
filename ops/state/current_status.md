@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1579 cases across 114 manifests, with all 1579 passing in the current slice; the benchmark publication covers 961/961 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The surviving ready feature follow-on is `RBR-1028`, a benchmark catch-up task for the direct `Pattern.sub()` / `Pattern.subn()` `str` negative-count pair.
+- No ready feature follow-on currently survives in the feature queue.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,8 +22,8 @@ Published correctness covers 1579 cases across 114 manifests, with all 1579 pass
 The published correctness slice now covers 1579 cases across 114 manifests, all passing, and 961 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- The surviving ready feature follow-on is `RBR-1028`, a benchmark catch-up task for the direct `Pattern.sub()` / `Pattern.subn()` `str` negative-count pair.
-- No feature tasks are in progress or blocked, and the done queue now holds `1030` completed task files in this checkout.
+- No ready feature follow-on currently survives in the feature queue.
+- `RBR-1028` was retired as a stale ready task after its exact benchmark target was verified as already landed; no feature tasks are in progress or blocked, and the done queue now holds `1032` completed task files in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.

@@ -1,6 +1,6 @@
 # RBR-1028: Catch up the direct `Pattern.sub()` / `Pattern.subn()` str negative-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,10 @@ Created: 2026-03-23
     - `_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS == ("pattern-sub-no-match-warm-str", "pattern-sub-single-match-warm-str", "pattern-sub-bytes-no-match-purged-bytes", "pattern-sub-bytes-single-match-purged-bytes", "pattern-subn-count-warm-str", "pattern-subn-repeated-warm-str", "pattern-subn-bytes-count-purged-bytes", "pattern-subn-bytes-repeated-purged-bytes")`; and
     - `_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS == ("pattern-sub-str-no-match", "pattern-sub-str-single-match", "pattern-sub-bytes-no-match", "pattern-sub-bytes-single-match", "pattern-subn-str-count", "pattern-subn-str-repeated", "pattern-subn-bytes-count", "pattern-subn-bytes-repeated")`.
 - 2026-03-23T07:25:51+00:00: harness requeued after failed or incomplete run after run `20260323T072141Z-feature-implementation-RBR-1028-catch-up-pattern-replacement-str-negative-count-pair` (exit=1, timed_out=false).
+
+## Completion
+- 2026-03-23 feature-planning retired this ready task as stale after confirming that its exact benchmark target already landed on the tracked owner path: `pattern-sub-negative-count-warm-str` and `pattern-subn-negative-count-warm-str` are already present in `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+- Verification for the already-landed slice is green in the current checkout:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and str-negative-count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1028-stale-queue-check.py`
