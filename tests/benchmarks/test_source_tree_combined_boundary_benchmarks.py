@@ -17143,64 +17143,54 @@ class _CompiledPatternModuleContractAnchorLane:
     expected_anchor_pairs: tuple[tuple[str, str], ...]
 
 
-def _compiled_pattern_module_success_anchor_lane(
-    anchor_spec: _CompiledPatternModuleSuccessAnchorSpec,
-) -> _CompiledPatternModuleContractAnchorLane:
-    return _CompiledPatternModuleContractAnchorLane(
-        case_id=anchor_spec.case_id,
-        contract_filename=anchor_spec.contract_filename,
-        source_workloads=(
-            lambda anchor_spec=anchor_spec: anchor_spec.source_workloads(
-                anchor_spec.owner_spec
-            )
-        ),
-        contract_builder_spec=anchor_spec.owner_spec.contract_builder_spec,
-        expected_anchor_case_ids=anchor_spec.expected_anchor_case_ids,
-        anchor_case_ids=(
-            lambda anchor_spec=anchor_spec: published_case_ids_by_signature(
-                anchor_spec.correctness_case_signature
-            )
-        ),
-        workload_signature=anchor_spec.workload_signature,
-        include_workload=anchor_spec.include_workload,
-        expected_anchor_pairs=anchor_spec.expected_anchored_pairs,
-    )
-
-
-def _compiled_pattern_module_compile_contract_anchor_lane(
-    contract_case: CompiledPatternModuleCompileContractCase,
-) -> _CompiledPatternModuleContractAnchorLane:
-    return _CompiledPatternModuleContractAnchorLane(
-        case_id=contract_case.case_id,
-        contract_filename=contract_case.anchor_contract_filename,
-        source_workloads=contract_case.source_workloads,
-        contract_builder_spec=contract_case.contract_builder_spec,
-        expected_anchor_case_ids=(
-            lambda manifest_path, contract_case=contract_case: (
-                _workload_case_pair_anchor_expectations(
-                    manifest_path,
-                    contract_case.expected_anchor_pairs,
-                )
-            )
-        ),
-        anchor_case_ids=(
-            lambda contract_case=contract_case: published_case_ids_by_signature(
-                contract_case.correctness_case_signature
-            )
-        ),
-        workload_signature=contract_case.workload_signature,
-        include_workload=contract_case.include_workload,
-        expected_anchor_pairs=contract_case.expected_anchor_pairs,
-    )
-
-
 _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
     *(
-        _compiled_pattern_module_success_anchor_lane(anchor_spec)
+        _CompiledPatternModuleContractAnchorLane(
+            case_id=anchor_spec.case_id,
+            contract_filename=anchor_spec.contract_filename,
+            source_workloads=(
+                lambda anchor_spec=anchor_spec: anchor_spec.source_workloads(
+                    anchor_spec.owner_spec
+                )
+            ),
+            contract_builder_spec=anchor_spec.owner_spec.contract_builder_spec,
+            expected_anchor_case_ids=anchor_spec.expected_anchor_case_ids,
+            anchor_case_ids=(
+                lambda anchor_spec=anchor_spec: published_case_ids_by_signature(
+                    anchor_spec.correctness_case_signature
+                )
+            ),
+            workload_signature=anchor_spec.workload_signature,
+            include_workload=anchor_spec.include_workload,
+            expected_anchor_pairs=anchor_spec.expected_anchored_pairs,
+        )
         for anchor_spec in _COMPILED_PATTERN_MODULE_SUCCESS_ANCHOR_SPECS
     ),
     *(
-        _compiled_pattern_module_compile_contract_anchor_lane(contract_case)
+        _CompiledPatternModuleContractAnchorLane(
+            case_id=contract_case.case_id,
+            contract_filename=contract_case.anchor_contract_filename,
+            source_workloads=contract_case.source_workloads,
+            contract_builder_spec=contract_case.contract_builder_spec,
+            expected_anchor_case_ids=(
+                lambda manifest_path, contract_case=contract_case: (
+                    _workload_case_pair_anchor_expectations(
+                        manifest_path,
+                        contract_case.expected_anchor_pairs,
+                    )
+                )
+            ),
+            anchor_case_ids=(
+                lambda contract_case=contract_case: (
+                    published_case_ids_by_signature(
+                        contract_case.correctness_case_signature
+                    )
+                )
+            ),
+            workload_signature=contract_case.workload_signature,
+            include_workload=contract_case.include_workload,
+            expected_anchor_pairs=contract_case.expected_anchor_pairs,
+        )
         for contract_case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
     ),
 )
