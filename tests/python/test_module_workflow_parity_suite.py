@@ -766,18 +766,13 @@ def _pattern_collection_case_from_fixture(case: FixtureCase) -> CollectionPatter
     )
 
 
-def _call_module_collection_helper(
-    regex_api: object,
-    case: CollectionModuleCase,
+def _call_collection_helper(
+    target: object,
+    case: CollectionModuleCase | CollectionPatternCase,
 ) -> object:
-    return getattr(regex_api, case.helper)(case.pattern, case.string, *case.extra_args)
-
-
-def _call_pattern_collection_helper(
-    pattern: object,
-    case: CollectionPatternCase,
-) -> object:
-    return getattr(pattern, case.helper)(case.string, *case.extra_args)
+    if isinstance(case, CollectionModuleCase):
+        return getattr(target, case.helper)(case.pattern, case.string, *case.extra_args)
+    return getattr(target, case.helper)(case.string, *case.extra_args)
 
 
 def _invoke_fixture_collection_helper(
@@ -7771,11 +7766,11 @@ def test_module_split_collection_helpers_match_cpython(
     _, backend = regex_backend
 
     assert_value_parity(
-        _call_module_collection_helper(
+        _call_collection_helper(
             backend,
             case,
         ),
-        _call_module_collection_helper(re, case),
+        _call_collection_helper(re, case),
     )
 
 
@@ -7797,11 +7792,11 @@ def test_pattern_split_collection_helpers_match_cpython(
     )
 
     assert_value_parity(
-        _call_pattern_collection_helper(
+        _call_collection_helper(
             observed_pattern,
             case,
         ),
-        _call_pattern_collection_helper(expected_pattern, case),
+        _call_collection_helper(expected_pattern, case),
     )
 
 
@@ -7817,11 +7812,11 @@ def test_module_findall_collection_helpers_match_cpython(
     _, backend = regex_backend
 
     assert_value_parity(
-        _call_module_collection_helper(
+        _call_collection_helper(
             backend,
             case,
         ),
-        _call_module_collection_helper(re, case),
+        _call_collection_helper(re, case),
     )
 
 
@@ -7843,11 +7838,11 @@ def test_pattern_findall_collection_helpers_match_cpython(
     )
 
     assert_value_parity(
-        _call_pattern_collection_helper(
+        _call_collection_helper(
             observed_pattern,
             case,
         ),
-        _call_pattern_collection_helper(expected_pattern, case),
+        _call_collection_helper(expected_pattern, case),
     )
 
 
@@ -7864,8 +7859,8 @@ def test_module_finditer_collection_helpers_match_cpython(
 
     assert_finditer_parity(
         backend_name,
-        _call_module_collection_helper(backend, case),
-        _call_module_collection_helper(re, case),
+        _call_collection_helper(backend, case),
+        _call_collection_helper(re, case),
         check_regs=True,
     )
 
@@ -7883,8 +7878,8 @@ def test_module_finditer_collection_helpers_preserve_match_identity_like_cpython
 
     _assert_finditer_match_input_identity(
         backend_name,
-        _call_module_collection_helper(backend, case),
-        _call_module_collection_helper(re, case),
+        _call_collection_helper(backend, case),
+        _call_collection_helper(re, case),
         pattern=case.pattern,
         string=case.string,
         check_regs=True,
@@ -7910,8 +7905,8 @@ def test_pattern_finditer_collection_helpers_match_cpython(
 
     assert_finditer_parity(
         backend_name,
-        _call_pattern_collection_helper(observed_pattern, case),
-        _call_pattern_collection_helper(expected_pattern, case),
+        _call_collection_helper(observed_pattern, case),
+        _call_collection_helper(expected_pattern, case),
         check_regs=True,
     )
 
@@ -7935,8 +7930,8 @@ def test_pattern_finditer_collection_helpers_preserve_match_identity_like_cpytho
 
     _assert_finditer_compiled_pattern_identity(
         backend_name,
-        _call_pattern_collection_helper(observed_pattern, case),
-        _call_pattern_collection_helper(expected_pattern, case),
+        _call_collection_helper(observed_pattern, case),
+        _call_collection_helper(expected_pattern, case),
         pattern=case.pattern,
         string=case.string,
         observed_pattern=observed_pattern,
