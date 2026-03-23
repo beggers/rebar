@@ -950,12 +950,6 @@ def _pattern_from_extractor(
     return pattern
 
 
-def _pattern_sort_key(pattern: TextValue) -> tuple[int, TextValue]:
-    if isinstance(pattern, str):
-        return (0, pattern)
-    return (1, pattern)
-
-
 def _sorted_compile_patterns(
     cases: tuple[FixtureCase, ...],
     *,
@@ -964,15 +958,9 @@ def _sorted_compile_patterns(
     return tuple(
         sorted(
             {_pattern_from_extractor(pattern_extractor, case) for case in cases},
-            key=_pattern_sort_key,
+            key=lambda pattern: (0, pattern) if isinstance(pattern, str) else (1, pattern),
         )
     )
-
-
-def _pattern_param_id(pattern: TextValue) -> str:
-    if isinstance(pattern, bytes):
-        return repr(pattern)
-    return pattern
 
 
 def _compiled_case_pattern(case: FixtureCase) -> re.Pattern[str] | re.Pattern[bytes]:
@@ -1546,7 +1534,11 @@ def _bundle_params() -> tuple[object, ...]:
 
 def _compile_pattern_params() -> tuple[object, ...]:
     return tuple(
-        pytest.param(surface, pattern, id=_pattern_param_id(pattern))
+        pytest.param(
+            surface,
+            pattern,
+            id=repr(pattern) if isinstance(pattern, bytes) else pattern,
+        )
         for surface in REPLACEMENT_SURFACES
         for pattern in surface.spec.compile_patterns
     )
