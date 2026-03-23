@@ -9,7 +9,7 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1590 cases across 114 manifests, with all 1590 passing in the current slice; the benchmark publication covers 972/972 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1591 cases across 114 manifests, with all 1591 passing in the current slice; the benchmark publication covers 972/972 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
 - `RBR-1059`: catch up the direct `Pattern.subn()` bytes single-match on the shared collection/replacement benchmark path.
@@ -19,7 +19,7 @@ Published correctness covers 1590 cases across 114 manifests, with all 1590 pass
 - The published benchmark surface is still bounded at 972 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1590 cases across 114 manifests, all passing, and 972 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1591 cases across 114 manifests, all passing, and 972 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
 - `RBR-1059` is the surviving ready follow-on after the current correctness head drains: catch up the direct `Pattern.subn()` bytes single-match on the shared collection/replacement benchmark path.
@@ -314,7 +314,7 @@ The published correctness slice now covers 1590 cases across 114 manifests, all 
 - Tracked state and task queue directories under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1590 cases, with all 1590 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1591 cases, with all 1591 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree-shim path while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 972 workloads across 30 manifests with 972 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
@@ -333,7 +333,7 @@ The published correctness slice now covers 1590 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-1057`: publish the direct `Pattern.subn()` bytes single-match on the shared collection/replacement correctness path.
+- `RBR-1059`: catch up the direct `Pattern.subn()` bytes single-match on the shared collection/replacement benchmark path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
