@@ -3720,12 +3720,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_module_literal_replacement_workload,
         )
-        self.assertEqual(workload_count, 112)
+        self.assertEqual(workload_count, 114)
         self.assertEqual(
             expected_measured_workload_ids,
             _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 2)
+        self.assertEqual(len(expected_measured_workload_ids), 4)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5407,11 +5407,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 951,
-                "module_workloads": 943,
+                "measured_workloads": 953,
+                "module_workloads": 945,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 951,
+                "total_workloads": 953,
             },
         )
 
@@ -8055,11 +8055,15 @@ _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
 )
 
 _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
+    "module-sub-str-no-match-purged-str",
+    "module-sub-str-single-match-purged-str",
     "module-sub-bytes-no-match-purged-bytes",
     "module-subn-bytes-repeated-purged-bytes",
 )
 
 _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
+    "module-sub-str-no-match",
+    "module-sub-str-single-match",
     "module-sub-bytes-no-match",
     "module-subn-bytes-repeated",
 )
@@ -8409,7 +8413,7 @@ def _is_collection_replacement_module_literal_replacement_workload(
         workload,
         workload_ids=_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
         operations=("module.sub", "module.subn"),
-        text_models=("bytes",),
+        text_models=("str", "bytes"),
         allowed_counts=(0,),
     )
 
@@ -9550,6 +9554,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         expected_anchor_case_ids=_definition_anchor_expectations(
             COLLECTION_REPLACEMENT_MANIFEST_PATH,
             {
+                "module-sub-str-no-match-purged-str": (
+                    "module-sub-str-no-match",
+                ),
+                "module-sub-str-single-match-purged-str": (
+                    "module-sub-str-single-match",
+                ),
                 "module-sub-bytes-no-match-purged-bytes": (
                     "module-sub-bytes-no-match",
                 ),
