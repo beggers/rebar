@@ -297,16 +297,6 @@ INVALID_EXPAND_TEMPLATE_CASES = (
 
 
 @dataclass(frozen=True)
-class ReplacementParityCase:
-    fixture_case: FixtureCase
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
-
-    def __getattr__(self, attribute: str) -> object:
-        return getattr(self.fixture_case, attribute)
-
-
-@dataclass(frozen=True)
 class ReplacementSurfaceSpec:
     id: str
     pattern_extractor: Callable[[FixtureCase], TextValue]
@@ -1159,10 +1149,6 @@ def _run_replacement_case(
     raise ValueError(f"unsupported replacement parity operation {case.operation!r}")
 
 
-def _replacement_parity_case(case: FixtureCase) -> ReplacementParityCase:
-    return ReplacementParityCase(fixture_case=case)
-
-
 def _search_match_for_case(
     surface: LoadedReplacementSurface,
     backend_name: str,
@@ -1404,16 +1390,14 @@ def _replacement_case_params(
     case_selector: Callable[[LoadedReplacementSurface], tuple[FixtureCase, ...]],
     *,
     include_surface: bool = False,
-    case_transform: Callable[[FixtureCase], object] | None = None,
 ) -> tuple[object, ...]:
     params: list[object] = []
     for surface in REPLACEMENT_SURFACES:
         for case in case_selector(surface):
-            param_case = case if case_transform is None else case_transform(case)
             if include_surface:
-                params.append(pytest.param(surface, param_case, id=case.case_id))
+                params.append(pytest.param(surface, case, id=case.case_id))
             else:
-                params.append(pytest.param(param_case, id=case.case_id))
+                params.append(pytest.param(case, id=case.case_id))
     return tuple(params)
 
 
@@ -1986,10 +1970,7 @@ def test_compile_metadata_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _replacement_case_params(
-        lambda surface: surface.module_cases,
-        case_transform=_replacement_parity_case,
-    ),
+    _replacement_case_params(lambda surface: surface.module_cases),
 )
 def test_module_replacement_matches_cpython(
     regex_backend: tuple[str, object],
@@ -2006,10 +1987,7 @@ def test_module_replacement_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _replacement_case_params(
-        lambda surface: surface.pattern_cases,
-        case_transform=_replacement_parity_case,
-    ),
+    _replacement_case_params(lambda surface: surface.pattern_cases),
 )
 def test_pattern_replacement_matches_cpython(
     regex_backend: tuple[str, object],
