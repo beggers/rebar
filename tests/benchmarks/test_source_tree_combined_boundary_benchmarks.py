@@ -8284,108 +8284,133 @@ def _pattern_collection_replacement_split_workload_signature(
     )
 
 
-def _pattern_collection_replacement_literal_replacement_correctness_case_signature(
+def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
+    *,
+    case_ids: tuple[str, ...],
+    expected_operation: str,
+    operation_prefix: str,
+    args_offset: int,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS:
+    if case.case_id not in case_ids:
         return None
-    if case.operation != "pattern_call" or case.kwargs:
+    if case.operation != expected_operation or case.kwargs:
         return None
     if case.helper not in {"sub", "subn"}:
         return None
     return (
-        f"pattern.{case.helper}",
+        f"{operation_prefix}.{case.helper}",
         case_pattern(case),
-        freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args[args_offset:])),
         (),
         case.flags or 0,
         case.text_model or "str",
+    )
+
+
+def _pattern_collection_replacement_literal_replacement_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _collection_replacement_literal_replacement_correctness_case_signature(
+        case,
+        case_ids=_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS,
+        expected_operation="pattern_call",
+        operation_prefix="pattern",
+        args_offset=0,
     )
 
 
 def _module_collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS:
-        return None
-    if case.operation != "module_call" or case.kwargs:
-        return None
-    if case.helper not in {"sub", "subn"}:
-        return None
+    return _collection_replacement_literal_replacement_correctness_case_signature(
+        case,
+        case_ids=_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS,
+        expected_operation="module_call",
+        operation_prefix="module",
+        args_offset=1,
+    )
+
+
+def _collection_replacement_literal_replacement_workload_signature(
+    workload: Any,
+    *,
+    include_workload: Callable[[Any], bool],
+    workload_kind: str,
+) -> tuple[Any, ...]:
+    if not include_workload(workload):
+        raise AssertionError(
+            "unexpected collection/replacement "
+            f"{workload_kind} literal replacement workload {workload.workload_id!r}"
+        )
+    args = [
+        workload.replacement_payload(),
+        workload.haystack_payload(),
+    ]
+    if workload.count:
+        args.append(workload.count_argument())
     return (
-        f"module.{case.helper}",
-        case_pattern(case),
-        freeze_signature_value(list(case.args[1:])),
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value(args),
         (),
-        case.flags or 0,
-        case.text_model or "str",
+        workload.flags,
+        workload.text_model,
     )
 
 
 def _module_collection_replacement_literal_replacement_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_collection_replacement_module_literal_replacement_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement module literal replacement workload "
-            f"{workload.workload_id!r}"
-        )
-    args = [
-        workload.replacement_payload(),
-        workload.haystack_payload(),
-    ]
-    if workload.count:
-        args.append(workload.count_argument())
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(args),
-        (),
-        workload.flags,
-        workload.text_model,
+    return _collection_replacement_literal_replacement_workload_signature(
+        workload,
+        include_workload=_is_collection_replacement_module_literal_replacement_workload,
+        workload_kind="module",
     )
 
 
 def _pattern_collection_replacement_literal_replacement_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_collection_replacement_pattern_literal_replacement_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement direct Pattern replacement workload "
-            f"{workload.workload_id!r}"
-        )
-    args = [
-        workload.replacement_payload(),
-        workload.haystack_payload(),
-    ]
-    if workload.count:
-        args.append(workload.count_argument())
+    return _collection_replacement_literal_replacement_workload_signature(
+        workload,
+        include_workload=_is_collection_replacement_pattern_literal_replacement_workload,
+        workload_kind="direct Pattern",
+    )
+
+
+def _is_collection_replacement_literal_replacement_workload(
+    workload: Any,
+    *,
+    workload_ids: tuple[str, ...],
+    operations: tuple[str, ...],
+    text_models: tuple[str, ...],
+    allowed_counts: tuple[int, ...] | None = None,
+) -> bool:
     return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(args),
-        (),
-        workload.flags,
-        workload.text_model,
+        workload.workload_id in workload_ids
+        and workload.operation in operations
+        and workload.pattern == "abc"
+        and workload.replacement == "x"
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+        and workload.text_model in text_models
+        and (allowed_counts is None or workload.count in allowed_counts)
+        and workload.pos is None
+        and workload.endpos is None
+        and not workload.kwargs
     )
 
 
 def _is_collection_replacement_module_literal_replacement_workload(
     workload: Any,
 ) -> bool:
-    return (
-        workload.workload_id
-        in _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS
-        and workload.operation in {"module.sub", "module.subn"}
-        and workload.pattern == "abc"
-        and workload.replacement == "x"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model == "bytes"
-        and workload.count == 0
-        and workload.pos is None
-        and workload.endpos is None
-        and not workload.kwargs
+    return _is_collection_replacement_literal_replacement_workload(
+        workload,
+        workload_ids=_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+        operations=("module.sub", "module.subn"),
+        text_models=("bytes",),
+        allowed_counts=(0,),
     )
 
 
@@ -8425,18 +8450,11 @@ def _is_collection_replacement_pattern_split_workload(
 def _is_collection_replacement_pattern_literal_replacement_workload(
     workload: Any,
 ) -> bool:
-    return (
-        workload.workload_id
-        in _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS
-        and workload.operation in {"pattern.sub", "pattern.subn"}
-        and workload.pattern == "abc"
-        and workload.replacement == "x"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in {"str", "bytes"}
-        and workload.pos is None
-        and workload.endpos is None
-        and not workload.kwargs
+    return _is_collection_replacement_literal_replacement_workload(
+        workload,
+        workload_ids=_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+        operations=("pattern.sub", "pattern.subn"),
+        text_models=("str", "bytes"),
     )
 
 
