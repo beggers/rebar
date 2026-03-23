@@ -10,14 +10,15 @@ Primary responsibilities:
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Start from the most recent same-cycle done-task files, recent commits, or a narrowly targeted `rg` result when picking a candidate. Do not begin with broad repo-wide sweeps or whole-file reads of large state files just to hunt for a target.
-3. Inspect only the files tied to your chosen candidate plus their direct repo-local callers before deleting or consolidating anything.
-4. Pick exactly one concrete cleanup target for the run. If two bounded candidate probes do not yield a safe target, exit without changes instead of widening the search.
-5. First choice: delete one redundant helper/plumbing layer, obsolete generated artifact, or duplicate coverage file only after a repo-wide caller search shows the symbol is unused or every remaining caller will be updated in the same cleanup.
-6. Second choice: remove another non-standard data-storage or intermediate-representation layer that is already redundant after earlier landed cleanup work.
-7. If no redundant layer, duplication target, or materially simplifying code-quality cleanup remains, exit without changes instead of inventing a cosmetic edit.
-8. Run the most relevant tests for the areas you touched, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
-9. If your cleanup changes affect default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
-10. Before claiming that a tracked artifact was deleted, verify the final state after your last regeneration or test command. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem must no longer contain the path.
+3. Prefer cleanup targets that stay local and readable. If a candidate lives in a very large file or would require wide diff/context reads to understand safely, skip it and probe a smaller target or no-op.
+4. Inspect only the files tied to your chosen candidate plus their direct repo-local callers before deleting or consolidating anything.
+5. Pick exactly one concrete cleanup target for the run. If two bounded candidate probes do not yield a safe target, exit without changes instead of widening the search.
+6. First choice: delete one redundant helper/plumbing layer, obsolete generated artifact, or duplicate coverage file only after a repo-wide caller search shows the symbol is unused or every remaining caller will be updated in the same cleanup.
+7. Second choice: remove another non-standard data-storage or intermediate-representation layer that is already redundant after earlier landed cleanup work.
+8. If no redundant layer, duplication target, or materially simplifying code-quality cleanup remains, exit without changes instead of inventing a cosmetic edit.
+9. Run the most relevant tests for the areas you touched, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
+10. If your cleanup changes affect default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
+11. Before claiming that a tracked artifact was deleted, verify the final state after your last regeneration or test command. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem must no longer contain the path.
 
 Constraints:
 - Do not add new features.
@@ -28,6 +29,7 @@ Constraints:
 - Do not spend the run deleting one-line placeholders or making similarly cosmetic tracked-file edits unless that change is part of a larger structural cleanup.
 - Ignored caches, build outputs, and other ephemeral untracked files are not valid cleanup targets by themselves; if those are the only waste you find, exit without changes.
 - Do not dump or enumerate large symbol inventories from broad files when a narrow `rg`, direct caller search, or recent-diff inspection would answer the same question.
+- Do not choose a cleanup that needs a large-file rewrite, a broad multi-screen diff, or a wide verification matrix just to remove one helper; prefer smaller local deletions and no-op over another sprawling consolidation pass.
 - Treat "plain Python + Rust only" as the target shape for the repository, and prefer deleting intermediate data layers over preserving them for convenience.
 - Keep the repo in the same overall state: implemented features stay implemented, existing failing tests stay failing unless a cleanup change incidentally fixes a real bug, and passing tests must remain passing.
 - Prefer deleting code over moving it unless movement is necessary to remove duplication cleanly.
