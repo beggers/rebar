@@ -14477,10 +14477,10 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         "python_benchmark_pattern_collection_replacement_keyword_contract.py",
         manifest_source,
     )
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(manifest_path).workloads
-    }
+    workloads_by_id = records_by_string_id(
+        load_manifest(manifest_path).workloads,
+        id_attr="workload_id",
+    )
     split_workload = workloads_by_id["pattern-split-maxsplit-keyword-contract-str"]
     split_bool_workload = workloads_by_id[
         "pattern-split-maxsplit-bool-keyword-contract-str"
