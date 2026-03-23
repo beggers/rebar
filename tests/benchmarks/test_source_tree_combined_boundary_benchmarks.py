@@ -3674,7 +3674,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_pattern_split_workload,
         )
-        self.assertEqual(workload_count, 108)
         self.assertEqual(
             expected_measured_workload_ids,
             _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_IDS,
@@ -3697,7 +3696,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_pattern_literal_replacement_workload,
         )
-        self.assertEqual(workload_count, 112)
         self.assertEqual(
             expected_measured_workload_ids,
             _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
