@@ -306,6 +306,28 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-str-count",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "args": ["abc", "x", "abcabc", 1],
+      "categories": ["workflow", "subn", "literal", "str", "count"],
+      "notes": [
+        "Publishes the raw str module subn helper outcome for a bounded replacement count."
+      ]
+    },
+    {
+      "id": "module-subn-str-repeated",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "args": ["abc", "x", "abcabc"],
+      "categories": ["workflow", "subn", "literal", "str", "repeated"],
+      "notes": [
+        "Publishes the raw str module subn helper outcome for repeated literal matches."
+      ]
+    },
+    {
       "id": "module-sub-bytes-no-match",
       "operation": "module_call",
       "family": "replacement_workflow",

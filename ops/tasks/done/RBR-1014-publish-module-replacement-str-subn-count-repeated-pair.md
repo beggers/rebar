@@ -1,6 +1,6 @@
 # RBR-1014: Publish the raw `re.subn()` str count/repeated pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,14 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (str-repeated-match or str-count-one)'` currently passes (`2 passed`), so the exact raw-module `str` `subn()` count/repeated parity slice is already green in this checkout;
   - direct runtime probes confirm `rebar.subn("abc", "x", "abcabc", 1) == re.subn("abc", "x", "abcabc", 1)` and `rebar.subn("abc", "x", "abcabc") == re.subn("abc", "x", "abcabc")` on the live branch; and
   - `rg -n 'module-subn-str-count|module-subn-str-repeated|module-subn-str-count-purged-str|module-subn-str-repeated-purged-str' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/correctness/latest.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact correctness and benchmark ids are still absent from the tracked owner-path surfaces.
+
+## Completion
+- Added `module-subn-str-count` and `module-subn-str-repeated` to `tests/conformance/fixtures/collection_replacement_workflows.py` immediately after `module-sub-str-repeated`, keeping the raw-module literal replacement block ordered on the existing shared manifest path.
+- Extended `tests/python/test_fixture_backed_replacement_parity_suite.py` so the existing shared module literal replacement publication contract now selects and validates the eight-row ordered owner slice `module-sub-str-no-match`, `module-sub-str-single-match`, `module-sub-str-repeated`, `module-subn-str-count`, `module-subn-str-repeated`, `module-sub-bytes-no-match`, `module-subn-bytes-count`, and `module-subn-bytes-repeated`.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the combined scorecard manifest expectations include the two new published raw-module `str` `subn()` case ids on the existing `collection-replacement-workflows` route.
+- Republished `reports/correctness/latest.py`. The tracked report now shows `1575` total / `1575` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `38` / `38`, `collection.replacement.workflow.str` at `25` / `25`, `collection.replacement.workflow.bytes` unchanged at `13` / `13`, `collection.replacement.workflow.module_call` at `18` / `18`, and `collection.replacement.workflow.pattern_call` unchanged at `20` / `20`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (str-repeated-match or str-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1014-module-replacement-str-subn-count-repeated-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
