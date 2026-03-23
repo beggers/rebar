@@ -2593,6 +2593,60 @@ def test_nested_group_callable_bytes_pattern_matches_cpython(
 
 
 @pytest.mark.parametrize(
+    ("helper", "count", "group", "expected"),
+    (
+        pytest.param("sub", 0, 1, b"zz<bcbc>zz", id="sub-group-1"),
+        pytest.param("subn", 1, 2, (b"zz<bc>abcbcdzz", 1), id="subn-count-one-group-2"),
+    ),
+)
+def test_quantified_nested_group_callable_bytes_module_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+    group: int,
+    expected: bytes | tuple[bytes, int],
+) -> None:
+    _, backend = regex_backend
+    pattern = rb"a((bc)+)d"
+    string = b"zzabcbcdabcbcdzz" if helper == "subn" else b"zzabcbcdzz"
+    replacement = _nested_group_bytes_replacement(group)
+
+    observed = getattr(backend, helper)(pattern, replacement, string, count=count)
+    expected_result = getattr(re, helper)(pattern, replacement, string, count=count)
+
+    assert observed == expected_result
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
+    ("helper", "count", "group", "expected"),
+    (
+        pytest.param("sub", 0, "outer", b"zz<bcbc>zz", id="sub-outer"),
+        pytest.param("subn", 1, "inner", (b"zz<bc>abcbcdzz", 1), id="subn-count-one-inner"),
+    ),
+)
+def test_quantified_nested_group_callable_bytes_pattern_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+    group: str,
+    expected: bytes | tuple[bytes, int],
+) -> None:
+    _, backend = regex_backend
+    pattern = rb"a(?P<outer>(?P<inner>bc)+)d"
+    string = b"zzabcbcdabcbcdzz" if helper == "subn" else b"zzabcbcdzz"
+    replacement = _nested_group_bytes_replacement(group)
+
+    observed_target = backend.compile(pattern)
+    expected_target = re.compile(pattern)
+    observed = getattr(observed_target, helper)(replacement, string, count=count)
+    expected_result = getattr(expected_target, helper)(replacement, string, count=count)
+
+    assert observed == expected_result
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
     ("helper", "count", "pattern", "string"),
     (
         pytest.param("sub", 0, "(abc)", "abcabc", id="str-sub"),

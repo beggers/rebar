@@ -47,7 +47,10 @@ const BYTES_GROUPED_LITERAL_PATTERN: &[u8] = br"(abc)";
 const BYTES_NAMED_GROUP_LITERAL_PATTERN: &[u8] = br"(?P<word>abc)";
 const BYTES_NESTED_GROUP_LITERAL_PATTERN: &[u8] = br"a((b))d";
 const BYTES_NAMED_NESTED_GROUP_LITERAL_PATTERN: &[u8] = br"a(?P<outer>(?P<inner>b))d";
+const BYTES_QUANTIFIED_NESTED_GROUP_LITERAL_PATTERN: &[u8] = br"a((bc)+)d";
+const BYTES_NAMED_QUANTIFIED_NESTED_GROUP_LITERAL_PATTERN: &[u8] = br"a(?P<outer>(?P<inner>bc)+)d";
 const BYTES_NESTED_GROUP_LITERAL: &[u8] = b"abd";
+const BYTES_QUANTIFIED_NESTED_GROUP_INNER_LITERAL: &[u8] = b"bc";
 const BYTES_NESTED_GROUP_OUTER_NAME: &str = "outer";
 const BYTES_NESTED_GROUP_INNER_NAME: &str = "inner";
 const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
@@ -743,6 +746,12 @@ struct QuantifiedNestedCaptureLiteralPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct QuantifiedNestedCaptureBytesPattern {
+    outer_name: Option<&'static str>,
+    inner_name: Option<&'static str>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct QuantifiedNestedGroupAlternationPattern<'a> {
     prefix: &'a str,
     outer_name: Option<&'a str>,
@@ -1313,6 +1322,40 @@ impl<'a> QuantifiedNestedCaptureLiteralPattern<'a> {
     fn group_spans(&self, match_start: usize, repeat_count: usize) -> Vec<Option<(usize, usize)>> {
         let outer_start = match_start + self.prefix.chars().count();
         let inner_len = self.inner_capture.body.chars().count();
+        let outer_end = outer_start + inner_len * repeat_count;
+        let inner_start = outer_end - inner_len;
+        vec![
+            Some((outer_start, outer_end)),
+            Some((inner_start, outer_end)),
+        ]
+    }
+}
+
+impl QuantifiedNestedCaptureBytesPattern {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        let mut groups = Vec::new();
+        if let Some(name) = self.outer_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 1,
+            });
+        }
+        if let Some(name) = self.inner_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 2,
+            });
+        }
+        groups
+    }
+
+    fn group_spans(&self, match_start: usize, repeat_count: usize) -> Vec<Option<(usize, usize)>> {
+        let outer_start = match_start + 1;
+        let inner_len = BYTES_QUANTIFIED_NESTED_GROUP_INNER_LITERAL.len();
         let outer_end = outer_start + inner_len * repeat_count;
         let inner_start = outer_end - inner_len;
         vec![
@@ -2936,6 +2979,21 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Bytes(pattern)
+            if parse_quantified_nested_capture_literal_pattern_bytes(pattern).is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern = parse_quantified_nested_capture_literal_pattern_bytes(pattern)
+                .expect("guarded quantified nested capture bytes literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
             if pattern == BYTES_GROUPED_LITERAL_PATTERN && normalized_flags == 0 =>
         {
             Some(CompileOutcome {
@@ -4460,6 +4518,26 @@ fn parse_nested_capture_literal_pattern_bytes(pattern: &[u8]) -> Option<NestedCa
             outer_name: Some(BYTES_NESTED_GROUP_OUTER_NAME),
             inner_name: Some(BYTES_NESTED_GROUP_INNER_NAME),
         }),
+        _ => None,
+    }
+}
+
+fn parse_quantified_nested_capture_literal_pattern_bytes(
+    pattern: &[u8],
+) -> Option<QuantifiedNestedCaptureBytesPattern> {
+    match pattern {
+        BYTES_QUANTIFIED_NESTED_GROUP_LITERAL_PATTERN => {
+            Some(QuantifiedNestedCaptureBytesPattern {
+                outer_name: None,
+                inner_name: None,
+            })
+        }
+        BYTES_NAMED_QUANTIFIED_NESTED_GROUP_LITERAL_PATTERN => {
+            Some(QuantifiedNestedCaptureBytesPattern {
+                outer_name: Some(BYTES_NESTED_GROUP_OUTER_NAME),
+                inner_name: Some(BYTES_NESTED_GROUP_INNER_NAME),
+            })
+        }
         _ => None,
     }
 }
@@ -10699,6 +10777,46 @@ fn find_quantified_nested_capture_match_span_str(
     None
 }
 
+fn find_quantified_nested_capture_match_span_bytes(
+    pattern: &QuantifiedNestedCaptureBytesPattern,
+    flags: i32,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    let inner_len = BYTES_QUANTIFIED_NESTED_GROUP_INNER_LITERAL.len();
+    for start in pos..=endpos {
+        if !literal_matches_at_bytes(b"a", flags, string, start, endpos) {
+            continue;
+        }
+
+        let outer_start = start + 1;
+        let mut repeat_count = 0;
+        let mut next_inner_start = outer_start;
+        while literal_matches_at_bytes(
+            BYTES_QUANTIFIED_NESTED_GROUP_INNER_LITERAL,
+            flags,
+            string,
+            next_inner_start,
+            endpos,
+        ) {
+            repeat_count += 1;
+            next_inner_start += inner_len;
+        }
+
+        while repeat_count > 0 {
+            let outer_end = outer_start + inner_len * repeat_count;
+            if literal_matches_at_bytes(b"d", flags, string, outer_end, endpos) {
+                let match_end = outer_end + 1;
+                return Some(((start, match_end), pattern.group_spans(start, repeat_count)));
+            }
+            repeat_count -= 1;
+        }
+    }
+
+    None
+}
+
 /// Discover repeated spans for the bounded quantified nested-group
 /// replacement slice while preserving capture spans for template expansion.
 #[must_use]
@@ -10740,6 +10858,60 @@ pub fn quantified_nested_capture_find_spans_str(
         suffix_chars.as_slice(),
         flags,
         &string_chars,
+        next_start,
+        normalized_endpos,
+    ) {
+        matches.push(CapturedMatchSpan { span, group_spans });
+        next_start = span.1;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
+/// Discover repeated spans for the exact quantified nested-group callable
+/// replacement bytes slice while preserving both capture spans on each match.
+#[must_use]
+pub fn quantified_nested_capture_find_spans_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    let Some(grouped_pattern) = parse_quantified_nested_capture_literal_pattern_bytes(pattern)
+    else {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != 0 {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((span, group_spans)) = find_quantified_nested_capture_match_span_bytes(
+        &grouped_pattern,
+        flags,
+        string,
         next_start,
         normalized_endpos,
     ) {

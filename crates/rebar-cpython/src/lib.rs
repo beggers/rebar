@@ -36,6 +36,7 @@ use rebar_core::{
     nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_find_spans_bytes as core_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_find_spans_bytes,
     nested_capture_find_spans_bytes as core_nested_capture_find_spans_bytes,
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
+    quantified_nested_capture_find_spans_bytes as core_quantified_nested_capture_find_spans_bytes,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
     quantified_nested_group_alternation_branch_local_backreference_find_spans_str as core_quantified_nested_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_group_alternation_find_spans_str as core_quantified_nested_group_alternation_find_spans_str,
@@ -558,7 +559,15 @@ fn boundary_nested_capture_finditer_bytes(
     Vec<(usize, usize)>,
     Vec<Vec<Option<(usize, usize)>>>,
 ) {
-    let outcome = core_nested_capture_find_spans_bytes(pattern, flags, string, pos, endpos);
+    let outcome = {
+        let nested_capture_outcome =
+            core_nested_capture_find_spans_bytes(pattern, flags, string, pos, endpos);
+        if nested_capture_outcome.status != MatchStatus::Unsupported {
+            nested_capture_outcome
+        } else {
+            core_quantified_nested_capture_find_spans_bytes(pattern, flags, string, pos, endpos)
+        }
+    };
     (
         workflow_status(outcome.status),
         outcome.pos,

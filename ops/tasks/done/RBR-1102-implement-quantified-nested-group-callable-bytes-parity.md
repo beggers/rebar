@@ -1,6 +1,6 @@
 # RBR-1102: Implement quantified nested-group callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,6 @@ Created: 2026-03-23
   - `tests/conformance/fixtures/quantified_nested_group_callable_replacement_workflows.py` and `reports/correctness/latest.py` still publish only the `str` rows for `quantified-nested-group-callable-replacement-workflows`, with no adjacent bytes ids on that existing correctness owner path;
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` and `reports/benchmarks/latest.py` likewise contain no adjacent quantified nested-group bytes workload ids on that same benchmark owner path; and
   - exact `.venv` public-path probes in this run showed `rebar.sub(rb"a((bc)+)d", lambda m: b"<" + m.group(1) + b">", b"zzabcbcdzz")` and `rebar.compile(rb"a(?P<outer>(?P<inner>bc)+)d").subn(lambda m: b"<" + m.group("inner") + b">", b"zzabcbcdabcbcdzz", 1)` still raise scaffold `NotImplementedError`, while the corresponding stdlib `re` calls return `b"zz<bcbc>zz"` and `(b"zz<bc>abcbcdzz", 1)`.
+
+## Completion Note
+- Landed bounded Rust-backed bytes callable parity for `rb"a((bc)+)d"` and `rb"a(?P<outer>(?P<inner>bc)+)d"` on the existing nested-capture owner path, added direct parity coverage in `tests/python/test_callable_replacement_parity_suite.py`, and verified the task’s four narrow pytest gates all pass without changing correctness publications, benchmark reports, README text, or tracked ops state prose.
