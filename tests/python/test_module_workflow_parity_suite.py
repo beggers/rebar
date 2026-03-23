@@ -2504,14 +2504,6 @@ PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
 )
 
 
-def _published_owner_path_fixture_cases(
-    fixture_cases: tuple[FixtureCase, ...],
-    rows: tuple[_OwnerPathRow[object], ...],
-) -> tuple[FixtureCase, ...]:
-    fixture_cases_by_id = {case.case_id: case for case in fixture_cases}
-    return tuple(fixture_cases_by_id[row.fixture_case_id] for row in rows)
-
-
 def _assert_owner_path_publication_contract(
     fixture_cases: tuple[FixtureCase, ...],
     rows: tuple[_OwnerPathRow[_DirectCaseT], ...],
@@ -2521,7 +2513,10 @@ def _assert_owner_path_publication_contract(
     expected_text_model_counts: Counter[str] | None = None,
     direct_case_helper: Callable[[_DirectCaseT], str] | None = None,
 ) -> tuple[tuple[FixtureCase, ...], tuple[_DirectCaseT, ...]]:
-    published_fixture_cases = _published_owner_path_fixture_cases(fixture_cases, rows)
+    fixture_cases_by_id = {case.case_id: case for case in fixture_cases}
+    published_fixture_cases = tuple(
+        fixture_cases_by_id[row.fixture_case_id] for row in rows
+    )
     selected_direct_cases = tuple(row.direct_case for row in rows)
 
     assert tuple(
@@ -4233,38 +4228,24 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             "cache": frozenset(case.case_id for case in CACHE_CASES),
             "purge": frozenset(case.case_id for case in PURGE_CASES),
             "bounded-wildcard-module-helper": frozenset(
-                case.case_id
-                for case in _published_owner_path_fixture_cases(
-                    RAW_MODULE_CALL_CASES,
-                    BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS,
+                _owner_path_fixture_case_ids(
+                    BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS
                 )
             ),
             "module-keyword-helper": frozenset(
-                case.case_id
-                for case in _published_owner_path_fixture_cases(
-                    RAW_MODULE_CALL_CASES,
-                    MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-                )
+                _owner_path_fixture_case_ids(MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS)
             ),
             "module-positional-indexlike-helper": frozenset(
-                case.case_id
-                for case in _published_owner_path_fixture_cases(
-                    RAW_MODULE_CALL_CASES,
-                    MODULE_POSITIONAL_INDEXLIKE_PUBLICATION_OWNER_PATH_ROWS,
+                _owner_path_fixture_case_ids(
+                    MODULE_POSITIONAL_INDEXLIKE_PUBLICATION_OWNER_PATH_ROWS
                 )
             ),
             "module-keyword-error": frozenset(
-                case.case_id
-                for case in _published_owner_path_fixture_cases(
-                    RAW_MODULE_CALL_CASES,
-                    MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
-                )
+                _owner_path_fixture_case_ids(MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS)
             ),
             "compiled-module-helper": frozenset(
-                case.case_id
-                for case in _published_owner_path_fixture_cases(
-                    MODULE_CALL_CASES,
-                    COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+                _owner_path_fixture_case_ids(
+                    COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
                 )
             ),
             "escape": frozenset(case.case_id for case in ESCAPE_CASES),
