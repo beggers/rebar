@@ -17559,10 +17559,10 @@ class WrongTextModelOwnerSpec:
     timing_scope: str
     excluded_fields: frozenset[str]
     note_surface: str | None
-    expected_callback_result: Callable[[Workload], object]
-    expected_callback_call: Callable[[Workload], tuple[object, ...]]
+    callback_result_handler: Callable[[Workload], object] | None
+    callback_call_handler: Callable[[Workload], tuple[object, ...]] | None
     expected_build_calls: Callable[[Workload], list[tuple[object, ...]]]
-    run_cpython_workload: Callable[[Workload], object]
+    cpython_workload_runner: Callable[[Workload], object] | None
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
         notes: tuple[str, ...] = ()
@@ -17590,6 +17590,131 @@ class WrongTextModelOwnerSpec:
             ),
         )
 
+    def expected_callback_result(self, source_workload: Workload) -> object:
+        if self.use_compiled_pattern:
+            if source_workload.operation == "module.subn":
+                return ("module-result", 0)
+            if source_workload.operation == "module.finditer":
+                return ["module-finditer-result"]
+            return "module-result"
+
+        if self.callback_result_handler is None:
+            raise AssertionError(
+                "missing wrong-text-model callback-result handler for "
+                f"{self.case_id!r}"
+            )
+        return self.callback_result_handler(source_workload)
+
+    def expected_callback_call(
+        self,
+        source_workload: Workload,
+    ) -> tuple[object, ...]:
+        if self.use_compiled_pattern:
+            if source_workload.operation in {
+                "module.search",
+                "module.match",
+                "module.fullmatch",
+            }:
+                return (
+                    source_workload.operation,
+                    source_workload.haystack_payload(),
+                    0,
+                    {},
+                )
+            if source_workload.operation == "module.split":
+                return (
+                    source_workload.operation,
+                    source_workload.haystack_payload(),
+                    source_workload.maxsplit_argument(),
+                    0,
+                    {},
+                )
+            if source_workload.operation in {"module.findall", "module.finditer"}:
+                return (
+                    source_workload.operation,
+                    source_workload.haystack_payload(),
+                    0,
+                )
+            if source_workload.operation in {"module.sub", "module.subn"}:
+                return (
+                    source_workload.operation,
+                    source_workload.replacement_payload(),
+                    source_workload.haystack_payload(),
+                    source_workload.count_argument(),
+                    0,
+                    {},
+                )
+            raise AssertionError(
+                "unexpected compiled-pattern module helper wrong-text-model "
+                f"workload operation {source_workload.operation!r}"
+            )
+
+        if self.callback_call_handler is None:
+            raise AssertionError(
+                "missing wrong-text-model callback-call handler for "
+                f"{self.case_id!r}"
+            )
+        return self.callback_call_handler(source_workload)
+
+    def run_cpython_workload(self, workload: Workload) -> object:
+        if self.use_compiled_pattern:
+            compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+            helper_name = workload.operation.removeprefix("module.")
+
+            if workload.operation in {
+                "module.search",
+                "module.match",
+                "module.fullmatch",
+            }:
+                return getattr(re, helper_name)(
+                    compiled_pattern,
+                    workload.haystack_payload(),
+                    workload.flags,
+                )
+
+            if workload.operation == "module.split":
+                return getattr(re, helper_name)(
+                    compiled_pattern,
+                    workload.haystack_payload(),
+                    workload.maxsplit_argument(),
+                )
+
+            if workload.operation == "module.findall":
+                return getattr(re, helper_name)(
+                    compiled_pattern,
+                    workload.haystack_payload(),
+                    workload.flags,
+                )
+
+            if workload.operation == "module.finditer":
+                return list(
+                    getattr(re, helper_name)(
+                        compiled_pattern,
+                        workload.haystack_payload(),
+                        workload.flags,
+                    )
+                )
+
+            if workload.operation in {"module.sub", "module.subn"}:
+                return getattr(re, helper_name)(
+                    compiled_pattern,
+                    workload.replacement_payload(),
+                    workload.haystack_payload(),
+                    workload.count_argument(),
+                )
+
+            raise AssertionError(
+                "unexpected compiled-pattern module helper wrong-text-model "
+                f"workload operation {workload.operation!r}"
+            )
+
+        if self.cpython_workload_runner is None:
+            raise AssertionError(
+                "missing wrong-text-model CPython workload runner for "
+                f"{self.case_id!r}"
+            )
+        return self.cpython_workload_runner(workload)
+
 
 _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
     {
@@ -17601,110 +17726,6 @@ _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
         "smoke",
     }
 )
-
-
-def _compiled_pattern_wrong_text_model_expected_callback_result(
-    source_workload: Workload,
-) -> object:
-    if source_workload.operation == "module.subn":
-        return ("module-result", 0)
-    if source_workload.operation == "module.finditer":
-        return ["module-finditer-result"]
-    return "module-result"
-
-
-def _compiled_pattern_wrong_text_model_expected_callback_call(
-    source_workload: Workload,
-) -> tuple[object, ...]:
-    if source_workload.operation in {
-        "module.search",
-        "module.match",
-        "module.fullmatch",
-    }:
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            0,
-            {},
-        )
-    if source_workload.operation == "module.split":
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            source_workload.maxsplit_argument(),
-            0,
-            {},
-        )
-    if source_workload.operation in {"module.findall", "module.finditer"}:
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            0,
-        )
-    if source_workload.operation in {"module.sub", "module.subn"}:
-        return (
-            source_workload.operation,
-            source_workload.replacement_payload(),
-            source_workload.haystack_payload(),
-            source_workload.count_argument(),
-            0,
-            {},
-        )
-    raise AssertionError(
-        "unexpected compiled-pattern module helper wrong-text-model workload "
-        f"operation {source_workload.operation!r}"
-    )
-
-
-def _run_cpython_compiled_pattern_wrong_text_model_workload(
-    workload: Workload,
-) -> object:
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    helper_name = workload.operation.removeprefix("module.")
-
-    if workload.operation in {"module.search", "module.match", "module.fullmatch"}:
-        return getattr(re, helper_name)(
-            compiled_pattern,
-            workload.haystack_payload(),
-            workload.flags,
-        )
-
-    if workload.operation == "module.split":
-        return getattr(re, helper_name)(
-            compiled_pattern,
-            workload.haystack_payload(),
-            workload.maxsplit_argument(),
-        )
-
-    if workload.operation == "module.findall":
-        return getattr(re, helper_name)(
-            compiled_pattern,
-            workload.haystack_payload(),
-            workload.flags,
-        )
-
-    if workload.operation == "module.finditer":
-        return list(
-            getattr(re, helper_name)(
-                compiled_pattern,
-                workload.haystack_payload(),
-                workload.flags,
-            )
-        )
-
-    if workload.operation in {"module.sub", "module.subn"}:
-        return getattr(re, helper_name)(
-            compiled_pattern,
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            workload.count_argument(),
-        )
-
-    raise AssertionError(
-        "unexpected compiled-pattern module helper wrong-text-model workload "
-        f"operation {workload.operation!r}"
-    )
-
 
 def _wrong_text_model_owner_param_id(
     owner_spec: WrongTextModelOwnerSpec,
@@ -17758,16 +17779,16 @@ _PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwne
     timing_scope="pattern-helper-call",
     excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
     note_surface=None,
-    expected_callback_result=(
+    callback_result_handler=(
         _pattern_collection_replacement_wrong_text_model_expected_callback_result
     ),
-    expected_callback_call=(
+    callback_call_handler=(
         _pattern_collection_replacement_wrong_text_model_expected_callback_call
     ),
     expected_build_calls=(
         _pattern_collection_replacement_wrong_text_model_expected_build_calls
     ),
-    run_cpython_workload=_run_cpython_pattern_collection_replacement_wrong_text_model_workload,
+    cpython_workload_runner=_run_cpython_pattern_collection_replacement_wrong_text_model_workload,
 )
 
 _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
@@ -17787,12 +17808,12 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
     timing_scope="pattern-helper-call",
     excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
     note_surface=None,
-    expected_callback_result=_pattern_boundary_wrong_text_model_expected_callback_result,
-    expected_callback_call=_pattern_boundary_wrong_text_model_expected_callback_call,
+    callback_result_handler=_pattern_boundary_wrong_text_model_expected_callback_result,
+    callback_call_handler=_pattern_boundary_wrong_text_model_expected_callback_call,
     expected_build_calls=(
         _pattern_collection_replacement_wrong_text_model_expected_build_calls
     ),
-    run_cpython_workload=_run_cpython_pattern_boundary_wrong_text_model_workload,
+    cpython_workload_runner=_run_cpython_pattern_boundary_wrong_text_model_workload,
 )
 
 _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
@@ -17817,13 +17838,13 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
         timing_scope="module-helper-call",
         excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="collection/replacement",
-        expected_callback_result=_compiled_pattern_wrong_text_model_expected_callback_result,
-        expected_callback_call=_compiled_pattern_wrong_text_model_expected_callback_call,
+        callback_result_handler=None,
+        callback_call_handler=None,
         expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
             workload,
             label="module helper wrong-text-model",
         ),
-        run_cpython_workload=_run_cpython_compiled_pattern_wrong_text_model_workload,
+        cpython_workload_runner=None,
     )
 )
 
@@ -17845,13 +17866,13 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = (
         timing_scope="module-helper-call",
         excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="module-boundary",
-        expected_callback_result=_compiled_pattern_wrong_text_model_expected_callback_result,
-        expected_callback_call=_compiled_pattern_wrong_text_model_expected_callback_call,
+        callback_result_handler=None,
+        callback_call_handler=None,
         expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
             workload,
             label="module helper wrong-text-model",
         ),
-        run_cpython_workload=_run_cpython_compiled_pattern_wrong_text_model_workload,
+        cpython_workload_runner=None,
     )
 )
 

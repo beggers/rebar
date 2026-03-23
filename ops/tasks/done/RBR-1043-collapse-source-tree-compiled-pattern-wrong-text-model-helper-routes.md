@@ -1,6 +1,6 @@
 # RBR-1043: Collapse source-tree compiled-pattern wrong-text-model helper routes
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -66,3 +66,10 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently defines `WrongTextModelOwnerSpec` at line `17551`, `_compiled_pattern_wrong_text_model_expected_callback_result(...)` at line `17606`, `_compiled_pattern_wrong_text_model_expected_callback_call(...)` at line `17616`, `_run_cpython_compiled_pattern_wrong_text_model_workload(...)` at line `17659`, `_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC` at line `17798`, and `_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC` at line `17830`;
   - the targeted pytest slice in Verification currently passes (`51 passed, 670 deselected, 8 subtests passed in 0.48s`); and
   - the negative `rg` check in Verification currently fails only because those exact helper definitions are still present.
+
+## Completion Note
+- Folded the compiled-pattern wrong-text-model callback-result, callback-call, and CPython-dispatch behavior into `WrongTextModelOwnerSpec` methods, renamed the pattern-owner delegate fields to keep their existing local routes intact, and removed the three detached compiled-pattern helper functions from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Repointed `_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC` and `_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC` to the owner-spec route without widening into adjacent success-owner or pattern-owner helper families.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract or collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'`
+  - `bash -lc "! rg -n 'def _compiled_pattern_wrong_text_model_expected_callback_result\\(|def _compiled_pattern_wrong_text_model_expected_callback_call\\(|def _run_cpython_compiled_pattern_wrong_text_model_workload\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
