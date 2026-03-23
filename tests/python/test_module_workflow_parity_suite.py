@@ -160,9 +160,6 @@ _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
 )
 
 
-MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
-    MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR
-)
 MODULE_WORKFLOW_MANIFEST_ID = "module-workflow-surface"
 MATCH_BEHAVIOR_MANIFEST_ID = "match-behavior-smoke"
 
@@ -176,7 +173,7 @@ def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID,
 ) = load_published_fixture_bundles(MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR)
 assert {bundle.manifest.path for bundle in MODULE_WORKFLOW_SURFACE_BUNDLES} == set(
-    MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
+    select_correctness_fixture_paths(MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR)
 )
 MODULE_WORKFLOW_BUNDLE = MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID[
     MODULE_WORKFLOW_MANIFEST_ID
@@ -406,9 +403,6 @@ NON_INSTANTIABLE_EXPORTS = (
 )
 # Keep the public-surface coverage on the canonical published manifests while
 # treating case ids as the contract token for these owner rows.
-PUBLIC_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
-    PUBLIC_SURFACE_FIXTURE_SELECTOR
-)
 (
     PUBLIC_SURFACE_BUNDLES,
     PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID,
@@ -8305,7 +8299,9 @@ def test_public_surface_parity_suite_stays_aligned_with_published_fixtures(
     assert tuple(
         public_surface_bundle.manifest.path
         for public_surface_bundle in PUBLIC_SURFACE_BUNDLES
-    ) == PUBLIC_SURFACE_FIXTURE_PATHS
+    ) == tuple(
+        select_correctness_fixture_paths(PUBLIC_SURFACE_FIXTURE_SELECTOR)
+    )
     assert tuple(
         public_surface_bundle.manifest.manifest_id
         for public_surface_bundle in PUBLIC_SURFACE_BUNDLES
