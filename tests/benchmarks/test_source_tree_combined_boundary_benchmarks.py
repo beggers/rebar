@@ -16934,6 +16934,47 @@ def _compiled_pattern_module_compile_keyword_callback_flags(
     return source_workload.keyword_arguments()["flags"]
 
 
+def _compiled_pattern_module_compile_success_correctness_case_signature(
+    contract_case: CompiledPatternModuleCompileContractCase,
+    case: Any,
+) -> tuple[Any, ...] | None:
+    del contract_case
+    return _module_workflow_compiled_pattern_compile_correctness_case_signature(case)
+
+
+def _compiled_pattern_module_compile_success_workload_signature(
+    contract_case: CompiledPatternModuleCompileContractCase,
+    workload: Any,
+) -> tuple[Any, ...]:
+    del contract_case
+    return _module_workflow_compiled_pattern_compile_workload_signature(workload)
+
+
+def _is_compiled_pattern_module_compile_success_workload(
+    contract_case: CompiledPatternModuleCompileContractCase,
+    workload: Any,
+) -> bool:
+    del contract_case
+    return _is_module_workflow_compiled_pattern_compile_workload(workload)
+
+
+def _run_cpython_compiled_pattern_module_compile_success_workload(
+    contract_case: CompiledPatternModuleCompileContractCase,
+    workload: Workload,
+) -> object:
+    del contract_case
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+    return re.compile(compiled_pattern, workload.flags)
+
+
+def _compiled_pattern_module_compile_success_callback_flags(
+    contract_case: CompiledPatternModuleCompileContractCase,
+    source_workload: Workload,
+) -> object:
+    del contract_case
+    return source_workload.flags
+
+
 @dataclass(frozen=True, slots=True)
 class _CompiledPatternModuleCompileContractRoute:
     surface_label: str
@@ -17079,29 +17120,22 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE = (
             "module.compile rows unresolved until helper invocation."
         ),
         correctness_case_signature_builder=(
-            lambda _contract_case, case: (
-                _module_workflow_compiled_pattern_compile_correctness_case_signature(
-                    case
-                )
-            )
+            _compiled_pattern_module_compile_success_correctness_case_signature
         ),
         workload_signature_builder=(
-            lambda _contract_case, workload: (
-                _module_workflow_compiled_pattern_compile_workload_signature(workload)
-            )
+            _compiled_pattern_module_compile_success_workload_signature
         ),
-        include_workload_selector=lambda _contract_case, workload: (
-            _is_module_workflow_compiled_pattern_compile_workload(workload)
+        include_workload_selector=(
+            _is_compiled_pattern_module_compile_success_workload
         ),
         payload_round_trip_assertion=(
             _assert_compiled_pattern_module_compile_success_payload_round_trip
         ),
-        cpython_dispatch=lambda _contract_case, workload: re.compile(
-            re.compile(workload.pattern_payload(), workload.flags),
-            workload.flags,
+        cpython_dispatch=(
+            _run_cpython_compiled_pattern_module_compile_success_workload
         ),
-        callback_flags_selector=lambda _contract_case, source_workload: (
-            source_workload.flags
+        callback_flags_selector=(
+            _compiled_pattern_module_compile_success_callback_flags
         ),
     )
 )
@@ -17205,6 +17239,16 @@ class _CompiledPatternModuleContractAnchorLane:
     expected_anchor_pairs: tuple[tuple[str, str], ...]
 
 
+def _compiled_pattern_module_contract_expected_anchor_case_ids(
+    manifest_path: pathlib.Path,
+    contract_case: CompiledPatternModuleCompileContractCase,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return _workload_case_pair_anchor_expectations(
+        manifest_path,
+        contract_case.expected_anchor_pairs,
+    )
+
+
 _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
     *(
         _CompiledPatternModuleContractAnchorLane(
@@ -17229,11 +17273,9 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
             source_workloads=source_workloads,
             contract_builder_spec=contract_case.contract_builder_spec,
             expected_anchor_case_ids=(
-                lambda manifest_path, contract_case=contract_case: (
-                    _workload_case_pair_anchor_expectations(
-                        manifest_path,
-                        contract_case.expected_anchor_pairs,
-                    )
+                partial(
+                    _compiled_pattern_module_contract_expected_anchor_case_ids,
+                    contract_case=contract_case,
                 )
             ),
             anchor_case_ids=published_case_ids_by_signature(

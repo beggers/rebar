@@ -1,6 +1,6 @@
 # RBR-1087: Collapse compiled-pattern compile-contract singleton lambdas
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,11 @@ Created: 2026-03-23
   - `rg -n "lambda _contract_case, case|lambda _contract_case, workload|include_workload_selector=lambda _contract_case, workload|cpython_dispatch=lambda _contract_case, workload|callback_flags_selector=lambda _contract_case, source_workload|lambda manifest_path, contract_case=contract_case" tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the five success-route singleton lambdas at lines `17082`, `17089`, `17093`, `17099`, and `17103`, plus the anchor-lane lambda at line `17232` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing'` returned `76 passed, 650 deselected` in this run.
+
+## Completion
+- Replaced the five compiled-pattern `module.compile` success-route singleton lambdas with same-file named helpers for correctness-case signatures, workload signatures, workload inclusion, CPython dispatch, and callback flag selection.
+- Replaced the compile-contract anchor-lane singleton lambda with a named helper plus `functools.partial`, preserving `_workload_case_pair_anchor_expectations(...)` against `contract_case.expected_anchor_pairs`.
+- Kept the file-local contract structure intact: `_CompiledPatternModuleCompileContractRoute`, `CompiledPatternModuleCompileContractCase`, and `_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES` still own the route and anchor wiring.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing'`
+  - `bash -lc "! rg -n \"lambda _contract_case, case|lambda _contract_case, workload|include_workload_selector=lambda _contract_case, workload|cpython_dispatch=lambda _contract_case, workload|callback_flags_selector=lambda _contract_case, source_workload|lambda manifest_path, contract_case=contract_case\" tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
