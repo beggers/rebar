@@ -27,6 +27,7 @@ from tests.python.fixture_parity_support import (
     IndexLike as _IndexLike,
     IndexLikeBoomError as _IndexLikeBoomError,
     RecordingIndexLike as _RecordingIndexLike,
+    assert_value_parity,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -1996,7 +1997,7 @@ def test_module_replacement_matches_cpython(
     observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
     expected = getattr(re, case.helper)(*case.args, **case.kwargs)
 
-    assert observed == expected
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
@@ -2019,7 +2020,7 @@ def test_pattern_replacement_matches_cpython(
     observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
     expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
-    assert observed == expected
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
@@ -2142,8 +2143,7 @@ def test_replacement_template_match_expand_matches_cpython(
     observed = observed_match.expand(template)
     expected = expected_match.expand(template)
 
-    assert type(observed) is type(expected)
-    assert observed == expected
+    assert_value_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
@@ -2210,7 +2210,8 @@ def test_discovered_no_match_paths_leave_input_unchanged(
     else:
         expected_result = (text, 0)
 
-    assert observed == expected == expected_result
+    assert_value_parity(observed, expected)
+    assert_value_parity(observed, expected_result)
 
 
 @pytest.mark.parametrize(
@@ -2238,7 +2239,8 @@ def test_supplemental_no_match_paths_match_cpython(
     else:
         expected_result = (case.string, 0)
 
-    assert observed == expected == expected_result
+    assert_value_parity(observed, expected)
+    assert_value_parity(observed, expected_result)
 
 
 @pytest.mark.parametrize(
@@ -2261,7 +2263,8 @@ def test_repeated_replacement_paths_match_cpython(
     )
 
     assert case.expected_result is not None
-    assert observed == expected == case.expected_result
+    assert_value_parity(observed, expected)
+    assert_value_parity(observed, case.expected_result)
 
 
 @pytest.mark.parametrize(
@@ -2280,7 +2283,8 @@ def test_negative_replacement_counts_short_circuit_like_cpython(
     )
 
     assert case.expected_result is not None
-    assert observed == expected == case.expected_result
+    assert_value_parity(observed, expected)
+    assert_value_parity(observed, case.expected_result)
 
 
 def test_sorted_compile_patterns_supports_mixed_text_models() -> None:
@@ -2418,13 +2422,33 @@ def _assert_literal_replacement_result_matches_cpython(
     expected: ReplacementOutcome,
 ) -> None:
     try:
-        assert type(observed) is type(expected)
-        assert observed == expected
+        assert_value_parity(observed, expected)
     except AssertionError as exc:
         raise AssertionError(
             f"{backend_name} {context} {helper} mismatch for pattern={pattern!r}, "
             f"replacement={replacement!r}, string={string!r}, count={count!r}"
         ) from exc
+
+
+def test_literal_replacement_result_helper_rejects_bool_count_type_drift() -> None:
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "rebar synthetic-helper subn mismatch for pattern='abc', "
+            "replacement='x', string='abcabc', count=-1"
+        ),
+    ):
+        _assert_literal_replacement_result_matches_cpython(
+            backend_name="rebar",
+            context="synthetic-helper",
+            helper="subn",
+            pattern="abc",
+            replacement="x",
+            string="abcabc",
+            count=-1,
+            observed=("xx", False),
+            expected=("xx", 0),
+        )
 
 
 @pytest.mark.parametrize(
