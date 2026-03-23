@@ -9,7 +9,7 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1579 cases across 114 manifests, with all 1579 passing in the current slice; the benchmark publication covers 961/961 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1581 cases across 114 manifests, with all 1581 passing in the current slice; the benchmark publication covers 961/961 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
 - No ready feature follow-on currently survives in the feature queue.
@@ -19,7 +19,7 @@ Published correctness covers 1579 cases across 114 manifests, with all 1579 pass
 - The published benchmark surface is still bounded at 961 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1579 cases across 114 manifests, all passing, and 961 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1581 cases across 114 manifests, all passing, and 961 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
 - No ready feature follow-on currently survives in the feature queue.
@@ -314,7 +314,7 @@ The published correctness slice now covers 1579 cases across 114 manifests, all 
 - Tracked state and task queue directories under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1579 cases, with all 1579 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1581 cases, with all 1581 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree-shim path while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 961 workloads across 30 manifests with 961 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
@@ -333,7 +333,7 @@ The published correctness slice now covers 1579 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving ready feature follow-on is `RBR-1028`, a benchmark catch-up task for the direct `Pattern.sub()` / `Pattern.subn()` `str` negative-count pair.
+- No ready feature follow-on currently survives in the feature queue.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
