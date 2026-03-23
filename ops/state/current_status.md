@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1590 cases across 114 manifests, with all 1590 passing in the current slice; the benchmark publication covers 971/971 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- `RBR-1055`: catch up the direct `module.subn()` bytes single-match on the existing collection/replacement Python-path benchmark path.
+- `RBR-1057`: publish the direct `Pattern.subn()` bytes single-match on the shared collection/replacement correctness path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,8 +22,8 @@ Published correctness covers 1590 cases across 114 manifests, with all 1590 pass
 The published correctness slice now covers 1590 cases across 114 manifests, all passing, and 971 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- `RBR-1055` is the sole ready follow-on in this checkout: catch up the direct `module.subn()` bytes single-match on the existing collection/replacement Python-path benchmark path.
-- No earlier correctness-publication head survives in the ready queue, and no feature task is in progress or blocked in this checkout.
+- `RBR-1057` is the surviving ready follow-on after `RBR-1055` drains: publish the direct `Pattern.subn()` bytes single-match on the shared collection/replacement correctness path.
+- No blocked or in-progress feature task shadows this frontier in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -333,7 +333,7 @@ The published correctness slice now covers 1590 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-1055`: catch up the direct `module.subn()` bytes single-match on the existing collection/replacement Python-path benchmark path.
+- `RBR-1057`: publish the direct `Pattern.subn()` bytes single-match on the shared collection/replacement correctness path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
