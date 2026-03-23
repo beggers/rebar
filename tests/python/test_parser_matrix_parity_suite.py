@@ -191,6 +191,31 @@ def _compile_case_with_warnings(
     return compiled, _warning_summary(caught_warnings)
 
 
+def _warning_lifecycle(
+    backend: object,
+    case: FixtureCase,
+) -> tuple[
+    object,
+    list[tuple[type[Warning], str]],
+    object,
+    list[tuple[type[Warning], str]],
+    object,
+    list[tuple[type[Warning], str]],
+]:
+    first, first_warnings = _compile_case_with_warnings(backend, case)
+    second, second_warnings = _compile_case_with_warnings(backend, case)
+    backend.purge()
+    refreshed, refreshed_warnings = _compile_case_with_warnings(backend, case)
+    return (
+        first,
+        first_warnings,
+        second,
+        second_warnings,
+        refreshed,
+        refreshed_warnings,
+    )
+
+
 def _assert_compile_error_parity(backend: object, case: FixtureCase) -> BaseException:
     pattern = case_pattern(case)
     flags = case.flags or 0
@@ -265,39 +290,47 @@ def test_compile_metadata_matches_cpython(
     )
 
 
-def test_nested_set_warning_matches_cpython_and_re_emits_after_purge(
-    rebar_backend: object,
+def test_nested_set_warning_matches_cpython_cache_and_purge_behavior(
+    regex_backend: tuple[str, object],
 ) -> None:
-    pattern = case_pattern(NESTED_SET_WARNING_CASE)
-    flags = NESTED_SET_WARNING_CASE.flags or 0
+    backend_name, backend = regex_backend
 
-    with warnings.catch_warnings(record=True) as expected_warnings:
-        warnings.simplefilter("always")
-        expected = re.compile(pattern, flags)
-
-    first, first_warnings = _compile_case_with_warnings(
-        rebar_backend,
-        NESTED_SET_WARNING_CASE,
+    (
+        expected_first,
+        expected_first_warnings,
+        expected_second,
+        expected_second_warnings,
+        expected_refreshed,
+        expected_refreshed_warnings,
+    ) = _warning_lifecycle(
+        re, NESTED_SET_WARNING_CASE
     )
-    second, second_warnings = _compile_case_with_warnings(
-        rebar_backend,
-        NESTED_SET_WARNING_CASE,
-    )
+    backend.purge()
 
-    assert first_warnings == _warning_summary(expected_warnings)
-    assert second_warnings == []
-    assert first is second
-    assert_pattern_parity("rebar", first, expected)
-
-    rebar_backend.purge()
-
-    refreshed, refreshed_warnings = _compile_case_with_warnings(
-        rebar_backend,
-        NESTED_SET_WARNING_CASE,
+    (
+        actual_first,
+        actual_first_warnings,
+        actual_second,
+        actual_second_warnings,
+        actual_refreshed,
+        actual_refreshed_warnings,
+    ) = _warning_lifecycle(
+        backend, NESTED_SET_WARNING_CASE
     )
 
-    assert refreshed is not first
-    assert refreshed_warnings == first_warnings
+    assert expected_first_warnings == actual_first_warnings
+    assert expected_second_warnings == actual_second_warnings == []
+    assert (
+        expected_refreshed_warnings
+        == actual_refreshed_warnings
+        == actual_first_warnings
+    )
+    assert expected_second is expected_first
+    assert actual_second is actual_first
+    assert expected_refreshed is not expected_first
+    assert actual_refreshed is not actual_first
+    assert_pattern_parity(backend_name, actual_first, expected_first)
+    assert_pattern_parity(backend_name, actual_refreshed, expected_refreshed)
 
 
 @pytest.mark.parametrize(
