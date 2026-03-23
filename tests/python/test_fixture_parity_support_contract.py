@@ -5651,6 +5651,54 @@ def test_finditer_parity_helper_propagates_match_callback_failures() -> None:
         )
 
 
+def test_finditer_parity_helper_skips_match_callback_for_shared_empty_iterators() -> None:
+    callback_calls: list[tuple[object, object]] = []
+
+    def record_match_pair(observed: object, expected: object) -> None:
+        callback_calls.append((observed, expected))
+
+    assert_finditer_parity(
+        "stub-backend",
+        re.finditer("abc", "zzz"),
+        re.finditer("abc", "zzz"),
+        match_callback=record_match_pair,
+    )
+
+    assert callback_calls == []
+
+
+def test_finditer_parity_helper_rejects_iterator_that_resumes_after_exhaustion() -> None:
+    class _ResumingIterator:
+        def __init__(self, values: tuple[object, ...]) -> None:
+            self._values = values
+            self._index = 0
+            self._stopped_once = False
+            self._resumed = False
+
+        def __iter__(self) -> "_ResumingIterator":
+            return self
+
+        def __next__(self) -> object:
+            if self._index < len(self._values):
+                value = self._values[self._index]
+                self._index += 1
+                return value
+            if not self._stopped_once:
+                self._stopped_once = True
+                raise StopIteration
+            if not self._resumed:
+                self._resumed = True
+                return self._values[-1]
+            raise StopIteration
+
+    with pytest.raises(AssertionError):
+        assert_finditer_parity(
+            "stub-backend",
+            _ResumingIterator(tuple(re.finditer("abc", "abc"))),
+            iter(()),
+        )
+
+
 def test_finditer_parity_helper_rejects_exhausted_non_self_iterables() -> None:
     class _AlreadyExhaustedNonSelfIterator:
         def __iter__(self) -> object:
