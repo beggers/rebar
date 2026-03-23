@@ -509,7 +509,18 @@ class CompiledPatternModuleHelperOwnerPathRow:
 
     @property
     def direct_case(self) -> object:
-        return _COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID[self.direct_case_id]
+        for cases in (
+            COMPILED_PATTERN_COMPILE_CASES,
+            COMPILED_PATTERN_MODULE_HELPER_CASES,
+            COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
+            COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
+            COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
+            BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+        ):
+            for case in cases:
+                if case.case_id == self.direct_case_id:
+                    return case
+        raise KeyError(self.direct_case_id)
 
     @property
     def text_model(self) -> str:
@@ -3679,18 +3690,6 @@ COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
         kwargs={"count_alias": 1},
     ),
 )
-
-_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID = {
-    case.case_id: case
-    for case in (
-        *COMPILED_PATTERN_COMPILE_CASES,
-        *COMPILED_PATTERN_MODULE_HELPER_CASES,
-        *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
-        *COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES,
-        *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
-        *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
-    )
-}
 
 # Exercise CPython-supported input shapes that are easy to miss when escape()
 # only appears to support plain str and bytes inputs.
