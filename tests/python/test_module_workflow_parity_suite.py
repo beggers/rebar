@@ -319,19 +319,13 @@ def _published_bounded_wildcard_pattern_fixture_cases() -> tuple[FixtureCase, ..
     return _published_bounded_wildcard_fixture_cases(PATTERN_CASES)
 
 
-def _published_bounded_wildcard_pattern_match_fixture_cases() -> tuple[FixtureCase, ...]:
+def _published_bounded_wildcard_pattern_fixture_cases_for_helpers(
+    helpers: tuple[str, ...],
+) -> tuple[FixtureCase, ...]:
     return tuple(
         case
         for case in _published_bounded_wildcard_pattern_fixture_cases()
-        if case.helper in {"search", "match", "fullmatch"}
-    )
-
-
-def _published_bounded_wildcard_pattern_collection_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in _published_bounded_wildcard_pattern_fixture_cases()
-        if case.helper in {"findall", "finditer"}
+        if case.helper in helpers
     )
 
 
@@ -7485,7 +7479,9 @@ def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() ->
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_pattern_match_fixture_cases(),
+    _published_bounded_wildcard_pattern_fixture_cases_for_helpers(
+        ("search", "match", "fullmatch")
+    ),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_pattern_match_helpers_match_cpython(
@@ -7605,7 +7601,9 @@ def test_bounded_wildcard_generated_pattern_match_matrix_with_windows_matches_cp
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_pattern_collection_fixture_cases(),
+    _published_bounded_wildcard_pattern_fixture_cases_for_helpers(
+        ("findall", "finditer")
+    ),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_pattern_collection_helpers_match_cpython(
