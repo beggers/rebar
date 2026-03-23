@@ -1,6 +1,6 @@
 ## RBR-1041: Collapse source-tree compiled-pattern success callback helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -54,3 +54,6 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently defines `_compiled_pattern_module_collection_replacement_success_callback_result(...)` at line `16446`, `_compiled_pattern_module_collection_replacement_success_callback_call(...)` at line `16456`, `_compiled_pattern_module_boundary_success_callback_result(...)` at line `16488`, and `_compiled_pattern_module_boundary_success_callback_call(...)` at line `16494`;
   - the targeted pytest slice in Verification currently passes (`42 passed, 679 deselected in 0.19s`); and
   - the negative `rg` check in Verification currently fails only because those exact helper definitions are still present.
+
+## Completion
+- 2026-03-23: Collapsed the four detached compiled-pattern success callback helpers into `CompiledPatternModuleSuccessOwnerSpec.expected_callback_result(...)` and `.expected_callback_call(...)`, keeping the collection/replacement and module-boundary callback semantics unchanged while removing the redundant free-function route. Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_workloads or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases'` (`42 passed, 679 deselected`) and `bash -lc \"! rg -n 'def _compiled_pattern_module_collection_replacement_success_callback_result\\(|def _compiled_pattern_module_collection_replacement_success_callback_call\\(|def _compiled_pattern_module_boundary_success_callback_result\\(|def _compiled_pattern_module_boundary_success_callback_call\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py\"`.

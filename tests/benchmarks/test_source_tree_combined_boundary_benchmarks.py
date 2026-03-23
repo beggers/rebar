@@ -16407,8 +16407,6 @@ class CompiledPatternModuleSuccessOwnerSpec:
     expected_source_workload_ids: tuple[str, ...]
     preserved_payload_fields: tuple[str, ...]
     preserve_replacement_payload_typing: bool
-    expected_callback_result: Callable[[Workload], object]
-    expected_callback_call: Callable[[Workload], tuple[object, ...]]
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
         return _SourceTreeContractBuilderSpec(
@@ -16442,73 +16440,72 @@ class CompiledPatternModuleSuccessOwnerSpec:
             label=f"{self.case_id} success",
         )
 
-
-def _compiled_pattern_module_collection_replacement_success_callback_result(
-    source_workload: Workload,
-) -> object:
-    if source_workload.operation == "module.subn":
-        return ("module-result", 0)
-    if source_workload.operation == "module.finditer":
-        return ["module-finditer-result"]
-    return "module-result"
-
-
-def _compiled_pattern_module_collection_replacement_success_callback_call(
-    source_workload: Workload,
-) -> tuple[object, ...]:
-    if source_workload.operation == "module.split":
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            source_workload.maxsplit_argument(),
-            source_workload.flags,
-            {},
+    def expected_callback_result(self, source_workload: Workload) -> object:
+        if self.case_id == "collection-replacement":
+            if source_workload.operation == "module.subn":
+                return ("module-result", 0)
+            if source_workload.operation == "module.finditer":
+                return ["module-finditer-result"]
+            return "module-result"
+        if self.case_id == "module-boundary":
+            return "module-result"
+        raise AssertionError(
+            "unexpected compiled-pattern module success owner-spec callback-result "
+            f"case {self.case_id!r}"
         )
-    if source_workload.operation in {"module.findall", "module.finditer"}:
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            source_workload.flags,
+
+    def expected_callback_call(
+        self,
+        source_workload: Workload,
+    ) -> tuple[object, ...]:
+        if self.case_id == "collection-replacement":
+            if source_workload.operation == "module.split":
+                return (
+                    source_workload.operation,
+                    source_workload.haystack_payload(),
+                    source_workload.maxsplit_argument(),
+                    source_workload.flags,
+                    {},
+                )
+            if source_workload.operation in {"module.findall", "module.finditer"}:
+                return (
+                    source_workload.operation,
+                    source_workload.haystack_payload(),
+                    source_workload.flags,
+                )
+            if source_workload.operation in {"module.sub", "module.subn"}:
+                return (
+                    source_workload.operation,
+                    source_workload.replacement_payload(),
+                    source_workload.haystack_payload(),
+                    source_workload.count_argument(),
+                    source_workload.flags,
+                    {},
+                )
+            raise AssertionError(
+                "unexpected compiled-pattern collection/replacement success "
+                f"workload operation {source_workload.operation!r}"
+            )
+        if self.case_id == "module-boundary":
+            if source_workload.operation in {
+                "module.search",
+                "module.match",
+                "module.fullmatch",
+            }:
+                return (
+                    source_workload.operation,
+                    source_workload.haystack_payload(),
+                    0,
+                    {},
+                )
+            raise AssertionError(
+                "unexpected compiled-pattern module-boundary success workload "
+                f"operation {source_workload.operation!r}"
+            )
+        raise AssertionError(
+            "unexpected compiled-pattern module success owner-spec callback-call "
+            f"case {self.case_id!r}"
         )
-    if source_workload.operation in {"module.sub", "module.subn"}:
-        return (
-            source_workload.operation,
-            source_workload.replacement_payload(),
-            source_workload.haystack_payload(),
-            source_workload.count_argument(),
-            source_workload.flags,
-            {},
-        )
-    raise AssertionError(
-        "unexpected compiled-pattern collection/replacement success workload "
-        f"operation {source_workload.operation!r}"
-    )
-
-
-def _compiled_pattern_module_boundary_success_callback_result(
-    source_workload: Workload,
-) -> object:
-    return "module-result"
-
-
-def _compiled_pattern_module_boundary_success_callback_call(
-    source_workload: Workload,
-) -> tuple[object, ...]:
-    if source_workload.operation in {
-        "module.search",
-        "module.match",
-        "module.fullmatch",
-    }:
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            0,
-            {},
-        )
-    raise AssertionError(
-        "unexpected compiled-pattern module-boundary success workload operation "
-        f"{source_workload.operation!r}"
-    )
 
 
 _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
@@ -16532,12 +16529,6 @@ _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
         ),
         preserved_payload_fields=("count", "maxsplit"),
         preserve_replacement_payload_typing=True,
-        expected_callback_result=(
-            _compiled_pattern_module_collection_replacement_success_callback_result
-        ),
-        expected_callback_call=(
-            _compiled_pattern_module_collection_replacement_success_callback_call
-        ),
     )
 )
 
@@ -16567,8 +16558,6 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC = (
         ),
         preserved_payload_fields=("flags",),
         preserve_replacement_payload_typing=False,
-        expected_callback_result=_compiled_pattern_module_boundary_success_callback_result,
-        expected_callback_call=_compiled_pattern_module_boundary_success_callback_call,
     )
 )
 
