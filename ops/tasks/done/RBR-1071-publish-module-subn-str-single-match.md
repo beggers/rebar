@@ -1,6 +1,6 @@
 # RBR-1071: Publish the direct module `subn()` str single-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -74,3 +74,13 @@ Created: 2026-03-23
   - a direct runtime probe in this run confirmed `rebar.subn("abc", "x", "zabczz") == re.subn("abc", "x", "zabczz")` on the live branch;
   - `test_source_package_module_literal_replacement_helpers_match_cpython` in `tests/python/test_fixture_backed_replacement_parity_suite.py` already exercises the direct raw-module `str` single-match replacement parity path and asserts `subn()` equality on the shared owner route; and
   - `rg -n "module-subn-str-single-match|module-subn-single-match-warm-str" tests/conformance/fixtures/collection_replacement_workflows.py benchmarks/workloads/collection_replacement_boundary.py reports/correctness/latest.py reports/benchmarks/latest.py` returned no matches in this run, confirming the exact correctness row and matching benchmark workload are still absent from the tracked owner-path publication surfaces.
+
+## Completion Note
+- Landed the single new `module-subn-str-single-match` `module_call` row in `tests/conformance/fixtures/collection_replacement_workflows.py`, inserted immediately after `module-subn-str-count`, and kept the shared owner-path publication selectors/assertions on `tests/python/test_fixture_backed_replacement_parity_suite.py` aligned with the new sixteen-row direct-module order.
+- Regenerated the tracked combined correctness publication in `reports/correctness/latest.py`; the tracked artifact now shows `1595` total / `1595` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `58/58`, `.str` at `35/35`, `.bytes` unchanged at `23/23`, and `.module_call` at `26/26`, including `module-subn-str-single-match` as a published representative case.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and str-single-match'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or test_literal_replacement_publication_gaps_stay_explicit'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1071-module-subn-str-single-match.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

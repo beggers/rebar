@@ -220,7 +220,7 @@ def _direct_literal_replacement_publication_case_ids(
                 "count-one",
                 "negative-count",
             ),
-            ("subn", "str"): ("count", "repeated", "negative-count"),
+            ("subn", "str"): ("count", "single-match", "repeated", "negative-count"),
             ("sub", "bytes"): ("no-match", "single-match", "repeated", "count-one"),
             ("subn", "bytes"): ("count", "single-match", "repeated"),
         }
@@ -2706,7 +2706,6 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
         pytest.param(
             "module",
             (
-                "module-subn-str-single-match",
                 "module-subn-str-no-match",
                 "module-subn-bytes-no-match",
             ),
@@ -2784,6 +2783,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "module-sub-str-count-one": ("abc", "x", "abcabc", 1),
             "module-sub-str-negative-count": ("abc", "x", "abcabc", -1),
             "module-subn-str-count": ("abc", "x", "abcabc", 1),
+            "module-subn-str-single-match": ("abc", "x", "zabczz"),
             "module-subn-str-repeated": ("abc", "x", "abcabc"),
             "module-subn-str-negative-count": ("abc", "x", "abcabc", -1),
             "module-sub-bytes-no-match": (b"abc", b"x", b"zzz"),
@@ -2803,6 +2803,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "subn",
             "subn",
             "subn",
+            "subn",
             "sub",
             "sub",
             "sub",
@@ -2812,6 +2813,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "subn",
         ),
         expected_text_models=(
+            "str",
             "str",
             "str",
             "str",

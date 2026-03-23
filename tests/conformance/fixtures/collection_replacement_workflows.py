@@ -339,6 +339,17 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-str-single-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "args": ["abc", "x", "zabczz"],
+      "categories": ["workflow", "subn", "literal", "str", "single-match"],
+      "notes": [
+        "Publishes the raw str module subn helper outcome for the direct single-match module workflow."
+      ]
+    },
+    {
       "id": "module-subn-str-repeated",
       "operation": "module_call",
       "family": "replacement_workflow",
