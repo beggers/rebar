@@ -1,6 +1,6 @@
 # RBR-1073: Publish the direct module `subn()` str no-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -74,3 +74,13 @@ Created: 2026-03-23
   - a direct runtime probe in this run confirmed `rebar.subn("abc", "x", "zzz") == re.subn("abc", "x", "zzz")` on the live branch;
   - `test_source_package_module_literal_replacement_helpers_match_cpython` in `tests/python/test_fixture_backed_replacement_parity_suite.py` already exercises the direct raw-module `str` no-match replacement parity path and asserts `subn()` equality on the shared owner route; and
   - `rg -n "module-subn-str-no-match|module-subn-no-match-warm-str" tests/conformance/fixtures/collection_replacement_workflows.py benchmarks/workloads/collection_replacement_boundary.py reports/correctness/latest.py reports/benchmarks/latest.py` returned only the still-explicit unpublished reference in `tests/python/test_fixture_backed_replacement_parity_suite.py` in this run, confirming the exact correctness row and matching benchmark workload are still absent from the tracked owner-path publication surfaces.
+
+## Completion
+- Added `module-subn-str-no-match` immediately after `module-subn-str-negative-count` in `tests/conformance/fixtures/collection_replacement_workflows.py` and published it through the existing shared direct-module literal replacement owner path in `tests/python/test_fixture_backed_replacement_parity_suite.py`.
+- Regenerated `reports/correctness/latest.py`; the tracked combined scorecard now reports `1596` total / `1596` passed across `114` manifests, with `collection.replacement.workflow` at `59/59`, `collection.replacement.workflow.str` at `36/36`, `collection.replacement.workflow.bytes` unchanged at `23/23`, and `collection.replacement.workflow.module_call` at `27/27`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and str-no-match'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or test_literal_replacement_publication_gaps_stay_explicit'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1073-module-subn-str-no-match.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

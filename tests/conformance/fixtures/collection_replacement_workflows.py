@@ -372,6 +372,17 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-str-no-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "args": ["abc", "x", "zzz"],
+      "categories": ["workflow", "subn", "literal", "str", "no-match"],
+      "notes": [
+        "Publishes the raw str module subn helper outcome when no literal match is present."
+      ]
+    },
+    {
       "id": "module-sub-bytes-no-match",
       "operation": "module_call",
       "family": "replacement_workflow",
