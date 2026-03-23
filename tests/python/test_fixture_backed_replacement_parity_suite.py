@@ -1454,24 +1454,11 @@ def _expected_uncovered_replacement_case_ids(
     )
 
 
-@dataclass(frozen=True)
-class MixedTextReplacementSurfaceContract:
-    surface: LoadedReplacementSurface
-    bundle: FixtureBundle
-    str_case_ids: tuple[str, ...]
-    bytes_case_ids: tuple[str, ...]
-    selected_case_ids: tuple[str, ...]
-    uncovered_case_ids: tuple[str, ...]
-    all_case_ids: tuple[str, ...]
-    module_case_ids: tuple[str, ...]
-    pattern_case_ids: tuple[str, ...]
-
-
 def _assert_mixed_text_replacement_surface_loader_contract(
     *,
     spec: ReplacementSurfaceSpec,
     manifest_id: str,
-) -> MixedTextReplacementSurfaceContract:
+) -> tuple[LoadedReplacementSurface, tuple[str, ...]]:
     surface = _load_surface(spec)
     (bundle,) = surface.bundles
     str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
@@ -1533,17 +1520,7 @@ def _assert_mixed_text_replacement_surface_loader_contract(
         selected_case_ids=selected_case_ids,
         expected_uncovered_case_ids=uncovered_case_ids,
     )
-    return MixedTextReplacementSurfaceContract(
-        surface=surface,
-        bundle=bundle,
-        str_case_ids=str_case_ids,
-        bytes_case_ids=bytes_case_ids,
-        selected_case_ids=selected_case_ids,
-        uncovered_case_ids=uncovered_case_ids,
-        all_case_ids=all_case_ids,
-        module_case_ids=module_case_ids,
-        pattern_case_ids=pattern_case_ids,
-    )
+    return surface, selected_case_ids
 
 
 @pytest.mark.parametrize("surface", _selector_surface_params())
@@ -1936,7 +1913,7 @@ def test_broader_range_wider_ranged_repeat_replacement_manifest_keeps_mixed_text
 def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pending_follow_on(
 ) -> None:
     manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
-    contract = _assert_mixed_text_replacement_surface_loader_contract(
+    surface, selected_case_ids = _assert_mixed_text_replacement_surface_loader_contract(
         spec=ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-pending-bytes-contract",
             fixture_selector=NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR,
@@ -1946,17 +1923,16 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
         ),
         manifest_id=manifest_id,
     )
-    surface = contract.surface
 
     assert tuple(case.case_id for case in surface.match_group_access_cases) == ()
     assert tuple(case.case_id for case in surface.template_expand_cases) == (
-        contract.selected_case_ids
+        selected_case_ids
     )
 
 
 def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> None:
     manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID
-    contract = _assert_mixed_text_replacement_surface_loader_contract(
+    surface, selected_case_ids = _assert_mixed_text_replacement_surface_loader_contract(
         spec=ReplacementSurfaceSpec(
             id="mixed-replacement-pending-bytes-contract",
             fixture_selector=(
@@ -1969,20 +1945,19 @@ def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> No
         ),
         manifest_id=manifest_id,
     )
-    surface = contract.surface
 
     assert tuple(case.case_id for case in surface.match_group_access_cases) == (
-        contract.selected_case_ids
+        selected_case_ids
     )
     assert tuple(case.case_id for case in surface.template_expand_cases) == (
-        contract.selected_case_ids
+        selected_case_ids
     )
 
 
 def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_from_selected_frontier(
 ) -> None:
     manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
-    contract = _assert_mixed_text_replacement_surface_loader_contract(
+    surface, selected_case_ids = _assert_mixed_text_replacement_surface_loader_contract(
         spec=ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-mixed-contract",
             fixture_selector=NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR,
@@ -1991,11 +1966,10 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
         ),
         manifest_id=manifest_id,
     )
-    surface = contract.surface
 
     assert tuple(case.case_id for case in surface.match_group_access_cases) == ()
     assert tuple(case.case_id for case in surface.template_expand_cases) == (
-        contract.selected_case_ids
+        selected_case_ids
     )
 
 
