@@ -4,7 +4,7 @@ from collections import Counter
 import pathlib
 import subprocess
 import sys
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from unittest import mock
 
 import pytest
@@ -272,6 +272,61 @@ def test_run_harness_scorecard_loads_json_reports_without_importing_module_loade
     assert scorecard == expected_scorecard
     run_mock.assert_called_once()
     import_module_mock.assert_not_called()
+
+
+def test_run_harness_scorecard_uses_non_json_scorecard_loader_when_available() -> None:
+    expected_summary = {"passing_cases": 1}
+    expected_scorecard = {"suite": "synthetic", "summary": expected_summary}
+    placeholder_payload = "synthetic python scorecard payload"
+
+    def _run_harness_cli(
+        module_name: str,
+        cli_args: list[str],
+        *,
+        check: bool = True,
+    ) -> subprocess.CompletedProcess[str]:
+        assert module_name == "custom.module"
+        assert check is True
+        report_path = _report_path_from_cli_args(cli_args)
+        report_path.write_text(placeholder_payload, encoding="utf-8")
+        return completed_process(
+            "python",
+            "-m",
+            module_name,
+            stdout='{"passing_cases": 1}\n',
+        )
+
+    def _load_scorecard(report_path: pathlib.Path) -> dict[str, object]:
+        assert report_path.name == "scorecard.py"
+        assert report_path.read_text(encoding="utf-8") == placeholder_payload
+        return expected_scorecard
+
+    load_scorecard_mock = mock.Mock(side_effect=_load_scorecard)
+    module = ModuleType("custom.module")
+    module.SCORECARD_REPORT = SimpleNamespace(load=load_scorecard_mock)
+
+    with mock.patch.object(
+        test_support,
+        "run_harness_cli",
+        side_effect=_run_harness_cli,
+    ) as run_mock, mock.patch.object(
+        test_support.importlib,
+        "import_module",
+        return_value=module,
+    ) as import_module_mock:
+        summary, scorecard = run_harness_scorecard(
+            "custom.module",
+            ["--selector", "focused"],
+            report_name="scorecard.py",
+        )
+
+    assert summary == expected_summary
+    assert scorecard == expected_scorecard
+    run_mock.assert_called_once()
+    import_module_mock.assert_called_once_with("custom.module")
+    load_scorecard_mock.assert_called_once()
+    (report_path,) = load_scorecard_mock.call_args.args
+    assert report_path.name == "scorecard.py"
 
 
 def test_run_harness_scorecard_wraps_non_json_import_failures_in_value_error() -> None:
