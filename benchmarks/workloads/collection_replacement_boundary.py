@@ -886,6 +886,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-str-negative-count-purged-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": -1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "negative-count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.sub helper path that keeps the raw negative-count literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-subn-str-count-purged-str",
       "bucket": "module-subn",
       "family": "module",
@@ -941,6 +970,35 @@ MANIFEST = {
       ],
       "notes": [
         "Str module.subn helper path that keeps the raw repeated-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-str-negative-count-purged-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": -1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "literal",
+        "negative-count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.subn helper path that keeps the raw negative-count literal replacement workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

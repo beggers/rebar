@@ -1,6 +1,6 @@
 # RBR-1024: Catch up the raw `re.sub()` / `re.subn()` str negative-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,13 @@ Created: 2026-03-23
   - `rg -n 'module-sub-str-negative-count-purged-str|module-subn-str-negative-count-purged-str' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact Python-path benchmark rows are still absent from the tracked owner-path surfaces;
   - synthetic benchmark probes built through `rebar_harness.benchmarks.Workload.from_dict(...)`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` return `status == "measured"` for both adapters on both hypothetical workloads `module-sub-str-negative-count-purged-str` and `module-subn-str-negative-count-purged-str`, so the benchmark catch-up can stay on the existing Python-path owner route instead of needing another implementation prerequisite first; and
   - `reports/benchmarks/latest.py` currently reports `957` total / `957` measured / `0` known gaps overall, with `module_workloads == 949`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 408, "warm": 445}`, and `collection-replacement-boundary` at `selected_workload_count == 118`, `measured_workloads == 118`, `known_gap_count == 0`, and `workload_count == 118`.
+
+## Completion
+- Added `module-sub-str-negative-count-purged-str` and `module-subn-str-negative-count-purged-str` to `benchmarks/workloads/collection_replacement_boundary.py`, keeping the raw-module literal replacement block on the existing collection/replacement owner-path manifest and ordered as `module-sub-str-no-match-purged-str`, `module-sub-str-single-match-purged-str`, `module-sub-str-repeated-purged-str`, `module-sub-str-negative-count-purged-str`, `module-subn-str-count-purged-str`, `module-subn-str-repeated-purged-str`, `module-subn-str-negative-count-purged-str`, `module-sub-bytes-no-match-purged-bytes`, `module-subn-bytes-count-purged-bytes`, and `module-subn-bytes-repeated-purged-bytes`.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared collection/replacement owner route now selects those ten module literal replacement workload ids in order, accepts `count == -1` on the existing filter, and anchors the two new workloads to `module-sub-str-negative-count` and `module-subn-str-negative-count` with callback-result parity still enabled.
+- Republished `reports/benchmarks/latest.py` on the tracked source-tree-shim path. The tracked report now shows `959` total / `959` measured / `0` known gaps across `30` manifests, with `module_workloads == 951`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 410, "warm": 445}`, and `collection-replacement-boundary` at `selected_workload_count == 120`, `measured_workloads == 120`, `known_gap_count == 0`, and `workload_count == 120`; the matching artifact manifest entry now reports `workload_count == 120`, and both new workload ids publish `status == "measured"`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and str-negative-count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_module_literal_replacement_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1024-module-replacement-str-negative-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
