@@ -1,6 +1,6 @@
 # RBR-0988: Collapse module/pattern collection helper selectors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -224,3 +224,11 @@ PY`
   - the collection-helper contract probe in Verification currently passes (`ok`), confirming the live published fixture order, helper-backed module/pattern slices, and `MODULE_COLLECTION_CASES`/`PATTERN_COLLECTION_CASES` ordering already match the acceptance surface without relying on wrapper-specific behavior; and
   - `rg -n '^def _published_module_collection_cases_for_helper\\(|^def _published_pattern_collection_cases_for_helper\\(' tests/python/test_module_workflow_parity_suite.py` currently finds the duplicated selector pair at lines `1098` and `1109`, so the structural no-match check will fail until this cleanup lands.
 - `RBR-0893` already deleted the older top-level published collection helper-bucket mirrors in this owner file and replaced them with these two wrappers; this task is the bounded follow-on that removes the remaining module-vs-pattern selector duplication without reopening collection manifests or helper behavior.
+
+## Completion
+- Replaced `_published_module_collection_cases_for_helper(...)` and `_published_pattern_collection_cases_for_helper(...)` in `tests/python/test_module_workflow_parity_suite.py` with one shared `_published_collection_fixture_cases_for_owner(...)` selector over the existing published collection fixture rows.
+- Rewired `MODULE_COLLECTION_CASES`, `PATTERN_COLLECTION_CASES`, and `test_literal_collection_direct_test_buckets_cover_selected_frontier()` to derive their published module/pattern `split`, `findall`, and `finditer` buckets from that shared selector while preserving the existing case-id ordering and direct supplemental rows.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'literal_collection_suite or literal_collection_direct_test_buckets_cover_selected_frontier or module_collection or pattern_collection or collection_type_error'` -> `15 passed, 1436 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... PY` -> `ok`
+  - `bash -lc "! rg -n '^def _published_module_collection_cases_for_helper\\(|^def _published_pattern_collection_cases_for_helper\\(' tests/python/test_module_workflow_parity_suite.py"` -> success with no matches
