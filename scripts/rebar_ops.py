@@ -1911,7 +1911,10 @@ def run_write_probe(agent: AgentSpec, config: dict[str, Any]) -> RunResult:
     }
     write_json(metadata_path, metadata)
 
-    effective_exit_code = exit_code if probe_ok and environment_issue is None else max(exit_code, 75)
+    # The probe's only contract is "can the child write here?". If that succeeded and
+    # no sandbox/cache issue was detected, let task dispatch continue even when the
+    # child later exits nonzero because of a transient stream disconnect or rate limit.
+    effective_exit_code = 0 if probe_ok and environment_issue is None else max(exit_code, 75)
     return RunResult(
         agent_name=agent.name,
         agent_kind=agent.kind,

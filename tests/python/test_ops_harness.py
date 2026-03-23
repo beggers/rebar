@@ -587,6 +587,140 @@ Verified with `pytest -q`.
             self.assertTrue((task_root / "in_progress" / "A-architecture.md").exists())
             self.assertTrue(feature_task.exists())
 
+    def test_run_write_probe_tolerates_nonzero_exit_after_successful_probe_write(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        agent = rebar_ops.AgentSpec(
+            name="feature-implementation",
+            kind="task_worker",
+            description="",
+            enabled=True,
+            cycle_order=35,
+            spec_path=REPO_ROOT / "ops" / "agents" / "feature_implementation.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "feature_implementation.md",
+            dispatch={"probe_timeout_seconds": 120},
+            codex={},
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            runtime_root = pathlib.Path(temp_dir)
+            config = {"runtime": {"artifact_dir": str(runtime_root)}}
+            probe_token_holder: dict[str, str] = {}
+
+            def fake_run(*args, **kwargs):
+                prompt = kwargs["input"]
+                token_match = re.search(r"Required contents: `([^`]+)`", prompt)
+                path_match = re.search(r"Probe path: `([^`]+)`", prompt)
+                assert token_match is not None
+                assert path_match is not None
+                probe_token_holder["token"] = token_match.group(1)
+                probe_path = REPO_ROOT / path_match.group(1)
+                probe_path.parent.mkdir(parents=True, exist_ok=True)
+                probe_path.write_text(probe_token_holder["token"] + "\n", encoding="utf-8")
+                return completed_process(
+                    "codex",
+                    returncode=1,
+                    stdout="sandbox: danger-full-access\n",
+                    stderr="ERROR: stream disconnected before completion: Rate limit reached\n",
+                )
+
+            with mock.patch.object(rebar_ops, "build_codex_command", return_value=["codex"]), mock.patch.object(
+                rebar_ops,
+                "build_codex_env",
+                return_value={},
+            ), mock.patch.object(
+                rebar_ops,
+                "requested_sandbox",
+                return_value="danger-full-access",
+            ), mock.patch.object(
+                rebar_ops.subprocess,
+                "run",
+                side_effect=fake_run,
+            ):
+                result = rebar_ops.run_write_probe(agent, config)
+
+            self.assertEqual(result.exit_code, 0)
+            self.assertIsNone(result.environment_issue)
+            metadata = json.loads((result.run_dir / "metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(metadata["exit_code"], 1)
+            self.assertTrue(metadata["probe_ok"])
+
+    def test_dispatch_agent_runs_claimed_task_after_successful_probe_with_transient_nonzero_exit(
+        self,
+    ) -> None:
+        rebar_ops = load_rebar_ops_module()
+        agent = rebar_ops.AgentSpec(
+            name="feature-implementation",
+            kind="task_worker",
+            description="",
+            enabled=True,
+            cycle_order=35,
+            spec_path=REPO_ROOT / "ops" / "agents" / "feature_implementation.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "feature_implementation.md",
+            dispatch={
+                "mode": "task_queue",
+                "queue": "ready",
+                "claim_to": "in_progress",
+                "accepted_owners": ["feature-implementation"],
+                "max_runs_per_cycle": 1,
+                "require_write_probe": True,
+            },
+            codex={},
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            task_root = pathlib.Path(temp_dir) / "ops" / "tasks"
+            for status in ("ready", "in_progress", "done", "blocked"):
+                (task_root / status).mkdir(parents=True, exist_ok=True)
+            ready_task = task_root / "ready" / "RBR-9999.md"
+            ready_task.write_text(
+                "# RBR-9999\n\nStatus: ready\nOwner: feature-implementation\n",
+                encoding="utf-8",
+            )
+            claimed_task = task_root / "in_progress" / "RBR-9999.md"
+            run_result = rebar_ops.RunResult(
+                agent_name=agent.name,
+                agent_kind=agent.kind,
+                run_id="run-1",
+                exit_code=0,
+                timed_out=False,
+                run_dir=REPO_ROOT,
+                task_initial_path=claimed_task,
+                task_final_path=claimed_task,
+                task_final_status="in_progress",
+            )
+
+            with mock.patch.object(
+                rebar_ops,
+                "TASK_ROOT",
+                task_root,
+            ), mock.patch.object(
+                rebar_ops,
+                "run_write_probe",
+                return_value=rebar_ops.RunResult(
+                    agent_name=agent.name,
+                    agent_kind=agent.kind,
+                    run_id="probe-1",
+                    exit_code=0,
+                    timed_out=False,
+                    run_dir=REPO_ROOT,
+                    task_initial_path=None,
+                    task_final_path=None,
+                    task_final_status=None,
+                    environment_issue=None,
+                ),
+            ) as run_probe_mock, mock.patch.object(
+                rebar_ops,
+                "run_agent",
+                return_value=run_result,
+            ) as run_agent_mock:
+                results = rebar_ops.dispatch_agent(agent, {}, {}, force=False)
+
+            self.assertEqual(results, [run_result])
+            run_probe_mock.assert_called_once_with(agent, {})
+            run_agent_mock.assert_called_once_with(agent, {}, task_path=claimed_task)
+            self.assertFalse(ready_task.exists())
+            self.assertTrue(claimed_task.exists())
+
     def test_reroute_misplaced_user_asks_moves_queue_entries_into_supervisor_owned_dirs(
         self,
     ) -> None:
