@@ -582,6 +582,13 @@ class _OwnerPathRow(Protocol[_DirectCaseT]):
     def text_model(self) -> str: ...
 
 
+class _CollectionHelperCase(Protocol):
+    helper: str
+
+
+_CollectionCaseT = TypeVar("_CollectionCaseT", bound=_CollectionHelperCase)
+
+
 @dataclass(frozen=True)
 class WorkflowNumericCoercionCase:
     case_id: str
@@ -1226,16 +1233,11 @@ PATTERN_COLLECTION_CASES = (
 )
 
 
-def _module_collection_cases_for_helper(
+def _collection_cases_for_helper(
+    cases: tuple[_CollectionCaseT, ...],
     helper: str,
-) -> tuple[CollectionModuleCase, ...]:
-    return tuple(case for case in MODULE_COLLECTION_CASES if case.helper == helper)
-
-
-def _pattern_collection_cases_for_helper(
-    helper: str,
-) -> tuple[CollectionPatternCase, ...]:
-    return tuple(case for case in PATTERN_COLLECTION_CASES if case.helper == helper)
+) -> tuple[_CollectionCaseT, ...]:
+    return tuple(case for case in cases if case.helper == helper)
 
 
 BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
@@ -7913,7 +7915,7 @@ def test_module_and_pattern_placeholders_still_surface_for_unsupported_native_re
 
 @pytest.mark.parametrize(
     "case",
-    _module_collection_cases_for_helper("split"),
+    _collection_cases_for_helper(MODULE_COLLECTION_CASES, "split"),
     ids=lambda case: case.case_id,
 )
 def test_module_split_collection_helpers_match_cpython(
@@ -7933,7 +7935,7 @@ def test_module_split_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _pattern_collection_cases_for_helper("split"),
+    _collection_cases_for_helper(PATTERN_COLLECTION_CASES, "split"),
     ids=lambda case: case.case_id,
 )
 def test_pattern_split_collection_helpers_match_cpython(
@@ -7959,7 +7961,7 @@ def test_pattern_split_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _module_collection_cases_for_helper("findall"),
+    _collection_cases_for_helper(MODULE_COLLECTION_CASES, "findall"),
     ids=lambda case: case.case_id,
 )
 def test_module_findall_collection_helpers_match_cpython(
@@ -7979,7 +7981,7 @@ def test_module_findall_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _pattern_collection_cases_for_helper("findall"),
+    _collection_cases_for_helper(PATTERN_COLLECTION_CASES, "findall"),
     ids=lambda case: case.case_id,
 )
 def test_pattern_findall_collection_helpers_match_cpython(
@@ -8005,7 +8007,7 @@ def test_pattern_findall_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _module_collection_cases_for_helper("finditer"),
+    _collection_cases_for_helper(MODULE_COLLECTION_CASES, "finditer"),
     ids=lambda case: case.case_id,
 )
 def test_module_finditer_collection_helpers_match_cpython(
@@ -8024,7 +8026,7 @@ def test_module_finditer_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _module_collection_cases_for_helper("finditer"),
+    _collection_cases_for_helper(MODULE_COLLECTION_CASES, "finditer"),
     ids=lambda case: case.case_id,
 )
 def test_module_finditer_collection_helpers_preserve_match_identity_like_cpython(
@@ -8045,7 +8047,7 @@ def test_module_finditer_collection_helpers_preserve_match_identity_like_cpython
 
 @pytest.mark.parametrize(
     "case",
-    _pattern_collection_cases_for_helper("finditer"),
+    _collection_cases_for_helper(PATTERN_COLLECTION_CASES, "finditer"),
     ids=lambda case: case.case_id,
 )
 def test_pattern_finditer_collection_helpers_match_cpython(
@@ -8070,7 +8072,7 @@ def test_pattern_finditer_collection_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _pattern_collection_cases_for_helper("finditer"),
+    _collection_cases_for_helper(PATTERN_COLLECTION_CASES, "finditer"),
     ids=lambda case: case.case_id,
 )
 def test_pattern_finditer_collection_helpers_preserve_match_identity_like_cpython(
