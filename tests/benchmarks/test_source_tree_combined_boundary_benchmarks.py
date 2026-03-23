@@ -15691,7 +15691,6 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
     case_id: str
     spec: _CompiledPatternModuleHelperKeywordContractSpec
     source_workload_selector: Callable[[], tuple[Workload, ...]]
-    outcome_assertion: Callable[[Workload, Workload, Workload], None]
     precompile_source_workload_selector: Callable[[], tuple[Workload, ...]] | None = None
 
     def source_workloads(self) -> tuple[Workload, ...]:
@@ -15743,6 +15742,65 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         if source_workload.operation == "module.subn":
             return ("module-result", 0)
         return "module-result"
+
+    def run_cpython_helper_workload(
+        self,
+        workload: Workload,
+    ) -> object:
+        compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+        helper_name = workload.operation.removeprefix("module.")
+        helper = getattr(re, helper_name)
+        kwargs = dict(workload.kwargs)
+        positional_keyword_field = _collection_replacement_positional_keyword_field(
+            workload
+        )
+
+        if workload.operation == "module.split":
+            args: list[object] = [compiled_pattern, workload.haystack_payload()]
+            if positional_keyword_field == "maxsplit":
+                args.append(workload.maxsplit)
+            return helper(*args, **kwargs)
+
+        if workload.operation in {"module.sub", "module.subn"}:
+            args = [
+                compiled_pattern,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+            ]
+            if positional_keyword_field == "count":
+                args.append(workload.count)
+            return helper(*args, **kwargs)
+
+        raise AssertionError(
+            "unexpected compiled-pattern module helper keyword workload operation "
+            f"{workload.operation!r}"
+        )
+
+    def assert_outcome(
+        self,
+        source_workload: Workload,
+        workload: Workload,
+        round_tripped: Workload,
+    ) -> None:
+        if self.case_id == "success":
+            assert_benchmark_workload_matches_expected_result(
+                round_tripped,
+                run_benchmark_workload_with_cpython(source_workload),
+            )
+            return
+
+        if self.case_id == "keyword-error":
+            with pytest.raises(TypeError) as expected_error:
+                self.run_cpython_helper_workload(workload)
+            with pytest.raises(TypeError) as observed_error:
+                run_benchmark_workload_with_cpython(round_tripped)
+            assert str(observed_error.value) == str(expected_error.value)
+            return
+
+        raise AssertionError(
+            "unexpected compiled-pattern module helper keyword contract surface "
+            f"{self.case_id!r}"
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -15950,71 +16008,11 @@ def _compiled_pattern_module_helper_keyword_error_source_workloads() -> tuple[Wo
     )
 
 
-def _run_cpython_compiled_pattern_module_helper_keyword_workload(
-    workload: Workload,
-) -> object:
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    helper_name = workload.operation.removeprefix("module.")
-    kwargs = dict(workload.kwargs)
-    positional_keyword_field = _collection_replacement_positional_keyword_field(
-        workload
-    )
-
-    if workload.operation == "module.split":
-        args: list[object] = [compiled_pattern, workload.haystack_payload()]
-        if positional_keyword_field == "maxsplit":
-            args.append(workload.maxsplit)
-        return getattr(re, helper_name)(*args, **kwargs)
-
-    if workload.operation in {"module.sub", "module.subn"}:
-        args = [
-            compiled_pattern,
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-        ]
-        if positional_keyword_field == "count":
-            args.append(workload.count)
-        return getattr(re, helper_name)(*args, **kwargs)
-
-    raise AssertionError(
-        "unexpected compiled-pattern module helper keyword workload operation "
-        f"{workload.operation!r}"
-    )
-
-
-def _assert_compiled_pattern_module_helper_keyword_contract_success_outcome(
-    source_workload: Workload,
-    workload: Workload,
-    round_tripped: Workload,
-) -> None:
-    del workload
-    assert_benchmark_workload_matches_expected_result(
-        round_tripped,
-        run_benchmark_workload_with_cpython(source_workload),
-    )
-
-
-def _assert_compiled_pattern_module_helper_keyword_contract_error_outcome(
-    source_workload: Workload,
-    workload: Workload,
-    round_tripped: Workload,
-) -> None:
-    del source_workload
-    with pytest.raises(TypeError) as expected_error:
-        _run_cpython_compiled_pattern_module_helper_keyword_workload(workload)
-    with pytest.raises(TypeError) as observed_error:
-        run_benchmark_workload_with_cpython(round_tripped)
-    assert str(observed_error.value) == str(expected_error.value)
-
-
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
     _CompiledPatternModuleHelperKeywordContractSurface(
         case_id="success",
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
         source_workload_selector=_compiled_pattern_module_helper_keyword_source_workloads,
-        outcome_assertion=(
-            _assert_compiled_pattern_module_helper_keyword_contract_success_outcome
-        ),
         precompile_source_workload_selector=(
             _compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads
         ),
@@ -16024,9 +16022,6 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
         source_workload_selector=(
             _compiled_pattern_module_helper_keyword_error_source_workloads
-        ),
-        outcome_assertion=(
-            _assert_compiled_pattern_module_helper_keyword_contract_error_outcome
         ),
     ),
 )
@@ -16153,7 +16148,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
             round_tripped,
             spec=contract_surface.spec,
         )
-        contract_surface.outcome_assertion(
+        contract_surface.assert_outcome(
             source_workload,
             workload,
             round_tripped,
@@ -17986,6 +17981,11 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     monkeypatch,
     source_workload: Workload,
 ) -> None:
+    contract_surface = next(
+        surface
+        for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        if surface.case_id == "keyword-error"
+    )
     workload = _source_tree_contract_workload(
         source_workload,
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec(),
@@ -17998,7 +17998,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
         assert observed_field_names == []
 
         with pytest.raises(TypeError) as expected_error:
-            _run_cpython_compiled_pattern_module_helper_keyword_workload(workload)
+            contract_surface.run_cpython_helper_workload(workload)
         with pytest.raises(TypeError) as observed_error:
             callback()
 

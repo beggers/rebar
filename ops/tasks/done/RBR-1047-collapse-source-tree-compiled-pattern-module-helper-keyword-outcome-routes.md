@@ -1,6 +1,6 @@
 ## RBR-1047: Collapse source-tree compiled-pattern module-helper keyword outcome routes
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -56,8 +56,15 @@ Created: 2026-03-23
 - The shared-ready-queue stall rule does not apply in this checkout:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, and `blocked: 0`; and
   - the latest dashboard shows both task workers finishing `done`, with no inherited-dirty checkpoint churn or stalled post-task refresh path.
-- The duplication target is concrete in the live checkout:
-  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently defines `_run_cpython_compiled_pattern_module_helper_keyword_workload(...)` at line `15953`, `_assert_compiled_pattern_module_helper_keyword_contract_success_outcome(...)` at line `15985`, `_assert_compiled_pattern_module_helper_keyword_contract_error_outcome(...)` at line `15997`, and `_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES` at line `16012`;
-  - the targeted pytest slice in Verification already passes (`77 passed, 644 deselected in 0.18s`); and
-  - the negative `rg` check in Verification fails only because those exact helper definitions are still present.
+- The duplication target was concrete at task creation:
+  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` defined `_run_cpython_compiled_pattern_module_helper_keyword_workload(...)`, `_assert_compiled_pattern_module_helper_keyword_contract_success_outcome(...)`, `_assert_compiled_pattern_module_helper_keyword_contract_error_outcome(...)`, and `_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES` as separate file-local routes;
+  - the targeted pytest slice in Verification already passed (`77 passed, 644 deselected in 0.18s`); and
+  - the negative `rg` check in Verification failed only because those exact helper definitions were still present.
 - A broader `-k 'compiled_pattern_module_helper_keyword or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time'` slice is currently red for unrelated drift in `test_collection_replacement_manifest_keeps_compiled_pattern_module_helper_keyword_error_rows_measured` (`10 != 12` measured rows), so the acceptance command is intentionally narrowed to the green slice above.
+
+## Completion Note
+- 2026-03-23: Collapsed the detached compiled-pattern module-helper keyword CPython-dispatch and success/error outcome helpers into `_CompiledPatternModuleHelperKeywordContractSurface` in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, so both the `"success"` and `"keyword-error"` contract surfaces now use the same file-local owner route.
+- Updated the existing contract call sites to use `contract_surface.assert_outcome(...)` and `contract_surface.run_cpython_helper_workload(...)` while preserving the existing success-result, bool-count complement, precompile-before-timing, and keyword-error exception behavior.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_contract or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements or compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions'`
+  - `bash -lc "! rg -n 'def _run_cpython_compiled_pattern_module_helper_keyword_workload\\(|def _assert_compiled_pattern_module_helper_keyword_contract_success_outcome\\(|def _assert_compiled_pattern_module_helper_keyword_contract_error_outcome\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
