@@ -1,6 +1,6 @@
 # RBR-1118: Catch up nested-group alternation branch-local-backreference callable bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -52,3 +52,11 @@ Created: 2026-03-23
   - `ops/tasks/done/RBR-1114-implement-nested-group-alternation-branch-local-backreference-callable-bytes-parity.md` landed the exact bytes runtime path;
   - `ops/tasks/done/RBR-1116-publish-nested-group-alternation-branch-local-backreference-callable-bytes-workflows.md` expanded the correctness manifest to `text_models == ['bytes', 'str']`; and
   - `reports/benchmarks/latest.py` still reports `REPORT["manifests"]["nested-group-callable-replacement-boundary"]["workload_count"] == 96`, with the exact branch-local callable slice present only through the four `str` ids.
+
+## Completion
+- Added the four adjacent exact bytes branch-local-backreference callable workloads on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` owner path without widening the family: numbered module `sub()` and `subn(count=1)` rows for `a((b|c))\\2d`, plus named compiled-pattern `sub()` and `subn(count=1)` rows for `a(?P<outer>(?P<inner>b|c))(?P=inner)d`.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the combined benchmark contract now requires those exact bytes workload ids on the `branch-local-backreference` callable slice and explicitly asserts they are promoted as representative measured rows.
+- Regenerated `reports/benchmarks/latest.py`; the tracked artifact now shows `REPORT["summary"] == {'known_gap_count': 0, 'measured_workloads': 1003, 'module_workloads': 995, 'parser_workloads': 8, 'regression_workloads': 8, 'total_workloads': 1003}`, `REPORT["summary"]["workloads_by_cache_mode"] == {'cold': 104, 'purged': 435, 'warm': 464}`, and `REPORT["manifests"]["nested-group-callable-replacement-boundary"]` with `selected_workload_count == 100`, `measured_workloads == 100`, `known_gap_count == 0`, and `workload_count == 100`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'branch_local_backreference and callable and nested_group'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
