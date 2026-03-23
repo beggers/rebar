@@ -1,6 +1,6 @@
 # RBR-1103: Collapse published manifest cache contracts onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -55,3 +55,10 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:11281` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:11291` encode the benchmark-side copy of the same contract today.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py::test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids tests/python/test_fixture_parity_support_contract.py::test_published_fixture_manifests_cache_clear_reloads_current_default_fixture_paths tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_published_benchmark_manifests_cache_clear_reloads_current_default_selector` returned `4 passed` in this run.
+
+## Completion
+- Added `assert_published_manifest_helper_contract()` to `tests/conftest.py` so shared test support owns the repeated published-helper cache, default-order, manifest-id, and post-`cache_clear()` single-reload assertions.
+- Added direct coverage for that helper in `tests/python/test_shared_test_support_contract.py` with a synthetic cached manifest loader that changes its source order after `cache_clear()`.
+- Replaced the duplicated published-helper cache/order assertion blocks in `tests/python/test_fixture_parity_support_contract.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with calls to the shared helper while leaving correctness-side and benchmark-side uniqueness checks in their existing owner files.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_fixture_parity_support_contract.py::test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids tests/python/test_fixture_parity_support_contract.py::test_published_fixture_manifests_cache_clear_reloads_current_default_fixture_paths tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_published_benchmark_manifests_cache_clear_reloads_current_default_selector`

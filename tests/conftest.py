@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 import importlib
 import json
 import pathlib
@@ -37,6 +37,27 @@ def declared_string_constants_by_suffix(
         for name, value in vars(module).items()
         if name.endswith(name_suffix) and isinstance(value, str)
     }
+
+
+def assert_published_manifest_helper_contract(
+    published_loader: Callable[[], object],
+    *,
+    expected_paths: tuple[pathlib.Path, ...],
+    expected_manifest_ids: tuple[str, ...] | None = None,
+    observed_load_calls: list[tuple[pathlib.Path, ...]] | None = None,
+) -> object:
+    manifests = published_loader()
+
+    assert published_loader() is manifests
+    assert tuple(manifest.path for manifest in manifests) == expected_paths
+
+    if expected_manifest_ids is not None:
+        assert tuple(manifest.manifest_id for manifest in manifests) == expected_manifest_ids
+
+    if observed_load_calls is not None:
+        assert observed_load_calls == [expected_paths]
+
+    return manifests
 
 
 def run_harness_cli(

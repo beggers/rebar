@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from functools import cache
 import pathlib
 import subprocess
 import sys
@@ -12,6 +13,7 @@ import pytest
 import tests.conftest as test_support
 from tests.conftest import (
     REPO_ROOT,
+    assert_published_manifest_helper_contract,
     declared_string_constants_by_suffix,
     duplicate_items,
     duplicate_string_ids,
@@ -95,6 +97,48 @@ def test_declared_string_constants_by_suffix_returns_empty_dict_without_matching
     module.NON_STRING_SELECTOR = 3
 
     assert declared_string_constants_by_suffix(module, name_suffix="_SELECTOR") == {}
+
+
+def test_assert_published_manifest_helper_contract_checks_cache_order_and_post_clear_reload(
+    tmp_path: pathlib.Path,
+) -> None:
+    first_path = tmp_path / "manifest_a.py"
+    second_path = tmp_path / "manifest_b.py"
+    current_paths = [first_path, second_path]
+    loader_calls: list[tuple[pathlib.Path, ...]] = []
+
+    def _load_current_manifests() -> tuple[SimpleNamespace, ...]:
+        paths = tuple(current_paths)
+        loader_calls.append(paths)
+        return tuple(
+            SimpleNamespace(path=path, manifest_id=path.stem)
+            for path in paths
+        )
+
+    @cache
+    def published_manifests() -> tuple[SimpleNamespace, ...]:
+        return _load_current_manifests()
+
+    manifests = assert_published_manifest_helper_contract(
+        published_manifests,
+        expected_paths=(first_path, second_path),
+        expected_manifest_ids=("manifest_a", "manifest_b"),
+    )
+
+    assert loader_calls == [(first_path, second_path)]
+
+    current_paths[:] = [second_path, first_path]
+    loader_calls.clear()
+    published_manifests.cache_clear()
+
+    reloaded_manifests = assert_published_manifest_helper_contract(
+        published_manifests,
+        expected_paths=(second_path, first_path),
+        expected_manifest_ids=("manifest_b", "manifest_a"),
+        observed_load_calls=loader_calls,
+    )
+
+    assert reloaded_manifests is not manifests
 
 
 def test_run_harness_cli_uses_repo_local_pythonpath_and_check_by_default() -> None:

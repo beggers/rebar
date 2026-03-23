@@ -29,7 +29,11 @@ from rebar_harness.correctness import (
 from rebar_harness.scorecard_io import (
     ordered_published_subset_filenames,
 )
-from tests.conftest import declared_string_constants_by_suffix, duplicate_items
+from tests.conftest import (
+    assert_published_manifest_helper_contract,
+    declared_string_constants_by_suffix,
+    duplicate_items,
+)
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -1569,14 +1573,12 @@ def test_fixture_case_module_call_args_require_compiled_pattern_argument(
 
 
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
-    manifests = published_fixture_manifests()
+    manifests = assert_published_manifest_helper_contract(
+        published_fixture_manifests,
+        expected_paths=DEFAULT_FIXTURE_PATHS,
+    )
     cases = [case for manifest in manifests for case in manifest.cases]
 
-    assert published_fixture_manifests() is manifests
-    assert tuple(manifest.path for manifest in manifests) == DEFAULT_FIXTURE_PATHS
-    assert tuple(manifest.path.name for manifest in manifests) == tuple(
-        path.name for path in DEFAULT_FIXTURE_PATHS
-    )
     assert duplicate_items(Counter(manifest.manifest_id for manifest in manifests)) == []
     assert duplicate_items(Counter(manifest.suite_id for manifest in manifests)) == []
     assert duplicate_items(Counter(case.case_id for case in cases)) == []
@@ -2243,15 +2245,15 @@ def test_published_fixture_manifests_cache_clear_reloads_current_default_fixture
     monkeypatch.setattr(correctness, "load_fixture_manifests", _recording_loader)
     correctness.published_fixture_manifests.cache_clear()
     try:
-        manifests = published_fixture_manifests()
-
-        assert tuple(manifest.path for manifest in manifests) == requested_paths
-        assert tuple(manifest.manifest_id for manifest in manifests) == (
-            "cached-correctness-manifest-b",
-            "cached-correctness-manifest-a",
+        assert_published_manifest_helper_contract(
+            published_fixture_manifests,
+            expected_paths=requested_paths,
+            expected_manifest_ids=(
+                "cached-correctness-manifest-b",
+                "cached-correctness-manifest-a",
+            ),
+            observed_load_calls=loader_calls,
         )
-        assert published_fixture_manifests() is manifests
-        assert loader_calls == [requested_paths]
     finally:
         correctness.published_fixture_manifests.cache_clear()
 

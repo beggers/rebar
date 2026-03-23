@@ -42,6 +42,7 @@ from rebar_harness.scorecard_io import (
 )
 from tests.conftest import (
     REPO_ROOT,
+    assert_published_manifest_helper_contract,
     declared_string_constants_by_suffix,
     duplicate_items,
     run_harness_scorecard,
@@ -11279,13 +11280,14 @@ def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
 
 
 def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
-    manifests = published_benchmark_manifests()
     published_manifest_paths = select_benchmark_manifest_paths(
         PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     )
 
-    assert published_benchmark_manifests() is manifests
-    assert tuple(manifest.path for manifest in manifests) == published_manifest_paths
+    assert_published_manifest_helper_contract(
+        published_benchmark_manifests,
+        expected_paths=published_manifest_paths,
+    )
 
 
 def test_published_benchmark_manifests_cache_clear_reloads_current_default_selector(
@@ -11344,15 +11346,15 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
     monkeypatch.setattr(benchmarks, "load_manifests", _recording_loader)
     benchmarks.published_benchmark_manifests.cache_clear()
     try:
-        manifests = published_benchmark_manifests()
-
-        assert tuple(manifest.path for manifest in manifests) == requested_paths
-        assert tuple(manifest.manifest_id for manifest in manifests) == (
-            "cached-benchmark-manifest-b",
-            "cached-benchmark-manifest-a",
+        assert_published_manifest_helper_contract(
+            published_benchmark_manifests,
+            expected_paths=requested_paths,
+            expected_manifest_ids=(
+                "cached-benchmark-manifest-b",
+                "cached-benchmark-manifest-a",
+            ),
+            observed_load_calls=loader_calls,
         )
-        assert published_benchmark_manifests() is manifests
-        assert loader_calls == [requested_paths]
     finally:
         benchmarks.published_benchmark_manifests.cache_clear()
 
