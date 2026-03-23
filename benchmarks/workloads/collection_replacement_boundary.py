@@ -2699,6 +2699,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-no-match-warm-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zzz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "literal",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.sub helper path that keeps the bounded literal no-match replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",
@@ -3478,6 +3506,36 @@ MANIFEST = {
       ],
       "notes": [
         "Purged precompiled Pattern.subn helper path that keeps the bounded wrong-text-model TypeError on str haystacks on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-count-warm-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "literal",
+        "count",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "literal-text",
+        "positional-count"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.subn helper path that keeps the bounded literal single-replacement workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

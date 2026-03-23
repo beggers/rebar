@@ -1,6 +1,6 @@
 # RBR-0989: Catch up the direct `Pattern.sub()` / `Pattern.subn()` literal-success pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,13 @@ Created: 2026-03-23
   - `rg -n 'pattern-sub-no-match-warm-str|pattern-subn-count-warm-str' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while `rg -n 'pattern-sub-str-no-match|pattern-subn-str-count' tests/conformance/fixtures/collection_replacement_workflows.py reports/correctness/latest.py` finds both published correctness anchors, confirming the benchmark ids are still absent from the tracked Python-path benchmark surface;
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... synthetic Workload.from_dict(...) / workload_to_payload(...) / run_internal_workload_probe(...) for pattern-sub-no-match-warm-str and pattern-subn-count-warm-str ... PY` returns `status == "measured"` for both adapters on both synthetic workloads through the current benchmark harness in this checkout; and
   - current published benchmark totals in this checkout are `941` total / `941` measured / `0` known gaps overall, with `collection-replacement-boundary` at `102` selected / `102` measured / `0` known gaps and `102` workload-count rows in both the manifest summary and matching artifact record.
+
+## Completion
+- Added the two direct `Pattern.sub()` / `Pattern.subn()` literal-success workloads on the existing `collection-replacement-boundary` manifest in the required order, keeping them on the shared owner route and leaving the slice benchmark-only.
+- Extended the shared benchmark suite with one direct-`Pattern` literal-replacement measured-rows assertion and one standard anchor-contract definition that maps the new workload ids to `pattern-sub-str-no-match` and `pattern-subn-str-count` with callback-result parity enabled.
+- Regenerated the tracked source-tree-shim benchmark publication in `reports/benchmarks/latest.py`; the tracked report now publishes `943` total / `943` measured / `0` known gaps across `30` manifests, `935` module workloads, `8` parser workloads, `8` regression workloads, and `collection-replacement-boundary` at `104` selected / `104` measured / `104` workload-count rows, with both new workload ids marked `measured`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_pattern_replacement_matches_cpython'` -> `168 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'` -> `2 passed` with `2` subtests passed
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0989-pattern-replacement-literal-success-pair.py` -> temporary narrow report at `104` total / `104` measured / `0` known gaps
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` -> tracked publication refreshed
