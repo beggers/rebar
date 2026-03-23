@@ -81,6 +81,40 @@ MIXED_TEXT_MODELS = frozenset({"str", "bytes"})
 
 CALLABLE_MANIFEST_SPECS = (
     CallableManifestSpec(
+        manifest_id="quantified-nested-group-callable-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-quantified-nested-group-numbered-lower-bound-str",
+                "module-subn-callable-quantified-nested-group-numbered-first-match-only-str",
+                "pattern-sub-callable-quantified-nested-group-numbered-repeated-outer-capture-str",
+                "pattern-subn-callable-quantified-nested-group-numbered-first-match-only-str",
+                "module-sub-callable-quantified-nested-group-named-lower-bound-str",
+                "module-subn-callable-quantified-nested-group-named-first-match-only-str",
+                "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-str",
+                "pattern-subn-callable-quantified-nested-group-named-first-match-only-str",
+                "module-sub-callable-quantified-nested-group-numbered-lower-bound-bytes",
+                "module-subn-callable-quantified-nested-group-numbered-first-match-only-bytes",
+                "pattern-sub-callable-quantified-nested-group-numbered-repeated-outer-capture-bytes",
+                "pattern-subn-callable-quantified-nested-group-numbered-first-match-only-bytes",
+                "module-sub-callable-quantified-nested-group-named-lower-bound-bytes",
+                "module-subn-callable-quantified-nested-group-named-first-match-only-bytes",
+                "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-bytes",
+                "pattern-subn-callable-quantified-nested-group-named-first-match-only-bytes",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((bc)+)d",
+                r"a(?P<outer>(?P<inner>bc)+)d",
+                rb"a((bc)+)d",
+                rb"a(?P<outer>(?P<inner>bc)+)d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+    ),
+    CallableManifestSpec(
         manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
         expected_case_ids=frozenset(
             {

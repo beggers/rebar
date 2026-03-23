@@ -1,6 +1,6 @@
 # RBR-1104: Publish quantified nested-group callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -52,3 +52,12 @@ Created: 2026-03-23
   - `tests/conformance/fixtures/quantified_nested_group_callable_replacement_workflows.py` still publishes only the eight `str` cases for `quantified-nested-group-callable-replacement-workflows`;
   - `reports/correctness/latest.py` still reports `collection.replacement.quantified_nested_group.callable` with `text_models == ['str']`; and
   - the adjacent benchmark owner path in `benchmarks/workloads/nested_group_callable_replacement_boundary.py` already contains the same quantified nested-group family, so correctness catch-up is the next same-family follow-on before any benchmark task.
+
+## Completion
+- Added the adjacent eight bytes callable cases to `tests/conformance/fixtures/quantified_nested_group_callable_replacement_workflows.py` without widening beyond the existing quantified nested-group callable manifest, and updated the combined scorecard expectations plus callable-manifest parity contract to treat the manifest as mixed text.
+- Regenerated `reports/correctness/latest.py` and verified the tracked artifact now reports `1621` total / `1621` passed / `0` failed / `0` unimplemented cases across `114` manifests, with `quantified-nested-group-callable-replacement-workflows` at `16` total / `16` passed and `collection.replacement.quantified_nested_group.callable` publishing `['bytes', 'str']` text models.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified_nested_group and callable and bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified-nested-group-callable-replacement-workflows and (test_callable_replacement_cases_stay_aligned_with_published_fixture or test_mixed_text_callable_manifest_partitions_track_pending_or_landed_bytes_cases)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

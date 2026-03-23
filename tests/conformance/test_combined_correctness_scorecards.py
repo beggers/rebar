@@ -528,6 +528,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-quantified-nested-group-numbered-first-match-only-str",
             "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-str",
             "pattern-subn-callable-quantified-nested-group-named-first-match-only-str",
+            "module-sub-callable-quantified-nested-group-numbered-lower-bound-bytes",
+            "module-subn-callable-quantified-nested-group-named-first-match-only-bytes",
         ),
     ),
     "nested-group-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(

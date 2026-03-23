@@ -275,5 +275,397 @@ MANIFEST = {
                 "Publishes the bounded Pattern.subn named quantified nested-group callable replacement first-match-only path for the same repeated inner-capture slice."
             ],
         },
+        {
+            "id": "module-sub-callable-quantified-nested-group-numbered-lower-bound-bytes",
+            "operation": "module_call",
+            "family": "quantified_nested_group_numbered_outer_callable_workflow",
+            "helper": "sub",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": r"a((bc)+)d",
+                },
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcdzz",
+                },
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "numbered-group",
+                "outer-capture",
+                "lower-bound",
+                "module",
+                "bytes",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded numbered module-level quantified nested-group callable replacement lower-bound path on `abcd` with bytes payloads, so the one-repetition outer capture stays visible on the shared bytes correctness surface."
+            ],
+        },
+        {
+            "id": "module-subn-callable-quantified-nested-group-numbered-first-match-only-bytes",
+            "operation": "module_call",
+            "family": "quantified_nested_group_numbered_inner_callable_count_workflow",
+            "helper": "subn",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": r"a((bc)+)d",
+                },
+                {
+                    "type": "callable_match_group",
+                    "group": 2,
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "<",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": ">",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcbcdabcbcdzz",
+                },
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "numbered-group",
+                "final-inner-capture",
+                "count-limited",
+                "module",
+                "bytes",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the numbered module-level quantified nested-group callable replacement first-match-only path on `abcbcdabcbcd` with bytes payloads, so the final inner capture from the first quantified match stays observable while the second match remains untouched."
+            ],
+        },
+        {
+            "id": "pattern-sub-callable-quantified-nested-group-numbered-repeated-outer-capture-bytes",
+            "operation": "pattern_call",
+            "family": "quantified_nested_group_numbered_outer_callable_workflow",
+            "pattern": r"a((bc)+)d",
+            "helper": "sub",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcbcdzz",
+                },
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "numbered-group",
+                "outer-capture",
+                "repeated-inner-capture",
+                "pattern",
+                "bytes",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded Pattern.sub numbered quantified nested-group callable replacement repeated path on `abcbcd` with bytes payloads, so the outer capture expands to the repeated `bcbc` payload under quantification."
+            ],
+        },
+        {
+            "id": "pattern-subn-callable-quantified-nested-group-numbered-first-match-only-bytes",
+            "operation": "pattern_call",
+            "family": "quantified_nested_group_numbered_inner_callable_count_workflow",
+            "pattern": r"a((bc)+)d",
+            "helper": "subn",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": 2,
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "<",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": ">",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcbcdabcbcdzz",
+                },
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "numbered-group",
+                "final-inner-capture",
+                "count-limited",
+                "pattern",
+                "bytes",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded Pattern.subn numbered quantified nested-group callable replacement first-match-only path for the same repeated inner-capture slice with bytes payloads."
+            ],
+        },
+        {
+            "id": "module-sub-callable-quantified-nested-group-named-lower-bound-bytes",
+            "operation": "module_call",
+            "family": "named_quantified_nested_group_outer_callable_workflow",
+            "helper": "sub",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": r"a(?P<outer>(?P<inner>bc)+)d",
+                },
+                {
+                    "type": "callable_match_group",
+                    "group": "outer",
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcdzz",
+                },
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "named-group",
+                "outer-capture",
+                "lower-bound",
+                "module",
+                "bytes",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded named module-level quantified nested-group callable replacement lower-bound path on `abcd` with bytes payloads, so the one-repetition named outer capture stays explicit on the shared bytes correctness surface."
+            ],
+        },
+        {
+            "id": "module-subn-callable-quantified-nested-group-named-first-match-only-bytes",
+            "operation": "module_call",
+            "family": "named_quantified_nested_group_inner_callable_count_workflow",
+            "helper": "subn",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": r"a(?P<outer>(?P<inner>bc)+)d",
+                },
+                {
+                    "type": "callable_match_group",
+                    "group": "inner",
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "<",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": ">",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcbcdabcbcdzz",
+                },
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "named-group",
+                "final-inner-capture",
+                "count-limited",
+                "module",
+                "bytes",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the named module-level quantified nested-group callable replacement first-match-only path on `abcbcdabcbcd` with bytes payloads, so the final inner named capture from the first quantified match stays visible while the second match remains untouched."
+            ],
+        },
+        {
+            "id": "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-bytes",
+            "operation": "pattern_call",
+            "family": "named_quantified_nested_group_outer_callable_workflow",
+            "pattern": r"a(?P<outer>(?P<inner>bc)+)d",
+            "helper": "sub",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": "outer",
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcbcdzz",
+                },
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "named-group",
+                "outer-capture",
+                "repeated-inner-capture",
+                "pattern",
+                "bytes",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded Pattern.sub named quantified nested-group callable replacement repeated path on `abcbcd` with bytes payloads, so the named outer capture still expands to the repeated `bcbc` payload under quantification."
+            ],
+        },
+        {
+            "id": "pattern-subn-callable-quantified-nested-group-named-first-match-only-bytes",
+            "operation": "pattern_call",
+            "family": "named_quantified_nested_group_inner_callable_count_workflow",
+            "pattern": r"a(?P<outer>(?P<inner>bc)+)d",
+            "helper": "subn",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": "inner",
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "<",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": ">",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "zzabcbcdabcbcdzz",
+                },
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "nested-group",
+                "quantified",
+                "named-group",
+                "final-inner-capture",
+                "count-limited",
+                "pattern",
+                "bytes",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded Pattern.subn named quantified nested-group callable replacement first-match-only path for the same repeated inner-capture slice with bytes payloads."
+            ],
+        },
     ],
 }
