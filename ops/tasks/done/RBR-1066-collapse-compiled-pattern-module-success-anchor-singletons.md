@@ -1,6 +1,6 @@
 # RBR-1066: Collapse compiled-pattern module success anchor singletons
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -76,3 +76,10 @@ Created: 2026-03-23
   - the remaining module-boundary verbose-bytes success anchor test still sits at line `17603`.
 - The focused benchmark slice already passes in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or compiled_pattern_module_collection_replacement_success_rows_stay_anchored_to_published_correctness_cases or compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases or run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_workloads or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing'` returned `43 passed, 680 deselected` in this run.
+
+## Completion Note
+- Replaced the two one-off compiled-pattern success anchor tests with one file-local `_CompiledPatternModuleSuccessAnchorSpec` carrier plus a shared parametrized anchor test, while keeping the existing `CompiledPatternModuleSuccessOwnerSpec` lane for the manifest, probe, and precompile contract coverage.
+- Preserved the anchored contract filenames, workload ids, correctness case ids, and the owner-spec source workload ordering exactly for the collection/replacement and module-boundary verbose-bytes slices.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or compiled_pattern_module_success_rows_stay_anchored_to_published_correctness_cases or run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_workloads or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing'` -> `43 passed, 680 deselected`
+  - `bash -lc "! rg -n '^def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchored_to_published_correctness_cases\\(|^def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> success

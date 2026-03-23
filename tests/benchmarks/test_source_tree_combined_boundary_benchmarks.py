@@ -16502,6 +16502,102 @@ _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
 )
 
 
+@dataclass(frozen=True)
+class _CompiledPatternModuleSuccessAnchorSpec:
+    case_id: str
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec
+    contract_filename: str
+    source_workloads: Callable[
+        [CompiledPatternModuleSuccessOwnerSpec],
+        tuple[Workload, ...],
+    ]
+    correctness_case_signature: Callable[[Any], object]
+    workload_signature: Callable[[Any], object]
+    include_workload: Callable[[Any], bool]
+    expected_anchored_pairs: tuple[tuple[str, str], ...]
+
+    def expected_anchor_case_ids(
+        self,
+        manifest_path: pathlib.Path,
+    ) -> dict[tuple[str, str], tuple[str, ...]]:
+        return _definition_anchor_expectations(
+            manifest_path,
+            {
+                workload_id: (case_id,)
+                for workload_id, case_id in self.expected_anchored_pairs
+            },
+        )
+
+
+_COMPILED_PATTERN_MODULE_SUCCESS_ANCHOR_SPECS = (
+    _CompiledPatternModuleSuccessAnchorSpec(
+        case_id="collection-replacement",
+        owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+        contract_filename=(
+            "python_benchmark_compiled_pattern_collection_replacement_success_anchor_contract.py"
+        ),
+        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
+        correctness_case_signature=(
+            _collection_replacement_compiled_pattern_success_correctness_case_signature
+        ),
+        workload_signature=(
+            _collection_replacement_compiled_pattern_success_workload_signature
+        ),
+        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+        expected_anchored_pairs=(
+            (
+                "module-split-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-split-str-compiled-pattern",
+            ),
+            (
+                "module-findall-literal-purged-bytes-compiled-pattern-contract",
+                "workflow-module-findall-bytes-compiled-pattern",
+            ),
+            (
+                "module-finditer-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-finditer-str-compiled-pattern",
+            ),
+            (
+                "module-sub-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-sub-str-compiled-pattern",
+            ),
+            (
+                "module-subn-literal-purged-bytes-compiled-pattern-contract",
+                "workflow-module-subn-bytes-compiled-pattern",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleSuccessAnchorSpec(
+        case_id="module-boundary-verbose-bytes",
+        owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_boundary_verbose_bytes_contract.py"
+        ),
+        source_workloads=lambda owner_spec: _selected_manifest_workloads(
+            owner_spec.manifest_path,
+            include_workload=(
+                _is_module_workflow_compiled_pattern_verbose_bytes_success_workload
+            ),
+        ),
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        include_workload=_is_module_workflow_compiled_pattern_workload,
+        expected_anchored_pairs=(
+            (
+                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern-contract",
+                "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+            ),
+            (
+                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern-contract",
+                "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+            ),
+        ),
+    ),
+)
+
+
 _COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
     {
         "manifest_id",
@@ -16764,89 +16860,52 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
         )
 
 
-def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchored_to_published_correctness_cases(
+@pytest.mark.parametrize(
+    "anchor_spec",
+    tuple(
+        pytest.param(anchor_spec, id=anchor_spec.case_id)
+        for anchor_spec in _COMPILED_PATTERN_MODULE_SUCCESS_ANCHOR_SPECS
+    ),
+)
+def test_compiled_pattern_module_success_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
+    anchor_spec: _CompiledPatternModuleSuccessAnchorSpec,
 ) -> None:
-    owner_spec = _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
     manifest = _source_tree_contract_manifest(
-        owner_spec.source_workloads(),
-        spec=owner_spec.contract_builder_spec(),
+        anchor_spec.source_workloads(anchor_spec.owner_spec),
+        spec=anchor_spec.owner_spec.contract_builder_spec(),
     )
 
     manifest_path = _write_test_manifest(
         tmp_path,
-        "python_benchmark_compiled_pattern_collection_replacement_success_anchor_contract.py",
+        anchor_spec.contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
-    expected_anchor_case_ids = _definition_anchor_expectations(
-        manifest_path,
-        {
-            "module-split-literal-warm-str-compiled-pattern-contract": (
-                "workflow-module-split-str-compiled-pattern",
-            ),
-            "module-findall-literal-purged-bytes-compiled-pattern-contract": (
-                "workflow-module-findall-bytes-compiled-pattern",
-            ),
-            "module-finditer-literal-warm-str-compiled-pattern-contract": (
-                "workflow-module-finditer-str-compiled-pattern",
-            ),
-            "module-sub-literal-warm-str-compiled-pattern-contract": (
-                "workflow-module-sub-str-compiled-pattern",
-            ),
-            "module-subn-literal-purged-bytes-compiled-pattern-contract": (
-                "workflow-module-subn-bytes-compiled-pattern",
-            ),
-        },
-    )
+    expected_anchor_case_ids = anchor_spec.expected_anchor_case_ids(manifest_path)
     anchor_case_ids = published_case_ids_by_signature(
-        _collection_replacement_compiled_pattern_success_correctness_case_signature
+        anchor_spec.correctness_case_signature
     )
 
     assert anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=(
-            _collection_replacement_compiled_pattern_success_workload_signature
-        ),
-        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+        workload_signature=anchor_spec.workload_signature,
+        include_workload=anchor_spec.include_workload,
     ) == expected_anchor_case_ids
     assert unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=(
-            _collection_replacement_compiled_pattern_success_workload_signature
-        ),
-        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+        workload_signature=anchor_spec.workload_signature,
+        include_workload=anchor_spec.include_workload,
     ) == ()
     assert tuple(
         (pair.workload_id, pair.case_id)
         for pair in expected_anchored_workload_case_pairs(
             manifest_path,
             expected_anchor_case_ids=expected_anchor_case_ids,
-            include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+            include_workload=anchor_spec.include_workload,
         )
-    ) == (
-        (
-            "module-split-literal-warm-str-compiled-pattern-contract",
-            "workflow-module-split-str-compiled-pattern",
-        ),
-        (
-            "module-findall-literal-purged-bytes-compiled-pattern-contract",
-            "workflow-module-findall-bytes-compiled-pattern",
-        ),
-        (
-            "module-finditer-literal-warm-str-compiled-pattern-contract",
-            "workflow-module-finditer-str-compiled-pattern",
-        ),
-        (
-            "module-sub-literal-warm-str-compiled-pattern-contract",
-            "workflow-module-sub-str-compiled-pattern",
-        ),
-        (
-            "module-subn-literal-purged-bytes-compiled-pattern-contract",
-            "workflow-module-subn-bytes-compiled-pattern",
-        ),
-    )
+    ) == anchor_spec.expected_anchored_pairs
 
 
 @pytest.mark.parametrize(
@@ -17598,71 +17657,6 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_
     assert last_call[0] == "compile"
     assert last_call[1] is compiled_pattern
     assert last_call[2:] == (contract_case.callback_flags(source_workload),)
-
-
-def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchored_to_published_correctness_cases(
-    tmp_path: pathlib.Path,
-) -> None:
-    owner_spec = _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
-    manifest = _source_tree_contract_manifest(
-        _selected_manifest_workloads(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            include_workload=(
-                _is_module_workflow_compiled_pattern_verbose_bytes_success_workload
-            ),
-        ),
-        spec=owner_spec.contract_builder_spec(),
-    )
-
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_compiled_pattern_module_boundary_verbose_bytes_contract.py",
-        f"MANIFEST = {manifest!r}\n",
-    )
-    expected_anchor_case_ids = _definition_anchor_expectations(
-        manifest_path,
-        {
-            "module-search-verbose-regression-warm-hit-bytes-compiled-pattern-contract": (
-                "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-            ),
-            "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern-contract": (
-                "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-            ),
-        },
-    )
-    anchor_case_ids = published_case_ids_by_signature(
-        _module_workflow_compiled_pattern_correctness_case_signature
-    )
-
-    assert anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_module_workflow_compiled_pattern_workload_signature,
-        include_workload=_is_module_workflow_compiled_pattern_workload,
-    ) == expected_anchor_case_ids
-    assert unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_module_workflow_compiled_pattern_workload_signature,
-        include_workload=_is_module_workflow_compiled_pattern_workload,
-    ) == ()
-    assert tuple(
-        (pair.workload_id, pair.case_id)
-        for pair in expected_anchored_workload_case_pairs(
-            manifest_path,
-            expected_anchor_case_ids=expected_anchor_case_ids,
-            include_workload=_is_module_workflow_compiled_pattern_workload,
-        )
-    ) == (
-        (
-            "module-search-verbose-regression-warm-hit-bytes-compiled-pattern-contract",
-            "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-        ),
-        (
-            "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern-contract",
-            "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-        ),
-    )
 
 
 @dataclass(frozen=True)
