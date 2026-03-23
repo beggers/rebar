@@ -164,6 +164,43 @@ def test_assert_published_selector_subset_paths_contract_rejects_duplicate_resol
         )
 
 
+def test_assert_published_selector_subset_paths_contract_rejects_duplicate_expected_filenames(
+    tmp_path: pathlib.Path,
+) -> None:
+    alpha_path = tmp_path / "alpha.py"
+    beta_path = tmp_path / "beta.py"
+
+    for path in (alpha_path, beta_path):
+        path.write_text("MANIFEST = {}\n", encoding="utf-8")
+
+    with pytest.raises(AssertionError):
+        assert_published_selector_subset_paths_contract(
+            (alpha_path, beta_path),
+            (alpha_path, beta_path),
+            root_path=tmp_path,
+            expected_filenames=("alpha.py", "alpha.py"),
+        )
+
+
+def test_assert_published_selector_subset_paths_contract_rejects_explicit_filename_order_drift(
+    tmp_path: pathlib.Path,
+) -> None:
+    alpha_path = tmp_path / "alpha.py"
+    beta_path = tmp_path / "beta.py"
+    gamma_path = tmp_path / "gamma.py"
+
+    for path in (alpha_path, beta_path, gamma_path):
+        path.write_text("MANIFEST = {}\n", encoding="utf-8")
+
+    with pytest.raises(AssertionError):
+        assert_published_selector_subset_paths_contract(
+            (gamma_path, alpha_path, beta_path),
+            (beta_path, gamma_path),
+            root_path=tmp_path,
+            expected_filenames=("beta.py", "gamma.py"),
+        )
+
+
 def test_assert_published_manifest_helper_contract_checks_cache_order_and_post_clear_reload(
     tmp_path: pathlib.Path,
 ) -> None:
