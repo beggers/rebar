@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from collections import Counter
+import pathlib
 import subprocess
 import sys
 from types import ModuleType
 from unittest import mock
+
+import pytest
 
 import tests.conftest as test_support
 from tests.conftest import (
@@ -35,6 +38,11 @@ PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parse
 COMPILE_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 )
+
+
+def _report_path_from_cli_args(cli_args: list[str]) -> pathlib.Path:
+    report_index = cli_args.index("--report")
+    return pathlib.Path(cli_args[report_index + 1])
 
 
 def test_duplicate_items_returns_sorted_duplicate_keys_once() -> None:
@@ -219,3 +227,138 @@ def test_run_harness_scorecard_accepts_one_shot_cli_arg_iterators() -> None:
     assert scorecard["fixtures"]["path"] == str(PARSER_FIXTURES_PATH.relative_to(REPO_ROOT))
     assert scorecard["fixtures"]["manifest_id"] == "parser-matrix"
     assert scorecard["summary"] == summary
+
+
+def test_run_harness_scorecard_loads_json_reports_without_importing_module_loader() -> None:
+    expected_summary = {"passing_cases": 1}
+    expected_scorecard = {"suite": "synthetic", "summary": expected_summary}
+
+    def _run_harness_cli(
+        module_name: str,
+        cli_args: list[str],
+        *,
+        check: bool = True,
+    ) -> subprocess.CompletedProcess[str]:
+        assert module_name == "custom.module"
+        assert check is True
+        report_path = _report_path_from_cli_args(cli_args)
+        report_path.write_text(
+            '{"suite": "synthetic", "summary": {"passing_cases": 1}}',
+            encoding="utf-8",
+        )
+        return completed_process(
+            "python",
+            "-m",
+            module_name,
+            stdout='{"passing_cases": 1}\n',
+        )
+
+    with mock.patch.object(
+        test_support,
+        "run_harness_cli",
+        side_effect=_run_harness_cli,
+    ) as run_mock, mock.patch.object(
+        test_support.importlib,
+        "import_module",
+        side_effect=AssertionError("json reports should not import scorecard modules"),
+    ) as import_module_mock:
+        summary, scorecard = run_harness_scorecard(
+            "custom.module",
+            ["--selector", "focused"],
+            report_name="scorecard.json",
+        )
+
+    assert summary == expected_summary
+    assert scorecard == expected_scorecard
+    run_mock.assert_called_once()
+    import_module_mock.assert_not_called()
+
+
+def test_run_harness_scorecard_wraps_non_json_import_failures_in_value_error() -> None:
+    def _run_harness_cli(
+        module_name: str,
+        cli_args: list[str],
+        *,
+        check: bool = True,
+    ) -> subprocess.CompletedProcess[str]:
+        assert module_name == "custom.module"
+        assert check is True
+        _report_path_from_cli_args(cli_args)
+        return completed_process(
+            "python",
+            "-m",
+            module_name,
+            stdout='{"passing_cases": 1}\n',
+        )
+
+    with mock.patch.object(
+        test_support,
+        "run_harness_cli",
+        side_effect=_run_harness_cli,
+    ), mock.patch.object(
+        test_support.importlib,
+        "import_module",
+        side_effect=ImportError("no such module"),
+    ):
+        with pytest.raises(
+            ValueError,
+            match=(
+                "run_harness_scorecard cannot load a non-JSON report for "
+                "'custom.module'"
+            ),
+        ) as exc_info:
+            run_harness_scorecard(
+                "custom.module",
+                ["--selector", "focused"],
+                report_name="scorecard.py",
+            )
+
+    assert isinstance(exc_info.value.__cause__, ImportError)
+    assert str(exc_info.value.__cause__) == "no such module"
+
+
+def test_run_harness_scorecard_wraps_missing_non_json_loader_in_value_error() -> None:
+    def _run_harness_cli(
+        module_name: str,
+        cli_args: list[str],
+        *,
+        check: bool = True,
+    ) -> subprocess.CompletedProcess[str]:
+        assert module_name == "custom.module"
+        assert check is True
+        _report_path_from_cli_args(cli_args)
+        return completed_process(
+            "python",
+            "-m",
+            module_name,
+            stdout='{"passing_cases": 1}\n',
+        )
+
+    module = ModuleType("custom.module")
+
+    with mock.patch.object(
+        test_support,
+        "run_harness_cli",
+        side_effect=_run_harness_cli,
+    ), mock.patch.object(
+        test_support.importlib,
+        "import_module",
+        return_value=module,
+    ):
+        with pytest.raises(
+            ValueError,
+            match=(
+                "run_harness_scorecard cannot load a non-JSON report for "
+                "'custom.module'"
+            ),
+        ) as exc_info:
+            run_harness_scorecard(
+                "custom.module",
+                ["--selector", "focused"],
+                report_name="scorecard.py",
+            )
+
+    assert isinstance(exc_info.value.__cause__, AttributeError)
+    cause_message = str(exc_info.value.__cause__)
+    assert "custom.module" in cause_message
+    assert "SCORECARD_REPORT" in cause_message
