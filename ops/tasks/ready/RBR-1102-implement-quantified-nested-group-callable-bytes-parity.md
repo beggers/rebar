@@ -1,0 +1,55 @@
+# RBR-1102: Implement quantified nested-group callable bytes parity
+
+Status: ready
+Owner: feature-implementation
+Created: 2026-03-23
+
+## Goal
+- Reopen the next adjacent callable-replacement owner path after `RBR-1099` by converting the exact bounded quantified nested-group bytes callable slice from scaffold placeholders to Rust-backed parity before any same-family correctness publication, benchmark catch-up, or broader callable-replacement expansion reenters the queue.
+
+## Pattern Pair
+- `rebar.sub(rb"a((bc)+)d", lambda m: b"<" + m.group(1) + b">", b"zzabcbcdzz")`
+- `rebar.compile(rb"a(?P<outer>(?P<inner>bc)+)d").subn(lambda m: b"<" + m.group("inner") + b">", b"zzabcbcdabcbcdzz", 1)`
+
+## Deliverables
+- `crates/rebar-core/src/lib.rs`
+- `crates/rebar-cpython/src/lib.rs`
+- `python/rebar/__init__.py`
+- `tests/python/test_callable_replacement_parity_suite.py`
+
+## Acceptance Criteria
+- Land the missing quantified nested-group callable bytes runtime support on the existing replacement owner path in Rust, with any Python bridge changes limited to argument normalization, wrapper plumbing, and FFI calls:
+  - the exact numbered module bytes path `rebar.sub(rb"a((bc)+)d", lambda m: b"<" + m.group(1) + b">", b"zzabcbcdzz")` now matches `re.sub(rb"a((bc)+)d", lambda m: b"<" + m.group(1) + b">", b"zzabcbcdzz")` instead of raising the scaffold placeholder;
+  - the exact numbered count-bearing module bytes path `rebar.subn(rb"a((bc)+)d", lambda m: b"<" + m.group(2) + b">", b"zzabcbcdabcbcdzz", 1)` now matches CPython on the same bounded final-inner-capture slice;
+  - the exact named compiled-pattern bytes path `rebar.compile(rb"a(?P<outer>(?P<inner>bc)+)d").sub(lambda m: b"<" + m.group("outer") + b">", b"zzabcbcdzz")` now matches `re.compile(rb"a(?P<outer>(?P<inner>bc)+)d").sub(lambda m: b"<" + m.group("outer") + b">", b"zzabcbcdzz")` instead of raising the scaffold placeholder; and
+  - the exact named compiled-pattern count-bearing bytes path `rebar.compile(rb"a(?P<outer>(?P<inner>bc)+)d").subn(lambda m: b"<" + m.group("inner") + b">", b"zzabcbcdabcbcdzz", 1)` now matches CPython on that same bounded first-match-only slice.
+- Keep the work on the existing callable owner path in `tests/python/test_callable_replacement_parity_suite.py` rather than creating a detached parity file, correctness fixture manifest, or benchmark workload:
+  - add bounded direct quantified nested-group callable bytes parity coverage for the exact numbered module and named compiled-pattern slices above, including the `subn(count=1)` variants;
+  - keep the already-landed grouped and nested-group callable str and bytes direct tests green on the same file; and
+  - keep the adjacent broader fixture-backed callable coverage on the same file green without widening into new correctness publication or benchmark rows in this run.
+- Preserve the existing unsupported boundaries outside this exact slice:
+  - `test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation` in `tests/python/test_fixture_backed_replacement_parity_suite.py` still observes placeholder errors for the flagged/meta/empty module cases it already covers; and
+  - `test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases` in `tests/python/test_fixture_backed_replacement_parity_suite.py` still observes placeholder errors for the flagged/empty compiled-pattern cases it already covers.
+- Do not widen this task into correctness fixture publication, benchmark manifests, reports, README text, or tracked state prose.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified_nested_group and callable and bytes and module'`
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified_nested_group and callable and bytes and pattern'`
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group_callable or grouped_callable'`
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation or test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases'`
+
+## Constraints
+- Keep the implementation bounded to the exact quantified nested-group bytes callable slice above. Leave correctness publication, benchmark catch-up, quantified nested-group alternation follow-ons, and broader callable-replacement expansion for later tasks.
+- New compatibility behavior belongs in Rust. Do not solve this by expanding Python-only fallback execution beyond the existing wrapper and bridge responsibilities.
+- Preserve the current callable callback semantics for the already-landed grouped and nested-group callable slices while widening only the bytes quantified nested-group capture visibility needed for this exact follow-on.
+
+## Notes
+- `RBR-1102` is the next available unreserved feature task id in this checkout:
+  - `ops/tasks/done/` currently runs through `RBR-1101`;
+  - `ops/tasks/ready/`, `ops/tasks/in_progress/`, and `ops/tasks/blocked/` contain no live feature task file; and
+  - `rg -n 'RBR-1102|RBR-1103|RBR-1104' ops/tasks ops/state -g '*.md'` returned no live reservation in this run.
+- No blocked feature task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in this checkout.
+- `RBR-1099` explicitly left broader same-family callable replacement expansion for later work on this owner family, and the narrow owner-path check in this run shows the next bounded missing slice is the quantified nested-group bytes implementation prerequisite rather than another publication-only catch-up task:
+  - `tests/conformance/fixtures/quantified_nested_group_callable_replacement_workflows.py` and `reports/correctness/latest.py` still publish only the `str` rows for `quantified-nested-group-callable-replacement-workflows`, with no adjacent bytes ids on that existing correctness owner path;
+  - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` and `reports/benchmarks/latest.py` likewise contain no adjacent quantified nested-group bytes workload ids on that same benchmark owner path; and
+  - exact `.venv` public-path probes in this run showed `rebar.sub(rb"a((bc)+)d", lambda m: b"<" + m.group(1) + b">", b"zzabcbcdzz")` and `rebar.compile(rb"a(?P<outer>(?P<inner>bc)+)d").subn(lambda m: b"<" + m.group("inner") + b">", b"zzabcbcdabcbcdzz", 1)` still raise scaffold `NotImplementedError`, while the corresponding stdlib `re` calls return `b"zz<bcbc>zz"` and `(b"zz<bc>abcbcdzz", 1)`.
