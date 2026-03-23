@@ -15810,6 +15810,37 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
             label="module helper keyword",
         )
 
+    def expected_callback_call(
+        self,
+        source_workload: Workload,
+    ) -> tuple[object, ...]:
+        if source_workload.operation == "module.split":
+            return (
+                source_workload.operation,
+                source_workload.haystack_payload(),
+                source_workload.maxsplit,
+                source_workload.flags,
+                source_workload.kwargs,
+            )
+        if source_workload.operation in {"module.sub", "module.subn"}:
+            return (
+                source_workload.operation,
+                source_workload.replacement_payload(),
+                source_workload.haystack_payload(),
+                source_workload.count,
+                source_workload.flags,
+                source_workload.kwargs,
+            )
+        raise AssertionError(
+            "unexpected compiled-pattern module helper keyword workload operation "
+            f"{source_workload.operation!r}"
+        )
+
+    def expected_callback_result(self, source_workload: Workload) -> object:
+        if source_workload.operation == "module.subn":
+            return ("module-result", 0)
+        return "module-result"
+
 
 @dataclass(frozen=True, slots=True)
 class _SourceTreeContractBuilderSpec:
@@ -16031,40 +16062,6 @@ def _compiled_pattern_contract_expected_build_calls(
         f"unexpected compiled-pattern {label} workload cache mode "
         f"{source_workload.cache_mode!r}"
     )
-
-
-def _compiled_pattern_module_helper_contract_expected_callback_call(
-    source_workload: Workload,
-) -> tuple[object, ...]:
-    if source_workload.operation == "module.split":
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            source_workload.maxsplit,
-            source_workload.flags,
-            source_workload.kwargs,
-        )
-    if source_workload.operation in {"module.sub", "module.subn"}:
-        return (
-            source_workload.operation,
-            source_workload.replacement_payload(),
-            source_workload.haystack_payload(),
-            source_workload.count,
-            source_workload.flags,
-            source_workload.kwargs,
-        )
-    raise AssertionError(
-        "unexpected compiled-pattern module helper keyword workload operation "
-        f"{source_workload.operation!r}"
-    )
-
-
-def _compiled_pattern_module_helper_contract_expected_callback_result(
-    source_workload: Workload,
-) -> object:
-    if source_workload.operation == "module.subn":
-        return ("module-result", 0)
-    return "module-result"
 
 
 def _compiled_pattern_module_helper_keyword_error_source_workloads() -> tuple[Workload, ...]:
@@ -16364,9 +16361,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
     source_workload: Workload,
 ) -> None:
     expected_build_calls = contract_surface.expected_build_calls(source_workload)
-    expected_callback_call = (
-        _compiled_pattern_module_helper_contract_expected_callback_call(source_workload)
-    )
+    expected_callback_call = contract_surface.expected_callback_call(source_workload)
     module = _RecordingBenchmarkModule()
     callback = build_callable(
         module,
@@ -16379,9 +16374,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
-    assert callback() == _compiled_pattern_module_helper_contract_expected_callback_result(
-        source_workload
-    )
+    assert callback() == contract_surface.expected_callback_result(source_workload)
 
     compiled_pattern = module.compiled_patterns[0]
     last_call = module.calls[-1]
