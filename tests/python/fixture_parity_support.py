@@ -588,6 +588,26 @@ def assert_mixed_text_model_case_pairs(
             f"got {actual_bytes_case_ids}"
         )
 
+    def _normalize_mixed_text_payload(value: object) -> object:
+        if isinstance(value, bytes):
+            return value.decode("latin-1")
+        if isinstance(value, list):
+            return [_normalize_mixed_text_payload(item) for item in value]
+        if isinstance(value, tuple):
+            return tuple(_normalize_mixed_text_payload(item) for item in value)
+        if isinstance(value, dict):
+            if (
+                value.get("type") == "bytes"
+                and isinstance(value.get("encoding"), str)
+                and isinstance(value.get("value"), str)
+            ):
+                return value["value"]
+            return {
+                key: _normalize_mixed_text_payload(item)
+                for key, item in value.items()
+            }
+        return value
+
     drift_messages: list[str] = []
     for str_case, bytes_case in zip(str_cases, bytes_cases):
         if str_case.operation != bytes_case.operation:
@@ -627,6 +647,20 @@ def assert_mixed_text_model_case_pairs(
         if str_case.include_pattern_arg != bytes_case.include_pattern_arg:
             drift_messages.append(
                 f"{str_case.case_id}/{bytes_case.case_id} include-pattern routing drifted"
+            )
+        if _normalize_mixed_text_payload(str_case.source_args) != _normalize_mixed_text_payload(
+            bytes_case.source_args
+        ):
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} source args drifted: "
+                f"{str_case.source_args!r} != {bytes_case.source_args!r}"
+            )
+        if _normalize_mixed_text_payload(str_case.args) != _normalize_mixed_text_payload(
+            bytes_case.args
+        ):
+            drift_messages.append(
+                f"{str_case.case_id}/{bytes_case.case_id} args drifted: "
+                f"{str_case.args!r} != {bytes_case.args!r}"
             )
         if str_case.kwargs != bytes_case.kwargs:
             drift_messages.append(

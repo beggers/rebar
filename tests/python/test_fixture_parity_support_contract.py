@@ -517,6 +517,16 @@ def test_assert_mixed_text_model_case_pairs_rejects_pairing_drift(
             id="include-pattern-routing",
         ),
         pytest.param(
+            {"source_args": [rb"(?P<word>abc)", b"zzabdzz"]},
+            "source args drifted",
+            id="source-args",
+        ),
+        pytest.param(
+            {"args": [rb"(?P<word>abc)", b"zzabdzz"]},
+            "args drifted",
+            id="args",
+        ),
+        pytest.param(
             {"kwargs": {"pos": 1}},
             "kwargs drifted",
             id="kwargs",
