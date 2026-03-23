@@ -4723,6 +4723,32 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
 
         self.assertEqual(len(suite_ids), len(set(suite_ids)))
 
+    def test_suite_registry_manifest_expectations_keep_nonempty_unique_representative_case_ids(
+        self,
+    ) -> None:
+        for suite in tracked_correctness_scorecard_suites():
+            for manifest_id, expectation in suite.expectation_table.items():
+                with self.subTest(
+                    suite_id=suite.suite_id,
+                    manifest_id=manifest_id,
+                ):
+                    self.assertNotEqual(
+                        expectation.representative_case_ids,
+                        (),
+                        msg=(
+                            f"{suite.suite_id} manifest {manifest_id!r} should keep "
+                            "at least one representative case id"
+                        ),
+                    )
+                    self.assertEqual(
+                        len(expectation.representative_case_ids),
+                        len(set(expectation.representative_case_ids)),
+                        msg=(
+                            f"{suite.suite_id} manifest {manifest_id!r} repeats "
+                            "representative case ids"
+                        ),
+                    )
+
     def test_tracked_report_freshness_helpers_follow_registry_and_fixture_order(
         self,
     ) -> None:
