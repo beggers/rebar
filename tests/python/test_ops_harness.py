@@ -1082,6 +1082,17 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertEqual(baseline["executable"], sys.executable)
         self.assertEqual(baseline["re_module"], "re")
 
+    def test_scorecard_ordered_published_subset_filenames_deduplicates_requested_names(
+        self,
+    ) -> None:
+        ordered_subset = scorecard_io.ordered_published_subset_filenames(
+            ("gamma.py", "alpha.py", "beta.py", "delta.py"),
+            ("beta.py", "alpha.py", "beta.py", "alpha.py"),
+            missing_filename_error_prefix="unknown published filename(s): ",
+        )
+
+        self.assertEqual(ordered_subset, ("alpha.py", "beta.py"))
+
     def test_scorecard_build_published_subset_registry_preserves_published_order(
         self,
     ) -> None:
@@ -1105,6 +1116,25 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertEqual(registry["published-full-suite"], published_filenames)
         self.assertEqual(registry["module-surface"], ("alpha.py", "beta.py"))
         self.assertEqual(registry["single-file"], ("delta.py",))
+
+    def test_scorecard_build_published_subset_registry_deduplicates_requested_names(
+        self,
+    ) -> None:
+        registry = scorecard_io.build_published_subset_registry(
+            ("gamma.py", "alpha.py", "beta.py", "delta.py"),
+            {
+                "module-surface": (
+                    "beta.py",
+                    "alpha.py",
+                    "beta.py",
+                    "alpha.py",
+                ),
+            },
+            full_suite_selector="published-full-suite",
+            missing_filename_error_prefix="unknown published filename(s): ",
+        )
+
+        self.assertEqual(registry["module-surface"], ("alpha.py", "beta.py"))
 
     def test_scorecard_build_published_subset_registry_rejects_unknown_requested_filenames(
         self,
