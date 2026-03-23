@@ -6,7 +6,6 @@ Primary responsibilities:
 - Convert one concrete simplification finding into a concrete architecture task when the queue actually needs more architecture work.
 - Do at most one architecture-sized piece of work in a run.
 - Drive the repo toward one legible Python parity harness and one legible Python benchmark harness, with as little bespoke glue and checked-in fixture data as possible.
-- Prioritize code quality in the harness and the `rebar` library itself.
 - Treat elimination of JSON blobs and other non-standard architecture patterns as the highest-priority simplification target.
 
 Required behavior:
@@ -18,7 +17,7 @@ Required behavior:
 6. Check the current `tracked_json_blob_count` and `tracked_json_blob_delta` in `.rebar/runtime/dashboard.md` or `.rebar/runtime/loop_state.json`, but treat those values as lagging whenever the checkout is dirty or the runtime report is behind `HEAD`.
 7. When the tracked count may be stale, cross-check both `git ls-files '*.json' | wc -l` and `rg --files -g '*.json' | wc -l`; use the live filesystem count to size the next burn-down task and call out the lag if the counts differ.
 8. If tracked JSON or the live filesystem JSON count remains nonzero, queue a task whose primary acceptance criteria reduce that live count or delete plumbing that exists only to support tracked JSON.
-9. Only fall back to duplicate-fixture, duplicate-workload, report-plumbing, or boundary-clarity tasks after both counts reach zero.
+9. Only fall back to duplicate-fixture, duplicate-workload, report-plumbing, or boundary-clarity tasks after both counts reach zero, and keep those fallbacks focused on shared or cross-file structural payoff rather than local test tidy-ups.
 10. If the ready queue already contains concrete `feature-implementation` work and recent runtime artifacts show inherited-dirty checkpoint churn or another stalled post-task refresh/commit path, do only the minimal queue/runtime check needed to confirm the stall and then no-op cleanly instead of seeding another architecture task into the same bottleneck.
 11. Before inventing a new architecture task, inspect the newest blocked architecture task. If its blocker was an out-of-scope feature or reporting drift that has since landed, first inspect the task's scoped target files plus recent done-task notes or commits to confirm the cleanup is still missing. If the checkout already reflects the task's intended end state and its acceptance command is green, move that exact task to `ops/tasks/done/` with a short stale-queue note instead of reopening it. Otherwise, if the task is still otherwise bounded, move that exact task back to `ops/tasks/ready/` with any minimal refinement it now needs instead of minting a sibling.
 12. If the first simplification you inspect is not viable against the current checkout, keep looking and queue the next concrete cleanup/refactor task instead of defaulting to a no-op, unless rule 10 applies or every remaining candidate still depends on work outside the architecture lane landing first.
@@ -37,6 +36,7 @@ Constraints:
 - Prefer deleting or consolidating machinery over adding new abstractions.
 - Do not spend the run on duplicated-wrapper or general clarity work while tracked JSON or the live filesystem JSON count is still nonzero.
 - Once tracked JSON and the live filesystem JSON count both reach zero, favor tasks that shrink duplicated fixtures, duplicated benchmark rows, duplicate report plumbing, redundant wrappers, or unnecessary architectural layers.
+- Once tracked JSON and the live filesystem JSON count both reach zero, do not queue single-file pytest collection-id, `ids=lambda`, monkeypatch-lambda, or other local naming-only cleanups unless the task also removes a shared helper, shared wrapper, or another cross-file layer.
 - Prefer rearchitecture tasks that replace bespoke JSON-heavy harness plumbing with ordinary Python tests, helpers, and workload definitions when they preserve or improve coverage.
 - Do not queue tasks whose main effect would be new features or broad test deletion; architecture tasks should change structure, clarity, and representation.
 
