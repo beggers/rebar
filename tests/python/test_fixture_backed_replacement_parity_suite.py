@@ -987,10 +987,6 @@ def _cases_for_manifest_ids(
     )
 
 
-def _case_ids(cases: tuple[FixtureCase, ...]) -> tuple[str, ...]:
-    return tuple(case.case_id for case in cases)
-
-
 def _case_ids_for_manifest(
     cases: tuple[FixtureCase, ...],
     manifest_id: str,
@@ -1008,14 +1004,16 @@ def _mixed_text_replacement_manifest_routing(
     str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
 
     return MixedTextReplacementManifestRouting(
-        str_case_ids=_case_ids(str_cases),
-        bytes_case_ids=_case_ids(bytes_cases),
-        bundle_case_ids=_case_ids(bundle.cases),
-        expected_module_case_ids=_case_ids(
-            fixture_cases_for_operation((bundle,), "module_call")
+        str_case_ids=tuple(case.case_id for case in str_cases),
+        bytes_case_ids=tuple(case.case_id for case in bytes_cases),
+        bundle_case_ids=tuple(case.case_id for case in bundle.cases),
+        expected_module_case_ids=tuple(
+            case.case_id
+            for case in fixture_cases_for_operation((bundle,), "module_call")
         ),
-        expected_pattern_case_ids=_case_ids(
-            fixture_cases_for_operation((bundle,), "pattern_call")
+        expected_pattern_case_ids=tuple(
+            case.case_id
+            for case in fixture_cases_for_operation((bundle,), "pattern_call")
         ),
         shared_replacement_case_ids=_case_ids_for_manifest(
             surface.replacement_cases,
