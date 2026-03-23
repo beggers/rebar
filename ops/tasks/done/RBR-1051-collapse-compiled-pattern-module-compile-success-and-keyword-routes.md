@@ -1,6 +1,6 @@
 # RBR-1051: Collapse compiled-pattern `module.compile` success and keyword routes
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -62,3 +62,8 @@ Created: 2026-03-23
   - the class still fans the same success-versus-keyword split across eight `if self._uses_keyword_flags()` branches at lines `16878`, `16886`, `16897`, `16908`, `16919`, `16943`, `16959`, and `16964`; and
   - those branches still drive source-workload selection, payload-round-trip expectations, signature routing, and callback/CPython dispatch for the same compile-contract surface.
 - The focused pytest slice in Verification already passes in the current checkout (`74 passed, 647 deselected in 0.22s`), and the negative `rg` check fails only because the targeted branch fanout still exists.
+
+## Completion Note
+- 2026-03-23: Added a shared file-local `_CompiledPatternModuleCompileContractRoute` in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and rewired `CompiledPatternModuleCompileContractCase` so the success case and every keyword case delegate drift labeling, excluded fields, notes, signature selection, workload inclusion, payload round trips, CPython dispatch, and callback flags through that route instead of branching on `_uses_keyword_flags()`.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_compile_success_and_keyword_contract_rows_stay_anchored_to_published_correctness_cases or compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing'` (`74 passed, 647 deselected in 0.67s`).
+- Verified branch removal with `bash -lc "! rg -n 'def _uses_keyword_flags\\(|if self\\._uses_keyword_flags\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.
