@@ -15784,6 +15784,30 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
             notes=self.notes,
         )
 
+    def expected_materialized_field_names(
+        self,
+        source_workload: Workload,
+    ) -> tuple[str, ...]:
+        if self.materializes_positional_keyword_field:
+            field_names: list[str] = []
+            positional_keyword_field = _collection_replacement_positional_keyword_field(
+                source_workload
+            )
+            if positional_keyword_field is not None:
+                field_names.append(positional_keyword_field)
+            field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
+            return tuple(field_names)
+
+        keyword_parameter = _collection_replacement_keyword_parameter_name(
+            source_workload
+        )
+        if keyword_parameter is None:
+            raise AssertionError(
+                "unexpected compiled-pattern module helper keyword workload "
+                f"{source_workload.workload_id!r}"
+            )
+        return (f"kwargs.{keyword_parameter}",)
+
 
 @dataclass(frozen=True, slots=True)
 class _CompiledPatternModuleHelperKeywordContractSurface:
@@ -16024,30 +16048,6 @@ def _assert_compiled_pattern_module_helper_contract_payload_round_trip(
         if type(value) is bool:
             assert type(payload["kwargs"][name]) is bool
             assert type(round_tripped.kwargs[name]) is bool
-
-
-def _compiled_pattern_module_helper_contract_expected_field_names(
-    source_workload: Workload,
-    *,
-    spec: _CompiledPatternModuleHelperKeywordContractSpec,
-) -> tuple[str, ...]:
-    if spec.materializes_positional_keyword_field:
-        field_names: list[str] = []
-        positional_keyword_field = _collection_replacement_positional_keyword_field(
-            source_workload
-        )
-        if positional_keyword_field is not None:
-            field_names.append(positional_keyword_field)
-        field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
-        return tuple(field_names)
-
-    keyword_parameter = _collection_replacement_keyword_parameter_name(source_workload)
-    if keyword_parameter is None:
-        raise AssertionError(
-            "unexpected compiled-pattern module helper keyword workload "
-            f"{source_workload.workload_id!r}"
-    )
-    return (f"kwargs.{keyword_parameter}",)
 
 
 def _compiled_pattern_contract_expected_build_calls(
@@ -16303,9 +16303,8 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
         workload,
         expected_result=run_benchmark_workload_with_cpython(source_workload),
         expected_field_names=(
-            _compiled_pattern_module_helper_contract_expected_field_names(
-                source_workload,
-                spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
+                source_workload
             )
         ),
     )
@@ -18063,9 +18062,8 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
             callback()
 
         assert observed_field_names == list(
-            _compiled_pattern_module_helper_contract_expected_field_names(
-                source_workload,
-                spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_materialized_field_names(
+                source_workload
             )
         )
         assert str(observed_error.value) == str(expected_error.value)
