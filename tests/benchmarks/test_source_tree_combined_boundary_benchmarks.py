@@ -1957,13 +1957,21 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     _combined_slice_expectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="quantified-nested-group",
-        required_syntax_features=("callable-replacement", "quantifiers"),
+        required_syntax_features=(
+            "callable-replacement",
+            "pattern-text-model",
+            "quantifiers",
+        ),
         excluded_syntax_features=("alternation", "branch-local-backreferences"),
         expected_workload_ids=(
             "module-sub-callable-numbered-quantified-nested-group-lower-bound-warm-str",
             "module-subn-callable-numbered-quantified-nested-group-first-match-only-warm-str",
             "pattern-sub-callable-named-quantified-nested-group-repeated-outer-purged-str",
             "pattern-subn-callable-named-quantified-nested-group-purged-gap",
+            "module-sub-callable-numbered-quantified-nested-group-lower-bound-warm-bytes",
+            "module-subn-callable-numbered-quantified-nested-group-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-quantified-nested-group-repeated-outer-purged-bytes",
+            "pattern-subn-callable-named-quantified-nested-group-first-match-only-purged-bytes",
         ),
         expected_patterns={
             r"a((bc)+)d",
@@ -1976,6 +1984,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "replacement",
             "callable",
             "quantified",
+            "bytes",
         ),
     ),
     _combined_slice_expectation(
@@ -5698,11 +5707,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 991,
-                "module_workloads": 983,
+                "measured_workloads": 995,
+                "module_workloads": 987,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 991,
+                "total_workloads": 995,
             },
         )
 
@@ -5997,6 +6006,32 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             "module-subn-callable-nested-group-named-warm-bytes",
             "pattern-sub-callable-nested-group-named-purged-bytes",
             "pattern-subn-callable-nested-group-named-purged-bytes",
+        )
+
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                "nested-group-callable-replacement-boundary"
+            ),
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
+                self.assertNotIn(
+                    workload_id,
+                    case.representative_known_gap_workload_ids,
+                )
+
+    def test_nested_group_callable_replacement_scorecard_promotes_quantified_nested_group_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        expected_workload_ids = (
+            "module-sub-callable-numbered-quantified-nested-group-lower-bound-warm-bytes",
+            "module-subn-callable-numbered-quantified-nested-group-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-quantified-nested-group-repeated-outer-purged-bytes",
+            "pattern-subn-callable-named-quantified-nested-group-first-match-only-purged-bytes",
         )
 
         self.assertEqual(

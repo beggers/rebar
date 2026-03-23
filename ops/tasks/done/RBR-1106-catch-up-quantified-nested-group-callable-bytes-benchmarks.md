@@ -1,6 +1,6 @@
 # RBR-1106: Catch up quantified nested-group callable bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -50,3 +50,12 @@ Created: 2026-03-23
 - The existing benchmark contract already pins the exact same owner path and slice boundary:
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` defines the `quantified-nested-group` slice on `nested-group-callable-replacement-boundary` with the four current str ids; and
   - the bytes callable runtime prerequisite is already satisfied by `RBR-1102`, so this is publication catch-up rather than another implementation prerequisite.
+
+## Completion
+- Added the adjacent bytes quantified callable benchmark quartet to `benchmarks/workloads/nested_group_callable_replacement_boundary.py` without widening beyond the existing owner-path slice, keeping the original `str` quantified rows in place and publishing mixed-text representative ids for the same bounded haystacks.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the `quantified-nested-group` slice contract explicitly requires the new bytes ids, the published full-suite summary expectation moves to `995` total / `995` measured / `0` known gaps, and the scorecard representative checks assert the bytes quartet is promoted to measured rows on `nested-group-callable-replacement-boundary`.
+- Regenerated the tracked `reports/benchmarks/latest.py` artifact and verified the committed publication now reports `995` total / `995` measured / `0` known gaps overall, with `nested-group-callable-replacement-boundary` at `92` selected / `92` measured / `0` known gaps and the new bytes quantified callable ids present in the tracked workload list.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'quantified_nested_group and callable'`
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
