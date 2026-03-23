@@ -31,6 +31,7 @@ from rebar_harness.scorecard_io import (
 )
 from tests.conftest import (
     assert_published_manifest_helper_contract,
+    assert_published_manifest_helper_reload_contract,
     declared_string_constants_by_suffix,
     duplicate_items,
 )
@@ -2243,19 +2244,16 @@ def test_published_fixture_manifests_cache_clear_reloads_current_default_fixture
 
     monkeypatch.setattr(correctness, "DEFAULT_FIXTURE_PATHS", requested_paths)
     monkeypatch.setattr(correctness, "load_fixture_manifests", _recording_loader)
-    correctness.published_fixture_manifests.cache_clear()
-    try:
-        assert_published_manifest_helper_contract(
-            published_fixture_manifests,
-            expected_paths=requested_paths,
-            expected_manifest_ids=(
-                "cached-correctness-manifest-b",
-                "cached-correctness-manifest-a",
-            ),
-            observed_load_calls=loader_calls,
-        )
-    finally:
-        correctness.published_fixture_manifests.cache_clear()
+    assert_published_manifest_helper_reload_contract(
+        published_fixture_manifests,
+        clear_cache=correctness.published_fixture_manifests.cache_clear,
+        expected_paths=requested_paths,
+        expected_manifest_ids=(
+            "cached-correctness-manifest-b",
+            "cached-correctness-manifest-a",
+        ),
+        observed_load_calls=loader_calls,
+    )
 
 
 def test_direct_test_case_id_bucket_helper_accepts_exact_selected_frontier_coverage(

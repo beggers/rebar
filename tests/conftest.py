@@ -60,6 +60,26 @@ def assert_published_manifest_helper_contract(
     return manifests
 
 
+def assert_published_manifest_helper_reload_contract(
+    published_loader: Callable[[], object],
+    *,
+    clear_cache: Callable[[], None],
+    expected_paths: tuple[pathlib.Path, ...],
+    expected_manifest_ids: tuple[str, ...] | None = None,
+    observed_load_calls: list[tuple[pathlib.Path, ...]] | None = None,
+) -> object:
+    clear_cache()
+    try:
+        return assert_published_manifest_helper_contract(
+            published_loader,
+            expected_paths=expected_paths,
+            expected_manifest_ids=expected_manifest_ids,
+            observed_load_calls=observed_load_calls,
+        )
+    finally:
+        clear_cache()
+
+
 def run_harness_cli(
     module_name: str,
     cli_args: Iterable[str],

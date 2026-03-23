@@ -43,6 +43,7 @@ from rebar_harness.scorecard_io import (
 from tests.conftest import (
     REPO_ROOT,
     assert_published_manifest_helper_contract,
+    assert_published_manifest_helper_reload_contract,
     declared_string_constants_by_suffix,
     duplicate_items,
     run_harness_scorecard,
@@ -11344,19 +11345,16 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
 
     monkeypatch.setattr(benchmarks, "select_benchmark_manifest_paths", _recording_selector)
     monkeypatch.setattr(benchmarks, "load_manifests", _recording_loader)
-    benchmarks.published_benchmark_manifests.cache_clear()
-    try:
-        assert_published_manifest_helper_contract(
-            published_benchmark_manifests,
-            expected_paths=requested_paths,
-            expected_manifest_ids=(
-                "cached-benchmark-manifest-b",
-                "cached-benchmark-manifest-a",
-            ),
-            observed_load_calls=loader_calls,
-        )
-    finally:
-        benchmarks.published_benchmark_manifests.cache_clear()
+    assert_published_manifest_helper_reload_contract(
+        published_benchmark_manifests,
+        clear_cache=benchmarks.published_benchmark_manifests.cache_clear,
+        expected_paths=requested_paths,
+        expected_manifest_ids=(
+            "cached-benchmark-manifest-b",
+            "cached-benchmark-manifest-a",
+        ),
+        observed_load_calls=loader_calls,
+    )
 
 
 def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_workload_ids() -> None:

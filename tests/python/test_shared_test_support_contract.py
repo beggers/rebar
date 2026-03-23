@@ -14,6 +14,7 @@ import tests.conftest as test_support
 from tests.conftest import (
     REPO_ROOT,
     assert_published_manifest_helper_contract,
+    assert_published_manifest_helper_reload_contract,
     declared_string_constants_by_suffix,
     duplicate_items,
     duplicate_string_ids,
@@ -129,10 +130,9 @@ def test_assert_published_manifest_helper_contract_checks_cache_order_and_post_c
 
     current_paths[:] = [second_path, first_path]
     loader_calls.clear()
-    published_manifests.cache_clear()
-
-    reloaded_manifests = assert_published_manifest_helper_contract(
+    reloaded_manifests = assert_published_manifest_helper_reload_contract(
         published_manifests,
+        clear_cache=published_manifests.cache_clear,
         expected_paths=(second_path, first_path),
         expected_manifest_ids=("manifest_b", "manifest_a"),
         observed_load_calls=loader_calls,
