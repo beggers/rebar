@@ -118,28 +118,35 @@ def _placeholder_search_cases() -> tuple[FixtureCase, ...]:
     return _compile_metadata_cases() + _select_parser_matrix_cases(_is_warning_case)
 
 
+def _is_non_character_class_compile_metadata_case(case: FixtureCase) -> bool:
+    return _is_compile_metadata_case(case) and case.family != "character_classes"
+
+
 def _repeated_compile_cache_cases() -> tuple[FixtureCase, ...]:
-    return _select_parser_matrix_cases(
-        lambda case: _is_compile_metadata_case(case)
-        and case.family != "character_classes"
-    )
+    return _select_parser_matrix_cases(_is_non_character_class_compile_metadata_case)
 
 
 def _diagnostic_cases() -> tuple[FixtureCase, ...]:
     return _select_parser_matrix_cases(_is_diagnostic_case)
 
 
-def _no_stdlib_delegation_cases() -> tuple[FixtureCase, ...]:
-    return _select_parser_matrix_cases(
-        lambda case: _is_compile_metadata_case(case)
-        or (case.family == "assertions" and _is_diagnostic_case(case))
+def _is_no_stdlib_delegation_case(case: FixtureCase) -> bool:
+    return _is_compile_metadata_case(case) or (
+        case.family == "assertions" and _is_diagnostic_case(case)
     )
+
+
+def _no_stdlib_delegation_cases() -> tuple[FixtureCase, ...]:
+    return _select_parser_matrix_cases(_is_no_stdlib_delegation_case)
+
+
+def _is_character_class_compile_metadata_case(case: FixtureCase) -> bool:
+    return case.family == "character_classes" and _is_compile_metadata_case(case)
 
 
 NESTED_SET_WARNING_CASE = _only_parser_matrix_case(_is_warning_case)
 CHARACTER_CLASS_CASE = _only_parser_matrix_case(
-    lambda case: case.family == "character_classes"
-    and _is_compile_metadata_case(case)
+    _is_character_class_compile_metadata_case
 )
 PLACEHOLDER_SEARCH_SUBJECTS = {
     "str-character-class-ignorecase-success": "Token_123",
