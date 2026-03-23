@@ -1,6 +1,6 @@
 # RBR-1120: Implement quantified nested-group alternation branch-local-backreference callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -44,6 +44,13 @@ Created: 2026-03-23
 - Preserve the current callable callback semantics for the already-landed quantified nested-group alternation and exact branch-local-backreference families while widening only the bytes quantified branch-local capture visibility needed for this exact follow-on.
 
 ## Notes
+- Completed 2026-03-23: added the exact `bytes` callable replacement owner path for `a((b|c)+)\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` behind the Rust/native boundary, widened the Python bytes callable passthrough/dispatch to the new native finder, and added direct module/pattern `sub`/`subn(count=1)` parity coverage in `tests/python/test_callable_replacement_parity_suite.py`.
+- Verification completed:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified_nested_group_alternation_branch_local_backreference and callable and bytes and module'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified_nested_group_alternation_branch_local_backreference and callable and bytes and pattern'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified_nested_group_alternation_branch_local_backreference and callable'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation or test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases'`
 - `RBR-1120` is the next available unreserved feature task id in this checkout:
   - the highest live task id across `ops/tasks/ready/`, `ops/tasks/in_progress/`, `ops/tasks/done/`, and `ops/tasks/blocked/` is `1119`; and
   - `rg -n 'RBR-1120|RBR-1121|RBR-1122' ops/tasks ops/state -g '*.md'` returned no matches in this run.

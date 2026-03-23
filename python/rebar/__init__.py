@@ -118,6 +118,12 @@ _EXACT_NUMBERED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLAB
 _EXACT_NAMED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLABLE_PATTERN: Final[
     bytes
 ] = rb"a(?P<outer>(?P<inner>b|c))(?P=inner)d"
+_EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLABLE_PATTERN: Final[
+    bytes
+] = rb"a((b|c)+)\2d"
+_EXACT_NAMED_QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLABLE_PATTERN: Final[
+    bytes
+] = rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d"
 _EXACT_NUMBERED_NESTED_GROUP_BYTES_CALLABLE_PATTERN: Final[bytes] = rb"a((b))d"
 _EXACT_NAMED_NESTED_GROUP_BYTES_CALLABLE_PATTERN: Final[bytes] = (
     rb"a(?P<outer>(?P<inner>b))d"
@@ -180,6 +186,8 @@ _NATIVE_CALLABLE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
         _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_ALTERNATION_BYTES_CALLABLE_PATTERN,
         _EXACT_NUMBERED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLABLE_PATTERN,
         _EXACT_NAMED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLABLE_PATTERN,
+        _EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLABLE_PATTERN,
+        _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CALLABLE_PATTERN,
         _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN,
         _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN,
         _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_NUMBERED_BYTES_CALLABLE_PATTERN,
@@ -1568,6 +1576,24 @@ def _native_callable_match_spans(
 
         status, normalized_pos, normalized_endpos, spans, group_spans = (
             _native.boundary_quantified_nested_group_alternation_finditer_bytes(
+                compiled_pattern.pattern,
+                compiled_pattern.flags,
+                compatible_string,
+                0,
+                None,
+            )
+        )
+        if status != "unsupported":
+            return (
+                status,
+                normalized_pos,
+                normalized_endpos,
+                spans,
+                [tuple(match_group_spans) for match_group_spans in group_spans],
+            )
+
+        status, normalized_pos, normalized_endpos, spans, group_spans = (
+            _native.boundary_quantified_nested_group_alternation_branch_local_backreference_finditer_bytes(
                 compiled_pattern.pattern,
                 compiled_pattern.flags,
                 compatible_string,
