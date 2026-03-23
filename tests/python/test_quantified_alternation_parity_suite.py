@@ -31,6 +31,7 @@ from tests.python.fixture_parity_support import (
     direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    fixture_bundle_manifest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
@@ -180,22 +181,6 @@ GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES = tuple(
     for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
     for case in fixture_cases_for_operation((spec.bundle,), "compile")
 )
-
-
-def _bundle_manifest_id(bundle: FixtureBundle) -> str:
-    return bundle.expected_manifest_id
-
-
-def _generated_spec_manifest_id(spec: GeneratedQuantifiedAlternationParitySpec) -> str:
-    return spec.bundle.expected_manifest_id
-
-
-def _follow_on_spec_id(spec: QuantifiedAlternationDirectBytesFollowOnSpec) -> str:
-    return spec.follow_on_id
-
-
-def _fixture_case_id(case: FixtureCase) -> str:
-    return case.case_id
 
 
 def _case_id(
@@ -655,7 +640,7 @@ SUPPLEMENTAL_NO_MATCH_CASES = _build_supplemental_no_match_cases()
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=_bundle_manifest_id,
+    ids=fixture_bundle_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
@@ -666,7 +651,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 @pytest.mark.parametrize(
     "spec",
     GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS,
-    ids=_generated_spec_manifest_id,
+    ids=lambda spec: fixture_bundle_manifest_id(spec.bundle),
 )
 def test_generated_quantified_alternation_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedAlternationParitySpec,
@@ -744,7 +729,7 @@ def test_direct_bytes_follow_on_case_surfaces_keep_expected_ids() -> None:
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=_follow_on_spec_id,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: QuantifiedAlternationDirectBytesFollowOnSpec,
@@ -767,7 +752,7 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=_follow_on_spec_id,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: QuantifiedAlternationDirectBytesFollowOnSpec,
@@ -844,7 +829,7 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     )
 
 
-@pytest.mark.parametrize("case", COMPILE_CASES, ids=_fixture_case_id)
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -856,7 +841,7 @@ def test_compile_metadata_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES,
-    ids=_fixture_case_id,
+    ids=lambda case: case.case_id,
 )
 def test_generated_quantified_alternation_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
@@ -896,7 +881,7 @@ def test_generated_quantified_alternation_text_matrix_matches_cpython(
     assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=_fixture_case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_search_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -919,7 +904,7 @@ def test_module_search_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=_fixture_case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -937,7 +922,7 @@ def test_module_search_match_convenience_api_matches_cpython(
     assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=_fixture_case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -966,7 +951,7 @@ def test_pattern_fullmatch_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=_fixture_case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -993,7 +978,7 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     MATCH_GROUP_ACCESS_CASES,
-    ids=_fixture_case_id,
+    ids=lambda case: case.case_id,
 )
 def test_match_group_access_apis_match_cpython(
     regex_backend: tuple[str, object],
