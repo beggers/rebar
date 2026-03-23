@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 from itertools import product
 import re
 
@@ -13,8 +12,14 @@ from rebar_harness.correctness import (
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
 )
 from tests.python.fixture_parity_support import (
+    BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
+    BROADER_RANGE_CONDITIONAL_BYTES_CASES,
     BoundedPatternCase,
     FixtureBundle,
+    GroupedQuantifiedBytesSurfaceSpec,
+    NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES,
+    NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
+    NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES,
     PatternTraceCase as BacktrackingTraceCase,
     SupplementalCase,
     assert_mixed_text_model_case_pairs,
@@ -32,7 +37,9 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    fixture_bundle_manifest_id,
     fixture_cases_for_operation,
+    grouped_quantified_bytes_surface_follow_on_id,
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
@@ -41,16 +48,6 @@ BACKTRACKING_BRANCH_TEXT = {
     "short": "bc",
     "long": "bcc",
 }
-
-
-@dataclass(frozen=True)
-class DirectBytesFollowOnSpec:
-    id: str
-    bundle: FixtureBundle
-    cases: tuple[SupplementalCase, ...]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-    expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
-    expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
 
 
 FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
@@ -79,95 +76,8 @@ BACKTRACKING_TRACE_BUNDLES = (
     BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
     NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
 )
-BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
-    SupplementalCase(
-        id="broader-range-wider-ranged-repeat-conditional-numbered-bytes",
-        pattern=rb"a((bc|de){1,4})?(?(1)d|e)",
-        search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz", b"zzabcdedededzz"),
-        search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
-        fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
-        fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
-    ),
-    SupplementalCase(
-        id="broader-range-wider-ranged-repeat-conditional-named-bytes",
-        pattern=rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
-        search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz", b"zzabcdedededzz"),
-        search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
-        fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
-        fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
-    ),
-)
-BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
-    SupplementalCase(
-        id="broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
-        pattern=rb"a((bc|b)c){1,4}d",
-        search_matches=(b"zzabcdzz", b"zzabccdzz"),
-        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-        fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
-        fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
-    ),
-    SupplementalCase(
-        id="broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
-        pattern=rb"a(?P<word>(bc|b)c){1,4}d",
-        search_matches=(b"zzabccdzz", b"zzabcbccdzz", b"zzabcbccbccbcdzz"),
-        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-        fullmatch_matches=(b"abccbcd",),
-        fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
-    ),
-)
-NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES = (
-    SupplementalCase(
-        id="nested-broader-range-wider-ranged-repeat-grouped-alternation-numbered-bytes",
-        pattern=rb"a((bc|de){1,4})d",
-        search_matches=(b"zzabcdzz", b"zzadedzz"),
-        fullmatch_matches=(b"abcbcded", b"adedededed"),
-        fullmatch_misses=(b"ae", b"abcbcdede"),
-    ),
-    SupplementalCase(
-        id="nested-broader-range-wider-ranged-repeat-grouped-alternation-named-bytes",
-        pattern=rb"a(?P<outer>(bc|de){1,4})d",
-        search_matches=(b"zzabcdzz", b"zzadedzz"),
-        fullmatch_matches=(b"abcbcded", b"adedededed"),
-        fullmatch_misses=(b"ae", b"abcbcbcbcbcd"),
-    ),
-)
-NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
-    SupplementalCase(
-        id="nested-broader-range-wider-ranged-repeat-grouped-conditional-numbered-bytes",
-        pattern=rb"a(((bc|de){1,4})d)?(?(1)e|f)",
-        search_matches=(b"zzafzz", b"zzabcdezz", b"zzadedezz"),
-        fullmatch_matches=(b"abcbcdede",),
-        fullmatch_misses=(b"abcbcded", b"ae"),
-    ),
-    SupplementalCase(
-        id="nested-broader-range-wider-ranged-repeat-grouped-conditional-named-bytes",
-        pattern=rb"a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)",
-        search_matches=(b"zzafzz", b"zzadedezz", b"zzadededededezz"),
-        fullmatch_matches=(b"abcbcdede",),
-        fullmatch_misses=(b"ae", b"abcbcbcbcbcde"),
-    ),
-)
-NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
-    SupplementalCase(
-        id="nested-broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
-        pattern=rb"a(((bc|b)c){1,4})d",
-        search_matches=(b"zzabcdzz", b"zzabccdzz"),
-        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-        fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
-        fullmatch_misses=(b"abccbd",),
-    ),
-    SupplementalCase(
-        id="nested-broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
-        pattern=rb"a(?P<outer>((bc|b)c){1,4})d",
-        search_matches=(b"zzabccdzz", b"zzabcbccdzz", b"zzabcbccbccbcdzz"),
-        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
-        fullmatch_matches=(b"abccbcd",),
-        fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
-    ),
-)
 DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
-    DirectBytesFollowOnSpec(
-        id="broader-range-conditional",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=BROADER_RANGE_CONDITIONAL_BUNDLE,
         cases=BROADER_RANGE_CONDITIONAL_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -193,9 +103,9 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abcbcded", b"abcbcbcbcbcd", b"ad"}
             ),
         },
+        follow_on_id="broader-range-conditional",
     ),
-    DirectBytesFollowOnSpec(
-        id="broader-range-backtracking-heavy",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
         cases=BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -221,9 +131,9 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abccbcd", b"abccbd", b"abcbcbcbcbcd"}
             ),
         },
+        follow_on_id="broader-range-backtracking-heavy",
     ),
-    DirectBytesFollowOnSpec(
-        id="nested-broader-range-alternation",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=NESTED_BROADER_RANGE_ALTERNATION_BUNDLE,
         cases=NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -249,9 +159,9 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abcbcded", b"adedededed", b"ae", b"abcbcbcbcbcd"}
             ),
         },
+        follow_on_id="nested-broader-range-alternation",
     ),
-    DirectBytesFollowOnSpec(
-        id="nested-broader-range-conditional",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE,
         cases=NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -277,9 +187,9 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abcbcdede", b"ae", b"abcbcbcbcbcde"}
             ),
         },
+        follow_on_id="nested-broader-range-conditional",
     ),
-    DirectBytesFollowOnSpec(
-        id="nested-broader-range-backtracking-heavy",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
         cases=NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -305,6 +215,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
                 {b"abccbcd", b"abccbd", b"abcbcbcbcbcd"}
             ),
         },
+        follow_on_id="nested-broader-range-backtracking-heavy",
     ),
 )
 # Keep the shared manifest contract honest, but route the published bytes slices
@@ -317,16 +228,6 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
     case for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES for case in spec.cases
 )
-
-
-def fixture_bundle_manifest_id(bundle: FixtureBundle) -> str:
-    return bundle.expected_manifest_id
-
-
-def direct_bytes_follow_on_spec_id(spec: DirectBytesFollowOnSpec) -> str:
-    return spec.id
-
-
 def fixture_case_id(case: FixtureCase) -> str:
     return case.case_id
 
@@ -495,10 +396,10 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 @pytest.mark.parametrize(
     "surface",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=direct_bytes_follow_on_spec_id,
+    ids=grouped_quantified_bytes_surface_follow_on_id,
 )
 def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract(
-    surface: DirectBytesFollowOnSpec,
+    surface: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
     bundle = surface.bundle
     expected_operation_helper_counts = Counter(
@@ -543,7 +444,7 @@ def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_
             module_bucket_label="shared-module-search",
             pattern_bucket_label="shared-pattern-fullmatch",
             follow_on_buckets=(
-                (f"{spec.id}-bytes-follow-on", spec.bundle)
+                (f"{spec.follow_on_id}-bytes-follow-on", spec.bundle)
                 for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
             ),
         ),
@@ -619,7 +520,7 @@ def test_wider_ranged_repeat_supplemental_bytes_case_tables_keep_case_ids_in_ord
 
 def test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_keep_expected_manifest_pairings(
 ) -> None:
-    assert tuple(spec.id for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES) == (
+    assert tuple(spec.follow_on_id for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES) == (
         "broader-range-conditional",
         "broader-range-backtracking-heavy",
         "nested-broader-range-alternation",
@@ -627,7 +528,7 @@ def test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_keep_expected_
         "nested-broader-range-backtracking-heavy",
     )
     assert tuple(
-        (spec.id, spec.bundle.manifest.manifest_id)
+        (spec.follow_on_id, spec.bundle.manifest.manifest_id)
         for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     ) == (
         (
@@ -699,10 +600,10 @@ def test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_resolve_to_exp
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=direct_bytes_follow_on_spec_id,
+    ids=grouped_quantified_bytes_surface_follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
-    spec: DirectBytesFollowOnSpec,
+    spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
     _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         spec.bundle,
@@ -722,10 +623,10 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=direct_bytes_follow_on_spec_id,
+    ids=grouped_quantified_bytes_surface_follow_on_id,
 )
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
-    spec: DirectBytesFollowOnSpec,
+    spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
     bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         spec.bundle,

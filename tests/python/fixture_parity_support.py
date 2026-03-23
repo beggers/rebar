@@ -344,6 +344,10 @@ def load_published_fixture_bundles(
     return bundles, published_fixture_bundles_by_manifest_id(bundles)
 
 
+def fixture_bundle_manifest_id(bundle: FixtureBundle) -> str:
+    return bundle.expected_manifest_id
+
+
 def case_pattern(case: FixtureCase) -> str | bytes:
     pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
     assert isinstance(pattern, (str, bytes))
@@ -411,6 +415,29 @@ class SupplementalMissCase:
     pattern: str
     helper: str
     text: str
+
+
+@dataclass(frozen=True)
+class GroupedQuantifiedBytesSurfaceSpec:
+    bundle: FixtureBundle
+    cases: tuple[SupplementalCase, ...]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
+    expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
+    follow_on_id: str | None = None
+
+
+def grouped_quantified_bytes_surface_manifest_id(
+    spec: GroupedQuantifiedBytesSurfaceSpec,
+) -> str:
+    return spec.bundle.manifest.manifest_id
+
+
+def grouped_quantified_bytes_surface_follow_on_id(
+    spec: GroupedQuantifiedBytesSurfaceSpec,
+) -> str:
+    assert spec.follow_on_id is not None
+    return spec.follow_on_id
 
 
 OPEN_ENDED_ALTERNATION_BYTES_CASES = (
@@ -524,6 +551,92 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_misses=(b"zzabccbdzz",),
         fullmatch_matches=(b"abcbccd", b"abcbcbcbcd"),
         fullmatch_misses=(b"abcd",),
+    ),
+)
+BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
+    SupplementalCase(
+        id="broader-range-wider-ranged-repeat-conditional-numbered-bytes",
+        pattern=rb"a((bc|de){1,4})?(?(1)d|e)",
+        search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz", b"zzabcdedededzz"),
+        search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
+        fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
+        fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
+    ),
+    SupplementalCase(
+        id="broader-range-wider-ranged-repeat-conditional-named-bytes",
+        pattern=rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+        search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz", b"zzabcdedededzz"),
+        search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
+        fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
+        fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
+    ),
+)
+BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
+    SupplementalCase(
+        id="broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
+        pattern=rb"a((bc|b)c){1,4}d",
+        search_matches=(b"zzabcdzz", b"zzabccdzz"),
+        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
+        fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
+        fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
+    ),
+    SupplementalCase(
+        id="broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
+        pattern=rb"a(?P<word>(bc|b)c){1,4}d",
+        search_matches=(b"zzabccdzz", b"zzabcbccdzz", b"zzabcbccbccbcdzz"),
+        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
+        fullmatch_matches=(b"abccbcd",),
+        fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
+    ),
+)
+NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES = (
+    SupplementalCase(
+        id="nested-broader-range-wider-ranged-repeat-grouped-alternation-numbered-bytes",
+        pattern=rb"a((bc|de){1,4})d",
+        search_matches=(b"zzabcdzz", b"zzadedzz"),
+        fullmatch_matches=(b"abcbcded", b"adedededed"),
+        fullmatch_misses=(b"ae", b"abcbcdede"),
+    ),
+    SupplementalCase(
+        id="nested-broader-range-wider-ranged-repeat-grouped-alternation-named-bytes",
+        pattern=rb"a(?P<outer>(bc|de){1,4})d",
+        search_matches=(b"zzabcdzz", b"zzadedzz"),
+        fullmatch_matches=(b"abcbcded", b"adedededed"),
+        fullmatch_misses=(b"ae", b"abcbcbcbcbcd"),
+    ),
+)
+NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
+    SupplementalCase(
+        id="nested-broader-range-wider-ranged-repeat-grouped-conditional-numbered-bytes",
+        pattern=rb"a(((bc|de){1,4})d)?(?(1)e|f)",
+        search_matches=(b"zzafzz", b"zzabcdezz", b"zzadedezz"),
+        fullmatch_matches=(b"abcbcdede",),
+        fullmatch_misses=(b"abcbcded", b"ae"),
+    ),
+    SupplementalCase(
+        id="nested-broader-range-wider-ranged-repeat-grouped-conditional-named-bytes",
+        pattern=rb"a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)",
+        search_matches=(b"zzafzz", b"zzadedezz", b"zzadededededezz"),
+        fullmatch_matches=(b"abcbcdede",),
+        fullmatch_misses=(b"ae", b"abcbcbcbcbcde"),
+    ),
+)
+NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
+    SupplementalCase(
+        id="nested-broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
+        pattern=rb"a(((bc|b)c){1,4})d",
+        search_matches=(b"zzabcdzz", b"zzabccdzz"),
+        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
+        fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
+        fullmatch_misses=(b"abccbd",),
+    ),
+    SupplementalCase(
+        id="nested-broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
+        pattern=rb"a(?P<outer>((bc|b)c){1,4})d",
+        search_matches=(b"zzabccdzz", b"zzabcbccdzz", b"zzabcbccbccbcdzz"),
+        search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
+        fullmatch_matches=(b"abccbcd",),
+        fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
     ),
 )
 

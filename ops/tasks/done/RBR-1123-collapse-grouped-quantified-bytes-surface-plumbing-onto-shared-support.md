@@ -1,6 +1,6 @@
 # RBR-1123: Collapse grouped quantified bytes surface plumbing onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,12 @@ Created: 2026-03-23
   - the negative `rg` verification above currently fails exactly on those owner-local definitions.
 - The focused verification slice is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'load_published_fixture_bundles or published_fixture_bundles_by_manifest_id' tests/python/test_open_ended_quantified_group_parity_suite.py -k 'bytes_case_surface_contracts or direct_bytes_follow_on_bundle_routing or source_fixture_contract' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py -k 'follow_on_case_surfaces or direct_bytes_follow_on_bundle_routing or source_fixture_contract'` returned `11 passed, 5638 deselected` in this run.
+
+## Completion
+- Landed the shared grouped-quantified bytes surface support on `tests/python/fixture_parity_support.py`, including the reusable shared spec/id helpers plus the five wider-ranged-repeat bytes payload tables that were previously inline in the wider-ranged suite.
+- Updated both grouped quantified parity suites to consume the shared support path without owner-local bytes-surface dataclasses or owner-local bytes-surface id callbacks.
+- Extended `tests/python/test_fixture_parity_support_contract.py` with focused shared-support coverage for bundle ordering, optional follow-on ids, and wider-ranged-repeat payload reachability.
+- Verified with:
+  - `./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'load_published_fixture_bundles or published_fixture_bundles_by_manifest_id or grouped_quantified_bytes_surface_spec' tests/python/test_open_ended_quantified_group_parity_suite.py -k 'bytes_case_surface_contracts or direct_bytes_follow_on_bundle_routing or source_fixture_contract' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py -k 'follow_on_case_surfaces or direct_bytes_follow_on_bundle_routing or source_fixture_contract'`
+  - `./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py::test_grouped_quantified_bytes_surface_spec_preserves_bundle_order_and_optional_follow_on_ids tests/python/test_fixture_parity_support_contract.py::test_grouped_quantified_bytes_surface_spec_keeps_wider_ranged_repeat_payloads_reachable`
+  - `bash -lc "! rg -n 'class DirectBytesFollowOnSpec|class BytesCaseSurfaceSpec|def fixture_bundle_manifest_id\\(|def bytes_case_surface_manifest_id\\(|def bytes_case_surface_follow_on_id\\(|def direct_bytes_follow_on_spec_id\\(|^BROADER_RANGE_CONDITIONAL_BYTES_CASES = \\(|^BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = \\(|^NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES = \\(|^NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES = \\(|^NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = \\(' tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"`
