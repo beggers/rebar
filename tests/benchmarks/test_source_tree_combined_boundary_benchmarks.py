@@ -3785,7 +3785,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_measured_workload_ids,
             _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"].workload_ids(),
         )
-        self.assertEqual(len(expected_measured_workload_ids), 15)
+        self.assertEqual(len(expected_measured_workload_ids), 16)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5483,11 +5483,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 976,
-                "module_workloads": 968,
+                "measured_workloads": 977,
+                "module_workloads": 969,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 976,
+                "total_workloads": 977,
             },
         )
 
@@ -8389,6 +8389,10 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
             ("module-sub-str-count-one-purged-str", "module-sub-str-count-one"),
             ("module-sub-str-negative-count-purged-str", "module-sub-str-negative-count"),
             ("module-subn-str-count-purged-str", "module-subn-str-count"),
+            (
+                "module-subn-str-single-match-purged-str",
+                "module-subn-str-single-match",
+            ),
             ("module-subn-str-repeated-purged-str", "module-subn-str-repeated"),
             (
                 "module-subn-str-negative-count-purged-str",

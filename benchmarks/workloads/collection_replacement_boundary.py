@@ -973,6 +973,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-str-single-match-purged-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "literal",
+        "single-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.subn helper path that keeps the raw single-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-subn-str-repeated-purged-str",
       "bucket": "module-subn",
       "family": "module",
