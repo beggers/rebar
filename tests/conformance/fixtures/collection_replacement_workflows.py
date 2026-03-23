@@ -49,6 +49,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-split-str-no-match",
+      "operation": "pattern_call",
+      "family": "split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": ["zzz"],
+      "categories": ["workflow", "split", "literal", "str", "no-match"],
+      "notes": [
+        "Publishes the direct Pattern.split str no-match path on the shared collection workflow frontier."
+      ]
+    },
+    {
+      "id": "pattern-split-str-repeated",
+      "operation": "pattern_call",
+      "family": "split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "args": ["abcabc"],
+      "categories": ["workflow", "split", "literal", "str", "repeated"],
+      "notes": [
+        "Publishes the direct Pattern.split str repeated-match path on the shared collection workflow frontier."
+      ]
+    },
+    {
       "id": "pattern-split-bytes-maxsplit",
       "operation": "pattern_call",
       "family": "split_workflow",

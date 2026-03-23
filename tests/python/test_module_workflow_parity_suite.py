@@ -7313,6 +7313,13 @@ def test_literal_collection_suite_tracks_published_case_frontier() -> None:
 
 def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> None:
     assert tuple(
+        case.case_id for case in _published_pattern_collection_cases_for_helper("split")
+    ) == (
+        "pattern-split-str-no-match",
+        "pattern-split-str-repeated",
+        "pattern-split-bytes-maxsplit",
+    )
+    assert tuple(
         case.case_id for case in _published_pattern_collection_cases_for_helper("findall")
     ) == (
         "pattern-findall-str-no-match",

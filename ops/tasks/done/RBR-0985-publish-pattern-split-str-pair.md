@@ -1,6 +1,6 @@
 ## RBR-0985: Publish the direct Pattern `split()` str pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,12 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-str-no-match or pattern-split-str-repeated or literal_collection_direct_test_buckets_cover_selected_frontier'` currently passes (`5 passed`), so the exact direct parity slice is already green in this checkout;
   - `rg -n 'pattern-split-str-no-match|pattern-split-str-repeated|workflow-pattern-split-str-no-match|workflow-pattern-split-str-repeated' tests/conformance/fixtures/collection_replacement_workflows.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` currently returns no matches, so the exact pair is still absent from the published correctness surface; and
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... synthetic Workload.from_dict(...) / workload_to_payload(...) / run_internal_workload_probe(...) for pattern-split-no-match-warm-str and pattern-split-repeated-warm-str ... PY` returns `status == "measured"` for both adapters on both synthetic workloads through the current benchmark harness, confirming a later Python-path benchmark catch-up remains concrete on the existing `collection_replacement_boundary.py` owner route.
+
+## Completion Notes
+- 2026-03-23: Added the two published direct `Pattern.split()` `str` rows on `tests/conformance/fixtures/collection_replacement_workflows.py`, kept them on the existing shared collection/replacement owner path, and tightened `tests/python/test_module_workflow_parity_suite.py` so the published `pattern-split` frontier resolves in order to `pattern-split-str-no-match`, `pattern-split-str-repeated`, and `pattern-split-bytes-maxsplit`.
+- Regenerated the combined correctness publication and verified the tracked `reports/correctness/latest.py` artifact now reports `1563` total / `1563` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `26/26`, `.str` at `19/19`, `.bytes` unchanged at `7/7`, `.pattern_call` at `14/14`, and `.module_call` unchanged at `12/12`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-str-no-match or pattern-split-str-repeated or literal_collection_direct_test_buckets_cover_selected_frontier'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-0985-pattern-split-str-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
