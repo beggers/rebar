@@ -1267,7 +1267,6 @@ def test_shared_correctness_fixture_selectors_resolve_published_paths(
         PARSER_PARITY_FIXTURE_SELECTOR,
         PUBLIC_SURFACE_FIXTURE_SELECTOR,
     ),
-    ids=lambda selector: selector,
 )
 def test_canonical_published_subset_selectors_keep_explicit_membership_contract(
     selector: str,
