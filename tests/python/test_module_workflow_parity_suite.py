@@ -1506,108 +1506,45 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
         kwargs={"count_alias": 1},
     ),
 )
-_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID = {
-    case.case_id: case for case in BOUND_PATTERN_TYPE_ERROR_CASES
-}
-_PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS = (
+_PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS = tuple(
     PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-split-duplicate-maxsplit-keyword-str",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-split-duplicate-maxsplit-keyword-str"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-split-unexpected-keyword-bytes",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-split-unexpected-keyword-bytes"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-sub-duplicate-count-keyword-str",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-sub-duplicate-count-keyword-str"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-sub-unexpected-keyword-str",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-sub-unexpected-keyword-str"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-sub-unexpected-keyword-after-positional-count-str"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-sub-count-alias-keyword-str",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-sub-count-alias-keyword-str"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-subn-duplicate-count-keyword-bytes",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-subn-duplicate-count-keyword-bytes"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-subn-unexpected-keyword-bytes",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-subn-unexpected-keyword-bytes"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-subn-unexpected-keyword-after-positional-count-bytes"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-subn-count-alias-keyword-bytes",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-subn-count-alias-keyword-bytes"
-        ],
-    ),
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+    )
+    for fixture_case_id, direct_case in zip(
+        (
+            "workflow-pattern-split-duplicate-maxsplit-keyword-str",
+            "workflow-pattern-split-unexpected-keyword-bytes",
+            "workflow-pattern-sub-duplicate-count-keyword-str",
+            "workflow-pattern-sub-unexpected-keyword-str",
+            "workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
+            "workflow-pattern-sub-count-alias-keyword-str",
+            "workflow-pattern-subn-duplicate-count-keyword-bytes",
+            "workflow-pattern-subn-unexpected-keyword-bytes",
+            "workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+            "workflow-pattern-subn-count-alias-keyword-bytes",
+        ),
+        BOUND_PATTERN_TYPE_ERROR_CASES[4:6] + BOUND_PATTERN_TYPE_ERROR_CASES[8:],
+        strict=True,
+    )
 )
-_PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS = (
+_PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS = tuple(
     PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-search-str-pattern-on-bytes-string",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-search-str-pattern-on-bytes-string"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-match-bytes-pattern-on-str-string",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-match-bytes-pattern-on-str-string"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-fullmatch-str-pattern-on-bytes-string",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-fullmatch-str-pattern-on-bytes-string"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-split-str-pattern-on-bytes-string",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-split-str-pattern-on-bytes-string"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-sub-str-pattern-on-bytes-string",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-sub-str-pattern-on-bytes-string"
-        ],
-    ),
-    PatternTypeErrorOwnerPathRow(
-        fixture_case_id="workflow-pattern-subn-bytes-pattern-on-str-string",
-        direct_case=_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID[
-            "pattern-subn-bytes-pattern-on-str-string"
-        ],
-    ),
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+    )
+    for fixture_case_id, direct_case in zip(
+        (
+            "workflow-pattern-search-str-pattern-on-bytes-string",
+            "workflow-pattern-match-bytes-pattern-on-str-string",
+            "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
+            "workflow-pattern-split-str-pattern-on-bytes-string",
+            "workflow-pattern-sub-str-pattern-on-bytes-string",
+            "workflow-pattern-subn-bytes-pattern-on-str-string",
+        ),
+        BOUND_PATTERN_TYPE_ERROR_CASES[:4] + BOUND_PATTERN_TYPE_ERROR_CASES[6:8],
+        strict=True,
+    )
 )
 PATTERN_REPLACEMENT_UNEXPECTED_KEYWORD_NAME_CASES = (
     pytest.param(

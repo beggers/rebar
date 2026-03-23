@@ -1,6 +1,6 @@
 # RBR-1019: Collapse pattern type-error owner-path lookup table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -132,3 +132,6 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases or module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases'` currently passes (`2 passed, 1449 deselected`);
   - the owner-path order probe in Verification currently passes (`ok`); and
   - `bash -lc "! rg -n '^_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID = ' tests/python/test_module_workflow_parity_suite.py"` currently fails exactly on that one remaining detached id map, which is the cleanup being queued here.
+
+## Completion
+- 2026-03-23: Replaced `_PATTERN_TYPE_ERROR_DIRECT_CASES_BY_ID` in `tests/python/test_module_workflow_parity_suite.py` with explicit ordered slices of `BOUND_PATTERN_TYPE_ERROR_CASES` zipped directly into `_PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS` and `_PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS`, preserving the published owner-path order without a detached case-id map. Verified with the targeted pytest selector (`2 passed, 1449 deselected`), the owner-path order probe (`ok`), and the no-match `rg` check for the removed lookup table.
