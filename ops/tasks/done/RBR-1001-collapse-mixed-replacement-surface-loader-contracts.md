@@ -1,6 +1,6 @@
 ## RBR-1001: Collapse mixed replacement surface loader contracts
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -174,3 +174,8 @@ PY`
   - the focused pytest slice in Verification currently passes (`3 passed, 1295 deselected`);
   - the contract probe in Verification currently passes (`ok`); and
   - `tests/python/test_fixture_backed_replacement_parity_suite.py` currently repeats the same `expected_selected_case_ids = tuple(case.case_id for case in str_cases)`, `expected_uncovered_case_ids = tuple(case.case_id for case in bytes_cases)`, expected module/pattern derivation, and frontier assertions across the three target tests at lines `1846`, `1847`, `1907`, `1908`, and the surrounding assertion blocks through line `1979`, so this cleanup can stay structural and file-local.
+- 2026-03-23 completion:
+  - added the file-local `MixedTextReplacementSurfaceContract` plus `_assert_mixed_text_replacement_surface_loader_contract(...)` helper in `tests/python/test_fixture_backed_replacement_parity_suite.py` to centralize the repeated mixed-text bundle, selected/uncovered frontier, and module/pattern loader assertions for the three targeted tests;
+  - repointed the three target tests through that helper while keeping their specific `match_group_access_cases` and `template_expand_cases` expectations explicit;
+  - verified `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pending_follow_on or mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on or broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_from_selected_frontier'` (`3 passed, 1295 deselected`); and
+  - verified the task's contract probe script (`ok`).

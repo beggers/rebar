@@ -1442,6 +1442,98 @@ def _expected_uncovered_replacement_case_ids(
     )
 
 
+@dataclass(frozen=True)
+class MixedTextReplacementSurfaceContract:
+    surface: LoadedReplacementSurface
+    bundle: FixtureBundle
+    str_case_ids: tuple[str, ...]
+    bytes_case_ids: tuple[str, ...]
+    selected_case_ids: tuple[str, ...]
+    uncovered_case_ids: tuple[str, ...]
+    all_case_ids: tuple[str, ...]
+    module_case_ids: tuple[str, ...]
+    pattern_case_ids: tuple[str, ...]
+
+
+def _assert_mixed_text_replacement_surface_loader_contract(
+    *,
+    spec: ReplacementSurfaceSpec,
+    manifest_id: str,
+) -> MixedTextReplacementSurfaceContract:
+    surface = _load_surface(spec)
+    (bundle,) = surface.bundles
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    str_case_ids = tuple(case.case_id for case in str_cases)
+    bytes_case_ids = tuple(case.case_id for case in bytes_cases)
+    all_case_ids = tuple(case.case_id for case in bundle.cases)
+    selected_case_ids = (
+        str_case_ids
+        if manifest_id in spec.pending_bytes_follow_on_manifest_ids
+        else all_case_ids
+    )
+    selected_case_id_set = frozenset(selected_case_ids)
+    uncovered_case_ids = (
+        bytes_case_ids
+        if manifest_id in spec.pending_bytes_follow_on_manifest_ids
+        else ()
+    )
+    expected_operation_helper_counts = (
+        EXPECTED_OPERATION_HELPER_COUNTS
+        if uncovered_case_ids
+        else MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
+    )
+    module_case_ids = tuple(
+        case.case_id
+        for case in fixture_cases_for_operation((bundle,), "module_call")
+        if case.case_id in selected_case_id_set
+    )
+    pattern_case_ids = tuple(
+        case.case_id
+        for case in fixture_cases_for_operation((bundle,), "pattern_call")
+        if case.case_id in selected_case_id_set
+    )
+
+    assert len(bundle.cases) == 16
+    assert len(str_case_ids) == 8
+    assert len(bytes_case_ids) == 8
+    assert tuple(case.case_id for case in (*str_cases, *bytes_cases)) == all_case_ids
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
+    )
+    assert tuple(case.case_id for case in surface.replacement_cases) == (
+        selected_case_ids
+    )
+    assert Counter((case.operation, case.helper) for case in surface.replacement_cases) == (
+        expected_operation_helper_counts
+    )
+    assert tuple(case.case_id for case in surface.module_cases) == module_case_ids
+    assert tuple(case.case_id for case in surface.pattern_cases) == pattern_case_ids
+    assert _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=manifest_id,
+    ) == selected_case_ids
+    assert _expected_uncovered_replacement_case_ids(
+        surface,
+        manifest_id,
+    ) == uncovered_case_ids
+    assert_fixture_bundle_tracks_published_case_frontier(
+        bundle,
+        selected_case_ids=selected_case_ids,
+        expected_uncovered_case_ids=uncovered_case_ids,
+    )
+    return MixedTextReplacementSurfaceContract(
+        surface=surface,
+        bundle=bundle,
+        str_case_ids=str_case_ids,
+        bytes_case_ids=bytes_case_ids,
+        selected_case_ids=selected_case_ids,
+        uncovered_case_ids=uncovered_case_ids,
+        all_case_ids=all_case_ids,
+        module_case_ids=module_case_ids,
+        pattern_case_ids=pattern_case_ids,
+    )
+
+
 @pytest.mark.parametrize("surface", _selector_surface_params())
 def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     surface: LoadedReplacementSurface,
@@ -1832,66 +1924,28 @@ def test_broader_range_wider_ranged_repeat_replacement_manifest_keeps_mixed_text
 def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pending_follow_on(
 ) -> None:
     manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
-    surface = _load_surface(
-        ReplacementSurfaceSpec(
+    contract = _assert_mixed_text_replacement_surface_loader_contract(
+        spec=ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-pending-bytes-contract",
             fixture_selector=NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR,
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),
             pending_bytes_follow_on_manifest_ids=frozenset({manifest_id}),
-        )
+        ),
+        manifest_id=manifest_id,
     )
-    (bundle,) = surface.bundles
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
-    expected_selected_case_ids = tuple(case.case_id for case in str_cases)
-    expected_uncovered_case_ids = tuple(case.case_id for case in bytes_cases)
-    expected_module_case_ids = tuple(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "module_call")
-        if case.text_model == "str"
-    )
-    expected_pattern_case_ids = tuple(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "pattern_call")
-        if case.text_model == "str"
-    )
-    expected_template_expand_case_ids = tuple(
-        case.case_id
-        for case in bundle.cases
-        if case.text_model == "str" and "replacement-template" in case.categories
-    )
+    surface = contract.surface
 
-    assert tuple(case.case_id for case in surface.replacement_cases) == (
-        expected_selected_case_ids
-    )
-    assert Counter((case.operation, case.helper) for case in surface.replacement_cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
-    )
-    assert tuple(case.case_id for case in surface.module_cases) == expected_module_case_ids
-    assert tuple(case.case_id for case in surface.pattern_cases) == expected_pattern_case_ids
     assert tuple(case.case_id for case in surface.match_group_access_cases) == ()
     assert tuple(case.case_id for case in surface.template_expand_cases) == (
-        expected_template_expand_case_ids
-    )
-    assert _expected_selected_replacement_case_ids(
-        surface,
-        manifest_id=manifest_id,
-    ) == expected_selected_case_ids
-    assert _expected_uncovered_replacement_case_ids(
-        surface,
-        manifest_id,
-    ) == expected_uncovered_case_ids
-    assert_fixture_bundle_tracks_published_case_frontier(
-        bundle,
-        selected_case_ids=expected_selected_case_ids,
-        expected_uncovered_case_ids=expected_uncovered_case_ids,
+        contract.selected_case_ids
     )
 
 
 def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> None:
     manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID
-    surface = _load_surface(
-        ReplacementSurfaceSpec(
+    contract = _assert_mixed_text_replacement_surface_loader_contract(
+        spec=ReplacementSurfaceSpec(
             id="mixed-replacement-pending-bytes-contract",
             fixture_selector=(
                 NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR
@@ -1900,87 +1954,37 @@ def test_mixed_replacement_manifest_can_stage_bytes_as_pending_follow_on() -> No
             match_group_access_manifest_ids=(manifest_id,),
             template_expand_manifest_ids=(manifest_id,),
             pending_bytes_follow_on_manifest_ids=frozenset({manifest_id}),
-        )
+        ),
+        manifest_id=manifest_id,
     )
-    (bundle,) = surface.bundles
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
-    expected_selected_case_ids = tuple(case.case_id for case in str_cases)
-    expected_uncovered_case_ids = tuple(case.case_id for case in bytes_cases)
-    expected_module_case_ids = tuple(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "module_call")
-        if case.text_model == "str"
-    )
-    expected_pattern_case_ids = tuple(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "pattern_call")
-        if case.text_model == "str"
-    )
+    surface = contract.surface
 
-    assert tuple(case.case_id for case in surface.replacement_cases) == (
-        expected_selected_case_ids
-    )
-    assert Counter((case.operation, case.helper) for case in surface.replacement_cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
-    )
-    assert tuple(case.case_id for case in surface.module_cases) == expected_module_case_ids
-    assert tuple(case.case_id for case in surface.pattern_cases) == expected_pattern_case_ids
     assert tuple(case.case_id for case in surface.match_group_access_cases) == (
-        expected_selected_case_ids
+        contract.selected_case_ids
     )
     assert tuple(case.case_id for case in surface.template_expand_cases) == (
-        expected_selected_case_ids
-    )
-    assert _expected_selected_replacement_case_ids(
-        surface,
-        manifest_id=manifest_id,
-    ) == expected_selected_case_ids
-    assert _expected_uncovered_replacement_case_ids(
-        surface,
-        manifest_id,
-    ) == expected_uncovered_case_ids
-    assert_fixture_bundle_tracks_published_case_frontier(
-        bundle,
-        selected_case_ids=expected_selected_case_ids,
-        expected_uncovered_case_ids=expected_uncovered_case_ids,
+        contract.selected_case_ids
     )
 
 
 def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_from_selected_frontier(
 ) -> None:
     manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
-    surface = _load_surface(
-        ReplacementSurfaceSpec(
+    contract = _assert_mixed_text_replacement_surface_loader_contract(
+        spec=ReplacementSurfaceSpec(
             id="broader-range-open-ended-replacement-mixed-contract",
             fixture_selector=NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR,
             pattern_extractor=case_pattern,
             template_expand_manifest_ids=(manifest_id,),
-        )
-    )
-    (bundle,) = surface.bundles
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
-    expected_case_ids = tuple(case.case_id for case in bundle.cases)
-    expected_module_case_ids = tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
-    )
-    expected_pattern_case_ids = tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), "pattern_call")
-    )
-
-    assert tuple(case.case_id for case in str_cases + bytes_cases) == expected_case_ids
-    assert tuple(case.case_id for case in surface.replacement_cases) == expected_case_ids
-    assert Counter((case.operation, case.helper) for case in surface.replacement_cases) == (
-        MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
-    )
-    assert tuple(case.case_id for case in surface.module_cases) == expected_module_case_ids
-    assert tuple(case.case_id for case in surface.pattern_cases) == expected_pattern_case_ids
-    assert tuple(case.case_id for case in surface.match_group_access_cases) == ()
-    assert tuple(case.case_id for case in surface.template_expand_cases) == expected_case_ids
-    assert _expected_selected_replacement_case_ids(
-        surface,
+        ),
         manifest_id=manifest_id,
-    ) == expected_case_ids
-    assert _expected_uncovered_replacement_case_ids(surface, manifest_id) == ()
+    )
+    surface = contract.surface
+
+    assert tuple(case.case_id for case in surface.match_group_access_cases) == ()
+    assert tuple(case.case_id for case in surface.template_expand_cases) == (
+        contract.selected_case_ids
+    )
 
 
 @pytest.mark.parametrize(("surface", "pattern"), _compile_pattern_params())
