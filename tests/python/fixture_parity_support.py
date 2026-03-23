@@ -1056,9 +1056,20 @@ def assert_match_parity(
         assert type(observed) is type(expected)
 
     group_indexes = tuple(range(expected.re.groups + 1))
+    mixed_group_references: list[tuple[object, ...]] = []
+    if expected.re.groups >= 1:
+        mixed_group_references.append((0, False, 1))
+
+    group_names = tuple(expected.re.groupindex)
+    if group_names:
+        first_group_name = group_names[0]
+        mixed_group_references.append((0, first_group_name))
+        mixed_group_references.append((0, 1, first_group_name))
 
     assert observed.group(0) == expected.group(0)
     assert observed.group(*group_indexes) == expected.group(*group_indexes)
+    for references in mixed_group_references:
+        assert observed.group(*references) == expected.group(*references)
     for group_index in range(1, expected.re.groups + 1):
         assert observed.group(group_index) == expected.group(group_index)
         assert observed.span(group_index) == expected.span(group_index)

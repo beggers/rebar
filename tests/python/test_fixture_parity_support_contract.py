@@ -4717,6 +4717,92 @@ def test_match_convenience_api_parity_covers_multiple_named_groups(
     assert_match_convenience_api_parity(observed, expected)
 
 
+@pytest.mark.skipif(
+    not rebar.native_module_loaded(),
+    reason="mixed group tuple tracing requires rebar.Match",
+)
+@pytest.mark.parametrize(
+    "text",
+    (
+        pytest.param("abd", id="present-optional-group"),
+        pytest.param("ad", id="missing-optional-group"),
+    ),
+)
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-fullmatch"),
+        pytest.param(True, id="pattern-fullmatch"),
+    ),
+)
+def test_match_parity_helper_checks_mixed_group_reference_tuples_for_named_groups(
+    monkeypatch: pytest.MonkeyPatch,
+    text: str,
+    use_compiled_pattern: bool,
+) -> None:
+    observed, expected = _optional_named_group_match(
+        "rebar",
+        rebar,
+        text,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    calls: list[tuple[object, ...]] = []
+    original_group = rebar.Match.group
+
+    def recording_group(self: rebar.Match, *groups: object) -> object:
+        calls.append(groups)
+        return original_group(self, *groups)
+
+    monkeypatch.setattr(rebar.Match, "group", recording_group)
+
+    assert_match_parity("rebar", observed, expected, check_regs=True)
+
+    assert (0, False, 1) in calls
+    assert (0, 1, "word") in calls
+
+
+@pytest.mark.skipif(
+    not rebar.native_module_loaded(),
+    reason="mixed group tuple tracing requires rebar.Match",
+)
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-search"),
+        pytest.param(True, id="pattern-fullmatch"),
+    ),
+)
+def test_match_parity_helper_checks_mixed_group_reference_tuples_for_multiple_names(
+    monkeypatch: pytest.MonkeyPatch,
+    use_compiled_pattern: bool,
+) -> None:
+    observed, expected = _branch_local_named_backreference_match(
+        "rebar",
+        rebar,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    calls: list[tuple[object, ...]] = []
+    original_group = rebar.Match.group
+
+    def recording_group(self: rebar.Match, *groups: object) -> object:
+        calls.append(groups)
+        return original_group(self, *groups)
+
+    monkeypatch.setattr(rebar.Match, "group", recording_group)
+
+    assert_match_parity("rebar", observed, expected, check_regs=True)
+
+    assert (0, 1, "outer") in calls
+
+
 @pytest.mark.parametrize(
     "use_compiled_pattern",
     (
