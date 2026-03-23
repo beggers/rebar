@@ -1,6 +1,6 @@
 ## RBR-1114: Implement nested-group alternation branch-local-backreference callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,14 @@ Created: 2026-03-23
   - `tests/python/test_callable_replacement_parity_suite.py` currently has no direct bytes parity coverage for the exact nested-group alternation plus branch-local-backreference callable family; and
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` plus `reports/benchmarks/latest.py` still include exact and quantified branch-local callable `str` workload ids with no adjacent exact bytes ids on that owner path.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly describe the post-drain frontier for a single ready feature task: no ready feature follow-on currently survives in this checkout, so this run does not need tracked state-prose edits.
+
+## Completion
+- Landed exact bytes callable parity for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` on the Rust/native replacement path by adding bounded bytes compile recognition plus capture-preserving finditer support in `crates/rebar-core/src/lib.rs`, exposing that path through `crates/rebar-cpython/src/lib.rs`, and allowing the exact bytes patterns through the existing Python wrapper passthrough in `python/rebar/__init__.py`.
+- Added focused direct module/pattern bytes parity checks in `tests/python/test_callable_replacement_parity_suite.py` for the numbered `sub`/`subn` and named compiled-pattern `sub`/`subn` callable slices without changing the published fixture manifest or benchmark surface.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group_alternation_branch_local_backreference and callable and bytes and module'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group_alternation_branch_local_backreference and callable and bytes and pattern'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group_alternation_branch_local_backreference and callable'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation or test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Refreshed `reports/correctness/latest.py` as required for a correctness-behavior change; the tracked artifact totals remain `1629` executed, `1629` passed, `0` failed, and `0` unimplemented, and the tracked diff for that file is timestamp-only because this task did not widen the published fixture surface.
