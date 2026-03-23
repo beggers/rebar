@@ -56,6 +56,8 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
     case_pattern,
+    case_replacement_argument,
+    case_text_argument,
 )
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
@@ -575,6 +577,20 @@ class _CollectionReplacementLiteralReplacementRoute:
         )
 
 
+def _callable_match_group_signature(replacement: object) -> tuple[object, ...] | None:
+    if not callable(replacement):
+        return None
+    kwdefaults = getattr(replacement, "__kwdefaults__", None)
+    if not isinstance(kwdefaults, dict):
+        return None
+    return (
+        getattr(replacement, "__qualname__", getattr(replacement, "__name__", None)),
+        kwdefaults.get("_group_reference"),
+        kwdefaults.get("_prefix"),
+        kwdefaults.get("_suffix"),
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class _CollectionReplacementPatternCollectionRoute:
     workload_case_pairs: tuple[tuple[str, str], ...]
@@ -703,7 +719,9 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS = {
             "module-fullmatch-unexpected-keyword-purged-str",
             "module-findall-single-dot-warm-str",
             "module-sub-template-warm-str",
+            "module-sub-callable-grouped-warm-str",
             "pattern-subn-grouped-template-warm-str",
+            "pattern-subn-callable-named-grouped-warm-str",
             "module-search-inline-flag-warm-str-hit",
             "pattern-search-inline-flag-warm-str-hit",
             "module-search-locale-purged-bytes-hit",
@@ -3877,6 +3895,30 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
+    def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("collection-replacement-boundary")
+        workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_collection_replacement_grouped_callable_workload,
+        )
+        self.assertEqual(
+            expected_measured_workload_ids,
+            _workload_case_pairs_workload_ids(
+                _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+            ),
+        )
+        self.assertEqual(len(expected_measured_workload_ids), 2)
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "collection-replacement-boundary",
+            expected_measured_workload_ids,
+            workload_count,
+            expected_total_workload_count=workload_count,
+        )
+
     def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit(
         self,
     ) -> None:
@@ -5570,11 +5612,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 979,
-                "module_workloads": 971,
+                "measured_workloads": 981,
+                "module_workloads": 973,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 979,
+                "total_workloads": 981,
             },
         )
 
@@ -8521,6 +8563,13 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
         allowed_counts=(-1, 0, 1),
     ),
 }
+_COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS = (
+    ("module-sub-callable-grouped-warm-str", "module-sub-callable-grouped-str"),
+    (
+        "pattern-subn-callable-named-grouped-warm-str",
+        "pattern-subn-callable-named-grouped-str",
+    ),
+)
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
     "pattern-search-verbose-regression-warm-str",
     "pattern-search-verbose-regression-digits-warm-str",
@@ -8737,6 +8786,89 @@ _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
         "pattern"
     ].workload_ids(),
 )
+
+
+def _collection_replacement_grouped_callable_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.case_id not in _workload_case_pairs_case_ids(
+        _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+    ):
+        return None
+    if case.kwargs or case.use_compiled_pattern:
+        return None
+    if case.operation not in {"module_call", "pattern_call"}:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    replacement_signature = _callable_match_group_signature(
+        case_replacement_argument(case)
+    )
+    if replacement_signature is None:
+        return None
+    args = [case_text_argument(case)]
+    if case.helper == "subn":
+        count = case.args[-1]
+        if type(count) is not int:
+            return None
+        args.append(count)
+    operation_prefix = "module" if case.operation == "module_call" else "pattern"
+    return (
+        f"{operation_prefix}.{case.helper}",
+        case_pattern(case),
+        replacement_signature,
+        freeze_signature_value(args),
+        (),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _collection_replacement_grouped_callable_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_collection_replacement_grouped_callable_workload(workload):
+        raise AssertionError(
+            "unexpected collection/replacement grouped callable workload "
+            f"{workload.workload_id!r}"
+        )
+    replacement_signature = _callable_match_group_signature(
+        workload.replacement_payload()
+    )
+    if replacement_signature is None:
+        raise AssertionError(
+            "expected callable_match_group replacement for grouped callable workload "
+            f"{workload.workload_id!r}"
+        )
+    args = [workload.haystack_payload()]
+    if workload.count:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        replacement_signature,
+        freeze_signature_value(args),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_collection_replacement_grouped_callable_workload(workload: Any) -> bool:
+    return (
+        workload.workload_id
+        in _workload_case_pairs_workload_ids(
+            _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+        )
+        and workload.operation in {"module.sub", "pattern.subn"}
+        and workload.pattern in {"(abc)", "(?P<word>abc)"}
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+        and workload.text_model == "str"
+        and workload.pos is None
+        and workload.endpos is None
+        and not workload.kwargs
+    )
 
 
 def _pattern_verbose_regression_correctness_case_signature(
@@ -9815,6 +9947,20 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
             workload_kind="direct Pattern",
         ),
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="collection-replacement-grouped-callable-replacement",
+        manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
+        ),
+        include_workload=_is_collection_replacement_grouped_callable_workload,
+        correctness_case_signature=(
+            _collection_replacement_grouped_callable_correctness_case_signature
+        ),
+        workload_signature=_collection_replacement_grouped_callable_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(

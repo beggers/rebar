@@ -1,6 +1,6 @@
 # RBR-1088: Catch up grouped callable replacement benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -59,3 +59,15 @@ Created: 2026-03-23
   - `benchmarks/workloads/collection_replacement_boundary.py` currently contains `module-sub-template-warm-str` and `pattern-subn-grouped-template-warm-str` but no simple grouped callable rows, confirming the gap is on the existing collection/replacement benchmark path rather than in a missing manifest family;
   - `reports/correctness/latest.py` already publishes `module-sub-callable-grouped-str` and `pattern-subn-callable-named-grouped-str`, confirming the exact correctness anchors are already live; and
   - `tests/python/test_callable_replacement_parity_suite.py` already keeps `test_grouped_callable_replacement_module_matches_cpython` and `test_grouped_callable_replacement_pattern_matches_cpython` green for the exact str grouped callable owner path, so this task can stay benchmark-only.
+
+## Completion
+- Added the two bounded str grouped callable benchmark rows on the existing `collection-replacement-boundary` owner path:
+  - `module-sub-callable-grouped-warm-str`
+  - `pattern-subn-callable-named-grouped-warm-str`
+- Extended the shared benchmark-owner suite so the collection/replacement manifest keeps those ids measured on the source-tree combined path and anchors them to the published correctness cases `module-sub-callable-grouped-str` and `pattern-subn-callable-named-grouped-str`.
+- Regenerated the tracked benchmark publication in `reports/benchmarks/latest.py`; the tracked report now publishes `981` total workloads, `981` measured workloads, `0` known gaps, `{"cold": 104, "purged": 424, "warm": 453}` by cache mode, and `142/142` measured workloads for `collection-replacement-boundary`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_module_matches_cpython or grouped_callable_replacement_pattern_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement or compiled_pattern_module_collection_replacement or standard_benchmark_manifest_preserves_collection_replacement_keyword_descriptors_until_helper_invocation'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1088-grouped-callable-benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

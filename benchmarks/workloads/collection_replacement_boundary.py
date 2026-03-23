@@ -771,6 +771,42 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-grouped-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "(abc)",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "callable",
+        "grouped",
+        "numbered-group",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded grouped callable replacement workflow when the callback reads `match.group(1)` and wraps it in angle brackets."
+      ]
+    },
+    {
       "id": "module-sub-literal-purged-bytes",
       "bucket": "module-sub",
       "family": "module",
@@ -4626,6 +4662,43 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled Pattern.subn helper path with a grouped-literal replacement template so capture-aware replacement timing is published explicitly."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-grouped-warm-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "(?P<word>abc)",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "callable",
+        "grouped",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.subn helper path for the bounded named grouped callable replacement first-match-only workflow when the callback reads `match.group(\"word\")` and wraps it in angle brackets."
       ]
     },
     {
