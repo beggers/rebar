@@ -278,6 +278,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-sub-str-single-match",
             "pattern-sub-str-repeated",
             "pattern-sub-str-count-one",
+            "pattern-subn-str-single-match",
             "module-sub-bytes-no-match",
             "module-sub-bytes-single-match",
             "module-sub-bytes-repeated",

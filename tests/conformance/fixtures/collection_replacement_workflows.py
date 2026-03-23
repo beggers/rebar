@@ -631,6 +631,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-subn-str-single-match",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "zabczz"],
+      "categories": ["workflow", "subn", "literal", "str", "single-match"],
+      "notes": [
+        "Publishes the direct Pattern.subn str single-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-subn-str-repeated",
       "operation": "pattern_call",
       "family": "replacement_workflow",
