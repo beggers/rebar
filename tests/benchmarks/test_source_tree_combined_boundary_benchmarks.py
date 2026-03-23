@@ -3582,7 +3582,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_compiled_pattern_keyword_error_workload,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 12)
+        expected_source_workload_ids = {
+            workload.workload_id
+            for workload in _compiled_pattern_module_helper_keyword_error_source_workloads()
+        }
+        self.assertEqual(
+            set(expected_measured_workload_ids),
+            expected_source_workload_ids,
+        )
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
