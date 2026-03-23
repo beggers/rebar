@@ -10887,6 +10887,28 @@ def _standard_benchmark_definition_params(
     )
 
 
+def _benchmark_manifest_selector_id(selector: str) -> str:
+    return selector
+
+
+def _compiled_pattern_module_compile_contract_case_id(
+    contract_case: CompiledPatternModuleCompileContractCase,
+) -> str:
+    return contract_case.case_id
+
+
+def _compiled_pattern_module_contract_anchor_lane_id(
+    anchor_lane: _CompiledPatternModuleContractAnchorLane,
+) -> str:
+    return anchor_lane.case_id
+
+
+def _standard_benchmark_definition_id(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> str:
+    return definition.name
+
+
 def _standard_benchmark_special_unanchored_result_parity_params() -> tuple[Any, ...]:
     return tuple(
         pytest.param(
@@ -11048,7 +11070,7 @@ def test_default_benchmark_published_full_suite_selector_covers_tracked_manifest
 @pytest.mark.parametrize(
     "selector",
     tuple(benchmarks._NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES),
-    ids=lambda selector: selector,
+    ids=_benchmark_manifest_selector_id,
 )
 def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants(
     selector: str,
@@ -17517,7 +17539,7 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
 @pytest.mark.parametrize(
     "contract_case",
     _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-    ids=lambda contract_case: contract_case.case_id,
+    ids=_compiled_pattern_module_compile_contract_case_id,
 )
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
@@ -17584,7 +17606,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
 @pytest.mark.parametrize(
     "anchor_lane",
     _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
-    ids=lambda anchor_lane: anchor_lane.case_id,
+    ids=_compiled_pattern_module_contract_anchor_lane_id,
 )
 def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
@@ -19968,7 +19990,7 @@ def test_standard_benchmark_workloads_stay_anchored_to_published_correctness_cas
 @pytest.mark.parametrize(
     "definition",
     STANDARD_BENCHMARK_DEFINITIONS,
-    ids=lambda definition: definition.name,
+    ids=_standard_benchmark_definition_id,
 )
 def test_standard_benchmark_workloads_stay_pinned_to_exact_case_ids(
     definition: StandardBenchmarkAnchorContractDefinition,

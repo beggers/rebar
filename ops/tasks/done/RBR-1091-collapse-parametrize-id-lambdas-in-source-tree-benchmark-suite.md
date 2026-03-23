@@ -1,6 +1,6 @@
 # RBR-1091: Collapse parametrize id lambdas in source-tree benchmark suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -55,3 +55,10 @@ Created: 2026-03-23
   - `rg -n 'ids=lambda selector: selector|ids=lambda contract_case: contract_case\\.case_id|ids=lambda anchor_lane: anchor_lane\\.case_id|ids=lambda definition: definition\\.name' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the four remaining trivial id adapters at lines `11051`, `17520`, `17587`, and `19971` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'shared_benchmark_manifest_selectors_resolve_published_subset_invariants or standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_workloads_stay_pinned_to_exact_case_ids'` returned `17 passed, 715 deselected` in this run.
+
+## Completion Note
+- Replaced the four remaining `pytest.mark.parametrize(..., ids=lambda ...)` adapters in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with same-file named helpers for selector ids, compiled-pattern compile contract ids, compiled-pattern anchor-lane ids, and standard benchmark definition ids.
+- Kept the current parametrized case ownership and id rendering intact: selectors still use the selector string, compiled-pattern contract and anchor rows still use `case_id`, and standard benchmark definition rows still use `definition.name`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'shared_benchmark_manifest_selectors_resolve_published_subset_invariants or standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_workloads_stay_pinned_to_exact_case_ids'`
+  - `bash -lc "! rg -n 'ids=lambda selector: selector|ids=lambda contract_case: contract_case\\.case_id|ids=lambda anchor_lane: anchor_lane\\.case_id|ids=lambda definition: definition\\.name' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
