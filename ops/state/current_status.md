@@ -9,20 +9,20 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1590 cases across 114 manifests, with all 1590 passing in the current slice; the benchmark publication covers 971/971 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1590 cases across 114 manifests, with all 1590 passing in the current slice; the benchmark publication covers 972/972 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
 - `RBR-1057`: publish the direct `Pattern.subn()` bytes single-match on the shared collection/replacement correctness path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
-- The published benchmark surface is still bounded at 971 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 972 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1590 cases across 114 manifests, all passing, and 971 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1590 cases across 114 manifests, all passing, and 972 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- `RBR-1057` is the surviving ready follow-on after `RBR-1055` drains: publish the direct `Pattern.subn()` bytes single-match on the shared collection/replacement correctness path.
+- `RBR-1057` is the surviving ready follow-on in the current checkout: publish the direct `Pattern.subn()` bytes single-match on the shared collection/replacement correctness path.
 - No blocked or in-progress feature task shadows this frontier in this checkout.
 
 ## What Exists
@@ -317,7 +317,7 @@ The published correctness slice now covers 1590 cases across 114 manifests, all 
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1590 cases, with all 1590 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree-shim path while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 971 workloads across 30 manifests with 971 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
+- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 972 workloads across 30 manifests with 972 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -337,4 +337,4 @@ The published correctness slice now covers 1590 cases across 114 manifests, all 
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface is still bounded at 971 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
+- The published benchmark surface is still bounded at 972 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
