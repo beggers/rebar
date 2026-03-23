@@ -2600,49 +2600,30 @@ def test_no_match_text_filters_candidates_by_case_text_model() -> None:
     assert _no_match_text(surface, bytes_case) == b"zzzz"
 
 
-def _assert_module_replacement_parity(
+def _assert_replacement_parity(
+    surface: str,
     pattern: TextValue,
     replacement: TextValue,
     string: TextValue,
     count: int,
 ) -> None:
-    assert rebar.sub(pattern, replacement, string, count=count) == re.sub(
-        pattern,
-        replacement,
-        string,
-        count=count,
-    )
-    assert rebar.subn(pattern, replacement, string, count=count) == re.subn(
-        pattern,
-        replacement,
-        string,
-        count=count,
-    )
+    if surface == "module":
+        observed_sub = rebar.sub(pattern, replacement, string, count=count)
+        expected_sub = re.sub(pattern, replacement, string, count=count)
+        observed_subn = rebar.subn(pattern, replacement, string, count=count)
+        expected_subn = re.subn(pattern, replacement, string, count=count)
+    elif surface == "pattern":
+        observed_pattern = rebar.compile(pattern)
+        expected_pattern = re.compile(pattern)
+        observed_sub = observed_pattern.sub(replacement, string, count=count)
+        expected_sub = expected_pattern.sub(replacement, string, count=count)
+        observed_subn = observed_pattern.subn(replacement, string, count=count)
+        expected_subn = expected_pattern.subn(replacement, string, count=count)
+    else:
+        raise AssertionError(f"unexpected replacement parity surface: {surface!r}")
 
-
-def _assert_pattern_replacement_parity(
-    pattern: TextValue,
-    replacement: TextValue,
-    string: TextValue,
-    count: int,
-) -> None:
-    observed_pattern = rebar.compile(pattern)
-    expected_pattern = re.compile(pattern)
-
-    assert observed_pattern.sub(replacement, string, count=count) == expected_pattern.sub(
-        replacement,
-        string,
-        count=count,
-    )
-    assert observed_pattern.subn(
-        replacement,
-        string,
-        count=count,
-    ) == expected_pattern.subn(
-        replacement,
-        string,
-        count=count,
-    )
+    assert observed_sub == expected_sub
+    assert observed_subn == expected_subn
 
 
 def _assert_literal_replacement_result_matches_cpython(
@@ -2697,7 +2678,7 @@ def test_source_package_module_literal_replacement_helpers_match_cpython(
     string: TextValue,
     count: int,
 ) -> None:
-    _assert_module_replacement_parity(pattern, replacement, string, count)
+    _assert_replacement_parity("module", pattern, replacement, string, count)
 
 
 @pytest.mark.parametrize(
@@ -2710,7 +2691,7 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     string: TextValue,
     count: int,
 ) -> None:
-    _assert_pattern_replacement_parity(pattern, replacement, string, count)
+    _assert_replacement_parity("pattern", pattern, replacement, string, count)
 
 
 @pytest.mark.parametrize(
@@ -3168,7 +3149,7 @@ def test_source_package_module_whole_match_template_replacement_matches_cpython(
     string: str,
     count: int,
 ) -> None:
-    _assert_module_replacement_parity(pattern, replacement, string, count)
+    _assert_replacement_parity("module", pattern, replacement, string, count)
 
 
 @pytest.mark.parametrize(
@@ -3181,7 +3162,7 @@ def test_source_package_pattern_whole_match_template_replacement_matches_cpython
     string: str,
     count: int,
 ) -> None:
-    _assert_pattern_replacement_parity(pattern, replacement, string, count)
+    _assert_replacement_parity("pattern", pattern, replacement, string, count)
 
 
 def _capture_type_error(callback: Callable[[], object]) -> TypeError:
