@@ -12152,6 +12152,92 @@ def test_standard_benchmark_keyword_kwargs_validation_matches_manifest_and_paylo
         )
 
 
+@pytest.mark.parametrize(
+    ("operation", "kwargs_payload", "expected_kwargs"),
+    (
+        pytest.param(
+            "module.subn",
+            {
+                "missing": 1,
+                "count": {"type": "indexlike", "value": 2},
+            },
+            {
+                "count": {"type": "indexlike", "value": 2},
+                "missing": 1,
+            },
+            id="module-subn-unexpected-keyword-passthrough",
+        ),
+        pytest.param(
+            "pattern.split",
+            {
+                "missing": {"type": "indexlike", "value": 1},
+                "maxsplit": False,
+            },
+            {
+                "maxsplit": False,
+                "missing": {"type": "indexlike", "value": 1},
+            },
+            id="pattern-split-unexpected-keyword-passthrough",
+        ),
+    ),
+)
+def test_benchmark_keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows(
+    operation: str,
+    kwargs_payload: dict[str, object],
+    expected_kwargs: dict[str, object],
+) -> None:
+    assert benchmarks.normalize_keyword_workload_arguments(
+        kwargs_payload,
+        operation=operation,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "unexpected keyword argument 'missing'",
+        },
+    ) == expected_kwargs
+
+
+@pytest.mark.parametrize(
+    ("operation", "kwargs_payload", "error_pattern"),
+    (
+        pytest.param(
+            "pattern.search",
+            {"missing": 1},
+            re.escape(
+                "benchmark workload kwargs for pattern.search only supports the "
+                "`endpos` and `pos` keys; got unsupported keys ['missing']"
+            ),
+            id="pattern-search-still-rejects-unexpected-keyword",
+        ),
+        pytest.param(
+            "module.compile",
+            {"missing": 1},
+            re.escape(
+                "benchmark workload kwargs are only supported for pattern.search, "
+                "pattern.match, pattern.fullmatch, pattern.findall, "
+                "pattern.finditer, pattern.split, pattern.sub, pattern.subn, "
+                "module.search, module.match, module.fullmatch, module.split, "
+                "module.sub, and module.subn"
+            ),
+            id="module-compile-still-rejects-generic-kwargs",
+        ),
+    ),
+)
+def test_benchmark_keyword_kwargs_normalization_does_not_expand_expected_exception_passthrough(
+    operation: str,
+    kwargs_payload: dict[str, object],
+    error_pattern: str,
+) -> None:
+    with pytest.raises(ValueError, match=error_pattern):
+        benchmarks.normalize_keyword_workload_arguments(
+            kwargs_payload,
+            operation=operation,
+            expected_exception={
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+        )
+
+
 def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
