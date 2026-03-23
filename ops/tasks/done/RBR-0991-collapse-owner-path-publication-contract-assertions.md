@@ -1,6 +1,6 @@
 # RBR-0991: Collapse owner-path publication contract assertions
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -177,3 +177,8 @@ PY`
   - `rg -n 'published_fixture_cases = _published_owner_path_fixture_cases\\(|selected_direct_cases = _selected_owner_path_direct_cases\\(' tests/python/test_module_workflow_parity_suite.py` currently finds twelve open-coded setup lines across the shared-owner-path frontier tests, including the six slices targeted here;
   - the focused pytest slice in Verification currently passes (`6 passed, 1445 deselected`); and
   - the owner-path contract probe in Verification currently passes (`ok`), confirming that this cleanup can stay structural while preserving the current row-driven ordering and count contracts.
+
+## Completion
+- Added one file-local `_assert_owner_path_publication_contract(...)` helper in `tests/python/test_module_workflow_parity_suite.py` to centralize owner-path fixture/direct-case selection, row ordering, optional text-model count checks, and helper-order assertions.
+- Repointed the six targeted owner-path publication tests through that helper while keeping each test's fixture-vs-direct-case field assertions local and unchanged in behavior, including the compiled-pattern helper ordering special case.
+- Verified with the focused pytest slice (`6 passed, 1445 deselected`) and the explicit owner-path contract probe (`ok`).

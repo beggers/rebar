@@ -2406,6 +2406,59 @@ def _selected_owner_path_direct_cases(
     return tuple(row.direct_case for row in rows)
 
 
+def _owner_path_direct_case_helper(case: object) -> str:
+    return case.helper
+
+
+def _assert_owner_path_publication_contract(
+    fixture_cases: tuple[FixtureCase, ...],
+    rows: tuple[_OwnerPathRow[_DirectCaseT], ...],
+    *,
+    expected_count: int,
+    expected_helper_counts: Counter[str],
+    expected_text_model_counts: Counter[str] | None = None,
+    direct_case_helper: Callable[[_DirectCaseT], str] | None = None,
+) -> tuple[tuple[FixtureCase, ...], tuple[_DirectCaseT, ...]]:
+    published_fixture_cases = _published_owner_path_fixture_cases(fixture_cases, rows)
+    selected_direct_cases = _selected_owner_path_direct_cases(rows)
+
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            published_fixture_cases,
+            "str",
+        )
+    ) == _owner_path_fixture_case_ids(rows, "str")
+    assert tuple(
+        case.case_id
+        for case in _fixture_cases_for_text_model(
+            published_fixture_cases,
+            "bytes",
+        )
+    ) == _owner_path_fixture_case_ids(rows, "bytes")
+    assert tuple(case.case_id for case in published_fixture_cases) == (
+        _owner_path_fixture_case_ids(rows)
+    )
+    assert tuple(case.case_id for case in selected_direct_cases) == tuple(
+        row.direct_case.case_id for row in rows
+    )
+    assert len(published_fixture_cases) == expected_count
+    assert len(selected_direct_cases) == len(published_fixture_cases)
+    if expected_text_model_counts is not None:
+        assert Counter(case.text_model for case in published_fixture_cases) == (
+            expected_text_model_counts
+        )
+    assert Counter(case.helper for case in published_fixture_cases) == (
+        expected_helper_counts
+    )
+    if direct_case_helper is None:
+        direct_case_helper = _owner_path_direct_case_helper
+    assert tuple(case.helper for case in published_fixture_cases) == tuple(
+        direct_case_helper(case) for case in selected_direct_cases
+    )
+    return published_fixture_cases, selected_direct_cases
+
+
 def _positional_indexlike_direct_case_pattern_and_args(
     case: ModulePositionalIndexLikeCallCase | PatternPositionalIndexLikeCallCase,
 ) -> tuple[str | bytes, tuple[object, ...]]:
@@ -4496,65 +4549,24 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
 def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_owner_path_fixture_cases(
-        RAW_MODULE_CALL_CASES,
-        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    )
-    selected_direct_cases = _selected_owner_path_direct_cases(
-        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-    )
-
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "str",
-        )
-    ) == _owner_path_fixture_case_ids(
-        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-        "str",
-    )
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "bytes",
-        )
-    ) == _owner_path_fixture_case_ids(
-        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-        "bytes",
-    )
-    assert tuple(
-        case.case_id for case in published_fixture_cases
-    ) == _owner_path_fixture_case_ids(
-        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    )
-    assert tuple(
-        case.case_id for case in selected_direct_cases
-    ) == tuple(
-        row.direct_case.case_id
-        for row in MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    )
-    assert len(published_fixture_cases) == 14
-    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 6, "bytes": 8}
-    )
-    assert len(selected_direct_cases) == len(published_fixture_cases)
-    assert Counter(case.helper for case in published_fixture_cases) == (
-        Counter(
-            {
-                "search": 1,
-                "match": 1,
-                "fullmatch": 1,
-                "split": 3,
-                "sub": 4,
-                "subn": 4,
-            }
+    published_fixture_cases, selected_direct_cases = (
+        _assert_owner_path_publication_contract(
+            RAW_MODULE_CALL_CASES,
+            MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+            expected_count=14,
+            expected_text_model_counts=Counter({"str": 6, "bytes": 8}),
+            expected_helper_counts=Counter(
+                {
+                    "search": 1,
+                    "match": 1,
+                    "fullmatch": 1,
+                    "split": 3,
+                    "sub": 4,
+                    "subn": 4,
+                }
+            ),
         )
     )
-    assert tuple(
-        case.helper for case in published_fixture_cases
-    ) == tuple(case.helper for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(
         published_fixture_cases,
@@ -4676,59 +4688,22 @@ def test_module_workflow_surface_publishes_module_positional_indexlike_slice_fro
 
 def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_owner_path_fixture_cases(
-        RAW_MODULE_CALL_CASES,
-        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
-    )
-    selected_direct_cases = _selected_owner_path_direct_cases(
-        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
-    )
-
-    assert tuple(
-        case.case_id for case in published_fixture_cases
-    ) == _owner_path_fixture_case_ids(
-        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
-    )
-    assert tuple(
-        case.case_id for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "str",
+    published_fixture_cases, selected_direct_cases = (
+        _assert_owner_path_publication_contract(
+            RAW_MODULE_CALL_CASES,
+            MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
+            expected_count=13,
+            expected_text_model_counts=Counter({"str": 8, "bytes": 5}),
+            expected_helper_counts=Counter(
+                {
+                    "search": 1,
+                    "split": 3,
+                    "sub": 4,
+                    "fullmatch": 1,
+                    "subn": 4,
+                }
+            ),
         )
-    ) == _owner_path_fixture_case_ids(
-        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
-        "str",
-    )
-    assert tuple(
-        case.case_id for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "bytes",
-        )
-    ) == _owner_path_fixture_case_ids(
-        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
-        "bytes",
-    )
-    assert tuple(case.case_id for case in selected_direct_cases) == tuple(
-        row.direct_case.case_id
-        for row in MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS
-    )
-    assert len(published_fixture_cases) == 13
-    assert len(selected_direct_cases) == len(published_fixture_cases)
-    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 8, "bytes": 5}
-    )
-    assert Counter(
-        case.helper for case in published_fixture_cases
-    ) == Counter(
-        {
-            "search": 1,
-            "split": 3,
-            "sub": 4,
-            "fullmatch": 1,
-            "subn": 4,
-        }
-    )
-    assert tuple(case.helper for case in published_fixture_cases) == tuple(
-        case.helper for case in selected_direct_cases
     )
 
     for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
@@ -4748,65 +4723,26 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
 
 def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_owner_path_fixture_cases(
-        PATTERN_CASES,
-        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    )
-    selected_direct_cases = _selected_owner_path_direct_cases(
-        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    )
-
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "str",
-        )
-    ) == _owner_path_fixture_case_ids(
-        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-        "str",
-    )
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "bytes",
-        )
-    ) == _owner_path_fixture_case_ids(
-        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-        "bytes",
-    )
-    assert tuple(
-        case.case_id for case in published_fixture_cases
-    ) == _owner_path_fixture_case_ids(PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS)
-    assert tuple(
-        case.case_id for case in selected_direct_cases
-    ) == tuple(
-        row.direct_case.case_id
-        for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
-    )
-    assert len(published_fixture_cases) == 27
-    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 15, "bytes": 12}
-    )
-    assert len(selected_direct_cases) == len(published_fixture_cases)
-    assert Counter(case.helper for case in published_fixture_cases) == (
-        Counter(
-            {
-                "search": 5,
-                "match": 3,
-                "fullmatch": 2,
-                "findall": 3,
-                "finditer": 3,
-                "split": 3,
-                "sub": 4,
-                "subn": 4,
-            }
+    published_fixture_cases, selected_direct_cases = (
+        _assert_owner_path_publication_contract(
+            PATTERN_CASES,
+            PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+            expected_count=27,
+            expected_text_model_counts=Counter({"str": 15, "bytes": 12}),
+            expected_helper_counts=Counter(
+                {
+                    "search": 5,
+                    "match": 3,
+                    "fullmatch": 2,
+                    "findall": 3,
+                    "finditer": 3,
+                    "split": 3,
+                    "sub": 4,
+                    "subn": 4,
+                }
+            ),
         )
     )
-    assert tuple(
-        case.helper for case in published_fixture_cases
-    ) == tuple(case.helper for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(
         published_fixture_cases,
@@ -4825,53 +4761,19 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
 
 def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_owner_path_fixture_cases(
-        PATTERN_CASES,
-        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
-    )
-    selected_direct_cases = _selected_owner_path_direct_cases(
-        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
-    )
-
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "str",
+    published_fixture_cases, selected_direct_cases = (
+        _assert_owner_path_publication_contract(
+            PATTERN_CASES,
+            _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
+            expected_count=10,
+            expected_helper_counts=Counter(
+                {
+                    "split": 2,
+                    "sub": 4,
+                    "subn": 4,
+                }
+            ),
         )
-    ) == _owner_path_fixture_case_ids(
-        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
-        "str",
-    )
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "bytes",
-        )
-    ) == _owner_path_fixture_case_ids(
-        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
-        "bytes",
-    )
-    assert tuple(case.case_id for case in published_fixture_cases) == (
-        _owner_path_fixture_case_ids(
-            _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS
-        )
-    )
-    assert tuple(case.case_id for case in selected_direct_cases) == (
-        tuple(row.direct_case.case_id for row in _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS)
-    )
-    assert len(published_fixture_cases) == 10
-    assert len(selected_direct_cases) == len(published_fixture_cases)
-    assert Counter(case.helper for case in published_fixture_cases) == Counter(
-        {
-            "split": 2,
-            "sub": 4,
-            "subn": 4,
-        }
-    )
-    assert tuple(case.helper for case in published_fixture_cases) == tuple(
-        case.helper for case in selected_direct_cases
     )
 
     for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
@@ -4888,62 +4790,23 @@ def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_dire
 
 def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_owner_path_fixture_cases(
-        PATTERN_CASES,
-        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
-    )
-    selected_direct_cases = _selected_owner_path_direct_cases(
-        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
-    )
-
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "str",
+    published_fixture_cases, selected_direct_cases = (
+        _assert_owner_path_publication_contract(
+            PATTERN_CASES,
+            _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
+            expected_count=6,
+            expected_text_model_counts=Counter({"str": 4, "bytes": 2}),
+            expected_helper_counts=Counter(
+                {
+                    "search": 1,
+                    "match": 1,
+                    "fullmatch": 1,
+                    "split": 1,
+                    "sub": 1,
+                    "subn": 1,
+                }
+            ),
         )
-    ) == _owner_path_fixture_case_ids(
-        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
-        "str",
-    )
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "bytes",
-        )
-    ) == _owner_path_fixture_case_ids(
-        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
-        "bytes",
-    )
-    assert tuple(case.case_id for case in published_fixture_cases) == (
-        _owner_path_fixture_case_ids(
-            _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
-        )
-    )
-    assert tuple(case.case_id for case in selected_direct_cases) == (
-        tuple(
-            row.direct_case.case_id
-            for row in _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS
-        )
-    )
-    assert len(published_fixture_cases) == 6
-    assert len(selected_direct_cases) == len(published_fixture_cases)
-    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 4, "bytes": 2}
-    )
-    assert Counter(case.helper for case in published_fixture_cases) == Counter(
-        {
-            "search": 1,
-            "match": 1,
-            "fullmatch": 1,
-            "split": 1,
-            "sub": 1,
-            "subn": 1,
-        }
-    )
-    assert tuple(case.helper for case in published_fixture_cases) == tuple(
-        case.helper for case in selected_direct_cases
     )
 
     for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
@@ -5189,65 +5052,27 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_owner_path_fixture_cases(
-        MODULE_CALL_CASES,
-        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
-    )
-    selected_direct_cases = _selected_owner_path_direct_cases(
-        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
-    )
-
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "str",
+    published_fixture_cases, selected_direct_cases = (
+        _assert_owner_path_publication_contract(
+            MODULE_CALL_CASES,
+            COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+            expected_count=62,
+            expected_text_model_counts=Counter({"str": 33, "bytes": 29}),
+            expected_helper_counts=Counter(
+                {
+                    "compile": 20,
+                    "search": 4,
+                    "match": 3,
+                    "fullmatch": 4,
+                    "split": 7,
+                    "findall": 2,
+                    "finditer": 2,
+                    "sub": 10,
+                    "subn": 10,
+                }
+            ),
+            direct_case_helper=_compiled_pattern_module_helper_direct_case_helper,
         )
-    ) == _owner_path_fixture_case_ids(
-        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
-        "str",
-    )
-    assert tuple(
-        case.case_id
-        for case in _fixture_cases_for_text_model(
-            published_fixture_cases,
-            "bytes",
-        )
-    ) == _owner_path_fixture_case_ids(
-        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
-        "bytes",
-    )
-    assert len(published_fixture_cases) == 62
-    assert Counter(case.text_model for case in published_fixture_cases) == Counter(
-        {"str": 33, "bytes": 29}
-    )
-    assert Counter(case.helper for case in published_fixture_cases) == Counter(
-        {
-            "compile": 20,
-            "search": 4,
-            "match": 3,
-            "fullmatch": 4,
-            "split": 7,
-            "findall": 2,
-            "finditer": 2,
-            "sub": 10,
-            "subn": 10,
-        }
-    )
-    assert tuple(
-        case.case_id for case in published_fixture_cases
-    ) == _owner_path_fixture_case_ids(COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS)
-    assert tuple(
-        case.case_id for case in selected_direct_cases
-    ) == tuple(
-        row.direct_case.case_id for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
-    )
-    assert len(selected_direct_cases) == len(published_fixture_cases)
-    assert tuple(
-        case.helper for case in published_fixture_cases
-    ) == tuple(
-        _compiled_pattern_module_helper_direct_case_helper(case)
-        for case in selected_direct_cases
     )
 
     for row, fixture_case, direct_case in zip(
