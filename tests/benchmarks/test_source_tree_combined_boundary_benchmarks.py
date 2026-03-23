@@ -14503,32 +14503,6 @@ def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_c
         re.purge()
 
 
-def _run_cpython_pattern_helper_keyword_error_workload(workload: Workload) -> object:
-    helper_name = workload.operation.removeprefix("pattern.")
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    kwargs = dict(workload.kwargs)
-    positional_keyword_field = _collection_replacement_positional_keyword_field(
-        workload
-    )
-
-    if workload.operation == "pattern.split":
-        args: list[object] = [workload.haystack_payload()]
-        if positional_keyword_field == "maxsplit":
-            args.append(workload.maxsplit_argument())
-        return getattr(compiled_pattern, helper_name)(*args, **kwargs)
-
-    if workload.operation in {"pattern.sub", "pattern.subn"}:
-        args = [workload.replacement_payload(), workload.haystack_payload()]
-        if positional_keyword_field == "count":
-            args.append(workload.count_argument())
-        return getattr(compiled_pattern, helper_name)(*args, **kwargs)
-
-    raise AssertionError(
-        "unexpected pattern helper keyword-error workload operation "
-        f"{workload.operation!r}"
-    )
-
-
 def _pattern_helper_collection_replacement_keyword_error_workload(
     *,
     operation: str,
@@ -14921,6 +14895,10 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
     )
     observed_field_names = _record_numeric_materialization_fields(monkeypatch)
     callback_field_names: list[str] = []
+    helper_name = workload.operation.removeprefix("pattern.")
+    positional_keyword_field = _collection_replacement_positional_keyword_field(
+        workload
+    )
 
     re.purge()
     try:
@@ -14929,7 +14907,29 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
 
         for _ in range(2):
             with pytest.raises(TypeError) as expected_error:
-                _run_cpython_pattern_helper_keyword_error_workload(workload)
+                compiled_pattern = re.compile(
+                    workload.pattern_payload(),
+                    workload.flags,
+                )
+                kwargs = dict(workload.kwargs)
+                if workload.operation == "pattern.split":
+                    args: list[object] = [workload.haystack_payload()]
+                    if positional_keyword_field == "maxsplit":
+                        args.append(workload.maxsplit_argument())
+                    getattr(compiled_pattern, helper_name)(*args, **kwargs)
+                elif workload.operation in {"pattern.sub", "pattern.subn"}:
+                    args = [
+                        workload.replacement_payload(),
+                        workload.haystack_payload(),
+                    ]
+                    if positional_keyword_field == "count":
+                        args.append(workload.count_argument())
+                    getattr(compiled_pattern, helper_name)(*args, **kwargs)
+                else:
+                    raise AssertionError(
+                        "unexpected pattern helper keyword-error workload "
+                        f"operation {workload.operation!r}"
+                    )
             observed_field_names.clear()
             with pytest.raises(TypeError) as observed_error:
                 callback()
