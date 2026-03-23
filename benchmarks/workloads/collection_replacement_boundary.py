@@ -1060,6 +1060,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-str-no-match-purged-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zzz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "literal",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.subn helper path that keeps the raw no-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-bytes-no-match-purged-bytes",
       "bucket": "module-sub",
       "family": "module",
@@ -1261,6 +1290,35 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes module.subn helper path that keeps the raw repeated-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-bytes-no-match-purged-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zzz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.subn helper path that keeps the raw no-match literal replacement workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

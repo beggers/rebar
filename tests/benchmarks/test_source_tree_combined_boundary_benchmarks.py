@@ -3864,7 +3864,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_measured_workload_ids,
             _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"].workload_ids(),
         )
-        self.assertEqual(len(expected_measured_workload_ids), 16)
+        self.assertEqual(len(expected_measured_workload_ids), 18)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5562,11 +5562,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 977,
-                "module_workloads": 969,
+                "measured_workloads": 979,
+                "module_workloads": 971,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 977,
+                "total_workloads": 979,
             },
         )
 
@@ -8492,6 +8492,7 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
                 "module-subn-str-negative-count-purged-str",
                 "module-subn-str-negative-count",
             ),
+            ("module-subn-str-no-match-purged-str", "module-subn-str-no-match"),
             ("module-sub-bytes-no-match-purged-bytes", "module-sub-bytes-no-match"),
             (
                 "module-sub-bytes-single-match-purged-bytes",
@@ -8505,6 +8506,7 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
                 "module-subn-bytes-single-match",
             ),
             ("module-subn-bytes-repeated-purged-bytes", "module-subn-bytes-repeated"),
+            ("module-subn-bytes-no-match-purged-bytes", "module-subn-bytes-no-match"),
         ),
         expected_operation="module_call",
         operation_prefix="module",
