@@ -378,6 +378,63 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-bytes-repeated",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabc"
+        }
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "repeated"],
+      "notes": [
+        "Publishes the raw bytes module sub helper outcome for repeated literal matches."
+      ]
+    },
+    {
+      "id": "module-sub-bytes-count-one",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        1
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "count-one"],
+      "notes": [
+        "Publishes the raw bytes module sub helper outcome for a bounded replacement count."
+      ]
+    },
+    {
       "id": "module-subn-bytes-count",
       "operation": "module_call",
       "family": "replacement_workflow",

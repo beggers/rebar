@@ -1,6 +1,6 @@
 # RBR-1042: Publish the direct `module.sub()` bytes repeated/count-one pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -64,3 +64,13 @@ Created: 2026-03-23
   - `rg -n 'module-sub-bytes-(repeated|count-one)' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py reports/correctness/latest.py benchmarks/workloads/collection_replacement_boundary.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact correctness and benchmark publication ids are still absent from the tracked owner-path surfaces; and
   - the matching benchmark-side workload ids are also still absent from `benchmarks/workloads/collection_replacement_boundary.py`, so Python-path benchmark catch-up should stay sequenced behind this correctness publication instead of replacing it.
 - Keep the still-unpublished `module-sub-str-count-one` row out of this task: it is a separate singleton gap on the same owner path, while this run stays on one exact two-row `bytes` pair that can be queued without widening the task shape.
+
+## Completion Note
+- Added `module-sub-bytes-repeated` and `module-sub-bytes-count-one` to `tests/conformance/fixtures/collection_replacement_workflows.py` on the existing direct raw-module literal replacement block, extended the shared owner-path publication selector/assertions in `tests/python/test_fixture_backed_replacement_parity_suite.py`, refreshed the collection manifest representative cases in `tests/conformance/test_combined_correctness_scorecards.py`, and republished `reports/correctness/latest.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (bytes-repeated-match or bytes-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1042-module-sub-bytes-repeated-count-one-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+- Published combined correctness now reports `1587` total / `1587` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `50`/`50`, `collection.replacement.workflow.bytes` at `19`/`19`, `collection.replacement.workflow.str` unchanged at `31`/`31`, `collection.replacement.workflow.pattern_call` unchanged at `28`/`28`, and `collection.replacement.workflow.module_call` at `22`/`22`.
