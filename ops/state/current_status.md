@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1589 cases across 114 manifests, with all 1589 passing in the current slice; the benchmark publication covers 971/971 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- `RBR-1053`: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
+- `RBR-1055`: catch up the direct `module.subn()` bytes single-match on the existing collection/replacement Python-path benchmark path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,8 +22,8 @@ Published correctness covers 1589 cases across 114 manifests, with all 1589 pass
 The published correctness slice now covers 1589 cases across 114 manifests, all passing, and 971 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- `RBR-1053` is the current ready follow-on: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
-- The feature queue currently has `1` ready task, `0` in progress, and `0` blocked, and the done queue now holds `1055` completed task files in this checkout.
+- `RBR-1055` is the surviving ready follow-on after the current correctness head drains: catch up the direct `module.subn()` bytes single-match on the existing collection/replacement Python-path benchmark path.
+- The current ready head remains the bounded `RBR-1053` correctness publication, with no blocked or in-progress feature task needing normalization in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.

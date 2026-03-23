@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-1053` is the current ready follow-on: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
+`RBR-1055` is the surviving ready follow-on after the current correctness head drains: catch up the direct `module.subn()` bytes single-match on the existing collection/replacement Python-path benchmark path.
 
 ## Ordered Work
-1. `RBR-1053`: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
+1. `RBR-1055`: catch up the direct `module.subn()` bytes single-match on the existing collection/replacement Python-path benchmark path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
