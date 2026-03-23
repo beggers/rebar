@@ -3944,24 +3944,6 @@ def _assert_verbose_compile_bytes_case_matches_cpython(
     assert observed.span() == expected.span() == case.expected_span
     assert_match_convenience_api_parity(observed, expected)
 
-
-@dataclass(frozen=True)
-class BackendFixtureContractCase:
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
-
-
-def _request_with_backend_params(**params: object) -> object:
-    return SimpleNamespace(node=SimpleNamespace(callspec=SimpleNamespace(params=params)))
-
-
-def _backend_fixture_request(backend_name: str, **params: object) -> object:
-    return SimpleNamespace(
-        param=backend_name,
-        node=SimpleNamespace(callspec=SimpleNamespace(params=params)),
-    )
-
-
 def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> None:
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
@@ -4949,84 +4931,6 @@ def test_match_behavior_supplemental_bytes_cases_cover_missing_module_paths() ->
         for case in SUPPLEMENTAL_BYTES_CASES
         for payload in (case.pattern, case.string)
     )
-
-
-def test_regex_backend_fixture_ignores_requests_without_callspec() -> None:
-    request = SimpleNamespace(param="stdlib", node=SimpleNamespace())
-
-    assert python_conftest.regex_backend.__wrapped__(request) == ("stdlib", re)
-
-
-def test_regex_backend_fixture_preserves_case_param_compatibility() -> None:
-    request = _request_with_backend_params(
-        case=BackendFixtureContractCase(
-            unsupported_backends=("rebar",),
-            unsupported_backend_reason="case-style reason",
-        )
-    )
-    request.param = "rebar"
-
-    with pytest.raises(pytest.skip.Exception, match="case-style reason"):
-        python_conftest.regex_backend.__wrapped__(request)
-
-
-def test_regex_backend_fixture_supports_nonstandard_case_param_names() -> None:
-    request = _request_with_backend_params(
-        supplemental_case=BackendFixtureContractCase(
-            unsupported_backends=("rebar",),
-            unsupported_backend_reason="supplemental reason",
-        )
-    )
-    request.param = "rebar"
-
-    with pytest.raises(pytest.skip.Exception, match="supplemental reason"):
-        python_conftest.regex_backend.__wrapped__(request)
-
-
-def test_regex_backend_fixture_ignores_unrelated_params() -> None:
-    request = _request_with_backend_params(
-        text="abc",
-        flags=0,
-        supplemental_case=BackendFixtureContractCase(unsupported_backends=("stdlib",)),
-    )
-    request.param = "rebar"
-
-    assert python_conftest.regex_backend.__wrapped__(request) == ("rebar", rebar)
-
-
-def test_regex_backend_fixture_defaults_missing_reason() -> None:
-    request = _request_with_backend_params(
-        supplemental_case=BackendFixtureContractCase(unsupported_backends=("rebar",))
-    )
-    request.param = "rebar"
-
-    with pytest.raises(
-        pytest.skip.Exception,
-        match="rebar backend unsupported for this parity case",
-    ):
-        python_conftest.regex_backend.__wrapped__(request)
-
-
-def test_regex_backend_fixture_rejects_multiple_param_sources() -> None:
-    request = _request_with_backend_params(
-        case=BackendFixtureContractCase(
-            unsupported_backends=("rebar",),
-            unsupported_backend_reason="primary reason",
-        ),
-        supplemental_case=BackendFixtureContractCase(
-            unsupported_backends=("rebar",),
-            unsupported_backend_reason="secondary reason",
-        ),
-    )
-    request.param = "rebar"
-
-    with pytest.raises(
-        AssertionError,
-        match="multiple parametrized values declare unsupported_backends",
-    ):
-        python_conftest.regex_backend.__wrapped__(request)
-
-
 def test_workflow_keyword_kwargs_signature_distinguishes_bool_int_and_indexlike() -> None:
     assert _workflow_keyword_kwargs_signature(
         {
@@ -5077,60 +4981,6 @@ def test_workflow_positional_args_signature_normalizes_indexlike_carriers_by_val
     assert _workflow_positional_args_signature(["abc", _INDEX_FOUR]) == (
         _workflow_positional_args_signature(["abc", _AlternateIndexLike(4)])
     )
-
-
-def test_purge_regex_caches_calls_both_backends_before_and_after_test(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    calls: list[str] = []
-
-    def _record_stdlib_purge() -> None:
-        calls.append("stdlib")
-
-    def _record_rebar_purge() -> None:
-        calls.append("rebar")
-
-    monkeypatch.setattr(python_conftest.re, "purge", _record_stdlib_purge)
-    monkeypatch.setattr(python_conftest.rebar, "purge", _record_rebar_purge)
-
-    fixture_gen = python_conftest.purge_regex_caches.__wrapped__()
-
-    next(fixture_gen)
-    assert calls == ["stdlib", "rebar"]
-
-    with pytest.raises(StopIteration):
-        next(fixture_gen)
-
-    assert calls == ["stdlib", "rebar", "stdlib", "rebar"]
-
-
-def test_regex_backend_fixture_returns_stdlib_backend_module() -> None:
-    request = _backend_fixture_request("stdlib")
-
-    assert python_conftest.regex_backend.__wrapped__(request) == ("stdlib", re)
-
-
-@pytest.mark.skipif(
-    not rebar.native_module_loaded(),
-    reason="rebar backend fixture only resolves when rebar._rebar is available",
-)
-def test_regex_backend_fixture_returns_rebar_backend_module() -> None:
-    request = _backend_fixture_request("rebar")
-
-    assert python_conftest.regex_backend.__wrapped__(request) == ("rebar", rebar)
-
-
-def test_regex_backend_fixture_propagates_unsupported_backend_skips() -> None:
-    request = _backend_fixture_request(
-        "rebar",
-        case=BackendFixtureContractCase(
-            unsupported_backends=("rebar",),
-            unsupported_backend_reason="feature slice is stdlib-only",
-        ),
-    )
-
-    with pytest.raises(pytest.skip.Exception, match="feature slice is stdlib-only"):
-        python_conftest.regex_backend.__wrapped__(request)
 
 
 @pytest.mark.parametrize(

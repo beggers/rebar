@@ -50,6 +50,31 @@ def test_regex_backend_fixture_marks_only_rebar_param_with_native_skipif() -> No
     assert rebar_mark.kwargs == {"reason": "backend parity requires rebar._rebar"}
 
 
+def test_purge_regex_caches_calls_both_backends_before_and_after_test(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+
+    def _record_stdlib_purge() -> None:
+        calls.append("stdlib")
+
+    def _record_rebar_purge() -> None:
+        calls.append("rebar")
+
+    monkeypatch.setattr(python_conftest.re, "purge", _record_stdlib_purge)
+    monkeypatch.setattr(python_conftest.rebar, "purge", _record_rebar_purge)
+
+    fixture_gen = python_conftest.purge_regex_caches.__wrapped__()
+
+    next(fixture_gen)
+    assert calls == ["stdlib", "rebar"]
+
+    with pytest.raises(StopIteration):
+        next(fixture_gen)
+
+    assert calls == ["stdlib", "rebar", "stdlib", "rebar"]
+
+
 def test_regex_backend_returns_stdlib_backend_without_callspec_filters() -> None:
     backend_name, backend = _invoke_regex_backend("stdlib")
 
