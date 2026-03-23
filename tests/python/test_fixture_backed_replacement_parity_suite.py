@@ -247,34 +247,6 @@ _DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER = {
 }
 
 
-def _direct_module_literal_replacement_case_id(
-    pattern: TextValue,
-    string: TextValue,
-    count: int,
-    *,
-    helper: str,
-) -> str:
-    text_model = "bytes" if isinstance(pattern, bytes) else "str"
-
-    if count == 1:
-        suffix = "count" if helper == "subn" else "count-one"
-    elif count == -1:
-        suffix = "negative-count"
-    elif string == (b"zzz" if text_model == "bytes" else "zzz"):
-        suffix = "no-match"
-    elif string == (b"zabczz" if text_model == "bytes" else "zabczz"):
-        suffix = "single-match"
-    elif string == (b"zabcabc" if text_model == "bytes" else "abcabc"):
-        suffix = "repeated"
-    else:
-        raise AssertionError(
-            "unexpected direct module literal replacement case: "
-            f"pattern={pattern!r}, string={string!r}, count={count!r}"
-        )
-
-    return f"module-{helper}-{text_model}-{suffix}"
-
-
 def _ordered_direct_module_literal_replacement_case_ids(
     *,
     helper: str,
@@ -286,13 +258,23 @@ def _ordered_direct_module_literal_replacement_case_ids(
         case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
         if case_text_model != text_model:
             continue
-        case_ids.append(
-            _direct_module_literal_replacement_case_id(
-                pattern,
-                string,
-                count,
-                helper=helper,
+        if count == 1:
+            suffix = "count" if helper == "subn" else "count-one"
+        elif count == -1:
+            suffix = "negative-count"
+        elif string == (b"zzz" if text_model == "bytes" else "zzz"):
+            suffix = "no-match"
+        elif string == (b"zabczz" if text_model == "bytes" else "zabczz"):
+            suffix = "single-match"
+        elif string == (b"zabcabc" if text_model == "bytes" else "abcabc"):
+            suffix = "repeated"
+        else:
+            raise AssertionError(
+                "unexpected direct module literal replacement case: "
+                f"pattern={pattern!r}, string={string!r}, count={count!r}"
             )
+        case_ids.append(
+            f"module-{helper}-{text_model}-{suffix}"
         )
     suffix_order = _DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER[helper]
     return tuple(
