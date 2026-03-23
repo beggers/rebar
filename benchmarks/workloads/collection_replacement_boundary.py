@@ -3194,6 +3194,67 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-bytes-repeated-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "bytes",
+        "repeated-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes precompiled Pattern.sub helper path that keeps the bounded literal repeated-match replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-sub-bytes-count-one-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "bytes",
+        "count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "cache-purge",
+        "positional-count"
+      ],
+      "notes": [
+        "Purged bytes precompiled Pattern.sub helper path that keeps the bounded literal single-replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-sub-bytes-negative-count-purged-bytes",
       "bucket": "pattern-sub",
       "family": "module",
