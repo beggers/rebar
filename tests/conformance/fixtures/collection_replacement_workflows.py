@@ -1054,6 +1054,81 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-grouped-bytes",
+      "operation": "module_call",
+      "family": "grouped_callable_replacement_workflow",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "(abc)"
+        },
+        {
+          "type": "callable_match_group",
+          "group": 1,
+          "prefix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": "<"
+          },
+          "suffix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": ">"
+          }
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "categories": ["workflow", "sub", "callable-replacement", "grouped", "numbered-group", "module", "bytes"],
+      "notes": [
+        "Publishes the bounded module-level grouped callable replacement bytes path for the same tiny numbered capture already proven by the direct parity slice."
+      ]
+    },
+    {
+      "id": "module-subn-callable-grouped-bytes",
+      "operation": "module_call",
+      "family": "grouped_callable_replacement_count_workflow",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "(abc)"
+        },
+        {
+          "type": "callable_match_group",
+          "group": 1,
+          "prefix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": "<"
+          },
+          "suffix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": ">"
+          }
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        1
+      ],
+      "categories": ["workflow", "subn", "callable-replacement", "grouped", "numbered-group", "module", "bytes", "count"],
+      "notes": [
+        "Publishes the bounded module-level grouped callable replacement first-match-only bytes path so `subn(count=1)` is explicit on the collection owner path too."
+      ]
+    },
+    {
       "id": "module-findall-nonliteral-str",
       "operation": "module_call",
       "family": "bounded_wildcard_collection_workflow",

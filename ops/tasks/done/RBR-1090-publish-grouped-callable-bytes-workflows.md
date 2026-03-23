@@ -1,6 +1,6 @@
 # RBR-1090: Publish grouped callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -55,3 +55,16 @@ Created: 2026-03-23
   - `tests/conformance/fixtures/collection_replacement_workflows.py` currently publishes `module-sub-callable-grouped-str` and `module-subn-callable-grouped-str` but no bytes variants;
   - `tests/conformance/fixtures/named_group_replacement_workflows.py` currently publishes `pattern-sub-callable-named-grouped-str` and `pattern-subn-callable-named-grouped-str` but no bytes variants; and
   - `reports/correctness/latest.py` currently contains those four str grouped callable ids and none of the adjacent bytes ids, confirming the exact gap is on the published correctness surface rather than in the runtime or benchmark path.
+
+## Completion
+- Added the four bounded bytes grouped callable publication rows on the existing owner path:
+  - `module-sub-callable-grouped-bytes`
+  - `module-subn-callable-grouped-bytes`
+  - `pattern-sub-callable-named-grouped-bytes`
+  - `pattern-subn-callable-named-grouped-bytes`
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so both owner manifests require those bytes representative ids alongside the already-published str rows.
+- Republished `reports/correctness/latest.py`; the tracked scorecard now shows `1605` total / `1605` passed / `0` failed / `0` unimplemented across the same `114` manifests.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_module_matches_cpython or grouped_callable_replacement_pattern_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

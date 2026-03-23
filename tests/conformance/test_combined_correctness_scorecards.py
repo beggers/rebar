@@ -309,6 +309,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-grouping-template",
             "module-sub-callable-grouped-str",
             "module-subn-callable-grouped-str",
+            "module-sub-callable-grouped-bytes",
+            "module-subn-callable-grouped-bytes",
             "module-findall-nonliteral-str",
         ),
     ),
@@ -347,6 +349,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-template-named-group-str",
             "pattern-sub-callable-named-grouped-str",
             "pattern-subn-callable-named-grouped-str",
+            "pattern-sub-callable-named-grouped-bytes",
+            "pattern-subn-callable-named-grouped-bytes",
         ),
     ),
     "named-backreference-workflows": CorrectnessScorecardManifestExpectation(

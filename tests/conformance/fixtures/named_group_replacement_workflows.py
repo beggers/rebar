@@ -109,6 +109,73 @@ MANIFEST = {
       "notes": [
         "Publishes the bounded Pattern.subn named-group callable replacement first-match-only path so the compiled named grouped callback slice is explicit in the shared correctness surface."
       ]
+    },
+    {
+      "id": "pattern-sub-callable-named-grouped-bytes",
+      "operation": "pattern_call",
+      "family": "named_group_callable_replacement_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "callable_match_group",
+          "group": "word",
+          "prefix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": "<"
+          },
+          "suffix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": ">"
+          }
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "categories": ["workflow", "sub", "callable-replacement", "named-group", "pattern", "bytes"],
+      "notes": [
+        "Publishes the bounded Pattern.sub named-group callable replacement bytes path for the tiny `word` capture already covered by direct parity tests."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-grouped-bytes",
+      "operation": "pattern_call",
+      "family": "named_group_callable_replacement_count_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "callable_match_group",
+          "group": "word",
+          "prefix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": "<"
+          },
+          "suffix": {
+            "type": "bytes",
+            "encoding": "latin-1",
+            "value": ">"
+          }
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        1
+      ],
+      "categories": ["workflow", "subn", "callable-replacement", "named-group", "pattern", "bytes", "count"],
+      "notes": [
+        "Publishes the bounded Pattern.subn named-group callable replacement first-match-only bytes path so the compiled named grouped callback bytes slice is explicit in the shared correctness surface."
+      ]
     }
   ]
 }
