@@ -2194,6 +2194,267 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-findall-bounded-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabcabcz",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 7,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "findall",
+        "literal",
+        "bounded",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.findall helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-findall-bounded-no-match-warm-str",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabz",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 4,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "findall",
+        "literal",
+        "bounded",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.findall helper path that keeps the bounded literal no-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-findall-bounded-purged-bytes",
+      "bucket": "pattern-findall",
+      "family": "module",
+      "operation": "pattern.findall",
+      "pattern": "abc",
+      "haystack": "zabcabcz",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 7,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "findall",
+        "bytes",
+        "bounded",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-findall",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes Pattern.findall helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-finditer-bounded-warm-str",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "abc",
+      "haystack": "zabcabcx",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 7,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "finditer",
+        "literal",
+        "bounded",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.finditer helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-finditer-bounded-no-match-warm-str",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "abc",
+      "haystack": "zabz",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 4,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "finditer",
+        "literal",
+        "bounded",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.finditer helper path that keeps the bounded literal no-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-finditer-bounded-purged-bytes",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "abc",
+      "haystack": "zabcabcx",
+      "flags": 0,
+      "pos": 1,
+      "endpos": 7,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "finditer",
+        "bytes",
+        "bounded",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes Pattern.finditer helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-split-no-match-warm-str",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "zzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "literal",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.split helper path that keeps the direct literal no-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-split-repeated-warm-str",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "abcabc",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "literal",
+        "repeated",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.split helper path that keeps the direct literal repeated-match workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-split-maxsplit-purged-bytes",
+      "bucket": "pattern-split",
+      "family": "module",
+      "operation": "pattern.split",
+      "pattern": "abc",
+      "haystack": "abczzabc",
+      "flags": 0,
+      "maxsplit": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "split",
+        "bytes",
+        "maxsplit",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-split",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged bytes Pattern.split helper path that keeps the direct bounded maxsplit workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-split-maxsplit-indexlike-positional-warm-str",
       "bucket": "pattern-split",
       "family": "module",
@@ -2435,184 +2696,6 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled Pattern.split helper path that keeps the bounded wrong-text-model TypeError on bytes haystacks on the shared collection/replacement benchmark surface."
-      ]
-    },
-    {
-      "id": "pattern-findall-bounded-warm-str",
-      "bucket": "pattern-findall",
-      "family": "module",
-      "operation": "pattern.findall",
-      "pattern": "abc",
-      "haystack": "zabcabcz",
-      "flags": 0,
-      "pos": 1,
-      "endpos": 7,
-      "text_model": "str",
-      "cache_mode": "warm",
-      "timing_scope": "pattern-helper-call",
-      "categories": [
-        "pattern",
-        "collection",
-        "findall",
-        "literal",
-        "bounded",
-        "warm-cache"
-      ],
-      "syntax_features": [
-        "pattern-findall",
-        "literal-text"
-      ],
-      "notes": [
-        "Warm precompiled Pattern.findall helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
-      ]
-    },
-    {
-      "id": "pattern-findall-bounded-no-match-warm-str",
-      "bucket": "pattern-findall",
-      "family": "module",
-      "operation": "pattern.findall",
-      "pattern": "abc",
-      "haystack": "zabz",
-      "flags": 0,
-      "pos": 1,
-      "endpos": 4,
-      "text_model": "str",
-      "cache_mode": "warm",
-      "timing_scope": "pattern-helper-call",
-      "categories": [
-        "pattern",
-        "collection",
-        "findall",
-        "literal",
-        "bounded",
-        "no-match",
-        "warm-cache"
-      ],
-      "syntax_features": [
-        "pattern-findall",
-        "literal-text"
-      ],
-      "notes": [
-        "Warm precompiled Pattern.findall helper path that keeps the bounded literal no-match workflow on the shared collection/replacement benchmark surface."
-      ]
-    },
-    {
-      "id": "pattern-findall-bounded-purged-bytes",
-      "bucket": "pattern-findall",
-      "family": "module",
-      "operation": "pattern.findall",
-      "pattern": "abc",
-      "haystack": "zabcabcz",
-      "flags": 0,
-      "pos": 1,
-      "endpos": 7,
-      "text_model": "bytes",
-      "cache_mode": "purged",
-      "timing_scope": "pattern-helper-call",
-      "categories": [
-        "pattern",
-        "collection",
-        "findall",
-        "bytes",
-        "bounded",
-        "purged-cache"
-      ],
-      "syntax_features": [
-        "pattern-findall",
-        "pattern-text-model",
-        "cache-purge"
-      ],
-      "notes": [
-        "Purged bytes Pattern.findall helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
-      ]
-    },
-    {
-      "id": "pattern-finditer-bounded-warm-str",
-      "bucket": "pattern-finditer",
-      "family": "module",
-      "operation": "pattern.finditer",
-      "pattern": "abc",
-      "haystack": "zabcabcx",
-      "flags": 0,
-      "pos": 1,
-      "endpos": 7,
-      "text_model": "str",
-      "cache_mode": "warm",
-      "timing_scope": "pattern-helper-call",
-      "categories": [
-        "pattern",
-        "collection",
-        "finditer",
-        "literal",
-        "bounded",
-        "warm-cache"
-      ],
-      "syntax_features": [
-        "pattern-finditer",
-        "literal-text"
-      ],
-      "notes": [
-        "Warm precompiled Pattern.finditer helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
-      ]
-    },
-    {
-      "id": "pattern-finditer-bounded-no-match-warm-str",
-      "bucket": "pattern-finditer",
-      "family": "module",
-      "operation": "pattern.finditer",
-      "pattern": "abc",
-      "haystack": "zabz",
-      "flags": 0,
-      "pos": 1,
-      "endpos": 4,
-      "text_model": "str",
-      "cache_mode": "warm",
-      "timing_scope": "pattern-helper-call",
-      "categories": [
-        "pattern",
-        "collection",
-        "finditer",
-        "literal",
-        "bounded",
-        "no-match",
-        "warm-cache"
-      ],
-      "syntax_features": [
-        "pattern-finditer",
-        "literal-text"
-      ],
-      "notes": [
-        "Warm precompiled Pattern.finditer helper path that keeps the bounded literal no-match workflow on the shared collection/replacement benchmark surface."
-      ]
-    },
-    {
-      "id": "pattern-finditer-bounded-purged-bytes",
-      "bucket": "pattern-finditer",
-      "family": "module",
-      "operation": "pattern.finditer",
-      "pattern": "abc",
-      "haystack": "zabcabcx",
-      "flags": 0,
-      "pos": 1,
-      "endpos": 7,
-      "text_model": "bytes",
-      "cache_mode": "purged",
-      "timing_scope": "pattern-helper-call",
-      "categories": [
-        "pattern",
-        "collection",
-        "finditer",
-        "bytes",
-        "bounded",
-        "purged-cache"
-      ],
-      "syntax_features": [
-        "pattern-finditer",
-        "pattern-text-model",
-        "cache-purge"
-      ],
-      "notes": [
-        "Purged bytes Pattern.finditer helper path that keeps the bounded literal repeated-match workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {

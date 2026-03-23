@@ -1,6 +1,6 @@
 ## RBR-0987: Catch up the direct Pattern `split()` trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -64,3 +64,13 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-str-no-match or pattern-split-str-repeated or pattern-split-bytes-maxsplit or literal_collection_direct_test_buckets_cover_selected_frontier'` currently passes (`11 passed`), so the exact direct parity slice is already green in this checkout;
   - `rg -n 'pattern-split-(no-match-warm-str|repeated-warm-str|maxsplit-purged-bytes)|pattern-split-(str-no-match|str-repeated|bytes-maxsplit)' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py tests/conformance/fixtures/collection_replacement_workflows.py reports/correctness/latest.py` currently finds only the three published correctness case ids in `tests/conformance/fixtures/collection_replacement_workflows.py` and `reports/correctness/latest.py`, confirming the benchmark workload ids are still absent from the published Python-path benchmark surface; and
   - `PYTHONPATH=python python3 - <<'PY' ... Workload.from_dict(...) / workload_to_payload(...) / run_internal_workload_probe(...) for pattern-split-no-match-warm-str, pattern-split-repeated-warm-str, and pattern-split-maxsplit-purged-bytes ... PY` returns `status == "measured"` for both adapters on all three synthetic workloads through the current benchmark harness in this checkout.
+
+## Completion
+- Added the three direct `Pattern.split()` workloads on the existing `collection-replacement-boundary` manifest in the required order, keeping them on the shared owner route and leaving the slice benchmark-only.
+- Extended the shared benchmark suite with one direct-`Pattern` `split()` measured-rows assertion and one standard anchor-contract definition that maps the new workload ids to `pattern-split-str-no-match`, `pattern-split-str-repeated`, and `pattern-split-bytes-maxsplit` with callback-result parity enabled.
+- Regenerated the tracked source-tree-shim benchmark publication in `reports/benchmarks/latest.py`; the tracked report now publishes `941` total / `941` measured / `0` known gaps across `30` manifests, `933` module workloads, `8` parser workloads, and `collection-replacement-boundary` at `102` selected / `102` measured / `102` workload-count rows.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'pattern-split-str-no-match or pattern-split-str-repeated or pattern-split-bytes-maxsplit or literal_collection_direct_test_buckets_cover_selected_frontier'` -> `11 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_split_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'` -> `2 passed` with `3` subtests passed
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0987-pattern-split-trio.py` -> temporary narrow report at `102` total / `102` measured / `0` known gaps
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` -> tracked publication refreshed
