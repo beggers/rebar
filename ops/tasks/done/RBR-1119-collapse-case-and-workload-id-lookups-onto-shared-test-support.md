@@ -1,6 +1,6 @@
 # RBR-1119: Collapse case and workload id lookups onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -65,3 +65,9 @@ Created: 2026-03-23
 - A broader benchmark-file verification is currently red for unrelated report-count drift, so it is intentionally excluded from this task's acceptance:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently fails at `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks` because the file still expects `999` workloads while the live report surface is `1003`.
 - The negative `rg` verification currently fails exactly on the targeted lookup boilerplate above, so it is an acceptance check for this cleanup rather than unrelated repo drift.
+
+## Completion
+- Added `records_by_string_id()` to `tests/conftest.py` as the shared record-oriented id lookup helper, kept `manifest_records_by_id()` as a thin wrapper over it, and covered the new helper with focused unique-id and duplicate-id tests in `tests/python/test_shared_test_support_contract.py`.
+- Replaced the fixture-support case-id lookups in `tests/python/fixture_parity_support.py` and `tests/python/test_fixture_parity_support_contract.py` with the shared helper while preserving requested case ordering and the existing duplicate fixture-case failure message.
+- Removed the benchmark-file-local `_published_cases_lookup()` and `_manifest_workloads_by_id()` wrappers from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and routed those case/workload maps through the shared helper without changing the surrounding cache boundaries.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_fixture_parity_support_contract.py -k 'duplicate_fixture_case_ids or zero_flag_keyword_carrier' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'published_case_ids_by_signature or anchored_and_unanchored_workload_helpers or expected_anchored_workload_case_pairs or manifest_workload_cache'` (`8 passed, 1158 deselected`) and `bash -lc "! rg -n 'case_by_id = \\{case\\.case_id: case for case in loaded_cases\\}|cases_by_id = \\{case\\.case_id: case for case in manifest\\.cases\\}|def _published_cases_lookup\\(|def _manifest_workloads_by_id\\(' tests/python/fixture_parity_support.py tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.

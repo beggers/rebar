@@ -13,7 +13,7 @@ from rebar_harness.correctness import (
     load_fixture_manifest,
     select_correctness_fixture_paths,
 )
-from tests.conftest import duplicate_string_ids
+from tests.conftest import duplicate_string_ids, records_by_string_id
 
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
@@ -272,7 +272,14 @@ def build_selected_fixture_bundle(
                 f"{duplicate_case_ids}"
             )
 
-        case_by_id = {case.case_id: case for case in loaded_cases}
+        case_by_id = records_by_string_id(
+            loaded_cases,
+            id_attr="case_id",
+            duplicate_error=lambda duplicate_ids: ValueError(
+                f"{fixture_path.name} contains duplicate fixture case ids: "
+                f"{duplicate_ids}"
+            ),
+        )
         missing_case_ids = tuple(
             case_id for case_id in selected_case_ids if case_id not in case_by_id
         )

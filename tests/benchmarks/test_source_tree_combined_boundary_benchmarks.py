@@ -48,6 +48,7 @@ from tests.conftest import (
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
     manifest_records_by_id,
+    records_by_string_id,
     run_harness_scorecard,
 )
 from tests.python.fixture_parity_support import (
@@ -6552,10 +6553,6 @@ def _single_manifest_tuple(manifest: Any) -> tuple[Any, ...]:
     return (manifest,)
 
 
-def _published_cases_lookup(*cases: Any) -> dict[str, Any]:
-    return {case.case_id: case for case in cases}
-
-
 def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
     return workload.signature
 
@@ -6749,17 +6746,17 @@ def published_case_ids_by_signature(
 
 @cache
 def published_cases_by_id() -> dict[str, Any]:
-    cases_by_id: dict[str, Any] = {}
-
-    for manifest in published_fixture_manifests():
-        for case in manifest.cases:
-            if case.case_id in cases_by_id:
-                raise AssertionError(
-                    f"duplicate published correctness case id {case.case_id!r}"
-                )
-            cases_by_id[case.case_id] = case
-
-    return cases_by_id
+    return records_by_string_id(
+        (
+            case
+            for manifest in published_fixture_manifests()
+            for case in manifest.cases
+        ),
+        id_attr="case_id",
+        duplicate_error=lambda duplicate_ids: AssertionError(
+            f"duplicate published correctness case id {duplicate_ids[0]!r}"
+        ),
+    )
 
 
 @cache
@@ -6826,13 +6823,13 @@ def expected_anchored_workload_case_pairs(
     include_workload: Callable[[Any], bool] | None = None,
 ) -> tuple[AnchoredWorkloadCasePair, ...]:
     manifest_name = manifest_path.name
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in _selected_manifest_workloads(
+    workloads_by_id = records_by_string_id(
+        _selected_manifest_workloads(
             manifest_path,
             include_workload=include_workload,
-        )
-    }
+        ),
+        id_attr="workload_id",
+    )
     published_cases = published_cases_by_id()
     anchored_pairs: list[AnchoredWorkloadCasePair] = []
 
@@ -9554,19 +9551,17 @@ def _include_all_workloads(_: Any) -> bool:
     return True
 
 
-@cache
-def _manifest_workloads_by_id(manifest_path: pathlib.Path) -> dict[str, Any]:
-    return {
-        workload.workload_id: workload for workload in load_manifest(manifest_path).workloads
-    }
-
-
 def _definition_workloads_by_id(
     definition: StandardBenchmarkAnchorContractDefinition,
 ) -> dict[str, Any]:
     workloads_by_id: dict[str, Any] = {}
     for manifest_path in definition.manifest_paths:
-        workloads_by_id.update(_manifest_workloads_by_id(manifest_path))
+        workloads_by_id.update(
+            records_by_string_id(
+                _manifest_workloads(manifest_path),
+                id_attr="workload_id",
+            )
+        )
     return workloads_by_id
 
 
@@ -20701,7 +20696,7 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
     monkeypatch.setattr(
         support,
         "published_cases_by_id",
-        partial(_published_cases_lookup, case),
+        partial(records_by_string_id, (case,), id_attr="case_id"),
     )
 
     anchored_pairs = support.expected_anchored_workload_case_pairs(
@@ -20740,7 +20735,7 @@ def test_manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries(
     monkeypatch.setattr(
         support,
         "published_cases_by_id",
-        partial(_published_cases_lookup, case),
+        partial(records_by_string_id, (case,), id_attr="case_id"),
     )
 
     anchor_case_ids = {("shared",): ("case-1",)}
@@ -20790,7 +20785,11 @@ def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
     monkeypatch.setattr(
         support,
         "published_cases_by_id",
-        partial(_published_cases_lookup, SimpleNamespace(case_id="case-1")),
+        partial(
+            records_by_string_id,
+            (SimpleNamespace(case_id="case-1"),),
+            id_attr="case_id",
+        ),
     )
 
     with pytest.raises(AssertionError, match="does not match"):
@@ -20818,9 +20817,12 @@ def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
         support,
         "published_cases_by_id",
         partial(
-            _published_cases_lookup,
-            SimpleNamespace(case_id="case-1"),
-            SimpleNamespace(case_id="case-2"),
+            records_by_string_id,
+            (
+                SimpleNamespace(case_id="case-1"),
+                SimpleNamespace(case_id="case-2"),
+            ),
+            id_attr="case_id",
         ),
     )
 
@@ -20851,7 +20853,11 @@ def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
     monkeypatch.setattr(
         support,
         "published_cases_by_id",
-        partial(_published_cases_lookup, SimpleNamespace(case_id="case-1")),
+        partial(
+            records_by_string_id,
+            (SimpleNamespace(case_id="case-1"),),
+            id_attr="case_id",
+        ),
     )
 
     with pytest.raises(
@@ -20878,7 +20884,11 @@ def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
             workloads=(_synthetic_workload("anchored", ("shared",)),),
         ),
     )
-    monkeypatch.setattr(support, "published_cases_by_id", _published_cases_lookup)
+    monkeypatch.setattr(
+        support,
+        "published_cases_by_id",
+        partial(records_by_string_id, (), id_attr="case_id"),
+    )
 
     with pytest.raises(
         AssertionError,

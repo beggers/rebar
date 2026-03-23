@@ -27,17 +27,30 @@ def duplicate_string_ids(items: Iterable[str]) -> tuple[str, ...]:
     return tuple(duplicate_items(Counter(items)))
 
 
+def records_by_string_id(
+    records: Iterable[Any],
+    *,
+    id_attr: str,
+    duplicate_error: Callable[[tuple[str, ...]], Exception] | None = None,
+) -> dict[str, Any]:
+    record_entries = tuple(records)
+    duplicate_ids = duplicate_string_ids(getattr(record, id_attr) for record in record_entries)
+    if duplicate_ids:
+        if duplicate_error is not None:
+            raise duplicate_error(duplicate_ids)
+        raise AssertionError(f"{id_attr} values must be unique; duplicate ids: {list(duplicate_ids)}")
+    return {getattr(record, id_attr): record for record in record_entries}
+
+
 def manifest_records_by_id(manifests: Iterable[Any]) -> dict[str, Any]:
-    manifest_records = tuple(manifests)
-    duplicate_manifest_ids = duplicate_string_ids(
-        manifest.manifest_id for manifest in manifest_records
-    )
-    if duplicate_manifest_ids:
-        raise AssertionError(
+    return records_by_string_id(
+        manifests,
+        id_attr="manifest_id",
+        duplicate_error=lambda duplicate_ids: AssertionError(
             "manifest ids must be unique; duplicate ids: "
-            f"{list(duplicate_manifest_ids)}"
-        )
-    return {manifest.manifest_id: manifest for manifest in manifest_records}
+            f"{list(duplicate_ids)}"
+        ),
+    )
 
 
 def declared_string_constants_by_suffix(

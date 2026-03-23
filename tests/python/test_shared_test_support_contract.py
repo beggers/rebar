@@ -24,6 +24,7 @@ from tests.conftest import (
     duplicate_string_ids,
     fake_harness_cli_scorecard_result,
     manifest_records_by_id,
+    records_by_string_id,
     report_path_from_cli_args,
     run_harness_cli,
     run_harness_scorecard,
@@ -323,6 +324,37 @@ def test_manifest_records_by_id_returns_original_records_keyed_by_manifest_id() 
     assert list(manifests_by_id) == ["manifest-a", "manifest-b"]
     assert manifests_by_id["manifest-a"] is manifest_a
     assert manifests_by_id["manifest-b"] is manifest_b
+
+
+def test_records_by_string_id_returns_original_records_keyed_by_requested_id_in_input_order(
+) -> None:
+    case_a = SimpleNamespace(case_id="case-a", payload="alpha")
+    case_b = SimpleNamespace(case_id="case-b", payload="beta")
+
+    cases_by_id = records_by_string_id(
+        iter((case_a, case_b)),
+        id_attr="case_id",
+    )
+
+    assert list(cases_by_id) == ["case-a", "case-b"]
+    assert cases_by_id["case-a"] is case_a
+    assert cases_by_id["case-b"] is case_b
+
+
+def test_records_by_string_id_rejects_duplicate_ids() -> None:
+    duplicate_case_id = "duplicate-case"
+
+    with pytest.raises(
+        AssertionError,
+        match=rf"duplicate ids: \['{duplicate_case_id}'\]",
+    ):
+        records_by_string_id(
+            (
+                SimpleNamespace(case_id=duplicate_case_id, payload="alpha"),
+                SimpleNamespace(case_id=duplicate_case_id, payload="beta"),
+            ),
+            id_attr="case_id",
+        )
 
 
 def test_manifest_records_by_id_rejects_duplicate_manifest_ids() -> None:

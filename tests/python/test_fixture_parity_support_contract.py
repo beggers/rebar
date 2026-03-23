@@ -36,6 +36,7 @@ from tests.conftest import (
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
     declared_string_constants_by_suffix,
+    records_by_string_id,
 )
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
@@ -5119,7 +5120,7 @@ def test_load_fixture_manifest_preserves_distinct_zero_flag_keyword_carriers(
 ) -> None:
     fixture_path = _write_zero_flag_keyword_carrier_fixture_module(tmp_path)
     manifest = load_fixture_manifest(fixture_path)
-    cases_by_id = {case.case_id: case for case in manifest.cases}
+    cases_by_id = records_by_string_id(manifest.cases, id_attr="case_id")
 
     assert tuple(cases_by_id) == (
         ZERO_FLAG_KEYWORD_NOFLAG_CASE_ID,
