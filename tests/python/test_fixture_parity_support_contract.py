@@ -60,6 +60,7 @@ from tests.python.fixture_parity_support import (
     case_replacement_argument,
     case_text_argument,
     compile_with_cpython_parity,
+    fixture_cases_by_id,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_single_published_fixture_bundle,
@@ -4878,6 +4879,63 @@ def test_fixture_cases_for_operation_accepts_one_shot_bundle_iterables(
         "bundle-loader-contract-mixed-compile-str",
         "bundle-loader-contract-compile-str",
     )
+
+
+def test_fixture_cases_by_id_preserves_input_order_for_bundles_and_cases(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    mixed_bundle = build_selected_fixture_bundle(
+        mixed_path,
+        selected_case_ids=(
+            "bundle-loader-contract-mixed-module-search-str",
+            "bundle-loader-contract-mixed-compile-bytes",
+        ),
+        pattern_extractor=case_pattern,
+    )
+    str_bundle = build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=(
+            "bundle-loader-contract-pattern-search-str",
+            "bundle-loader-contract-compile-str",
+        ),
+        pattern_extractor=str_case_pattern,
+    )
+
+    bundles_by_id = fixture_cases_by_id((mixed_bundle, str_bundle))
+    assert tuple(bundles_by_id) == (
+        "bundle-loader-contract-mixed-module-search-str",
+        "bundle-loader-contract-mixed-compile-bytes",
+        "bundle-loader-contract-pattern-search-str",
+        "bundle-loader-contract-compile-str",
+    )
+
+    cases_by_id = fixture_cases_by_id(str_bundle.cases)
+    assert tuple(cases_by_id) == (
+        "bundle-loader-contract-pattern-search-str",
+        "bundle-loader-contract-compile-str",
+    )
+    assert cases_by_id["bundle-loader-contract-compile-str"] is str_bundle.cases[1]
+
+
+def test_fixture_cases_by_id_rejects_duplicate_case_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    bundle = build_selected_fixture_bundle(
+        str_path,
+        pattern_extractor=str_case_pattern,
+    )
+    duplicate_case = replace(bundle.cases[1], case_id=bundle.cases[0].case_id)
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "fixture cases contain duplicate case ids: "
+            r"\('bundle-loader-contract-compile-str',\)"
+        ),
+    ):
+        fixture_cases_by_id((bundle.cases[0], duplicate_case))
 
 
 def test_full_manifest_bundle_sets_str_text_model_expectation(

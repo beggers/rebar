@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
+    fixture_cases_by_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     str_case_pattern,
@@ -110,7 +111,7 @@ MODULE_CASES = tuple(
 PATTERN_CASES = tuple(
     case for case in _iter_fixture_cases() if case.operation == "pattern_call"
 )
-CASES_BY_ID = {case.case_id: case for case in _iter_fixture_cases()}
+CASES_BY_ID = fixture_cases_by_id(FIXTURE_BUNDLES)
 assert len(CASES_BY_ID) == sum(len(bundle.cases) for bundle in FIXTURE_BUNDLES)
 
 

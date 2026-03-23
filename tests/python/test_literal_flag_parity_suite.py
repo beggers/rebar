@@ -21,6 +21,7 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
+    fixture_cases_by_id,
     load_single_published_fixture_bundle,
 )
 
@@ -187,9 +188,7 @@ class _FakeNativeBoundary(RecordingNativeBoundary):
 LITERAL_FLAG_FIXTURE_BUNDLE = load_single_published_fixture_bundle(
     LITERAL_FLAG_FIXTURE_SELECTOR
 )
-LITERAL_FLAG_CASES_BY_ID = {
-    case.case_id: case for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases
-}
+LITERAL_FLAG_CASES_BY_ID = fixture_cases_by_id((LITERAL_FLAG_FIXTURE_BUNDLE,))
 
 
 MODULE_IGNORECASE_CASES = (

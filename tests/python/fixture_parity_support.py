@@ -368,6 +368,30 @@ def fixture_cases_for_operation(
     )
 
 
+def fixture_cases_by_id(
+    fixtures: Iterable[FixtureBundle] | Iterable[FixtureCase],
+) -> dict[str, FixtureCase]:
+    case_entries: list[FixtureCase] = []
+    for fixture in fixtures:
+        if isinstance(fixture, FixtureBundle):
+            case_entries.extend(fixture.cases)
+            continue
+        if isinstance(fixture, FixtureCase):
+            case_entries.append(fixture)
+            continue
+        raise TypeError(
+            "fixture_cases_by_id() accepts FixtureBundle or FixtureCase entries, "
+            f"got {type(fixture).__name__}"
+        )
+    return records_by_string_id(
+        case_entries,
+        id_attr="case_id",
+        duplicate_error=lambda duplicate_ids: ValueError(
+            f"fixture cases contain duplicate case ids: {duplicate_ids}"
+        ),
+    )
+
+
 @dataclass(frozen=True)
 class SupplementalCase:
     id: str

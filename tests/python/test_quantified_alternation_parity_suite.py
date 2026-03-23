@@ -29,6 +29,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    fixture_cases_by_id,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
@@ -371,10 +372,9 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
 MATCH_GROUP_ACCESS_CASES = tuple(
     case for case in (*MODULE_CASES, *PATTERN_CASES) if "no-match" not in case.case_id
 )
-COMPILE_CASES_BY_ID = {
-    case.case_id: case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-}
+COMPILE_CASES_BY_ID = fixture_cases_by_id(
+    fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+)
 REGS_PARITY_CASE_IDS = frozenset(
     {
         "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",

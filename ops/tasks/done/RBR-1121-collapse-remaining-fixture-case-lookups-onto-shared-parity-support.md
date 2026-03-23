@@ -1,6 +1,6 @@
 # RBR-1121: Collapse remaining fixture case lookups onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -56,12 +56,15 @@ Created: 2026-03-23
 - The shared-queue stall rule does not apply in this checkout:
   - `.rebar/runtime/dashboard.md` reports `Dirty worktree: false`, `ready: 0`, `in_progress: 0`, and `blocked: 0`; and
   - the latest runtime cycle shows both task workers finishing `done`, with no inherited-dirty checkpoint churn or stalled post-task refresh path.
-- The remaining duplication is concrete in the live checkout:
-  - `tests/python/test_grouped_capture_parity_suite.py:113` still defines `CASES_BY_ID` from a local `_iter_fixture_cases()` generator;
-  - `tests/python/test_branch_local_backreference_parity_suite.py:486` still defines `CASES_BY_ID` from a local `_iter_fixture_cases()` generator;
-  - `tests/python/test_conditional_group_exists_parity_suite.py:90` still defines `CASES_BY_ID` from a local `_iter_fixture_cases()` generator;
-  - `tests/python/test_literal_flag_parity_suite.py:190` still defines `LITERAL_FLAG_CASES_BY_ID` inline from `LITERAL_FLAG_FIXTURE_BUNDLE.cases`; and
-  - `tests/python/test_quantified_alternation_parity_suite.py:374` still defines `COMPILE_CASES_BY_ID` inline from `fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")`.
 - The focused verification slice is green in the current checkout:
-  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'published_fixture_bundles_by_manifest_id or load_single_published_fixture_bundle' tests/python/test_grouped_capture_parity_suite.py::test_match_group_access_rows_remain_on_grouped_capture_fixture_paths tests/python/test_branch_local_backreference_parity_suite.py::test_pattern_bounds_cases_stay_anchored_to_supported_backreference_patterns tests/python/test_conditional_group_exists_parity_suite.py::test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_published_manifest tests/python/test_literal_flag_parity_suite.py::test_literal_ignorecase_module_helpers_match_cpython tests/python/test_quantified_alternation_parity_suite.py::test_compile_metadata_matches_cpython` returned `5 passed, 434 deselected` in this run.
-- The negative `rg` verification currently fails exactly on the targeted duplicate lookup maps above, so it is an acceptance check for this cleanup rather than unrelated repo drift.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'published_fixture_bundles_by_manifest_id or load_single_published_fixture_bundle' tests/python/test_grouped_capture_parity_suite.py::test_match_group_access_rows_remain_on_grouped_capture_fixture_paths tests/python/test_branch_local_backreference_parity_suite.py::test_pattern_bounds_cases_stay_anchored_to_supported_backreference_patterns tests/python/test_conditional_group_exists_parity_suite.py::test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_published_manifest tests/python/test_literal_flag_parity_suite.py::test_literal_ignorecase_module_helpers_match_cpython tests/python/test_quantified_alternation_parity_suite.py::test_compile_metadata_matches_cpython` returned `5 passed, 436 deselected` in this run.
+- The negative `rg` verification listed above now passes after the shared helper replacement, so the targeted duplicate lookup maps are gone from the five parity suites in scope.
+
+## Completion
+- Added `fixture_cases_by_id()` to `tests/python/fixture_parity_support.py` so parity suites can build ordered `case_id` maps from either published fixture bundles or direct `FixtureCase` iterables while rejecting duplicate ids with a shared `ValueError`.
+- Extended `tests/python/test_fixture_parity_support_contract.py` with focused success and duplicate-id rejection coverage for the new helper.
+- Replaced the remaining owner-local `case_id` maps in the grouped-capture, branch-local-backreference, conditional-group-exists, literal-flag, and quantified-alternation parity suites with the shared helper.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'fixture_cases_by_id'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'published_fixture_bundles_by_manifest_id or load_single_published_fixture_bundle' tests/python/test_grouped_capture_parity_suite.py::test_match_group_access_rows_remain_on_grouped_capture_fixture_paths tests/python/test_branch_local_backreference_parity_suite.py::test_pattern_bounds_cases_stay_anchored_to_supported_backreference_patterns tests/python/test_conditional_group_exists_parity_suite.py::test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_published_manifest tests/python/test_literal_flag_parity_suite.py::test_literal_ignorecase_module_helpers_match_cpython tests/python/test_quantified_alternation_parity_suite.py::test_compile_metadata_matches_cpython`
+  - `bash -lc "! rg -n 'CASES_BY_ID = \\{case\\.case_id: case for case in _iter_fixture_cases\\(\\)\\}|LITERAL_FLAG_CASES_BY_ID = \\{|COMPILE_CASES_BY_ID = \\{' tests/python/test_grouped_capture_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_literal_flag_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py"`
