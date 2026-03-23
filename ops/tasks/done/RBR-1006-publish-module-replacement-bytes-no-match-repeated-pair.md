@@ -1,6 +1,6 @@
 # RBR-1006: Publish the raw `re.sub()` / `re.subn()` bytes no-match/repeated pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,13 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (bytes-no-match or bytes-repeated-match)'` currently passes (`2 passed`), so the exact raw-module bytes parity slice is already green in this checkout;
   - `rg -n 'module-sub-bytes-no-match|module-subn-bytes-repeated|module-sub-bytes-no-match-purged-bytes|module-subn-bytes-repeated-purged-bytes' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/correctness/latest.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact correctness and benchmark ids are still absent from the tracked owner-path surfaces; and
   - synthetic benchmark probes built through `rebar_harness.benchmarks.Workload.from_dict(...)`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` return `status == "measured"` for both adapters on both hypothetical workloads `module-sub-bytes-no-match-purged-bytes` and `module-subn-bytes-repeated-purged-bytes`, so the later benchmark catch-up can stay on the existing Python-path owner route instead of needing another implementation prerequisite first.
+
+## Completion Note
+- Added `module-sub-bytes-no-match` and `module-subn-bytes-repeated` to `tests/conformance/fixtures/collection_replacement_workflows.py` in the required raw-module order and kept the slice on the existing `collection-replacement-workflows` owner path.
+- Added the shared published raw-module selector/assertion coverage in `tests/python/test_fixture_backed_replacement_parity_suite.py` and refreshed representative-case coverage in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Regenerated `reports/correctness/latest.py`; the tracked published summary is now `1571` total / `1571` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `34/34`, `.bytes` at `13/13`, `.str` at `21/21`, `.module_call` at `14/14`, and `.pattern_call` unchanged at `20/20`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (bytes-no-match or bytes-repeated-match)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1006-module-replacement-bytes-no-match-repeated-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

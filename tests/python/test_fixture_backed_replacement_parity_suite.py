@@ -164,6 +164,12 @@ DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
     pytest.param(b"abc", b"x", b"abcabc", 1, id="bytes-count-one"),
     pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
 ]
+PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
+    "module-sub-str-repeated",
+    "module-sub-bytes-no-match",
+    "module-subn-bytes-count",
+    "module-subn-bytes-repeated",
+)
 PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
     "pattern-sub-str-no-match",
     "pattern-sub-str-single-match",
@@ -2477,6 +2483,51 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     count: int,
 ) -> None:
     _assert_pattern_replacement_parity(pattern, replacement, string, count)
+
+
+def test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order(
+) -> None:
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",
+        selected_case_ids=PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS,
+        pattern_extractor=case_pattern,
+    )
+    cases_by_id = {case.case_id: case for case in bundle.cases}
+
+    assert tuple(case.case_id for case in bundle.cases) == (
+        PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
+    )
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
+    ) == PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
+
+    assert tuple(cases_by_id["module-sub-str-repeated"].args) == ("abc", "x", "abcabc")
+    assert tuple(cases_by_id["module-sub-bytes-no-match"].args) == (
+        b"abc",
+        b"x",
+        b"zzz",
+    )
+    assert tuple(cases_by_id["module-subn-bytes-count"].args) == (
+        b"abc",
+        b"x",
+        b"abcabc",
+        1,
+    )
+    assert tuple(cases_by_id["module-subn-bytes-repeated"].args) == (
+        b"abc",
+        b"x",
+        b"abcabc",
+    )
+
+    assert cases_by_id["module-sub-str-repeated"].helper == "sub"
+    assert cases_by_id["module-sub-bytes-no-match"].helper == "sub"
+    assert cases_by_id["module-subn-bytes-count"].helper == "subn"
+    assert cases_by_id["module-subn-bytes-repeated"].helper == "subn"
+
+    assert cases_by_id["module-sub-str-repeated"].text_model == "str"
+    assert cases_by_id["module-sub-bytes-no-match"].text_model == "bytes"
+    assert cases_by_id["module-subn-bytes-count"].text_model == "bytes"
+    assert cases_by_id["module-subn-bytes-repeated"].text_model == "bytes"
 
 
 def test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order(

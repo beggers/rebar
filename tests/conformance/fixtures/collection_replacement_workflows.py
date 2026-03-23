@@ -284,6 +284,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-bytes-no-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzz"
+        }
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "no-match"],
+      "notes": [
+        "Publishes the raw bytes module sub helper outcome when no literal match is present."
+      ]
+    },
+    {
       "id": "module-subn-bytes-count",
       "operation": "module_call",
       "family": "replacement_workflow",
@@ -310,6 +338,34 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "count"],
       "notes": [
         "Carries bounded replacement-count behavior through the bytes-valued module subn helper."
+      ]
+    },
+    {
+      "id": "module-subn-bytes-repeated",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "repeated"],
+      "notes": [
+        "Publishes the raw bytes module subn helper outcome for repeated literal matches."
       ]
     },
     {
