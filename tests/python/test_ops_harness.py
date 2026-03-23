@@ -1491,6 +1491,41 @@ class ReadmeReportingTest(unittest.TestCase):
                     ),
                 )
 
+    def test_scorecard_load_unique_record_collection_rejects_duplicate_nested_ids_within_record(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            manifest_a = temp_path / "manifest_a.py"
+            published_a = temp_path / "published_manifest_a.py"
+            records_by_path = {
+                manifest_a: {
+                    "id": "manifest-a",
+                    "path": published_a,
+                    "case_ids": ("shared-case", "shared-case"),
+                },
+            }
+
+            with self.assertRaisesRegex(
+                ValueError,
+                re.escape(f"duplicate nested shared-case: {published_a} vs {published_a}"),
+            ):
+                scorecard_io.load_unique_record_collection(
+                    (manifest_a,),
+                    load_record=lambda path: dict(records_by_path[path]),
+                    record_id=lambda record: str(record["id"]),
+                    record_path=lambda record: pathlib.Path(str(record["path"])),
+                    duplicate_record_error=lambda record_id, first_path, second_path: (
+                        f"duplicate record {record_id}: {first_path} vs {second_path}"
+                    ),
+                    nested_ids=lambda record: tuple(
+                        str(case_id) for case_id in record["case_ids"]
+                    ),
+                    duplicate_nested_error=lambda nested_id, first_path, second_path: (
+                        f"duplicate nested {nested_id}: {first_path} vs {second_path}"
+                    ),
+                )
+
     def test_run_harness_scorecard_loads_python_correctness_reports(self) -> None:
         summary, scorecard = run_harness_scorecard(
             "rebar_harness.correctness",
