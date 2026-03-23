@@ -3042,59 +3042,44 @@ MODULE_KEYWORD_ERROR_CASES = (
     MODULE_SUBN_UNEXPECTED_KEYWORD_AFTER_POSITIONAL_COUNT_BYTES_ERROR_CASE,
     MODULE_SUBN_COUNT_ALIAS_KEYWORD_BYTES_ERROR_CASE,
 ) = MODULE_KEYWORD_ERROR_CASES
-MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS = (
+MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS = tuple(
     ModuleKeywordOwnerPathRow(
-        "workflow-module-search-duplicate-flags-keyword",
-        MODULE_SEARCH_DUPLICATE_FLAGS_KEYWORD_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-split-duplicate-maxsplit-keyword",
-        MODULE_SPLIT_DUPLICATE_MAXSPLIT_KEYWORD_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-split-unexpected-keyword",
-        MODULE_SPLIT_UNEXPECTED_KEYWORD_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-split-unexpected-keyword-bytes",
-        MODULE_SPLIT_UNEXPECTED_KEYWORD_BYTES_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-sub-duplicate-count-keyword",
-        MODULE_SUB_DUPLICATE_COUNT_KEYWORD_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-fullmatch-unexpected-keyword",
-        MODULE_FULLMATCH_UNEXPECTED_KEYWORD_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-sub-unexpected-keyword",
-        MODULE_SUB_UNEXPECTED_KEYWORD_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-sub-unexpected-keyword-after-positional-count",
-        MODULE_SUB_UNEXPECTED_KEYWORD_AFTER_POSITIONAL_COUNT_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-sub-count-alias-keyword",
-        MODULE_SUB_COUNT_ALIAS_KEYWORD_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-subn-duplicate-count-keyword-bytes",
-        MODULE_SUBN_DUPLICATE_COUNT_KEYWORD_BYTES_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-subn-unexpected-keyword-bytes",
-        MODULE_SUBN_UNEXPECTED_KEYWORD_BYTES_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
-        MODULE_SUBN_UNEXPECTED_KEYWORD_AFTER_POSITIONAL_COUNT_BYTES_ERROR_CASE,
-    ),
-    ModuleKeywordOwnerPathRow(
-        "workflow-module-subn-count-alias-keyword-bytes",
-        MODULE_SUBN_COUNT_ALIAS_KEYWORD_BYTES_ERROR_CASE,
-    ),
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+    )
+    for fixture_case_id, direct_case in zip(
+        (
+            "workflow-module-search-duplicate-flags-keyword",
+            "workflow-module-split-duplicate-maxsplit-keyword",
+            "workflow-module-split-unexpected-keyword",
+            "workflow-module-split-unexpected-keyword-bytes",
+            "workflow-module-sub-duplicate-count-keyword",
+            "workflow-module-fullmatch-unexpected-keyword",
+            "workflow-module-sub-unexpected-keyword",
+            "workflow-module-sub-unexpected-keyword-after-positional-count",
+            "workflow-module-sub-count-alias-keyword",
+            "workflow-module-subn-duplicate-count-keyword-bytes",
+            "workflow-module-subn-unexpected-keyword-bytes",
+            "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
+            "workflow-module-subn-count-alias-keyword-bytes",
+        ),
+        (
+            MODULE_SEARCH_DUPLICATE_FLAGS_KEYWORD_ERROR_CASE,
+            MODULE_SPLIT_DUPLICATE_MAXSPLIT_KEYWORD_ERROR_CASE,
+            MODULE_SPLIT_UNEXPECTED_KEYWORD_ERROR_CASE,
+            MODULE_SPLIT_UNEXPECTED_KEYWORD_BYTES_ERROR_CASE,
+            MODULE_SUB_DUPLICATE_COUNT_KEYWORD_ERROR_CASE,
+            MODULE_FULLMATCH_UNEXPECTED_KEYWORD_ERROR_CASE,
+            MODULE_SUB_UNEXPECTED_KEYWORD_ERROR_CASE,
+            MODULE_SUB_UNEXPECTED_KEYWORD_AFTER_POSITIONAL_COUNT_ERROR_CASE,
+            MODULE_SUB_COUNT_ALIAS_KEYWORD_ERROR_CASE,
+            MODULE_SUBN_DUPLICATE_COUNT_KEYWORD_BYTES_ERROR_CASE,
+            MODULE_SUBN_UNEXPECTED_KEYWORD_BYTES_ERROR_CASE,
+            MODULE_SUBN_UNEXPECTED_KEYWORD_AFTER_POSITIONAL_COUNT_BYTES_ERROR_CASE,
+            MODULE_SUBN_COUNT_ALIAS_KEYWORD_BYTES_ERROR_CASE,
+        ),
+        strict=True,
+    )
 )
 
 
