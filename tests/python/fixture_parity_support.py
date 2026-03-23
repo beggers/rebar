@@ -1333,9 +1333,12 @@ def record_generated_match_failure(
         if expected is None:
             return
 
-        assert_match_convenience_api_parity(observed, expected)
-        assert_valid_match_group_access_parity(observed, expected)
-        assert_invalid_match_group_access_parity(observed, expected)
+        _assert_match_follow_on_checks(
+            observed,
+            expected,
+            check_convenience_api=True,
+            check_group_access=True,
+        )
     except AssertionError as exc:
         failures.append(f"{label}: {exc}")
 
@@ -1345,6 +1348,20 @@ def assert_placeholder_message_contains(
     expected_fragment: str,
 ) -> None:
     assert expected_fragment in str(error)
+
+
+def _assert_match_follow_on_checks(
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+    *,
+    check_convenience_api: bool = False,
+    check_group_access: bool = False,
+) -> None:
+    if check_convenience_api:
+        assert_match_convenience_api_parity(observed, expected)
+    if check_group_access:
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 def assert_fixture_case_optional_match_parity(
@@ -1400,11 +1417,12 @@ def assert_fixture_case_optional_match_parity(
         expected,
         check_regs=check_regs,
     )
-    if check_convenience_api:
-        assert_match_convenience_api_parity(observed, expected)
-    if check_group_access:
-        assert_valid_match_group_access_parity(observed, expected)
-        assert_invalid_match_group_access_parity(observed, expected)
+    _assert_match_follow_on_checks(
+        observed,
+        expected,
+        check_convenience_api=check_convenience_api,
+        check_group_access=check_group_access,
+    )
 
 
 def assert_bounded_pattern_case_match_parity(
@@ -1436,8 +1454,10 @@ def assert_bounded_pattern_case_match_parity(
         return
 
     assert expected is not None
-    if check_convenience_api:
-        assert_match_convenience_api_parity(observed, expected)
-    if check_group_access:
-        assert_valid_match_group_access_parity(observed, expected)
-        assert_invalid_match_group_access_parity(observed, expected)
+    assert observed is not None
+    _assert_match_follow_on_checks(
+        observed,
+        expected,
+        check_convenience_api=check_convenience_api,
+        check_group_access=check_group_access,
+    )
