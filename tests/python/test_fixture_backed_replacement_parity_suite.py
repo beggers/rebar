@@ -2594,19 +2594,46 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     _assert_pattern_replacement_parity(pattern, replacement, string, count)
 
 
-def test_module_literal_replacement_publication_gaps_stay_explicit() -> None:
+@pytest.mark.parametrize(
+    ("surface", "expected_unpublished_case_ids"),
+    (
+        pytest.param(
+            "module",
+            (
+                "module-subn-str-single-match",
+                "module-subn-str-no-match",
+                "module-subn-bytes-no-match",
+            ),
+            id="module",
+        ),
+        pytest.param(
+            "pattern",
+            (
+                "pattern-subn-str-single-match",
+                "pattern-subn-str-no-match",
+                "pattern-subn-bytes-no-match",
+            ),
+            id="pattern",
+        ),
+    ),
+)
+def test_literal_replacement_publication_gaps_stay_explicit(
+    surface: str,
+    expected_unpublished_case_ids: tuple[str, ...],
+) -> None:
     direct_case_ids = _direct_literal_replacement_publication_case_ids(
-        surface="module",
+        surface=surface,
         selection="all",
     )
     published_case_ids = _direct_literal_replacement_publication_case_ids(
-        surface="module",
+        surface=surface,
     )
     unpublished_case_ids = _direct_literal_replacement_publication_case_ids(
-        surface="module",
+        surface=surface,
         selection="unpublished",
     )
 
+    assert unpublished_case_ids == expected_unpublished_case_ids
     assert frozenset(published_case_ids) & frozenset(unpublished_case_ids) == frozenset()
     assert tuple(
         case_id for case_id in direct_case_ids if case_id not in unpublished_case_ids
