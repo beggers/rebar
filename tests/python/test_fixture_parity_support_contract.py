@@ -1648,6 +1648,92 @@ def test_fixture_manifest_defaults_suite_id_from_layer_and_operation(
     assert cases[0].operation == expected_operation
 
 
+def test_fixture_manifest_loader_isolates_default_args_and_kwargs_per_case(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_fixture_module(
+        tmp_path,
+        "default_argument_isolation_contract.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "default-argument-isolation-contract",
+            "layer": "module_workflow",
+            "defaults": {
+                "operation": "module_call",
+                "text_model": "str",
+                "args": ["payload", ["shared-arg"]],
+                "kwargs": {
+                    "window": [1, 4],
+                    "metadata": {"label": "shared-kwarg"},
+                },
+            },
+            "cases": [
+                {
+                    "id": "first-default-contract-case",
+                    "helper": "search",
+                    "pattern": "abc",
+                    "include_pattern_arg": True,
+                },
+                {
+                    "id": "second-default-contract-case",
+                    "helper": "search",
+                    "pattern": "def",
+                    "include_pattern_arg": True,
+                },
+            ],
+        }
+        """,
+    )
+
+    manifest = load_fixture_manifest(fixture_path)
+    first_case, second_case = manifest.cases
+    expected_source_args = ["payload", ["shared-arg"]]
+    expected_source_kwargs = {
+        "window": [1, 4],
+        "metadata": {"label": "shared-kwarg"},
+    }
+
+    assert manifest.defaults["args"] == expected_source_args
+    assert manifest.defaults["kwargs"] == expected_source_kwargs
+
+    assert first_case.source_args == expected_source_args
+    assert second_case.source_args == expected_source_args
+    assert first_case.args == expected_source_args
+    assert second_case.args == expected_source_args
+    assert first_case.source_kwargs == expected_source_kwargs
+    assert second_case.source_kwargs == expected_source_kwargs
+    assert first_case.kwargs == expected_source_kwargs
+    assert second_case.kwargs == expected_source_kwargs
+
+    assert first_case.source_args is not second_case.source_args
+    assert first_case.source_args[1] is not second_case.source_args[1]
+    assert first_case.args is not second_case.args
+    assert first_case.args[1] is not second_case.args[1]
+    assert first_case.source_kwargs is not second_case.source_kwargs
+    assert first_case.source_kwargs["window"] is not second_case.source_kwargs["window"]
+    assert first_case.kwargs is not second_case.kwargs
+    assert first_case.kwargs["window"] is not second_case.kwargs["window"]
+
+    first_case.source_args[1].append("source-args-mutation")
+    first_case.source_kwargs["window"].append(7)
+    first_case.source_kwargs["metadata"]["label"] = "source-kwargs-mutation"
+
+    assert first_case.args == expected_source_args
+    assert first_case.kwargs == expected_source_kwargs
+
+    first_case.args[1].append("args-mutation")
+    first_case.kwargs["window"].append(9)
+    first_case.kwargs["metadata"]["label"] = "kwargs-mutation"
+
+    assert second_case.source_args == expected_source_args
+    assert second_case.args == expected_source_args
+    assert second_case.source_kwargs == expected_source_kwargs
+    assert second_case.kwargs == expected_source_kwargs
+    assert manifest.defaults["args"] == expected_source_args
+    assert manifest.defaults["kwargs"] == expected_source_kwargs
+
+
 @pytest.mark.parametrize(
     ("filename", "source", "error_pattern"),
     (
