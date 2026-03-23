@@ -100,6 +100,10 @@ _EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_PATTERN: Final[str] = r"a((bc)+)d"
 _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN: Final[str] = (
     r"a(?P<outer>(?P<inner>bc)+)d"
 )
+_EXACT_NUMBERED_NESTED_GROUP_BYTES_CALLABLE_PATTERN: Final[bytes] = rb"a((b))d"
+_EXACT_NAMED_NESTED_GROUP_BYTES_CALLABLE_PATTERN: Final[bytes] = (
+    rb"a(?P<outer>(?P<inner>b))d"
+)
 _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN: Final[
     bytes
 ] = br"a((b|c){1,4})\2d"
@@ -150,6 +154,8 @@ _NATIVE_CALLABLE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
     {
         rb"(abc)",
         rb"(?P<word>abc)",
+        _EXACT_NUMBERED_NESTED_GROUP_BYTES_CALLABLE_PATTERN,
+        _EXACT_NAMED_NESTED_GROUP_BYTES_CALLABLE_PATTERN,
         _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN,
         _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN,
         _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_NUMBERED_BYTES_CALLABLE_PATTERN,
@@ -1448,6 +1454,24 @@ def _native_callable_match_spans(
     if isinstance(compiled_pattern.pattern, bytes):
         status, normalized_pos, normalized_endpos, spans, group_spans = (
             _native.boundary_grouped_literal_finditer_bytes(
+                compiled_pattern.pattern,
+                compiled_pattern.flags,
+                compatible_string,
+                0,
+                None,
+            )
+        )
+        if status != "unsupported":
+            return (
+                status,
+                normalized_pos,
+                normalized_endpos,
+                spans,
+                [tuple(match_group_spans) for match_group_spans in group_spans],
+            )
+
+        status, normalized_pos, normalized_endpos, spans, group_spans = (
+            _native.boundary_nested_capture_finditer_bytes(
                 compiled_pattern.pattern,
                 compiled_pattern.flags,
                 compatible_string,

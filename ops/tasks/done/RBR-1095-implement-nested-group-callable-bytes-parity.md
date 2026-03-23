@@ -1,6 +1,6 @@
 # RBR-1095: Implement nested-group callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -56,3 +56,12 @@ Created: 2026-03-23
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` likewise contain no adjacent bytes workload ids for the simple nested-group callable slice on that existing benchmark owner path;
   - an exact `.venv` public-path probe showed `rebar.sub(rb"a((b))d", lambda m: b"<" + m.group(1) + b">", b"abdabd")` still raises `NotImplementedError: rebar.sub() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet`; and
   - the already-landed simple grouped callable slice still matches CPython on the same `.venv` public path, including `tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_module_matches_cpython or grouped_callable_replacement_pattern_matches_cpython'`, so the next bounded missing work is this exact nested-group bytes implementation prerequisite rather than another report-only catch-up task.
+
+## Completion Note
+- Added exact bytes nested-capture support on the callable replacement owner path in Rust and exposed it through the PyO3 boundary so `rb"a((b))d"` and `rb"a(?P<outer>(?P<inner>b))d"` now reach Rust-backed callable `sub()`/`subn()` parity instead of the scaffold placeholder.
+- Extended `tests/python/test_callable_replacement_parity_suite.py` with the bounded direct module and compiled-pattern bytes callback cases that read `group(1)`, `group(2)`, `group("outer")`, and `group("inner")`, and kept the existing grouped-callable and unsupported-loud boundaries green.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group and callable and bytes and module'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group and callable and bytes and pattern'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_module_matches_cpython or grouped_callable_replacement_pattern_matches_cpython or test_module_callable_replacement_matches_cpython or test_pattern_callable_replacement_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation or test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases'`

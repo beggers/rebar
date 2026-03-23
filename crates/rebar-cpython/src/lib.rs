@@ -34,6 +34,7 @@ use rebar_core::{
     nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes as core_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes,
     nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str as core_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str,
     nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_find_spans_bytes as core_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_find_spans_bytes,
+    nested_capture_find_spans_bytes as core_nested_capture_find_spans_bytes,
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
     quantified_nested_group_alternation_branch_local_backreference_find_spans_str as core_quantified_nested_group_alternation_branch_local_backreference_find_spans_str,
@@ -530,6 +531,34 @@ fn boundary_nested_capture_finditer(
             core_quantified_nested_capture_find_spans_str(pattern, flags, string, pos, endpos)
         }
     };
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_nested_capture_finditer_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome = core_nested_capture_find_spans_bytes(pattern, flags, string, pos, endpos);
     (
         workflow_status(outcome.status),
         outcome.pos,
@@ -1682,6 +1711,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(boundary_literal_findall, module)?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_finditer, module)?)?;
     module.add_function(wrap_pyfunction!(boundary_nested_capture_finditer, module)?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_nested_capture_finditer_bytes,
+        module
+    )?)?;
     module.add_function(wrap_pyfunction!(
         boundary_nested_alternation_finditer,
         module
