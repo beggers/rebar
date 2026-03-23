@@ -3765,7 +3765,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(len(expected_measured_workload_ids), 3)
         selected_measured_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
-            _is_collection_replacement_pattern_findall_bounded_workload,
+            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "findall"
+            ].includes_workload,
         )
         self.assertEqual(
             selected_measured_workload_ids,
@@ -3790,7 +3792,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(len(expected_measured_workload_ids), 3)
         selected_measured_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
-            _is_collection_replacement_pattern_finditer_bounded_workload,
+            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "finditer"
+            ].includes_workload,
         )
         self.assertEqual(
             selected_measured_workload_ids,
@@ -3815,7 +3819,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(len(expected_measured_workload_ids), 3)
         selected_measured_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
-            _is_collection_replacement_pattern_split_workload,
+            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].includes_workload,
         )
         self.assertEqual(
             selected_measured_workload_ids,
@@ -3836,7 +3840,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         workload_count = len(case.target_manifest.workloads)
         selected_measured_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
-            _is_collection_replacement_pattern_literal_replacement_workload,
+            _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
         )
         self.assertEqual(
             selected_measured_workload_ids,
@@ -3858,7 +3862,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         workload_count = len(case.target_manifest.workloads)
         expected_measured_workload_ids = _manifest_workload_ids_matching(
             case.target_manifest,
-            _is_collection_replacement_module_literal_replacement_workload,
+            _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
         )
         self.assertEqual(
             expected_measured_workload_ids,
@@ -3883,9 +3887,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 workload_kind="module",
             )
             for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
-            if _is_any_collection_replacement_module_literal_replacement_workload(
-                workload
-            )
+            if _COLLECTION_REPLACEMENT_ANY_MODULE_LITERAL_REPLACEMENT_SELECTOR(workload)
         }
         unbenchmarked_case_ids = tuple(
             case.case_id
@@ -3918,7 +3920,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 workload_kind="direct Pattern",
             )
             for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
-            if _is_any_collection_replacement_pattern_literal_replacement_workload(
+            if _COLLECTION_REPLACEMENT_ANY_PATTERN_LITERAL_REPLACEMENT_SELECTOR(
                 workload
             )
         }
@@ -8734,70 +8736,28 @@ def _is_collection_replacement_literal_replacement_workload(
     )
 
 
-def _is_collection_replacement_module_literal_replacement_workload(
-    workload: Any,
-) -> bool:
-    return _is_collection_replacement_literal_replacement_workload(
-        workload,
-        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
-        workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-            "module"
-        ].workload_ids(),
-    )
-
-
-def _is_any_collection_replacement_module_literal_replacement_workload(
-    workload: Any,
-) -> bool:
-    return _is_collection_replacement_literal_replacement_workload(
-        workload,
-        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
-    )
-
-
-def _is_any_collection_replacement_pattern_literal_replacement_workload(
-    workload: Any,
-) -> bool:
-    return _is_collection_replacement_literal_replacement_workload(
-        workload,
-        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
-    )
-
-
-def _is_collection_replacement_pattern_findall_bounded_workload(
-    workload: Any,
-) -> bool:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "findall"
-    ].includes_workload(workload)
-
-
-def _is_collection_replacement_pattern_split_workload(
-    workload: Any,
-) -> bool:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].includes_workload(
-        workload
-    )
-
-
-def _is_collection_replacement_pattern_literal_replacement_workload(
-    workload: Any,
-) -> bool:
-    return _is_collection_replacement_literal_replacement_workload(
-        workload,
-        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
-        workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-            "pattern"
-        ].workload_ids(),
-    )
-
-
-def _is_collection_replacement_pattern_finditer_bounded_workload(
-    workload: Any,
-) -> bool:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "finditer"
-    ].includes_workload(workload)
+_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR = partial(
+    _is_collection_replacement_literal_replacement_workload,
+    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+    workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+        "module"
+    ].workload_ids(),
+)
+_COLLECTION_REPLACEMENT_ANY_MODULE_LITERAL_REPLACEMENT_SELECTOR = partial(
+    _is_collection_replacement_literal_replacement_workload,
+    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+)
+_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
+    _is_collection_replacement_literal_replacement_workload,
+    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+    workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+        "pattern"
+    ].workload_ids(),
+)
+_COLLECTION_REPLACEMENT_ANY_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
+    _is_collection_replacement_literal_replacement_workload,
+    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+)
 
 
 def _pattern_verbose_regression_correctness_case_signature(
@@ -9797,7 +9757,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
             "findall"
         ].anchor_expectations(),
-        include_workload=_is_collection_replacement_pattern_findall_bounded_workload,
+        include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "findall"
+        ].includes_workload,
         correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
             "findall"
         ].correctness_case_signature,
@@ -9812,7 +9774,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
             "finditer"
         ].anchor_expectations(),
-        include_workload=_is_collection_replacement_pattern_finditer_bounded_workload,
+        include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "finditer"
+        ].includes_workload,
         correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
             "finditer"
         ].correctness_case_signature,
@@ -9827,7 +9791,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
             "split"
         ].anchor_expectations(),
-        include_workload=_is_collection_replacement_pattern_split_workload,
+        include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "split"
+        ].includes_workload,
         correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
             "split"
         ].correctness_case_signature,
@@ -9842,16 +9808,14 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
             "module"
         ].anchor_expectations(),
-        include_workload=(
-            _is_collection_replacement_module_literal_replacement_workload
-        ),
+        include_workload=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
         correctness_case_signature=partial(
             _collection_replacement_literal_replacement_correctness_case_signature,
             route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
         ),
         workload_signature=partial(
             _collection_replacement_literal_replacement_workload_signature,
-            include_workload=_is_collection_replacement_module_literal_replacement_workload,
+            include_workload=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
             workload_kind="module",
         ),
         run_callback_result_parity=True,
@@ -9862,16 +9826,14 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
             "pattern"
         ].anchor_expectations(),
-        include_workload=(
-            _is_collection_replacement_pattern_literal_replacement_workload
-        ),
+        include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
         correctness_case_signature=partial(
             _collection_replacement_literal_replacement_correctness_case_signature,
             route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
         ),
         workload_signature=partial(
             _collection_replacement_literal_replacement_workload_signature,
-            include_workload=_is_collection_replacement_pattern_literal_replacement_workload,
+            include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
             workload_kind="direct Pattern",
         ),
         run_callback_result_parity=True,
