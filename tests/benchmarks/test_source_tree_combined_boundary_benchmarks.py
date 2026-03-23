@@ -17245,6 +17245,15 @@ class CompiledPatternModuleCompileContractCase:
             source_workload,
         )
 
+    def expected_anchor_case_ids(
+        self,
+        manifest_path: pathlib.Path,
+    ) -> dict[tuple[str, str], tuple[str, ...]]:
+        return _workload_case_pair_anchor_expectations(
+            manifest_path,
+            self.expected_anchor_pairs,
+        )
+
     def expected_build_calls(
         self,
         source_workload: Workload,
@@ -17384,17 +17393,6 @@ class _CompiledPatternModuleContractAnchorLane:
     include_workload: Callable[[Any], bool]
     expected_anchor_pairs: tuple[tuple[str, str], ...]
 
-
-def _compiled_pattern_module_contract_expected_anchor_case_ids(
-    manifest_path: pathlib.Path,
-    contract_case: CompiledPatternModuleCompileContractCase,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return _workload_case_pair_anchor_expectations(
-        manifest_path,
-        contract_case.expected_anchor_pairs,
-    )
-
-
 _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
     *(
         _CompiledPatternModuleContractAnchorLane(
@@ -17418,12 +17416,7 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
             contract_filename=contract_case.anchor_contract_filename,
             source_workloads=source_workloads,
             contract_builder_spec=contract_case.contract_builder_spec,
-            expected_anchor_case_ids=(
-                partial(
-                    _compiled_pattern_module_contract_expected_anchor_case_ids,
-                    contract_case=contract_case,
-                )
-            ),
+            expected_anchor_case_ids=contract_case.expected_anchor_case_ids,
             anchor_case_ids=published_case_ids_by_signature(
                 contract_case.correctness_case_signature
             ),
