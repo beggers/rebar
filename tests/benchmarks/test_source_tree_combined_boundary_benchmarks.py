@@ -3880,14 +3880,18 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit(
         self,
     ) -> None:
+        include_workload = partial(
+            _is_collection_replacement_literal_replacement_workload,
+            route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+        )
         workload_signatures = {
-            _any_collection_replacement_literal_replacement_workload_signature(
+            _collection_replacement_literal_replacement_workload_signature(
                 workload,
-                route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+                include_workload=include_workload,
                 workload_kind="module",
             )
             for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
-            if _COLLECTION_REPLACEMENT_ANY_MODULE_LITERAL_REPLACEMENT_SELECTOR(workload)
+            if include_workload(workload)
         }
         unbenchmarked_case_ids = tuple(
             case.case_id
@@ -3913,16 +3917,18 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_explicit(
         self,
     ) -> None:
+        include_workload = partial(
+            _is_collection_replacement_literal_replacement_workload,
+            route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+        )
         workload_signatures = {
-            _any_collection_replacement_literal_replacement_workload_signature(
+            _collection_replacement_literal_replacement_workload_signature(
                 workload,
-                route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+                include_workload=include_workload,
                 workload_kind="direct Pattern",
             )
             for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
-            if _COLLECTION_REPLACEMENT_ANY_PATTERN_LITERAL_REPLACEMENT_SELECTOR(
-                workload
-            )
+            if include_workload(workload)
         }
         unbenchmarked_case_ids = tuple(
             case.case_id
@@ -8699,22 +8705,6 @@ def _collection_replacement_literal_replacement_workload_signature(
         workload.flags,
         workload.text_model,
     )
-def _any_collection_replacement_literal_replacement_workload_signature(
-    workload: Any,
-    *,
-    route: _CollectionReplacementLiteralReplacementRoute,
-    workload_kind: str,
-) -> tuple[Any, ...]:
-    return _collection_replacement_literal_replacement_workload_signature(
-        workload,
-        include_workload=lambda candidate: _is_collection_replacement_literal_replacement_workload(
-            candidate,
-            route=route,
-        ),
-        workload_kind=workload_kind,
-    )
-
-
 def _is_collection_replacement_literal_replacement_workload(
     workload: Any,
     *,
@@ -8743,20 +8733,12 @@ _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR = partial(
         "module"
     ].workload_ids(),
 )
-_COLLECTION_REPLACEMENT_ANY_MODULE_LITERAL_REPLACEMENT_SELECTOR = partial(
-    _is_collection_replacement_literal_replacement_workload,
-    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
-)
 _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
     _is_collection_replacement_literal_replacement_workload,
     route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
     workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
         "pattern"
     ].workload_ids(),
-)
-_COLLECTION_REPLACEMENT_ANY_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
-    _is_collection_replacement_literal_replacement_workload,
-    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
 )
 
 
