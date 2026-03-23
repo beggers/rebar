@@ -181,8 +181,6 @@ MODULE_WORKFLOW_BUNDLE = MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID[
 MATCH_BEHAVIOR_BUNDLE = MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID[
     MATCH_BEHAVIOR_MANIFEST_ID
 ]
-MODULE_WORKFLOW_FIXTURE_PATH = MODULE_WORKFLOW_BUNDLE.manifest.path
-MATCH_BEHAVIOR_FIXTURE_PATH = MATCH_BEHAVIOR_BUNDLE.manifest.path
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
 NOFLAG_COMPILE_CASES = tuple(
@@ -3971,7 +3969,7 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
+        expected_fixture_path=MODULE_WORKFLOW_BUNDLE.manifest.path,
         expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
 
@@ -4141,7 +4139,6 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
 
 
 def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
-    assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
     assert (
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
@@ -4181,7 +4178,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
+        expected_fixture_path=MODULE_WORKFLOW_BUNDLE.manifest.path,
         expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
     assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
@@ -4917,7 +4914,7 @@ def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> N
     assert_fixture_bundle_contract(
         MATCH_BEHAVIOR_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=MATCH_BEHAVIOR_FIXTURE_PATH,
+        expected_fixture_path=MATCH_BEHAVIOR_BUNDLE.manifest.path,
         expected_ordered_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
     )
 
