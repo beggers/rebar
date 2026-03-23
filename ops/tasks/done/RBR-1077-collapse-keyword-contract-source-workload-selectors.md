@@ -1,6 +1,6 @@
 # RBR-1077: Collapse keyword-contract source workload selectors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -70,3 +70,7 @@ Created: 2026-03-23
   - `sed -n '15900,15940p' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` shows the compiled-pattern keyword-error wrapper still only forwarding one manifest selection into the contract surface.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads or module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions or run_internal_workload_probe_measures_module_helper_keyword_error_workloads or compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements or standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or compiled_pattern_module_helper_keyword_contract_rows_stay_anchored_to_published_correctness_cases or run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_keyword_contract_workloads or compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions or compiled_pattern_module_helper_keyword_callbacks_precompile_first_argument_before_timing'` returned `77 passed, 645 deselected` in this run.
+
+## Completion Note
+- Replaced the five thin keyword-contract selector wrappers with file-local workload tuples and `partial(tuple, ...)` selector callables where the compiled-pattern contract surface still needs a no-argument selector, keeping the existing ordering and drift assertions intact.
+- Verified the focused benchmark pytest slice still passes (`77 passed, 645 deselected`) and confirmed the deleted wrapper definitions no longer exist in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.

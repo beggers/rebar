@@ -3686,7 +3686,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         expected_source_workload_ids = {
             workload.workload_id
-            for workload in _compiled_pattern_module_helper_keyword_error_source_workloads()
+            for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         }
         self.assertEqual(
             set(expected_measured_workload_ids),
@@ -14548,22 +14548,21 @@ def _is_collection_replacement_pattern_helper_keyword_error_workload(
     )
 
 
-def _pattern_helper_keyword_error_source_workloads() -> tuple[Workload, ...]:
-    selected = _selected_manifest_workloads(
-        COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=(
-            _is_collection_replacement_pattern_helper_keyword_error_workload
-        ),
+_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _selected_manifest_workloads(
+    COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload=_is_collection_replacement_pattern_helper_keyword_error_workload,
+)
+if (
+    tuple(
+        workload.workload_id
+        for workload in _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     )
-    if (
-        tuple(workload.workload_id for workload in selected)
-        != _PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
-    ):
-        raise AssertionError(
-            "pattern helper collection/replacement keyword-error surface drifted "
-            "from the live source workload surface"
-        )
-    return selected
+    != _PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+):
+    raise AssertionError(
+        "pattern helper collection/replacement keyword-error surface drifted "
+        "from the live source workload surface"
+    )
 
 
 @pytest.mark.parametrize(
@@ -14949,7 +14948,7 @@ def _assert_keyword_error_workload_probe_measured(
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _pattern_helper_keyword_error_source_workloads()
+        for workload in _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     ),
 )
 @pytest.mark.parametrize(
@@ -15417,16 +15416,13 @@ def _is_collection_replacement_module_helper_keyword_error_workload(
     )
 
 
-def _module_helper_keyword_error_source_workloads() -> tuple[Workload, ...]:
-    return _selected_manifest_workloads(
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload=_is_module_workflow_keyword_error_workload,
-    ) + _selected_manifest_workloads(
-        COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=(
-            _is_collection_replacement_module_helper_keyword_error_workload
-        ),
-    )
+_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _selected_manifest_workloads(
+    MODULE_BOUNDARY_MANIFEST_PATH,
+    include_workload=_is_module_workflow_keyword_error_workload,
+) + _selected_manifest_workloads(
+    COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload=_is_collection_replacement_module_helper_keyword_error_workload,
+)
 
 
 def _module_helper_keyword_error_expected_field_names(
@@ -15449,7 +15445,7 @@ def _module_helper_keyword_error_expected_field_names(
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _module_helper_keyword_error_source_workloads()
+        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     ),
 )
 def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions(
@@ -15480,7 +15476,7 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _module_helper_keyword_error_source_workloads()
+        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     ),
 )
 @pytest.mark.parametrize(
@@ -15512,33 +15508,6 @@ def _is_collection_replacement_compiled_pattern_module_helper_keyword_workload(
         and workload.expected_exception is None
         and getattr(workload, "haystack_text_model", None) is None
     )
-
-
-def _compiled_pattern_module_helper_keyword_source_workloads() -> tuple[Workload, ...]:
-    return _selected_manifest_workloads(
-        COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=(
-            _is_collection_replacement_compiled_pattern_module_helper_keyword_workload
-        ),
-    )
-
-
-def _compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads(
-) -> tuple[Workload, ...]:
-    anchor_ids = (
-        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.precompile_anchor_ids
-    )
-    selected = tuple(
-        workload
-        for workload in _compiled_pattern_module_helper_keyword_source_workloads()
-        if workload.workload_id in anchor_ids
-    )
-    if tuple(workload.workload_id for workload in selected) != anchor_ids:
-        raise AssertionError(
-            "compiled-pattern module-helper keyword precompile anchors drifted "
-            "from the live source workload surface"
-        )
-    return selected
 
 
 @dataclass(frozen=True, slots=True)
@@ -15903,10 +15872,62 @@ def _compiled_pattern_contract_expected_build_calls(
     )
 
 
-def _compiled_pattern_module_helper_keyword_error_source_workloads() -> tuple[Workload, ...]:
-    return _selected_manifest_workloads(
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
+    _selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=_is_collection_replacement_compiled_pattern_keyword_error_workload,
+        include_workload=(
+            _is_collection_replacement_compiled_pattern_module_helper_keyword_workload
+        ),
+    )
+)
+if (
+    tuple(
+        workload.workload_id
+        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+    )
+    != _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_source_workload_ids
+):
+    raise AssertionError(
+        "compiled-pattern module-helper keyword contract source workloads drifted "
+        "from the live source workload surface"
+    )
+
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS = tuple(
+    workload
+    for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+    if workload.workload_id
+    in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.precompile_anchor_ids
+)
+if (
+    tuple(
+        workload.workload_id
+        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS
+    )
+    != _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.precompile_anchor_ids
+):
+    raise AssertionError(
+        "compiled-pattern module-helper keyword precompile anchors drifted "
+        "from the live source workload surface"
+    )
+
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
+    _selected_manifest_workloads(
+        COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload=(
+            _is_collection_replacement_compiled_pattern_keyword_error_workload
+        ),
+    )
+)
+if (
+    tuple(
+        workload.workload_id
+        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    )
+    != _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_source_workload_ids
+):
+    raise AssertionError(
+        "compiled-pattern module-helper keyword-error source workloads drifted "
+        "from the live source workload surface"
     )
 
 
@@ -15914,16 +15935,21 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
     _CompiledPatternModuleHelperKeywordContractSurface(
         case_id="success",
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
-        source_workload_selector=_compiled_pattern_module_helper_keyword_source_workloads,
-        precompile_source_workload_selector=(
-            _compiled_pattern_module_helper_keyword_precompile_anchor_source_workloads
+        source_workload_selector=partial(
+            tuple,
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS,
+        ),
+        precompile_source_workload_selector=partial(
+            tuple,
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS,
         ),
     ),
     _CompiledPatternModuleHelperKeywordContractSurface(
         case_id="keyword-error",
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
-        source_workload_selector=(
-            _compiled_pattern_module_helper_keyword_error_source_workloads
+        source_workload_selector=partial(
+            tuple,
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
         ),
     ),
 )
@@ -15967,7 +15993,7 @@ def test_compiled_pattern_module_helper_keyword_cases_cover_bool_count_complemen
             workload.kwargs["count"],
             run_benchmark_workload_with_cpython(workload),
         )
-        for workload in _compiled_pattern_module_helper_keyword_source_workloads()
+        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
         if workload.operation in {"module.sub", "module.subn"}
         and type(workload.kwargs.get("count")) is bool
     } == {
@@ -16060,7 +16086,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_helper_keyword_source_workloads()
+        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
     ),
 )
 def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time(
@@ -17905,7 +17931,7 @@ def test_wrong_text_model_callbacks_preserve_precompile_contract(
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _compiled_pattern_module_helper_keyword_error_source_workloads()
+        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     ),
 )
 def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions(
