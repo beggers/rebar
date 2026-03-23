@@ -2802,19 +2802,6 @@ COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS = (
         direct_case_id="compiled-pattern-subn-bytes-on-str-string",
     ),
 )
-def _published_compiled_pattern_module_helper_fixture_cases() -> tuple[FixtureCase, ...]:
-    direct_signatures = {
-        _compiled_pattern_module_helper_direct_signature(row.direct_case)
-        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
-    }
-    return tuple(
-        case
-        for case in MODULE_CALL_CASES
-        if case.use_compiled_pattern
-        and _compiled_pattern_module_helper_fixture_signature(case) in direct_signatures
-    )
-
-
 # Keep the representative fixture-backed rows small, then use a compact matrix
 # here to prove the helpers keep accepting the broader bool/int/__index__ slice.
 WORKFLOW_NUMERIC_COERCION_VALUES = (
@@ -4081,7 +4068,10 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             ),
             "compiled-module-helper": frozenset(
                 case.case_id
-                for case in _published_compiled_pattern_module_helper_fixture_cases()
+                for case in _published_owner_path_fixture_cases(
+                    MODULE_CALL_CASES,
+                    COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+                )
             ),
             "escape": frozenset(case.case_id for case in ESCAPE_CASES),
         },
@@ -4126,7 +4116,10 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
     published_count_alias_cases = tuple(
         direct_cases_by_id[case_id] for case_id in published_count_alias_case_ids
     )
-    published_fixture_cases = _published_compiled_pattern_module_helper_fixture_cases()
+    published_fixture_cases = _published_owner_path_fixture_cases(
+        MODULE_CALL_CASES,
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+    )
     published_fixture_signatures = {
         _compiled_pattern_module_helper_fixture_signature(case)
         for case in published_fixture_cases
@@ -5210,9 +5203,12 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_compiled_pattern_module_helper_fixture_cases()
-    selected_direct_cases = tuple(
-        row.direct_case for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+    published_fixture_cases = _published_owner_path_fixture_cases(
+        MODULE_CALL_CASES,
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+    )
+    selected_direct_cases = _selected_owner_path_direct_cases(
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
     )
 
     assert tuple(
