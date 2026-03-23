@@ -3990,6 +3990,34 @@ def test_load_published_fixture_bundles_preserves_selected_path_order(
     assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID] is bundles[1]
 
 
+def test_load_published_fixture_bundles_treats_single_selector_string_as_atomic(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    seen_selectors: list[str] = []
+
+    def _select_paths(selector: str) -> tuple[pathlib.Path, ...]:
+        seen_selectors.append(selector)
+        return (str_path,) if selector == "single-selector" else ()
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "select_correctness_fixture_paths",
+        _select_paths,
+    )
+
+    bundles, bundles_by_manifest_id = fixture_parity_support.load_published_fixture_bundles(
+        "single-selector",
+        pattern_extractor=case_pattern,
+    )
+
+    assert seen_selectors == ["single-selector"]
+    assert tuple(bundle.manifest.path for bundle in bundles) == (str_path,)
+    assert tuple(bundles_by_manifest_id) == (BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,)
+    assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID] is bundles[0]
+
+
 def test_load_single_published_fixture_bundle_returns_expected_manifest_contract(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -4007,6 +4035,25 @@ def test_load_single_published_fixture_bundle_returns_expected_manifest_contract
     assert bundle.manifest.path == str_path
     assert bundle.manifest.path.name == BUNDLE_LOADER_CONTRACT_STR_FILENAME
     assert bundle.expected_manifest_id == BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID
+
+
+def test_load_single_published_fixture_bundle_rejects_zero_manifest_selector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "select_correctness_fixture_paths",
+        lambda selector: (),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "correctness fixture selector 'missing-selector' resolved to 0 "
+            "published fixture paths; expected exactly 1"
+        ),
+    ):
+        load_single_published_fixture_bundle("missing-selector")
 
 
 def test_load_single_published_fixture_bundle_rejects_multi_manifest_selector(
