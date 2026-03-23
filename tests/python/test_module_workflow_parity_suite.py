@@ -2682,6 +2682,70 @@ def _compiled_pattern_module_helper_publication_signature(
     )
 
 
+def _assert_compiled_pattern_module_helper_publication_contract(
+) -> tuple[
+    tuple[FixtureCase, ...],
+    tuple[object, ...],
+    set[
+        tuple[
+            str,
+            str | bytes,
+            tuple[object, ...],
+            int,
+            bool,
+            tuple[tuple[str, str, object], ...],
+            str,
+        ]
+    ],
+]:
+    published_fixture_cases, selected_direct_cases = _assert_owner_path_publication_contract(
+        MODULE_CALL_CASES,
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+        expected_count=62,
+        expected_text_model_counts=Counter({"str": 33, "bytes": 29}),
+        expected_helper_counts=Counter(
+            {
+                "compile": 20,
+                "search": 4,
+                "match": 3,
+                "fullmatch": 4,
+                "split": 7,
+                "findall": 2,
+                "finditer": 2,
+                "sub": 10,
+                "subn": 10,
+            }
+        ),
+        direct_case_helper=(
+            lambda case: _compiled_pattern_module_helper_publication_signature(case)[0]
+        ),
+    )
+    published_fixture_signatures = {
+        _compiled_pattern_module_helper_publication_signature(case)
+        for case in published_fixture_cases
+    }
+
+    for row, fixture_case, direct_case in zip(
+        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+        published_fixture_cases,
+        selected_direct_cases,
+    ):
+        assert fixture_case.case_id == row.fixture_case_id
+        assert direct_case is row.direct_case
+        assert fixture_case.use_compiled_pattern is True
+        assert fixture_case.text_model == row.text_model
+        assert (
+            _compiled_pattern_module_helper_publication_signature(fixture_case)
+            == _compiled_pattern_module_helper_publication_signature(direct_case)
+        )
+
+    return (
+        published_fixture_cases,
+        selected_direct_cases,
+        published_fixture_signatures,
+    )
+
+
 COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS = (
     CompiledPatternModuleHelperOwnerPathRow(
         fixture_case_id="workflow-module-compile-str-compiled-pattern",
@@ -4236,14 +4300,9 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
     published_count_alias_cases = tuple(
         direct_cases_by_id[case_id] for case_id in published_count_alias_case_ids
     )
-    published_fixture_cases = _published_owner_path_fixture_cases(
-        MODULE_CALL_CASES,
-        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
+    published_fixture_cases, _, published_fixture_signatures = (
+        _assert_compiled_pattern_module_helper_publication_contract()
     )
-    published_fixture_signatures = {
-        _compiled_pattern_module_helper_publication_signature(case)
-        for case in published_fixture_cases
-    }
 
     assert tuple(
         case.case_id
@@ -5043,44 +5102,7 @@ def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_fr
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_owner_path_publication_contract(
-            MODULE_CALL_CASES,
-            COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
-            expected_count=62,
-            expected_text_model_counts=Counter({"str": 33, "bytes": 29}),
-            expected_helper_counts=Counter(
-                {
-                    "compile": 20,
-                    "search": 4,
-                    "match": 3,
-                    "fullmatch": 4,
-                    "split": 7,
-                    "findall": 2,
-                    "finditer": 2,
-                    "sub": 10,
-                    "subn": 10,
-                }
-            ),
-            direct_case_helper=(
-                lambda case: _compiled_pattern_module_helper_publication_signature(case)[0]
-            ),
-        )
-    )
-
-    for row, fixture_case, direct_case in zip(
-        COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
-        published_fixture_cases,
-        selected_direct_cases,
-    ):
-        assert fixture_case.case_id == row.fixture_case_id
-        assert direct_case is row.direct_case
-        assert fixture_case.use_compiled_pattern is True
-        assert fixture_case.text_model == row.text_model
-        assert (
-            _compiled_pattern_module_helper_publication_signature(fixture_case)
-            == _compiled_pattern_module_helper_publication_signature(direct_case)
-        )
+    _assert_compiled_pattern_module_helper_publication_contract()
 
 
 def test_compiled_pattern_module_keyword_bool_count_direct_cases_cover_complements(

@@ -1,6 +1,6 @@
 ## RBR-0999: Collapse compiled-pattern owner-path contract glue
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -113,3 +113,8 @@ for i, line in enumerate(text, start=1):
     if "for row, fixture_case, direct_case in zip(" in line:
         print(i, line.strip())
 PY` currently reports the remaining compiled-pattern glue at lines `4239`, `4243`, and `5071`, so this cleanup can stay structural and file-local.
+
+## Completion Note
+- Added one file-local `_assert_compiled_pattern_module_helper_publication_contract()` helper in `tests/python/test_module_workflow_parity_suite.py` that wraps the existing owner-path contract helper, preserves the exact 62-row compiled-pattern counts and signature ordering, and centralizes the row-alignment assertions and published signature set.
+- Repointed both compiled-pattern publication tests through that shared helper so the keyword-frontier test no longer open-codes the owner-path fixture selection or signature-set build, and the compiled-pattern publication test no longer repeats the inline row-alignment loop.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path or module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases'` (`2 passed, 1449 deselected`) and with a repo-local Python probe that calls `_assert_compiled_pattern_module_helper_publication_contract()` (`ok`).
