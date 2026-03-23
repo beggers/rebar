@@ -11,7 +11,7 @@ from tests.python import conftest as python_conftest
 
 @dataclass(frozen=True)
 class _BackendCase:
-    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backends: tuple[str, ...] | None = ()
     unsupported_backend_reason: str | None = None
 
 
@@ -88,6 +88,21 @@ def test_regex_backend_ignores_unsupported_backend_metadata_for_other_backends()
 
     assert backend_name == "stdlib"
     assert backend is python_conftest.re
+
+
+def test_regex_backend_treats_none_unsupported_backends_as_unfiltered() -> None:
+    backend_name, backend = _invoke_regex_backend(
+        "rebar",
+        parametrized_values={
+            "case": _BackendCase(
+                unsupported_backends=None,
+                unsupported_backend_reason="ignored metadata",
+            ),
+        },
+    )
+
+    assert backend_name == "rebar"
+    assert backend is rebar
 
 
 def test_regex_backend_rejects_multiple_param_values_disabling_same_backend() -> None:

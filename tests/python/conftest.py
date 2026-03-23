@@ -36,6 +36,8 @@ def regex_backend(request: pytest.FixtureRequest) -> tuple[str, object]:
         skip_reason: str | None = None
         for param_name, value in callspec.params.items():
             unsupported_backends = getattr(value, "unsupported_backends", ())
+            if unsupported_backends is None:
+                unsupported_backends = ()
             if request.param not in unsupported_backends:
                 continue
 
