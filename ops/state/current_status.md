@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1592 cases across 114 manifests, with all 1592 passing in the current slice; the benchmark publication covers 973/973 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- `RBR-1063`: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
+- `RBR-1065`: publish the direct `Pattern.subn()` str single-match on the shared collection/replacement correctness surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1592 cases across 114 manifests, with all 1592 pass
 The published correctness slice now covers 1592 cases across 114 manifests, all passing, and 973 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- `RBR-1063` is the only ready feature follow-on in this checkout: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
+- `RBR-1065` is the surviving ready feature follow-on after the current benchmark head drains: publish the direct `Pattern.subn()` str single-match on the shared collection/replacement correctness surface.
 - No blocked or in-progress feature task shadows that ready frontier in this checkout.
 
 ## What Exists
@@ -333,7 +333,7 @@ The published correctness slice now covers 1592 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-1063`: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
+- `RBR-1065`: publish the direct `Pattern.subn()` str single-match on the shared collection/replacement correctness surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
