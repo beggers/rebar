@@ -655,6 +655,79 @@ def test_assert_mixed_text_model_case_pairs_accepts_normalized_bytes_payload_row
     )
 
 
+def test_assert_mixed_text_model_case_pairs_accepts_nested_normalized_bytes_payload_rows(
+) -> None:
+    bundle = _paired_mixed_text_contract_bundle()
+
+    nested_module_str_args = [
+        {
+            "pattern": SYNTHETIC_CASE_PATTERN,
+            "targets": ("zzabczz",),
+        }
+    ]
+    nested_module_bytes_args = [
+        {
+            "pattern": _normalized_bytes_payload(
+                SYNTHETIC_CASE_PATTERN.encode("latin-1")
+            ),
+            "targets": (_normalized_bytes_payload(b"zzabczz"),),
+        }
+    ]
+    nested_pattern_str_args = [
+        (
+            "zzabczz",
+            {
+                "expected": ["abc"],
+            },
+        )
+    ]
+    nested_pattern_bytes_args = [
+        (
+            _normalized_bytes_payload(b"zzabczz"),
+            {
+                "expected": [_normalized_bytes_payload(b"abc")],
+            },
+        )
+    ]
+
+    nested_bundle = replace(
+        bundle,
+        cases=(
+            replace(
+                bundle.cases[0],
+                source_args=nested_module_str_args,
+                args=nested_module_str_args,
+            ),
+            replace(
+                bundle.cases[1],
+                source_args=nested_pattern_str_args,
+                args=nested_pattern_str_args,
+            ),
+            replace(
+                bundle.cases[2],
+                source_args=nested_module_bytes_args,
+                args=nested_module_bytes_args,
+            ),
+            replace(
+                bundle.cases[3],
+                source_args=nested_pattern_bytes_args,
+                args=nested_pattern_bytes_args,
+            ),
+        ),
+    )
+
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(nested_bundle)
+
+    assert tuple(case.case_id for case in str_cases) == (
+        "synthetic-mixed-module-search-str",
+        "synthetic-mixed-pattern-search-str",
+    )
+    assert tuple(case.case_id for case in bytes_cases) == (
+        "synthetic-mixed-module-search-bytes",
+        "synthetic-mixed-pattern-search-bytes",
+    )
+
+
 @pytest.mark.parametrize(
     ("drift_kind", "expected_message"),
     (
