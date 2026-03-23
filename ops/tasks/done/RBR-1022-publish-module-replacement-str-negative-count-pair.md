@@ -1,6 +1,6 @@
 # RBR-1022: Publish the raw `re.sub()` / `re.subn()` str negative-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,16 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and str-negative-count'` currently passes (`1 passed, 1300 deselected`), so the exact raw-module negative-count parity slice is already green in this checkout;
   - a direct runtime probe confirms `rebar.sub("abc", "x", "abcabc", -1) == re.sub("abc", "x", "abcabc", -1)` and `rebar.subn("abc", "x", "abcabc", -1) == re.subn("abc", "x", "abcabc", -1)` on the live branch; and
   - a file-local scan across `tests/conformance/fixtures/collection_replacement_workflows.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py` reports `module-sub-str-negative-count` and `module-subn-str-negative-count` as absent, confirming the exact correctness publication ids are still missing from the tracked owner-path surfaces.
+
+## Completion
+- Added `module-sub-str-negative-count` and `module-subn-str-negative-count` to `tests/conformance/fixtures/collection_replacement_workflows.py`, keeping the raw-module literal replacement block on the existing owner-path manifest and ordered as `module-sub-str-no-match`, `module-sub-str-single-match`, `module-sub-str-repeated`, `module-sub-str-negative-count`, `module-subn-str-count`, `module-subn-str-repeated`, `module-subn-str-negative-count`, `module-sub-bytes-no-match`, `module-subn-bytes-count`, and `module-subn-bytes-repeated`.
+- Extended `tests/python/test_fixture_backed_replacement_parity_suite.py` so the shared collection/replacement owner route now selects those ten module literal replacement publication ids in order and checks their helper, args, and text-model alignment on the same file.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` to keep the combined scorecard expectation anchored on the widened collection replacement manifest.
+- Republished `reports/correctness/latest.py`. The tracked report now shows `1577` total / `1577` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow == 40/40`, `collection.replacement.workflow.str == 27/27`, `collection.replacement.workflow.bytes == 13/13`, `collection.replacement.workflow.module_call == 20/20`, and `collection.replacement.workflow.pattern_call == 20/20`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and str-negative-count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured or test_published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1022-module-replacement-str-negative-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

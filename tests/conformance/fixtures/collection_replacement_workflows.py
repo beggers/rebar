@@ -306,6 +306,17 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-str-negative-count",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "args": ["abc", "x", "abcabc", -1],
+      "categories": ["workflow", "sub", "literal", "str", "negative-count"],
+      "notes": [
+        "Publishes the raw str module sub helper outcome for the exact negative-count module workflow."
+      ]
+    },
+    {
       "id": "module-subn-str-count",
       "operation": "module_call",
       "family": "replacement_workflow",
@@ -325,6 +336,17 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "str", "repeated"],
       "notes": [
         "Publishes the raw str module subn helper outcome for repeated literal matches."
+      ]
+    },
+    {
+      "id": "module-subn-str-negative-count",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "args": ["abc", "x", "abcabc", -1],
+      "categories": ["workflow", "subn", "literal", "str", "negative-count"],
+      "notes": [
+        "Publishes the raw str module subn helper outcome for the exact negative-count module workflow."
       ]
     },
     {
