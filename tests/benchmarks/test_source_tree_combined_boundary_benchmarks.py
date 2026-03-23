@@ -1898,6 +1898,38 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
     _combined_slice_expectation(
         manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="nested-group-bytes",
+        required_syntax_features=("callable-replacement", "pattern-text-model"),
+        excluded_syntax_features=(
+            "alternation",
+            "branch-local-backreferences",
+            "quantifiers",
+        ),
+        expected_workload_ids=(
+            "module-sub-callable-nested-group-numbered-warm-bytes",
+            "module-subn-callable-nested-group-numbered-warm-bytes",
+            "pattern-sub-callable-nested-group-numbered-purged-bytes",
+            "pattern-subn-callable-nested-group-numbered-purged-bytes",
+            "module-sub-callable-nested-group-named-warm-bytes",
+            "module-subn-callable-nested-group-named-warm-bytes",
+            "pattern-sub-callable-nested-group-named-purged-bytes",
+            "pattern-subn-callable-nested-group-named-purged-bytes",
+        ),
+        expected_patterns={
+            r"a((b))d",
+            r"a(?P<outer>(?P<inner>b))d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abdabd"},
+        required_row_categories=(
+            "nested-group",
+            "replacement",
+            "callable",
+            "bytes",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-alternation",
         required_syntax_features=("alternation", "callable-replacement"),
         excluded_syntax_features=("branch-local-backreferences", "quantifiers"),
@@ -4468,6 +4500,58 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         expected_workload_ids,
                     )
 
+    def test_nested_group_callable_replacement_manifest_promotes_bounded_nested_group_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        manifest_id = "nested-group-callable-replacement-boundary"
+        expected_workload_ids = (
+            "module-sub-callable-nested-group-numbered-warm-bytes",
+            "module-subn-callable-nested-group-numbered-warm-bytes",
+            "pattern-sub-callable-nested-group-numbered-purged-bytes",
+            "pattern-subn-callable-nested-group-numbered-purged-bytes",
+            "module-sub-callable-nested-group-named-warm-bytes",
+            "module-subn-callable-nested-group-named-warm-bytes",
+            "pattern-sub-callable-nested-group-named-purged-bytes",
+            "pattern-subn-callable-nested-group-named-purged-bytes",
+        )
+
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        self.assertIsNone(manifest_definition.representative_measured_workload_ids)
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
+        )
+
+        case = source_tree_combined_case(manifest_id)
+        expected_workload_count = len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        )
+        public_representatives = (
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            )
+        )
+        manifest_expectation = case.manifest_expectation
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        self.assertEqual(manifest_expectation.representative_measured_workload_ids, ())
+        for workload_id in expected_workload_ids:
+            with self.subTest(public_workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    public_representatives,
+                )
+
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            manifest_id,
+            expected_workload_ids,
+            expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
+        )
+
     def test_nested_group_alternation_manifest_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
@@ -5881,6 +5965,36 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             "module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-bytes",
             "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
             "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-bytes",
+        )
+
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                "nested-group-callable-replacement-boundary"
+            ),
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
+                self.assertNotIn(
+                    workload_id,
+                    case.representative_known_gap_workload_ids,
+                )
+
+    def test_nested_group_callable_replacement_scorecard_promotes_bounded_nested_group_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        expected_workload_ids = (
+            "module-sub-callable-nested-group-numbered-warm-bytes",
+            "module-subn-callable-nested-group-numbered-warm-bytes",
+            "pattern-sub-callable-nested-group-numbered-purged-bytes",
+            "pattern-subn-callable-nested-group-numbered-purged-bytes",
+            "module-sub-callable-nested-group-named-warm-bytes",
+            "module-subn-callable-nested-group-named-warm-bytes",
+            "pattern-sub-callable-nested-group-named-purged-bytes",
+            "pattern-subn-callable-nested-group-named-purged-bytes",
         )
 
         self.assertEqual(

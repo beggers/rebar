@@ -1,6 +1,6 @@
 # RBR-1099: Catch up nested-group callable bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,13 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already has the shared `nested-group-callable-replacement-boundary` owner-path assertions that can absorb the adjacent bytes ids without forking a new benchmark family;
   - `reports/benchmarks/latest.py` currently reports `983` total workloads, `983` measured workloads, `0` known gaps overall, and `80` selected/measured workloads for `nested-group-callable-replacement-boundary`, with no adjacent bytes workload ids on that same bounded slice; and
   - `reports/correctness/latest.py` already publishes the corresponding bytes correctness rows from `RBR-1097`, so the runtime and correctness prerequisites are in place and benchmark catch-up is now the exact missing surface.
+
+## Completion Note
+- Added the eight bounded bytes callable-replacement benchmark rows for `a((b))d` and `a(?P<outer>(?P<inner>b))d` on the existing `nested-group-callable-replacement-boundary` owner manifest, using the published angle-bracket callback shape from `RBR-1097` for numbered and named module/compiled-pattern `sub()` and `subn(count=1)` workflows.
+- Refreshed the shared owner-path combined benchmark assertions so the bounded nested-group bytes workload ids are required as public measured representatives without widening the manifest beyond this exact slice.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `991` total workloads, `991` measured workloads, `0` known gaps, `{"cold": 104, "purged": 429, "warm": 458}` by cache mode, and `88/88/0` selected/measured/known-gap rows for `nested-group-callable-replacement-boundary`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group and callable and bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'nested_group_callable_replacement'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-1099-nested-group-callable-bytes-benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
