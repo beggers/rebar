@@ -4653,9 +4653,9 @@ def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_f
         "pattern-subn-count-bool-true-str",
     )
 
-    published_direct_case_ids = {
-        row.direct_case.case_id for row in published_bool_count_rows
-    }
+    published_direct_cases = tuple(
+        row.direct_case for row in published_bool_count_rows
+    )
     assert _workflow_bool_count_complement_projection(
         PATTERN_KEYWORD_CALL_CASES,
         lambda case: (
@@ -4673,7 +4673,7 @@ def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_f
             _workflow_keyword_kwargs_signature(case.kwargs),
         )
         for case in PATTERN_KEYWORD_CALL_CASES
-        if case.case_id in published_direct_case_ids
+        if case in published_direct_cases
     ) == (
         ("pattern-sub-count-bool-false-bytes", "sub", b"abc", (("count", "bool", False),)),
         ("pattern-sub-count-bool-true-bytes", "sub", b"abc", (("count", "bool", True),)),
