@@ -1725,27 +1725,29 @@ def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixt
     bundle = GROUPED_REPLACEMENT_TEMPLATE_BUNDLES_BY_MANIFEST_ID[
         GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID
     ]
-    cases_by_id = {case.case_id: case for case in bundle.cases}
     selected_case_ids = _grouped_replacement_collection_case_ids(bundle)
+    callable_case, grouped_template_case = bundle.cases
 
     assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
     assert selected_case_ids == (
         GROUPED_TEMPLATE_CALLABLE_CASE_ID,
         GROUPED_TEMPLATE_SELECTED_CASE_ID,
     )
+    assert callable_case.case_id == GROUPED_TEMPLATE_CALLABLE_CASE_ID
+    assert grouped_template_case.case_id == GROUPED_TEMPLATE_SELECTED_CASE_ID
     assert {case_pattern(case) for case in bundle.cases} == (
         GROUPED_REPLACEMENT_COLLECTION_PATTERNS
     )
     assert {str_case_pattern(case) for case in bundle.cases} == (
         GROUPED_REPLACEMENT_COLLECTION_PATTERNS
     )
-    assert cases_by_id[GROUPED_TEMPLATE_CALLABLE_CASE_ID].source_args[1] == {
+    assert callable_case.source_args[1] == {
         "type": "callable_constant",
         "value": "x",
     }
-    assert cases_by_id[GROUPED_TEMPLATE_CALLABLE_CASE_ID].source_kwargs == {}
-    assert cases_by_id[GROUPED_TEMPLATE_SELECTED_CASE_ID].source_args[1] == r"\1x"
-    assert cases_by_id[GROUPED_TEMPLATE_SELECTED_CASE_ID].source_kwargs == {}
+    assert callable_case.source_kwargs == {}
+    assert grouped_template_case.source_args[1] == r"\1x"
+    assert grouped_template_case.source_kwargs == {}
 
 
 def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:
@@ -2461,21 +2463,16 @@ def _assert_direct_literal_replacement_publication_contract(
         selected_case_ids=selected_case_ids,
         pattern_extractor=case_pattern,
     )
-    cases_by_id = {case.case_id: case for case in bundle.cases}
+    ordered_cases = tuple(bundle.cases)
+    selected_operation_cases = tuple(fixture_cases_for_operation((bundle,), operation))
 
-    assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
-    assert tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), operation)
-    ) == selected_case_ids
-    assert tuple(tuple(cases_by_id[case_id].args) for case_id in selected_case_ids) == (
+    assert tuple(case.case_id for case in ordered_cases) == selected_case_ids
+    assert tuple(case.case_id for case in selected_operation_cases) == selected_case_ids
+    assert tuple(tuple(case.args) for case in ordered_cases) == (
         tuple(expected_args_by_case_id[case_id] for case_id in selected_case_ids)
     )
-    assert tuple(cases_by_id[case_id].helper for case_id in selected_case_ids) == (
-        expected_helpers
-    )
-    assert tuple(cases_by_id[case_id].text_model for case_id in selected_case_ids) == (
-        expected_text_models
-    )
+    assert tuple(case.helper for case in ordered_cases) == expected_helpers
+    assert tuple(case.text_model for case in ordered_cases) == expected_text_models
 
 
 def test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order(

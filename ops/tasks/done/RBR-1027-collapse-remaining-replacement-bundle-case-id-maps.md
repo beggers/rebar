@@ -1,6 +1,6 @@
 ## RBR-1027: Collapse remaining replacement bundle case-id maps
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -57,3 +57,8 @@ Created: 2026-03-23
   - `tests/python/test_fixture_backed_replacement_parity_suite.py` still defines local `cases_by_id` maps at lines `1728` and `2464`;
   - the focused pytest selector in Verification currently passes (`3 passed, 1298 deselected`); and
   - the final `! rg ...` check currently fails exactly on those two remaining detached maps.
+
+## Completion
+- Replaced the two local `cases_by_id` maps in `tests/python/test_fixture_backed_replacement_parity_suite.py` with ordered-case tuple usage: direct bundle destructuring for the two grouped replacement rows, and ordered `bundle.cases` / `fixture_cases_for_operation(...)` tuples for the direct-literal publication contract.
+- Verified `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'bundle_pattern_projection_and_case_source_payloads_cover_published_fixtures or collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'` passes (`3 passed, 1298 deselected`).
+- Verified `bash -lc "! rg -n 'cases_by_id = \\{case\\.case_id: case for case in bundle\\.cases\\}' tests/python/test_fixture_backed_replacement_parity_suite.py"` succeeds with no matches.
