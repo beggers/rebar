@@ -19,7 +19,7 @@ from tests.conftest import (
     declared_string_constants_by_suffix,
     duplicate_items,
     duplicate_string_ids,
-    report_path_from_cli_args,
+    fake_harness_cli_scorecard_result,
     run_harness_cli,
     run_harness_scorecard,
 )
@@ -202,6 +202,24 @@ def test_run_harness_cli_accepts_one_shot_cli_arg_iterators() -> None:
     )
 
 
+def test_fake_harness_cli_scorecard_result_writes_report_and_returns_json_summary() -> None:
+    cli_args = ("--selector", "focused", "--report", str(REPO_ROOT / "scorecard.json"))
+
+    with mock.patch.object(pathlib.Path, "write_text") as write_text_mock:
+        observed = fake_harness_cli_scorecard_result(
+            "custom.module",
+            cli_args,
+            summary={"passing_cases": 1},
+            report_text='{"suite": "synthetic"}',
+        )
+
+    write_text_mock.assert_called_once_with('{"suite": "synthetic"}', encoding="utf-8")
+    assert observed.args == ("python", "-m", "custom.module")
+    assert observed.returncode == 0
+    assert observed.stdout == '{"passing_cases": 1}'
+    assert observed.stderr == ""
+
+
 def test_run_harness_scorecard_loads_python_correctness_reports() -> None:
     summary, scorecard = run_harness_scorecard(
         "rebar_harness.correctness",
@@ -266,16 +284,11 @@ def test_run_harness_scorecard_loads_json_reports_without_importing_module_loade
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        report_path = report_path_from_cli_args(cli_args)
-        report_path.write_text(
-            '{"suite": "synthetic", "summary": {"passing_cases": 1}}',
-            encoding="utf-8",
-        )
-        return completed_process(
-            "python",
-            "-m",
+        return fake_harness_cli_scorecard_result(
             module_name,
-            stdout='{"passing_cases": 1}\n',
+            cli_args,
+            summary=expected_summary,
+            report_text='{"suite": "synthetic", "summary": {"passing_cases": 1}}',
         )
 
     with mock.patch.object(
@@ -312,13 +325,11 @@ def test_run_harness_scorecard_uses_non_json_scorecard_loader_when_available() -
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        report_path = report_path_from_cli_args(cli_args)
-        report_path.write_text(placeholder_payload, encoding="utf-8")
-        return completed_process(
-            "python",
-            "-m",
+        return fake_harness_cli_scorecard_result(
             module_name,
-            stdout='{"passing_cases": 1}\n',
+            cli_args,
+            summary=expected_summary,
+            report_text=placeholder_payload,
         )
 
     def _load_scorecard(report_path: pathlib.Path) -> dict[str, object]:
@@ -363,12 +374,11 @@ def test_run_harness_scorecard_wraps_non_json_import_failures_in_value_error() -
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        report_path_from_cli_args(cli_args)
-        return completed_process(
-            "python",
-            "-m",
+        return fake_harness_cli_scorecard_result(
             module_name,
-            stdout='{"passing_cases": 1}\n',
+            cli_args,
+            summary={"passing_cases": 1},
+            report_text="REPORT = {'suite': 'synthetic'}\n",
         )
 
     with mock.patch.object(
@@ -406,12 +416,11 @@ def test_run_harness_scorecard_wraps_missing_non_json_loader_in_value_error() ->
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        report_path_from_cli_args(cli_args)
-        return completed_process(
-            "python",
-            "-m",
+        return fake_harness_cli_scorecard_result(
             module_name,
-            stdout='{"passing_cases": 1}\n',
+            cli_args,
+            summary={"passing_cases": 1},
+            report_text="REPORT = {'suite': 'synthetic'}\n",
         )
 
     module = ModuleType("custom.module")

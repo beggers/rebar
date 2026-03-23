@@ -116,6 +116,21 @@ def report_path_from_cli_args(cli_args: list[str] | tuple[str, ...]) -> pathlib.
     return pathlib.Path(cli_args[report_index + 1])
 
 
+def fake_harness_cli_scorecard_result(
+    module_name: str,
+    cli_args: list[str] | tuple[str, ...],
+    *,
+    summary: dict[str, Any],
+    report_text: str,
+    process_args: tuple[str, ...] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    report_path = report_path_from_cli_args(cli_args)
+    report_path.write_text(report_text, encoding="utf-8")
+    if process_args is None:
+        process_args = ("python", "-m", module_name)
+    return completed_process(*process_args, stdout=json.dumps(summary))
+
+
 def run_harness_scorecard(
     module_name: str,
     cli_args: Iterable[str],

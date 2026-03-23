@@ -16,7 +16,7 @@ import tests.conftest as test_support
 from tests.conftest import (
     REPO_ROOT,
     completed_process,
-    report_path_from_cli_args,
+    fake_harness_cli_scorecard_result,
     run_harness_cli,
     run_harness_scorecard,
 )
@@ -1735,12 +1735,12 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertEqual(module_name, "custom.scorecard.module")
             self.assertTrue(check)
             observed_cli_args = tuple(cli_args)
-            report_path = report_path_from_cli_args(observed_cli_args)
-            report_path.write_text(json.dumps(scorecard_payload), encoding="utf-8")
-            return completed_process(
+            return fake_harness_cli_scorecard_result(
                 module_name,
-                *observed_cli_args,
-                stdout=json.dumps(summary_payload),
+                observed_cli_args,
+                summary=summary_payload,
+                report_text=json.dumps(scorecard_payload),
+                process_args=(module_name, *observed_cli_args),
             )
 
         with mock.patch.object(
@@ -1775,12 +1775,12 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertEqual(module_name, "custom.scorecard.module")
             self.assertTrue(check)
             observed_cli_args = tuple(cli_args)
-            report_path = report_path_from_cli_args(observed_cli_args)
-            report_path.write_text("REPORT = {'suite': 'custom'}\n", encoding="utf-8")
-            return completed_process(
+            return fake_harness_cli_scorecard_result(
                 module_name,
-                *observed_cli_args,
-                stdout=json.dumps(summary_payload),
+                observed_cli_args,
+                summary=summary_payload,
+                report_text="REPORT = {'suite': 'custom'}\n",
+                process_args=(module_name, *observed_cli_args),
             )
 
         with mock.patch.object(
@@ -1813,12 +1813,12 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertEqual(module_name, "custom.scorecard.module")
             self.assertTrue(check)
             observed_cli_args = tuple(cli_args)
-            report_path = report_path_from_cli_args(observed_cli_args)
-            report_path.write_text("REPORT = {'suite': 'custom'}\n", encoding="utf-8")
-            return completed_process(
+            return fake_harness_cli_scorecard_result(
                 module_name,
-                *observed_cli_args,
-                stdout=json.dumps(summary_payload),
+                observed_cli_args,
+                summary=summary_payload,
+                report_text="REPORT = {'suite': 'custom'}\n",
+                process_args=(module_name, *observed_cli_args),
             )
 
         missing_loader_modules = (
