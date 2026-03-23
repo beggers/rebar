@@ -58,6 +58,7 @@ from tests.python.fixture_parity_support import (
     workflow_result_with_cpython_parity,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
+OPTIONAL_NAMED_GROUP_BYTES_PATTERN = rb"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
 
 
@@ -951,6 +952,11 @@ BRANCH_LOCAL_NAMED_BACKREFERENCE_PATTERN = (
 )
 BRANCH_LOCAL_NAMED_BACKREFERENCE_SEARCH_TEXT = "zzabcbcdzz"
 BRANCH_LOCAL_NAMED_BACKREFERENCE_FULLMATCH_TEXT = "abcbcd"
+BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_PATTERN = (
+    rb"a(?P<outer>(?P<inner>bc)|de)(?P=inner)d"
+)
+BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_SEARCH_TEXT = b"zzabcbcdzz"
+BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_FULLMATCH_TEXT = b"abcbcd"
 
 
 def _optional_named_group_match(
@@ -974,6 +980,30 @@ def _optional_named_group_match(
     return (
         backend.fullmatch(OPTIONAL_NAMED_GROUP_PATTERN, text),
         re.fullmatch(OPTIONAL_NAMED_GROUP_PATTERN, text),
+    )
+
+
+def _optional_named_group_bytes_match(
+    backend_name: str,
+    backend: object,
+    text: bytes,
+    *,
+    use_compiled_pattern: bool,
+) -> tuple[object, re.Match[bytes] | None]:
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            OPTIONAL_NAMED_GROUP_BYTES_PATTERN,
+        )
+        return (
+            observed_pattern.fullmatch(text),
+            expected_pattern.fullmatch(text),
+        )
+
+    return (
+        backend.fullmatch(OPTIONAL_NAMED_GROUP_BYTES_PATTERN, text),
+        re.fullmatch(OPTIONAL_NAMED_GROUP_BYTES_PATTERN, text),
     )
 
 
@@ -1026,6 +1056,39 @@ def _branch_local_named_backreference_match(
         re.search(
             BRANCH_LOCAL_NAMED_BACKREFERENCE_PATTERN,
             BRANCH_LOCAL_NAMED_BACKREFERENCE_SEARCH_TEXT,
+        ),
+    )
+
+
+def _branch_local_named_backreference_bytes_match(
+    backend_name: str,
+    backend: object,
+    *,
+    use_compiled_pattern: bool,
+) -> tuple[object, re.Match[bytes] | None]:
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_PATTERN,
+        )
+        return (
+            observed_pattern.fullmatch(
+                BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_FULLMATCH_TEXT
+            ),
+            expected_pattern.fullmatch(
+                BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_FULLMATCH_TEXT
+            ),
+        )
+
+    return (
+        backend.search(
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_PATTERN,
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_SEARCH_TEXT,
+        ),
+        re.search(
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_PATTERN,
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_BYTES_SEARCH_TEXT,
         ),
     )
 
@@ -4984,6 +5047,29 @@ def test_match_convenience_api_parity_covers_multiple_named_groups(
     assert_match_convenience_api_parity(observed, expected)
 
 
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-search"),
+        pytest.param(True, id="pattern-fullmatch"),
+    ),
+)
+def test_match_convenience_api_parity_covers_multiple_named_groups_for_bytes_patterns(
+    use_compiled_pattern: bool,
+) -> None:
+    observed, expected = _branch_local_named_backreference_bytes_match(
+        "stdlib",
+        re,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    assert_match_parity("stdlib", observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+
+
 @pytest.mark.skipif(
     not rebar.native_module_loaded(),
     reason="mixed group tuple tracing requires rebar.Match",
@@ -5094,6 +5180,41 @@ def test_match_parity_helpers_cover_bytes_match_object_contracts(
 
     assert_match_parity(backend_name, observed, expected, check_regs=True)
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        pytest.param(b"abd", id="present-optional-group"),
+        pytest.param(b"ad", id="missing-optional-group"),
+    ),
+)
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-fullmatch"),
+        pytest.param(True, id="pattern-fullmatch"),
+    ),
+)
+def test_match_parity_helpers_cover_bytes_named_group_match_object_contracts(
+    text: bytes,
+    use_compiled_pattern: bool,
+) -> None:
+    observed, expected = _optional_named_group_bytes_match(
+        "stdlib",
+        re,
+        text,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    assert_match_parity("stdlib", observed, expected, check_regs=True)
+    assert_match_result_parity("stdlib", observed, expected, check_regs=True)
     assert_match_convenience_api_parity(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
