@@ -144,6 +144,31 @@ def test_run_harness_cli_can_disable_check_without_changing_invocation_shape() -
     )
 
 
+def test_run_harness_cli_accepts_one_shot_cli_arg_iterators() -> None:
+    expected_result = completed_process("python", "-m", "custom.module")
+    cli_args = iter(("--selector", "focused", "--limit", "3"))
+
+    with mock.patch.object(
+        test_support.subprocess,
+        "run",
+        return_value=expected_result,
+    ) as run_mock:
+        observed = run_harness_cli(
+            "custom.module",
+            cli_args,
+        )
+
+    assert observed is expected_result
+    run_mock.assert_called_once_with(
+        [sys.executable, "-m", "custom.module", "--selector", "focused", "--limit", "3"],
+        check=True,
+        cwd=REPO_ROOT,
+        env={"PYTHONPATH": str(test_support.PYTHON_SOURCE)},
+        capture_output=True,
+        text=True,
+    )
+
+
 def test_run_harness_scorecard_loads_python_correctness_reports() -> None:
     summary, scorecard = run_harness_scorecard(
         "rebar_harness.correctness",
@@ -176,3 +201,21 @@ def test_run_harness_scorecard_loads_python_benchmark_reports() -> None:
     )
     assert scorecard["artifacts"]["manifest_id"] == "compile-matrix"
     assert {key: scorecard["summary"][key] for key in summary} == summary
+
+
+def test_run_harness_scorecard_accepts_one_shot_cli_arg_iterators() -> None:
+    summary, scorecard = run_harness_scorecard(
+        "rebar_harness.correctness",
+        iter(
+            (
+                "--fixtures",
+                str(PARSER_FIXTURES_PATH),
+            )
+        ),
+        report_name="parser-only.py",
+    )
+
+    assert scorecard["suite"] == "correctness"
+    assert scorecard["fixtures"]["path"] == str(PARSER_FIXTURES_PATH.relative_to(REPO_ROOT))
+    assert scorecard["fixtures"]["manifest_id"] == "parser-matrix"
+    assert scorecard["summary"] == summary
