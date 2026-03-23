@@ -31,11 +31,11 @@ from rebar_harness.scorecard_io import (
 )
 from tests.conftest import (
     assert_declared_string_selector_registry_contract,
+    assert_published_manifest_inventory_contract,
     assert_published_manifest_helper_contract,
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
     declared_string_constants_by_suffix,
-    duplicate_items,
 )
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
@@ -1583,20 +1583,12 @@ def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> N
         published_fixture_manifests,
         expected_paths=DEFAULT_FIXTURE_PATHS,
     )
-    cases = [case for manifest in manifests for case in manifest.cases]
-
-    assert duplicate_items(Counter(manifest.manifest_id for manifest in manifests)) == []
-    assert duplicate_items(Counter(manifest.suite_id for manifest in manifests)) == []
-    assert duplicate_items(Counter(case.case_id for case in cases)) == []
-
-    cases_by_manifest = Counter(case.manifest_id for case in cases)
-    manifest_ids = {manifest.manifest_id for manifest in manifests}
-
-    for manifest in manifests:
-        assert cases_by_manifest[manifest.manifest_id] > 0
-
-    for case in cases:
-        assert case.manifest_id in manifest_ids
+    assert_published_manifest_inventory_contract(
+        manifests,
+        child_records="cases",
+        child_id="case_id",
+        extra_manifest_unique_fields=("suite_id",),
+    )
 
 
 def test_default_fixture_inventory_serialized_case_payloads_are_json_safe_and_exercise_special_normalization_paths(

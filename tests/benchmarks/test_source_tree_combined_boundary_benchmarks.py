@@ -43,10 +43,10 @@ from rebar_harness.scorecard_io import (
 from tests.conftest import (
     REPO_ROOT,
     assert_declared_string_selector_registry_contract,
+    assert_published_manifest_inventory_contract,
     assert_published_manifest_helper_contract,
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
-    duplicate_items,
     run_harness_scorecard,
 )
 from tests.python.fixture_parity_support import (
@@ -11723,19 +11723,11 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
 
 def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_workload_ids() -> None:
     manifests = published_benchmark_manifests()
-    manifest_ids = [manifest.manifest_id for manifest in manifests]
-    workloads = [workload for manifest in manifests for workload in manifest.workloads]
-
-    assert duplicate_items(Counter(manifest_ids)) == []
-    assert duplicate_items(Counter(workload.workload_id for workload in workloads)) == []
-
-    workloads_by_manifest = Counter(workload.manifest_id for workload in workloads)
-    published_manifest_ids = set(manifest_ids)
-    for manifest_id in published_manifest_ids:
-        assert workloads_by_manifest[manifest_id] > 0
-
-    for workload in workloads:
-        assert workload.manifest_id in published_manifest_ids
+    assert_published_manifest_inventory_contract(
+        manifests,
+        child_records="workloads",
+        child_id="workload_id",
+    )
 
 
 def test_built_native_smoke_runner_uses_explicit_report_paths_only() -> None:

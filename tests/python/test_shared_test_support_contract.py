@@ -14,6 +14,7 @@ import tests.conftest as test_support
 from tests.conftest import (
     REPO_ROOT,
     assert_declared_string_selector_registry_contract,
+    assert_published_manifest_inventory_contract,
     assert_published_manifest_helper_contract,
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
@@ -164,6 +165,57 @@ def test_assert_published_manifest_helper_contract_checks_cache_order_and_post_c
     )
 
     assert reloaded_manifests is not manifests
+
+
+def test_assert_published_manifest_inventory_contract_accepts_unique_manifest_and_child_ids(
+) -> None:
+    manifests = (
+        SimpleNamespace(
+            manifest_id="manifest-a",
+            cases=(
+                SimpleNamespace(case_id="case-a-1", manifest_id="manifest-a"),
+                SimpleNamespace(case_id="case-a-2", manifest_id="manifest-a"),
+            ),
+        ),
+        SimpleNamespace(
+            manifest_id="manifest-b",
+            cases=(SimpleNamespace(case_id="case-b-1", manifest_id="manifest-b"),),
+        ),
+    )
+
+    cases = assert_published_manifest_inventory_contract(
+        manifests,
+        child_records="cases",
+        child_id="case_id",
+    )
+
+    assert tuple(case.case_id for case in cases) == ("case-a-1", "case-a-2", "case-b-1")
+
+
+def test_assert_published_manifest_inventory_contract_accepts_extra_manifest_uniqueness_fields(
+) -> None:
+    manifests = (
+        SimpleNamespace(
+            manifest_id="manifest-a",
+            suite_id="suite-a",
+            records=(SimpleNamespace(record_id="record-a", owner="manifest-a"),),
+        ),
+        SimpleNamespace(
+            manifest_id="manifest-b",
+            suite_id="suite-b",
+            records=(SimpleNamespace(record_id="record-b", owner="manifest-b"),),
+        ),
+    )
+
+    records = assert_published_manifest_inventory_contract(
+        manifests,
+        child_records=lambda manifest: manifest.records,
+        child_id=lambda record: record.record_id,
+        extra_manifest_unique_fields=("suite_id",),
+        child_manifest_id=lambda record: record.owner,
+    )
+
+    assert tuple(record.record_id for record in records) == ("record-a", "record-b")
 
 
 def test_run_harness_cli_uses_repo_local_pythonpath_and_check_by_default() -> None:

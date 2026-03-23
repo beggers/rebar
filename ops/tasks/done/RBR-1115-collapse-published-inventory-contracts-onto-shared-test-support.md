@@ -1,6 +1,6 @@
 # RBR-1115: Collapse published inventory contracts onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -65,3 +65,9 @@ Created: 2026-03-23
 - The focused verification slice is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned `1151 passed, 3 skipped, 1743 subtests passed` in this run.
 - The negative `rg` verification currently fails exactly on the duplicated inventory boilerplate above, so it is an acceptance check for this cleanup rather than unrelated repo drift.
+
+## Completion
+- Added `assert_published_manifest_inventory_contract()` to `tests/conftest.py` so shared published-manifest inventory checks now cover unique manifest ids, optional extra top-level uniqueness fields, unique child ids, nonempty manifest coverage, and child-to-manifest membership through one generic helper surface.
+- Extended `tests/python/test_shared_test_support_contract.py` with focused synthetic success coverage for the base manifest-to-child inventory contract and for the optional extra uniqueness-field path used by the correctness suite.
+- Routed the duplicated published inventory assertions in `tests/python/test_fixture_parity_support_contract.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` through the shared helper without changing their existing published loader or manifest expectations.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`1153 passed, 3 skipped, 1743 subtests passed`) and `bash -lc "! rg -n 'duplicate_items\\(Counter\\(manifest\\.manifest_id|duplicate_items\\(Counter\\(case\\.case_id|duplicate_items\\(Counter\\(workload\\.workload_id|cases_by_manifest = Counter\\(|workloads_by_manifest = Counter\\(' tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.

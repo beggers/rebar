@@ -133,6 +133,61 @@ def assert_published_manifest_helper_reload_contract(
         clear_cache()
 
 
+def _resolve_inventory_value(
+    record: Any,
+    accessor: str | Callable[[Any], Any],
+) -> Any:
+    if callable(accessor):
+        return accessor(record)
+    return getattr(record, accessor)
+
+
+def assert_published_manifest_inventory_contract(
+    manifests: Iterable[Any],
+    *,
+    child_records: str | Callable[[Any], Iterable[Any]],
+    child_id: str | Callable[[Any], str],
+    extra_manifest_unique_fields: Iterable[str | Callable[[Any], str]] = (),
+    manifest_id: str | Callable[[Any], str] = "manifest_id",
+    child_manifest_id: str | Callable[[Any], str] = "manifest_id",
+) -> tuple[Any, ...]:
+    manifest_records = tuple(manifests)
+    assert manifest_records
+
+    manifest_ids = tuple(
+        _resolve_inventory_value(manifest, manifest_id)
+        for manifest in manifest_records
+    )
+    assert duplicate_string_ids(manifest_ids) == ()
+
+    for field in extra_manifest_unique_fields:
+        assert duplicate_string_ids(
+            _resolve_inventory_value(manifest, field) for manifest in manifest_records
+        ) == ()
+
+    child_entries = tuple(
+        child
+        for manifest in manifest_records
+        for child in _resolve_inventory_value(manifest, child_records)
+    )
+    assert duplicate_string_ids(
+        _resolve_inventory_value(child, child_id) for child in child_entries
+    ) == ()
+
+    manifest_ids_set = set(manifest_ids)
+    child_counts_by_manifest = Counter(
+        _resolve_inventory_value(child, child_manifest_id) for child in child_entries
+    )
+
+    for current_manifest_id in manifest_ids:
+        assert child_counts_by_manifest[current_manifest_id] > 0
+
+    for child in child_entries:
+        assert _resolve_inventory_value(child, child_manifest_id) in manifest_ids_set
+
+    return child_entries
+
+
 def run_harness_cli(
     module_name: str,
     cli_args: Iterable[str],
