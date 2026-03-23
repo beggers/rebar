@@ -1,6 +1,6 @@
 # RBR-1026: Publish the direct `Pattern.sub()` / `Pattern.subn()` str negative-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -62,3 +62,15 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'pattern and negative-count'` currently passes (`7 passed, 1294 deselected`), so the direct compiled-pattern negative-count parity slice is already green in this checkout;
   - a direct runtime probe confirms `rebar.compile("abc").sub("x", "abcabc", -1) == re.compile("abc").sub("x", "abcabc", -1)` and `rebar.compile("abc").subn("x", "abcabc", -1) == re.compile("abc").subn("x", "abcabc", -1)` on the live branch; and
   - a file-local scan across `tests/conformance/fixtures/collection_replacement_workflows.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, and `reports/correctness/latest.py` reports `pattern-sub-str-negative-count` and `pattern-subn-str-negative-count` as absent, confirming the exact correctness publication ids are still missing from the tracked owner-path surfaces.
+
+## Completion
+- Added `pattern-sub-str-negative-count` and `pattern-subn-str-negative-count` to `tests/conformance/fixtures/collection_replacement_workflows.py`, keeping the direct-pattern literal replacement block on the existing owner-path manifest and ordered as `pattern-sub-str-no-match`, `pattern-sub-str-single-match`, `pattern-sub-str-negative-count`, `pattern-subn-str-count`, `pattern-subn-str-repeated`, `pattern-subn-str-negative-count`, `pattern-sub-bytes-no-match`, `pattern-sub-bytes-single-match`, `pattern-subn-bytes-count`, and `pattern-subn-bytes-repeated`.
+- Extended `tests/python/test_fixture_backed_replacement_parity_suite.py` so the shared collection/replacement owner route now selects those ten direct-pattern literal replacement publication ids in order and checks their helper, args, and text-model alignment on the same file.
+- Republished `reports/correctness/latest.py`. The tracked report now shows `1579` total / `1579` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow == 42/42`, `collection.replacement.workflow.str == 29/29`, `collection.replacement.workflow.bytes == 13/13`, `collection.replacement.workflow.module_call == 20/20`, and `collection.replacement.workflow.pattern_call == 22/22`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and str-negative-count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1026-pattern-replacement-str-negative-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or test_published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'` still reports the already-deferred benchmark-owner-route drift on `test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured` because that benchmark contract still expects `112` workloads while the current `collection_replacement_boundary.py` manifest has `120`; this correctness-only task did not change benchmark manifests or benchmark expectation logic.

@@ -459,6 +459,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-str-negative-count",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abcabc", -1],
+      "categories": ["workflow", "sub", "literal", "str", "negative-count"],
+      "notes": [
+        "Publishes the direct Pattern.sub str negative-count path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-subn-str-count",
       "operation": "pattern_call",
       "family": "replacement_workflow",
@@ -480,6 +492,18 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "str", "repeated"],
       "notes": [
         "Publishes the direct Pattern.subn str repeated-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
+      "id": "pattern-subn-str-negative-count",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "abcabc", -1],
+      "categories": ["workflow", "subn", "literal", "str", "negative-count"],
+      "notes": [
+        "Publishes the direct Pattern.subn str negative-count path on the shared collection replacement frontier."
       ]
     },
     {
