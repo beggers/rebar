@@ -1,6 +1,6 @@
 # RBR-1017: Collapse compiled-pattern keyword-frontier case mirrors onto owner-path rows
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -48,6 +48,8 @@ Created: 2026-03-23
 - Do not edit fixture manifests, harness modules, benchmark workloads/tests, reports, or tracked state prose in this run.
 
 ## Notes
+- Completed 2026-03-23: replaced the keyword-frontier test’s detached `direct_cases_by_id` and case-id tuple mirrors in `tests/python/test_module_workflow_parity_suite.py` with an owner-path-derived filter over `COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS`, keeping the same six published fixture rows plus the same adjacent, after-positional-count, and count-alias direct-case groups.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path or module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases'` (`2 passed, 1449 deselected`).
 - `RBR-1017` is the next available unreserved task id in the current checkout:
   - `python3` inspection over `ops/state/backlog.md`, `ops/state/current_status.md`, and all task queues reported `1017` as the first unused `RBR-` number in this run.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in the current checkout.

@@ -2692,6 +2692,22 @@ def _compiled_pattern_module_helper_publication_signature(
     )
 
 
+def _compiled_pattern_module_keyword_frontier_group(case: object) -> str | None:
+    if not isinstance(case, CompiledPatternModuleKeywordErrorCase):
+        return None
+
+    keyword_signature = _workflow_keyword_kwargs_signature(case.kwargs)
+    if keyword_signature == (("count_alias", "int", 1),):
+        return "count-alias"
+    if keyword_signature != (("missing", "int", 1),):
+        return None
+    if len(case.args) == 2:
+        return "adjacent-unexpected-keyword"
+    if len(case.args) == 3:
+        return "after-positional-count"
+    return None
+
+
 def _assert_compiled_pattern_module_helper_publication_contract(
 ) -> tuple[
     tuple[FixtureCase, ...],
@@ -4257,22 +4273,42 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
 
 def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path(
 ) -> None:
-    direct_cases_by_id = {
-        case.case_id: case for case in COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES
-    }
-    published_after_positional_count_case_ids = (
-        "compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
-        "compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+    published_fixture_cases, _, published_fixture_signatures = (
+        _assert_compiled_pattern_module_helper_publication_contract()
     )
-    adjacent_published_case_ids = (
-        "compiled-pattern-sub-unexpected-keyword-str",
-        "compiled-pattern-subn-unexpected-keyword-bytes",
+    published_keyword_frontier_rows = tuple(
+        (row, group)
+        for row in COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS
+        if (
+            group := _compiled_pattern_module_keyword_frontier_group(row.direct_case)
+        )
+        is not None
     )
-    published_count_alias_case_ids = (
-        "compiled-pattern-sub-count-alias-keyword-str",
-        "compiled-pattern-subn-count-alias-keyword-bytes",
+    published_keyword_frontier_owner_rows = tuple(
+        row for row, _ in published_keyword_frontier_rows
     )
-    published_fixture_case_ids = (
+    published_keyword_frontier_fixture_case_ids = _owner_path_fixture_case_ids(
+        published_keyword_frontier_owner_rows
+    )
+    adjacent_published_cases = tuple(
+        row.direct_case
+        for row, group in published_keyword_frontier_rows
+        if group == "adjacent-unexpected-keyword"
+    )
+    published_after_positional_count_cases = tuple(
+        row.direct_case
+        for row, group in published_keyword_frontier_rows
+        if group == "after-positional-count"
+    )
+    published_count_alias_cases = tuple(
+        row.direct_case
+        for row, group in published_keyword_frontier_rows
+        if group == "count-alias"
+    )
+
+    assert tuple(
+        row.fixture_case_id for row in published_keyword_frontier_owner_rows
+    ) == published_keyword_frontier_fixture_case_ids == (
         "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
         "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
         "workflow-module-sub-count-alias-keyword-str-compiled-pattern",
@@ -4280,26 +4316,23 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
         "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
         "workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
     )
-
-    published_after_positional_count_cases = tuple(
-        direct_cases_by_id[case_id]
-        for case_id in published_after_positional_count_case_ids
-    )
-    adjacent_published_cases = tuple(
-        direct_cases_by_id[case_id] for case_id in adjacent_published_case_ids
-    )
-    published_count_alias_cases = tuple(
-        direct_cases_by_id[case_id] for case_id in published_count_alias_case_ids
-    )
-    published_fixture_cases, _, published_fixture_signatures = (
-        _assert_compiled_pattern_module_helper_publication_contract()
-    )
-
     assert tuple(
         case.case_id
         for case in published_fixture_cases
-        if case.case_id in published_fixture_case_ids
-    ) == published_fixture_case_ids
+        if case.case_id in published_keyword_frontier_fixture_case_ids
+    ) == published_keyword_frontier_fixture_case_ids
+    assert tuple(case.case_id for case in adjacent_published_cases) == (
+        "compiled-pattern-sub-unexpected-keyword-str",
+        "compiled-pattern-subn-unexpected-keyword-bytes",
+    )
+    assert tuple(case.case_id for case in published_after_positional_count_cases) == (
+        "compiled-pattern-sub-unexpected-keyword-after-positional-count-str",
+        "compiled-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+    )
+    assert tuple(case.case_id for case in published_count_alias_cases) == (
+        "compiled-pattern-sub-count-alias-keyword-str",
+        "compiled-pattern-subn-count-alias-keyword-bytes",
+    )
     assert {
         _compiled_pattern_module_helper_publication_signature(case)
         for case in published_after_positional_count_cases
