@@ -36,6 +36,7 @@ CONFIG = {
         "dangerously_bypass_approvals_and_sandbox": True,
         "sandbox": "danger-full-access",
         "ask_for_approval": "never",
+        "max_reasoning_effort": "medium",
         "common_config": [
             "suppress_unstable_features_warning=true",
         ],

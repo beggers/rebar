@@ -39,6 +39,13 @@ USER_ASK_STATUSES = ("inbox", "done")
 TRAILER = "Co-authored-by: Codex <noreply@openai.com>"
 PYTHON_SOURCE_ROOT = REPO_ROOT / "python"
 DIRTY_STATUS_SAMPLE_LIMIT = 20
+REASONING_EFFORT_ORDER = {
+    "minimal": 0,
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "xhigh": 4,
+}
 
 
 @dataclass(frozen=True)
@@ -1348,9 +1355,18 @@ def build_codex_command(
     if model:
         cmd.extend(["--model", str(model)])
 
-    for item in defaults.get("common_config", []):
+    max_reasoning_effort = normalize_reasoning_effort(
+        defaults.get("max_reasoning_effort")
+    )
+    for item in normalize_codex_config_items(
+        defaults.get("common_config", []),
+        max_reasoning_effort=max_reasoning_effort,
+    ):
         cmd.extend(["-c", str(item)])
-    for item in agent.codex.get("config", []):
+    for item in normalize_codex_config_items(
+        agent.codex.get("config", []),
+        max_reasoning_effort=max_reasoning_effort,
+    ):
         cmd.extend(["-c", str(item)])
 
     for item in defaults.get("extra_cli_args", []):
@@ -1363,6 +1379,50 @@ def build_codex_command(
         cmd.append("--skip-git-repo-check")
     cmd.extend(["--output-last-message", str(output_path), "-"])
     return cmd
+
+
+def normalize_reasoning_effort(raw: Any) -> str | None:
+    if raw is None:
+        return None
+    value = str(raw).strip().lower()
+    if value in REASONING_EFFORT_ORDER:
+        return value
+    return None
+
+
+def cap_reasoning_effort(value: str, *, max_reasoning_effort: str | None) -> str:
+    if max_reasoning_effort is None:
+        return value
+    if REASONING_EFFORT_ORDER[value] <= REASONING_EFFORT_ORDER[max_reasoning_effort]:
+        return value
+    return max_reasoning_effort
+
+
+def normalize_codex_config_item(item: Any, *, max_reasoning_effort: str | None) -> str:
+    text = str(item)
+    if not text.startswith('model_reasoning_effort="') or not text.endswith('"'):
+        return text
+    reasoning_effort = normalize_reasoning_effort(
+        text.removeprefix('model_reasoning_effort="').removesuffix('"')
+    )
+    if reasoning_effort is None:
+        return text
+    capped_effort = cap_reasoning_effort(
+        reasoning_effort,
+        max_reasoning_effort=max_reasoning_effort,
+    )
+    return f'model_reasoning_effort="{capped_effort}"'
+
+
+def normalize_codex_config_items(
+    items: list[Any],
+    *,
+    max_reasoning_effort: str | None,
+) -> list[str]:
+    return [
+        normalize_codex_config_item(item, max_reasoning_effort=max_reasoning_effort)
+        for item in items
+    ]
 
 
 def build_codex_env(config: dict[str, Any]) -> dict[str, str]:

@@ -278,6 +278,31 @@ class OpsHarnessTest(unittest.TestCase):
                 ).removesuffix('"')
                 self.assertIn(reasoning_effort, {"high", "xhigh"})
 
+    def test_build_codex_command_caps_reasoning_effort_to_loop_default(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        config = rebar_ops.load_config()
+        agents = rebar_ops.load_agent_specs(config)
+
+        for agent in agents:
+            with self.subTest(agent=agent.name):
+                command = rebar_ops.build_codex_command(
+                    config=config,
+                    agent=agent,
+                    output_path=REPO_ROOT / ".rebar" / "tmp" / "last_message.md",
+                    cwd=REPO_ROOT,
+                )
+                config_entries = [
+                    command[index + 1]
+                    for index, entry in enumerate(command)
+                    if entry == "-c"
+                ]
+                reasoning_settings = [
+                    entry
+                    for entry in config_entries
+                    if entry.startswith('model_reasoning_effort="') and entry.endswith('"')
+                ]
+                self.assertEqual(reasoning_settings, ['model_reasoning_effort="medium"'])
+
     def test_loaded_agents_use_python_spec_modules(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
