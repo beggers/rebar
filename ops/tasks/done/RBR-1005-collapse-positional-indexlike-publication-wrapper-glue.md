@@ -1,6 +1,6 @@
 ## RBR-1005: Collapse positional-indexlike publication wrapper glue
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -59,3 +59,8 @@ Created: 2026-03-23
   - the focused pytest slice in Verification currently passes (`2 passed, 1449 deselected`);
   - `tests/python/test_module_workflow_parity_suite.py` still repeats the same wrapper shape in the two target tests at the current `published_fixture_cases, selected_direct_cases = (...)` assignments around lines `4758` and `5018`, followed by `_assert_noncompiled_publication_direct_case_field_alignment(...)` calls at lines `4787` and `5073`; and
   - the cleanup can stay structural and file-local because the two tests differ only in the positional-indexlike expectations they pass through the same two lower-level helpers.
+
+## Completion Notes
+- Added `_assert_noncompiled_positional_indexlike_publication_contract(...)` to `/home/ubuntu/rebar/tests/python/test_module_workflow_parity_suite.py` as the single file-local wrapper for the shared positional-indexlike publication plus noncompiled direct-case alignment sequence.
+- Repointed `test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases()` and `test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases()` through that helper without changing the expected fixture splits, ordering, helper counts, or alignment flags.
+- Verification: `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases or module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases'`

@@ -2632,6 +2632,44 @@ def _assert_noncompiled_publication_direct_case_field_alignment(
         assert fixture_case.flags == 0
 
 
+def _assert_noncompiled_positional_indexlike_publication_contract(
+    fixture_cases: tuple[FixtureCase, ...],
+    direct_cases: tuple[
+        ModulePositionalIndexLikeCallCase | PatternPositionalIndexLikeCallCase,
+        ...,
+    ],
+    *,
+    expected_str_case_ids: tuple[str, ...],
+    expected_bytes_case_ids: tuple[str, ...],
+    expected_published_case_ids: tuple[str, ...],
+    expected_direct_case_ids: tuple[str, ...],
+    expected_helper_counts: Counter[str],
+    include_fixture_case: Callable[[FixtureCase], bool] | None = None,
+    include_pattern_arg: bool | None = None,
+    use_compiled_pattern: bool | None = None,
+) -> None:
+    published_fixture_cases, selected_direct_cases = (
+        _assert_positional_indexlike_publication_contract(
+            fixture_cases,
+            direct_cases,
+            expected_str_case_ids=expected_str_case_ids,
+            expected_bytes_case_ids=expected_bytes_case_ids,
+            expected_published_case_ids=expected_published_case_ids,
+            expected_direct_case_ids=expected_direct_case_ids,
+            expected_helper_counts=expected_helper_counts,
+            include_fixture_case=include_fixture_case,
+        )
+    )
+
+    _assert_noncompiled_publication_direct_case_field_alignment(
+        published_fixture_cases,
+        selected_direct_cases,
+        keyword_arguments=False,
+        include_pattern_arg=include_pattern_arg,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
 def _assert_noncompiled_owner_path_publication_contract(
     fixture_cases: tuple[FixtureCase, ...],
     rows: tuple[_OwnerPathRow[_NonCompiledPublicationDirectCase], ...],
@@ -4755,39 +4793,31 @@ def test_module_keyword_direct_cases_keep_bool_count_complements_balanced_for_fo
 
 def test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_positional_indexlike_publication_contract(
-            MODULE_CALL_CASES,
-            MODULE_POSITIONAL_INDEXLIKE_CALL_CASES,
-            expected_str_case_ids=("workflow-module-sub-count-indexlike-positional-str",),
-            expected_bytes_case_ids=(
-                "workflow-module-split-maxsplit-indexlike-positional-bytes",
-                "workflow-module-subn-count-indexlike-positional-bytes",
-            ),
-            expected_published_case_ids=(
-                "workflow-module-split-maxsplit-indexlike-positional-bytes",
-                "workflow-module-sub-count-indexlike-positional-str",
-                "workflow-module-subn-count-indexlike-positional-bytes",
-            ),
-            expected_direct_case_ids=(
-                "module-split-maxsplit-indexlike-positional-bytes",
-                "module-sub-count-indexlike-positional-str",
-                "module-subn-count-indexlike-positional-bytes",
-            ),
-            expected_helper_counts=Counter(
-                {
-                    "split": 1,
-                    "sub": 1,
-                    "subn": 1,
-                }
-            ),
-        )
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
-        keyword_arguments=False,
+    _assert_noncompiled_positional_indexlike_publication_contract(
+        MODULE_CALL_CASES,
+        MODULE_POSITIONAL_INDEXLIKE_CALL_CASES,
+        expected_str_case_ids=("workflow-module-sub-count-indexlike-positional-str",),
+        expected_bytes_case_ids=(
+            "workflow-module-split-maxsplit-indexlike-positional-bytes",
+            "workflow-module-subn-count-indexlike-positional-bytes",
+        ),
+        expected_published_case_ids=(
+            "workflow-module-split-maxsplit-indexlike-positional-bytes",
+            "workflow-module-sub-count-indexlike-positional-str",
+            "workflow-module-subn-count-indexlike-positional-bytes",
+        ),
+        expected_direct_case_ids=(
+            "module-split-maxsplit-indexlike-positional-bytes",
+            "module-sub-count-indexlike-positional-str",
+            "module-subn-count-indexlike-positional-bytes",
+        ),
+        expected_helper_counts=Counter(
+            {
+                "split": 1,
+                "sub": 1,
+                "subn": 1,
+            }
+        ),
         include_pattern_arg=True,
         use_compiled_pattern=False,
     )
@@ -5015,65 +5045,57 @@ def test_pattern_positional_indexlike_direct_cases_remain_balanced_for_follow_on
 
 def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_positional_indexlike_publication_contract(
-            PATTERN_CASES,
-            PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES,
-            expected_str_case_ids=(
-                "workflow-pattern-search-str-pos-indexlike-positional",
-                "workflow-pattern-findall-str-window-indexlike-positional",
-                "workflow-pattern-split-str-maxsplit-indexlike-positional",
-                "workflow-pattern-subn-count-indexlike-positional-str",
-            ),
-            expected_bytes_case_ids=(
-                "workflow-pattern-search-bytes-endpos-indexlike-positional",
-                "workflow-pattern-match-bytes-window-indexlike-positional",
-                "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
-                "workflow-pattern-finditer-bytes-window-indexlike-positional",
-                "workflow-pattern-sub-count-indexlike-positional-bytes",
-            ),
-            expected_published_case_ids=(
-                "workflow-pattern-search-str-pos-indexlike-positional",
-                "workflow-pattern-search-bytes-endpos-indexlike-positional",
-                "workflow-pattern-match-bytes-window-indexlike-positional",
-                "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
-                "workflow-pattern-findall-str-window-indexlike-positional",
-                "workflow-pattern-finditer-bytes-window-indexlike-positional",
-                "workflow-pattern-split-str-maxsplit-indexlike-positional",
-                "workflow-pattern-sub-count-indexlike-positional-bytes",
-                "workflow-pattern-subn-count-indexlike-positional-str",
-            ),
-            expected_direct_case_ids=(
-                "pattern-search-pos-indexlike-positional-str",
-                "pattern-search-endpos-indexlike-positional-bytes",
-                "pattern-match-window-indexlike-positional-bytes",
-                "pattern-fullmatch-window-indexlike-positional-bytes",
-                "pattern-findall-window-indexlike-positional-str",
-                "pattern-finditer-window-indexlike-positional-bytes",
-                "pattern-split-maxsplit-indexlike-positional-str",
-                "pattern-sub-count-indexlike-positional-bytes",
-                "pattern-subn-count-indexlike-positional-str",
-            ),
-            expected_helper_counts=Counter(
-                {
-                    "search": 2,
-                    "match": 1,
-                    "fullmatch": 1,
-                    "findall": 1,
-                    "finditer": 1,
-                    "split": 1,
-                    "sub": 1,
-                    "subn": 1,
-                }
-            ),
-            include_fixture_case=lambda case: case.kwargs == {},
-        )
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
-        keyword_arguments=False,
+    _assert_noncompiled_positional_indexlike_publication_contract(
+        PATTERN_CASES,
+        PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES,
+        expected_str_case_ids=(
+            "workflow-pattern-search-str-pos-indexlike-positional",
+            "workflow-pattern-findall-str-window-indexlike-positional",
+            "workflow-pattern-split-str-maxsplit-indexlike-positional",
+            "workflow-pattern-subn-count-indexlike-positional-str",
+        ),
+        expected_bytes_case_ids=(
+            "workflow-pattern-search-bytes-endpos-indexlike-positional",
+            "workflow-pattern-match-bytes-window-indexlike-positional",
+            "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
+            "workflow-pattern-finditer-bytes-window-indexlike-positional",
+            "workflow-pattern-sub-count-indexlike-positional-bytes",
+        ),
+        expected_published_case_ids=(
+            "workflow-pattern-search-str-pos-indexlike-positional",
+            "workflow-pattern-search-bytes-endpos-indexlike-positional",
+            "workflow-pattern-match-bytes-window-indexlike-positional",
+            "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
+            "workflow-pattern-findall-str-window-indexlike-positional",
+            "workflow-pattern-finditer-bytes-window-indexlike-positional",
+            "workflow-pattern-split-str-maxsplit-indexlike-positional",
+            "workflow-pattern-sub-count-indexlike-positional-bytes",
+            "workflow-pattern-subn-count-indexlike-positional-str",
+        ),
+        expected_direct_case_ids=(
+            "pattern-search-pos-indexlike-positional-str",
+            "pattern-search-endpos-indexlike-positional-bytes",
+            "pattern-match-window-indexlike-positional-bytes",
+            "pattern-fullmatch-window-indexlike-positional-bytes",
+            "pattern-findall-window-indexlike-positional-str",
+            "pattern-finditer-window-indexlike-positional-bytes",
+            "pattern-split-maxsplit-indexlike-positional-str",
+            "pattern-sub-count-indexlike-positional-bytes",
+            "pattern-subn-count-indexlike-positional-str",
+        ),
+        expected_helper_counts=Counter(
+            {
+                "search": 2,
+                "match": 1,
+                "fullmatch": 1,
+                "findall": 1,
+                "finditer": 1,
+                "split": 1,
+                "sub": 1,
+                "subn": 1,
+            }
+        ),
+        include_fixture_case=lambda case: case.kwargs == {},
     )
 
 
