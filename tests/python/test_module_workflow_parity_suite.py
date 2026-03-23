@@ -3891,6 +3891,44 @@ def _assert_finditer_compiled_pattern_identity(
     )
 
 
+def _assert_finditer_resumes_after_partial_iteration_like_cpython(
+    backend_name: str,
+    observed_iter: object,
+    expected_iter: object,
+    *,
+    check_regs: bool = False,
+    first_match_callback: Callable[[object, re.Match[str] | re.Match[bytes]], None]
+    | None = None,
+    remaining_match_callback: Callable[[object, re.Match[str] | re.Match[bytes]], None]
+    | None = None,
+) -> None:
+    sentinel = object()
+    observed_first = next(observed_iter, sentinel)
+    expected_first = next(expected_iter, sentinel)
+
+    assert (observed_first is sentinel) == (expected_first is sentinel), (
+        f"{backend_name} finditer partial iteration produced different first-match availability "
+        "than CPython"
+    )
+    if expected_first is not sentinel:
+        assert_match_result_parity(
+            backend_name,
+            observed_first,
+            expected_first,
+            check_regs=check_regs,
+        )
+        if first_match_callback is not None:
+            first_match_callback(observed_first, expected_first)
+
+    assert_finditer_parity(
+        backend_name,
+        observed_iter,
+        expected_iter,
+        check_regs=check_regs,
+        match_callback=remaining_match_callback,
+    )
+
+
 def _assert_verbose_compile_case_matches_cpython(
     backend_name: str,
     observed_pattern: object,
@@ -7701,6 +7739,37 @@ def test_module_finditer_collection_helpers_preserve_match_identity_like_cpython
 
 @pytest.mark.parametrize(
     "case",
+    _collection_cases_for_helper(MODULE_COLLECTION_CASES, "finditer"),
+    ids=lambda case: case.case_id,
+)
+def test_module_finditer_collection_helpers_resume_after_partial_iteration_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CollectionModuleCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    _assert_finditer_resumes_after_partial_iteration_like_cpython(
+        backend_name,
+        _call_collection_helper(backend, case),
+        _call_collection_helper(re, case),
+        check_regs=True,
+        first_match_callback=lambda observed, expected: _assert_match_input_identity(
+            observed,
+            expected,
+            pattern=case.pattern,
+            string=case.string,
+        ),
+        remaining_match_callback=lambda observed, expected: _assert_match_input_identity(
+            observed,
+            expected,
+            pattern=case.pattern,
+            string=case.string,
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
     _collection_cases_for_helper(PATTERN_COLLECTION_CASES, "finditer"),
     ids=lambda case: case.case_id,
 )
@@ -7750,6 +7819,47 @@ def test_pattern_finditer_collection_helpers_preserve_match_identity_like_cpytho
         observed_pattern=observed_pattern,
         expected_pattern=expected_pattern,
         check_regs=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    _collection_cases_for_helper(PATTERN_COLLECTION_CASES, "finditer"),
+    ids=lambda case: case.case_id,
+)
+def test_pattern_finditer_collection_helpers_resume_after_partial_iteration_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CollectionPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
+
+    _assert_finditer_resumes_after_partial_iteration_like_cpython(
+        backend_name,
+        _call_collection_helper(observed_pattern, case),
+        _call_collection_helper(expected_pattern, case),
+        check_regs=True,
+        first_match_callback=lambda observed, expected: _assert_compiled_match_identity(
+            observed,
+            expected,
+            pattern=case.pattern,
+            string=case.string,
+            observed_pattern=observed_pattern,
+            expected_pattern=expected_pattern,
+        ),
+        remaining_match_callback=lambda observed, expected: _assert_compiled_match_identity(
+            observed,
+            expected,
+            pattern=case.pattern,
+            string=case.string,
+            observed_pattern=observed_pattern,
+            expected_pattern=expected_pattern,
+        ),
     )
 
 
