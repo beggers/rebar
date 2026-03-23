@@ -1,6 +1,6 @@
 # RBR-0992: Publish the direct `Pattern.sub()` / `Pattern.subn()` single-match/repeated pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,12 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile("abc").sub("x", "zabczz") ... rebar.compile("abc").subn("x", "abcabc") ... PY` currently matches CPython for the exact published outputs `zxzz` and `('xx', 2)` on the direct compiled-pattern path;
   - `rg -n 'pattern-sub-str-single-match|pattern-subn-str-repeated|workflow-pattern-sub-str-single-match|workflow-pattern-subn-str-repeated' tests/conformance/fixtures/collection_replacement_workflows.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` currently returns no matches, confirming the exact publication rows are still absent from the tracked correctness surface; and
   - `reports/correctness/latest.py` currently reports `1563` total / `1563` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `26` / `26`, `.str` at `19` / `19`, `.bytes` at `7` / `7`, `.pattern_call` at `14` / `14`, and `.module_call` at `12` / `12`.
+
+## Completion
+- 2026-03-23: Added the two published direct `Pattern.sub()` / `Pattern.subn()` rows to `tests/conformance/fixtures/collection_replacement_workflows.py` in the required order, and kept the shared owner path in `tests/python/test_fixture_backed_replacement_parity_suite.py` by adding a focused manifest-order assertion for `pattern-sub-str-no-match`, `pattern-sub-str-single-match`, `pattern-subn-str-count`, and `pattern-subn-str-repeated`.
+- Regenerated `reports/correctness/latest.py`; the tracked published scorecard now reports `1565` total / `1565` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `28` / `28`, `.str` at `21` / `21`, `.bytes` still `7` / `7`, `.pattern_call` at `16` / `16`, and `.module_call` still `12` / `12`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (str-single-match or str-repeated-match)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-0992-pattern-replacement-single-match-repeated-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`

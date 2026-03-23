@@ -162,6 +162,12 @@ DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
     pytest.param(b"abc", b"x", b"abcabc", 0, id="bytes-repeated-match"),
     pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
 ]
+PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
+    "pattern-sub-str-no-match",
+    "pattern-sub-str-single-match",
+    "pattern-subn-str-count",
+    "pattern-subn-str-repeated",
+)
 DIRECT_WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abc", 0, id="single-match"),
     pytest.param("abc", r"\g<0>x", "abcabc", 0, id="repeated-matches"),
@@ -2461,6 +2467,38 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     count: int,
 ) -> None:
     _assert_pattern_replacement_parity(pattern, replacement, string, count)
+
+
+def test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order(
+) -> None:
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",
+        selected_case_ids=PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS,
+        pattern_extractor=case_pattern,
+    )
+    cases_by_id = {case.case_id: case for case in bundle.cases}
+
+    assert tuple(case.case_id for case in bundle.cases) == (
+        PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS
+    )
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation((bundle,), "pattern_call")
+    ) == PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS
+
+    assert tuple(cases_by_id["pattern-sub-str-no-match"].args) == ("x", "zzz")
+    assert tuple(cases_by_id["pattern-sub-str-single-match"].args) == ("x", "zabczz")
+    assert tuple(cases_by_id["pattern-subn-str-count"].args) == ("x", "abcabc", 1)
+    assert tuple(cases_by_id["pattern-subn-str-repeated"].args) == ("x", "abcabc")
+
+    assert cases_by_id["pattern-sub-str-no-match"].helper == "sub"
+    assert cases_by_id["pattern-sub-str-single-match"].helper == "sub"
+    assert cases_by_id["pattern-subn-str-count"].helper == "subn"
+    assert cases_by_id["pattern-subn-str-repeated"].helper == "subn"
+
+    assert cases_by_id["pattern-sub-str-no-match"].text_model == "str"
+    assert cases_by_id["pattern-sub-str-single-match"].text_model == "str"
+    assert cases_by_id["pattern-subn-str-count"].text_model == "str"
+    assert cases_by_id["pattern-subn-str-repeated"].text_model == "str"
 
 
 @pytest.mark.parametrize(

@@ -325,6 +325,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-str-single-match",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "zabczz"],
+      "categories": ["workflow", "sub", "literal", "str", "single-match"],
+      "notes": [
+        "Publishes the direct Pattern.sub str single-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-subn-str-count",
       "operation": "pattern_call",
       "family": "replacement_workflow",
@@ -334,6 +346,18 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "str", "count"],
       "notes": [
         "Pins the compiled-pattern str subn path for a bounded single replacement."
+      ]
+    },
+    {
+      "id": "pattern-subn-str-repeated",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "abcabc"],
+      "categories": ["workflow", "subn", "literal", "str", "repeated"],
+      "notes": [
+        "Publishes the direct Pattern.subn str repeated-match path on the shared collection replacement frontier."
       ]
     },
     {
