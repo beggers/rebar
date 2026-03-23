@@ -9,21 +9,21 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1589 cases across 114 manifests, with all 1589 passing in the current slice; the benchmark publication covers 970/970 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1589 cases across 114 manifests, with all 1589 passing in the current slice; the benchmark publication covers 971/971 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
 - `RBR-1053`: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
-- The published benchmark surface is still bounded at 970 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 971 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1589 cases across 114 manifests, all passing, and 970 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1589 cases across 114 manifests, all passing, and 971 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
 - `RBR-1053` is the current ready follow-on: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
-- The feature queue currently has `2` ready tasks, `0` in progress, and `0` blocked, and the done queue now holds `1054` completed task files in this checkout.
+- The feature queue currently has `1` ready task, `0` in progress, and `0` blocked, and the done queue now holds `1055` completed task files in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -317,7 +317,7 @@ The published correctness slice now covers 1589 cases across 114 manifests, all 
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1589 cases, with all 1589 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree-shim path while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 970 workloads across 30 manifests with 970 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
+- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 971 workloads across 30 manifests with 971 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -333,8 +333,8 @@ The published correctness slice now covers 1589 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-1052`: catch up the direct `module.sub()` bytes single-match benchmark row on the existing collection/replacement manifest.
+- `RBR-1053`: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface is still bounded at 970 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
+- The published benchmark surface is still bounded at 971 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
