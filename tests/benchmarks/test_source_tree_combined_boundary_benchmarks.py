@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from functools import cache
+from functools import cache, partial
 import json
 import pathlib
 import re
@@ -8620,54 +8620,6 @@ def _is_pattern_bounded_wildcard_workload(workload: Any) -> bool:
     )
 
 
-def _pattern_collection_replacement_bounded_findall_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "findall"
-    ].correctness_case_signature(case)
-
-
-def _pattern_collection_replacement_bounded_findall_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"].workload_signature(
-        workload
-    )
-
-
-def _pattern_collection_replacement_bounded_finditer_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "finditer"
-    ].correctness_case_signature(case)
-
-
-def _pattern_collection_replacement_bounded_finditer_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "finditer"
-    ].workload_signature(workload)
-
-
-def _pattern_collection_replacement_split_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "split"
-    ].correctness_case_signature(case)
-
-
-def _pattern_collection_replacement_split_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].workload_signature(
-        workload
-    )
-
-
 def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
     *,
@@ -8718,26 +8670,6 @@ def _collection_replacement_literal_replacement_correctness_case_signature(
         case.flags or 0,
         case.text_model or "str",
     )
-
-
-def _pattern_collection_replacement_literal_replacement_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _collection_replacement_literal_replacement_correctness_case_signature(
-        case,
-        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
-    )
-
-
-def _module_collection_replacement_literal_replacement_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _collection_replacement_literal_replacement_correctness_case_signature(
-        case,
-        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
-    )
-
-
 def _collection_replacement_literal_replacement_workload_signature(
     workload: Any,
     *,
@@ -8763,28 +8695,6 @@ def _collection_replacement_literal_replacement_workload_signature(
         workload.flags,
         workload.text_model,
     )
-
-
-def _module_collection_replacement_literal_replacement_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _collection_replacement_literal_replacement_workload_signature(
-        workload,
-        include_workload=_is_collection_replacement_module_literal_replacement_workload,
-        workload_kind="module",
-    )
-
-
-def _pattern_collection_replacement_literal_replacement_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _collection_replacement_literal_replacement_workload_signature(
-        workload,
-        include_workload=_is_collection_replacement_pattern_literal_replacement_workload,
-        workload_kind="direct Pattern",
-    )
-
-
 def _any_collection_replacement_literal_replacement_workload_signature(
     workload: Any,
     *,
@@ -9886,12 +9796,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             "findall"
         ].anchor_expectations(),
         include_workload=_is_collection_replacement_pattern_findall_bounded_workload,
-        correctness_case_signature=(
-            _pattern_collection_replacement_bounded_findall_correctness_case_signature
-        ),
-        workload_signature=(
-            _pattern_collection_replacement_bounded_findall_workload_signature
-        ),
+        correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "findall"
+        ].correctness_case_signature,
+        workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "findall"
+        ].workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -9901,12 +9811,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             "finditer"
         ].anchor_expectations(),
         include_workload=_is_collection_replacement_pattern_finditer_bounded_workload,
-        correctness_case_signature=(
-            _pattern_collection_replacement_bounded_finditer_correctness_case_signature
-        ),
-        workload_signature=(
-            _pattern_collection_replacement_bounded_finditer_workload_signature
-        ),
+        correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "finditer"
+        ].correctness_case_signature,
+        workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "finditer"
+        ].workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -9916,12 +9826,12 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             "split"
         ].anchor_expectations(),
         include_workload=_is_collection_replacement_pattern_split_workload,
-        correctness_case_signature=(
-            _pattern_collection_replacement_split_correctness_case_signature
-        ),
-        workload_signature=(
-            _pattern_collection_replacement_split_workload_signature
-        ),
+        correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "split"
+        ].correctness_case_signature,
+        workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "split"
+        ].workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -9933,11 +9843,14 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         include_workload=(
             _is_collection_replacement_module_literal_replacement_workload
         ),
-        correctness_case_signature=(
-            _module_collection_replacement_literal_replacement_correctness_case_signature
+        correctness_case_signature=partial(
+            _collection_replacement_literal_replacement_correctness_case_signature,
+            route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
         ),
-        workload_signature=(
-            _module_collection_replacement_literal_replacement_workload_signature
+        workload_signature=partial(
+            _collection_replacement_literal_replacement_workload_signature,
+            include_workload=_is_collection_replacement_module_literal_replacement_workload,
+            workload_kind="module",
         ),
         run_callback_result_parity=True,
     ),
@@ -9950,11 +9863,14 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         include_workload=(
             _is_collection_replacement_pattern_literal_replacement_workload
         ),
-        correctness_case_signature=(
-            _pattern_collection_replacement_literal_replacement_correctness_case_signature
+        correctness_case_signature=partial(
+            _collection_replacement_literal_replacement_correctness_case_signature,
+            route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
         ),
-        workload_signature=(
-            _pattern_collection_replacement_literal_replacement_workload_signature
+        workload_signature=partial(
+            _collection_replacement_literal_replacement_workload_signature,
+            include_workload=_is_collection_replacement_pattern_literal_replacement_workload,
+            workload_kind="direct Pattern",
         ),
         run_callback_result_parity=True,
     ),

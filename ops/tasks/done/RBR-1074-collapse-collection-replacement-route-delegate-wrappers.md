@@ -1,6 +1,6 @@
 # RBR-1074: Collapse collection/replacement route delegate wrappers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -69,3 +69,8 @@ Created: 2026-03-23
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_split_rows_measured or collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or collection-replacement-pattern-findall-bounded or collection-replacement-pattern-finditer-bounded or collection-replacement-pattern-split or collection-replacement-module-literal-replacement or collection-replacement-pattern-literal-replacement'` returned `24 passed, 698 deselected, 29 subtests passed` in this run.
 - One adjacent collection/replacement gap test is currently red for unrelated drift and should stay out of this cleanup's acceptance surface:
   - `test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit` currently fails on `('module-subn-str-no-match',)` in the live checkout, so this wrapper-removal task should not claim that unrelated publication gap.
+
+## Completion
+- Deleted the ten thin collection/replacement delegate wrappers from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Rewired the five targeted anchor definitions to use bound route methods or direct partial bindings of the shared literal-replacement signature builders.
+- Verified with the task's focused pytest slice (`24 passed, 698 deselected, 29 subtests passed`) and the `rg` wrapper-removal check.
