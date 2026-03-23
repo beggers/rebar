@@ -314,16 +314,6 @@ VERBOSE_BYTES_FULLMATCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
 ]
 
 
-def _published_bounded_wildcard_raw_module_helper_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in MODULE_CALL_CASES
-        if not case.use_compiled_pattern
-        and case_pattern(case) == "a.c"
-        and case.helper in {"search", "match", "fullmatch"}
-    )
-
-
 def _published_bounded_wildcard_fixture_cases(
     cases: tuple[FixtureCase, ...],
 ) -> tuple[FixtureCase, ...]:
@@ -568,6 +558,16 @@ class PatternKeywordCallCase:
 class PatternKeywordPublicationOwnerPathRow:
     fixture_case_id: str
     direct_case: PatternKeywordCallCase
+
+    @property
+    def text_model(self) -> str:
+        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
+
+
+@dataclass(frozen=True)
+class BoundedWildcardModuleOwnerPathRow:
+    fixture_case_id: str
+    direct_case: BoundedWildcardModuleCase
 
     @property
     def text_model(self) -> str:
@@ -1313,6 +1313,29 @@ BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
         pattern="a.c",
         string="abc",
         compiled=True,
+    ),
+)
+_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID = {
+    case.case_id: case for case in BOUNDED_WILDCARD_MODULE_MATCH_CASES
+}
+BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS = (
+    BoundedWildcardModuleOwnerPathRow(
+        fixture_case_id="workflow-module-search-str-bounded-wildcard-ignorecase",
+        direct_case=_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID[
+            "module-search-ignorecase-bounded-hit"
+        ],
+    ),
+    BoundedWildcardModuleOwnerPathRow(
+        fixture_case_id="workflow-module-match-str-bounded-wildcard-miss",
+        direct_case=_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID[
+            "module-match-bounded-miss"
+        ],
+    ),
+    BoundedWildcardModuleOwnerPathRow(
+        fixture_case_id="workflow-module-fullmatch-str-bounded-wildcard",
+        direct_case=_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID[
+            "module-fullmatch-bounded-hit"
+        ],
     ),
 )
 BOUNDED_WILDCARD_MODULE_COLLECTION_CASES = (
@@ -2608,6 +2631,7 @@ def _assert_positional_indexlike_publication_contract(
 _NonCompiledPublicationDirectCase = (
     ModuleKeywordCallCase
     | ModuleKeywordErrorCase
+    | BoundedWildcardModuleCase
     | PatternKeywordCallCase
     | PatternHelperErrorCase
     | ModulePositionalIndexLikeCallCase
@@ -2618,6 +2642,8 @@ _NonCompiledPublicationDirectCase = (
 def _noncompiled_publication_direct_case_pattern_and_args(
     case: _NonCompiledPublicationDirectCase,
 ) -> tuple[str | bytes, tuple[object, ...]]:
+    if isinstance(case, BoundedWildcardModuleCase):
+        return case.pattern, (case.string,)
     if isinstance(
         case,
         (
@@ -2661,7 +2687,7 @@ def _assert_noncompiled_publication_direct_case_field_alignment(
                 _workflow_positional_args_signature(direct_args)
             )
             assert fixture_case.kwargs == {}
-        assert fixture_case.flags == 0
+        assert fixture_case.flags == getattr(direct_case, "flags", 0)
 
 
 def _assert_noncompiled_positional_indexlike_publication_contract(
@@ -2712,7 +2738,7 @@ def _assert_noncompiled_owner_path_publication_contract(
     expected_text_model_counts: Counter[str] | None = None,
     include_pattern_arg: bool | None = None,
     use_compiled_pattern: bool | None = None,
-) -> None:
+) -> tuple[tuple[FixtureCase, ...], tuple[_NonCompiledPublicationDirectCase, ...]]:
     published_fixture_cases, selected_direct_cases = _assert_owner_path_publication_contract(
         fixture_cases,
         rows,
@@ -2728,6 +2754,7 @@ def _assert_noncompiled_owner_path_publication_contract(
         include_pattern_arg=include_pattern_arg,
         use_compiled_pattern=use_compiled_pattern,
     )
+    return published_fixture_cases, selected_direct_cases
 
 
 def _compiled_pattern_module_helper_publication_signature(
@@ -4309,7 +4336,10 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             "purge": frozenset(case.case_id for case in PURGE_CASES),
             "bounded-wildcard-module-helper": frozenset(
                 case.case_id
-                for case in _published_bounded_wildcard_raw_module_helper_fixture_cases()
+                for case in _published_owner_path_fixture_cases(
+                    RAW_MODULE_CALL_CASES,
+                    BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS,
+                )
             ),
             "module-keyword-helper": frozenset(
                 case.case_id
@@ -4719,28 +4749,16 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
 
 def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_bounded_wildcard_raw_module_helper_fixture_cases()
-    published_case_signatures = frozenset(
-        (
-            case.helper,
-            case_pattern(case),
-            tuple(case.args),
-            case.flags,
-            case.use_compiled_pattern,
+    published_fixture_cases, selected_direct_cases = (
+        _assert_noncompiled_owner_path_publication_contract(
+            RAW_MODULE_CALL_CASES,
+            BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS,
+            expected_count=3,
+            expected_helper_counts=Counter({"search": 1, "match": 1, "fullmatch": 1}),
+            keyword_arguments=False,
+            expected_text_model_counts=Counter({"str": 3}),
+            use_compiled_pattern=False,
         )
-        for case in published_fixture_cases
-    )
-    selected_direct_cases = tuple(
-        case
-        for case in BOUNDED_WILDCARD_MODULE_MATCH_CASES
-        if (
-            case.helper,
-            case.pattern,
-            (case.string,),
-            case.flags,
-            case.compiled,
-        )
-        in published_case_signatures
     )
 
     assert tuple(
@@ -4756,9 +4774,6 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
         "module-match-bounded-miss",
         "module-fullmatch-bounded-hit",
     )
-    assert tuple(
-        case.helper for case in published_fixture_cases
-    ) == tuple(case.helper for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
         assert direct_case.compiled is False

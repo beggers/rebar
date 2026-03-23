@@ -1,6 +1,6 @@
 ## RBR-1009: Collapse bounded wildcard raw module publication selector
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -46,6 +46,8 @@ Created: 2026-03-23
 - Do not edit fixture manifests, harness modules, benchmark workloads/tests, reports, README/current-status/backlog prose, or non-parity test files in this run.
 
 ## Notes
+- Completed 2026-03-23: replaced the bespoke bounded-wildcard raw-module fixture selector in `tests/python/test_module_workflow_parity_suite.py` with explicit owner-path rows, repointed the direct-bucket and publication-contract tests through the shared owner-path helpers, and preserved the exact three published/direct case pairs plus field-level alignment contract.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_direct_test_buckets_cover_selected_frontier or module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_from_direct_cases'` (`2 passed, 1449 deselected`).
 - `RBR-1009` is unreserved in the live queue/state files for this run:
   - `rg -n 'RBR-1009|RBR-1010|RBR-1011|RBR-1012' ops/state/backlog.md ops/state/current_status.md ops/tasks/ready ops/tasks/in_progress ops/tasks/blocked -g '*.md'` returned no matches in the current checkout.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in the current checkout.
