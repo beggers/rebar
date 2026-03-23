@@ -717,9 +717,11 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
     "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
             "module-sub-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+            "module-subn-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
             "pattern-sub-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
             "module-sub-callable-quantified-nested-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
             "pattern-subn-callable-quantified-nested-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+            "pattern-sub-callable-quantified-nested-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
         ),
     ),
     "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(

@@ -1,6 +1,6 @@
 # RBR-1122: Publish quantified nested-group alternation branch-local-backreference callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -43,6 +43,7 @@ Created: 2026-03-23
 - Preserve the same bounded quantified nested-group alternation plus branch-local-backreference callable semantics that `RBR-1120` landed; this task is for correctness publication, not broader callback semantics.
 
 ## Notes
+- Completed on 2026-03-23: published the adjacent eight bytes callable replacement workflows on `tests/conformance/fixtures/quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py`, refreshed representative bytes coverage in `tests/conformance/test_combined_correctness_scorecards.py`, and republished `reports/correctness/latest.py` at 1645 total / 1645 passed / 0 failed / 0 unimplemented with 114 manifests; the targeted callable manifest now publishes 16 passing cases and `collection.replacement.quantified_nested_group_alternation_branch_local_backreference.callable` reports `text_models == ['bytes', 'str']`.
 - `RBR-1122` is the next available unreserved feature task id in this checkout:
   - the highest live task id across `ops/tasks/ready/`, `ops/tasks/in_progress/`, `ops/tasks/done/`, and `ops/tasks/blocked/` is `1121`; and
   - `rg -n 'RBR-1122' ops/tasks ops/state -g '*.md'` returned only historical mentions inside done-task notes in this run.
