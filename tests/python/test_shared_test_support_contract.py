@@ -127,6 +127,42 @@ def test_assert_published_selector_subset_paths_contract_preserves_published_ord
     )
 
 
+def test_assert_published_selector_subset_paths_contract_accepts_implicit_filename_subset(
+    tmp_path: pathlib.Path,
+) -> None:
+    alpha_path = tmp_path / "alpha.py"
+    beta_path = tmp_path / "beta.py"
+    gamma_path = tmp_path / "gamma.py"
+
+    for path in (alpha_path, beta_path, gamma_path):
+        path.write_text("MANIFEST = {}\n", encoding="utf-8")
+
+    published_paths = (gamma_path, alpha_path, beta_path)
+
+    assert_published_selector_subset_paths_contract(
+        published_paths,
+        (gamma_path, beta_path),
+        root_path=tmp_path,
+    )
+
+
+def test_assert_published_selector_subset_paths_contract_rejects_duplicate_resolved_paths(
+    tmp_path: pathlib.Path,
+) -> None:
+    alpha_path = tmp_path / "alpha.py"
+    beta_path = tmp_path / "beta.py"
+
+    for path in (alpha_path, beta_path):
+        path.write_text("MANIFEST = {}\n", encoding="utf-8")
+
+    with pytest.raises(AssertionError):
+        assert_published_selector_subset_paths_contract(
+            (alpha_path, beta_path),
+            (alpha_path, alpha_path),
+            root_path=tmp_path,
+        )
+
+
 def test_assert_published_manifest_helper_contract_checks_cache_order_and_post_clear_reload(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -217,6 +253,65 @@ def test_assert_published_manifest_inventory_contract_accepts_extra_manifest_uni
     )
 
     assert tuple(record.record_id for record in records) == ("record-a", "record-b")
+
+
+def test_assert_published_manifest_inventory_contract_rejects_duplicate_child_ids(
+) -> None:
+    manifests = (
+        SimpleNamespace(
+            manifest_id="manifest-a",
+            cases=(SimpleNamespace(case_id="shared-case", manifest_id="manifest-a"),),
+        ),
+        SimpleNamespace(
+            manifest_id="manifest-b",
+            cases=(SimpleNamespace(case_id="shared-case", manifest_id="manifest-b"),),
+        ),
+    )
+
+    with pytest.raises(AssertionError):
+        assert_published_manifest_inventory_contract(
+            manifests,
+            child_records="cases",
+            child_id="case_id",
+        )
+
+
+def test_assert_published_manifest_inventory_contract_rejects_manifests_without_children(
+) -> None:
+    manifests = (
+        SimpleNamespace(
+            manifest_id="manifest-a",
+            cases=(SimpleNamespace(case_id="case-a-1", manifest_id="manifest-a"),),
+        ),
+        SimpleNamespace(manifest_id="manifest-b", cases=()),
+    )
+
+    with pytest.raises(AssertionError):
+        assert_published_manifest_inventory_contract(
+            manifests,
+            child_records="cases",
+            child_id="case_id",
+        )
+
+
+def test_assert_published_manifest_inventory_contract_rejects_children_owned_by_unknown_manifest(
+) -> None:
+    manifests = (
+        SimpleNamespace(
+            manifest_id="manifest-a",
+            cases=(
+                SimpleNamespace(case_id="case-a-1", manifest_id="manifest-a"),
+                SimpleNamespace(case_id="orphan-case", manifest_id="missing-manifest"),
+            ),
+        ),
+    )
+
+    with pytest.raises(AssertionError):
+        assert_published_manifest_inventory_contract(
+            manifests,
+            child_records="cases",
+            child_id="case_id",
+        )
 
 
 def test_manifest_records_by_id_returns_original_records_keyed_by_manifest_id() -> None:
