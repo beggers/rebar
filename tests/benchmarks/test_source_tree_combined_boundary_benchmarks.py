@@ -20690,7 +20690,9 @@ def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_m
     )
 
     assert workload.maxsplit == 0
-    assert _pattern_collection_replacement_split_workload_signature(workload) == (
+    assert _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].workload_signature(
+        workload
+    ) == (
         "pattern.split",
         "abc",
         ("zzz",),
