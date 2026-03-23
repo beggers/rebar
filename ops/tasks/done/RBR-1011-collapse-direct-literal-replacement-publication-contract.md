@@ -1,6 +1,6 @@
 ## RBR-1011: Collapse direct literal replacement publication contract
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -73,6 +73,8 @@ Created: 2026-03-23
 - Do not edit fixture manifests, harness modules, benchmark files, reports, README/current-status/backlog prose, or non-replacement parity test files in this run.
 
 ## Notes
+- Completed 2026-03-23: added one file-local helper in `tests/python/test_fixture_backed_replacement_parity_suite.py` to centralize direct-literal replacement bundle loading plus ordered case/owner-path/args/helper/text-model assertions, and repointed the adjacent module and pattern publication-contract tests through it without changing their published rows.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'` (`2 passed, 1299 deselected`).
 - `RBR-1011` is unreserved in the live queue/state files for this run:
   - `rg -n 'RBR-1011|RBR-1012|RBR-1013|RBR-1014' ops/state/backlog.md ops/state/current_status.md ops/tasks/ready ops/tasks/in_progress ops/tasks/blocked -g '*.md'` returned no matches in the current checkout.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in the current checkout.

@@ -2461,106 +2461,81 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     _assert_pattern_replacement_parity(pattern, replacement, string, count)
 
 
-def test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order(
+def _assert_direct_literal_replacement_publication_contract(
+    *,
+    selected_case_ids: tuple[str, ...],
+    operation: str,
+    expected_args_by_case_id: dict[str, tuple[object, ...]],
+    expected_helpers: tuple[str, ...],
+    expected_text_models: tuple[str, ...],
 ) -> None:
     bundle = build_selected_fixture_bundle(
         CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",
-        selected_case_ids=PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS,
+        selected_case_ids=selected_case_ids,
         pattern_extractor=case_pattern,
     )
     cases_by_id = {case.case_id: case for case in bundle.cases}
 
-    assert tuple(case.case_id for case in bundle.cases) == (
-        PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
-    )
+    assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
     assert tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
-    ) == PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
-
-    assert tuple(cases_by_id["module-sub-str-no-match"].args) == ("abc", "x", "zzz")
-    assert tuple(cases_by_id["module-sub-str-single-match"].args) == (
-        "abc",
-        "x",
-        "zabczz",
+        case.case_id for case in fixture_cases_for_operation((bundle,), operation)
+    ) == selected_case_ids
+    assert tuple(tuple(cases_by_id[case_id].args) for case_id in selected_case_ids) == (
+        tuple(expected_args_by_case_id[case_id] for case_id in selected_case_ids)
     )
-    assert tuple(cases_by_id["module-sub-str-repeated"].args) == ("abc", "x", "abcabc")
-    assert tuple(cases_by_id["module-sub-bytes-no-match"].args) == (
-        b"abc",
-        b"x",
-        b"zzz",
+    assert tuple(cases_by_id[case_id].helper for case_id in selected_case_ids) == (
+        expected_helpers
     )
-    assert tuple(cases_by_id["module-subn-bytes-count"].args) == (
-        b"abc",
-        b"x",
-        b"abcabc",
-        1,
-    )
-    assert tuple(cases_by_id["module-subn-bytes-repeated"].args) == (
-        b"abc",
-        b"x",
-        b"abcabc",
+    assert tuple(cases_by_id[case_id].text_model for case_id in selected_case_ids) == (
+        expected_text_models
     )
 
-    assert cases_by_id["module-sub-str-no-match"].helper == "sub"
-    assert cases_by_id["module-sub-str-single-match"].helper == "sub"
-    assert cases_by_id["module-sub-str-repeated"].helper == "sub"
-    assert cases_by_id["module-sub-bytes-no-match"].helper == "sub"
-    assert cases_by_id["module-subn-bytes-count"].helper == "subn"
-    assert cases_by_id["module-subn-bytes-repeated"].helper == "subn"
 
-    assert cases_by_id["module-sub-str-no-match"].text_model == "str"
-    assert cases_by_id["module-sub-str-single-match"].text_model == "str"
-    assert cases_by_id["module-sub-str-repeated"].text_model == "str"
-    assert cases_by_id["module-sub-bytes-no-match"].text_model == "bytes"
-    assert cases_by_id["module-subn-bytes-count"].text_model == "bytes"
-    assert cases_by_id["module-subn-bytes-repeated"].text_model == "bytes"
+def test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order(
+) -> None:
+    _assert_direct_literal_replacement_publication_contract(
+        selected_case_ids=PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS,
+        operation="module_call",
+        expected_args_by_case_id={
+            "module-sub-str-no-match": ("abc", "x", "zzz"),
+            "module-sub-str-single-match": ("abc", "x", "zabczz"),
+            "module-sub-str-repeated": ("abc", "x", "abcabc"),
+            "module-sub-bytes-no-match": (b"abc", b"x", b"zzz"),
+            "module-subn-bytes-count": (b"abc", b"x", b"abcabc", 1),
+            "module-subn-bytes-repeated": (b"abc", b"x", b"abcabc"),
+        },
+        expected_helpers=("sub", "sub", "sub", "sub", "subn", "subn"),
+        expected_text_models=("str", "str", "str", "bytes", "bytes", "bytes"),
+    )
 
 
 def test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order(
 ) -> None:
-    bundle = build_selected_fixture_bundle(
-        CORRECTNESS_FIXTURES_ROOT / "collection_replacement_workflows.py",
+    _assert_direct_literal_replacement_publication_contract(
         selected_case_ids=PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS,
-        pattern_extractor=case_pattern,
+        operation="pattern_call",
+        expected_args_by_case_id={
+            "pattern-sub-str-no-match": ("x", "zzz"),
+            "pattern-sub-str-single-match": ("x", "zabczz"),
+            "pattern-subn-str-count": ("x", "abcabc", 1),
+            "pattern-subn-str-repeated": ("x", "abcabc"),
+            "pattern-sub-bytes-no-match": (b"x", b"zzz"),
+            "pattern-sub-bytes-single-match": (b"x", b"zabczz"),
+            "pattern-subn-bytes-count": (b"x", b"abcabc", 1),
+            "pattern-subn-bytes-repeated": (b"x", b"abcabc"),
+        },
+        expected_helpers=("sub", "sub", "subn", "subn", "sub", "sub", "subn", "subn"),
+        expected_text_models=(
+            "str",
+            "str",
+            "str",
+            "str",
+            "bytes",
+            "bytes",
+            "bytes",
+            "bytes",
+        ),
     )
-    cases_by_id = {case.case_id: case for case in bundle.cases}
-
-    assert tuple(case.case_id for case in bundle.cases) == (
-        PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS
-    )
-    assert tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), "pattern_call")
-    ) == PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS
-
-    assert tuple(cases_by_id["pattern-sub-str-no-match"].args) == ("x", "zzz")
-    assert tuple(cases_by_id["pattern-sub-str-single-match"].args) == ("x", "zabczz")
-    assert tuple(cases_by_id["pattern-subn-str-count"].args) == ("x", "abcabc", 1)
-    assert tuple(cases_by_id["pattern-subn-str-repeated"].args) == ("x", "abcabc")
-    assert tuple(cases_by_id["pattern-sub-bytes-no-match"].args) == (b"x", b"zzz")
-    assert tuple(cases_by_id["pattern-sub-bytes-single-match"].args) == (
-        b"x",
-        b"zabczz",
-    )
-    assert tuple(cases_by_id["pattern-subn-bytes-count"].args) == (b"x", b"abcabc", 1)
-    assert tuple(cases_by_id["pattern-subn-bytes-repeated"].args) == (b"x", b"abcabc")
-
-    assert cases_by_id["pattern-sub-str-no-match"].helper == "sub"
-    assert cases_by_id["pattern-sub-str-single-match"].helper == "sub"
-    assert cases_by_id["pattern-subn-str-count"].helper == "subn"
-    assert cases_by_id["pattern-subn-str-repeated"].helper == "subn"
-    assert cases_by_id["pattern-sub-bytes-no-match"].helper == "sub"
-    assert cases_by_id["pattern-sub-bytes-single-match"].helper == "sub"
-    assert cases_by_id["pattern-subn-bytes-count"].helper == "subn"
-    assert cases_by_id["pattern-subn-bytes-repeated"].helper == "subn"
-
-    assert cases_by_id["pattern-sub-str-no-match"].text_model == "str"
-    assert cases_by_id["pattern-sub-str-single-match"].text_model == "str"
-    assert cases_by_id["pattern-subn-str-count"].text_model == "str"
-    assert cases_by_id["pattern-subn-str-repeated"].text_model == "str"
-    assert cases_by_id["pattern-sub-bytes-no-match"].text_model == "bytes"
-    assert cases_by_id["pattern-sub-bytes-single-match"].text_model == "bytes"
-    assert cases_by_id["pattern-subn-bytes-count"].text_model == "bytes"
-    assert cases_by_id["pattern-subn-bytes-repeated"].text_model == "bytes"
 
 
 @pytest.mark.parametrize(
