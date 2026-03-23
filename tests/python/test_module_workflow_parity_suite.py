@@ -2420,14 +2420,23 @@ def _selected_owner_path_direct_cases(
     return tuple(row.direct_case for row in rows)
 
 
-def _module_positional_indexlike_direct_signature(
-    case: ModulePositionalIndexLikeCallCase,
+def _positional_indexlike_direct_case_pattern_and_args(
+    case: ModulePositionalIndexLikeCallCase | PatternPositionalIndexLikeCallCase,
+) -> tuple[str | bytes, tuple[object, ...]]:
+    if isinstance(case, ModulePositionalIndexLikeCallCase):
+        pattern, *args = case.args
+        return pattern, tuple(args)
+    return case.pattern, case.args
+
+
+def _positional_indexlike_direct_signature(
+    case: ModulePositionalIndexLikeCallCase | PatternPositionalIndexLikeCallCase,
 ) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
-    pattern, *args = case.args
+    pattern, args = _positional_indexlike_direct_case_pattern_and_args(case)
     return (
         case.helper,
         pattern,
-        _workflow_positional_args_signature(tuple(args)),
+        _workflow_positional_args_signature(args),
         "bytes" if isinstance(pattern, bytes) else "str",
     )
 
@@ -2443,15 +2452,41 @@ def _workflow_positional_indexlike_fixture_signature(
     )
 
 
-def _published_module_positional_indexlike_fixture_cases() -> tuple[FixtureCase, ...]:
+def _published_positional_indexlike_fixture_cases(
+    fixture_cases: tuple[FixtureCase, ...],
+    direct_cases: tuple[
+        ModulePositionalIndexLikeCallCase | PatternPositionalIndexLikeCallCase,
+        ...,
+    ],
+    *,
+    include_fixture_case: Callable[[FixtureCase], bool] | None = None,
+) -> tuple[FixtureCase, ...]:
     direct_signatures = {
-        _module_positional_indexlike_direct_signature(case)
-        for case in MODULE_POSITIONAL_INDEXLIKE_CALL_CASES
+        _positional_indexlike_direct_signature(case)
+        for case in direct_cases
     }
     return tuple(
         case
-        for case in MODULE_CALL_CASES
-        if _workflow_positional_indexlike_fixture_signature(case) in direct_signatures
+        for case in fixture_cases
+        if (include_fixture_case is None or include_fixture_case(case))
+        and _workflow_positional_indexlike_fixture_signature(case) in direct_signatures
+    )
+
+
+def _selected_positional_indexlike_direct_cases(
+    published_fixture_cases: tuple[FixtureCase, ...],
+    direct_cases: tuple[
+        ModulePositionalIndexLikeCallCase | PatternPositionalIndexLikeCallCase,
+        ...,
+    ],
+) -> tuple[ModulePositionalIndexLikeCallCase | PatternPositionalIndexLikeCallCase, ...]:
+    direct_cases_by_signature = {
+        _positional_indexlike_direct_signature(case): case
+        for case in direct_cases
+    }
+    return tuple(
+        direct_cases_by_signature[_workflow_positional_indexlike_fixture_signature(case)]
+        for case in published_fixture_cases
     )
 
 
@@ -2777,30 +2812,6 @@ def _published_compiled_pattern_module_helper_fixture_cases() -> tuple[FixtureCa
         for case in MODULE_CALL_CASES
         if case.use_compiled_pattern
         and _compiled_pattern_module_helper_fixture_signature(case) in direct_signatures
-    )
-
-
-def _pattern_positional_indexlike_direct_signature(
-    case: PatternPositionalIndexLikeCallCase,
-) -> tuple[str, str | bytes, tuple[tuple[str, object], ...], str]:
-    return (
-        case.helper,
-        case.pattern,
-        _workflow_positional_args_signature(case.args),
-        "bytes" if isinstance(case.pattern, bytes) else "str",
-    )
-
-
-def _published_pattern_positional_indexlike_fixture_cases() -> tuple[FixtureCase, ...]:
-    direct_signatures = {
-        _pattern_positional_indexlike_direct_signature(case)
-        for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
-    }
-    return tuple(
-        case
-        for case in PATTERN_CASES
-        if case.kwargs == {}
-        and _workflow_positional_indexlike_fixture_signature(case) in direct_signatures
     )
 
 
@@ -4055,7 +4066,11 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
                 )
             ),
             "module-positional-indexlike-helper": frozenset(
-                case.case_id for case in _published_module_positional_indexlike_fixture_cases()
+                case.case_id
+                for case in _published_positional_indexlike_fixture_cases(
+                    MODULE_CALL_CASES,
+                    MODULE_POSITIONAL_INDEXLIKE_CALL_CASES,
+                )
             ),
             "module-keyword-error": frozenset(
                 case.case_id
@@ -4613,14 +4628,13 @@ def test_module_keyword_direct_cases_keep_bool_count_complements_balanced_for_fo
 
 def test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_module_positional_indexlike_fixture_cases()
-    direct_cases_by_signature = {
-        _module_positional_indexlike_direct_signature(case): case
-        for case in MODULE_POSITIONAL_INDEXLIKE_CALL_CASES
-    }
-    selected_direct_cases = tuple(
-        direct_cases_by_signature[_workflow_positional_indexlike_fixture_signature(case)]
-        for case in published_fixture_cases
+    published_fixture_cases = _published_positional_indexlike_fixture_cases(
+        MODULE_CALL_CASES,
+        MODULE_POSITIONAL_INDEXLIKE_CALL_CASES,
+    )
+    selected_direct_cases = _selected_positional_indexlike_direct_cases(
+        published_fixture_cases,
+        MODULE_POSITIONAL_INDEXLIKE_CALL_CASES,
     )
 
     assert tuple(
@@ -5104,14 +5118,14 @@ def test_pattern_positional_indexlike_direct_cases_remain_balanced_for_follow_on
 
 def test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases = _published_pattern_positional_indexlike_fixture_cases()
-    direct_cases_by_signature = {
-        _pattern_positional_indexlike_direct_signature(case): case
-        for case in PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES
-    }
-    selected_direct_cases = tuple(
-        direct_cases_by_signature[_workflow_positional_indexlike_fixture_signature(case)]
-        for case in published_fixture_cases
+    published_fixture_cases = _published_positional_indexlike_fixture_cases(
+        PATTERN_CASES,
+        PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES,
+        include_fixture_case=lambda case: case.kwargs == {},
+    )
+    selected_direct_cases = _selected_positional_indexlike_direct_cases(
+        published_fixture_cases,
+        PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES,
     )
 
     assert tuple(

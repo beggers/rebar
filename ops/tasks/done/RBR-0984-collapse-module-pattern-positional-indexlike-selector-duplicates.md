@@ -1,6 +1,6 @@
 # RBR-0984: Collapse module/pattern positional-indexlike selector duplicates
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -164,3 +164,11 @@ PY`
   - the positional-indexlike contract probe in Verification currently passes (`ok`), confirming that the live module and pattern publication slices already preserve their current fixture ordering, text-model splits, direct-case ordering, and helper splits;
   - `rg -n '^def _module_positional_indexlike_direct_signature\\(|^def _published_module_positional_indexlike_fixture_cases\\(|^def _pattern_positional_indexlike_direct_signature\\(|^def _published_pattern_positional_indexlike_fixture_cases\\(' tests/python/test_module_workflow_parity_suite.py` currently finds the duplicated selector stack at lines `2423`, `2446`, `2783`, and `2794`, so the structural no-match check will fail until this cleanup lands; and
   - `RBR-0845` already collapsed the detached positional-indexlike published sidecars onto canonical owners, so this follow-on can stay narrowly focused on the still-live selector duplication instead of reopening removed sidecar state.
+
+## Completion
+- Replaced the duplicated module/pattern positional-`__index__` selector helpers in `tests/python/test_module_workflow_parity_suite.py` with one shared direct-signature helper plus shared published-fixture/direct-case selectors.
+- Repointed the module and pattern positional-indexlike publication tests, along with the selected-frontier bucket coverage check, to the shared helper surface without changing the published row counts, ordering, text-model splits, or helper counts.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'test_module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases or test_module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases'`
+  - `PYTHONPATH=python:. ./.venv/bin/python - <<'PY' ... shared positional-indexlike contract probe ... PY`
+  - `bash -lc "! rg -n '^def _module_positional_indexlike_direct_signature\\(|^def _published_module_positional_indexlike_fixture_cases\\(|^def _pattern_positional_indexlike_direct_signature\\(|^def _published_pattern_positional_indexlike_fixture_cases\\(' tests/python/test_module_workflow_parity_suite.py"`
