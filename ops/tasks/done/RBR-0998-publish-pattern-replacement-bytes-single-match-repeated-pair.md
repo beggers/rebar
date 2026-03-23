@@ -1,6 +1,6 @@
 # RBR-0998: Publish the direct `Pattern.sub()` / `Pattern.subn()` bytes single-match/repeated pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -59,3 +59,16 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (bytes-single-match or bytes-repeated-match)'` currently passes (`2 passed`), so the exact direct bytes parity slice is already green in this checkout;
   - `rg -n 'pattern-sub-bytes-single-match|pattern-subn-bytes-repeated|workflow-pattern-sub-bytes-single-match|workflow-pattern-subn-bytes-repeated' tests/conformance/fixtures/collection_replacement_workflows.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py tests/python/test_fixture_backed_replacement_parity_suite.py` currently returns no matches, confirming the exact bytes publication rows are still absent from the tracked correctness surface; and
   - the shared direct parity coverage already carries the bounded bytes single-match and repeated-match inputs on the existing owner route, so this run can stay publication-only instead of queuing another implementation prerequisite first.
+
+## Completion
+- 2026-03-23: Added `pattern-sub-bytes-single-match` and `pattern-subn-bytes-repeated` to `tests/conformance/fixtures/collection_replacement_workflows.py` immediately after `pattern-subn-str-repeated`, preserving the required direct compiled-pattern literal replacement order ahead of `module-sub-template-str`.
+- Extended `PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS` and the shared publication-order assertions in `tests/python/test_fixture_backed_replacement_parity_suite.py` so the owner-path selector now publishes the ordered direct literal `Pattern.sub()` / `Pattern.subn()` rows `pattern-sub-str-no-match`, `pattern-sub-str-single-match`, `pattern-subn-str-count`, `pattern-subn-str-repeated`, `pattern-sub-bytes-single-match`, and `pattern-subn-bytes-repeated`, with explicit bytes args/helper/text-model checks for the new pair.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the combined scorecard manifest expectation for `collection-replacement-workflows` includes the new bytes representative rows and keeps the mixed-text publication sample honest.
+- Regenerated the tracked `reports/correctness/latest.py` publication. The tracked artifact now reports `1567` total / `1567` passed / `0` failed / `0` unimplemented cases overall, and `collection-replacement-workflows` now publishes `30` cases including both `pattern-sub-bytes-single-match` and `pattern-subn-bytes-repeated`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (bytes-single-match or bytes-repeated-match)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'tracked_report_keeps_sample_manifests_fresh or suite_registry_manifest_expectations_keep_nonempty_unique_representative_case_ids or tracked_report_freshness_helpers_follow_registry_and_fixture_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'runner_regenerates_correctness_scorecards or mixed_text'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-0998-pattern-replacement-bytes-single-match-repeated-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

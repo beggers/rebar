@@ -267,6 +267,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-finditer-str-repeated",
             "pattern-split-str-no-match",
             "pattern-split-str-repeated",
+            "pattern-sub-bytes-single-match",
+            "pattern-subn-bytes-repeated",
             "pattern-finditer-str-bounded",
             "pattern-finditer-str-bounded-no-match",
             "pattern-finditer-bytes-bounded",

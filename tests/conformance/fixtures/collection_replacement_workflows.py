@@ -361,6 +361,54 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-bytes-single-match",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "sub",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        }
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "single-match"],
+      "notes": [
+        "Publishes the direct Pattern.sub bytes single-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
+      "id": "pattern-subn-bytes-repeated",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "subn",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "repeated"],
+      "notes": [
+        "Publishes the direct Pattern.subn bytes repeated-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "module-sub-template-str",
       "operation": "module_call",
       "family": "replacement_workflow",

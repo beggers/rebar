@@ -167,6 +167,8 @@ PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
     "pattern-sub-str-single-match",
     "pattern-subn-str-count",
     "pattern-subn-str-repeated",
+    "pattern-sub-bytes-single-match",
+    "pattern-subn-bytes-repeated",
 )
 DIRECT_WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abc", 0, id="single-match"),
@@ -2489,16 +2491,25 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
     assert tuple(cases_by_id["pattern-sub-str-single-match"].args) == ("x", "zabczz")
     assert tuple(cases_by_id["pattern-subn-str-count"].args) == ("x", "abcabc", 1)
     assert tuple(cases_by_id["pattern-subn-str-repeated"].args) == ("x", "abcabc")
+    assert tuple(cases_by_id["pattern-sub-bytes-single-match"].args) == (
+        b"x",
+        b"zabczz",
+    )
+    assert tuple(cases_by_id["pattern-subn-bytes-repeated"].args) == (b"x", b"abcabc")
 
     assert cases_by_id["pattern-sub-str-no-match"].helper == "sub"
     assert cases_by_id["pattern-sub-str-single-match"].helper == "sub"
     assert cases_by_id["pattern-subn-str-count"].helper == "subn"
     assert cases_by_id["pattern-subn-str-repeated"].helper == "subn"
+    assert cases_by_id["pattern-sub-bytes-single-match"].helper == "sub"
+    assert cases_by_id["pattern-subn-bytes-repeated"].helper == "subn"
 
     assert cases_by_id["pattern-sub-str-no-match"].text_model == "str"
     assert cases_by_id["pattern-sub-str-single-match"].text_model == "str"
     assert cases_by_id["pattern-subn-str-count"].text_model == "str"
     assert cases_by_id["pattern-subn-str-repeated"].text_model == "str"
+    assert cases_by_id["pattern-sub-bytes-single-match"].text_model == "bytes"
+    assert cases_by_id["pattern-subn-bytes-repeated"].text_model == "bytes"
 
 
 @pytest.mark.parametrize(
