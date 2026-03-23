@@ -3768,6 +3768,35 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
+    def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit(
+        self,
+    ) -> None:
+        workload_signatures = {
+            _module_collection_replacement_literal_replacement_workload_signature(
+                workload
+            )
+            for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
+            if _is_any_collection_replacement_module_literal_replacement_workload(
+                workload
+            )
+        }
+        unbenchmarked_case_ids = tuple(
+            case.case_id
+            for case in published_cases_by_id().values()
+            if (
+                signature := _all_module_collection_replacement_literal_replacement_correctness_case_signature(
+                    case
+                )
+            )
+            is not None
+            and signature not in workload_signatures
+        )
+
+        self.assertEqual(
+            unbenchmarked_case_ids,
+            ("module-subn-bytes-single-match",),
+        )
+
     def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured(
         self,
     ) -> None:
@@ -8430,21 +8459,35 @@ def _pattern_collection_replacement_split_workload_signature(
 def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
     *,
-    case_ids: tuple[str, ...],
+    case_ids: tuple[str, ...] | None,
     expected_operation: str,
     operation_prefix: str,
     args_offset: int,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in case_ids:
+    if case_ids is not None and case.case_id not in case_ids:
         return None
     if case.operation != expected_operation or case.kwargs:
         return None
     if case.helper not in {"sub", "subn"}:
         return None
+    if case.use_compiled_pattern:
+        return None
+    pattern = case_pattern(case)
+    if pattern not in {"abc", b"abc"}:
+        return None
+    if len(case.args) <= args_offset:
+        return None
+    if case.args[args_offset] not in {"x", b"x"}:
+        return None
+    trailing_args = case.args[args_offset:]
+    if len(trailing_args) not in {2, 3}:
+        return None
+    if len(trailing_args) == 3 and type(trailing_args[2]) is not int:
+        return None
     return (
         f"{operation_prefix}.{case.helper}",
-        case_pattern(case),
-        freeze_signature_value(list(case.args[args_offset:])),
+        pattern,
+        freeze_signature_value(list(trailing_args)),
         (),
         case.flags or 0,
         case.text_model or "str",
@@ -8473,6 +8516,18 @@ def _module_collection_replacement_literal_replacement_correctness_case_signatur
         case_ids=_workload_case_pairs_case_ids(
             _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
         ),
+        expected_operation="module_call",
+        operation_prefix="module",
+        args_offset=1,
+    )
+
+
+def _all_module_collection_replacement_literal_replacement_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _collection_replacement_literal_replacement_correctness_case_signature(
+        case,
+        case_ids=None,
         expected_operation="module_call",
         operation_prefix="module",
         args_offset=1,
@@ -8529,13 +8584,13 @@ def _pattern_collection_replacement_literal_replacement_workload_signature(
 def _is_collection_replacement_literal_replacement_workload(
     workload: Any,
     *,
-    workload_ids: tuple[str, ...],
+    workload_ids: tuple[str, ...] | None,
     operations: tuple[str, ...],
     text_models: tuple[str, ...],
     allowed_counts: tuple[int, ...] | None = None,
 ) -> bool:
     return (
-        workload.workload_id in workload_ids
+        (workload_ids is None or workload.workload_id in workload_ids)
         and workload.operation in operations
         and workload.pattern == "abc"
         and workload.replacement == "x"
@@ -8557,6 +8612,18 @@ def _is_collection_replacement_module_literal_replacement_workload(
         workload_ids=_workload_case_pairs_workload_ids(
             _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
         ),
+        operations=("module.sub", "module.subn"),
+        text_models=("str", "bytes"),
+        allowed_counts=(-1, 0, 1),
+    )
+
+
+def _is_any_collection_replacement_module_literal_replacement_workload(
+    workload: Any,
+) -> bool:
+    return _is_collection_replacement_literal_replacement_workload(
+        workload,
+        workload_ids=None,
         operations=("module.sub", "module.subn"),
         text_models=("str", "bytes"),
         allowed_counts=(-1, 0, 1),
