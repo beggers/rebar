@@ -2570,36 +2570,42 @@ _NonCompiledPublicationDirectCase = (
 )
 
 
-def _noncompiled_publication_direct_case_pattern_and_args(
-    case: _NonCompiledPublicationDirectCase,
-) -> tuple[str | bytes, tuple[object, ...]]:
-    if isinstance(case, BoundedWildcardModuleCase):
-        return case.pattern, (case.string,)
-    if isinstance(
-        case,
-        (
-            PatternKeywordCallCase,
-            PatternHelperErrorCase,
-            PatternPositionalIndexLikeCallCase,
-        ),
-    ):
-        return case.pattern, case.args
-    pattern, *args = case.args
-    return pattern, tuple(args)
-
-
-def _assert_noncompiled_publication_direct_case_field_alignment(
-    published_fixture_cases: tuple[FixtureCase, ...],
-    selected_direct_cases: tuple[_NonCompiledPublicationDirectCase, ...],
+def _assert_noncompiled_owner_path_publication_contract(
+    fixture_cases: tuple[FixtureCase, ...],
+    rows: tuple[_OwnerPathRow[_NonCompiledPublicationDirectCase], ...],
     *,
+    expected_count: int,
+    expected_helper_counts: Counter[str],
     keyword_arguments: bool,
+    expected_text_model_counts: Counter[str] | None = None,
     include_pattern_arg: bool | None = None,
     use_compiled_pattern: bool | None = None,
-) -> None:
+) -> tuple[tuple[FixtureCase, ...], tuple[_NonCompiledPublicationDirectCase, ...]]:
+    published_fixture_cases, selected_direct_cases = _assert_owner_path_publication_contract(
+        fixture_cases,
+        rows,
+        expected_count=expected_count,
+        expected_helper_counts=expected_helper_counts,
+        expected_text_model_counts=expected_text_model_counts,
+    )
     for fixture_case, direct_case in zip(published_fixture_cases, selected_direct_cases):
-        direct_pattern, direct_args = _noncompiled_publication_direct_case_pattern_and_args(
-            direct_case
-        )
+        if isinstance(direct_case, BoundedWildcardModuleCase):
+            direct_pattern = direct_case.pattern
+            direct_args = (direct_case.string,)
+        elif isinstance(
+            direct_case,
+            (
+                PatternKeywordCallCase,
+                PatternHelperErrorCase,
+                PatternPositionalIndexLikeCallCase,
+            ),
+        ):
+            direct_pattern = direct_case.pattern
+            direct_args = direct_case.args
+        else:
+            direct_pattern, *direct_arg_items = direct_case.args
+            direct_args = tuple(direct_arg_items)
+
         if include_pattern_arg is not None:
             assert fixture_case.include_pattern_arg is include_pattern_arg
         if use_compiled_pattern is not None:
@@ -2619,34 +2625,6 @@ def _assert_noncompiled_publication_direct_case_field_alignment(
             )
             assert fixture_case.kwargs == {}
         assert fixture_case.flags == getattr(direct_case, "flags", 0)
-
-
-def _assert_noncompiled_owner_path_publication_contract(
-    fixture_cases: tuple[FixtureCase, ...],
-    rows: tuple[_OwnerPathRow[_NonCompiledPublicationDirectCase], ...],
-    *,
-    expected_count: int,
-    expected_helper_counts: Counter[str],
-    keyword_arguments: bool,
-    expected_text_model_counts: Counter[str] | None = None,
-    include_pattern_arg: bool | None = None,
-    use_compiled_pattern: bool | None = None,
-) -> tuple[tuple[FixtureCase, ...], tuple[_NonCompiledPublicationDirectCase, ...]]:
-    published_fixture_cases, selected_direct_cases = _assert_owner_path_publication_contract(
-        fixture_cases,
-        rows,
-        expected_count=expected_count,
-        expected_helper_counts=expected_helper_counts,
-        expected_text_model_counts=expected_text_model_counts,
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
-        keyword_arguments=keyword_arguments,
-        include_pattern_arg=include_pattern_arg,
-        use_compiled_pattern=use_compiled_pattern,
-    )
     return published_fixture_cases, selected_direct_cases
 
 
