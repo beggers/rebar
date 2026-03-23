@@ -16593,18 +16593,15 @@ def _compiled_pattern_module_helper_route(
 
 def _contract_source_workload_params(
     owner_specs: tuple[object, ...],
-    *,
-    source_workloads: Callable[[object], tuple[Workload, ...]],
-    param_id: Callable[[object], str],
 ) -> tuple[object, ...]:
     return tuple(
         pytest.param(
             owner_spec,
             source_workload,
-            id=f"{param_id(owner_spec)}-{source_workload.workload_id}",
+            id=f"{owner_spec.case_id}-{source_workload.workload_id}",
         )
         for owner_spec in owner_specs
-        for source_workload in source_workloads(owner_spec)
+        for source_workload in owner_spec.source_workloads()
     )
 
 
@@ -16667,11 +16664,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(
-        _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
-        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
-        param_id=lambda owner_spec: owner_spec.case_id,
-    ),
+    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -16712,11 +16705,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(
-        _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
-        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
-        param_id=lambda owner_spec: owner_spec.case_id,
-    ),
+    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS),
 )
 def test_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing(
     owner_spec: CompiledPatternModuleSuccessOwnerSpec,
@@ -17349,11 +17338,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _contract_source_workload_params(
-        _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-        source_workloads=lambda contract_case: contract_case.source_workloads(),
-        param_id=lambda contract_case: contract_case.case_id,
-    ),
+    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -17393,11 +17378,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _contract_source_workload_params(
-        _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-        source_workloads=lambda contract_case: contract_case.source_workloads(),
-        param_id=lambda contract_case: contract_case.case_id,
-    ),
+    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES),
 )
 def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing(
     contract_case: CompiledPatternModuleCompileContractCase,
@@ -17637,12 +17618,6 @@ _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
     }
 )
 
-def _wrong_text_model_owner_param_id(
-    owner_spec: WrongTextModelOwnerSpec,
-) -> str:
-    return owner_spec.case_id
-
-
 def _assert_wrong_text_model_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],
@@ -17773,7 +17748,7 @@ WRONG_TEXT_MODEL_OWNER_SPECS = (
     tuple(
         pytest.param(
             owner_spec,
-            id=_wrong_text_model_owner_param_id(owner_spec),
+            id=owner_spec.case_id,
         )
         for owner_spec in WRONG_TEXT_MODEL_OWNER_SPECS
     ),
@@ -17836,11 +17811,7 @@ def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helpe
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(
-        WRONG_TEXT_MODEL_OWNER_SPECS,
-        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
-        param_id=_wrong_text_model_owner_param_id,
-    ),
+    _contract_source_workload_params(WRONG_TEXT_MODEL_OWNER_SPECS),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -17881,11 +17852,7 @@ def test_run_internal_workload_probe_measures_wrong_text_model_contract_workload
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(
-        WRONG_TEXT_MODEL_OWNER_SPECS,
-        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
-        param_id=_wrong_text_model_owner_param_id,
-    ),
+    _contract_source_workload_params(WRONG_TEXT_MODEL_OWNER_SPECS),
 )
 def test_wrong_text_model_callbacks_preserve_precompile_contract(
     owner_spec: WrongTextModelOwnerSpec,
