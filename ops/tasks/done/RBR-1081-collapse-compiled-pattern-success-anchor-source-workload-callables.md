@@ -1,6 +1,6 @@
 ## RBR-1081: Collapse compiled-pattern success anchor source-workload callables
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -51,3 +51,9 @@ Created: 2026-03-23
   - `rg -n 'source_workloads: Callable\\[|source_workloads=lambda owner_spec|lambda anchor_spec=anchor_spec|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the success-anchor callable field at line `16389`, the two `source_workloads=lambda owner_spec: ...` adapters at lines `16418` and `16455`, and the `lambda anchor_spec=anchor_spec: anchor_spec.source_workloads(...)` wrapper at line `17221` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_workloads or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing'` returned `50 passed, 676 deselected` in this run.
+
+## Completion
+- Landed a file-local cleanup in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` that replaces the success-anchor `source_workloads` callable field with concrete workload tuples, precomputes the collection-replacement and module-boundary verbose-bytes success anchor workload tuples after the shared workload selector helper is defined, and lets `_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES` read those tuples directly while still accepting callable-backed compile contract lanes.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or run_internal_workload_probe_measures_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_workloads or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing'`
+  - `bash -lc "! rg -n 'source_workloads: Callable\\[\\[CompiledPatternModuleSuccessOwnerSpec\\], tuple\\[Workload, \\.\\.\\.\\]\\]|source_workloads=lambda owner_spec|lambda anchor_spec=anchor_spec: anchor_spec.source_workloads\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`

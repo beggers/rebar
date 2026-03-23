@@ -16386,10 +16386,7 @@ class _CompiledPatternModuleSuccessAnchorSpec:
     case_id: str
     owner_spec: CompiledPatternModuleSuccessOwnerSpec
     contract_filename: str
-    source_workloads: Callable[
-        [CompiledPatternModuleSuccessOwnerSpec],
-        tuple[Workload, ...],
-    ]
+    source_workloads: tuple[Workload, ...]
     correctness_case_signature: Callable[[Any], object]
     workload_signature: Callable[[Any], object]
     include_workload: Callable[[Any], bool]
@@ -16406,75 +16403,6 @@ class _CompiledPatternModuleSuccessAnchorSpec:
                 for workload_id, case_id in self.expected_anchored_pairs
             },
         )
-
-
-_COMPILED_PATTERN_MODULE_SUCCESS_ANCHOR_SPECS = (
-    _CompiledPatternModuleSuccessAnchorSpec(
-        case_id="collection-replacement",
-        owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_collection_replacement_success_anchor_contract.py"
-        ),
-        source_workloads=lambda owner_spec: owner_spec.source_workloads(),
-        correctness_case_signature=(
-            _collection_replacement_compiled_pattern_success_correctness_case_signature
-        ),
-        workload_signature=(
-            _collection_replacement_compiled_pattern_success_workload_signature
-        ),
-        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
-        expected_anchored_pairs=(
-            (
-                "module-split-literal-warm-str-compiled-pattern-contract",
-                "workflow-module-split-str-compiled-pattern",
-            ),
-            (
-                "module-findall-literal-purged-bytes-compiled-pattern-contract",
-                "workflow-module-findall-bytes-compiled-pattern",
-            ),
-            (
-                "module-finditer-literal-warm-str-compiled-pattern-contract",
-                "workflow-module-finditer-str-compiled-pattern",
-            ),
-            (
-                "module-sub-literal-warm-str-compiled-pattern-contract",
-                "workflow-module-sub-str-compiled-pattern",
-            ),
-            (
-                "module-subn-literal-purged-bytes-compiled-pattern-contract",
-                "workflow-module-subn-bytes-compiled-pattern",
-            ),
-        ),
-    ),
-    _CompiledPatternModuleSuccessAnchorSpec(
-        case_id="module-boundary-verbose-bytes",
-        owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_boundary_verbose_bytes_contract.py"
-        ),
-        source_workloads=lambda owner_spec: _selected_manifest_workloads(
-            owner_spec.manifest_path,
-            include_workload=(
-                _is_module_workflow_compiled_pattern_verbose_bytes_success_workload
-            ),
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_correctness_case_signature
-        ),
-        workload_signature=_module_workflow_compiled_pattern_workload_signature,
-        include_workload=_is_module_workflow_compiled_pattern_workload,
-        expected_anchored_pairs=(
-            (
-                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern-contract",
-                "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-            ),
-            (
-                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern-contract",
-                "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-            ),
-        ),
-    ),
-)
 
 
 _COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
@@ -16520,6 +16448,84 @@ def _contract_source_workloads(
     ):
         raise AssertionError(drift_message)
     return source_workloads
+
+
+_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_SOURCE_WORKLOADS = (
+    _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC.source_workloads()
+)
+_COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_SOURCE_WORKLOADS = (
+    _selected_manifest_workloads(
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC.manifest_path,
+        include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+    )
+)
+
+_COMPILED_PATTERN_MODULE_SUCCESS_ANCHOR_SPECS = (
+    _CompiledPatternModuleSuccessAnchorSpec(
+        case_id="collection-replacement",
+        owner_spec=_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+        contract_filename=(
+            "python_benchmark_compiled_pattern_collection_replacement_success_anchor_contract.py"
+        ),
+        source_workloads=(
+            _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_SOURCE_WORKLOADS
+        ),
+        correctness_case_signature=(
+            _collection_replacement_compiled_pattern_success_correctness_case_signature
+        ),
+        workload_signature=(
+            _collection_replacement_compiled_pattern_success_workload_signature
+        ),
+        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+        expected_anchored_pairs=(
+            (
+                "module-split-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-split-str-compiled-pattern",
+            ),
+            (
+                "module-findall-literal-purged-bytes-compiled-pattern-contract",
+                "workflow-module-findall-bytes-compiled-pattern",
+            ),
+            (
+                "module-finditer-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-finditer-str-compiled-pattern",
+            ),
+            (
+                "module-sub-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-sub-str-compiled-pattern",
+            ),
+            (
+                "module-subn-literal-purged-bytes-compiled-pattern-contract",
+                "workflow-module-subn-bytes-compiled-pattern",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleSuccessAnchorSpec(
+        case_id="module-boundary-verbose-bytes",
+        owner_spec=_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_boundary_verbose_bytes_contract.py"
+        ),
+        source_workloads=(
+            _COMPILED_PATTERN_MODULE_BOUNDARY_VERBOSE_BYTES_SUCCESS_SOURCE_WORKLOADS
+        ),
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        include_workload=_is_module_workflow_compiled_pattern_workload,
+        expected_anchored_pairs=(
+            (
+                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern-contract",
+                "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+            ),
+            (
+                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern-contract",
+                "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+            ),
+        ),
+    ),
+)
 
 
 def _assert_compiled_pattern_module_success_payload_round_trip(
@@ -17200,7 +17206,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = tuple(
 class _CompiledPatternModuleContractAnchorLane:
     case_id: str
     contract_filename: str
-    source_workloads: Callable[[], tuple[Workload, ...]]
+    source_workloads: tuple[Workload, ...] | Callable[[], tuple[Workload, ...]]
     contract_builder_spec: Callable[[], _SourceTreeContractBuilderSpec]
     expected_anchor_case_ids: Callable[
         [pathlib.Path],
@@ -17212,16 +17218,20 @@ class _CompiledPatternModuleContractAnchorLane:
     expected_anchor_pairs: tuple[tuple[str, str], ...]
 
 
+def _compiled_pattern_module_contract_anchor_lane_source_workloads(
+    source_workloads: tuple[Workload, ...] | Callable[[], tuple[Workload, ...]],
+) -> tuple[Workload, ...]:
+    if callable(source_workloads):
+        return source_workloads()
+    return source_workloads
+
+
 _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
     *(
         _CompiledPatternModuleContractAnchorLane(
             case_id=anchor_spec.case_id,
             contract_filename=anchor_spec.contract_filename,
-            source_workloads=(
-                lambda anchor_spec=anchor_spec: anchor_spec.source_workloads(
-                    anchor_spec.owner_spec
-                )
-            ),
+            source_workloads=anchor_spec.source_workloads,
             contract_builder_spec=anchor_spec.owner_spec.contract_builder_spec,
             expected_anchor_case_ids=anchor_spec.expected_anchor_case_ids,
             anchor_case_ids=(
@@ -17341,7 +17351,9 @@ def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correc
     anchor_lane: _CompiledPatternModuleContractAnchorLane,
 ) -> None:
     manifest = _source_tree_contract_manifest(
-        anchor_lane.source_workloads(),
+        _compiled_pattern_module_contract_anchor_lane_source_workloads(
+            anchor_lane.source_workloads
+        ),
         spec=anchor_lane.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
