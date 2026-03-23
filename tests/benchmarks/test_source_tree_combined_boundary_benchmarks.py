@@ -16853,14 +16853,6 @@ def _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
     assert round_tripped.haystack_text_model is None
 
 
-def _compiled_pattern_module_compile_success_correctness_case_signature(
-    contract_case: CompiledPatternModuleCompileContractCase,
-    case: Any,
-) -> tuple[Any, ...] | None:
-    del contract_case
-    return _module_workflow_compiled_pattern_compile_correctness_case_signature(case)
-
-
 def _compiled_pattern_module_compile_keyword_correctness_case_signature(
     contract_case: CompiledPatternModuleCompileContractCase,
     case: Any,
@@ -16872,14 +16864,6 @@ def _compiled_pattern_module_compile_keyword_correctness_case_signature(
         ),
         allowed_patterns=contract_case.allowed_patterns,
     )
-
-
-def _compiled_pattern_module_compile_success_workload_signature(
-    contract_case: CompiledPatternModuleCompileContractCase,
-    workload: Any,
-) -> tuple[Any, ...]:
-    del contract_case
-    return _module_workflow_compiled_pattern_compile_workload_signature(workload)
 
 
 def _compiled_pattern_module_compile_keyword_workload_signature(
@@ -16897,14 +16881,6 @@ def _compiled_pattern_module_compile_keyword_workload_signature(
     )
 
 
-def _is_compiled_pattern_module_compile_success_workload(
-    contract_case: CompiledPatternModuleCompileContractCase,
-    workload: Any,
-) -> bool:
-    del contract_case
-    return _is_module_workflow_compiled_pattern_compile_workload(workload)
-
-
 def _is_compiled_pattern_module_compile_keyword_workload(
     contract_case: CompiledPatternModuleCompileContractCase,
     workload: Any,
@@ -16919,15 +16895,6 @@ def _is_compiled_pattern_module_compile_keyword_workload(
     )
 
 
-def _run_cpython_compiled_pattern_module_compile_success_workload(
-    contract_case: CompiledPatternModuleCompileContractCase,
-    workload: Workload,
-) -> object:
-    del contract_case
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return re.compile(compiled_pattern, workload.flags)
-
-
 def _run_cpython_compiled_pattern_module_compile_keyword_workload(
     contract_case: CompiledPatternModuleCompileContractCase,
     workload: Workload,
@@ -16935,14 +16902,6 @@ def _run_cpython_compiled_pattern_module_compile_keyword_workload(
     del contract_case
     compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
     return re.compile(compiled_pattern, **workload.keyword_arguments())
-
-
-def _compiled_pattern_module_compile_success_callback_flags(
-    contract_case: CompiledPatternModuleCompileContractCase,
-    source_workload: Workload,
-) -> object:
-    del contract_case
-    return source_workload.flags
 
 
 def _compiled_pattern_module_compile_keyword_callback_flags(
@@ -17098,22 +17057,29 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE = (
             "module.compile rows unresolved until helper invocation."
         ),
         correctness_case_signature_builder=(
-            _compiled_pattern_module_compile_success_correctness_case_signature
+            lambda _contract_case, case: (
+                _module_workflow_compiled_pattern_compile_correctness_case_signature(
+                    case
+                )
+            )
         ),
         workload_signature_builder=(
-            _compiled_pattern_module_compile_success_workload_signature
+            lambda _contract_case, workload: (
+                _module_workflow_compiled_pattern_compile_workload_signature(workload)
+            )
         ),
-        include_workload_selector=(
-            _is_compiled_pattern_module_compile_success_workload
+        include_workload_selector=lambda _contract_case, workload: (
+            _is_module_workflow_compiled_pattern_compile_workload(workload)
         ),
         payload_round_trip_assertion=(
             _assert_compiled_pattern_module_compile_success_payload_round_trip
         ),
-        cpython_dispatch=(
-            _run_cpython_compiled_pattern_module_compile_success_workload
+        cpython_dispatch=lambda _contract_case, workload: re.compile(
+            re.compile(workload.pattern_payload(), workload.flags),
+            workload.flags,
         ),
-        callback_flags_selector=(
-            _compiled_pattern_module_compile_success_callback_flags
+        callback_flags_selector=lambda _contract_case, source_workload: (
+            source_workload.flags
         ),
     )
 )
