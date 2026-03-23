@@ -41,6 +41,14 @@ def test_regex_backend_returns_rebar_backend_without_callspec_filters() -> None:
     assert backend is rebar
 
 
+def test_regex_backend_rejects_unknown_backend_parameter() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="unknown regex backend parameter 'missing-backend'",
+    ):
+        _invoke_regex_backend("missing-backend")
+
+
 def test_regex_backend_skips_matching_unsupported_backend_with_explicit_reason() -> None:
     with pytest.raises(pytest.skip.Exception, match="bounded rebar gap"):
         _invoke_regex_backend(

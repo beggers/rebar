@@ -56,4 +56,6 @@ def regex_backend(request: pytest.FixtureRequest) -> tuple[str, object]:
 
     if request.param == "stdlib":
         return ("stdlib", re)
-    return ("rebar", rebar)
+    if request.param == "rebar":
+        return ("rebar", rebar)
+    raise AssertionError(f"unknown regex backend parameter {request.param!r}")
