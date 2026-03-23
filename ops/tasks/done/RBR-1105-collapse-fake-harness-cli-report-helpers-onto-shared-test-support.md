@@ -1,6 +1,6 @@
 # RBR-1105: Collapse fake harness CLI report helpers onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -52,3 +52,11 @@ Created: 2026-03-23
   - `tests/python/test_shared_test_support_contract.py:47` plus `tests/python/test_ops_harness.py:1736-1738`, `tests/python/test_ops_harness.py:1777-1778`, and `tests/python/test_ops_harness.py:1816-1817` each hand-parse `--report` from mocked CLI args in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_ops_harness.py -k 'run_harness_scorecard'` returned `10 passed, 81 deselected, 2 subtests passed` in this run.
+
+## Completion Notes
+- Added shared `completed_process(...)` and `report_path_from_cli_args(...)` helpers in `tests/conftest.py` so fake harness CLI result construction and `--report` path resolution now live on the shared test-support surface.
+- Removed the owner-local `completed_process(...)` and `_report_path_from_cli_args(...)` copies from `tests/python/test_shared_test_support_contract.py`, and switched the scorecard contract mocks to the shared helpers.
+- Removed the owner-local `completed_process(...)` copy from `tests/python/test_ops_harness.py` and replaced the three hand-parsed `--report` lookups in the mocked scorecard tests with the shared helper.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_ops_harness.py -k 'run_harness_scorecard'`
+  - `bash -lc "! rg -n '^def completed_process\\(|^def _report_path_from_cli_args\\(|index\\(\\\"--report\\\"\\)' tests/python/test_shared_test_support_contract.py tests/python/test_ops_harness.py"`

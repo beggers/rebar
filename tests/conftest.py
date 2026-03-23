@@ -97,6 +97,25 @@ def run_harness_cli(
     )
 
 
+def completed_process(
+    *args: str,
+    returncode: int = 0,
+    stdout: str = "",
+    stderr: str = "",
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.CompletedProcess(
+        args=args,
+        returncode=returncode,
+        stdout=stdout,
+        stderr=stderr,
+    )
+
+
+def report_path_from_cli_args(cli_args: list[str] | tuple[str, ...]) -> pathlib.Path:
+    report_index = cli_args.index("--report")
+    return pathlib.Path(cli_args[report_index + 1])
+
+
 def run_harness_scorecard(
     module_name: str,
     cli_args: Iterable[str],

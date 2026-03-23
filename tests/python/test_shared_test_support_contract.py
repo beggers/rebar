@@ -15,37 +15,18 @@ from tests.conftest import (
     REPO_ROOT,
     assert_published_manifest_helper_contract,
     assert_published_manifest_helper_reload_contract,
+    completed_process,
     declared_string_constants_by_suffix,
     duplicate_items,
     duplicate_string_ids,
+    report_path_from_cli_args,
     run_harness_cli,
     run_harness_scorecard,
 )
 
 
-def completed_process(
-    *args: str,
-    returncode: int = 0,
-    stdout: str = "",
-    stderr: str = "",
-) -> subprocess.CompletedProcess[str]:
-    return subprocess.CompletedProcess(
-        args=args,
-        returncode=returncode,
-        stdout=stdout,
-        stderr=stderr,
-    )
-
-
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
-COMPILE_MATRIX_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
-)
-
-
-def _report_path_from_cli_args(cli_args: list[str]) -> pathlib.Path:
-    report_index = cli_args.index("--report")
-    return pathlib.Path(cli_args[report_index + 1])
+COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 
 
 def test_duplicate_items_returns_sorted_duplicate_keys_once() -> None:
@@ -285,7 +266,7 @@ def test_run_harness_scorecard_loads_json_reports_without_importing_module_loade
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        report_path = _report_path_from_cli_args(cli_args)
+        report_path = report_path_from_cli_args(cli_args)
         report_path.write_text(
             '{"suite": "synthetic", "summary": {"passing_cases": 1}}',
             encoding="utf-8",
@@ -331,7 +312,7 @@ def test_run_harness_scorecard_uses_non_json_scorecard_loader_when_available() -
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        report_path = _report_path_from_cli_args(cli_args)
+        report_path = report_path_from_cli_args(cli_args)
         report_path.write_text(placeholder_payload, encoding="utf-8")
         return completed_process(
             "python",
@@ -382,7 +363,7 @@ def test_run_harness_scorecard_wraps_non_json_import_failures_in_value_error() -
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        _report_path_from_cli_args(cli_args)
+        report_path_from_cli_args(cli_args)
         return completed_process(
             "python",
             "-m",
@@ -425,7 +406,7 @@ def test_run_harness_scorecard_wraps_missing_non_json_loader_in_value_error() ->
     ) -> subprocess.CompletedProcess[str]:
         assert module_name == "custom.module"
         assert check is True
-        _report_path_from_cli_args(cli_args)
+        report_path_from_cli_args(cli_args)
         return completed_process(
             "python",
             "-m",

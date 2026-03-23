@@ -13,11 +13,13 @@ from unittest import mock
 
 from rebar_harness import benchmarks, correctness, scorecard_io
 import tests.conftest as test_support
-from tests.conftest import REPO_ROOT, run_harness_cli, run_harness_scorecard
-
-
-def completed_process(*args: str, returncode: int = 0, stdout: str = "", stderr: str = ""):
-    return subprocess.CompletedProcess(args=args, returncode=returncode, stdout=stdout, stderr=stderr)
+from tests.conftest import (
+    REPO_ROOT,
+    completed_process,
+    report_path_from_cli_args,
+    run_harness_cli,
+    run_harness_scorecard,
+)
 
 
 REBAR_OPS_MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
@@ -1733,8 +1735,7 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertEqual(module_name, "custom.scorecard.module")
             self.assertTrue(check)
             observed_cli_args = tuple(cli_args)
-            report_index = observed_cli_args.index("--report")
-            report_path = pathlib.Path(observed_cli_args[report_index + 1])
+            report_path = report_path_from_cli_args(observed_cli_args)
             report_path.write_text(json.dumps(scorecard_payload), encoding="utf-8")
             return completed_process(
                 module_name,
@@ -1774,8 +1775,7 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertEqual(module_name, "custom.scorecard.module")
             self.assertTrue(check)
             observed_cli_args = tuple(cli_args)
-            report_index = observed_cli_args.index("--report")
-            report_path = pathlib.Path(observed_cli_args[report_index + 1])
+            report_path = report_path_from_cli_args(observed_cli_args)
             report_path.write_text("REPORT = {'suite': 'custom'}\n", encoding="utf-8")
             return completed_process(
                 module_name,
@@ -1813,8 +1813,7 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertEqual(module_name, "custom.scorecard.module")
             self.assertTrue(check)
             observed_cli_args = tuple(cli_args)
-            report_index = observed_cli_args.index("--report")
-            report_path = pathlib.Path(observed_cli_args[report_index + 1])
+            report_path = report_path_from_cli_args(observed_cli_args)
             report_path.write_text("REPORT = {'suite': 'custom'}\n", encoding="utf-8")
             return completed_process(
                 module_name,
