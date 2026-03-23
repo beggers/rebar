@@ -3791,8 +3791,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.case_id
             for case in published_cases_by_id().values()
             if (
-                signature := _all_module_collection_replacement_literal_replacement_correctness_case_signature(
-                    case
+                signature := _collection_replacement_literal_replacement_correctness_case_signature(
+                    case,
+                    case_ids=None,
+                    expected_operation="module_call",
+                    operation_prefix="module",
+                    args_offset=1,
                 )
             )
             is not None
@@ -8617,18 +8621,6 @@ def _module_collection_replacement_literal_replacement_correctness_case_signatur
         case_ids=_workload_case_pairs_case_ids(
             _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
         ),
-        expected_operation="module_call",
-        operation_prefix="module",
-        args_offset=1,
-    )
-
-
-def _all_module_collection_replacement_literal_replacement_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _collection_replacement_literal_replacement_correctness_case_signature(
-        case,
-        case_ids=None,
         expected_operation="module_call",
         operation_prefix="module",
         args_offset=1,
