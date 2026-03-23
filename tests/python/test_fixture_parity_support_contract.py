@@ -4694,6 +4694,41 @@ def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
     assert fixture_cases_for_operation((mixed_bundle, str_bundle), "cache_workflow") == ()
 
 
+def test_fixture_cases_for_operation_accepts_one_shot_bundle_iterables(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    mixed_bundle = build_selected_fixture_bundle(
+        mixed_path,
+        selected_case_ids=(
+            "bundle-loader-contract-mixed-compile-bytes",
+            "bundle-loader-contract-mixed-module-search-str",
+            "bundle-loader-contract-mixed-compile-str",
+        ),
+        pattern_extractor=case_pattern,
+    )
+    str_bundle = build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=(
+            "bundle-loader-contract-pattern-search-str",
+            "bundle-loader-contract-compile-str",
+        ),
+        pattern_extractor=str_case_pattern,
+    )
+
+    bundle_iterable = (
+        bundle for bundle in (mixed_bundle, str_bundle) if bundle.expected_case_ids is not None
+    )
+
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation(bundle_iterable, "compile")
+    ) == (
+        "bundle-loader-contract-mixed-compile-bytes",
+        "bundle-loader-contract-mixed-compile-str",
+        "bundle-loader-contract-compile-str",
+    )
+
+
 def test_full_manifest_bundle_sets_str_text_model_expectation(
     tmp_path: pathlib.Path,
 ) -> None:
