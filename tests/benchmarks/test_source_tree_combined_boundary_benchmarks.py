@@ -15760,6 +15760,20 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
     notes: tuple[str, ...] = ()
     precompile_anchor_ids: tuple[str, ...] = ()
 
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        excluded_fields = (
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+        )
+        if not self.preserve_expected_exception:
+            excluded_fields = excluded_fields | {"expected_exception"}
+        return _SourceTreeContractBuilderSpec(
+            manifest_id="collection-replacement-boundary",
+            excluded_fields=excluded_fields,
+            manifest_timed_samples=self.manifest_timed_samples,
+            timing_scope="module-helper-call",
+            notes=self.notes,
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class _CompiledPatternModuleHelperKeywordContractSurface:
@@ -15925,22 +15939,6 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
         materializes_positional_keyword_field=True,
     )
 )
-
-
-def _compiled_pattern_module_helper_keyword_contract_builder_spec(
-    spec: _CompiledPatternModuleHelperKeywordContractSpec,
-) -> _SourceTreeContractBuilderSpec:
-    excluded_fields = _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
-    if not spec.preserve_expected_exception:
-        excluded_fields = excluded_fields | {"expected_exception"}
-    return _SourceTreeContractBuilderSpec(
-        manifest_id="collection-replacement-boundary",
-        excluded_fields=excluded_fields,
-        manifest_timed_samples=spec.manifest_timed_samples,
-        timing_scope="module-helper-call",
-        notes=spec.notes,
-    )
-
 
 def _assert_compiled_pattern_module_helper_contract_payload_round_trip(
     source_workload: Workload,
@@ -16223,9 +16221,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     source_workloads = contract_surface.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=_compiled_pattern_module_helper_keyword_contract_builder_spec(
-            contract_surface.spec
-        ),
+        spec=contract_surface.spec.contract_builder_spec(),
     )
 
     manifest_path = _write_test_manifest(
@@ -16282,9 +16278,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_builder_spec(
-            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC
-        ),
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec(),
     )
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
@@ -16318,9 +16312,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_builder_spec(
-            contract_surface.spec
-        ),
+        spec=contract_surface.spec.contract_builder_spec(),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -16364,9 +16356,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
         "re",
         _source_tree_contract_workload(
             source_workload,
-            spec=_compiled_pattern_module_helper_keyword_contract_builder_spec(
-                contract_surface.spec
-            ),
+            spec=contract_surface.spec.contract_builder_spec(),
         ),
     )
 
@@ -18056,9 +18046,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_builder_spec(
-            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC
-        ),
+        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec(),
     )
     observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
