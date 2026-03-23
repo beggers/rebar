@@ -12,31 +12,31 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1592 cases across 114 manifests, with all 1592 passing in the current slice; the benchmark publication covers 973/973 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | `RBR-1063` is the surviving ready follow-on after the current correctness head drains: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface. |
-| Work queue | `1` ready, `0` in progress, `1065` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1593 cases across 114 manifests, with all 1593 passing in the current slice; the benchmark publication covers 974/974 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
+| Current milestone | `RBR-1065` is the surviving ready follow-on after the current benchmark head drains: publish the direct `Pattern.subn()` str single-match on the shared collection/replacement correctness surface. |
+| Work queue | `1` ready, `0` in progress, `1067` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1592` |
-| Passing in published slice | `1592` |
+| Published cases | `1593` |
+| Passing in published slice | `1593` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1592 cases across 114 manifests, with all 1592 passing in the current slice; the benchmark publication covers 973/973 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1593 cases across 114 manifests, with all 1593 passing in the current slice; the benchmark publication covers 974/974 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `973` |
-| Workloads with real `rebar` timings | `973` |
+| Published workloads | `974` |
+| Workloads with real `rebar` timings | `974` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-1063`: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
+- `RBR-1065`: publish the direct `Pattern.subn()` str single-match on the shared collection/replacement correctness surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
-- The published benchmark surface is still bounded at 973 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 974 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
