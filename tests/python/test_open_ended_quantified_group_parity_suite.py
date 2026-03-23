@@ -106,6 +106,35 @@ class BytesCaseSurfaceSpec:
     follow_on_id: str | None = None
 
 
+def fixture_bundle_manifest_id(bundle: FixtureBundle) -> str:
+    return bundle.expected_manifest_id
+
+
+def bytes_case_surface_manifest_id(spec: BytesCaseSurfaceSpec) -> str:
+    return spec.bundle.manifest.manifest_id
+
+
+def bytes_case_surface_follow_on_id(spec: BytesCaseSurfaceSpec) -> str:
+    assert spec.follow_on_id is not None
+    return spec.follow_on_id
+
+
+def fixture_case_param_id(case: FixtureCase) -> str:
+    return case.case_id
+
+
+def supplemental_case_param_id(case: SupplementalCase) -> str:
+    return case.id
+
+
+def bounded_pattern_case_param_id(case: BoundedPatternCase) -> str:
+    return case.id
+
+
+def trace_case_param_id(case: OpenEndedTraceCase) -> str:
+    return case.id
+
+
 OPEN_ENDED_BYTES_CASE_SURFACES = (
     BytesCaseSurfaceSpec(
         bundle=OPEN_ENDED_ALTERNATION_BUNDLE,
@@ -674,7 +703,7 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=lambda bundle: bundle.expected_manifest_id,
+    ids=fixture_bundle_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
@@ -710,7 +739,7 @@ def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_
 @pytest.mark.parametrize(
     "spec",
     OPEN_ENDED_BYTES_CASE_SURFACES,
-    ids=lambda spec: spec.bundle.manifest.manifest_id,
+    ids=bytes_case_surface_manifest_id,
 )
 def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     spec: BytesCaseSurfaceSpec,
@@ -779,7 +808,7 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
 @pytest.mark.parametrize(
     "spec",
     tuple(spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is None),
-    ids=lambda spec: spec.bundle.manifest.manifest_id,
+    ids=bytes_case_surface_manifest_id,
 )
 def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
     spec: BytesCaseSurfaceSpec,
@@ -818,7 +847,7 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
     tuple(
         spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
     ),
-    ids=lambda spec: spec.follow_on_id,
+    ids=bytes_case_surface_follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: BytesCaseSurfaceSpec,
@@ -1237,7 +1266,7 @@ def test_open_ended_backtracking_bytes_trace_cases_cover_all_declared_branch_ord
 @pytest.mark.parametrize(
     "case",
     PATTERN_BOUNDS_MATCH_CASES,
-    ids=lambda case: case.id,
+    ids=bounded_pattern_case_param_id,
 )
 def test_pattern_bounds_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1255,7 +1284,7 @@ def test_pattern_bounds_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     PATTERN_BOUNDS_NO_MATCH_CASES,
-    ids=lambda case: case.id,
+    ids=bounded_pattern_case_param_id,
 )
 def test_pattern_bounds_misses_match_cpython(
     regex_backend: tuple[str, object],
@@ -1272,7 +1301,7 @@ def test_pattern_bounds_misses_match_cpython(
 @pytest.mark.parametrize(
     "case",
     tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
-    ids=lambda case: case.id,
+    ids=supplemental_case_param_id,
 )
 def test_supplemental_bytes_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1285,7 +1314,7 @@ def test_supplemental_bytes_compile_metadata_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
-    ids=lambda case: case.id,
+    ids=supplemental_case_param_id,
 )
 def test_supplemental_bytes_module_search_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1309,7 +1338,7 @@ def test_supplemental_bytes_module_search_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
-    ids=lambda case: case.id,
+    ids=supplemental_case_param_id,
 )
 def test_supplemental_bytes_module_search_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1329,7 +1358,7 @@ def test_supplemental_bytes_module_search_convenience_api_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
-    ids=lambda case: case.id,
+    ids=supplemental_case_param_id,
 )
 def test_supplemental_bytes_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1350,7 +1379,7 @@ def test_supplemental_bytes_module_search_match_group_access_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
-    ids=lambda case: case.id,
+    ids=supplemental_case_param_id,
 )
 def test_supplemental_bytes_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1379,7 +1408,7 @@ def test_supplemental_bytes_pattern_fullmatch_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
-    ids=lambda case: case.id,
+    ids=supplemental_case_param_id,
 )
 def test_supplemental_bytes_pattern_fullmatch_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1404,7 +1433,7 @@ def test_supplemental_bytes_pattern_fullmatch_convenience_api_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     tuple(case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases),
-    ids=lambda case: case.id,
+    ids=supplemental_case_param_id,
 )
 def test_supplemental_bytes_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1427,7 +1456,7 @@ def test_supplemental_bytes_pattern_fullmatch_match_group_access_matches_cpython
         assert_invalid_match_group_access_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=fixture_case_param_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -1436,7 +1465,7 @@ def test_compile_metadata_matches_cpython(
     compile_with_cpython_parity(backend_name, backend, case_pattern(case), case.flags or 0)
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_param_id)
 def test_module_search_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -1449,7 +1478,7 @@ def test_module_search_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_param_id)
 def test_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -1463,7 +1492,7 @@ def test_module_search_match_convenience_api_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_param_id)
 def test_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -1477,7 +1506,7 @@ def test_module_search_match_group_access_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_param_id)
 def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -1490,7 +1519,7 @@ def test_pattern_fullmatch_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", OPEN_ENDED_TRACE_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", OPEN_ENDED_TRACE_CASES, ids=trace_case_param_id)
 def test_open_ended_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: OpenEndedTraceCase,
@@ -1505,7 +1534,7 @@ def test_open_ended_module_search_branch_traces_match_cpython(
     assert_match_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", OPEN_ENDED_TRACE_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", OPEN_ENDED_TRACE_CASES, ids=trace_case_param_id)
 def test_open_ended_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: OpenEndedTraceCase,
@@ -1528,7 +1557,7 @@ def test_open_ended_pattern_fullmatch_branch_traces_match_cpython(
 @pytest.mark.parametrize(
     "case",
     BROADER_RANGE_OPEN_ENDED_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_broader_range_open_ended_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1547,7 +1576,7 @@ def test_broader_range_open_ended_module_search_branch_traces_match_cpython(
 @pytest.mark.parametrize(
     "case",
     BROADER_RANGE_OPEN_ENDED_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_broader_range_open_ended_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1571,7 +1600,7 @@ def test_broader_range_open_ended_pattern_fullmatch_branch_traces_match_cpython(
 @pytest.mark.parametrize(
     "case",
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_broader_range_open_ended_conditional_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1590,7 +1619,7 @@ def test_broader_range_open_ended_conditional_module_search_branch_traces_match_
 @pytest.mark.parametrize(
     "case",
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_broader_range_open_ended_conditional_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1614,7 +1643,7 @@ def test_broader_range_open_ended_conditional_pattern_fullmatch_branch_traces_ma
 @pytest.mark.parametrize(
     "case",
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_broader_range_open_ended_conditional_bytes_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1635,7 +1664,7 @@ def test_broader_range_open_ended_conditional_bytes_module_search_branch_traces_
 @pytest.mark.parametrize(
     "case",
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_broader_range_open_ended_conditional_bytes_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1658,7 +1687,7 @@ def test_broader_range_open_ended_conditional_bytes_pattern_fullmatch_branch_tra
     assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
-@pytest.mark.parametrize("case", OPEN_ENDED_BYTES_TRACE_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", OPEN_ENDED_BYTES_TRACE_CASES, ids=trace_case_param_id)
 def test_open_ended_bytes_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: OpenEndedTraceCase,
@@ -1675,7 +1704,7 @@ def test_open_ended_bytes_module_search_branch_traces_match_cpython(
     assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
-@pytest.mark.parametrize("case", OPEN_ENDED_BYTES_TRACE_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", OPEN_ENDED_BYTES_TRACE_CASES, ids=trace_case_param_id)
 def test_open_ended_bytes_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: OpenEndedTraceCase,
@@ -1700,7 +1729,7 @@ def test_open_ended_bytes_pattern_fullmatch_branch_traces_match_cpython(
 @pytest.mark.parametrize(
     "case",
     OPEN_ENDED_BACKTRACKING_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_open_ended_backtracking_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1719,7 +1748,7 @@ def test_open_ended_backtracking_module_search_branch_traces_match_cpython(
 @pytest.mark.parametrize(
     "case",
     OPEN_ENDED_BACKTRACKING_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_open_ended_backtracking_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1743,7 +1772,7 @@ def test_open_ended_backtracking_pattern_fullmatch_branch_traces_match_cpython(
 @pytest.mark.parametrize(
     "case",
     OPEN_ENDED_BACKTRACKING_BYTES_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_open_ended_backtracking_bytes_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1764,7 +1793,7 @@ def test_open_ended_backtracking_bytes_module_search_branch_traces_match_cpython
 @pytest.mark.parametrize(
     "case",
     OPEN_ENDED_BACKTRACKING_BYTES_TRACE_CASES,
-    ids=lambda case: case.id,
+    ids=trace_case_param_id,
 )
 def test_open_ended_backtracking_bytes_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
@@ -1787,7 +1816,7 @@ def test_open_ended_backtracking_bytes_pattern_fullmatch_branch_traces_match_cpy
     assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_param_id)
 def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -1801,7 +1830,7 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_param_id)
 def test_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,

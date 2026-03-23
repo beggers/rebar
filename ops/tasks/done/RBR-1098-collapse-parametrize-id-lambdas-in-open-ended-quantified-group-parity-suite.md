@@ -1,6 +1,6 @@
 # RBR-1098: Collapse parametrize id lambdas in open-ended quantified-group parity suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -34,6 +34,8 @@ Created: 2026-03-23
 - Do not broaden this into other duplication cleanup elsewhere in the repo; keep the task bounded to the `ids=` adapters in `tests/python/test_open_ended_quantified_group_parity_suite.py`.
 
 ## Notes
+- Completed 2026-03-23: replaced every remaining `ids=lambda ...` adapter in `tests/python/test_open_ended_quantified_group_parity_suite.py` with same-file named id helpers, preserving the existing rendered ids for bundle, bytes-surface, fixture-case, bounded-window, supplemental-bytes, and trace parametrizations.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3902 passed`) and `bash -lc "! rg -n 'ids=lambda' tests/python/test_open_ended_quantified_group_parity_suite.py"`.
 - `RBR-1098` is the next available unreserved task id in this checkout:
   - the highest live task id across `ops/tasks/done/`, `ops/tasks/ready/`, `ops/tasks/in_progress/`, and `ops/tasks/blocked/` is `1097`; and
   - `rg -n 'RBR-1098|RBR-1099|RBR-1100|RBR-1101|RBR-1102' ops/state/current_status.md ops/state/backlog.md -g '*.md'` returned no reserved future ids in this run.
