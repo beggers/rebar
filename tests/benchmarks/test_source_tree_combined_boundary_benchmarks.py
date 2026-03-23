@@ -16570,21 +16570,6 @@ def _compiled_pattern_module_helper_route(
     )
 
 
-def _run_compiled_pattern_module_helper_workload_with_cpython(
-    workload: Workload,
-) -> object:
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    route = _compiled_pattern_module_helper_route(
-        workload,
-        collection_replacement_callback_flags=0,
-    )
-    helper = getattr(re, workload.operation.removeprefix("module."))
-    result = helper(compiled_pattern, *route.cpython_call_args)
-    if route.materialize_cpython_result:
-        return list(result)
-    return result
-
-
 def _contract_source_workload_params(
     owner_specs: tuple[object, ...],
     *,
@@ -17861,9 +17846,19 @@ class WrongTextModelOwnerSpec:
 
     def run_cpython_workload(self, workload: Workload) -> object:
         if self.use_compiled_pattern:
-            return _run_compiled_pattern_module_helper_workload_with_cpython(
-                workload
+            compiled_pattern = re.compile(
+                workload.pattern_payload(),
+                workload.flags,
             )
+            route = _compiled_pattern_module_helper_route(
+                workload,
+                collection_replacement_callback_flags=0,
+            )
+            helper = getattr(re, workload.operation.removeprefix("module."))
+            result = helper(compiled_pattern, *route.cpython_call_args)
+            if route.materialize_cpython_result:
+                return list(result)
+            return result
 
         route = self._direct_pattern_route_label()
         helper_name = workload.operation.removeprefix("pattern.")
