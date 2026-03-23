@@ -292,6 +292,32 @@ def test_recording_native_boundary_preserves_recorded_call_when_handler_raises()
     assert boundary.calls == [("compile", "abc", 7)]
 
 
+def test_recording_native_boundary_scaffold_helpers_follow_selected_message_source(
+) -> None:
+    boundary = fixture_parity_support.RecordingNativeBoundary()
+
+    with pytest.raises(NotImplementedError) as helper_raised:
+        boundary.scaffold_raise("search")
+    with pytest.raises(NotImplementedError) as pattern_raised:
+        boundary.scaffold_pattern_raise("finditer")
+
+    assert helper_raised.value.args == (rebar._placeholder_message("search"),)
+    assert pattern_raised.value.args == (
+        rebar._pattern_placeholder_message("finditer"),
+    )
+
+    native_boundary = fixture_parity_support.RecordingNativeBoundary(
+        native_placeholder_messages=True
+    )
+    with pytest.raises(NotImplementedError, match="native helper placeholder search"):
+        native_boundary.scaffold_raise("search")
+    with pytest.raises(NotImplementedError, match="native pattern placeholder finditer"):
+        native_boundary.scaffold_pattern_raise("finditer")
+
+    native_boundary.scaffold_purge()
+    assert native_boundary.calls == [("purge",)]
+
+
 def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
     return tuple(
         sorted(CORRECTNESS_FIXTURES_ROOT.glob("*.py"), key=lambda path: path.name)

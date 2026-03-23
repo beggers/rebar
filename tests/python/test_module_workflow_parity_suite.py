@@ -7279,30 +7279,6 @@ def test_recording_native_boundary_dispatch_helpers_record_calls_and_results() -
     ]
 
 
-def test_recording_native_boundary_placeholder_helpers_follow_selected_message_source(
-) -> None:
-    boundary = RecordingNativeBoundary()
-
-    with pytest.raises(NotImplementedError) as helper_raised:
-        boundary.scaffold_raise("search")
-    with pytest.raises(NotImplementedError) as pattern_raised:
-        boundary.scaffold_pattern_raise("finditer")
-
-    assert helper_raised.value.args == (rebar._placeholder_message("search"),)
-    assert pattern_raised.value.args == (
-        rebar._pattern_placeholder_message("finditer"),
-    )
-
-    native_boundary = RecordingNativeBoundary(native_placeholder_messages=True)
-    with pytest.raises(NotImplementedError, match="native helper placeholder search"):
-        native_boundary.scaffold_raise("search")
-    with pytest.raises(NotImplementedError, match="native pattern placeholder finditer"):
-        native_boundary.scaffold_pattern_raise("finditer")
-
-    native_boundary.scaffold_purge()
-    assert native_boundary.calls == [("purge",)]
-
-
 def test_recording_native_boundary_missing_handlers_raise_clear_assertions() -> None:
     boundary = RecordingNativeBoundary()
 
