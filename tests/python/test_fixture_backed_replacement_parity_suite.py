@@ -181,6 +181,8 @@ PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
 PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
     "pattern-sub-str-no-match",
     "pattern-sub-str-single-match",
+    "pattern-sub-str-repeated",
+    "pattern-sub-str-count-one",
     "pattern-sub-str-negative-count",
     "pattern-subn-str-count",
     "pattern-subn-str-repeated",
@@ -2554,6 +2556,8 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
         expected_args_by_case_id={
             "pattern-sub-str-no-match": ("x", "zzz"),
             "pattern-sub-str-single-match": ("x", "zabczz"),
+            "pattern-sub-str-repeated": ("x", "abcabc"),
+            "pattern-sub-str-count-one": ("x", "abcabc", 1),
             "pattern-sub-str-negative-count": ("x", "abcabc", -1),
             "pattern-subn-str-count": ("x", "abcabc", 1),
             "pattern-subn-str-repeated": ("x", "abcabc"),
@@ -2569,6 +2573,8 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "sub",
             "sub",
             "sub",
+            "sub",
+            "sub",
             "subn",
             "subn",
             "subn",
@@ -2580,6 +2586,8 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "subn",
         ),
         expected_text_models=(
+            "str",
+            "str",
             "str",
             "str",
             "str",

@@ -1,6 +1,6 @@
 # RBR-1034: Publish the direct `Pattern.sub()` str repeated/count-one pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,12 @@ Created: 2026-03-23
   - `DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES` in `tests/python/test_fixture_backed_replacement_parity_suite.py` already contains the source-package `str-repeated-match` and `str-count-one` cases, so the runtime parity slice is already exercised on the shared owner path;
   - `rg -n 'pattern-sub-str-repeated|pattern-sub-str-count-one' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py benchmarks/workloads/collection_replacement_boundary.py reports/correctness/latest.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact correctness and benchmark publication ids are still absent from the tracked owner-path surfaces; and
   - the matching benchmark-side workload ids `pattern-sub-repeated-warm-str` and `pattern-sub-count-one-warm-str` are also absent from `benchmarks/workloads/collection_replacement_boundary.py`, so benchmark catch-up should stay sequenced behind this correctness publication instead of replacing it.
+
+## Completion
+- 2026-03-23: Added `pattern-sub-str-repeated` and `pattern-sub-str-count-one` to `tests/conformance/fixtures/collection_replacement_workflows.py`, extended the shared owner-path publication assertions in `tests/python/test_fixture_backed_replacement_parity_suite.py`, refreshed the representative combined-scorecard expectation in `tests/conformance/test_combined_correctness_scorecards.py`, and republished `reports/correctness/latest.py`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (str-repeated-match or str-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1034-pattern-sub-str-repeated-count-one-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

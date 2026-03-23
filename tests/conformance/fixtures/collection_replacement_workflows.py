@@ -459,6 +459,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-str-repeated",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abcabc"],
+      "categories": ["workflow", "sub", "literal", "str", "repeated"],
+      "notes": [
+        "Publishes the direct Pattern.sub str repeated-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
+      "id": "pattern-sub-str-count-one",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "args": ["x", "abcabc", 1],
+      "categories": ["workflow", "sub", "literal", "str", "count-one"],
+      "notes": [
+        "Publishes the direct Pattern.sub str count-bounded path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-sub-str-negative-count",
       "operation": "pattern_call",
       "family": "replacement_workflow",
