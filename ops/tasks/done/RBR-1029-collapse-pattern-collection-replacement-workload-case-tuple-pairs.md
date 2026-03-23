@@ -1,6 +1,6 @@
 # RBR-1029: Collapse pattern collection/replacement workload-case tuple pairs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -59,6 +59,8 @@ Created: 2026-03-23
 - Do not edit benchmark workload manifests, correctness fixtures, reports, README/current-status/backlog prose, or the direct literal-replacement rows already queued in `RBR-1028`.
 
 ## Notes
+- Completed 2026-03-23: replaced the six detached bounded `Pattern.findall()` / `Pattern.finditer()` / `Pattern.split()` workload-id and case-id tuples in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with three canonical workload/case pair tables plus same-file helpers that derive measured-row expectations, anchor expectations, and correctness/workload membership from the same local pairing source.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_split_rows_measured or standard_benchmark_workloads_stay_pinned_to_exact_case_ids'` (`41 passed, 679 deselected, 9 subtests passed`) and `bash -lc "! rg -n '_PATTERN_COLLECTION_REPLACEMENT_(BOUNDED_FINDALL|BOUNDED_FINDITER|SPLIT)_(WORKLOAD|CASE)_IDS' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` (no matches).
 - `RBR-1029` is the next available unreserved task id in the current checkout:
   - `rg -n "RBR-1029" ops/state/current_status.md ops/state/backlog.md ops/tasks/ready ops/tasks/in_progress ops/tasks/done ops/tasks/blocked` returned no matches in this run.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in this checkout.
