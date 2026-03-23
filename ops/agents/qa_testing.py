@@ -10,9 +10,4 @@ SPEC = {
         "allow_dirty_worktree": True,
         "timeout_seconds": 2700,
     },
-    "codex": {
-        "config": [
-            'model_reasoning_effort="high"',
-        ],
-    },
 }
