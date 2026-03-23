@@ -1,6 +1,6 @@
 # RBR-1068: Retire pattern wrong-text-model anchor singleton
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -55,3 +55,10 @@ Created: 2026-03-23
   - the remaining bespoke singleton `test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases` still sits at line `15122`.
 - The focused verification slice already passes in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract'` returned `47 passed, 676 deselected` in this run.
+
+## Completion Note
+- Removed the one-off `test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases` singleton from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and left the existing `StandardBenchmarkAnchorContractDefinition` plus wrong-text-model owner-spec coverage untouched.
+- Preserved the existing `pattern-helper-collection-replacement-wrong-text-model` definition, its manifest path, its anchor mapping, and its signature helpers exactly as-is.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_workloads_stay_anchored_to_published_correctness_cases or standard_benchmark_workloads_stay_pinned_to_exact_case_ids or standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract'` -> `123 passed, 599 deselected`
+  - `bash -lc "! rg -n '^def test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> success
