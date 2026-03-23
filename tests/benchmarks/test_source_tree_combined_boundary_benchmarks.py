@@ -15508,22 +15508,6 @@ _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _selected_manifest_workloads(
 )
 
 
-def _module_helper_keyword_error_expected_field_names(
-    source_workload: Workload,
-) -> tuple[str, ...]:
-    if _is_module_workflow_keyword_error_workload(source_workload):
-        return tuple(f"kwargs.{name}" for name in source_workload.kwargs)
-
-    field_names: list[str] = []
-    positional_keyword_field = _collection_replacement_positional_keyword_field(
-        source_workload
-    )
-    if positional_keyword_field is not None:
-        field_names.append(positional_keyword_field)
-    field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
-    return tuple(field_names)
-
-
 @pytest.mark.parametrize(
     "source_workload",
     tuple(
@@ -15548,9 +15532,15 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
         with pytest.raises(TypeError) as observed_error:
             callback()
 
-        assert observed_field_names == list(
-            _module_helper_keyword_error_expected_field_names(source_workload)
-        )
+        expected_field_names = [f"kwargs.{name}" for name in source_workload.kwargs]
+        if not _is_module_workflow_keyword_error_workload(source_workload):
+            positional_keyword_field = _collection_replacement_positional_keyword_field(
+                source_workload
+            )
+            if positional_keyword_field is not None:
+                expected_field_names.insert(0, positional_keyword_field)
+
+        assert observed_field_names == expected_field_names
         assert str(observed_error.value) == str(expected_error.value)
     finally:
         re.purge()
