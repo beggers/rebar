@@ -16789,54 +16789,6 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 
 
 @pytest.mark.parametrize(
-    "anchor_spec",
-    tuple(
-        pytest.param(anchor_spec, id=anchor_spec.case_id)
-        for anchor_spec in _COMPILED_PATTERN_MODULE_SUCCESS_ANCHOR_SPECS
-    ),
-)
-def test_compiled_pattern_module_success_rows_stay_anchored_to_published_correctness_cases(
-    tmp_path: pathlib.Path,
-    anchor_spec: _CompiledPatternModuleSuccessAnchorSpec,
-) -> None:
-    manifest = _source_tree_contract_manifest(
-        anchor_spec.source_workloads(anchor_spec.owner_spec),
-        spec=anchor_spec.owner_spec.contract_builder_spec(),
-    )
-
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        anchor_spec.contract_filename,
-        f"MANIFEST = {manifest!r}\n",
-    )
-    expected_anchor_case_ids = anchor_spec.expected_anchor_case_ids(manifest_path)
-    anchor_case_ids = published_case_ids_by_signature(
-        anchor_spec.correctness_case_signature
-    )
-
-    assert anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=anchor_spec.workload_signature,
-        include_workload=anchor_spec.include_workload,
-    ) == expected_anchor_case_ids
-    assert unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=anchor_spec.workload_signature,
-        include_workload=anchor_spec.include_workload,
-    ) == ()
-    assert tuple(
-        (pair.workload_id, pair.case_id)
-        for pair in expected_anchored_workload_case_pairs(
-            manifest_path,
-            expected_anchor_case_ids=expected_anchor_case_ids,
-            include_workload=anchor_spec.include_workload,
-        )
-    ) == anchor_spec.expected_anchored_pairs
-
-
-@pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
     _contract_source_workload_params(
         _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
@@ -17332,6 +17284,85 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
 )
 
 
+@dataclass(frozen=True)
+class _CompiledPatternModuleContractAnchorLane:
+    case_id: str
+    contract_filename: str
+    source_workloads: Callable[[], tuple[Workload, ...]]
+    contract_builder_spec: Callable[[], _SourceTreeContractBuilderSpec]
+    expected_anchor_case_ids: Callable[
+        [pathlib.Path],
+        dict[tuple[str, str], tuple[str, ...]],
+    ]
+    anchor_case_ids: Callable[[], dict[tuple[Any, ...], tuple[str, ...]]]
+    workload_signature: Callable[[Any], tuple[Any, ...]]
+    include_workload: Callable[[Any], bool]
+    expected_anchor_pairs: tuple[tuple[str, str], ...]
+
+
+def _compiled_pattern_module_success_anchor_lane(
+    anchor_spec: _CompiledPatternModuleSuccessAnchorSpec,
+) -> _CompiledPatternModuleContractAnchorLane:
+    return _CompiledPatternModuleContractAnchorLane(
+        case_id=anchor_spec.case_id,
+        contract_filename=anchor_spec.contract_filename,
+        source_workloads=(
+            lambda anchor_spec=anchor_spec: anchor_spec.source_workloads(
+                anchor_spec.owner_spec
+            )
+        ),
+        contract_builder_spec=anchor_spec.owner_spec.contract_builder_spec,
+        expected_anchor_case_ids=anchor_spec.expected_anchor_case_ids,
+        anchor_case_ids=(
+            lambda anchor_spec=anchor_spec: published_case_ids_by_signature(
+                anchor_spec.correctness_case_signature
+            )
+        ),
+        workload_signature=anchor_spec.workload_signature,
+        include_workload=anchor_spec.include_workload,
+        expected_anchor_pairs=anchor_spec.expected_anchored_pairs,
+    )
+
+
+def _compiled_pattern_module_compile_contract_anchor_lane(
+    contract_case: CompiledPatternModuleCompileContractCase,
+) -> _CompiledPatternModuleContractAnchorLane:
+    return _CompiledPatternModuleContractAnchorLane(
+        case_id=contract_case.case_id,
+        contract_filename=contract_case.anchor_contract_filename,
+        source_workloads=contract_case.source_workloads,
+        contract_builder_spec=contract_case.contract_builder_spec,
+        expected_anchor_case_ids=(
+            lambda manifest_path, contract_case=contract_case: (
+                _workload_case_pair_anchor_expectations(
+                    manifest_path,
+                    contract_case.expected_anchor_pairs,
+                )
+            )
+        ),
+        anchor_case_ids=(
+            lambda contract_case=contract_case: published_case_ids_by_signature(
+                contract_case.correctness_case_signature
+            )
+        ),
+        workload_signature=contract_case.workload_signature,
+        include_workload=contract_case.include_workload,
+        expected_anchor_pairs=contract_case.expected_anchor_pairs,
+    )
+
+
+_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
+    *(
+        _compiled_pattern_module_success_anchor_lane(anchor_spec)
+        for anchor_spec in _COMPILED_PATTERN_MODULE_SUCCESS_ANCHOR_SPECS
+    ),
+    *(
+        _compiled_pattern_module_compile_contract_anchor_lane(contract_case)
+        for contract_case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    ),
+)
+
+
 def _compiled_pattern_module_compile_contract_params() -> tuple[object, ...]:
     return tuple(
         pytest.param(
@@ -17412,54 +17443,46 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
 
 
 @pytest.mark.parametrize(
-    "contract_case",
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-    ids=lambda contract_case: contract_case.case_id,
+    "anchor_lane",
+    _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
+    ids=lambda anchor_lane: anchor_lane.case_id,
 )
-def test_compiled_pattern_module_compile_success_and_keyword_contract_rows_stay_anchored_to_published_correctness_cases(
+def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
-    contract_case: CompiledPatternModuleCompileContractCase,
+    anchor_lane: _CompiledPatternModuleContractAnchorLane,
 ) -> None:
     manifest = _source_tree_contract_manifest(
-        contract_case.source_workloads(),
-        spec=contract_case.contract_builder_spec(),
+        anchor_lane.source_workloads(),
+        spec=anchor_lane.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
-        contract_case.anchor_contract_filename,
+        anchor_lane.contract_filename,
         f"MANIFEST = {manifest!r}\n",
     )
-    expected_anchor_case_ids = _definition_anchor_expectations(
-        manifest_path,
-        {
-            workload_id: (case_id,)
-            for workload_id, case_id in contract_case.expected_anchor_pairs
-        },
-    )
-    anchor_case_ids = published_case_ids_by_signature(
-        contract_case.correctness_case_signature
-    )
+    expected_anchor_case_ids = anchor_lane.expected_anchor_case_ids(manifest_path)
+    anchor_case_ids = anchor_lane.anchor_case_ids()
 
     assert anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=contract_case.workload_signature,
-        include_workload=contract_case.include_workload,
+        workload_signature=anchor_lane.workload_signature,
+        include_workload=anchor_lane.include_workload,
     ) == expected_anchor_case_ids
     assert unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=contract_case.workload_signature,
-        include_workload=contract_case.include_workload,
+        workload_signature=anchor_lane.workload_signature,
+        include_workload=anchor_lane.include_workload,
     ) == ()
     assert tuple(
         (pair.workload_id, pair.case_id)
         for pair in expected_anchored_workload_case_pairs(
             manifest_path,
             expected_anchor_case_ids=expected_anchor_case_ids,
-            include_workload=contract_case.include_workload,
+            include_workload=anchor_lane.include_workload,
         )
-    ) == contract_case.expected_anchor_pairs
+    ) == anchor_lane.expected_anchor_pairs
 
 
 @pytest.mark.parametrize(
