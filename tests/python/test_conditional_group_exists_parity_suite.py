@@ -368,6 +368,24 @@ PATTERN_BOUNDS_MATCH_CASES = (
         string="zzabczz",
         bounds=(2, 5),
     ),
+    BoundedPatternCase(
+        id="conditional-group-exists-fully-empty-alternation-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id=(
+            "conditional-group-exists-fully-empty-alternation-compile-metadata-str"
+        ),
+        helper="search",
+        string="zzabczz",
+        bounds=(-100, 999),
+    ),
+    BoundedPatternCase(
+        id="named-conditional-group-exists-fully-empty-alternation-fullmatch-preserves-absent-group-metadata-in-window",
+        pattern_case_id=(
+            "named-conditional-group-exists-fully-empty-alternation-compile-metadata-str"
+        ),
+        helper="fullmatch",
+        string="zzaczz",
+        bounds=(2, 4),
+    ),
 )
 
 PATTERN_BOUNDS_NO_MATCH_CASES = (
@@ -418,6 +436,24 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         pattern_case_id="named-conditional-group-exists-fully-empty-compile-metadata-str",
         helper="fullmatch",
         string="zzaczz",
+        bounds=(2, 5),
+    ),
+    BoundedPatternCase(
+        id="conditional-group-exists-fully-empty-alternation-search-skips-match-before-pos",
+        pattern_case_id=(
+            "conditional-group-exists-fully-empty-alternation-compile-metadata-str"
+        ),
+        helper="search",
+        string="zzaczz",
+        bounds=(3, 6),
+    ),
+    BoundedPatternCase(
+        id="named-conditional-group-exists-fully-empty-alternation-fullmatch-fails-when-endpos-includes-extra-suffix",
+        pattern_case_id=(
+            "named-conditional-group-exists-fully-empty-alternation-compile-metadata-str"
+        ),
+        helper="fullmatch",
+        string="zzacfzz",
         bounds=(2, 5),
     ),
 )
@@ -744,6 +780,16 @@ def test_pattern_bounds_cases_stay_anchored_to_published_conditional_patterns() 
     assert str_case_pattern(
         CASES_BY_ID["named-conditional-group-exists-fully-empty-compile-metadata-str"]
     ) == r"a(?P<word>b)?c(?(word)|)"
+    assert str_case_pattern(
+        CASES_BY_ID[
+            "conditional-group-exists-fully-empty-alternation-compile-metadata-str"
+        ]
+    ) == FULLY_EMPTY_ALTERNATION_NUMBERED_PATTERN
+    assert str_case_pattern(
+        CASES_BY_ID[
+            "named-conditional-group-exists-fully-empty-alternation-compile-metadata-str"
+        ]
+    ) == FULLY_EMPTY_ALTERNATION_NAMED_PATTERN
 
 
 def test_match_api_cases_remain_published_quantified_conditional_matches() -> None:
