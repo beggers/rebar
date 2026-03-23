@@ -17438,9 +17438,6 @@ class WrongTextModelOwnerSpec:
     excluded_fields: frozenset[str]
     note_surface: str | None
     direct_pattern_route: str | None
-    compiled_pattern_expected_build_calls: (
-        Callable[[Workload], list[tuple[object, ...]]] | None
-    )
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
         notes: tuple[str, ...] = ()
@@ -17499,12 +17496,10 @@ class WrongTextModelOwnerSpec:
         source_workload: Workload,
     ) -> list[tuple[object, ...]]:
         if self.use_compiled_pattern:
-            if self.compiled_pattern_expected_build_calls is None:
-                raise AssertionError(
-                    "missing wrong-text-model expected-build-calls handler for "
-                    f"{self.case_id!r}"
-                )
-            return self.compiled_pattern_expected_build_calls(source_workload)
+            return _compiled_pattern_contract_expected_build_calls(
+                source_workload,
+                label="module helper wrong-text-model",
+            )
 
         compile_call = (
             "compile",
@@ -17753,7 +17748,6 @@ _PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwne
     excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
     note_surface=None,
     direct_pattern_route="collection/replacement",
-    compiled_pattern_expected_build_calls=None,
 )
 
 _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
@@ -17774,7 +17768,6 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
     excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
     note_surface=None,
     direct_pattern_route="pattern-boundary",
-    compiled_pattern_expected_build_calls=None,
 )
 
 _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
@@ -17800,10 +17793,6 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
         excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="collection/replacement",
         direct_pattern_route=None,
-        compiled_pattern_expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
-            workload,
-            label="module helper wrong-text-model",
-        ),
     )
 )
 
@@ -17826,10 +17815,6 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = (
         excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="module-boundary",
         direct_pattern_route=None,
-        compiled_pattern_expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
-            workload,
-            label="module helper wrong-text-model",
-        ),
     )
 )
 
