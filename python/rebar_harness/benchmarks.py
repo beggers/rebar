@@ -19,7 +19,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from functools import cache
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -1156,21 +1156,43 @@ def load_manifest(path: pathlib.Path) -> BenchmarkManifest:
     return BenchmarkManifest.from_dict(path=path, raw_manifest=raw_manifest)
 
 
+def _benchmark_manifest_id(manifest: BenchmarkManifest) -> str:
+    return manifest.manifest_id
+
+
+def _benchmark_manifest_path(manifest: BenchmarkManifest) -> pathlib.Path:
+    return manifest.path
+
+
+def _duplicate_benchmark_manifest_error(
+    manifest_id: str,
+    _prior_path: pathlib.Path,
+    _current_path: pathlib.Path,
+) -> str:
+    return f"duplicate benchmark manifest id {manifest_id!r}"
+
+
+def _benchmark_workload_ids(manifest: BenchmarkManifest) -> Iterable[str]:
+    return (workload.workload_id for workload in manifest.workloads)
+
+
+def _duplicate_benchmark_workload_error(
+    workload_id: str,
+    _prior_path: pathlib.Path,
+    _current_path: pathlib.Path,
+) -> str:
+    return f"duplicate benchmark workload id {workload_id!r}"
+
+
 def load_manifests(paths: list[pathlib.Path]) -> list[BenchmarkManifest]:
     return load_unique_record_collection(
         paths,
         load_record=load_manifest,
-        record_id=lambda manifest: manifest.manifest_id,
-        record_path=lambda manifest: manifest.path,
-        duplicate_record_error=lambda manifest_id, _prior_path, _current_path: (
-            f"duplicate benchmark manifest id {manifest_id!r}"
-        ),
-        nested_ids=lambda manifest: (
-            workload.workload_id for workload in manifest.workloads
-        ),
-        duplicate_nested_error=lambda workload_id, _prior_path, _current_path: (
-            f"duplicate benchmark workload id {workload_id!r}"
-        ),
+        record_id=_benchmark_manifest_id,
+        record_path=_benchmark_manifest_path,
+        duplicate_record_error=_duplicate_benchmark_manifest_error,
+        nested_ids=_benchmark_workload_ids,
+        duplicate_nested_error=_duplicate_benchmark_workload_error,
     )
 
 

@@ -544,21 +544,43 @@ def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
     return replace(manifest, cases=cases)
 
 
+def _fixture_manifest_id(manifest: FixtureManifest) -> str:
+    return manifest.manifest_id
+
+
+def _fixture_manifest_path(manifest: FixtureManifest) -> pathlib.Path:
+    return manifest.path
+
+
+def _duplicate_fixture_manifest_error(
+    manifest_id: str,
+    prior_path: pathlib.Path,
+    current_path: pathlib.Path,
+) -> str:
+    return f"duplicate fixture manifest id {manifest_id!r} in {prior_path} and {current_path}"
+
+
+def _fixture_case_ids(manifest: FixtureManifest) -> Iterable[str]:
+    return (case.case_id for case in manifest.cases)
+
+
+def _duplicate_fixture_case_error(
+    case_id: str,
+    prior_path: pathlib.Path,
+    current_path: pathlib.Path,
+) -> str:
+    return f"duplicate fixture case id {case_id!r} in {prior_path} and {current_path}"
+
+
 def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> list[FixtureManifest]:
     return load_unique_record_collection(
         paths,
         load_record=load_fixture_manifest,
-        record_id=lambda manifest: manifest.manifest_id,
-        record_path=lambda manifest: manifest.path,
-        duplicate_record_error=lambda manifest_id, prior_path, current_path: (
-            "duplicate fixture manifest id "
-            f"{manifest_id!r} in {prior_path} and {current_path}"
-        ),
-        nested_ids=lambda manifest: (case.case_id for case in manifest.cases),
-        duplicate_nested_error=lambda case_id, prior_path, current_path: (
-            "duplicate fixture case id "
-            f"{case_id!r} in {prior_path} and {current_path}"
-        ),
+        record_id=_fixture_manifest_id,
+        record_path=_fixture_manifest_path,
+        duplicate_record_error=_duplicate_fixture_manifest_error,
+        nested_ids=_fixture_case_ids,
+        duplicate_nested_error=_duplicate_fixture_case_error,
     )
 
 

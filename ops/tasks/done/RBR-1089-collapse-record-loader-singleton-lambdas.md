@@ -1,6 +1,6 @@
 ## RBR-1089: Collapse record-loader singleton lambdas in harness manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,9 @@ Created: 2026-03-23
   - `rg -n 'load_unique_record_collection\\(|record_id=lambda|record_path=lambda|duplicate_record_error=lambda|nested_ids=lambda|duplicate_nested_error=lambda' python/rebar_harness -g '*.py'` currently shows the ten singleton adapters at `python/rebar_harness/correctness.py:548-558` and `python/rebar_harness/benchmarks.py:1160-1173`.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py::test_fixture_manifest_loader_rejects_duplicate_ids tests/python/test_fixture_parity_support_contract.py::test_load_fixture_manifests_preserves_requested_path_order tests/python/test_fixture_parity_support_contract.py::test_published_fixture_manifests_cache_clear_reloads_current_default_fixture_paths tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_standard_benchmark_manifest_loader_rejects_duplicate_ids` returned `5 passed` in this run.
+
+## Completion Note
+- Replaced the singleton `load_unique_record_collection(...)` adapter lambdas in `python/rebar_harness/correctness.py` and `python/rebar_harness/benchmarks.py` with same-file named helpers for manifest ids, manifest paths, duplicate-id messages, and nested record ids while preserving existing duplicate-error text and path-order behavior.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py::test_fixture_manifest_loader_rejects_duplicate_ids tests/python/test_fixture_parity_support_contract.py::test_load_fixture_manifests_preserves_requested_path_order tests/python/test_fixture_parity_support_contract.py::test_published_fixture_manifests_cache_clear_reloads_current_default_fixture_paths tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_standard_benchmark_manifest_loader_rejects_duplicate_ids`
+  - `bash -lc "! rg -n 'record_id=lambda manifest: manifest\\.manifest_id|record_path=lambda manifest: manifest\\.path|duplicate_record_error=lambda manifest_id|nested_ids=lambda manifest: \\(case\\.case_id for case in manifest\\.cases\\)|nested_ids=lambda manifest: \\(|duplicate_nested_error=lambda case_id|duplicate_nested_error=lambda workload_id' python/rebar_harness/correctness.py python/rebar_harness/benchmarks.py"`
