@@ -2399,17 +2399,6 @@ def _published_owner_path_fixture_cases(
     fixture_cases_by_id = {case.case_id: case for case in fixture_cases}
     return tuple(fixture_cases_by_id[row.fixture_case_id] for row in rows)
 
-
-def _selected_owner_path_direct_cases(
-    rows: tuple[_OwnerPathRow[_DirectCaseT], ...],
-) -> tuple[_DirectCaseT, ...]:
-    return tuple(row.direct_case for row in rows)
-
-
-def _owner_path_direct_case_helper(case: object) -> str:
-    return case.helper
-
-
 def _assert_owner_path_publication_contract(
     fixture_cases: tuple[FixtureCase, ...],
     rows: tuple[_OwnerPathRow[_DirectCaseT], ...],
@@ -2420,7 +2409,7 @@ def _assert_owner_path_publication_contract(
     direct_case_helper: Callable[[_DirectCaseT], str] | None = None,
 ) -> tuple[tuple[FixtureCase, ...], tuple[_DirectCaseT, ...]]:
     published_fixture_cases = _published_owner_path_fixture_cases(fixture_cases, rows)
-    selected_direct_cases = _selected_owner_path_direct_cases(rows)
+    selected_direct_cases = tuple(row.direct_case for row in rows)
 
     assert tuple(
         case.case_id
@@ -2452,10 +2441,13 @@ def _assert_owner_path_publication_contract(
         expected_helper_counts
     )
     if direct_case_helper is None:
-        direct_case_helper = _owner_path_direct_case_helper
-    assert tuple(case.helper for case in published_fixture_cases) == tuple(
-        direct_case_helper(case) for case in selected_direct_cases
-    )
+        assert tuple(case.helper for case in published_fixture_cases) == tuple(
+            case.helper for case in selected_direct_cases
+        )
+    else:
+        assert tuple(case.helper for case in published_fixture_cases) == tuple(
+            direct_case_helper(case) for case in selected_direct_cases
+        )
     return published_fixture_cases, selected_direct_cases
 
 
@@ -3922,14 +3914,6 @@ def _call_helper_case(
     if kwargs is None:
         return helper(*prefix_args, *case.args)
     return helper(*prefix_args, *case.args, **kwargs)
-
-
-def _call_compiled_pattern_module_keyword_case(
-    regex_api: object,
-    case: CompiledPatternModuleKeywordCallCase | CompiledPatternModuleKeywordErrorCase,
-) -> object:
-    compiled_pattern = _compile_compiled_pattern_case(regex_api, case.pattern, case.flags)
-    return _call_helper_case(regex_api, case, compiled_pattern)
 
 
 def _pattern_dual_indexlike_window_bounds(
@@ -6447,10 +6431,18 @@ def test_compiled_pattern_module_keyword_argument_errors_match_cpython(
     _, backend = regex_backend
 
     observed_error = _capture_error(
-        lambda: _call_compiled_pattern_module_keyword_case(backend, case)
+        lambda: _call_helper_case(
+            backend,
+            case,
+            _compile_compiled_pattern_case(backend, case.pattern, case.flags),
+        )
     )
     expected_error = _capture_error(
-        lambda: _call_compiled_pattern_module_keyword_case(re, case)
+        lambda: _call_helper_case(
+            re,
+            case,
+            _compile_compiled_pattern_case(re, case.pattern, case.flags),
+        )
     )
 
     assert type(observed_error) is type(expected_error)
