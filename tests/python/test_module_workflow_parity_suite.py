@@ -1095,28 +1095,13 @@ def _published_collection_fixture_cases() -> tuple[FixtureCase, ...]:
     )
 
 
-def _published_collection_success_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in _published_collection_fixture_cases()
-        if not _is_collection_type_error_fixture_case(case)
-    )
-
-
-def _published_collection_type_error_fixture_cases() -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in _published_collection_fixture_cases()
-        if _is_collection_type_error_fixture_case(case)
-    )
-
-
 def _published_module_collection_cases_for_helper(
     helper: str,
 ) -> tuple[CollectionModuleCase, ...]:
     return tuple(
         _module_collection_case_from_fixture(case)
-        for case in _published_collection_success_fixture_cases()
+        for case in _published_collection_fixture_cases()
+        if not _is_collection_type_error_fixture_case(case)
         if case.operation == "module_call" and case.helper == helper
     )
 
@@ -1126,7 +1111,8 @@ def _published_pattern_collection_cases_for_helper(
 ) -> tuple[CollectionPatternCase, ...]:
     return tuple(
         _pattern_collection_case_from_fixture(case)
-        for case in _published_collection_success_fixture_cases()
+        for case in _published_collection_fixture_cases()
+        if not _is_collection_type_error_fixture_case(case)
         if case.operation == "pattern_call" and case.helper == helper
     )
 
@@ -7341,12 +7327,14 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
             ),
             "module-type-error": frozenset(
                 case.case_id
-                for case in _published_collection_type_error_fixture_cases()
+                for case in _published_collection_fixture_cases()
+                if _is_collection_type_error_fixture_case(case)
                 if case.operation == "module_call"
             ),
             "pattern-type-error": frozenset(
                 case.case_id
-                for case in _published_collection_type_error_fixture_cases()
+                for case in _published_collection_fixture_cases()
+                if _is_collection_type_error_fixture_case(case)
                 if case.operation == "pattern_call"
             ),
         },
@@ -8381,7 +8369,11 @@ def test_literal_match_matrix_pattern_helpers_match_cpython_with_windows(
 
 @pytest.mark.parametrize(
     "case",
-    _published_collection_type_error_fixture_cases(),
+    tuple(
+        case
+        for case in _published_collection_fixture_cases()
+        if _is_collection_type_error_fixture_case(case)
+    ),
     ids=lambda case: case.case_id,
 )
 def test_collection_helper_type_errors_match_cpython(
