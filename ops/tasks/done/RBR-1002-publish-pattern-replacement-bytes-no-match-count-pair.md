@@ -1,6 +1,6 @@
 # RBR-1002: Publish the direct `Pattern.sub()` / `Pattern.subn()` bytes no-match/count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,12 @@ Created: 2026-03-23
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile(b"abc").sub(b"x", b"zzz") ... rebar.compile(b"abc").subn(b"x", b"abcabc", 1) ... PY` currently matches CPython for the exact direct compiled-bytes outputs `b"zzz"` / `(b"zzz", 0)` and `b"xabc"` / `(b"xabc", 1)`;
   - `rg -n 'pattern-sub-bytes-no-match|pattern-subn-bytes-count|pattern-sub-bytes-no-match-purged-bytes|pattern-subn-bytes-count-purged-bytes' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/correctness/latest.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact correctness and benchmark ids are still absent from the tracked owner-path surfaces; and
   - the existing shared direct parity route already covers the surrounding bytes literal replacement family on `tests/python/test_fixture_backed_replacement_parity_suite.py`, so this run can stay publication-only instead of queuing another implementation prerequisite first.
+
+## Completion
+- Added `pattern-sub-bytes-no-match` and `pattern-subn-bytes-count` to `tests/conformance/fixtures/collection_replacement_workflows.py` in the required published direct-`Pattern` replacement order, and extended the shared owner-route assertions in `tests/python/test_fixture_backed_replacement_parity_suite.py` plus the collection manifest representative ids in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (bytes-no-match or bytes-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1002-pattern-replacement-bytes-no-match-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Published tracked correctness report now reads `1569` total / `1569` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `32` / `32`, `collection.replacement.workflow.bytes` at `11` / `11`, `collection.replacement.workflow.str` unchanged at `21` / `21`, `collection.replacement.workflow.pattern_call` at `20` / `20`, and `collection.replacement.workflow.module_call` unchanged at `12` / `12`.

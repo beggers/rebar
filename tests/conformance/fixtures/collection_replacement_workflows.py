@@ -361,6 +361,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-bytes-no-match",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "sub",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzz"
+        }
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "no-match"],
+      "notes": [
+        "Observes that the compiled-pattern bytes replacement path leaves the haystack unchanged when no match exists."
+      ]
+    },
+    {
       "id": "pattern-sub-bytes-single-match",
       "operation": "pattern_call",
       "family": "replacement_workflow",
@@ -382,6 +406,31 @@ MANIFEST = {
       "categories": ["workflow", "sub", "literal", "bytes", "single-match"],
       "notes": [
         "Publishes the direct Pattern.sub bytes single-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
+      "id": "pattern-subn-bytes-count",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "subn",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        1
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "count"],
+      "notes": [
+        "Pins the compiled-pattern bytes subn path for a bounded single replacement."
       ]
     },
     {
