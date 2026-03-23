@@ -1,6 +1,6 @@
 # RBR-1023: Collapse verbose regression case-id maps onto canonical tuples
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -74,3 +74,7 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_bundle_contract_covers_regression_compile_cases or module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases or verbose'` currently passes (`103 passed, 1348 deselected`);
   - the inline helper probe in Verification currently reports `ok`; and
   - `bash -lc "rg -n '^PATTERN_CASES_BY_ID = |verbose_cases_by_id = ' tests/python/test_module_workflow_parity_suite.py"` currently finds both detached maps, so the final `! rg ...` acceptance check will fail only on the cleanup being queued here.
+- Completed 2026-03-23:
+  - replaced the global `PATTERN_CASES_BY_ID` and local `verbose_cases_by_id` lookups with file-local `_case_with_id` / `_cases_with_ids` selectors over the canonical tuples in `tests/python/test_module_workflow_parity_suite.py`;
+  - kept `VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES` and `COMPILED_PATTERN_MODULE_HELPER_CASES[3:5]` in the same order with the same pattern/args/flags payloads; and
+  - verified with the task's pytest target, the inline helper-order probe, and the final `! rg` map-removal check.
