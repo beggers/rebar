@@ -3700,7 +3700,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_measured_workload_ids,
             _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 8)
+        self.assertEqual(len(expected_measured_workload_ids), 10)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3718,7 +3718,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_module_literal_replacement_workload,
         )
-        self.assertEqual(workload_count, 120)
+        self.assertEqual(workload_count, 122)
         self.assertEqual(
             expected_measured_workload_ids,
             _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
@@ -5405,11 +5405,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 959,
-                "module_workloads": 951,
+                "measured_workloads": 961,
+                "module_workloads": 953,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 959,
+                "total_workloads": 961,
             },
         )
 
@@ -8033,10 +8033,12 @@ _PATTERN_COLLECTION_REPLACEMENT_SPLIT_CASE_IDS = (
 _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
     "pattern-sub-no-match-warm-str",
     "pattern-sub-single-match-warm-str",
+    "pattern-sub-negative-count-warm-str",
     "pattern-sub-bytes-no-match-purged-bytes",
     "pattern-sub-bytes-single-match-purged-bytes",
     "pattern-subn-count-warm-str",
     "pattern-subn-repeated-warm-str",
+    "pattern-subn-negative-count-warm-str",
     "pattern-subn-bytes-count-purged-bytes",
     "pattern-subn-bytes-repeated-purged-bytes",
 )
@@ -8044,10 +8046,12 @@ _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
 _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
     "pattern-sub-str-no-match",
     "pattern-sub-str-single-match",
+    "pattern-sub-str-negative-count",
     "pattern-sub-bytes-no-match",
     "pattern-sub-bytes-single-match",
     "pattern-subn-str-count",
     "pattern-subn-str-repeated",
+    "pattern-subn-str-negative-count",
     "pattern-subn-bytes-count",
     "pattern-subn-bytes-repeated",
 )
@@ -9619,6 +9623,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "pattern-sub-single-match-warm-str": (
                     "pattern-sub-str-single-match",
                 ),
+                "pattern-sub-negative-count-warm-str": (
+                    "pattern-sub-str-negative-count",
+                ),
                 "pattern-sub-bytes-no-match-purged-bytes": (
                     "pattern-sub-bytes-no-match",
                 ),
@@ -9630,6 +9637,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "pattern-subn-repeated-warm-str": (
                     "pattern-subn-str-repeated",
+                ),
+                "pattern-subn-negative-count-warm-str": (
+                    "pattern-subn-str-negative-count",
                 ),
                 "pattern-subn-bytes-count-purged-bytes": (
                     "pattern-subn-bytes-count",

@@ -3046,6 +3046,36 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-negative-count-warm-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": -1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "literal",
+        "negative-count",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "literal-text",
+        "positional-count"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.sub helper path that keeps the bounded negative-count literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-sub-bytes-no-match-purged-bytes",
       "bucket": "pattern-sub",
       "family": "module",
@@ -3943,6 +3973,36 @@ MANIFEST = {
       ],
       "notes": [
         "Warm precompiled Pattern.subn helper path that keeps the bounded literal repeated-match replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-negative-count-warm-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": -1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "literal",
+        "negative-count",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "literal-text",
+        "positional-count"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.subn helper path that keeps the bounded negative-count literal replacement workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {
