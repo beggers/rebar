@@ -15803,6 +15803,40 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
             f"{self.case_id!r}"
         )
 
+    def assert_payload_round_trip(
+        self,
+        source_workload: Workload,
+        payload: dict[str, object],
+        round_tripped: Workload,
+    ) -> None:
+        expected_text_type = str if source_workload.text_model == "str" else bytes
+        expected_exception = (
+            source_workload.expected_exception
+            if self.spec.preserve_expected_exception
+            else None
+        )
+
+        assert payload["use_compiled_pattern"] is True
+        assert round_tripped.use_compiled_pattern is True
+        assert payload["count"] == source_workload.count
+        assert round_tripped.count == source_workload.count
+        assert payload["maxsplit"] == source_workload.maxsplit
+        assert round_tripped.maxsplit == source_workload.maxsplit
+        assert payload["kwargs"] == source_workload.kwargs
+        assert round_tripped.kwargs == source_workload.kwargs
+        assert payload.get("expected_exception") == expected_exception
+        assert round_tripped.expected_exception == expected_exception
+        assert payload.get("haystack_text_model") is None
+        assert round_tripped.haystack_text_model is None
+        assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+        assert isinstance(round_tripped.haystack_payload(), expected_text_type)
+        if source_workload.replacement is not None:
+            assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+        for name, value in source_workload.kwargs.items():
+            if type(value) is bool:
+                assert type(payload["kwargs"][name]) is bool
+                assert type(round_tripped.kwargs[name]) is bool
+
 
 @dataclass(frozen=True, slots=True)
 class _SourceTreeContractBuilderSpec:
@@ -15949,42 +15983,6 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
         materializes_positional_keyword_field=True,
     )
 )
-
-def _assert_compiled_pattern_module_helper_contract_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-    *,
-    spec: _CompiledPatternModuleHelperKeywordContractSpec,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_exception = (
-        source_workload.expected_exception
-        if spec.preserve_expected_exception
-        else None
-    )
-
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload["count"] == source_workload.count
-    assert round_tripped.count == source_workload.count
-    assert payload["maxsplit"] == source_workload.maxsplit
-    assert round_tripped.maxsplit == source_workload.maxsplit
-    assert payload["kwargs"] == source_workload.kwargs
-    assert round_tripped.kwargs == source_workload.kwargs
-    assert payload.get("expected_exception") == expected_exception
-    assert round_tripped.expected_exception == expected_exception
-    assert payload.get("haystack_text_model") is None
-    assert round_tripped.haystack_text_model is None
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_text_type)
-    if source_workload.replacement is not None:
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
-    for name, value in source_workload.kwargs.items():
-        if type(value) is bool:
-            assert type(payload["kwargs"][name]) is bool
-            assert type(round_tripped.kwargs[name]) is bool
-
 
 def _compiled_pattern_contract_expected_build_calls(
     source_workload: Workload,
@@ -16143,11 +16141,10 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        _assert_compiled_pattern_module_helper_contract_payload_round_trip(
+        contract_surface.assert_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
-            spec=contract_surface.spec,
         )
         contract_surface.assert_outcome(
             source_workload,
@@ -16207,11 +16204,10 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_compiled_pattern_module_helper_contract_payload_round_trip(
+    contract_surface.assert_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
-        spec=contract_surface.spec,
     )
 
     probe = run_internal_workload_probe(
