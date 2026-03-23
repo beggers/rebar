@@ -886,6 +886,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-str-count-one-purged-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "count-one",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.sub helper path that keeps the raw count-bounded singleton literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-str-negative-count-purged-str",
       "bucket": "module-sub",
       "family": "module",

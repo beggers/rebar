@@ -1,6 +1,6 @@
 # RBR-1048: Catch up the direct `module.sub()` str count-one singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,12 @@ Created: 2026-03-23
   - `rg -n 'module-sub-str-count-one-purged-str' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` returned no matches in this run, confirming the exact benchmark workload id is still absent from the tracked owner-path surfaces; and
   - `reports/benchmarks/latest.py` currently reports `969` total / `969` measured / `0` known gaps overall, with `module_workloads == 961`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 416, "warm": 449}`, and `collection-replacement-boundary` at `selected_workload_count == 130`, `measured_workloads == 130`, `known_gap_count == 0`, and `workload_count == 130`.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a tracked state refresh in the same run.
+
+## Completion Note
+- 2026-03-23: Added the direct raw-module `str` count-one workload `module-sub-str-count-one-purged-str` to `benchmarks/workloads/collection_replacement_boundary.py` in the required owner-path order, extended the shared ordered owner-route tuple and measured-row assertion in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and regenerated the tracked combined benchmark publication at `reports/benchmarks/latest.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and str-count-one'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_module_literal_replacement_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1048-module-sub-str-count-one-singleton.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Verified from the tracked published report that `reports/benchmarks/latest.py` now contains `module-sub-str-count-one-purged-str` with `status == "measured"`, the combined summary is `970` total / `970` measured / `0` known gaps across `30` manifests, `module_workloads == 962`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 417, "warm": 449}`, and `collection-replacement-boundary` now reports `selected_workload_count == 131`, `measured_workloads == 131`, `known_gap_count == 0`, and `workload_count == 131`, with the matching tracked artifact manifest record also at `workload_count == 131`.
