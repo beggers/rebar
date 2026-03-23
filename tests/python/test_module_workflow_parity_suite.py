@@ -6736,6 +6736,71 @@ def test_source_package_pattern_literal_bytes_match_contract_matches_cpython() -
     )
 
 
+# Empty compiled patterns are already live on the supported match helper slice even
+# though adjacent collection helpers still fall back to placeholders.
+@pytest.mark.parametrize(
+    ("pattern", "string", "bounds"),
+    (
+        pytest.param("", "abc", (1, 3), id="str-nonempty-window"),
+        pytest.param("", "abc", (3, 3), id="str-empty-tail-window"),
+        pytest.param(b"", b"abc", (1, 2), id="bytes-nonempty-window"),
+        pytest.param(b"", b"", (0, 0), id="bytes-empty-input"),
+    ),
+)
+@pytest.mark.parametrize("helper", ("search", "match", "fullmatch"))
+def test_supported_empty_compiled_pattern_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    pattern: str | bytes,
+    string: str | bytes,
+    bounds: tuple[int, int],
+    helper: str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+
+    observed = getattr(observed_pattern, helper)(string, *bounds)
+    expected = getattr(expected_pattern, helper)(string, *bounds)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    if observed is not None:
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    ("pattern", "string"),
+    (
+        pytest.param("", "abc", id="str-nonempty-input"),
+        pytest.param("", "", id="str-empty-input"),
+        pytest.param(b"", b"abc", id="bytes-nonempty-input"),
+        pytest.param(b"", b"", id="bytes-empty-input"),
+    ),
+)
+@pytest.mark.parametrize("helper", ("search", "match", "fullmatch"))
+def test_module_helpers_accept_empty_compiled_patterns_like_cpython(
+    regex_backend: tuple[str, object],
+    pattern: str | bytes,
+    string: str | bytes,
+    helper: str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+
+    observed = getattr(backend, helper)(observed_pattern, string)
+    expected = getattr(re, helper)(expected_pattern, string)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    if observed is not None:
+        assert_match_convenience_api_parity(observed, expected)
+
+
 @pytest.mark.parametrize("accessor_name", ("group", "span", "start", "end"))
 def test_source_package_match_accessors_reject_missing_groups_like_cpython(
     accessor_name: str,
