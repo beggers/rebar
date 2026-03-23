@@ -8192,7 +8192,9 @@ def _pattern_collection_replacement_split_workload_signature(
             f"{workload.workload_id!r}"
         )
     args = [workload.haystack_payload()]
-    if workload.maxsplit is not None:
+    if workload.maxsplit is not None and not (
+        type(workload.maxsplit) is int and workload.maxsplit == 0
+    ):
         args.append(workload.maxsplit_argument())
     return (
         workload.operation,
@@ -20427,6 +20429,26 @@ def test_run_internal_workload_probe_reports_expected_exception_mismatches_as_un
         "status": "unavailable",
         "reason": expected_reason,
     }
+
+
+def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor(
+) -> None:
+    manifest = load_manifest(COLLECTION_REPLACEMENT_MANIFEST_PATH)
+    workload = next(
+        candidate
+        for candidate in manifest.workloads
+        if candidate.workload_id == "pattern-split-no-match-warm-str"
+    )
+
+    assert workload.maxsplit == 0
+    assert _pattern_collection_replacement_split_workload_signature(workload) == (
+        "pattern.split",
+        "abc",
+        ("zzz",),
+        (),
+        0,
+        "str",
+    )
 
 
 @pytest.mark.parametrize(
