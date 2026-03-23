@@ -1,6 +1,6 @@
 ## RBR-1085: Retire dead benchmark loader-contract main block
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -48,3 +48,10 @@ Created: 2026-03-23
   - `rg -n '__main__|unittest\\.main\\(|python-benchmark-loader-contract' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the live test copy around lines `11242-11388`, the dead `if __name__ == "__main__":` / `unittest.main()` block at lines `20121-20122`, and the duplicated loader-contract assertions immediately below that block in this run.
 - The focused synthetic-manifest verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_materializes_callable_replacement_descriptors or standard_benchmark_manifest_selected_workloads_preserves_filters_and_order or standard_benchmark_manifest_measures_expected_exception_workloads or run_internal_workload_probe_reports_unsupported_operations_as_unavailable or standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads'` returned `6 passed, 720 deselected` in this run.
+
+## Completion
+- Deleted the unreachable `if __name__ == "__main__": unittest.main()` block and the dead duplicate callable-loader assertion copy from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, leaving the live pytest-owned loader-contract test as the only assertion surface for that contract in the file.
+- Verified:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_materializes_callable_replacement_descriptors or standard_benchmark_manifest_selected_workloads_preserves_filters_and_order or standard_benchmark_manifest_measures_expected_exception_workloads or run_internal_workload_probe_reports_unsupported_operations_as_unavailable or standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads'`
+  - `bash -lc "! rg -n '^if __name__ == \"__main__\":|^\\s+unittest\\.main\\(\\)$' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+- No changes were made outside `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and this task record.
