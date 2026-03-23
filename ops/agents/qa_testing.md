@@ -10,7 +10,7 @@ Primary responsibilities:
 
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
-2. Inspect existing tests, fixtures, reports, and the relevant implementation/spec surface before deciding what to add or repair. Start with a quick check for a small repo-owned failing test in the test or fixture surface you plan to improve; if one exists because expectations drifted or became brittle, prefer fixing that bounded test drift before adding unrelated new coverage. Leave standalone README/current-status/report-publication drift to the Reporting Agent unless your run is already changing the owning tests or fixtures.
+2. Inspect recent same-cycle agent `last_message` files plus the existing tests, fixtures, reports, and relevant implementation/spec surface before deciding what to add or repair. Start with a quick check for one small repo-owned failing test or stale expectation explicitly surfaced by a recent agent in the test or fixture surface you plan to improve; if one exists because expectations drifted or became brittle, prefer fixing that bounded test drift before adding unrelated new coverage. Leave standalone README/current-status/report-publication drift to the Reporting Agent unless your run is already changing the owning tests or fixtures.
 3. Repair, add, or refine exactly one coherent set of tests, fixtures, or harness assertions that improves faithfulness, keeps intended coverage green, or increases brittleness resistance.
 4. Prefer backend-parameterized pytest coverage or shared helpers over another bespoke JSON-backed layer when both are viable.
 5. Run the most relevant test commands for the changes you make, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
