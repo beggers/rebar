@@ -1,6 +1,6 @@
 # RBR-1054: Collapse the compiled-pattern `module.compile` keyword wrapper family
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -75,3 +75,8 @@ Created: 2026-03-23
   - the repeated keyword wrapper definitions currently sit contiguously at lines `7522` through `7706` in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`;
   - the same family is consumed once in the standard anchor-definition section at lines `9754` through `9894`; and
   - the same family is consumed again in `COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS` at lines `17227` through `17353`.
+
+## Completion Note
+- 2026-03-23: Replaced the six compiled-pattern `module.compile` keyword wrapper triplets with one file-local `_CompiledPatternModuleCompileKeywordOwnerSpec` family in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, then reused those specs for the six module-boundary `StandardBenchmarkAnchorContractDefinition` entries, the six `COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS` entries, and the measured-row assertion in the same file.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_rows_measured or standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_compile_success_and_keyword_contract_rows_stay_anchored_to_published_correctness_cases or compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing'` (`75 passed, 646 deselected, 18 subtests passed in 1.77s`).
+- Verified wrapper removal with `bash -lc "! rg -n '^def (_module_workflow_compiled_pattern_compile_(int_zero|bool_false|ignorecase).*(correctness_case_signature|workload_signature)|_is_module_workflow_compiled_pattern_compile_(int_zero|bool_false|ignorecase).*)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.

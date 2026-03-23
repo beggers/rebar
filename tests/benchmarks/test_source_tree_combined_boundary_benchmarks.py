@@ -3864,63 +3864,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("module-boundary")
         workload_count = len(case.target_manifest.workloads)
-        cases = (
+        cases = tuple(
             (
-                "int-zero",
-                _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload,
-                (
-                    "module-compile-flags-int-zero-warm-str-compiled-pattern",
-                    "module-compile-flags-int-zero-purged-bytes-compiled-pattern",
-                ),
-            ),
-            (
-                "int-zero-named-group",
-                (
-                    _is_module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload
-                ),
-                (
-                    "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group",
-                    "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group",
-                ),
-            ),
-            (
-                "bool-false",
-                _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload,
-                (
-                    "module-compile-flags-bool-false-warm-str-compiled-pattern",
-                    "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
-                ),
-            ),
-            (
-                "bool-false-named-group",
-                (
-                    _is_module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_workload
-                ),
-                (
-                    "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group",
-                    "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group",
-                ),
-            ),
-            (
-                "ignorecase-rejection-named-group",
-                (
-                    _is_module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload
-                ),
-                (
-                    "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
-                    "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
-                ),
-            ),
-            (
-                "ignorecase-rejection",
-                (
-                    _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload
-                ),
-                (
-                    "module-compile-flags-ignorecase-warm-str-compiled-pattern",
-                    "module-compile-flags-ignorecase-purged-bytes-compiled-pattern",
-                ),
-            ),
+                owner_spec.anchor_definition_name,
+                owner_spec.includes_workload,
+                owner_spec.expected_anchor_workload_ids(),
+            )
+            for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
         )
 
         for group_id, include_workload, expected_workload_ids in cases:
@@ -7519,194 +7469,306 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
     )
 
 
-def _module_workflow_compiled_pattern_compile_int_zero_keyword_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
-        case,
+@dataclass(frozen=True, slots=True)
+class _CompiledPatternModuleCompileKeywordOwnerSpec:
+    case_id: str
+    anchor_definition_name: str
+    keyword_signature: tuple[tuple[str, str, object], ...]
+    allowed_patterns: tuple[str, ...]
+    anchor_expectations: tuple[tuple[str, tuple[str, ...]], ...]
+    contract_filename: str
+    anchor_contract_filename: str
+    expected_anchor_pairs: tuple[tuple[str, str], ...]
+    expected_exception: dict[str, str] | None = None
+
+    def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
+        return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+            case,
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+        )
+
+    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
+        return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+            workload,
+            keyword_label=self.case_id,
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+            expected_exception=self.expected_exception,
+        )
+
+    def includes_workload(self, workload: Any) -> bool:
+        return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+            workload,
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+            expected_exception=self.expected_exception,
+        )
+
+    def expected_anchor_case_ids(self) -> dict[tuple[str, str], tuple[str, ...]]:
+        return _definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            dict(self.anchor_expectations),
+        )
+
+    def expected_anchor_workload_ids(self) -> tuple[str, ...]:
+        return tuple(workload_id for workload_id, _ in self.anchor_expectations)
+
+    def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
+        return StandardBenchmarkAnchorContractDefinition(
+            name=self.anchor_definition_name,
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=self.expected_anchor_case_ids(),
+            include_workload=self.includes_workload,
+            correctness_case_signature=self.correctness_case_signature,
+            workload_signature=self.workload_signature,
+            run_callback_result_parity=True,
+        )
+
+    def contract_case(self) -> CompiledPatternModuleCompileContractCase:
+        return CompiledPatternModuleCompileContractCase(
+            route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
+            case_id=self.case_id,
+            source_selectors=(self.includes_workload,),
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+            contract_filename=self.contract_filename,
+            anchor_contract_filename=self.anchor_contract_filename,
+            expected_anchor_pairs=self.expected_anchor_pairs,
+            expected_exception=self.expected_exception,
+        )
+
+
+_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="int-zero",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword"
+        ),
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
         allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_int_zero_keyword_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
-        workload,
-        keyword_label="int-zero",
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-    )
-
-
-def _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload(
-    workload: Any,
-) -> bool:
-    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
-        workload,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
-        case,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
-        workload,
-        keyword_label="int-zero-named-group",
+        anchor_expectations=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern",
+                ("workflow-module-compile-flags-int-zero-str-compiled-pattern",),
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-flags-int-zero-bytes-compiled-pattern",),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-flags-int-zero-str-compiled-pattern",
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="int-zero-named-group",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-int-zero-"
+            "keyword-named-group"
+        ),
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
         allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-    )
-
-
-def _is_module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload(
-    workload: Any,
-) -> bool:
-    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
-        workload,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_bool_false_keyword_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
-        case,
+        anchor_expectations=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-int-zero-str-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="bool-false",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword"
+        ),
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
         allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_bool_false_keyword_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
-        workload,
-        keyword_label="bool-false",
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-    )
-
-
-def _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload(
-    workload: Any,
-) -> bool:
-    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
-        workload,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
-        case,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
-        workload,
-        keyword_label="bool-false-named-group",
+        anchor_expectations=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern",
+                ("workflow-module-compile-flags-bool-false-str-compiled-pattern",),
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-flags-bool-false-bytes-compiled-pattern",),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-flags-bool-false-str-compiled-pattern",
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="bool-false-named-group",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-bool-false-"
+            "keyword-named-group"
+        ),
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
         allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-    )
-
-
-def _is_module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_workload(
-    workload: Any,
-) -> bool:
-    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
-        workload,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_ignorecase_keyword_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
-        case,
+        anchor_expectations=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-bool-false-str-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="ignorecase",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
+            "keyword-rejection"
+        ),
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
         allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_ignorecase_keyword_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
-        workload,
-        keyword_label="ignorecase",
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern",
+                ("workflow-module-compile-flags-ignorecase-str-compiled-pattern",),
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
+            ),
+        ),
         expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
-    )
-
-
-def _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload(
-    workload: Any,
-) -> bool:
-    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
-        workload,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
-        case,
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="ignorecase-named-group",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
+            "keyword-rejection-named-group"
+        ),
         keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
         allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-    )
-
-
-def _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
-        workload,
-        keyword_label="ignorecase-named-group",
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-ignorecase-str-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
+            ),
+        ),
         expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
-    )
-
-
-def _is_module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload(
-    workload: Any,
-) -> bool:
-    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
-        workload,
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
-    )
+    ),
+)
 
 
 def _module_workflow_compiled_pattern_correctness_case_signature(
@@ -9736,164 +9798,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         run_callback_result_parity=True,
     ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword",
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-compile-flags-int-zero-warm-str-compiled-pattern": (
-                    "workflow-module-compile-flags-int-zero-str-compiled-pattern",
-                ),
-                "module-compile-flags-int-zero-purged-bytes-compiled-pattern": (
-                    "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
-                ),
-            },
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_int_zero_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_int_zero_keyword_workload_signature
-        ),
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group": (
-                    "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
-                ),
-                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group": (
-                    "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
-                ),
-            },
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload_signature
-        ),
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword",
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-compile-flags-bool-false-warm-str-compiled-pattern": (
-                    "workflow-module-compile-flags-bool-false-str-compiled-pattern",
-                ),
-                "module-compile-flags-bool-false-purged-bytes-compiled-pattern": (
-                    "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
-                ),
-            },
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_bool_false_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_bool_false_keyword_workload_signature
-        ),
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name=(
-            "module-workflow-compiled-pattern-module-compile-flags-bool-false-"
-            "keyword-named-group"
-        ),
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group": (
-                    "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
-                ),
-                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group": (
-                    "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
-                ),
-            },
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_workload
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_workload_signature
-        ),
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name=(
-            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
-            "keyword-rejection"
-        ),
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-compile-flags-ignorecase-warm-str-compiled-pattern": (
-                    "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
-                ),
-                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern": (
-                    "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
-                ),
-            },
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_ignorecase_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_ignorecase_keyword_workload_signature
-        ),
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name=(
-            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
-            "keyword-rejection-named-group"
-        ),
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group": (
-                    "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
-                ),
-                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group": (
-                    "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
-                ),
-            },
-        ),
-        include_workload=(
-            _is_module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload
-        ),
-        correctness_case_signature=(
-            _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_correctness_case_signature
-        ),
-        workload_signature=(
-            _module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload_signature
-        ),
-        run_callback_result_parity=True,
+    *(
+        owner_spec.anchor_definition()
+        for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-literal-success",
@@ -17220,157 +17127,9 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE = (
     )
 )
 COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
-    CompiledPatternModuleCompileContractCase(
-        route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
-        case_id="int-zero",
-        source_selectors=(
-            _is_module_workflow_compiled_pattern_compile_int_zero_keyword_workload,
-        ),
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_keyword_contract.py"
-        ),
-        anchor_contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_keyword_anchor_contract.py"
-        ),
-        expected_anchor_pairs=(
-            (
-                "module-compile-flags-int-zero-warm-str-compiled-pattern-contract",
-                "workflow-module-compile-flags-int-zero-str-compiled-pattern",
-            ),
-            (
-                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-contract",
-                "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
-            ),
-        ),
-    ),
-    CompiledPatternModuleCompileContractCase(
-        route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
-        case_id="int-zero-named-group",
-        source_selectors=(
-            _is_module_workflow_compiled_pattern_compile_int_zero_named_group_keyword_workload,
-        ),
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_contract.py"
-        ),
-        anchor_contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_anchor_contract.py"
-        ),
-        expected_anchor_pairs=(
-            (
-                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group-contract",
-                "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
-            ),
-            (
-                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group-contract",
-                "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
-            ),
-        ),
-    ),
-    CompiledPatternModuleCompileContractCase(
-        route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
-        case_id="bool-false",
-        source_selectors=(
-            _is_module_workflow_compiled_pattern_compile_bool_false_keyword_workload,
-        ),
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_contract.py"
-        ),
-        anchor_contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_anchor_contract.py"
-        ),
-        expected_anchor_pairs=(
-            (
-                "module-compile-flags-bool-false-warm-str-compiled-pattern-contract",
-                "workflow-module-compile-flags-bool-false-str-compiled-pattern",
-            ),
-            (
-                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-contract",
-                "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
-            ),
-        ),
-    ),
-    CompiledPatternModuleCompileContractCase(
-        route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
-        case_id="bool-false-named-group",
-        source_selectors=(
-            _is_module_workflow_compiled_pattern_compile_bool_false_named_group_keyword_workload,
-        ),
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_bool_false_named_group_keyword_contract.py"
-        ),
-        anchor_contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_bool_false_named_group_keyword_anchor_contract.py"
-        ),
-        expected_anchor_pairs=(
-            (
-                "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group-contract",
-                "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
-            ),
-            (
-                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group-contract",
-                "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
-            ),
-        ),
-    ),
-    CompiledPatternModuleCompileContractCase(
-        route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
-        case_id="ignorecase",
-        source_selectors=(
-            _is_module_workflow_compiled_pattern_compile_ignorecase_keyword_workload,
-        ),
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_contract.py"
-        ),
-        anchor_contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_anchor_contract.py"
-        ),
-        expected_anchor_pairs=(
-            (
-                "module-compile-flags-ignorecase-warm-str-compiled-pattern-contract",
-                "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
-            ),
-            (
-                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-contract",
-                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
-            ),
-        ),
-        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
-    ),
-    CompiledPatternModuleCompileContractCase(
-        route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
-        case_id="ignorecase-named-group",
-        source_selectors=(
-            _is_module_workflow_compiled_pattern_compile_ignorecase_named_group_keyword_workload,
-        ),
-        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
-        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_contract.py"
-        ),
-        anchor_contract_filename=(
-            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_anchor_contract.py"
-        ),
-        expected_anchor_pairs=(
-            (
-                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group-contract",
-                "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
-            ),
-            (
-                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group-contract",
-                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
-            ),
-        ),
-        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    *(
+        owner_spec.contract_case()
+        for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
     ),
 )
 
