@@ -1031,6 +1031,65 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-bytes-repeated-purged-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabcabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "bytes",
+        "repeated",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.sub helper path that keeps the raw repeated-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-sub-bytes-count-one-purged-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "bytes",
+        "count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "cache-purge",
+        "positional-count"
+      ],
+      "notes": [
+        "Bytes module.sub helper path that keeps the raw count-limited literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-subn-bytes-count-purged-bytes",
       "bucket": "module-subn",
       "family": "module",

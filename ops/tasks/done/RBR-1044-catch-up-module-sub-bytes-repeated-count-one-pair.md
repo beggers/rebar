@@ -1,6 +1,6 @@
 # RBR-1044: Catch up the direct `module.sub()` bytes repeated/count-one pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,12 @@ Created: 2026-03-23
   - `_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS` in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently jumps from `module-sub-bytes-no-match-purged-bytes` directly to `module-subn-bytes-count-purged-bytes`, confirming the exact benchmark publication gap on the shared owner path;
   - `rg -n 'module-sub-bytes-(repeated|count-one)-purged-bytes' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact benchmark workload ids are still absent from the tracked owner-path surfaces; and
   - `reports/benchmarks/latest.py` currently reports `967` total / `967` measured / `0` known gaps overall, with `module_workloads == 959`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 414, "warm": 449}`, and `collection-replacement-boundary` at `selected_workload_count == 128`, `measured_workloads == 128`, `known_gap_count == 0`, and `workload_count == 128`.
+
+## Completion Note
+- 2026-03-23: Added `module-sub-bytes-repeated-purged-bytes` and `module-sub-bytes-count-one-purged-bytes` to `benchmarks/workloads/collection_replacement_boundary.py` in the required owner-path order, updated the shared collection/replacement benchmark assertions and anchor pairs in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and regenerated `reports/benchmarks/latest.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (bytes-repeated-match or bytes-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_module_literal_replacement_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1044-module-sub-bytes-repeated-count-one-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Verified from the tracked published report that the combined benchmark summary is now `969` total / `969` measured / `0` known gaps across `30` manifests, with `module_workloads == 961`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 416, "warm": 449}`, `collection-replacement-boundary` at `selected_workload_count == 130`, `measured_workloads == 130`, `known_gap_count == 0`, and `workload_count == 130`, and both new workload ids publishing `status == "measured"`.

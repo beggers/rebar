@@ -3582,7 +3582,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_compiled_pattern_keyword_error_workload,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 10)
+        self.assertEqual(len(expected_measured_workload_ids), 12)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -3759,7 +3759,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
             ),
         )
-        self.assertEqual(len(expected_measured_workload_ids), 10)
+        self.assertEqual(len(expected_measured_workload_ids), 12)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5441,11 +5441,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 967,
-                "module_workloads": 959,
+                "measured_workloads": 969,
+                "module_workloads": 961,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 967,
+                "total_workloads": 969,
             },
         )
 
@@ -8128,6 +8128,8 @@ _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
         "module-subn-str-negative-count",
     ),
     ("module-sub-bytes-no-match-purged-bytes", "module-sub-bytes-no-match"),
+    ("module-sub-bytes-repeated-purged-bytes", "module-sub-bytes-repeated"),
+    ("module-sub-bytes-count-one-purged-bytes", "module-sub-bytes-count-one"),
     ("module-subn-bytes-count-purged-bytes", "module-subn-bytes-count"),
     ("module-subn-bytes-repeated-purged-bytes", "module-subn-bytes-repeated"),
 )
