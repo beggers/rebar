@@ -3697,12 +3697,35 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_pattern_literal_replacement_workload,
         )
-        self.assertEqual(workload_count, 110)
+        self.assertEqual(workload_count, 112)
         self.assertEqual(
             expected_measured_workload_ids,
             _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
         )
         self.assertEqual(len(expected_measured_workload_ids), 8)
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            "collection-replacement-boundary",
+            expected_measured_workload_ids,
+            workload_count,
+            expected_total_workload_count=workload_count,
+        )
+
+    def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured(
+        self,
+    ) -> None:
+        case = source_tree_combined_case("collection-replacement-boundary")
+        workload_count = len(case.target_manifest.workloads)
+        expected_measured_workload_ids = _manifest_workload_ids_matching(
+            case.target_manifest,
+            _is_collection_replacement_module_literal_replacement_workload,
+        )
+        self.assertEqual(workload_count, 112)
+        self.assertEqual(
+            expected_measured_workload_ids,
+            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+        )
+        self.assertEqual(len(expected_measured_workload_ids), 2)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5384,11 +5407,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 949,
-                "module_workloads": 941,
+                "measured_workloads": 951,
+                "module_workloads": 943,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 949,
+                "total_workloads": 951,
             },
         )
 
@@ -8031,6 +8054,16 @@ _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
     "pattern-subn-bytes-repeated",
 )
 
+_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
+    "module-sub-bytes-no-match-purged-bytes",
+    "module-subn-bytes-repeated-purged-bytes",
+)
+
+_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
+    "module-sub-bytes-no-match",
+    "module-subn-bytes-repeated",
+)
+
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
     "pattern-search-verbose-regression-warm-str",
     "pattern-search-verbose-regression-digits-warm-str",
@@ -8270,6 +8303,49 @@ def _pattern_collection_replacement_literal_replacement_correctness_case_signatu
     )
 
 
+def _module_collection_replacement_literal_replacement_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.case_id not in _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS:
+        return None
+    if case.operation != "module_call" or case.kwargs:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    return (
+        f"module.{case.helper}",
+        case_pattern(case),
+        freeze_signature_value(list(case.args[1:])),
+        (),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _module_collection_replacement_literal_replacement_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_collection_replacement_module_literal_replacement_workload(workload):
+        raise AssertionError(
+            "unexpected collection/replacement module literal replacement workload "
+            f"{workload.workload_id!r}"
+        )
+    args = [
+        workload.replacement_payload(),
+        workload.haystack_payload(),
+    ]
+    if workload.count:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value(args),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
 def _pattern_collection_replacement_literal_replacement_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
@@ -8291,6 +8367,25 @@ def _pattern_collection_replacement_literal_replacement_workload_signature(
         (),
         workload.flags,
         workload.text_model,
+    )
+
+
+def _is_collection_replacement_module_literal_replacement_workload(
+    workload: Any,
+) -> bool:
+    return (
+        workload.workload_id
+        in _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS
+        and workload.operation in {"module.sub", "module.subn"}
+        and workload.pattern == "abc"
+        and workload.replacement == "x"
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+        and workload.text_model == "bytes"
+        and workload.count == 0
+        and workload.pos is None
+        and workload.endpos is None
+        and not workload.kwargs
     )
 
 
@@ -9428,6 +9523,31 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         workload_signature=(
             _pattern_collection_replacement_split_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="collection-replacement-module-literal-replacement",
+        manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            {
+                "module-sub-bytes-no-match-purged-bytes": (
+                    "module-sub-bytes-no-match",
+                ),
+                "module-subn-bytes-repeated-purged-bytes": (
+                    "module-subn-bytes-repeated",
+                ),
+            },
+        ),
+        include_workload=(
+            _is_collection_replacement_module_literal_replacement_workload
+        ),
+        correctness_case_signature=(
+            _module_collection_replacement_literal_replacement_correctness_case_signature
+        ),
+        workload_signature=(
+            _module_collection_replacement_literal_replacement_workload_signature
         ),
         run_callback_result_parity=True,
     ),
