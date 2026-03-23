@@ -71,6 +71,109 @@ class _NonCachingStdlibBackend:
         return re.compile(pattern, flags)
 
 
+class _RecordingNativeBoundaryDispatchContract(
+    fixture_parity_support.RecordingNativeBoundary
+):
+    def __init__(self) -> None:
+        super().__init__()
+        self.handler_calls: list[tuple[str, tuple[object, ...]]] = []
+
+    def _record(self, handler_name: str, *args: object) -> tuple[str, tuple[object, ...]]:
+        payload = (handler_name, args)
+        self.handler_calls.append(payload)
+        return payload
+
+    def compile_result(self, pattern: str | bytes, flags: int) -> tuple[str, tuple[object, ...]]:
+        return self._record("compile_result", pattern, flags)
+
+    def literal_match_result(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        mode: str,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, tuple[object, ...]]:
+        return self._record(
+            "literal_match_result",
+            pattern,
+            flags,
+            mode,
+            string,
+            pos,
+            endpos,
+        )
+
+    def literal_split_result(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        maxsplit: int,
+    ) -> tuple[str, tuple[object, ...]]:
+        return self._record("literal_split_result", pattern, flags, string, maxsplit)
+
+    def literal_findall_result(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, tuple[object, ...]]:
+        return self._record(
+            "literal_findall_result",
+            pattern,
+            flags,
+            string,
+            pos,
+            endpos,
+        )
+
+    def literal_finditer_result(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, tuple[object, ...]]:
+        return self._record(
+            "literal_finditer_result",
+            pattern,
+            flags,
+            string,
+            pos,
+            endpos,
+        )
+
+    def literal_subn_result(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        repl: str | bytes,
+        string: str | bytes,
+        count: int,
+    ) -> tuple[str, tuple[object, ...]]:
+        return self._record(
+            "literal_subn_result",
+            pattern,
+            flags,
+            repl,
+            string,
+            count,
+        )
+
+    def escape_result(self, pattern: str | bytes) -> tuple[str, tuple[object, ...]]:
+        return self._record("escape_result", pattern)
+
+
+class _RecordingNativeBoundaryRaisingContract(fixture_parity_support.RecordingNativeBoundary):
+    def compile_result(self, pattern: str | bytes, flags: int) -> object:
+        raise RuntimeError(f"compile boom for {pattern!r} at flags={flags}")
+
+
 def _assert_json_literal_safe(value: object) -> None:
     if value is None or isinstance(value, (bool, int, float, str)):
         return
@@ -103,6 +206,84 @@ def _payload_type_markers(value: object) -> Counter[str]:
         for item in value.values():
             markers.update(_payload_type_markers(item))
     return markers
+
+
+@pytest.mark.parametrize(
+    ("method_name", "call_args", "expected_recorded_call", "expected_handler_name"),
+    (
+        pytest.param(
+            "boundary_compile",
+            ("abc", 4),
+            ("compile", "abc", 4),
+            "compile_result",
+            id="compile",
+        ),
+        pytest.param(
+            "boundary_literal_match",
+            (b"abc", 2, "search", b"zabc", 1, 5),
+            ("match", b"abc", 2, "search", b"zabc", 1, 5),
+            "literal_match_result",
+            id="literal-match",
+        ),
+        pytest.param(
+            "boundary_literal_split",
+            ("abc", 0, "zabc", 3),
+            ("split", "abc", 0, "zabc", 3),
+            "literal_split_result",
+            id="literal-split",
+        ),
+        pytest.param(
+            "boundary_literal_findall",
+            (b"abc", 0, b"zabc", 0, None),
+            ("findall", b"abc", 0, b"zabc", 0, None),
+            "literal_findall_result",
+            id="literal-findall",
+        ),
+        pytest.param(
+            "boundary_literal_finditer",
+            ("abc", 8, "zabc", 2, None),
+            ("finditer", "abc", 8, "zabc", 2, None),
+            "literal_finditer_result",
+            id="literal-finditer",
+        ),
+        pytest.param(
+            "boundary_literal_subn",
+            (b"abc", 0, b"x", b"zabc", 2),
+            ("subn", b"abc", 0, b"x", b"zabc", 2),
+            "literal_subn_result",
+            id="literal-subn",
+        ),
+        pytest.param(
+            "boundary_escape",
+            (b"a-b",),
+            ("escape", b"a-b"),
+            "escape_result",
+            id="escape",
+        ),
+    ),
+)
+def test_recording_native_boundary_dispatches_to_expected_handler_and_records_calls(
+    method_name: str,
+    call_args: tuple[object, ...],
+    expected_recorded_call: tuple[object, ...],
+    expected_handler_name: str,
+) -> None:
+    boundary = _RecordingNativeBoundaryDispatchContract()
+
+    observed = getattr(boundary, method_name)(*call_args)
+
+    assert observed == (expected_handler_name, call_args)
+    assert boundary.calls == [expected_recorded_call]
+    assert boundary.handler_calls == [(expected_handler_name, call_args)]
+
+
+def test_recording_native_boundary_preserves_recorded_call_when_handler_raises() -> None:
+    boundary = _RecordingNativeBoundaryRaisingContract()
+
+    with pytest.raises(RuntimeError, match=r"compile boom for 'abc' at flags=7"):
+        boundary.boundary_compile("abc", 7)
+
+    assert boundary.calls == [("compile", "abc", 7)]
 
 
 def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
