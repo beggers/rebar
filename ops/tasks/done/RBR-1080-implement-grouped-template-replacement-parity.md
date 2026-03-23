@@ -1,6 +1,6 @@
 # RBR-1080: Implement grouped-template replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -50,8 +50,18 @@ Created: 2026-03-23
   - `rg -n 'RBR-1080|RBR-1081|RBR-1082' ops/state/backlog.md ops/state/current_status.md ops/tasks -g '*.md'` returned only historical mentions in done-task notes, not a live reservation.
 - No blocked feature task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in this checkout.
 - `RBR-1075` explicitly left grouped-template rows ahead of callable replacement rows and benchmark catch-up on the same collection/replacement owner family, so this is the first concrete deferred same-family follow-on rather than a new frontier.
-- Narrow owner-path probes in this run confirm the task is still missing and concrete:
-  - `tests/conformance/fixtures/collection_replacement_workflows.py` already publishes `module-sub-grouping-template` for `"(abc)"` plus `r"\1x"`;
-  - `tests/conformance/fixtures/named_group_replacement_workflows.py` already publishes the adjacent named grouped-template `sub()` and `subn()` rows on the same owner family;
-  - `tests/python/test_fixture_backed_replacement_parity_suite.py` already routes those cases through `test_module_replacement_matches_cpython` and `test_pattern_replacement_matches_cpython`; and
-  - direct runtime probes in this run showed `rebar.sub("(abc)", r"\1x", "abc")` and `rebar.compile("(?P<word>abc)").sub(r"<\g<word>>", "abcabc")` still raising `NotImplementedError` while CPython returned concrete replacement results.
+- Current owner-path anchors for this slice are:
+  - `tests/conformance/fixtures/collection_replacement_workflows.py` publishes `module-sub-grouping-template` for `"(abc)"` plus `r"\1x"`;
+  - `tests/conformance/fixtures/named_group_replacement_workflows.py` publishes the adjacent named grouped-template `sub()` and `subn()` rows on the same owner family; and
+  - `tests/python/test_fixture_backed_replacement_parity_suite.py` routes those cases through `test_module_replacement_matches_cpython` and `test_pattern_replacement_matches_cpython`.
+
+## Completion Note
+- Retired without code changes on 2026-03-23. The exact grouped-template slice is already satisfied in this checkout:
+  - `rebar.sub("(abc)", r"\1x", "abc") == re.sub("(abc)", r"\1x", "abc")`
+  - `rebar.compile("(?P<word>abc)").sub(r"<\g<word>>", "abcabc") == re.compile("(?P<word>abc)").sub(r"<\g<word>>", "abcabc")`
+  - `module-subn-template-named-group-str` and `pattern-subn-template-named-group-str` already match CPython too.
+- Verification in this run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_module_replacement_matches_cpython and (module-sub-grouping-template or module-sub-template-named-group-str or module-subn-template-named-group-str)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_pattern_replacement_matches_cpython and (pattern-sub-template-named-group-str or pattern-subn-template-named-group-str)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_whole_match_template_replacement_matches_cpython or test_source_package_pattern_whole_match_template_replacement_matches_cpython or test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation or test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases'`
+- Published scorecards were not refreshed because no correctness behavior or fixtures changed.
