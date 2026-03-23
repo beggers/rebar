@@ -576,6 +576,85 @@ class _CollectionReplacementLiteralReplacementRoute:
 
 
 @dataclass(frozen=True, slots=True)
+class _CollectionReplacementPatternCollectionRoute:
+    workload_case_pairs: tuple[tuple[str, str], ...]
+    operation: str
+    requires_window_bounds: bool
+
+    @property
+    def helper(self) -> str:
+        return self.operation.removeprefix("pattern.")
+
+    def workload_ids(self) -> tuple[str, ...]:
+        return _workload_case_pairs_workload_ids(self.workload_case_pairs)
+
+    def case_ids(self) -> tuple[str, ...]:
+        return _workload_case_pairs_case_ids(self.workload_case_pairs)
+
+    def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
+        return _workload_case_pair_anchor_expectations(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            self.workload_case_pairs,
+        )
+
+    def correctness_case_signature(
+        self,
+        case: Any,
+    ) -> tuple[Any, ...] | None:
+        if case.case_id not in self.case_ids():
+            return None
+        if case.operation != "pattern_call" or case.kwargs or case.helper != self.helper:
+            return None
+        return (
+            self.operation,
+            case_pattern(case),
+            freeze_signature_value(list(case.args)),
+            (),
+            case.flags or 0,
+            case.text_model or "str",
+        )
+
+    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
+        if not self.includes_workload(workload):
+            raise AssertionError(
+                "unexpected collection/replacement bounded "
+                f"{self.operation} workload {workload.workload_id!r}"
+            )
+        return (
+            self.operation,
+            workload.pattern_payload(),
+            freeze_signature_value(list(self._workload_args(workload))),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+
+    def includes_workload(self, workload: Any) -> bool:
+        return (
+            workload.workload_id in self.workload_ids()
+            and workload.operation == self.operation
+            and workload.pattern == "abc"
+            and workload.expected_exception is None
+            and not workload.use_compiled_pattern
+            and workload.text_model in {"str", "bytes"}
+            and not workload.kwargs
+            and (workload.pos is not None) is self.requires_window_bounds
+            and (workload.endpos is not None) is self.requires_window_bounds
+        )
+
+    def _workload_args(self, workload: Any) -> tuple[Any, ...]:
+        if self.requires_window_bounds:
+            return _pattern_window_positional_indexlike_workload_args(workload)
+
+        args = [workload.haystack_payload()]
+        if workload.maxsplit is not None and not (
+            type(workload.maxsplit) is int and workload.maxsplit == 0
+        ):
+            args.append(workload.maxsplit_argument())
+        return tuple(args)
+
+
+@dataclass(frozen=True, slots=True)
 class SourceTreeCombinedSliceExpectation:
     manifest_id: str
     slice_id: str
@@ -3680,8 +3759,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
         workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _workload_case_pairs_workload_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_CASE_PAIRS
+        expected_measured_workload_ids = (
+            _collection_replacement_pattern_collection_route("findall").workload_ids()
         )
         self.assertEqual(len(expected_measured_workload_ids), 3)
         selected_measured_workload_ids = _manifest_workload_ids_matching(
@@ -3705,8 +3784,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
         workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _workload_case_pairs_workload_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDITER_WORKLOAD_CASE_PAIRS
+        expected_measured_workload_ids = (
+            _collection_replacement_pattern_collection_route("finditer").workload_ids()
         )
         self.assertEqual(len(expected_measured_workload_ids), 3)
         selected_measured_workload_ids = _manifest_workload_ids_matching(
@@ -3730,8 +3809,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         case = source_tree_combined_case("collection-replacement-boundary")
         workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _workload_case_pairs_workload_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS
+        expected_measured_workload_ids = (
+            _collection_replacement_pattern_collection_route("split").workload_ids()
         )
         self.assertEqual(len(expected_measured_workload_ids), 3)
         selected_measured_workload_ids = _manifest_workload_ids_matching(
@@ -8303,29 +8382,44 @@ _PATTERN_BOUNDED_WILDCARD_CASE_IDS = (
     "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
 )
 
-_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_CASE_PAIRS = (
-    ("pattern-findall-bounded-warm-str", "pattern-findall-str-bounded"),
-    (
-        "pattern-findall-bounded-no-match-warm-str",
-        "pattern-findall-str-bounded-no-match",
+_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES = {
+    "findall": _CollectionReplacementPatternCollectionRoute(
+        workload_case_pairs=(
+            ("pattern-findall-bounded-warm-str", "pattern-findall-str-bounded"),
+            (
+                "pattern-findall-bounded-no-match-warm-str",
+                "pattern-findall-str-bounded-no-match",
+            ),
+            ("pattern-findall-bounded-purged-bytes", "pattern-findall-bytes-bounded"),
+        ),
+        operation="pattern.findall",
+        requires_window_bounds=True,
     ),
-    ("pattern-findall-bounded-purged-bytes", "pattern-findall-bytes-bounded"),
-)
-
-_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDITER_WORKLOAD_CASE_PAIRS = (
-    ("pattern-finditer-bounded-warm-str", "pattern-finditer-str-bounded"),
-    (
-        "pattern-finditer-bounded-no-match-warm-str",
-        "pattern-finditer-str-bounded-no-match",
+    "finditer": _CollectionReplacementPatternCollectionRoute(
+        workload_case_pairs=(
+            ("pattern-finditer-bounded-warm-str", "pattern-finditer-str-bounded"),
+            (
+                "pattern-finditer-bounded-no-match-warm-str",
+                "pattern-finditer-str-bounded-no-match",
+            ),
+            (
+                "pattern-finditer-bounded-purged-bytes",
+                "pattern-finditer-bytes-bounded",
+            ),
+        ),
+        operation="pattern.finditer",
+        requires_window_bounds=True,
     ),
-    ("pattern-finditer-bounded-purged-bytes", "pattern-finditer-bytes-bounded"),
-)
-
-_PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS = (
-    ("pattern-split-no-match-warm-str", "pattern-split-str-no-match"),
-    ("pattern-split-repeated-warm-str", "pattern-split-str-repeated"),
-    ("pattern-split-maxsplit-purged-bytes", "pattern-split-bytes-maxsplit"),
-)
+    "split": _CollectionReplacementPatternCollectionRoute(
+        workload_case_pairs=(
+            ("pattern-split-no-match-warm-str", "pattern-split-str-no-match"),
+            ("pattern-split-repeated-warm-str", "pattern-split-str-repeated"),
+            ("pattern-split-maxsplit-purged-bytes", "pattern-split-bytes-maxsplit"),
+        ),
+        operation="pattern.split",
+        requires_window_bounds=False,
+    ),
+}
 
 _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
     "pattern": _CollectionReplacementLiteralReplacementRoute(
@@ -8420,6 +8514,12 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
         allowed_counts=(-1, 0, 1),
     ),
 }
+
+
+def _collection_replacement_pattern_collection_route(
+    helper: str,
+) -> _CollectionReplacementPatternCollectionRoute:
+    return _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[helper]
 
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
     "pattern-search-verbose-regression-warm-str",
@@ -8530,121 +8630,49 @@ def _is_pattern_bounded_wildcard_workload(workload: Any) -> bool:
 def _pattern_collection_replacement_bounded_findall_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in _workload_case_pairs_case_ids(
-        _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_CASE_PAIRS
-    ):
-        return None
-    if case.operation != "pattern_call" or case.kwargs or case.helper != "findall":
-        return None
-    return (
-        "pattern.findall",
-        case_pattern(case),
-        freeze_signature_value(list(case.args)),
-        (),
-        case.flags or 0,
-        case.text_model or "str",
-    )
+    return _collection_replacement_pattern_collection_route(
+        "findall"
+    ).correctness_case_signature(case)
 
 
 def _pattern_collection_replacement_bounded_findall_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_collection_replacement_pattern_findall_bounded_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement bounded Pattern.findall workload "
-            f"{workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(
-            list(_pattern_window_positional_indexlike_workload_args(workload))
-        ),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
+    return _collection_replacement_pattern_collection_route(
+        "findall"
+    ).workload_signature(workload)
 
 
 def _pattern_collection_replacement_bounded_finditer_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in _workload_case_pairs_case_ids(
-        _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDITER_WORKLOAD_CASE_PAIRS
-    ):
-        return None
-    if case.operation != "pattern_call" or case.kwargs or case.helper != "finditer":
-        return None
-    return (
-        "pattern.finditer",
-        case_pattern(case),
-        freeze_signature_value(list(case.args)),
-        (),
-        case.flags or 0,
-        case.text_model or "str",
-    )
+    return _collection_replacement_pattern_collection_route(
+        "finditer"
+    ).correctness_case_signature(case)
 
 
 def _pattern_collection_replacement_bounded_finditer_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_collection_replacement_pattern_finditer_bounded_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement bounded Pattern.finditer workload "
-            f"{workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(
-            list(_pattern_window_positional_indexlike_workload_args(workload))
-        ),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
+    return _collection_replacement_pattern_collection_route(
+        "finditer"
+    ).workload_signature(workload)
 
 
 def _pattern_collection_replacement_split_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in _workload_case_pairs_case_ids(
-        _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS
-    ):
-        return None
-    if case.operation != "pattern_call" or case.kwargs or case.helper != "split":
-        return None
-    return (
-        "pattern.split",
-        case_pattern(case),
-        freeze_signature_value(list(case.args)),
-        (),
-        case.flags or 0,
-        case.text_model or "str",
-    )
+    return _collection_replacement_pattern_collection_route(
+        "split"
+    ).correctness_case_signature(case)
 
 
 def _pattern_collection_replacement_split_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _is_collection_replacement_pattern_split_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement direct Pattern.split workload "
-            f"{workload.workload_id!r}"
-        )
-    args = [workload.haystack_payload()]
-    if workload.maxsplit is not None and not (
-        type(workload.maxsplit) is int and workload.maxsplit == 0
-    ):
-        args.append(workload.maxsplit_argument())
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(args),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
+    return _collection_replacement_pattern_collection_route(
+        "split"
+    ).workload_signature(workload)
 
 
 def _collection_replacement_literal_replacement_correctness_case_signature(
@@ -8834,38 +8862,16 @@ def _is_any_collection_replacement_pattern_literal_replacement_workload(
 def _is_collection_replacement_pattern_findall_bounded_workload(
     workload: Any,
 ) -> bool:
-    return (
-        workload.workload_id
-        in _workload_case_pairs_workload_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_CASE_PAIRS
-        )
-        and workload.operation == "pattern.findall"
-        and workload.pattern == "abc"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in {"str", "bytes"}
-        and workload.pos is not None
-        and workload.endpos is not None
-        and not workload.kwargs
+    return _collection_replacement_pattern_collection_route("findall").includes_workload(
+        workload
     )
 
 
 def _is_collection_replacement_pattern_split_workload(
     workload: Any,
 ) -> bool:
-    return (
-        workload.workload_id
-        in _workload_case_pairs_workload_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS
-        )
-        and workload.operation == "pattern.split"
-        and workload.pattern == "abc"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in {"str", "bytes"}
-        and workload.pos is None
-        and workload.endpos is None
-        and not workload.kwargs
+    return _collection_replacement_pattern_collection_route("split").includes_workload(
+        workload
     )
 
 
@@ -8884,20 +8890,9 @@ def _is_collection_replacement_pattern_literal_replacement_workload(
 def _is_collection_replacement_pattern_finditer_bounded_workload(
     workload: Any,
 ) -> bool:
-    return (
-        workload.workload_id
-        in _workload_case_pairs_workload_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDITER_WORKLOAD_CASE_PAIRS
-        )
-        and workload.operation == "pattern.finditer"
-        and workload.pattern == "abc"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in {"str", "bytes"}
-        and workload.pos is not None
-        and workload.endpos is not None
-        and not workload.kwargs
-    )
+    return _collection_replacement_pattern_collection_route(
+        "finditer"
+    ).includes_workload(workload)
 
 
 def _pattern_verbose_regression_correctness_case_signature(
@@ -9894,10 +9889,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-pattern-findall-bounded",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_CASE_PAIRS,
-        ),
+        expected_anchor_case_ids=_collection_replacement_pattern_collection_route(
+            "findall"
+        ).anchor_expectations(),
         include_workload=_is_collection_replacement_pattern_findall_bounded_workload,
         correctness_case_signature=(
             _pattern_collection_replacement_bounded_findall_correctness_case_signature
@@ -9910,10 +9904,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-pattern-finditer-bounded",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            _PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDITER_WORKLOAD_CASE_PAIRS,
-        ),
+        expected_anchor_case_ids=_collection_replacement_pattern_collection_route(
+            "finditer"
+        ).anchor_expectations(),
         include_workload=_is_collection_replacement_pattern_finditer_bounded_workload,
         correctness_case_signature=(
             _pattern_collection_replacement_bounded_finditer_correctness_case_signature
@@ -9926,10 +9919,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-pattern-split",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS,
-        ),
+        expected_anchor_case_ids=_collection_replacement_pattern_collection_route(
+            "split"
+        ).anchor_expectations(),
         include_workload=_is_collection_replacement_pattern_split_workload,
         correctness_case_signature=(
             _pattern_collection_replacement_split_correctness_case_signature

@@ -1,6 +1,6 @@
 # RBR-1072: Collapse pattern collection windowed workflow routes
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -86,3 +86,10 @@ Created: 2026-03-23
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_split_rows_measured or collection-replacement-pattern-bounded-findall or collection-replacement-pattern-bounded-finditer or collection-replacement-pattern-split'` returned `5 passed, 717 deselected, 3 subtests passed` in this run.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor'` returned `1 passed, 721 deselected` in this run.
   - `bash -lc "rg -n '^_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_CASE_PAIRS\\b|^_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDITER_WORKLOAD_CASE_PAIRS\\b|^_PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` returned all three table definitions in this run.
+
+## Completion Note
+- Replaced the three standalone bounded `Pattern.findall()`, `Pattern.finditer()`, and `Pattern.split()` workload/case pair tables in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with one file-local `_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES` map backed by `_CollectionReplacementPatternCollectionRoute`.
+- Rewired the measured-row tests, correctness-signature helpers, workload selectors, workload-signature helpers, and the three `collection-replacement-pattern-*` anchor definitions to read through that shared route owner while preserving the existing workload ids, case ids, ordering, and `Pattern.split()` implicit-zero `maxsplit` normalization.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured or collection_replacement_manifest_keeps_pattern_split_rows_measured or collection-replacement-pattern-bounded-findall or collection-replacement-pattern-bounded-finditer or collection-replacement-pattern-split or pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor'` -> `8 passed, 714 deselected, 9 subtests passed`
+  - `bash -lc "! rg -n '^_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDALL_WORKLOAD_CASE_PAIRS\\b|^_PATTERN_COLLECTION_REPLACEMENT_BOUNDED_FINDITER_WORKLOAD_CASE_PAIRS\\b|^_PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> success with no matches
