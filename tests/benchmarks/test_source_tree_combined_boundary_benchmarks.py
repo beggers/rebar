@@ -17366,19 +17366,6 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
     ),
 )
 
-
-def _compiled_pattern_module_compile_contract_params() -> tuple[object, ...]:
-    return tuple(
-        pytest.param(
-            contract_case,
-            source_workload,
-            id=f"{contract_case.case_id}-{source_workload.workload_id}",
-        )
-        for contract_case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
-        for source_workload in contract_case.source_workloads()
-    )
-
-
 @pytest.mark.parametrize(
     "contract_case",
     _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
@@ -17533,7 +17520,11 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _compiled_pattern_module_compile_contract_params(),
+    _contract_source_workload_params(
+        _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+        source_workloads=lambda contract_case: contract_case.source_workloads(),
+        param_id=lambda contract_case: contract_case.case_id,
+    ),
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -17573,7 +17564,11 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _compiled_pattern_module_compile_contract_params(),
+    _contract_source_workload_params(
+        _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+        source_workloads=lambda contract_case: contract_case.source_workloads(),
+        param_id=lambda contract_case: contract_case.case_id,
+    ),
 )
 def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing(
     contract_case: CompiledPatternModuleCompileContractCase,
