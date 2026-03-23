@@ -2635,26 +2635,8 @@ def _assert_noncompiled_publication_direct_case_field_alignment(
         assert fixture_case.flags == 0
 
 
-def _compiled_pattern_module_helper_direct_case_helper(
-    case: object,
-) -> str:
-    if isinstance(case, CompiledPatternCompileCase):
-        return "compile"
-    return case.helper
-
-
-def _compiled_pattern_module_helper_direct_case_args(
-    case: object,
-) -> tuple[object, ...]:
-    if isinstance(case, CompiledPatternCompileCase):
-        return ()
-    if hasattr(case, "args"):
-        return tuple(case.args)
-    return (case.string,)
-
-
-def _compiled_pattern_module_helper_direct_signature(
-    case: object,
+def _compiled_pattern_module_helper_publication_signature(
+    case: FixtureCase | object,
 ) -> tuple[
     str,
     str | bytes,
@@ -2664,36 +2646,34 @@ def _compiled_pattern_module_helper_direct_signature(
     tuple[tuple[str, str, object], ...],
     str,
 ]:
+    if isinstance(case, FixtureCase):
+        pattern = case_pattern(case)
+        return (
+            case.helper,
+            pattern,
+            tuple(case.args),
+            case.flags,
+            case.use_compiled_pattern,
+            _workflow_keyword_kwargs_signature(case.kwargs),
+            "bytes" if isinstance(pattern, bytes) else "str",
+        )
+
+    helper = "compile" if isinstance(case, CompiledPatternCompileCase) else case.helper
+    args: tuple[object, ...]
+    if isinstance(case, CompiledPatternCompileCase):
+        args = ()
+    elif hasattr(case, "args"):
+        args = tuple(case.args)
+    else:
+        args = (case.string,)
     return (
-        _compiled_pattern_module_helper_direct_case_helper(case),
+        helper,
         case.pattern,
-        _compiled_pattern_module_helper_direct_case_args(case),
+        args,
         getattr(case, "flags", 0),
         getattr(case, "compiled", True),
         _workflow_keyword_kwargs_signature(getattr(case, "kwargs", {})),
         "bytes" if isinstance(case.pattern, bytes) else "str",
-    )
-
-
-def _compiled_pattern_module_helper_fixture_signature(
-    case: FixtureCase,
-) -> tuple[
-    str,
-    str | bytes,
-    tuple[object, ...],
-    int,
-    bool,
-    tuple[tuple[str, str, object], ...],
-    str,
-]:
-    return (
-        case.helper,
-        case_pattern(case),
-        tuple(case.args),
-        case.flags,
-        case.use_compiled_pattern,
-        _workflow_keyword_kwargs_signature(case.kwargs),
-        case.text_model,
     )
 
 
@@ -4266,7 +4246,7 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
         COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS,
     )
     published_fixture_signatures = {
-        _compiled_pattern_module_helper_fixture_signature(case)
+        _compiled_pattern_module_helper_publication_signature(case)
         for case in published_fixture_cases
     }
 
@@ -4276,7 +4256,7 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
         if case.case_id in published_fixture_case_ids
     ) == published_fixture_case_ids
     assert {
-        _compiled_pattern_module_helper_direct_signature(case)
+        _compiled_pattern_module_helper_publication_signature(case)
         for case in published_after_positional_count_cases
     } == {
         (
@@ -4299,7 +4279,7 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
         ),
     }
     assert {
-        _compiled_pattern_module_helper_direct_signature(case)
+        _compiled_pattern_module_helper_publication_signature(case)
         for case in published_count_alias_cases
     } == {
         (
@@ -4322,15 +4302,15 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
         ),
     }
     assert {
-        _compiled_pattern_module_helper_direct_signature(case)
+        _compiled_pattern_module_helper_publication_signature(case)
         for case in published_after_positional_count_cases
     } <= published_fixture_signatures
     assert {
-        _compiled_pattern_module_helper_direct_signature(case)
+        _compiled_pattern_module_helper_publication_signature(case)
         for case in published_count_alias_cases
     } <= published_fixture_signatures
     assert {
-        _compiled_pattern_module_helper_direct_signature(case)
+        _compiled_pattern_module_helper_publication_signature(case)
         for case in adjacent_published_cases
     } <= published_fixture_signatures
 
@@ -5087,7 +5067,9 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
                     "subn": 10,
                 }
             ),
-            direct_case_helper=_compiled_pattern_module_helper_direct_case_helper,
+            direct_case_helper=(
+                lambda case: _compiled_pattern_module_helper_publication_signature(case)[0]
+            ),
         )
     )
 
@@ -5101,8 +5083,8 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         assert fixture_case.use_compiled_pattern is True
         assert fixture_case.text_model == row.text_model
         assert (
-            _compiled_pattern_module_helper_fixture_signature(fixture_case)
-            == _compiled_pattern_module_helper_direct_signature(direct_case)
+            _compiled_pattern_module_helper_publication_signature(fixture_case)
+            == _compiled_pattern_module_helper_publication_signature(direct_case)
         )
 
 

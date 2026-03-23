@@ -1,6 +1,6 @@
 # RBR-0997: Collapse compiled-pattern publication signature helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -58,3 +58,7 @@ Created: 2026-03-23
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases or compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path'` currently passes (`2 passed, 1449 deselected`);
   - `tests/python/test_module_workflow_parity_suite.py` currently defines exactly one copy each of `_compiled_pattern_module_helper_direct_case_helper(...)`, `_compiled_pattern_module_helper_direct_case_args(...)`, `_compiled_pattern_module_helper_direct_signature(...)`, and `_compiled_pattern_module_helper_fixture_signature(...)`; and
   - the same file currently routes both compiled-pattern publication tests through that quartet, so this cleanup can delete duplicated signature-shape machinery without opening a new feature frontier.
+
+## Completion Note
+- Replaced the four compiled-pattern direct-vs-fixture publication signature helpers in `tests/python/test_module_workflow_parity_suite.py` with one shared `_compiled_pattern_module_helper_publication_signature(...)` helper and repointed both scoped owner-path publication tests through it.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases or compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path'` (`2 passed, 1449 deselected`).
