@@ -11,6 +11,7 @@ from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.conftest import duplicate_string_ids
 
@@ -295,6 +296,31 @@ def build_selected_fixture_bundle(
         expected_case_ids=expected_case_ids,
         expected_text_models=expected_text_models,
     )
+
+
+def load_published_fixture_bundles(
+    fixture_selectors: str | Iterable[str],
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes] | None = None,
+) -> tuple[tuple[FixtureBundle, ...], dict[str, FixtureBundle]]:
+    if isinstance(fixture_selectors, str):
+        selectors = (fixture_selectors,)
+    else:
+        selectors = tuple(fixture_selectors)
+
+    fixture_paths = tuple(
+        path
+        for selector in selectors
+        for path in select_correctness_fixture_paths(selector)
+    )
+    bundles = tuple(
+        build_selected_fixture_bundle(
+            fixture_path,
+            pattern_extractor=pattern_extractor,
+        )
+        for fixture_path in fixture_paths
+    )
+    return bundles, published_fixture_bundles_by_manifest_id(bundles)
 
 
 def case_pattern(case: FixtureCase) -> str | bytes:

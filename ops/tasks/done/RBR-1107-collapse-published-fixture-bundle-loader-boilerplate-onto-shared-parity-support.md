@@ -1,6 +1,6 @@
 ## RBR-1107: Collapse published fixture-bundle loader boilerplate onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -55,3 +55,9 @@ Created: 2026-03-23
   - `tests/python/test_grouped_capture_parity_suite.py:60-64`, `tests/python/test_quantified_alternation_parity_suite.py:80-84`, `tests/python/test_branch_local_backreference_parity_suite.py:87-94`, and `tests/python/test_conditional_group_exists_parity_suite.py:72-78` each restate the same top-level `select_correctness_fixture_paths(...)` -> `build_selected_fixture_bundle(...)` -> `published_fixture_bundles_by_manifest_id(...)` setup today.
 - The focused verification slice is already green in this checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py` returned `2764 passed` in this run.
+
+## Completion
+- Added `load_published_fixture_bundles(...)` to `tests/python/fixture_parity_support.py` so selector resolution, ordered bundle construction, and duplicate-manifest index validation travel through one shared helper.
+- Extended `tests/python/test_fixture_parity_support_contract.py` with coverage for preserved selector path order and duplicate manifest-id rejection through the new combined helper.
+- Switched the grouped-capture, quantified-alternation, branch-local-backreference, and conditional-group-exists parity suites to the shared helper without changing their manifest aliases, bundle order, or expectations.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py` (`2766 passed`) and `bash -lc "! rg -n '^FIXTURE_BUNDLES = tuple\\(|^FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id\\(' tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py"` (passed).

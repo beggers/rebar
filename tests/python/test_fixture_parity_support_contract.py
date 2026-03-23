@@ -3952,6 +3952,72 @@ def test_published_fixture_bundles_by_manifest_id_rejects_duplicate_manifest_ids
         )
 
 
+def test_load_published_fixture_bundles_preserves_selected_path_order(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    selector_paths = {
+        "second-selector": (mixed_path,),
+        "first-selector": (str_path,),
+    }
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "select_correctness_fixture_paths",
+        lambda selector: selector_paths[selector],
+    )
+
+    bundles, bundles_by_manifest_id = fixture_parity_support.load_published_fixture_bundles(
+        ("second-selector", "first-selector"),
+        pattern_extractor=case_pattern,
+    )
+
+    assert tuple(bundle.manifest.path.name for bundle in bundles) == (
+        BUNDLE_LOADER_CONTRACT_MIXED_FILENAME,
+        BUNDLE_LOADER_CONTRACT_STR_FILENAME,
+    )
+    assert tuple(bundle.expected_manifest_id for bundle in bundles) == (
+        BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID,
+        BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+    )
+    assert tuple(bundles_by_manifest_id) == (
+        BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID,
+        BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+    )
+    assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID] is bundles[0]
+    assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID] is bundles[1]
+
+
+def test_load_published_fixture_bundles_rejects_duplicate_manifest_ids(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    selector_paths = {
+        "first-selector": (str_path,),
+        "duplicate-selector": (str_path,),
+    }
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "select_correctness_fixture_paths",
+        lambda selector: selector_paths[selector],
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "published fixture bundles contain duplicate manifest_id "
+            f"'{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}'"
+        ),
+    ):
+        fixture_parity_support.load_published_fixture_bundles(
+            ("first-selector", "duplicate-selector"),
+            pattern_extractor=case_pattern,
+        )
+
+
 def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
 ) -> None:
     fixture_path = (

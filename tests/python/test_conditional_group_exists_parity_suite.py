@@ -10,7 +10,6 @@ import pytest
 from rebar_harness.correctness import (
     CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR,
     FixtureCase,
-    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     CaseIdBoundedPatternCase as BoundedPatternCase,
@@ -22,11 +21,10 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
-    build_selected_fixture_bundle,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
-    published_fixture_bundles_by_manifest_id,
+    load_published_fixture_bundles,
     record_generated_match_failure,
     SupplementalMissCase,
     str_case_pattern,
@@ -69,14 +67,9 @@ QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
 FULLY_EMPTY_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)|(?:|))"
 FULLY_EMPTY_ALTERNATION_NAMED_PATTERN = r"a(?P<word>b)?c(?(word)|(?:|))"
 
-FIXTURE_BUNDLES = tuple(
-    build_selected_fixture_bundle(path, pattern_extractor=str_case_pattern)
-    for path in select_correctness_fixture_paths(
-        CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR
-    )
-)
-FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
-    FIXTURE_BUNDLES
+FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
+    CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR,
+    pattern_extractor=str_case_pattern,
 )
 QUANTIFIED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
     "conditional-group-exists-quantified-workflows"
