@@ -50,6 +50,15 @@ class GeneratedQuantifiedConditionalParitySpec:
     failure_prefix: str
 
 
+@dataclass(frozen=True)
+class GeneratedFullyEmptyAlternationParitySpec:
+    bundle: FixtureBundle
+    expected_compile_case_ids: tuple[str, ...]
+    expected_patterns: frozenset[str]
+    candidate_texts: tuple[str, ...]
+    failure_prefix: str
+
+
 HELPERS = ("search", "match", "fullmatch")
 FAILURE_PREVIEW_LIMIT = 20
 
@@ -57,6 +66,8 @@ QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
 QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
     r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
 )
+FULLY_EMPTY_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)|(?:|))"
+FULLY_EMPTY_ALTERNATION_NAMED_PATTERN = r"a(?P<word>b)?c(?(word)|(?:|))"
 
 FIXTURE_BUNDLES = tuple(
     build_selected_fixture_bundle(path, pattern_extractor=str_case_pattern)
@@ -72,6 +83,9 @@ QUANTIFIED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
 ]
 QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
     "conditional-group-exists-quantified-alternation-workflows"
+]
+FULLY_EMPTY_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "conditional-group-exists-fully-empty-alternation-workflows"
 ]
 
 
@@ -243,6 +257,32 @@ GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
         branch_choices=("de", "df", "eg", "eh"),
         failure_prefix="quantified conditional alternation generated parity drifted",
     ),
+)
+
+
+def _build_generated_fully_empty_alternation_candidate_texts() -> tuple[str, ...]:
+    cores = ("ac", "abc", "ad", "ab", "ace", "abce", "acf", "abcf")
+    return tuple(
+        f"{wrapper_prefix}{core}{wrapper_suffix}"
+        for core in cores
+        for wrapper_prefix, wrapper_suffix in WRAPPER_PAIRS
+    )
+
+
+GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC = GeneratedFullyEmptyAlternationParitySpec(
+    bundle=FULLY_EMPTY_ALTERNATION_BUNDLE,
+    expected_compile_case_ids=(
+        "conditional-group-exists-fully-empty-alternation-compile-metadata-str",
+        "named-conditional-group-exists-fully-empty-alternation-compile-metadata-str",
+    ),
+    expected_patterns=frozenset(
+        {
+            FULLY_EMPTY_ALTERNATION_NUMBERED_PATTERN,
+            FULLY_EMPTY_ALTERNATION_NAMED_PATTERN,
+        }
+    ),
+    candidate_texts=_build_generated_fully_empty_alternation_candidate_texts(),
+    failure_prefix="fully-empty conditional alternation generated parity drifted",
 )
 
 
@@ -655,6 +695,27 @@ def test_generated_quantified_conditional_compile_cases_stay_anchored_to_publish
     )
 
 
+def test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_published_manifest() -> None:
+    compile_cases = fixture_cases_for_operation(
+        (GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.bundle,),
+        "compile",
+    )
+
+    assert GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.bundle.manifest.path == (
+        FULLY_EMPTY_ALTERNATION_BUNDLE.manifest.path
+    )
+    assert tuple(case.case_id for case in compile_cases) == (
+        GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.expected_compile_case_ids
+    )
+    assert {str_case_pattern(case) for case in compile_cases} == (
+        GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.expected_patterns
+    )
+    assert {case.text_model for case in compile_cases} == {"str"}
+    assert len(GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.candidate_texts) == (
+        len(_build_generated_fully_empty_alternation_candidate_texts())
+    )
+
+
 def test_pattern_bounds_cases_stay_anchored_to_published_conditional_patterns() -> None:
     assert str_case_pattern(
         CASES_BY_ID["optional-group-conditional-compile-metadata-str"]
@@ -778,6 +839,54 @@ def test_generated_quantified_conditional_text_matrix_matches_cpython(
     if len(failures) > FAILURE_PREVIEW_LIMIT:
         failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
     assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
+
+
+@pytest.mark.parametrize(
+    "case",
+    fixture_cases_for_operation(
+        (GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.bundle,),
+        "compile",
+    ),
+    ids=lambda case: case.case_id,
+)
+def test_generated_fully_empty_alternation_text_matrix_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = str_case_pattern(case)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        case.flags or 0,
+    )
+
+    failures: list[str] = []
+    for text in GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.candidate_texts:
+        for helper in HELPERS:
+            record_generated_match_failure(
+                failures,
+                label=f"module.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(backend, helper)(pattern, text),
+                expected=getattr(re, helper)(pattern, text),
+            )
+            record_generated_match_failure(
+                failures,
+                label=f"pattern.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(observed_pattern, helper)(text),
+                expected=getattr(expected_pattern, helper)(text),
+            )
+
+    failure_preview = "\n".join(failures[:FAILURE_PREVIEW_LIMIT])
+    if len(failures) > FAILURE_PREVIEW_LIMIT:
+        failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
+    assert not failures, (
+        f"{GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.failure_prefix}:\n"
+        f"{failure_preview}"
+    )
 
 
 @pytest.mark.parametrize("case", BASE_MODULE_CASES, ids=lambda case: case.case_id)
