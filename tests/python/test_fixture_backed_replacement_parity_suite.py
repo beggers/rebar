@@ -163,6 +163,7 @@ DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
     pytest.param(b"abc", b"x", b"abcabc", 0, id="bytes-repeated-match"),
     pytest.param(b"abc", b"x", b"abcabc", 1, id="bytes-count-one"),
     pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
+    pytest.param(b"abc", b"x", b"abcabc", -1, id="bytes-negative-count"),
 ]
 PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
     "module-sub-str-no-match",
@@ -185,8 +186,10 @@ PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
     "pattern-subn-str-negative-count",
     "pattern-sub-bytes-no-match",
     "pattern-sub-bytes-single-match",
+    "pattern-sub-bytes-negative-count",
     "pattern-subn-bytes-count",
     "pattern-subn-bytes-repeated",
+    "pattern-subn-bytes-negative-count",
 )
 DIRECT_WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abc", 0, id="single-match"),
@@ -2533,8 +2536,10 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "pattern-subn-str-negative-count": ("x", "abcabc", -1),
             "pattern-sub-bytes-no-match": (b"x", b"zzz"),
             "pattern-sub-bytes-single-match": (b"x", b"zabczz"),
+            "pattern-sub-bytes-negative-count": (b"x", b"abcabc", -1),
             "pattern-subn-bytes-count": (b"x", b"abcabc", 1),
             "pattern-subn-bytes-repeated": (b"x", b"abcabc"),
+            "pattern-subn-bytes-negative-count": (b"x", b"abcabc", -1),
         },
         expected_helpers=(
             "sub",
@@ -2545,6 +2550,8 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "subn",
             "sub",
             "sub",
+            "sub",
+            "subn",
             "subn",
             "subn",
         ),
@@ -2555,6 +2562,8 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "str",
             "str",
             "str",
+            "bytes",
+            "bytes",
             "bytes",
             "bytes",
             "bytes",

@@ -1,6 +1,6 @@
 # RBR-1030: Publish the direct `Pattern.sub()` / `Pattern.subn()` bytes negative-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -62,3 +62,15 @@ Created: 2026-03-23
   - a direct runtime probe confirms `rebar.compile(b"abc").sub(b"x", b"abcabc", -1) == re.compile(b"abc").sub(b"x", b"abcabc", -1)` and `rebar.compile(b"abc").subn(b"x", b"abcabc", -1) == re.compile(b"abc").subn(b"x", b"abcabc", -1)` on the live branch;
   - `rg -n 'pattern-sub-bytes-negative-count|pattern-subn-bytes-negative-count' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` currently returns no matches, confirming the exact correctness publication ids are still absent from the tracked owner-path surfaces; and
   - `RBR-1028` already landed the adjacent benchmark-side `str` negative-count catch-up on the same owner route, so this follow-on can stay correctness-only instead of queuing another implementation or benchmark prerequisite first.
+
+## Completion
+- Added the two missing shared-manifest direct compiled-pattern bytes negative-count rows in `tests/conformance/fixtures/collection_replacement_workflows.py`: `pattern-sub-bytes-negative-count` immediately after `pattern-sub-bytes-single-match`, and `pattern-subn-bytes-negative-count` immediately after `pattern-subn-bytes-repeated`.
+- Extended the existing shared direct `Pattern.sub()` / `Pattern.subn()` parity/publication route in `tests/python/test_fixture_backed_replacement_parity_suite.py` with the `bytes-negative-count` source-package case, the twelve published direct pattern replacement ids in the required order, and aligned helper/args/text-model publication assertions.
+- Refreshed `tests/conformance/test_combined_correctness_scorecards.py` so the shared collection-replacement manifest expectation now samples both new published ids.
+- Regenerated `reports/correctness/latest.py`; the tracked combined summary is now `1581` total / `1581` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `44` / `44`, `.bytes` at `15` / `15`, `.str` unchanged at `29` / `29`, `.pattern_call` at `24` / `24`, and `.module_call` unchanged at `20` / `20`.
+- Verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and bytes-negative-count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1030-pattern-replacement-bytes-negative-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

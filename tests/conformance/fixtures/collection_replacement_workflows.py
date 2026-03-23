@@ -555,6 +555,31 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-bytes-negative-count",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "sub",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        -1
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "negative-count"],
+      "notes": [
+        "Publishes the direct Pattern.sub bytes negative-count path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-subn-bytes-count",
       "operation": "pattern_call",
       "family": "replacement_workflow",
@@ -601,6 +626,31 @@ MANIFEST = {
       "categories": ["workflow", "subn", "literal", "bytes", "repeated"],
       "notes": [
         "Publishes the direct Pattern.subn bytes repeated-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
+      "id": "pattern-subn-bytes-negative-count",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "subn",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        -1
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "negative-count"],
+      "notes": [
+        "Publishes the direct Pattern.subn bytes negative-count path on the shared collection replacement frontier."
       ]
     },
     {
