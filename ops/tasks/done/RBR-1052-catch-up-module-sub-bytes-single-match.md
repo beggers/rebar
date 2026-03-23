@@ -1,6 +1,6 @@
 # RBR-1052: Catch up the direct `module.sub()` bytes single-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,4 @@ Created: 2026-03-23
   - `reports/benchmarks/latest.py` currently reports `970` total / `970` measured / `0` known gaps overall, with `module_workloads == 962`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 417, "warm": 449}`, and `collection-replacement-boundary` at `selected_workload_count == 131`, `measured_workloads == 131`, `known_gap_count == 0`, and `workload_count == 131`.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a tracked state refresh in the same run.
 - 2026-03-23T11:27:45+00:00: harness requeued after failed or incomplete run after run `20260323T112643Z-feature-implementation-RBR-1052-catch-up-module-sub-bytes-single-match` (exit=1, timed_out=false).
+- 2026-03-23T11:48:24+00:00: completed by refreshing the stale published full-suite summary assertion in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and republishing `reports/benchmarks/latest.py` after confirming the scoped workload row and owner-path anchor coverage were already present in this checkout. Verified with the bounded replacement parity slice, the shared benchmark owner-route checks, a narrow `collection_replacement_boundary.py` benchmark run (`132/132` measured), and a full published benchmark refresh (`971` total / `971` measured / `0` known gaps; `collection-replacement-boundary` at `132` workloads with `module-sub-bytes-single-match-purged-bytes` published as `measured`).
