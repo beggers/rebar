@@ -1,6 +1,6 @@
 # RBR-1004: Catch up the direct `Pattern.sub()` / `Pattern.subn()` bytes no-match/count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,13 @@ Created: 2026-03-23
   - `rg -n 'pattern-sub-bytes-no-match-purged-bytes|pattern-subn-bytes-count-purged-bytes' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while the surrounding direct bytes correctness anchors are already present on the shared owner path;
   - direct synthetic benchmark probes built through `rebar_harness.benchmarks.Workload.from_dict(...)`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` return `status == "measured"` for both adapters on both hypothetical workloads `pattern-sub-bytes-no-match-purged-bytes` and `pattern-subn-bytes-count-purged-bytes`; and
   - `reports/benchmarks/latest.py` currently reports `947` total / `947` measured / `0` known gaps overall, with `module_workloads == 939`, `workloads_by_cache_mode == {"cold": 104, "purged": 398, "warm": 445}`, and `collection-replacement-boundary` at `108` selected / `108` measured / `108` workload-count rows.
+
+## Completion Notes
+- Added `pattern-sub-bytes-no-match-purged-bytes` and `pattern-subn-bytes-count-purged-bytes` to `benchmarks/workloads/collection_replacement_boundary.py` in the required direct-`Pattern` literal-replacement order.
+- Updated the shared owner-route assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the literal replacement contract now covers the full eight-workload `str`/`bytes` pair set and the published full-suite summary expects `949` total / `949` measured / `0` gaps with `module_workloads == 941`.
+- Regenerated `reports/benchmarks/latest.py`; the tracked report now publishes `workloads_by_cache_mode == {'cold': 104, 'purged': 400, 'warm': 445}`, `collection-replacement-boundary` at `110` selected / `110` measured / `110` workload-count rows, and both new workload ids with `status == "measured"`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (bytes-no-match or bytes-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1004-pattern-replacement-bytes-no-match-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
