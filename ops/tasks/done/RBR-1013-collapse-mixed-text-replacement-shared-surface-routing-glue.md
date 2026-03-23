@@ -1,6 +1,6 @@
 ## RBR-1013: Collapse mixed-text replacement shared-surface routing glue
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -39,6 +39,8 @@ Created: 2026-03-23
 - Do not edit fixture manifests, harness modules, benchmark files, reports, README/current-status/backlog prose, or non-replacement parity files in this run.
 
 ## Notes
+- Completed 2026-03-23: added one file-local mixed-text manifest-routing helper surface in `tests/python/test_fixture_backed_replacement_parity_suite.py` and repointed the three targeted shared-surface tests through it so they now share the same bundle/text-model/manifest-scoped case-id extraction without changing the asserted routing contracts.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surface or broader_range_open_ended_replacement_manifest_routes_bytes_rows_through_shared_parity_surface or broader_range_wider_ranged_repeat_replacement_manifest_keeps_mixed_text_on_shared_parity_surface'` (`3 passed, 1298 deselected`).
 - `RBR-1013` is unreserved in the live queue/state files for this run:
   - `python3` inspection over `ops/state/backlog.md`, `ops/state/current_status.md`, and the task queues reported `next_free=1013`, `max_existing=1012`, and no reserved `RBR-` ids above the live task frontier.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in the current checkout.

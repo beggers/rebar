@@ -326,6 +326,20 @@ class LoadedReplacementSurface:
     discovered_no_match_cases: tuple[FixtureCase, ...]
 
 
+@dataclass(frozen=True)
+class MixedTextReplacementManifestRouting:
+    str_case_ids: tuple[str, ...]
+    bytes_case_ids: tuple[str, ...]
+    bundle_case_ids: tuple[str, ...]
+    expected_module_case_ids: tuple[str, ...]
+    expected_pattern_case_ids: tuple[str, ...]
+    shared_replacement_case_ids: tuple[str, ...]
+    shared_module_case_ids: tuple[str, ...]
+    shared_pattern_case_ids: tuple[str, ...]
+    shared_match_group_access_case_ids: tuple[str, ...]
+    shared_template_expand_case_ids: tuple[str, ...]
+
+
 OPEN_ENDED_SUPPLEMENTAL_NO_MATCH_CASES = (
     SupplementalReplacementCase(
         id="module-open-ended-numbered-sub-no-match",
@@ -968,6 +982,59 @@ def _cases_for_manifest_ids(
         for manifest_id in manifest_ids
         for case in cases
         if case.manifest_id == manifest_id
+    )
+
+
+def _case_ids(cases: tuple[FixtureCase, ...]) -> tuple[str, ...]:
+    return tuple(case.case_id for case in cases)
+
+
+def _case_ids_for_manifest(
+    cases: tuple[FixtureCase, ...],
+    manifest_id: str,
+) -> tuple[str, ...]:
+    return tuple(case.case_id for case in cases if case.manifest_id == manifest_id)
+
+
+def _mixed_text_replacement_manifest_routing(
+    bundle: FixtureBundle,
+    surface: LoadedReplacementSurface,
+    *,
+    manifest_id: str | None = None,
+) -> MixedTextReplacementManifestRouting:
+    manifest_id = bundle.expected_manifest_id if manifest_id is None else manifest_id
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+
+    return MixedTextReplacementManifestRouting(
+        str_case_ids=_case_ids(str_cases),
+        bytes_case_ids=_case_ids(bytes_cases),
+        bundle_case_ids=_case_ids(bundle.cases),
+        expected_module_case_ids=_case_ids(
+            fixture_cases_for_operation((bundle,), "module_call")
+        ),
+        expected_pattern_case_ids=_case_ids(
+            fixture_cases_for_operation((bundle,), "pattern_call")
+        ),
+        shared_replacement_case_ids=_case_ids_for_manifest(
+            surface.replacement_cases,
+            manifest_id,
+        ),
+        shared_module_case_ids=_case_ids_for_manifest(
+            surface.module_cases,
+            manifest_id,
+        ),
+        shared_pattern_case_ids=_case_ids_for_manifest(
+            surface.pattern_cases,
+            manifest_id,
+        ),
+        shared_match_group_access_case_ids=_case_ids_for_manifest(
+            surface.match_group_access_cases,
+            manifest_id,
+        ),
+        shared_template_expand_case_ids=_case_ids_for_manifest(
+            surface.template_expand_cases,
+            manifest_id,
+        ),
     )
 
 
@@ -1761,82 +1828,36 @@ def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surf
 ) -> None:
     bundle = MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE
     surface = OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
-    str_case_ids = frozenset(case.case_id for case in str_cases)
-    bytes_case_ids = frozenset(case.case_id for case in bytes_cases)
-    expected_module_case_ids = frozenset(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "module_call")
-    )
-    expected_pattern_case_ids = frozenset(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "pattern_call")
-    )
-    shared_module_case_ids = frozenset(
-        case.case_id
-        for case in surface.module_cases
-        if case.manifest_id == bundle.expected_manifest_id
-    )
-    shared_pattern_case_ids = frozenset(
-        case.case_id
-        for case in surface.pattern_cases
-        if case.manifest_id == bundle.expected_manifest_id
-    )
-    shared_match_group_access_case_ids = frozenset(
-        case.case_id
-        for case in surface.match_group_access_cases
-        if case.manifest_id == bundle.expected_manifest_id
-    )
-    shared_template_expand_case_ids = frozenset(
-        case.case_id
-        for case in surface.template_expand_cases
-        if case.manifest_id == bundle.expected_manifest_id
-    )
+    routing = _mixed_text_replacement_manifest_routing(bundle, surface)
+    shared_text_case_ids = frozenset((*routing.str_case_ids, *routing.bytes_case_ids))
 
-    assert shared_module_case_ids == expected_module_case_ids
-    assert shared_pattern_case_ids == expected_pattern_case_ids
-    assert shared_match_group_access_case_ids == str_case_ids | bytes_case_ids
-    assert shared_template_expand_case_ids == str_case_ids | bytes_case_ids
+    assert frozenset(routing.shared_module_case_ids) == frozenset(
+        routing.expected_module_case_ids
+    )
+    assert frozenset(routing.shared_pattern_case_ids) == frozenset(
+        routing.expected_pattern_case_ids
+    )
+    assert frozenset(routing.shared_match_group_access_case_ids) == shared_text_case_ids
+    assert frozenset(routing.shared_template_expand_case_ids) == shared_text_case_ids
 
 
 def test_broader_range_open_ended_replacement_manifest_routes_bytes_rows_through_shared_parity_surface(
 ) -> None:
     bundle = BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE
     surface = OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
-    ordered_str_case_ids = tuple(case.case_id for case in str_cases)
-    ordered_bytes_case_ids = tuple(case.case_id for case in bytes_cases)
-    expected_module_case_ids = frozenset(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "module_call")
-    )
-    expected_pattern_case_ids = frozenset(
-        case.case_id
-        for case in fixture_cases_for_operation((bundle,), "pattern_call")
-    )
-    shared_module_case_ids = frozenset(
-        case.case_id
-        for case in surface.module_cases
-        if case.manifest_id == bundle.expected_manifest_id
-    )
-    shared_pattern_case_ids = frozenset(
-        case.case_id
-        for case in surface.pattern_cases
-        if case.manifest_id == bundle.expected_manifest_id
-    )
-    shared_template_expand_case_ids = frozenset(
-        case.case_id
-        for case in surface.template_expand_cases
-        if case.manifest_id == bundle.expected_manifest_id
-    )
+    routing = _mixed_text_replacement_manifest_routing(bundle, surface)
 
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
     )
-    assert shared_module_case_ids == expected_module_case_ids
-    assert shared_pattern_case_ids == expected_pattern_case_ids
-    assert shared_template_expand_case_ids == (
-        frozenset(ordered_str_case_ids) | frozenset(ordered_bytes_case_ids)
+    assert frozenset(routing.shared_module_case_ids) == frozenset(
+        routing.expected_module_case_ids
+    )
+    assert frozenset(routing.shared_pattern_case_ids) == frozenset(
+        routing.expected_pattern_case_ids
+    )
+    assert frozenset(routing.shared_template_expand_case_ids) == frozenset(
+        (*routing.str_case_ids, *routing.bytes_case_ids)
     )
 
 
@@ -1845,40 +1866,24 @@ def test_broader_range_wider_ranged_repeat_replacement_manifest_keeps_mixed_text
     manifest_id = NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID
     bundle = BROADER_RANGE_WIDER_RANGED_REPEAT_MIXED_TEXT_REPLACEMENT_BUNDLE
     surface = GROUPED_REPLACEMENT_TEMPLATE_SURFACE
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
-    ordered_str_case_ids = tuple(case.case_id for case in str_cases)
-    ordered_bytes_case_ids = tuple(case.case_id for case in bytes_cases)
-    expected_selected_case_ids = _expected_selected_replacement_case_ids(
+    routing = _mixed_text_replacement_manifest_routing(
+        bundle,
         surface,
         manifest_id=manifest_id,
     )
-    expected_module_case_ids = tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
-    )
-    expected_pattern_case_ids = tuple(
-        case.case_id for case in fixture_cases_for_operation((bundle,), "pattern_call")
+    expected_selected_case_ids = _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=manifest_id,
     )
 
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
     )
-    assert tuple(case.case_id for case in bundle.cases) == expected_selected_case_ids
-    assert tuple(
-        case.case_id
-        for case in surface.replacement_cases
-        if case.manifest_id == manifest_id
-    ) == expected_selected_case_ids
-    assert tuple(
-        case.case_id for case in surface.module_cases if case.manifest_id == manifest_id
-    ) == expected_module_case_ids
-    assert tuple(
-        case.case_id for case in surface.pattern_cases if case.manifest_id == manifest_id
-    ) == expected_pattern_case_ids
-    assert tuple(
-        case.case_id
-        for case in surface.template_expand_cases
-        if case.manifest_id == manifest_id
-    ) == expected_selected_case_ids
+    assert routing.bundle_case_ids == expected_selected_case_ids
+    assert routing.shared_replacement_case_ids == expected_selected_case_ids
+    assert routing.shared_module_case_ids == routing.expected_module_case_ids
+    assert routing.shared_pattern_case_ids == routing.expected_pattern_case_ids
+    assert routing.shared_template_expand_case_ids == expected_selected_case_ids
     assert _expected_selected_replacement_case_ids(
         surface,
         manifest_id=manifest_id,
