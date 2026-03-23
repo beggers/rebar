@@ -17209,7 +17209,7 @@ class _CompiledPatternModuleContractAnchorLane:
         [pathlib.Path],
         dict[tuple[str, str], tuple[str, ...]],
     ]
-    anchor_case_ids: Callable[[], dict[tuple[Any, ...], tuple[str, ...]]]
+    anchor_case_ids: dict[tuple[Any, ...], tuple[str, ...]]
     workload_signature: Callable[[Any], tuple[Any, ...]]
     include_workload: Callable[[Any], bool]
     expected_anchor_pairs: tuple[tuple[str, str], ...]
@@ -17223,10 +17223,8 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
             source_workloads=anchor_spec.source_workloads,
             contract_builder_spec=anchor_spec.owner_spec.contract_builder_spec,
             expected_anchor_case_ids=anchor_spec.expected_anchor_case_ids,
-            anchor_case_ids=(
-                lambda anchor_spec=anchor_spec: published_case_ids_by_signature(
-                    anchor_spec.correctness_case_signature
-                )
+            anchor_case_ids=published_case_ids_by_signature(
+                anchor_spec.correctness_case_signature
             ),
             workload_signature=anchor_spec.workload_signature,
             include_workload=anchor_spec.include_workload,
@@ -17248,12 +17246,8 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
                     )
                 )
             ),
-            anchor_case_ids=(
-                lambda contract_case=contract_case: (
-                    published_case_ids_by_signature(
-                        contract_case.correctness_case_signature
-                    )
-                )
+            anchor_case_ids=published_case_ids_by_signature(
+                contract_case.correctness_case_signature
             ),
             workload_signature=contract_case.workload_signature,
             include_workload=contract_case.include_workload,
@@ -17350,7 +17344,7 @@ def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correc
         f"MANIFEST = {manifest!r}\n",
     )
     expected_anchor_case_ids = anchor_lane.expected_anchor_case_ids(manifest_path)
-    anchor_case_ids = anchor_lane.anchor_case_ids()
+    anchor_case_ids = anchor_lane.anchor_case_ids
 
     assert anchored_workload_case_ids(
         manifest_path,
