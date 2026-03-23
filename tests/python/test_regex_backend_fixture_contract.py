@@ -124,7 +124,18 @@ def test_regex_backend_skips_matching_unsupported_backend_with_default_reason() 
         )
 
 
-def test_regex_backend_treats_empty_reason_as_request_for_default_skip_message() -> None:
+@pytest.mark.parametrize(
+    "unsupported_backend_reason",
+    (
+        pytest.param(None, id="none"),
+        pytest.param("", id="empty-string"),
+        pytest.param(0, id="zero"),
+        pytest.param(False, id="false"),
+    ),
+)
+def test_regex_backend_falls_back_to_default_reason_for_falsey_matching_reason(
+    unsupported_backend_reason: object,
+) -> None:
     with pytest.raises(
         pytest.skip.Exception,
         match="rebar backend unsupported for this parity case",
@@ -134,7 +145,7 @@ def test_regex_backend_treats_empty_reason_as_request_for_default_skip_message()
             parametrized_values={
                 "case": _BackendCase(
                     unsupported_backends=("rebar",),
-                    unsupported_backend_reason="",
+                    unsupported_backend_reason=unsupported_backend_reason,  # type: ignore[arg-type]
                 ),
             },
         )
@@ -317,22 +328,6 @@ def test_regex_backend_rejects_overlapping_backend_specific_and_shared_disables(
                 "payload": _BackendCase(
                     unsupported_backends=("rebar",),
                     unsupported_backend_reason="rebar-only fixture gap",
-                ),
-            },
-        )
-
-
-def test_regex_backend_falls_back_to_default_reason_for_falsey_matching_reason() -> None:
-    with pytest.raises(
-        pytest.skip.Exception,
-        match="rebar backend unsupported for this parity case",
-    ):
-        _invoke_regex_backend(
-            "rebar",
-            parametrized_values={
-                "case": _BackendCase(
-                    unsupported_backends=("rebar",),
-                    unsupported_backend_reason="",
                 ),
             },
         )
