@@ -10,7 +10,6 @@ import pytest
 from rebar_harness.correctness import (
     FixtureCase,
     OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -34,14 +33,13 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
-    build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_for_operation,
+    load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
-    published_fixture_bundles_by_manifest_id,
 )
 
 
@@ -62,13 +60,10 @@ OPEN_ENDED_BACKTRACKING_BRANCH_BYTES = {
 }
 
 
-FIXTURE_BUNDLES = tuple(
-    build_selected_fixture_bundle(path, pattern_extractor=case_pattern)
-    for path in select_correctness_fixture_paths(
-        OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR
-    )
+FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
+    OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
+    pattern_extractor=case_pattern,
 )
-FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(FIXTURE_BUNDLES)
 OPEN_ENDED_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
     "open-ended-quantified-group-alternation-workflows"
 ]
