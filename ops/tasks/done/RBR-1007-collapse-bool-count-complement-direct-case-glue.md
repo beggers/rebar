@@ -1,6 +1,6 @@
 ## RBR-1007: Collapse bool-count complement direct-case glue
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -41,6 +41,8 @@ Created: 2026-03-23
 - Do not edit fixture manifests, harness modules, benchmark workloads/tests, reports, or README/current-status/backlog prose in this run.
 
 ## Notes
+- Completed 2026-03-23: added one file-local helper in `tests/python/test_module_workflow_parity_suite.py` to centralize bool-count complement filtering/projection, repointed the three adjacent complement-balance tests through it, and preserved the existing ordered/set contracts exactly.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on or pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on or compiled_pattern_module_keyword_bool_count_direct_cases_cover_complements'` (`3 passed, 1448 deselected`).
 - `RBR-1007` is unreserved in the live queue/state files for this run:
   - `rg -n 'RBR-1007|RBR-1008|RBR-1009|RBR-1010' ops/state/backlog.md ops/state/current_status.md ops/tasks/ready ops/tasks/in_progress ops/tasks/done ops/tasks/blocked` returned matches only inside prior done-task notes, with no live reservation in ready, in-progress, blocked, or done task filenames.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in the current checkout.

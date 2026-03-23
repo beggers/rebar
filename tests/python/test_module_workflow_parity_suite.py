@@ -256,6 +256,29 @@ def _workflow_keyword_kwargs_signature(
     return tuple(signature)
 
 
+_BOOL_COUNT_COMPLEMENT_KWARGS_SIGNATURES = frozenset(
+    {
+        (("count", "bool", False),),
+        (("count", "bool", True),),
+    }
+)
+
+
+def _workflow_bool_count_complement_projection(
+    cases: tuple[_WorkflowKeywordCaseT, ...],
+    project: Callable[[_WorkflowKeywordCaseT], _WorkflowProjectionT],
+    *,
+    helpers: frozenset[str] | None = None,
+) -> tuple[_WorkflowProjectionT, ...]:
+    return tuple(
+        project(case)
+        for case in cases
+        if (helpers is None or case.helper in helpers)
+        and _workflow_keyword_kwargs_signature(case.kwargs)
+        in _BOOL_COUNT_COMPLEMENT_KWARGS_SIGNATURES
+    )
+
+
 def _workflow_positional_args_signature(
     args: tuple[object, ...] | list[object],
 ) -> tuple[tuple[str, object], ...]:
@@ -592,6 +615,15 @@ _CollectionCaseT = TypeVar("_CollectionCaseT", bound=_CollectionHelperCase)
 class _HelperCallCase(Protocol):
     helper: str
     args: tuple[object, ...]
+
+
+class _WorkflowKeywordCase(Protocol):
+    helper: str
+    kwargs: dict[str, object]
+
+
+_WorkflowKeywordCaseT = TypeVar("_WorkflowKeywordCaseT", bound=_WorkflowKeywordCase)
+_WorkflowProjectionT = TypeVar("_WorkflowProjectionT")
 
 
 @dataclass(frozen=True)
@@ -4761,18 +4793,14 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
 
 def test_module_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on(
 ) -> None:
-    assert tuple(
-        (
+    assert _workflow_bool_count_complement_projection(
+        MODULE_KEYWORD_CALL_CASES,
+        lambda case: (
             case.case_id,
             case.helper,
             case.args[0],
             _workflow_keyword_kwargs_signature(case.kwargs),
-        )
-        for case in MODULE_KEYWORD_CALL_CASES
-        if _workflow_keyword_kwargs_signature(case.kwargs) in {
-            (("count", "bool", False),),
-            (("count", "bool", True),),
-        }
+        ),
     ) == (
         ("module-sub-count-bool-false-str", "sub", "abc", (("count", "bool", False),)),
         ("module-sub-count-bool-true-str", "sub", "abc", (("count", "bool", True),)),
@@ -4908,28 +4936,24 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
 
 def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on(
 ) -> None:
-    assert tuple(
-        (
+    assert _workflow_bool_count_complement_projection(
+        PATTERN_KEYWORD_CALL_CASES,
+        lambda case: (
             case.case_id,
             case.helper,
             case.pattern,
             _workflow_keyword_kwargs_signature(case.kwargs),
-        )
-        for case in PATTERN_KEYWORD_CALL_CASES
-        if _workflow_keyword_kwargs_signature(case.kwargs)
-        in {
-            (("count", "bool", False),),
-            (("count", "bool", True),),
-        }
-        and case.helper in {"sub", "subn"}
-    ) == tuple(
-        (
+        ),
+        helpers=frozenset({"sub", "subn"}),
+    ) == _workflow_bool_count_complement_projection(
+        PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES,
+        lambda case: (
             case.case_id,
             case.helper,
             case.pattern,
             _workflow_keyword_kwargs_signature(case.kwargs),
-        )
-        for case in PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES
+        ),
+        helpers=frozenset({"sub", "subn"}),
     )
 
 
@@ -5106,21 +5130,18 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
 
 def test_compiled_pattern_module_keyword_bool_count_direct_cases_cover_complements(
 ) -> None:
-    assert {
-        (
-            case.case_id,
-            case.helper,
-            "bytes" if isinstance(case.pattern, bytes) else "str",
-            _workflow_keyword_kwargs_signature(case.kwargs),
+    assert set(
+        _workflow_bool_count_complement_projection(
+            COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
+            lambda case: (
+                case.case_id,
+                case.helper,
+                "bytes" if isinstance(case.pattern, bytes) else "str",
+                _workflow_keyword_kwargs_signature(case.kwargs),
+            ),
+            helpers=frozenset({"sub", "subn"}),
         )
-        for case in COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES
-        if case.helper in {"sub", "subn"}
-        and _workflow_keyword_kwargs_signature(case.kwargs)
-        in {
-            (("count", "bool", False),),
-            (("count", "bool", True),),
-        }
-    } == {
+    ) == {
         (
             "compiled-pattern-sub-count-bool-false-str",
             "sub",
