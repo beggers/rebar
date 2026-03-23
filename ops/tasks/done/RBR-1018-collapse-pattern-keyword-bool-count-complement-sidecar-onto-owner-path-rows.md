@@ -1,6 +1,6 @@
 # RBR-1018: Collapse pattern-keyword bool-count complement sidecar onto owner-path rows
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -84,6 +84,10 @@ PY`
 - Do not edit fixture manifests, harness modules, benchmark workloads/tests, reports, or tracked state prose in this run.
 
 ## Notes
+- Completed 2026-03-23: removed `PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES` from `tests/python/test_module_workflow_parity_suite.py` and rewired `test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on()` to derive the bool-count complement membership from `PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS` before asserting the ordered `PATTERN_KEYWORD_CALL_CASES` projection against the same four direct cases.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on'` (`2 passed, 1449 deselected`).
+- Verified with the owner-path/direct-case probe in the task body (`ok`).
+- Verified the sidecar removal with `bash -lc "! rg -n '^PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES = ' tests/python/test_module_workflow_parity_suite.py"`.
 - `RBR-1018` is the next available unreserved task id in the current checkout:
   - a repo-local `python3` scan over `ops/state/backlog.md`, `ops/state/current_status.md`, and all task queues reported `1018` as the first unused `RBR-` number in this run.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in the current checkout.

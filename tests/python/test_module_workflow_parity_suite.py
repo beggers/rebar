@@ -2386,10 +2386,6 @@ PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
         strict=True,
     )
 )
-PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES = (
-    *PATTERN_KEYWORD_CALL_CASES[21:23],
-    *PATTERN_KEYWORD_CALL_CASES[25:27],
-)
 
 
 PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
@@ -4861,6 +4857,29 @@ def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_d
 
 def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_follow_on(
 ) -> None:
+    published_bool_count_rows = tuple(
+        row
+        for row in PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS
+        if row.direct_case.helper in {"sub", "subn"}
+        and _workflow_keyword_kwargs_signature(row.direct_case.kwargs)
+        in _BOOL_COUNT_COMPLEMENT_KWARGS_SIGNATURES
+    )
+    assert tuple(row.fixture_case_id for row in published_bool_count_rows) == (
+        "workflow-pattern-sub-count-bool-false-bytes",
+        "workflow-pattern-sub-count-bool-true-bytes",
+        "workflow-pattern-subn-count-bool-false-str",
+        "workflow-pattern-subn-count-bool-true-str",
+    )
+    assert tuple(row.direct_case.case_id for row in published_bool_count_rows) == (
+        "pattern-sub-count-bool-false-bytes",
+        "pattern-sub-count-bool-true-bytes",
+        "pattern-subn-count-bool-false-str",
+        "pattern-subn-count-bool-true-str",
+    )
+
+    published_direct_case_ids = {
+        row.direct_case.case_id for row in published_bool_count_rows
+    }
     assert _workflow_bool_count_complement_projection(
         PATTERN_KEYWORD_CALL_CASES,
         lambda case: (
@@ -4870,15 +4889,20 @@ def test_pattern_keyword_direct_cases_keep_bool_count_complements_balanced_for_f
             _workflow_keyword_kwargs_signature(case.kwargs),
         ),
         helpers=frozenset({"sub", "subn"}),
-    ) == _workflow_bool_count_complement_projection(
-        PATTERN_KEYWORD_BOOL_COUNT_COMPLEMENT_DIRECT_CASES,
-        lambda case: (
+    ) == tuple(
+        (
             case.case_id,
             case.helper,
             case.pattern,
             _workflow_keyword_kwargs_signature(case.kwargs),
-        ),
-        helpers=frozenset({"sub", "subn"}),
+        )
+        for case in PATTERN_KEYWORD_CALL_CASES
+        if case.case_id in published_direct_case_ids
+    ) == (
+        ("pattern-sub-count-bool-false-bytes", "sub", b"abc", (("count", "bool", False),)),
+        ("pattern-sub-count-bool-true-bytes", "sub", b"abc", (("count", "bool", True),)),
+        ("pattern-subn-count-bool-true-str", "subn", "abc", (("count", "bool", True),)),
+        ("pattern-subn-count-bool-false-str", "subn", "abc", (("count", "bool", False),)),
     )
 
 
