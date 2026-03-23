@@ -1,6 +1,6 @@
 # RBR-1038: Publish the direct `Pattern.sub()` bytes repeated/count-one pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,6 @@ Created: 2026-03-23
   - `tests/conformance/fixtures/collection_replacement_workflows.py` currently jumps from `pattern-sub-bytes-single-match` directly to `pattern-sub-bytes-negative-count`, confirming the exact adjacent publication gap on the shared correctness path;
   - `rg -n 'pattern-sub-bytes-(repeated|count-one)' tests/conformance/fixtures/collection_replacement_workflows.py reports/correctness/latest.py` currently returns no matches, confirming the exact correctness publication ids are still absent from the tracked owner-path surfaces; and
   - the matching benchmark-side workload ids are also still absent from `benchmarks/workloads/collection_replacement_boundary.py`, so Python-path benchmark catch-up should stay sequenced behind this correctness publication instead of replacing it.
+
+## Completion Note
+- 2026-03-23: Added `pattern-sub-bytes-repeated` and `pattern-sub-bytes-count-one` to the shared `collection-replacement-workflows` manifest, extended the existing direct-pattern literal replacement publication selector/assertions on the shared parity suite, refreshed the combined correctness representative ids, and republished `reports/correctness/latest.py`. Verified with the task's narrow parity/publication pytest commands, the full `tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` gate, a narrow fixture-only correctness refresh to `.rebar/tmp/rbr-1038-pattern-sub-bytes-repeated-count-one-pair.py` (`48` total / `48` passed), and the tracked combined refresh at `reports/correctness/latest.py` (`1585` total / `1585` passed / `0` failed / `0` unimplemented across `114` manifests; `collection.replacement.workflow` `48/48`, `.bytes` `17/17`, `.str` `31/31`, `.module_call` `20/20`, `.pattern_call` `28/28`).

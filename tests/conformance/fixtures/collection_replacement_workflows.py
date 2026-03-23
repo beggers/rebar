@@ -579,6 +579,55 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-bytes-repeated",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "sub",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        }
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "repeated"],
+      "notes": [
+        "Publishes the direct Pattern.sub bytes repeated-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
+      "id": "pattern-sub-bytes-count-one",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "sub",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        1
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "count-one"],
+      "notes": [
+        "Pins the compiled-pattern bytes sub path for a bounded single replacement on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-sub-bytes-negative-count",
       "operation": "pattern_call",
       "family": "replacement_workflow",
