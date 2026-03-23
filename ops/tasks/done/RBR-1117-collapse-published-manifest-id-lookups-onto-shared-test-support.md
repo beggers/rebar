@@ -1,6 +1,6 @@
 # RBR-1117: Collapse published manifest-id lookups onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -59,3 +59,9 @@ Created: 2026-03-23
 - The focused verification slice is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned `804 passed, 3 skipped, 4022 subtests passed` in this run.
 - The negative `rg` verification currently fails exactly on the targeted lookup boilerplate above, so it is an acceptance check for this cleanup rather than unrelated repo drift.
+
+## Completion
+- Added `manifest_records_by_id()` to `tests/conftest.py` as the shared manifest-id lookup helper for published manifest-like records, preserving original manifest objects and rejecting duplicate ids loudly.
+- Extended `tests/python/test_shared_test_support_contract.py` with focused unique-id and duplicate-id coverage for the new helper.
+- Replaced the two inline correctness scorecard manifest-id map comprehensions with the shared helper and removed the benchmark-local `_source_tree_manifest_records()` wrapper in favor of the same shared helper.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`806 passed, 3 skipped, 4022 subtests passed`) and `bash -lc "! rg -n 'manifests_by_id = \\{|def _source_tree_manifest_records\\(' tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.

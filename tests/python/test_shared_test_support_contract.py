@@ -23,6 +23,7 @@ from tests.conftest import (
     duplicate_items,
     duplicate_string_ids,
     fake_harness_cli_scorecard_result,
+    manifest_records_by_id,
     report_path_from_cli_args,
     run_harness_cli,
     run_harness_scorecard,
@@ -216,6 +217,32 @@ def test_assert_published_manifest_inventory_contract_accepts_extra_manifest_uni
     )
 
     assert tuple(record.record_id for record in records) == ("record-a", "record-b")
+
+
+def test_manifest_records_by_id_returns_original_records_keyed_by_manifest_id() -> None:
+    manifest_a = SimpleNamespace(manifest_id="manifest-a", payload="alpha")
+    manifest_b = SimpleNamespace(manifest_id="manifest-b", payload="beta")
+
+    manifests_by_id = manifest_records_by_id(iter((manifest_a, manifest_b)))
+
+    assert list(manifests_by_id) == ["manifest-a", "manifest-b"]
+    assert manifests_by_id["manifest-a"] is manifest_a
+    assert manifests_by_id["manifest-b"] is manifest_b
+
+
+def test_manifest_records_by_id_rejects_duplicate_manifest_ids() -> None:
+    duplicate_manifest_id = "duplicate-manifest"
+
+    with pytest.raises(
+        AssertionError,
+        match=rf"duplicate ids: \['{duplicate_manifest_id}'\]",
+    ):
+        manifest_records_by_id(
+            (
+                SimpleNamespace(manifest_id=duplicate_manifest_id, payload="alpha"),
+                SimpleNamespace(manifest_id=duplicate_manifest_id, payload="beta"),
+            )
+        )
 
 
 def test_run_harness_cli_uses_repo_local_pythonpath_and_check_by_default() -> None:

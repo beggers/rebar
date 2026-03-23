@@ -15,7 +15,7 @@ from rebar_harness import correctness
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
 )
-from tests.conftest import REPO_ROOT, run_harness_scorecard
+from tests.conftest import REPO_ROOT, manifest_records_by_id, run_harness_scorecard
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
@@ -4654,10 +4654,9 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         suite_id: str,
         expectation_table: object,
     ) -> None:
-        manifests_by_id = {
-            manifest.manifest_id: manifest
-            for manifest in correctness.published_fixture_manifests()
-        }
+        manifests_by_id = manifest_records_by_id(
+            correctness.published_fixture_manifests()
+        )
         mixed_text_manifest_ids: list[str] = []
 
         for manifest_id, manifest_expectation in expectation_table.items():
@@ -4700,10 +4699,9 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         suite_id: str,
         expectation_table: object,
     ) -> None:
-        manifests_by_id = {
-            manifest.manifest_id: manifest
-            for manifest in correctness.published_fixture_manifests()
-        }
+        manifests_by_id = manifest_records_by_id(
+            correctness.published_fixture_manifests()
+        )
         mixed_text_manifest_ids: list[str] = []
 
         for manifest_id, manifest_expectation in expectation_table.items():

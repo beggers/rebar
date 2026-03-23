@@ -47,6 +47,7 @@ from tests.conftest import (
     assert_published_manifest_helper_contract,
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
+    manifest_records_by_id,
     run_harness_scorecard,
 )
 from tests.python.fixture_parity_support import (
@@ -2812,14 +2813,6 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
 )
 
-
-@cache
-def _source_tree_manifest_records() -> dict[str, BenchmarkManifest]:
-    return {
-        manifest.manifest_id: manifest for manifest in published_benchmark_manifests()
-    }
-
-
 def relative_manifest_path(path: pathlib.Path) -> str:
     return str(path.relative_to(REPO_ROOT))
 
@@ -3107,7 +3100,7 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
 
     case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
     manifest_ids = case_definition.manifest_ids
-    manifest_records = _source_tree_manifest_records()
+    manifest_records = manifest_records_by_id(published_benchmark_manifests())
     manifests: list[BenchmarkManifest] = []
     for manifest_id in manifest_ids:
         try:
