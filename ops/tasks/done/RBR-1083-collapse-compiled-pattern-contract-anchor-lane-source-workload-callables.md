@@ -1,6 +1,6 @@
 ## RBR-1083: Collapse compiled-pattern contract anchor-lane source-workload callables
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -50,3 +50,9 @@ Created: 2026-03-23
   - `rg -n 'source_workloads: tuple\\[Workload, \\.\\.\\.\\] \\| Callable\\[\\[\\], tuple\\[Workload, \\.\\.\\.\\]\\]|def _compiled_pattern_module_contract_anchor_lane_source_workloads\\(|source_workloads=contract_case.source_workloads' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the union-typed lane field at line `17206`, the one-purpose normalizer helper at lines `17218-17222`, and the remaining compile-contract callable assignment at line `17249` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing'` returned `64 passed, 662 deselected` in this run.
+
+## Completion
+- 2026-03-23: `_CompiledPatternModuleContractAnchorLane.source_workloads` now stores concrete workload tuples only, the one-purpose callable normalizer helper is deleted, the compile-contract anchor lanes materialize their tuple payloads eagerly at lane construction time, and the anchored-manifest assertion reads those tuples directly.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing'` returned `64 passed, 662 deselected`.
+  - `bash -lc "! rg -n 'source_workloads: tuple\\[Workload, \\.\\.\\.\\] \\| Callable\\[\\[\\], tuple\\[Workload, \\.\\.\\.\\]\\]|def _compiled_pattern_module_contract_anchor_lane_source_workloads\\(|source_workloads=contract_case.source_workloads' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` returned success with no matches.

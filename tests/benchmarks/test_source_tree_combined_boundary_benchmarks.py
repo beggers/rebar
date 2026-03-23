@@ -17203,7 +17203,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = tuple(
 class _CompiledPatternModuleContractAnchorLane:
     case_id: str
     contract_filename: str
-    source_workloads: tuple[Workload, ...] | Callable[[], tuple[Workload, ...]]
+    source_workloads: tuple[Workload, ...]
     contract_builder_spec: Callable[[], _SourceTreeContractBuilderSpec]
     expected_anchor_case_ids: Callable[
         [pathlib.Path],
@@ -17213,14 +17213,6 @@ class _CompiledPatternModuleContractAnchorLane:
     workload_signature: Callable[[Any], tuple[Any, ...]]
     include_workload: Callable[[Any], bool]
     expected_anchor_pairs: tuple[tuple[str, str], ...]
-
-
-def _compiled_pattern_module_contract_anchor_lane_source_workloads(
-    source_workloads: tuple[Workload, ...] | Callable[[], tuple[Workload, ...]],
-) -> tuple[Workload, ...]:
-    if callable(source_workloads):
-        return source_workloads()
-    return source_workloads
 
 
 _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
@@ -17246,7 +17238,7 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
         _CompiledPatternModuleContractAnchorLane(
             case_id=contract_case.case_id,
             contract_filename=contract_case.anchor_contract_filename,
-            source_workloads=contract_case.source_workloads,
+            source_workloads=source_workloads,
             contract_builder_spec=contract_case.contract_builder_spec,
             expected_anchor_case_ids=(
                 lambda manifest_path, contract_case=contract_case: (
@@ -17268,6 +17260,7 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
             expected_anchor_pairs=contract_case.expected_anchor_pairs,
         )
         for contract_case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for source_workloads in (contract_case.source_workloads(),)
     ),
 )
 
@@ -17348,9 +17341,7 @@ def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correc
     anchor_lane: _CompiledPatternModuleContractAnchorLane,
 ) -> None:
     manifest = _source_tree_contract_manifest(
-        _compiled_pattern_module_contract_anchor_lane_source_workloads(
-            anchor_lane.source_workloads
-        ),
+        anchor_lane.source_workloads,
         spec=anchor_lane.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
