@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives beyond the active direct compiled-pattern `Pattern.subn()` str single-match benchmark catch-up slice on the shared collection/replacement owner path.
+No ready feature follow-on currently survives beyond the active direct compiled-pattern `Pattern.subn()` str no-match correctness-publication slice on the shared collection/replacement owner path.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives beyond the active direct compiled-pattern `Pattern.subn()` str single-match benchmark catch-up slice on the shared collection/replacement owner path.
+1. No ready feature follow-on currently survives beyond the active direct compiled-pattern `Pattern.subn()` str no-match correctness-publication slice on the shared collection/replacement owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

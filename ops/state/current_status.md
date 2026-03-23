@@ -22,8 +22,8 @@ Published correctness covers 1593 cases across 114 manifests, with all 1593 pass
 The published correctness slice now covers 1593 cases across 114 manifests, all passing, and 975 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- No ready feature follow-on currently survives in this checkout.
-- No blocked or in-progress feature task currently shadows the empty ready queue in this checkout.
+- No ready feature follow-on currently survives beyond the active direct compiled-pattern `Pattern.subn()` str no-match correctness-publication slice on the shared collection/replacement owner path.
+- No blocked or in-progress feature task currently shadows that active ready collection/replacement slice in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
