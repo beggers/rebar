@@ -112,7 +112,16 @@ def completed_process(
 
 
 def report_path_from_cli_args(cli_args: list[str] | tuple[str, ...]) -> pathlib.Path:
-    report_index = cli_args.index("--report")
+    report_indexes = [
+        index for index, argument in enumerate(cli_args) if argument == "--report"
+    ]
+    if len(report_indexes) != 1:
+        raise ValueError("cli args must include exactly one --report argument")
+
+    report_index = report_indexes[0]
+    if report_index + 1 >= len(cli_args):
+        raise ValueError("--report must be followed by a path")
+
     return pathlib.Path(cli_args[report_index + 1])
 
 
@@ -137,11 +146,18 @@ def run_harness_scorecard(
     *,
     report_name: str,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    cli_args_list = list(cli_args)
+    if "--report" in cli_args_list:
+        raise ValueError(
+            "run_harness_scorecard manages its own --report argument; "
+            "omit it from cli_args"
+        )
+
     with tempfile.TemporaryDirectory() as temp_dir:
         report_path = pathlib.Path(temp_dir) / report_name
         result = run_harness_cli(
             module_name,
-            [*cli_args, "--report", str(report_path)],
+            [*cli_args_list, "--report", str(report_path)],
         )
         summary = json.loads(result.stdout.strip())
         if report_path.suffix == ".json":

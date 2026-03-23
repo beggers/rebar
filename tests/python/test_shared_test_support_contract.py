@@ -20,6 +20,7 @@ from tests.conftest import (
     duplicate_items,
     duplicate_string_ids,
     fake_harness_cli_scorecard_result,
+    report_path_from_cli_args,
     run_harness_cli,
     run_harness_scorecard,
 )
@@ -220,6 +221,31 @@ def test_fake_harness_cli_scorecard_result_writes_report_and_returns_json_summar
     assert observed.stderr == ""
 
 
+def test_report_path_from_cli_args_rejects_duplicate_report_flags() -> None:
+    with pytest.raises(
+        ValueError,
+        match="cli args must include exactly one --report argument",
+    ):
+        report_path_from_cli_args(
+            (
+                "--selector",
+                "focused",
+                "--report",
+                "first.json",
+                "--report",
+                "second.json",
+            )
+        )
+
+
+def test_report_path_from_cli_args_rejects_missing_report_value() -> None:
+    with pytest.raises(
+        ValueError,
+        match="--report must be followed by a path",
+    ):
+        report_path_from_cli_args(("--selector", "focused", "--report"))
+
+
 def test_run_harness_scorecard_loads_python_correctness_reports() -> None:
     summary, scorecard = run_harness_scorecard(
         "rebar_harness.correctness",
@@ -270,6 +296,23 @@ def test_run_harness_scorecard_accepts_one_shot_cli_arg_iterators() -> None:
     assert scorecard["fixtures"]["path"] == str(PARSER_FIXTURES_PATH.relative_to(REPO_ROOT))
     assert scorecard["fixtures"]["manifest_id"] == "parser-matrix"
     assert scorecard["summary"] == summary
+
+
+def test_run_harness_scorecard_rejects_preexisting_report_arg() -> None:
+    with pytest.raises(
+        ValueError,
+        match="run_harness_scorecard manages its own --report argument",
+    ):
+        run_harness_scorecard(
+            "rebar_harness.correctness",
+            [
+                "--fixtures",
+                str(PARSER_FIXTURES_PATH),
+                "--report",
+                "preexisting.py",
+            ],
+            report_name="parser-only.py",
+        )
 
 
 def test_run_harness_scorecard_loads_json_reports_without_importing_module_loader() -> None:
