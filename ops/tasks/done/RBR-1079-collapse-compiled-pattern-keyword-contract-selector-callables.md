@@ -1,8 +1,9 @@
 ## RBR-1079: Collapse compiled-pattern keyword contract selector callables
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
+Completed: 2026-03-23
 
 ## Goal
 - Remove the remaining callable-selector wrapper layer in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` for the compiled-pattern module-helper keyword contract surface so the precomputed workload tuples flow directly into the contract carriers and nearby parametrized tests instead of bouncing through `partial(tuple, ...)` and two one-purpose param-builder helpers.
@@ -55,3 +56,6 @@ Created: 2026-03-23
   - `rg -n '^def (_compiled_pattern_module_helper_keyword_contract_surface_params|_compiled_pattern_module_helper_keyword_contract_source_workload_params)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the two dedicated param-builder helpers at lines `15958` and `15965` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements'` returned `69 passed, 653 deselected` in this run.
+- Completion note:
+  - Replaced the compiled-pattern module-helper keyword contract surface's callable selectors with direct workload tuple fields, deleted the two one-purpose param-builder helpers, and rewired the affected parametrized tests to consume precomputed `pytest.param(...)` tuples while preserving the existing workload ordering and precompile subset.
+  - Re-verified the focused pytest slice and the negative `rg` acceptance check after the cleanup.

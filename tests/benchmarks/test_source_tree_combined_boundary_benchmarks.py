@@ -15563,18 +15563,17 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
 class _CompiledPatternModuleHelperKeywordContractSurface:
     case_id: str
     spec: _CompiledPatternModuleHelperKeywordContractSpec
-    source_workload_selector: Callable[[], tuple[Workload, ...]]
-    precompile_source_workload_selector: Callable[[], tuple[Workload, ...]] | None = None
+    source_workloads_value: tuple[Workload, ...]
+    precompile_source_workloads_value: tuple[Workload, ...] | None = None
 
     def source_workloads(self) -> tuple[Workload, ...]:
-        return self.source_workload_selector()
+        return self.source_workloads_value
 
     def precompile_source_workloads(self) -> tuple[Workload, ...]:
-        selector = (
-            self.precompile_source_workload_selector
-            or self.source_workload_selector
+        return (
+            self.precompile_source_workloads_value
+            or self.source_workloads_value
         )
-        return selector()
 
     def expected_build_calls(
         self,
@@ -15935,53 +15934,44 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
     _CompiledPatternModuleHelperKeywordContractSurface(
         case_id="success",
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
-        source_workload_selector=partial(
-            tuple,
-            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS,
-        ),
-        precompile_source_workload_selector=partial(
-            tuple,
-            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS,
+        source_workloads_value=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS,
+        precompile_source_workloads_value=(
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS
         ),
     ),
     _CompiledPatternModuleHelperKeywordContractSurface(
         case_id="keyword-error",
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
-        source_workload_selector=partial(
-            tuple,
-            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
+        source_workloads_value=(
+            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         ),
     ),
 )
 
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS = tuple(
+    pytest.param(surface, id=surface.case_id)
+    for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+)
 
-def _compiled_pattern_module_helper_keyword_contract_surface_params() -> tuple[object, ...]:
-    return tuple(
-        pytest.param(surface, id=surface.case_id)
-        for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS = tuple(
+    pytest.param(
+        surface,
+        source_workload,
+        id=f"{surface.case_id}-{source_workload.workload_id}",
     )
+    for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+    for source_workload in surface.source_workloads()
+)
 
-
-def _compiled_pattern_module_helper_keyword_contract_source_workload_params(
-    *,
-    precompile_only: bool = False,
-) -> tuple[object, ...]:
-    params: list[object] = []
-    for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES:
-        source_workloads = (
-            surface.precompile_source_workloads()
-            if precompile_only
-            else surface.source_workloads()
-        )
-        params.extend(
-            pytest.param(
-                surface,
-                source_workload,
-                id=f"{surface.case_id}-{source_workload.workload_id}",
-            )
-            for source_workload in source_workloads
-        )
-    return tuple(params)
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS = tuple(
+    pytest.param(
+        surface,
+        source_workload,
+        id=f"{surface.case_id}-{source_workload.workload_id}",
+    )
+    for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+    for source_workload in surface.precompile_source_workloads()
+)
 
 
 def test_compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements() -> None:
@@ -16030,7 +16020,7 @@ def test_compiled_pattern_module_helper_keyword_cases_cover_bool_count_complemen
 
 @pytest.mark.parametrize(
     "contract_surface",
-    _compiled_pattern_module_helper_keyword_contract_surface_params(),
+    _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS,
 )
 def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_contract_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
@@ -16111,7 +16101,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
 
 @pytest.mark.parametrize(
     ("contract_surface", "source_workload"),
-    _compiled_pattern_module_helper_keyword_contract_source_workload_params(),
+    _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -16151,9 +16141,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
 
 @pytest.mark.parametrize(
     ("contract_surface", "source_workload"),
-    _compiled_pattern_module_helper_keyword_contract_source_workload_params(
-        precompile_only=True
-    ),
+    _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing(
     contract_surface: _CompiledPatternModuleHelperKeywordContractSurface,
