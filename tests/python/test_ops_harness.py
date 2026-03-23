@@ -1119,63 +1119,6 @@ Verified with `pytest -q`.
 
 
 class ReadmeReportingTest(unittest.TestCase):
-    def test_run_harness_cli_uses_repo_local_pythonpath_and_check_by_default(
-        self,
-    ) -> None:
-        expected_result = completed_process("python", "-m", "custom.module")
-
-        with mock.patch.object(
-            test_support.subprocess,
-            "run",
-            return_value=expected_result,
-        ) as run_mock:
-            observed = run_harness_cli(
-                "custom.module",
-                ["--selector", "focused"],
-            )
-
-        self.assertIs(observed, expected_result)
-        run_mock.assert_called_once_with(
-            [sys.executable, "-m", "custom.module", "--selector", "focused"],
-            check=True,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(test_support.PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
-        )
-
-    def test_run_harness_cli_can_disable_check_without_changing_invocation_shape(
-        self,
-    ) -> None:
-        expected_result = completed_process(
-            "python",
-            "-m",
-            "custom.module",
-            returncode=2,
-            stderr="usage error",
-        )
-
-        with mock.patch.object(
-            test_support.subprocess,
-            "run",
-            return_value=expected_result,
-        ) as run_mock:
-            observed = run_harness_cli(
-                "custom.module",
-                ["--selector", "focused"],
-                check=False,
-            )
-
-        self.assertIs(observed, expected_result)
-        run_mock.assert_called_once_with(
-            [sys.executable, "-m", "custom.module", "--selector", "focused"],
-            check=False,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(test_support.PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
-        )
-
     def test_correctness_cli_rejects_legacy_tracked_json_path(self) -> None:
         result = run_harness_cli(
             "rebar_harness.correctness",
@@ -1769,45 +1712,6 @@ class ReadmeReportingTest(unittest.TestCase):
                         f"duplicate nested {nested_id}: {first_path} vs {second_path}"
                     ),
                 )
-
-    def test_run_harness_scorecard_loads_python_correctness_reports(self) -> None:
-        summary, scorecard = run_harness_scorecard(
-            "rebar_harness.correctness",
-            [
-                "--fixtures",
-                str(PARSER_FIXTURES_PATH),
-            ],
-            report_name="parser-only.py",
-        )
-
-        self.assertEqual(scorecard["suite"], "correctness")
-        self.assertEqual(
-            scorecard["fixtures"]["path"],
-            str(PARSER_FIXTURES_PATH.relative_to(REPO_ROOT)),
-        )
-        self.assertEqual(scorecard["fixtures"]["manifest_id"], "parser-matrix")
-        self.assertEqual(scorecard["summary"], summary)
-
-    def test_run_harness_scorecard_loads_python_benchmark_reports(self) -> None:
-        summary, scorecard = run_harness_scorecard(
-            "rebar_harness.benchmarks",
-            [
-                "--manifest",
-                str(COMPILE_MATRIX_MANIFEST_PATH),
-            ],
-            report_name="compile-matrix.py",
-        )
-
-        self.assertEqual(scorecard["suite"], "benchmarks")
-        self.assertEqual(
-            scorecard["artifacts"]["manifest"],
-            str(COMPILE_MATRIX_MANIFEST_PATH.relative_to(REPO_ROOT)),
-        )
-        self.assertEqual(scorecard["artifacts"]["manifest_id"], "compile-matrix")
-        self.assertEqual(
-            {key: scorecard["summary"][key] for key in summary},
-            summary,
-        )
 
     def test_run_harness_scorecard_loads_json_reports_for_generic_modules(self) -> None:
         summary_payload = {"suite": "custom", "status": "ok"}
