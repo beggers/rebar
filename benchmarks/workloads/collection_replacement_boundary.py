@@ -857,6 +857,64 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-str-count-purged-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "literal",
+        "count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.subn helper path that keeps the raw count-limited literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-str-repeated-purged-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "literal",
+        "repeated",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.subn helper path that keeps the raw repeated-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-bytes-no-match-purged-bytes",
       "bucket": "module-sub",
       "family": "module",

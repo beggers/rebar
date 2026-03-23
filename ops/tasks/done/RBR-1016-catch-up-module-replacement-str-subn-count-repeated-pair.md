@@ -1,6 +1,6 @@
 # RBR-1016: Catch up the raw `re.subn()` str count/repeated pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,13 @@ Created: 2026-03-23
   - `rg -n 'module-subn-str-count-purged-str|module-subn-str-repeated-purged-str' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact Python-path benchmark rows are still absent from the tracked owner-path surfaces;
   - synthetic benchmark probes built through `rebar_harness.benchmarks.Workload.from_dict(...)`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` return `status == "measured"` for both adapters on both hypothetical workloads `module-subn-str-count-purged-str` and `module-subn-str-repeated-purged-str`, so the later benchmark catch-up can stay on the existing Python-path owner route instead of needing another implementation prerequisite first; and
   - `reports/benchmarks/latest.py` currently reports `953` total / `953` measured / `0` known gaps overall, with `module_workloads == 945`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 404, "warm": 445}`, and `collection-replacement-boundary` at `selected_workload_count == 114`, `measured_workloads == 114`, `known_gap_count == 0`, and `workload_count == 114`.
+
+## Completion
+- Added `module-subn-str-count-purged-str` and `module-subn-str-repeated-purged-str` to `benchmarks/workloads/collection_replacement_boundary.py` immediately after `module-sub-str-single-match-purged-str`, keeping the raw-module literal replacement slice on the existing owner-path manifest and ordered as `module-sub-str-no-match-purged-str`, `module-sub-str-single-match-purged-str`, `module-subn-str-count-purged-str`, `module-subn-str-repeated-purged-str`, `module-sub-bytes-no-match-purged-bytes`, and `module-subn-bytes-repeated-purged-bytes`.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared collection/replacement benchmark owner route now selects those six module literal replacement workload ids in order, anchors the new rows to `module-subn-str-count` and `module-subn-str-repeated`, and expects the published full-suite summary to move to `955` total / `955` measured with `947` module workloads.
+- Republished `reports/benchmarks/latest.py` on the tracked source-tree-shim path. The tracked report now shows `955` total / `955` measured / `0` known gaps across `30` manifests, `module_workloads == 947`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 406, "warm": 445}`, and `collection-replacement-boundary` at `selected_workload_count == 116`, `measured_workloads == 116`, `known_gap_count == 0`, and `workload_count == 116`, with both new workload ids published as `status == "measured"`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (str-repeated-match or str-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_module_literal_replacement_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1016-module-replacement-str-subn-count-repeated-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
