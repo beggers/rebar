@@ -1177,6 +1177,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-bytes-single-match-purged-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "single-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.subn helper path that keeps the raw single-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-subn-bytes-repeated-purged-bytes",
       "bucket": "module-subn",
       "family": "module",
