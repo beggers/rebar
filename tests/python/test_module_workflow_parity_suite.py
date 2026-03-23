@@ -2632,6 +2632,34 @@ def _assert_noncompiled_publication_direct_case_field_alignment(
         assert fixture_case.flags == 0
 
 
+def _assert_noncompiled_owner_path_publication_contract(
+    fixture_cases: tuple[FixtureCase, ...],
+    rows: tuple[_OwnerPathRow[_NonCompiledPublicationDirectCase], ...],
+    *,
+    expected_count: int,
+    expected_helper_counts: Counter[str],
+    keyword_arguments: bool,
+    expected_text_model_counts: Counter[str] | None = None,
+    include_pattern_arg: bool | None = None,
+    use_compiled_pattern: bool | None = None,
+) -> None:
+    published_fixture_cases, selected_direct_cases = _assert_owner_path_publication_contract(
+        fixture_cases,
+        rows,
+        expected_count=expected_count,
+        expected_helper_counts=expected_helper_counts,
+        expected_text_model_counts=expected_text_model_counts,
+    )
+
+    _assert_noncompiled_publication_direct_case_field_alignment(
+        published_fixture_cases,
+        selected_direct_cases,
+        keyword_arguments=keyword_arguments,
+        include_pattern_arg=include_pattern_arg,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
 def _compiled_pattern_module_helper_publication_signature(
     case: FixtureCase | object,
 ) -> tuple[
@@ -4673,28 +4701,21 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
 def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_owner_path_publication_contract(
-            RAW_MODULE_CALL_CASES,
-            MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-            expected_count=14,
-            expected_text_model_counts=Counter({"str": 6, "bytes": 8}),
-            expected_helper_counts=Counter(
-                {
-                    "search": 1,
-                    "match": 1,
-                    "fullmatch": 1,
-                    "split": 3,
-                    "sub": 4,
-                    "subn": 4,
-                }
-            ),
-        )
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
+    _assert_noncompiled_owner_path_publication_contract(
+        RAW_MODULE_CALL_CASES,
+        MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        expected_count=14,
+        expected_text_model_counts=Counter({"str": 6, "bytes": 8}),
+        expected_helper_counts=Counter(
+            {
+                "search": 1,
+                "match": 1,
+                "fullmatch": 1,
+                "split": 3,
+                "sub": 4,
+                "subn": 4,
+            }
+        ),
         keyword_arguments=True,
         use_compiled_pattern=False,
     )
@@ -4774,27 +4795,20 @@ def test_module_workflow_surface_publishes_module_positional_indexlike_slice_fro
 
 def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_owner_path_publication_contract(
-            RAW_MODULE_CALL_CASES,
-            MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
-            expected_count=13,
-            expected_text_model_counts=Counter({"str": 8, "bytes": 5}),
-            expected_helper_counts=Counter(
-                {
-                    "search": 1,
-                    "split": 3,
-                    "sub": 4,
-                    "fullmatch": 1,
-                    "subn": 4,
-                }
-            ),
-        )
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
+    _assert_noncompiled_owner_path_publication_contract(
+        RAW_MODULE_CALL_CASES,
+        MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS,
+        expected_count=13,
+        expected_text_model_counts=Counter({"str": 8, "bytes": 5}),
+        expected_helper_counts=Counter(
+            {
+                "search": 1,
+                "split": 3,
+                "sub": 4,
+                "fullmatch": 1,
+                "subn": 4,
+            }
+        ),
         keyword_arguments=True,
         include_pattern_arg=True,
         use_compiled_pattern=False,
@@ -4803,82 +4817,61 @@ def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direc
 
 def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_owner_path_publication_contract(
-            PATTERN_CASES,
-            PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
-            expected_count=27,
-            expected_text_model_counts=Counter({"str": 15, "bytes": 12}),
-            expected_helper_counts=Counter(
-                {
-                    "search": 5,
-                    "match": 3,
-                    "fullmatch": 2,
-                    "findall": 3,
-                    "finditer": 3,
-                    "split": 3,
-                    "sub": 4,
-                    "subn": 4,
-                }
-            ),
-        )
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
+    _assert_noncompiled_owner_path_publication_contract(
+        PATTERN_CASES,
+        PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS,
+        expected_count=27,
+        expected_text_model_counts=Counter({"str": 15, "bytes": 12}),
+        expected_helper_counts=Counter(
+            {
+                "search": 5,
+                "match": 3,
+                "fullmatch": 2,
+                "findall": 3,
+                "finditer": 3,
+                "split": 3,
+                "sub": 4,
+                "subn": 4,
+            }
+        ),
         keyword_arguments=True,
     )
 
 
 def test_module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_owner_path_publication_contract(
-            PATTERN_CASES,
-            _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
-            expected_count=10,
-            expected_helper_counts=Counter(
-                {
-                    "split": 2,
-                    "sub": 4,
-                    "subn": 4,
-                }
-            ),
-        )
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
+    _assert_noncompiled_owner_path_publication_contract(
+        PATTERN_CASES,
+        _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS,
+        expected_count=10,
+        expected_helper_counts=Counter(
+            {
+                "split": 2,
+                "sub": 4,
+                "subn": 4,
+            }
+        ),
         keyword_arguments=True,
     )
 
 
 def test_module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases(
 ) -> None:
-    published_fixture_cases, selected_direct_cases = (
-        _assert_owner_path_publication_contract(
-            PATTERN_CASES,
-            _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
-            expected_count=6,
-            expected_text_model_counts=Counter({"str": 4, "bytes": 2}),
-            expected_helper_counts=Counter(
-                {
-                    "search": 1,
-                    "match": 1,
-                    "fullmatch": 1,
-                    "split": 1,
-                    "sub": 1,
-                    "subn": 1,
-                }
-            ),
-        )
-    )
-
-    _assert_noncompiled_publication_direct_case_field_alignment(
-        published_fixture_cases,
-        selected_direct_cases,
+    _assert_noncompiled_owner_path_publication_contract(
+        PATTERN_CASES,
+        _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS,
+        expected_count=6,
+        expected_text_model_counts=Counter({"str": 4, "bytes": 2}),
+        expected_helper_counts=Counter(
+            {
+                "search": 1,
+                "match": 1,
+                "fullmatch": 1,
+                "split": 1,
+                "sub": 1,
+                "subn": 1,
+            }
+        ),
         keyword_arguments=True,
     )
 

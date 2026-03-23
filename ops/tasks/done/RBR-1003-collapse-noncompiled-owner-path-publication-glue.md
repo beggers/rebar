@@ -1,6 +1,6 @@
 ## RBR-1003: Collapse noncompiled owner-path publication glue
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,9 @@ Created: 2026-03-23
   - the focused pytest slice in Verification currently passes (`5 passed, 1446 deselected`);
   - `tests/python/test_module_workflow_parity_suite.py` currently repeats the same owner-path-plus-field-alignment wrapper pattern in the five target tests at lines `4677`/`4695`, `4778`/`4795`, `4807`/`4827`, `4837`/`4851`, and `4861`/`4879`; and
   - the cleanup can stay structural and file-local because those tests differ only in the owner-path rows, expected counts, and alignment options they pass through the same two lower-level helpers.
+
+## Completion
+- Added `_assert_noncompiled_owner_path_publication_contract(...)` to `tests/python/test_module_workflow_parity_suite.py` so the repeated noncompiled owner-path publication wrapper stays file-local while preserving `_assert_owner_path_publication_contract(...)` and `_assert_noncompiled_publication_direct_case_field_alignment(...)` as the lower-level primitives.
+- Repointed the five targeted keyword/error/wrong-text-model publication tests through that shared helper without changing their expected row counts, helper counters, text-model counters, or alignment flags.
+- Verified:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_module_keyword_helpers_from_direct_cases or module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases or module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_cases or module_workflow_surface_publishes_pattern_keyword_error_slice_from_direct_cases or module_workflow_surface_publishes_pattern_wrong_text_model_slice_from_direct_cases'` (`5 passed, 1446 deselected`)
