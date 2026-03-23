@@ -291,6 +291,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-sub-bytes-count-one",
             "pattern-sub-bytes-negative-count",
             "pattern-subn-bytes-count",
+            "pattern-subn-bytes-single-match",
             "pattern-subn-bytes-repeated",
             "pattern-subn-bytes-negative-count",
             "pattern-finditer-str-bounded",

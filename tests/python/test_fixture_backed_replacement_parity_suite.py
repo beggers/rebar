@@ -204,6 +204,7 @@ PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
     "pattern-sub-bytes-count-one",
     "pattern-sub-bytes-negative-count",
     "pattern-subn-bytes-count",
+    "pattern-subn-bytes-single-match",
     "pattern-subn-bytes-repeated",
     "pattern-subn-bytes-negative-count",
 )
@@ -2663,6 +2664,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "pattern-sub-bytes-count-one": (b"x", b"abcabc", 1),
             "pattern-sub-bytes-negative-count": (b"x", b"abcabc", -1),
             "pattern-subn-bytes-count": (b"x", b"abcabc", 1),
+            "pattern-subn-bytes-single-match": (b"x", b"zabczz"),
             "pattern-subn-bytes-repeated": (b"x", b"abcabc"),
             "pattern-subn-bytes-negative-count": (b"x", b"abcabc", -1),
         },
@@ -2683,6 +2685,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "subn",
             "subn",
             "subn",
+            "subn",
         ),
         expected_text_models=(
             "str",
@@ -2693,6 +2696,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "str",
             "str",
             "str",
+            "bytes",
             "bytes",
             "bytes",
             "bytes",

@@ -1,6 +1,6 @@
 # RBR-1057: Publish the direct `Pattern.subn()` bytes single-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -77,3 +77,13 @@ Created: 2026-03-23
   - `tests/conformance/fixtures/collection_replacement_workflows.py` currently jumps from `pattern-subn-bytes-count` to `pattern-subn-bytes-repeated`, confirming the exact adjacent compiled-pattern publication gap on the shared correctness path;
   - `PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS` in `tests/python/test_fixture_backed_replacement_parity_suite.py` currently jumps from `pattern-subn-bytes-count` to `pattern-subn-bytes-repeated`, confirming the same owner-path publication gap on the shared parity selector; and
   - `rg -n 'pattern-subn-bytes-single-match|pattern-subn-bytes-single-match-purged-bytes' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/correctness/latest.py reports/benchmarks/latest.py` returned no matches in this run, so the matching Python-path benchmark catch-up should stay sequenced behind this correctness publication instead of replacing it.
+
+## Completion
+- Added the direct compiled-pattern `bytes` `subn()` single-match row to the shared `collection-replacement-workflows` manifest immediately after `pattern-subn-bytes-count`, extended the shared direct-pattern publication selector/order assertion to 17 rows, and refreshed the combined correctness scorecard.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and bytes-single-match'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1057-pattern-subn-bytes-single-match.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Published scorecard now reports `1591` total / `1591` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `54/54`, `collection.replacement.workflow.bytes` at `22/22`, and `collection.replacement.workflow.pattern_call` at `29/29`.

@@ -802,6 +802,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-subn-bytes-single-match",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "subn",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        }
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "single-match"],
+      "notes": [
+        "Publishes the direct Pattern.subn bytes single-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-subn-bytes-repeated",
       "operation": "pattern_call",
       "family": "replacement_workflow",
