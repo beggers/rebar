@@ -183,6 +183,12 @@ PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
     "module-subn-bytes-count",
     "module-subn-bytes-repeated",
 )
+UNPUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
+    "module-subn-str-no-match",
+    "module-subn-str-single-match",
+    "module-subn-bytes-no-match",
+    "module-subn-bytes-single-match",
+)
 PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
     "pattern-sub-str-no-match",
     "pattern-sub-str-single-match",
@@ -235,6 +241,82 @@ _LITERAL_REPLACEMENT_COUNT_COERCION_VALUES = (
     pytest.param(_INDEXLIKE_ONE, id="indexlike-one"),
     pytest.param(_INDEXLIKE_TWO, id="indexlike-two"),
 )
+_DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER = {
+    "sub": ("no-match", "single-match", "repeated", "count-one", "negative-count"),
+    "subn": ("count", "repeated", "negative-count", "no-match", "single-match"),
+}
+
+
+def _direct_module_literal_replacement_case_id(
+    pattern: TextValue,
+    string: TextValue,
+    count: int,
+    *,
+    helper: str,
+) -> str:
+    text_model = "bytes" if isinstance(pattern, bytes) else "str"
+
+    if count == 1:
+        suffix = "count" if helper == "subn" else "count-one"
+    elif count == -1:
+        suffix = "negative-count"
+    elif string == (b"zzz" if text_model == "bytes" else "zzz"):
+        suffix = "no-match"
+    elif string == (b"zabczz" if text_model == "bytes" else "zabczz"):
+        suffix = "single-match"
+    elif string == (b"zabcabc" if text_model == "bytes" else "abcabc"):
+        suffix = "repeated"
+    else:
+        raise AssertionError(
+            "unexpected direct module literal replacement case: "
+            f"pattern={pattern!r}, string={string!r}, count={count!r}"
+        )
+
+    return f"module-{helper}-{text_model}-{suffix}"
+
+
+def _direct_module_literal_replacement_case_ids_from_parity_matrix(
+    *,
+    helper: str | None = None,
+    text_model: str | None = None,
+) -> tuple[str, ...]:
+    case_ids: list[str] = []
+    for case in DIRECT_LITERAL_MODULE_REPLACEMENT_CASES:
+        pattern, _replacement, string, count = case.values
+        case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
+        if text_model is not None and case_text_model != text_model:
+            continue
+        helpers = (helper,) if helper is not None else _LITERAL_REPLACEMENT_HELPERS
+        for helper_name in helpers:
+            case_ids.append(
+                _direct_module_literal_replacement_case_id(
+                    pattern,
+                    string,
+                    count,
+                    helper=helper_name,
+                )
+            )
+    return tuple(case_ids)
+
+
+def _ordered_direct_module_literal_replacement_case_ids(
+    *,
+    helper: str,
+    text_model: str,
+) -> tuple[str, ...]:
+    case_ids = _direct_module_literal_replacement_case_ids_from_parity_matrix(
+        helper=helper,
+        text_model=text_model,
+    )
+    suffix_order = _DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER[helper]
+    return tuple(
+        sorted(
+            case_ids,
+            key=lambda case_id: suffix_order.index(
+                case_id.removeprefix(f"module-{helper}-{text_model}-")
+            ),
+        )
+    )
 
 
 def _literal_replacement_matrix_payloads(
@@ -2484,6 +2566,37 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     count: int,
 ) -> None:
     _assert_pattern_replacement_parity(pattern, replacement, string, count)
+
+
+def test_module_literal_replacement_publication_gaps_stay_explicit() -> None:
+    direct_case_ids = (
+        _ordered_direct_module_literal_replacement_case_ids(
+            helper="sub",
+            text_model="str",
+        )
+        + _ordered_direct_module_literal_replacement_case_ids(
+            helper="subn",
+            text_model="str",
+        )
+        + _ordered_direct_module_literal_replacement_case_ids(
+            helper="sub",
+            text_model="bytes",
+        )
+        + _ordered_direct_module_literal_replacement_case_ids(
+            helper="subn",
+            text_model="bytes",
+        )
+    )
+    published_case_ids = PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
+    unpublished_case_ids = UNPUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
+
+    assert frozenset(published_case_ids) & frozenset(unpublished_case_ids) == frozenset()
+    assert tuple(
+        case_id for case_id in direct_case_ids if case_id not in unpublished_case_ids
+    ) == published_case_ids
+    assert tuple(
+        case_id for case_id in direct_case_ids if case_id not in published_case_ids
+    ) == unpublished_case_ids
 
 
 def _assert_direct_literal_replacement_publication_contract(
