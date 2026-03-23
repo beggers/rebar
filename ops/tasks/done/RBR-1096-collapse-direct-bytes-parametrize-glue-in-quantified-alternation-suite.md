@@ -1,6 +1,6 @@
 # RBR-1096: Collapse direct-bytes parametrize glue in quantified alternation suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -50,3 +50,7 @@ Created: 2026-03-23
   - `rg -n '_direct_bytes_follow_on_cases\\(\\)|ids=lambda case: case\\.id' tests/python/test_quantified_alternation_parity_suite.py` returned the seven repeated `_direct_bytes_follow_on_cases()` decorators and their paired anonymous `ids=` adapters in this run.
 - The focused verification slice is already green in the live checkout:
   - `./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py -k 'direct_bytes_follow_on_compile_metadata_matches_cpython or direct_bytes_follow_on_module_search_matches_cpython or direct_bytes_follow_on_module_search_match_convenience_api_matches_cpython or direct_bytes_follow_on_module_search_match_group_access_matches_cpython or direct_bytes_follow_on_pattern_fullmatch_matches_cpython or direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_cpython or direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython'` returned `168 passed, 610 deselected` in this run.
+
+## Completion
+- Replaced the repeated direct-bytes decorator glue in `tests/python/test_quantified_alternation_parity_suite.py` with shared `DIRECT_BYTES_FOLLOW_ON_CASES` and `DIRECT_BYTES_FOLLOW_ON_PARAMS` constants so the seven direct-bytes follow-on tests keep the same case ordering and rendered ids without calling `_direct_bytes_follow_on_cases()` or using `ids=lambda case: case.id`.
+- Verified with `./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py -k 'direct_bytes_follow_on_compile_metadata_matches_cpython or direct_bytes_follow_on_module_search_matches_cpython or direct_bytes_follow_on_module_search_match_convenience_api_matches_cpython or direct_bytes_follow_on_module_search_match_group_access_matches_cpython or direct_bytes_follow_on_pattern_fullmatch_matches_cpython or direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_cpython or direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython'` (`168 passed, 610 deselected`) and the task's `rg` acceptance check.
