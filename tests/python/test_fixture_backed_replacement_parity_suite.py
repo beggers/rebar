@@ -275,39 +275,25 @@ def _direct_module_literal_replacement_case_id(
     return f"module-{helper}-{text_model}-{suffix}"
 
 
-def _direct_module_literal_replacement_case_ids_from_parity_matrix(
-    *,
-    helper: str | None = None,
-    text_model: str | None = None,
-) -> tuple[str, ...]:
-    case_ids: list[str] = []
-    for case in DIRECT_LITERAL_MODULE_REPLACEMENT_CASES:
-        pattern, _replacement, string, count = case.values
-        case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
-        if text_model is not None and case_text_model != text_model:
-            continue
-        helpers = (helper,) if helper is not None else _LITERAL_REPLACEMENT_HELPERS
-        for helper_name in helpers:
-            case_ids.append(
-                _direct_module_literal_replacement_case_id(
-                    pattern,
-                    string,
-                    count,
-                    helper=helper_name,
-                )
-            )
-    return tuple(case_ids)
-
-
 def _ordered_direct_module_literal_replacement_case_ids(
     *,
     helper: str,
     text_model: str,
 ) -> tuple[str, ...]:
-    case_ids = _direct_module_literal_replacement_case_ids_from_parity_matrix(
-        helper=helper,
-        text_model=text_model,
-    )
+    case_ids = []
+    for case in DIRECT_LITERAL_MODULE_REPLACEMENT_CASES:
+        pattern, _replacement, string, count = case.values
+        case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
+        if case_text_model != text_model:
+            continue
+        case_ids.append(
+            _direct_module_literal_replacement_case_id(
+                pattern,
+                string,
+                count,
+                helper=helper,
+            )
+        )
     suffix_order = _DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER[helper]
     return tuple(
         sorted(
