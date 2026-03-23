@@ -1104,6 +1104,30 @@ def _bytes_literal_search_match(
     )
 
 
+def _str_literal_search_match(
+    backend_name: str,
+    backend: object,
+    text: str,
+    *,
+    use_compiled_pattern: bool,
+) -> tuple[object, re.Match[str] | None]:
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            "abc",
+        )
+        return (
+            observed_pattern.search(text),
+            expected_pattern.search(text),
+        )
+
+    return (
+        backend.search("abc", text),
+        re.search("abc", text),
+    )
+
+
 def _branch_local_named_backreference_match(
     backend_name: str,
     backend: object,
@@ -5082,6 +5106,35 @@ def test_match_parity_helpers_cover_match_object_contracts(
         backend_name,
         backend,
         text,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-search"),
+        pytest.param(True, id="pattern-search"),
+    ),
+)
+def test_match_parity_helpers_cover_zero_group_str_match_object_contracts(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _str_literal_search_match(
+        backend_name,
+        backend,
+        "zzabczz",
         use_compiled_pattern=use_compiled_pattern,
     )
 
