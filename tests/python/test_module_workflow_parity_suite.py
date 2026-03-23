@@ -1347,28 +1347,20 @@ BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
         compiled=True,
     ),
 )
-_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID = {
-    case.case_id: case for case in BOUNDED_WILDCARD_MODULE_MATCH_CASES
-}
-BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS = (
+BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS = tuple(
     BoundedWildcardModuleOwnerPathRow(
-        fixture_case_id="workflow-module-search-str-bounded-wildcard-ignorecase",
-        direct_case=_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID[
-            "module-search-ignorecase-bounded-hit"
-        ],
-    ),
-    BoundedWildcardModuleOwnerPathRow(
-        fixture_case_id="workflow-module-match-str-bounded-wildcard-miss",
-        direct_case=_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID[
-            "module-match-bounded-miss"
-        ],
-    ),
-    BoundedWildcardModuleOwnerPathRow(
-        fixture_case_id="workflow-module-fullmatch-str-bounded-wildcard",
-        direct_case=_BOUNDED_WILDCARD_MODULE_MATCH_CASES_BY_ID[
-            "module-fullmatch-bounded-hit"
-        ],
-    ),
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+    )
+    for fixture_case_id, direct_case in zip(
+        (
+            "workflow-module-search-str-bounded-wildcard-ignorecase",
+            "workflow-module-match-str-bounded-wildcard-miss",
+            "workflow-module-fullmatch-str-bounded-wildcard",
+        ),
+        BOUNDED_WILDCARD_MODULE_MATCH_CASES[:3],
+        strict=True,
+    )
 )
 BOUNDED_WILDCARD_MODULE_COLLECTION_CASES = (
     BoundedWildcardModuleCase(
