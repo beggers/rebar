@@ -144,29 +144,6 @@ GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     rb"a((b|c){1,4})\2d",
     rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
 )
-DIRECT_LITERAL_MODULE_REPLACEMENT_CASES = [
-    pytest.param("abc", "x", "zzz", 0, id="str-no-match"),
-    pytest.param("abc", "x", "zabczz", 0, id="str-single-match"),
-    pytest.param("abc", "x", "abcabc", 0, id="str-repeated-match"),
-    pytest.param("abc", "x", "abcabc", 1, id="str-count-one"),
-    pytest.param("abc", "x", "abcabc", -1, id="str-negative-count"),
-    pytest.param(b"abc", b"x", b"zzz", 0, id="bytes-no-match"),
-    pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
-    pytest.param(b"abc", b"x", b"zabcabc", 0, id="bytes-repeated-match"),
-    pytest.param(b"abc", b"x", b"abcabc", 1, id="bytes-count-one"),
-]
-DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
-    pytest.param("abc", "x", "zzz", 0, id="str-no-match"),
-    pytest.param("abc", "x", "zabczz", 0, id="str-single-match"),
-    pytest.param("abc", "x", "abcabc", 0, id="str-repeated-match"),
-    pytest.param("abc", "x", "abcabc", 1, id="str-count-one"),
-    pytest.param("abc", "x", "abcabc", -1, id="str-negative-count"),
-    pytest.param(b"abc", b"x", b"zzz", 0, id="bytes-no-match"),
-    pytest.param(b"abc", b"x", b"abcabc", 0, id="bytes-repeated-match"),
-    pytest.param(b"abc", b"x", b"abcabc", 1, id="bytes-count-one"),
-    pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
-    pytest.param(b"abc", b"x", b"abcabc", -1, id="bytes-negative-count"),
-]
 DIRECT_WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abc", 0, id="single-match"),
     pytest.param("abc", r"\g<0>x", "abcabc", 0, id="repeated-matches"),
@@ -235,7 +212,6 @@ def _direct_literal_replacement_publication_case_ids(
     published_case_ids: list[str] = []
     if surface == "module":
         case_prefix = "module"
-        cases = DIRECT_LITERAL_MODULE_REPLACEMENT_CASES
         published_suffixes = {
             ("sub", "str"): (
                 "no-match",
@@ -250,7 +226,6 @@ def _direct_literal_replacement_publication_case_ids(
         }
     elif surface == "pattern":
         case_prefix = "pattern"
-        cases = DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES
         published_suffixes = {
             ("sub", "str"): (
                 "no-match",
@@ -277,6 +252,7 @@ def _direct_literal_replacement_publication_case_ids(
         }
     else:
         raise AssertionError(f"unexpected direct literal replacement surface: {surface!r}")
+    cases = _direct_literal_replacement_cases(surface)
 
     for text_model in ("str", "bytes"):
         for helper in ("sub", "subn"):
@@ -288,7 +264,9 @@ def _direct_literal_replacement_publication_case_ids(
             prefix = f"{case_prefix}-{helper}-{text_model}-"
             ordered_case_ids = []
             for case in cases:
-                pattern, _replacement, string, count = case.values
+                pattern = case.pattern
+                string = case.string_for_surface(surface)
+                count = case.count
                 case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
                 if case_text_model != text_model:
                     continue
@@ -377,6 +355,32 @@ class InvalidExpandTemplateCase:
     use_compiled_pattern: bool
 
 
+@dataclass(frozen=True)
+class DirectLiteralReplacementCase:
+    case_id: str
+    pattern: TextValue
+    replacement: TextValue
+    count: int
+    module_string: TextValue | None
+    pattern_string: TextValue | None
+
+    def string_for_surface(self, surface: str) -> TextValue:
+        if surface == "module":
+            string = self.module_string
+        elif surface == "pattern":
+            string = self.pattern_string
+        else:
+            raise AssertionError(
+                f"unexpected direct literal replacement surface: {surface!r}"
+            )
+        if string is None:
+            raise AssertionError(
+                "direct literal replacement case is unavailable on this surface: "
+                f"surface={surface!r}, case_id={self.case_id!r}"
+            )
+        return string
+
+
 INVALID_EXPAND_TEMPLATE_CASES = (
     InvalidExpandTemplateCase(
         case_id="module-str-missing-named-group",
@@ -407,6 +411,143 @@ INVALID_EXPAND_TEMPLATE_CASES = (
         use_compiled_pattern=True,
     ),
 )
+
+
+DIRECT_LITERAL_REPLACEMENT_CASES = {
+    "str-no-match": DirectLiteralReplacementCase(
+        case_id="str-no-match",
+        pattern="abc",
+        replacement="x",
+        count=0,
+        module_string="zzz",
+        pattern_string="zzz",
+    ),
+    "str-single-match": DirectLiteralReplacementCase(
+        case_id="str-single-match",
+        pattern="abc",
+        replacement="x",
+        count=0,
+        module_string="zabczz",
+        pattern_string="zabczz",
+    ),
+    "str-repeated-match": DirectLiteralReplacementCase(
+        case_id="str-repeated-match",
+        pattern="abc",
+        replacement="x",
+        count=0,
+        module_string="abcabc",
+        pattern_string="abcabc",
+    ),
+    "str-count-one": DirectLiteralReplacementCase(
+        case_id="str-count-one",
+        pattern="abc",
+        replacement="x",
+        count=1,
+        module_string="abcabc",
+        pattern_string="abcabc",
+    ),
+    "str-negative-count": DirectLiteralReplacementCase(
+        case_id="str-negative-count",
+        pattern="abc",
+        replacement="x",
+        count=-1,
+        module_string="abcabc",
+        pattern_string="abcabc",
+    ),
+    "bytes-no-match": DirectLiteralReplacementCase(
+        case_id="bytes-no-match",
+        pattern=b"abc",
+        replacement=b"x",
+        count=0,
+        module_string=b"zzz",
+        pattern_string=b"zzz",
+    ),
+    "bytes-single-match": DirectLiteralReplacementCase(
+        case_id="bytes-single-match",
+        pattern=b"abc",
+        replacement=b"x",
+        count=0,
+        module_string=b"zabczz",
+        pattern_string=b"zabczz",
+    ),
+    "bytes-repeated-match": DirectLiteralReplacementCase(
+        case_id="bytes-repeated-match",
+        pattern=b"abc",
+        replacement=b"x",
+        count=0,
+        module_string=b"zabcabc",
+        pattern_string=b"abcabc",
+    ),
+    "bytes-count-one": DirectLiteralReplacementCase(
+        case_id="bytes-count-one",
+        pattern=b"abc",
+        replacement=b"x",
+        count=1,
+        module_string=b"abcabc",
+        pattern_string=b"abcabc",
+    ),
+    "bytes-negative-count": DirectLiteralReplacementCase(
+        case_id="bytes-negative-count",
+        pattern=b"abc",
+        replacement=b"x",
+        count=-1,
+        module_string=None,
+        pattern_string=b"abcabc",
+    ),
+}
+
+DIRECT_LITERAL_REPLACEMENT_CASE_IDS_BY_SURFACE = {
+    "module": (
+        "str-no-match",
+        "str-single-match",
+        "str-repeated-match",
+        "str-count-one",
+        "str-negative-count",
+        "bytes-no-match",
+        "bytes-single-match",
+        "bytes-repeated-match",
+        "bytes-count-one",
+    ),
+    "pattern": (
+        "str-no-match",
+        "str-single-match",
+        "str-repeated-match",
+        "str-count-one",
+        "str-negative-count",
+        "bytes-no-match",
+        "bytes-repeated-match",
+        "bytes-count-one",
+        "bytes-single-match",
+        "bytes-negative-count",
+    ),
+}
+
+
+def _direct_literal_replacement_cases(
+    surface: str,
+) -> tuple[DirectLiteralReplacementCase, ...]:
+    try:
+        case_ids = DIRECT_LITERAL_REPLACEMENT_CASE_IDS_BY_SURFACE[surface]
+    except KeyError as exc:
+        raise AssertionError(
+            f"unexpected direct literal replacement surface: {surface!r}"
+        ) from exc
+    return tuple(DIRECT_LITERAL_REPLACEMENT_CASES[case_id] for case_id in case_ids)
+
+
+def _direct_literal_replacement_params(
+    surface: str,
+) -> tuple[object, ...]:
+    return tuple(
+        pytest.param(
+            case.pattern,
+            case.replacement,
+            case.string_for_surface(surface),
+            case.count,
+            id=case.case_id,
+        )
+        for case in _direct_literal_replacement_cases(surface)
+    )
 
 
 @dataclass(frozen=True)
@@ -2548,7 +2689,7 @@ def test_literal_replacement_result_helper_rejects_bool_count_type_drift() -> No
 
 @pytest.mark.parametrize(
     ("pattern", "replacement", "string", "count"),
-    DIRECT_LITERAL_MODULE_REPLACEMENT_CASES,
+    _direct_literal_replacement_params("module"),
 )
 def test_source_package_module_literal_replacement_helpers_match_cpython(
     pattern: TextValue,
@@ -2561,7 +2702,7 @@ def test_source_package_module_literal_replacement_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     ("pattern", "replacement", "string", "count"),
-    DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES,
+    _direct_literal_replacement_params("pattern"),
 )
 def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     pattern: TextValue,

@@ -1,6 +1,6 @@
 # RBR-1064: Collapse direct literal replacement surface case tables
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,9 @@ Created: 2026-03-23
 - The duplication target is concrete in the live checkout:
   - `DIRECT_LITERAL_MODULE_REPLACEMENT_CASES` and `DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES` are still defined separately at lines 147 and 158 of `tests/python/test_fixture_backed_replacement_parity_suite.py`; and
   - the focused verification slice already passes in the current checkout: `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'source_package_module_literal_replacement_helpers_match_cpython or source_package_pattern_literal_replacement_helpers_match_cpython or literal_replacement_publication_gaps_stay_explicit or collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'` returned `23 passed, 1283 deselected` in this run.
+
+## Completion Note
+- Replaced the split direct-literal module/pattern param tables with one file-local `DirectLiteralReplacementCase` owner plus surface-specific case-id ordering, and rewired both direct parity parametrizations plus `_direct_literal_replacement_publication_case_ids(...)` to reuse that shared source while preserving the existing row ids, row counts, and publication gaps.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'source_package_module_literal_replacement_helpers_match_cpython or source_package_pattern_literal_replacement_helpers_match_cpython or literal_replacement_publication_gaps_stay_explicit or collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'` -> `23 passed, 1283 deselected`
+  - `bash -lc "! rg -n '^DIRECT_LITERAL_MODULE_REPLACEMENT_CASES =|^DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES =' tests/python/test_fixture_backed_replacement_parity_suite.py"` -> success
