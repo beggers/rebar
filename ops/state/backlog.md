@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives in the feature queue.
+`RBR-1053` is the current ready follow-on: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives in the feature queue.
+1. `RBR-1053`: publish the direct `module.subn()` bytes single-match on the existing collection/replacement correctness path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
