@@ -177,6 +177,30 @@ def _artifact_manifest_record(
     }
 
 
+def _render_manifest_inline_value(value: object) -> str:
+    if isinstance(value, re.RegexFlag):
+        if value == re.NOFLAG:
+            return "re.NOFLAG"
+        return f"re.RegexFlag({int(value)})"
+    return repr(value)
+
+
+def _manifest_kwargs_source(kwargs_payload: dict[str, object] | None) -> tuple[str, str]:
+    if kwargs_payload is None:
+        return "", ""
+
+    rendered_items = ", ".join(
+        f"{key!r}: {_render_manifest_inline_value(value)}"
+        for key, value in kwargs_payload.items()
+    )
+    manifest_imports = (
+        "import re\n\n"
+        if any(isinstance(value, re.RegexFlag) for value in kwargs_payload.values())
+        else ""
+    )
+    return manifest_imports, "{" + rendered_items + "}"
+
+
 def assert_source_tree_benchmark_contract(
     testcase: Any,
     scorecard: dict[str, Any],
@@ -19289,6 +19313,21 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
         ),
         pytest.param(
             "module-boundary",
+            {"flags": re.NOFLAG},
+            None,
+            "abc",
+            0,
+            "str",
+            re.escape(
+                "benchmark compiled-pattern module-helper "
+                "module.compile workloads currently only support "
+                "the bounded `flags=0`, `flags=False`, and "
+                "`flags=IGNORECASE` rejection keyword carriers"
+            ),
+            id="keyword-carrier-noflag-scope",
+        ),
+        pytest.param(
+            "module-boundary",
             {"flags": True},
             None,
             "abc",
@@ -19398,13 +19437,13 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
     text_model: str,
     error_pattern: str,
 ) -> None:
+    manifest_imports, rendered_kwargs_payload = _manifest_kwargs_source(kwargs_payload)
     kwargs_line = (
-        f'                "kwargs": {kwargs_payload!r},\n'
+        f'                "kwargs": {rendered_kwargs_payload},\n'
         if kwargs_payload is not None
         else ""
     )
-    manifest_source = f"""
-    MANIFEST = {{
+    manifest_source = f"""{manifest_imports}MANIFEST = {{
         "schema_version": 1,
         "manifest_id": {manifest_id!r},
         "workloads": [
