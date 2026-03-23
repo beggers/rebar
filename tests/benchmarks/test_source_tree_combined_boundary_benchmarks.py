@@ -3798,8 +3798,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         workload_signatures = {
-            _module_collection_replacement_literal_replacement_workload_signature(
-                workload
+            _any_collection_replacement_literal_replacement_workload_signature(
+                workload,
+                route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+                workload_kind="module",
             )
             for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
             if _is_any_collection_replacement_module_literal_replacement_workload(
@@ -3825,6 +3827,41 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             unbenchmarked_case_ids,
             (),
+        )
+
+    def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_explicit(
+        self,
+    ) -> None:
+        workload_signatures = {
+            _any_collection_replacement_literal_replacement_workload_signature(
+                workload,
+                route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+                workload_kind="direct Pattern",
+            )
+            for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
+            if _is_any_collection_replacement_pattern_literal_replacement_workload(
+                workload
+            )
+        }
+        unbenchmarked_case_ids = tuple(
+            case.case_id
+            for case in published_cases_by_id().values()
+            if (
+                signature := _collection_replacement_literal_replacement_correctness_case_signature(
+                    case,
+                    case_ids=None,
+                    expected_operation="pattern_call",
+                    operation_prefix="pattern",
+                    args_offset=0,
+                )
+            )
+            is not None
+            and signature not in workload_signatures
+        )
+
+        self.assertEqual(
+            unbenchmarked_case_ids,
+            ("pattern-subn-bytes-no-match",),
         )
 
     def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured(
@@ -8603,11 +8640,28 @@ def _pattern_collection_replacement_split_workload_signature(
 def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
     *,
-    route: _CollectionReplacementLiteralReplacementRoute,
+    route: _CollectionReplacementLiteralReplacementRoute | None = None,
+    case_ids: tuple[str, ...] | None = None,
+    expected_operation: str | None = None,
+    operation_prefix: str | None = None,
+    args_offset: int | None = None,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in route.case_ids():
+    if route is not None:
+        case_ids = route.case_ids()
+        expected_operation = route.expected_operation
+        operation_prefix = route.operation_prefix
+        args_offset = route.args_offset
+
+    if expected_operation is None or operation_prefix is None or args_offset is None:
+        raise AssertionError(
+            "literal replacement correctness signatures require either a route "
+            "or explicit operation metadata"
+        )
+    if case.manifest_id != "collection-replacement-workflows":
         return None
-    if case.operation != route.expected_operation or case.kwargs:
+    if case_ids is not None and case.case_id not in case_ids:
+        return None
+    if case.operation != expected_operation or case.kwargs:
         return None
     if case.helper not in {"sub", "subn"}:
         return None
@@ -8616,17 +8670,17 @@ def _collection_replacement_literal_replacement_correctness_case_signature(
     pattern = case_pattern(case)
     if pattern not in {"abc", b"abc"}:
         return None
-    if len(case.args) <= route.args_offset:
+    if len(case.args) <= args_offset:
         return None
-    if case.args[route.args_offset] not in {"x", b"x"}:
+    if case.args[args_offset] not in {"x", b"x"}:
         return None
-    trailing_args = case.args[route.args_offset:]
+    trailing_args = case.args[args_offset:]
     if len(trailing_args) not in {2, 3}:
         return None
     if len(trailing_args) == 3 and type(trailing_args[2]) is not int:
         return None
     return (
-        f"{route.operation_prefix}.{case.helper}",
+        f"{operation_prefix}.{case.helper}",
         pattern,
         freeze_signature_value(list(trailing_args)),
         (),
@@ -8700,6 +8754,22 @@ def _pattern_collection_replacement_literal_replacement_workload_signature(
     )
 
 
+def _any_collection_replacement_literal_replacement_workload_signature(
+    workload: Any,
+    *,
+    route: _CollectionReplacementLiteralReplacementRoute,
+    workload_kind: str,
+) -> tuple[Any, ...]:
+    return _collection_replacement_literal_replacement_workload_signature(
+        workload,
+        include_workload=lambda candidate: _is_collection_replacement_literal_replacement_workload(
+            candidate,
+            route=route,
+        ),
+        workload_kind=workload_kind,
+    )
+
+
 def _is_collection_replacement_literal_replacement_workload(
     workload: Any,
     *,
@@ -8739,6 +8809,15 @@ def _is_any_collection_replacement_module_literal_replacement_workload(
     return _is_collection_replacement_literal_replacement_workload(
         workload,
         route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+    )
+
+
+def _is_any_collection_replacement_pattern_literal_replacement_workload(
+    workload: Any,
+) -> bool:
+    return _is_collection_replacement_literal_replacement_workload(
+        workload,
+        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
     )
 
 
