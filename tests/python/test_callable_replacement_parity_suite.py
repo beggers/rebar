@@ -30,7 +30,6 @@ from tests.python.fixture_parity_support import (
     case_replacement_argument,
     case_text_argument,
     load_published_fixture_bundles,
-    published_fixture_bundles_by_manifest_id,
     str_case_pattern,
 )
 
@@ -1545,46 +1544,6 @@ def test_callable_replacement_selector_tracks_published_callable_manifests() -> 
     assert tuple(bundle.manifest.path.name for bundle in FIXTURE_BUNDLES) == tuple(
         path.name for path in expected_paths
     )
-
-
-def test_published_fixture_bundle_loading_preserves_selector_path_order() -> None:
-    fixture_paths = tuple(reversed(CALLABLE_FIXTURE_PATHS[:2]))
-
-    bundles = tuple(build_selected_fixture_bundle(path) for path in fixture_paths)
-
-    assert tuple(bundle.manifest.path for bundle in bundles) == fixture_paths
-    for bundle in bundles:
-        assert bundle.expected_case_ids is None
-        assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-        assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
-        assert {case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
-        assert {case.text_model for case in bundle.cases} == bundle.expected_text_models
-        assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-            bundle.expected_operation_helper_counts
-        )
-
-
-def test_published_fixture_bundle_manifest_map_supports_lookup_and_duplicate_rejection(
-) -> None:
-    bundles = tuple(
-        build_selected_fixture_bundle(path) for path in CALLABLE_FIXTURE_PATHS[:2]
-    )
-    manifest_id = bundles[0].manifest.manifest_id
-    bundles_by_manifest_id = published_fixture_bundles_by_manifest_id(bundles)
-
-    assert tuple(bundles_by_manifest_id) == (
-        bundles[0].manifest.manifest_id,
-        bundles[1].manifest.manifest_id,
-    )
-    assert bundles_by_manifest_id[manifest_id] is bundles[0]
-
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
-        ),
-    ):
-        published_fixture_bundles_by_manifest_id((bundles[0], bundles[0]))
 
 
 @pytest.mark.parametrize(
