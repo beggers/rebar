@@ -167,54 +167,6 @@ DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
     pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
     pytest.param(b"abc", b"x", b"abcabc", -1, id="bytes-negative-count"),
 ]
-_DIRECT_LITERAL_REPLACEMENT_HELPER_ORDER = ("sub", "subn")
-_DIRECT_LITERAL_REPLACEMENT_TEXT_MODEL_ORDER = ("str", "bytes")
-DIRECT_LITERAL_REPLACEMENT_PUBLICATION_ROUTE = {
-    "module": {
-        "case_prefix": "module",
-        "cases": DIRECT_LITERAL_MODULE_REPLACEMENT_CASES,
-        "published_suffixes": {
-            ("sub", "str"): (
-                "no-match",
-                "single-match",
-                "repeated",
-                "count-one",
-                "negative-count",
-            ),
-            ("subn", "str"): ("count", "repeated", "negative-count"),
-            ("sub", "bytes"): ("no-match", "single-match", "repeated", "count-one"),
-            ("subn", "bytes"): ("count", "single-match", "repeated"),
-        },
-    },
-    "pattern": {
-        "case_prefix": "pattern",
-        "cases": DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES,
-        "published_suffixes": {
-            ("sub", "str"): (
-                "no-match",
-                "single-match",
-                "repeated",
-                "count-one",
-                "negative-count",
-            ),
-            ("subn", "str"): ("count", "repeated", "negative-count"),
-            ("sub", "bytes"): (
-                "no-match",
-                "single-match",
-                "repeated",
-                "count-one",
-                "negative-count",
-            ),
-            ("subn", "bytes"): (
-                "count",
-                "single-match",
-                "repeated",
-                "negative-count",
-                "no-match",
-            ),
-        },
-    },
-}
 DIRECT_WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abc", 0, id="single-match"),
     pytest.param("abc", r"\g<0>x", "abcabc", 0, id="repeated-matches"),
@@ -279,15 +231,55 @@ def _direct_literal_replacement_publication_case_ids(
     surface: str,
     selection: str = "published",
 ) -> tuple[str, ...]:
-    route = DIRECT_LITERAL_REPLACEMENT_PUBLICATION_ROUTE[surface]
     all_case_ids: list[str] = []
     published_case_ids: list[str] = []
-    published_suffixes = route["published_suffixes"]
-    case_prefix = route["case_prefix"]
-    cases = route["cases"]
+    if surface == "module":
+        case_prefix = "module"
+        cases = DIRECT_LITERAL_MODULE_REPLACEMENT_CASES
+        published_suffixes = {
+            ("sub", "str"): (
+                "no-match",
+                "single-match",
+                "repeated",
+                "count-one",
+                "negative-count",
+            ),
+            ("subn", "str"): ("count", "repeated", "negative-count"),
+            ("sub", "bytes"): ("no-match", "single-match", "repeated", "count-one"),
+            ("subn", "bytes"): ("count", "single-match", "repeated"),
+        }
+    elif surface == "pattern":
+        case_prefix = "pattern"
+        cases = DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES
+        published_suffixes = {
+            ("sub", "str"): (
+                "no-match",
+                "single-match",
+                "repeated",
+                "count-one",
+                "negative-count",
+            ),
+            ("subn", "str"): ("count", "repeated", "negative-count"),
+            ("sub", "bytes"): (
+                "no-match",
+                "single-match",
+                "repeated",
+                "count-one",
+                "negative-count",
+            ),
+            ("subn", "bytes"): (
+                "count",
+                "single-match",
+                "repeated",
+                "negative-count",
+                "no-match",
+            ),
+        }
+    else:
+        raise AssertionError(f"unexpected direct literal replacement surface: {surface!r}")
 
-    for text_model in _DIRECT_LITERAL_REPLACEMENT_TEXT_MODEL_ORDER:
-        for helper in _DIRECT_LITERAL_REPLACEMENT_HELPER_ORDER:
+    for text_model in ("str", "bytes"):
+        for helper in ("sub", "subn"):
             suffix_order = (
                 ("no-match", "single-match", "repeated", "count-one", "negative-count")
                 if helper == "sub"
