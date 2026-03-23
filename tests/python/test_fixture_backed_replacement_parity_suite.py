@@ -169,10 +169,6 @@ DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
 ]
 _DIRECT_LITERAL_REPLACEMENT_HELPER_ORDER = ("sub", "subn")
 _DIRECT_LITERAL_REPLACEMENT_TEXT_MODEL_ORDER = ("str", "bytes")
-_DIRECT_LITERAL_REPLACEMENT_SUFFIX_ORDER = {
-    "sub": ("no-match", "single-match", "repeated", "count-one", "negative-count"),
-    "subn": ("count", "single-match", "repeated", "negative-count", "no-match"),
-}
 DIRECT_LITERAL_REPLACEMENT_PUBLICATION_ROUTE = {
     "module": {
         "case_prefix": "module",
@@ -277,37 +273,6 @@ def _direct_literal_replacement_case_suffix(
     )
 
 
-def _ordered_direct_literal_replacement_case_ids(
-    *,
-    case_prefix: str,
-    cases: list[pytest.ParameterSet],
-    helper: str,
-    text_model: str,
-) -> tuple[str, ...]:
-    case_ids = []
-    for case in cases:
-        pattern, _replacement, string, count = case.values
-        case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
-        if case_text_model != text_model:
-            continue
-        suffix = _direct_literal_replacement_case_suffix(
-            string,
-            count,
-            helper=helper,
-            text_model=text_model,
-        )
-        case_ids.append(f"{case_prefix}-{helper}-{text_model}-{suffix}")
-    suffix_order = _DIRECT_LITERAL_REPLACEMENT_SUFFIX_ORDER[helper]
-    return tuple(
-        sorted(
-            case_ids,
-            key=lambda case_id: suffix_order.index(
-                case_id.removeprefix(f"{case_prefix}-{helper}-{text_model}-")
-            ),
-        )
-    )
-
-
 def _direct_literal_replacement_publication_case_ids(
     *,
     surface: str,
@@ -322,14 +287,34 @@ def _direct_literal_replacement_publication_case_ids(
 
     for text_model in _DIRECT_LITERAL_REPLACEMENT_TEXT_MODEL_ORDER:
         for helper in _DIRECT_LITERAL_REPLACEMENT_HELPER_ORDER:
-            ordered_case_ids = _ordered_direct_literal_replacement_case_ids(
-                case_prefix=case_prefix,
-                cases=cases,
-                helper=helper,
-                text_model=text_model,
+            suffix_order = (
+                ("no-match", "single-match", "repeated", "count-one", "negative-count")
+                if helper == "sub"
+                else ("count", "single-match", "repeated", "negative-count", "no-match")
+            )
+            prefix = f"{case_prefix}-{helper}-{text_model}-"
+            ordered_case_ids = []
+            for case in cases:
+                pattern, _replacement, string, count = case.values
+                case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
+                if case_text_model != text_model:
+                    continue
+                suffix = _direct_literal_replacement_case_suffix(
+                    string,
+                    count,
+                    helper=helper,
+                    text_model=text_model,
+                )
+                ordered_case_ids.append(f"{prefix}{suffix}")
+            ordered_case_ids = tuple(
+                sorted(
+                    ordered_case_ids,
+                    key=lambda case_id: suffix_order.index(
+                        case_id.removeprefix(prefix)
+                    ),
+                )
             )
             all_case_ids.extend(ordered_case_ids)
-            prefix = f"{case_prefix}-{helper}-{text_model}-"
             selected_case_ids = tuple(
                 case_id
                 for case_id in ordered_case_ids
