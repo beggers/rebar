@@ -20296,8 +20296,9 @@ def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest(
-            workloads=(_synthetic_workload("anchored", ("shared",)),)
+        partial(
+            _synthetic_manifest_loader,
+            workloads=(_synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(
@@ -20328,8 +20329,9 @@ def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest(
-            workloads=(_synthetic_workload("anchored", ("shared",)),)
+        partial(
+            _synthetic_manifest_loader,
+            workloads=(_synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(
@@ -20357,8 +20359,9 @@ def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest(
-            workloads=(_synthetic_workload("anchored", ("shared",)),)
+        partial(
+            _synthetic_manifest_loader,
+            workloads=(_synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(support, "published_cases_by_id", lambda: {})
