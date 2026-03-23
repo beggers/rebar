@@ -7034,6 +7034,87 @@ def run_benchmark_workload_with_cpython(workload: Any) -> object:
     return result
 
 
+@cache
+def _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
+) -> tuple[Workload, ...]:
+    manifest_id = "nested-group-callable-replacement-boundary"
+    slice_expectation = next(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(manifest_id)
+        if expectation.slice_id == "quantified-branch-local-backreference"
+    )
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in load_manifest(
+            BENCHMARK_WORKLOADS_ROOT / "nested_group_callable_replacement_boundary.py"
+        ).workloads
+    }
+    return tuple(
+        workloads_by_id[workload_id]
+        for workload_id in slice_expectation.expected_workload_ids
+        if workload_id.endswith("-bytes")
+    )
+
+
+_NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_BACKREFERENCE_BYTES_WORKLOAD_PARAMS = tuple(
+    pytest.param(workload, id=workload.workload_id)
+    for workload in (
+        _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads()
+    )
+)
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    _NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_BACKREFERENCE_BYTES_WORKLOAD_PARAMS,
+)
+def test_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads_round_trip_preserves_callback_results(
+    source_workload: Workload,
+) -> None:
+    payload = workload_to_payload(source_workload)
+    round_tripped = workload_from_payload(payload)
+
+    assert payload["text_model"] == "bytes"
+    assert round_tripped.text_model == "bytes"
+    assert round_tripped.pattern_payload() == source_workload.pattern_payload()
+    assert round_tripped.haystack_payload() == source_workload.haystack_payload()
+
+    assert_benchmark_workload_matches_expected_result(
+        round_tripped,
+        run_benchmark_workload_with_cpython(source_workload),
+    )
+
+
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+@pytest.mark.parametrize(
+    "source_workload",
+    _NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_BACKREFERENCE_BYTES_WORKLOAD_PARAMS,
+)
+def test_run_internal_workload_probe_measures_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    payload = workload_to_payload(source_workload)
+    round_tripped = workload_from_payload(payload)
+
+    assert round_tripped.text_model == "bytes"
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
 def run_correctness_case_with_cpython(case: Any) -> object:
     if case.operation == "compile":
         return re.compile(case.pattern_payload(), case.flags or 0)
