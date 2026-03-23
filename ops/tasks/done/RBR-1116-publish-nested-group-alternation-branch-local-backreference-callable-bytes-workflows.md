@@ -1,6 +1,6 @@
 # RBR-1116: Publish nested-group alternation branch-local-backreference callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,8 @@ Created: 2026-03-23
   - `tests/conformance/test_combined_correctness_scorecards.py` still requires only representative `str` ids for `nested-group-alternation-branch-local-backreference-callable-replacement-workflows`; and
   - `reports/correctness/latest.py` still shows `collection.replacement.nested_group_alternation_branch_local_backreference.callable` with `text_models == ['str']`, while the runtime-backed parity prerequisite is already green.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly describe the post-drain frontier for a single ready feature task: no ready feature follow-on currently survives in this checkout, so this one-task refill does not need tracked state-prose edits.
+
+## Completion
+- Published the eight adjacent bytes callable replacement rows on the existing `nested-group-alternation-branch-local-backreference-callable-replacement-workflows` manifest without widening the family, and refreshed the combined scorecard expectation so representative bytes ids are now required there too.
+- Regenerated `reports/correctness/latest.py`; the tracked report now shows `REPORT["summary"] == {'executed_cases': 1637, 'failed_cases': 0, 'passed_cases': 1637, 'skipped_cases': 0, 'total_cases': 1637, 'unimplemented_cases': 0}`, `REPORT["fixtures"]["manifest_count"] == 114`, the target manifest at 16 passing cases, and `collection.replacement.nested_group_alternation_branch_local_backreference.callable` with `text_models == ['bytes', 'str']`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group_alternation_branch_local_backreference and callable and bytes'`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
