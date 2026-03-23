@@ -7741,9 +7741,6 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
     def expected_anchor_workload_ids(self) -> tuple[str, ...]:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
-    def source_selector(self) -> Callable[[Any], bool]:
-        return self.includes_workload
-
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
         return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
@@ -17173,7 +17170,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
         route=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE,
         case_id="success",
         source_selectors=tuple(
-            owner_spec.source_selector()
+            owner_spec.includes_workload
             for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
         ),
         contract_filename=(
