@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1589 cases across 114 manifests, with all 1589 passing in the current slice; the benchmark publication covers 970/970 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives in the feature queue.
+- `RBR-1052`: catch up the direct `module.sub()` bytes single-match benchmark row on the existing collection/replacement manifest.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,8 +22,8 @@ Published correctness covers 1589 cases across 114 manifests, with all 1589 pass
 The published correctness slice now covers 1589 cases across 114 manifests, all passing, and 970 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- No ready feature follow-on currently survives in the feature queue.
-- No feature tasks are in progress or blocked, and the done queue now holds `1053` completed task files in this checkout.
+- `RBR-1052` is the current ready follow-on: catch up the direct `module.sub()` bytes single-match benchmark row on the existing collection/replacement manifest.
+- No feature tasks are in progress or blocked, and the done queue now holds `1054` completed task files in this checkout.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -333,7 +333,7 @@ The published correctness slice now covers 1589 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No ready feature follow-on currently survives in the feature queue.
+- `RBR-1052`: catch up the direct `module.sub()` bytes single-match benchmark row on the existing collection/replacement manifest.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
