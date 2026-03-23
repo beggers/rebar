@@ -124,3 +124,46 @@ def test_regex_backend_rejects_multiple_param_values_disabling_same_backend() ->
                 ),
             },
         )
+
+
+@pytest.mark.parametrize(
+    ("backend_param", "expected_reason"),
+    (
+        pytest.param("stdlib", "stdlib-only fixture gap", id="stdlib"),
+        pytest.param("rebar", "rebar-only fixture gap", id="rebar"),
+    ),
+)
+def test_regex_backend_skips_only_for_matching_backend_when_param_values_target_different_backends(
+    backend_param: str,
+    expected_reason: str,
+) -> None:
+    with pytest.raises(pytest.skip.Exception, match=expected_reason):
+        _invoke_regex_backend(
+            backend_param,
+            parametrized_values={
+                "case": _BackendCase(
+                    unsupported_backends=("stdlib",),
+                    unsupported_backend_reason="stdlib-only fixture gap",
+                ),
+                "text": _BackendCase(
+                    unsupported_backends=("rebar",),
+                    unsupported_backend_reason="rebar-only fixture gap",
+                ),
+            },
+        )
+
+
+def test_regex_backend_falls_back_to_default_reason_for_falsey_matching_reason() -> None:
+    with pytest.raises(
+        pytest.skip.Exception,
+        match="rebar backend unsupported for this parity case",
+    ):
+        _invoke_regex_backend(
+            "rebar",
+            parametrized_values={
+                "case": _BackendCase(
+                    unsupported_backends=("rebar",),
+                    unsupported_backend_reason="",
+                ),
+            },
+        )
