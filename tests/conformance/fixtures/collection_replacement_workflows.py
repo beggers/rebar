@@ -273,6 +273,28 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-str-no-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "args": ["abc", "x", "zzz"],
+      "categories": ["workflow", "sub", "literal", "str", "no-match"],
+      "notes": [
+        "Publishes the raw str module sub helper outcome when no literal match is present."
+      ]
+    },
+    {
+      "id": "module-sub-str-single-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "args": ["abc", "x", "zabczz"],
+      "categories": ["workflow", "sub", "literal", "str", "single-match"],
+      "notes": [
+        "Publishes the raw str module sub helper outcome for a single literal match."
+      ]
+    },
+    {
       "id": "module-sub-str-repeated",
       "operation": "module_call",
       "family": "replacement_workflow",

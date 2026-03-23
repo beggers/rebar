@@ -1,6 +1,6 @@
 # RBR-1010: Publish the raw `re.sub()` str no-match/single-match pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,13 @@ Created: 2026-03-23
 - 2026-03-23 feature-planning probes confirm this follow-on is concrete from the landed runtime frontier and does not need another implementation prerequisite first:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (str-no-match or str-single-match)'` currently passes (`2 passed`), so the exact raw-module `str` parity slice is already green in this checkout; and
   - `rg -n 'module-sub-str-no-match|module-sub-str-single-match|module-sub-str-no-match-warm-str|module-sub-str-single-match-warm-str' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/correctness/latest.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact correctness and benchmark ids are still absent from the tracked owner-path surfaces.
+
+## Completion Note
+- Added `module-sub-str-no-match` and `module-sub-str-single-match` to `tests/conformance/fixtures/collection_replacement_workflows.py` in the required raw-module order and kept the slice on the existing `collection-replacement-workflows` owner path.
+- Extended the shared published raw-module selector/assertion coverage in `tests/python/test_fixture_backed_replacement_parity_suite.py` and refreshed the collection replacement representative-case coverage in `tests/conformance/test_combined_correctness_scorecards.py`.
+- Regenerated `reports/correctness/latest.py`; the tracked published summary is now `1573` total / `1573` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `36/36`, `.str` at `23/23`, `.bytes` unchanged at `13/13`, `.module_call` at `16/16`, and `.pattern_call` unchanged at `20/20`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and (str-no-match or str-single-match)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1010-module-replacement-str-no-match-single-match-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

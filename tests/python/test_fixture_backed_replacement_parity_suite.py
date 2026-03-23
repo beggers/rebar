@@ -165,6 +165,8 @@ DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
     pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
 ]
 PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
+    "module-sub-str-no-match",
+    "module-sub-str-single-match",
     "module-sub-str-repeated",
     "module-sub-bytes-no-match",
     "module-subn-bytes-count",
@@ -2501,6 +2503,12 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
         case.case_id for case in fixture_cases_for_operation((bundle,), "module_call")
     ) == PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
 
+    assert tuple(cases_by_id["module-sub-str-no-match"].args) == ("abc", "x", "zzz")
+    assert tuple(cases_by_id["module-sub-str-single-match"].args) == (
+        "abc",
+        "x",
+        "zabczz",
+    )
     assert tuple(cases_by_id["module-sub-str-repeated"].args) == ("abc", "x", "abcabc")
     assert tuple(cases_by_id["module-sub-bytes-no-match"].args) == (
         b"abc",
@@ -2519,11 +2527,15 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
         b"abcabc",
     )
 
+    assert cases_by_id["module-sub-str-no-match"].helper == "sub"
+    assert cases_by_id["module-sub-str-single-match"].helper == "sub"
     assert cases_by_id["module-sub-str-repeated"].helper == "sub"
     assert cases_by_id["module-sub-bytes-no-match"].helper == "sub"
     assert cases_by_id["module-subn-bytes-count"].helper == "subn"
     assert cases_by_id["module-subn-bytes-repeated"].helper == "subn"
 
+    assert cases_by_id["module-sub-str-no-match"].text_model == "str"
+    assert cases_by_id["module-sub-str-single-match"].text_model == "str"
     assert cases_by_id["module-sub-str-repeated"].text_model == "str"
     assert cases_by_id["module-sub-bytes-no-match"].text_model == "bytes"
     assert cases_by_id["module-subn-bytes-count"].text_model == "bytes"
