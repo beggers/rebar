@@ -5075,6 +5075,60 @@ def test_fixture_cases_by_id_preserves_input_order_for_bundles_and_cases(
     assert cases_by_id["bundle-loader-contract-compile-str"] is str_bundle.cases[1]
 
 
+def test_fixture_cases_by_id_accepts_mixed_bundle_and_case_entries(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    mixed_bundle = build_selected_fixture_bundle(
+        mixed_path,
+        selected_case_ids=(
+            "bundle-loader-contract-mixed-module-search-str",
+            "bundle-loader-contract-mixed-compile-bytes",
+        ),
+        pattern_extractor=case_pattern,
+    )
+    str_bundle = build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=(
+            "bundle-loader-contract-pattern-search-str",
+            "bundle-loader-contract-compile-str",
+        ),
+        pattern_extractor=str_case_pattern,
+    )
+
+    cases_by_id = fixture_cases_by_id((mixed_bundle, str_bundle.cases[1]))
+
+    assert tuple(cases_by_id) == (
+        "bundle-loader-contract-mixed-module-search-str",
+        "bundle-loader-contract-mixed-compile-bytes",
+        "bundle-loader-contract-compile-str",
+    )
+    assert (
+        cases_by_id["bundle-loader-contract-mixed-module-search-str"]
+        is mixed_bundle.cases[0]
+    )
+    assert cases_by_id["bundle-loader-contract-compile-str"] is str_bundle.cases[1]
+
+
+def test_fixture_cases_by_id_rejects_non_fixture_entries(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    bundle = build_selected_fixture_bundle(
+        str_path,
+        pattern_extractor=str_case_pattern,
+    )
+
+    with pytest.raises(
+        TypeError,
+        match=re.escape(
+            "fixture_cases_by_id() accepts FixtureBundle or FixtureCase entries, "
+            "got FixtureManifest"
+        ),
+    ):
+        fixture_cases_by_id((bundle, bundle.manifest))
+
+
 def test_fixture_cases_by_id_rejects_duplicate_case_ids(
     tmp_path: pathlib.Path,
 ) -> None:
