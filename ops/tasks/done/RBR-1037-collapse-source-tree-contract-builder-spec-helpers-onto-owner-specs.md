@@ -1,6 +1,6 @@
 ## RBR-1037: Collapse source-tree contract builder-spec helpers onto owner specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -65,3 +65,10 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently defines `_compiled_pattern_module_contract_note(...)` at line `16551`, `_compiled_pattern_module_success_contract_builder_spec(...)` at line `16562`, `_wrong_text_model_contract_builder_spec(...)` at line `16601`, and `_compiled_pattern_module_compile_contract_builder_spec(...)` at line `17226`;
   - the targeted pytest slice in Verification currently passes (`158 passed, 562 deselected in 0.29s`); and
   - the negative `rg` check in Verification currently fails only because those exact helper definitions are still present.
+
+## Completion Note
+- 2026-03-23: Moved the source-tree contract builder metadata onto `CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec()`, `WrongTextModelOwnerSpec.contract_builder_spec()`, and `CompiledPatternModuleCompileContractCase.contract_builder_spec()` in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and deleted the detached compiled-pattern note / builder-spec helpers.
+- Updated the existing call sites in the same file to use those owner-spec / contract-case routes without widening into another support module or changing benchmark coverage.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success or compiled_pattern_module_boundary_success or compiled_pattern_module_compile_success_and_keyword_contract or wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract or wrong_text_model_rows_until_helper_invocation or pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases or haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio or compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows'`
+  - `bash -lc "! rg -n 'def _compiled_pattern_module_success_contract_builder_spec\\(|def _wrong_text_model_contract_builder_spec\\(|def _compiled_pattern_module_compile_contract_builder_spec\\(|def _compiled_pattern_module_contract_note\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`

@@ -15089,7 +15089,7 @@ def test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchor
     source_workloads = owner_spec.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=_wrong_text_model_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -16379,6 +16379,18 @@ class CompiledPatternModuleSuccessOwnerSpec:
     expected_callback_result: Callable[[Workload], object]
     expected_callback_call: Callable[[Workload], tuple[object, ...]]
 
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        return _SourceTreeContractBuilderSpec(
+            manifest_id=self.contract_manifest_id,
+            excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+            timing_scope="module-helper-call",
+            notes=(
+                "Ensures benchmark manifests keep the bounded "
+                "compiled-pattern-first-argument successful "
+                f"{self.note_surface} rows unresolved until helper invocation.",
+            ),
+        )
+
     def source_workloads(self) -> tuple[Workload, ...]:
         return _contract_source_workloads(
             manifest_path=self.manifest_path,
@@ -16548,33 +16560,6 @@ _COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
 )
 
 
-def _compiled_pattern_module_contract_note(
-    *,
-    note_label: str,
-    note_surface: str,
-) -> str:
-    return (
-        "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
-        f"{note_label} {note_surface} rows unresolved until helper invocation."
-    )
-
-
-def _compiled_pattern_module_success_contract_builder_spec(
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
-) -> _SourceTreeContractBuilderSpec:
-    return _SourceTreeContractBuilderSpec(
-        manifest_id=owner_spec.contract_manifest_id,
-        excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
-        timing_scope="module-helper-call",
-        notes=(
-            _compiled_pattern_module_contract_note(
-                note_label="successful",
-                note_surface=owner_spec.note_surface,
-            ),
-        ),
-    )
-
-
 def _contract_source_workloads(
     *,
     manifest_path: pathlib.Path,
@@ -16598,23 +16583,6 @@ def _contract_source_workloads(
     return source_workloads
 
 
-def _wrong_text_model_contract_builder_spec(
-    owner_spec: WrongTextModelOwnerSpec,
-) -> _SourceTreeContractBuilderSpec:
-    notes: tuple[str, ...] = ()
-    if owner_spec.note_surface is not None:
-        notes = (
-            _compiled_pattern_module_contract_note(
-                note_label="wrong-text-model",
-                note_surface=owner_spec.note_surface,
-            ),
-        )
-    return _SourceTreeContractBuilderSpec(
-        manifest_id=owner_spec.contract_manifest_id,
-        excluded_fields=owner_spec.excluded_fields,
-        timing_scope=owner_spec.timing_scope,
-        notes=notes,
-    )
 def _assert_compiled_pattern_module_success_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],
@@ -16692,7 +16660,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
     source_workloads = owner_spec.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=_compiled_pattern_module_success_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
 
     manifest_path = _write_test_manifest(
@@ -16741,7 +16709,7 @@ def test_compiled_pattern_module_collection_replacement_success_rows_stay_anchor
     owner_spec = _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
     manifest = _source_tree_contract_manifest(
         owner_spec.source_workloads(),
-        spec=_compiled_pattern_module_success_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
 
     manifest_path = _write_test_manifest(
@@ -16843,7 +16811,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_success_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -16888,7 +16856,7 @@ def test_compiled_pattern_module_collection_replacement_success_and_compiled_pat
         "re",
         _source_tree_contract_workload(
             source_workload,
-            spec=_compiled_pattern_module_success_contract_builder_spec(owner_spec),
+            spec=owner_spec.contract_builder_spec(),
         ),
     )
 
@@ -16926,6 +16894,15 @@ class CompiledPatternModuleCompileContractCase:
     keyword_signature: tuple[tuple[str, str, object], ...] | None = None
     allowed_patterns: tuple[str, ...] = ()
     expected_exception: dict[str, str] | None = None
+
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        return _SourceTreeContractBuilderSpec(
+            manifest_id="module-boundary",
+            excluded_fields=self.manifest_excluded_fields(),
+            manifest_timed_samples=2,
+            timing_scope="module-helper-call",
+            notes=(self.note(),),
+        )
 
     def expected_source_workload_ids(self) -> tuple[str, ...]:
         return tuple(
@@ -17223,18 +17200,6 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
 )
 
 
-def _compiled_pattern_module_compile_contract_builder_spec(
-    contract_case: CompiledPatternModuleCompileContractCase,
-) -> _SourceTreeContractBuilderSpec:
-    return _SourceTreeContractBuilderSpec(
-        manifest_id="module-boundary",
-        excluded_fields=contract_case.manifest_excluded_fields(),
-        manifest_timed_samples=2,
-        timing_scope="module-helper-call",
-        notes=(contract_case.note(),),
-    )
-
-
 def _compiled_pattern_module_compile_contract_expected_build_calls(
     source_workload: Workload,
 ) -> list[tuple[object, ...]]:
@@ -17291,7 +17256,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
     source_workloads = contract_case.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=_compiled_pattern_module_compile_contract_builder_spec(contract_case),
+        spec=contract_case.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -17357,7 +17322,7 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_rows_stay_
 ) -> None:
     manifest = _source_tree_contract_manifest(
         contract_case.source_workloads(),
-        spec=_compiled_pattern_module_compile_contract_builder_spec(contract_case),
+        spec=contract_case.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -17412,7 +17377,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_compile_contract_builder_spec(case_group),
+        spec=case_group.contract_builder_spec(),
     )
     observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
@@ -17458,7 +17423,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_compile_contract_builder_spec(contract_case),
+        spec=contract_case.contract_builder_spec(),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -17501,9 +17466,7 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_
         "re",
         _source_tree_contract_workload(
             source_workload,
-            spec=_compiled_pattern_module_compile_contract_builder_spec(
-                contract_case
-            ),
+            spec=contract_case.contract_builder_spec(),
         ),
     )
 
@@ -17537,7 +17500,7 @@ def test_compiled_pattern_module_boundary_verbose_bytes_success_rows_stay_anchor
                 _is_module_workflow_compiled_pattern_verbose_bytes_success_workload
             ),
         ),
-        spec=_compiled_pattern_module_success_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
 
     manifest_path = _write_test_manifest(
@@ -17607,6 +17570,21 @@ class WrongTextModelOwnerSpec:
     expected_callback_call: Callable[[Workload], tuple[object, ...]]
     expected_build_calls: Callable[[Workload], list[tuple[object, ...]]]
     run_cpython_workload: Callable[[Workload], object]
+
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        notes: tuple[str, ...] = ()
+        if self.note_surface is not None:
+            notes = (
+                "Ensures benchmark manifests keep the bounded "
+                "compiled-pattern-first-argument wrong-text-model "
+                f"{self.note_surface} rows unresolved until helper invocation.",
+            )
+        return _SourceTreeContractBuilderSpec(
+            manifest_id=self.contract_manifest_id,
+            excluded_fields=self.excluded_fields,
+            timing_scope=self.timing_scope,
+            notes=notes,
+        )
 
     def source_workloads(self) -> tuple[Workload, ...]:
         return _contract_source_workloads(
@@ -17909,7 +17887,7 @@ def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helpe
     source_workloads = owner_spec.source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=_wrong_text_model_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -17981,7 +17959,7 @@ def test_run_internal_workload_probe_measures_wrong_text_model_contract_workload
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_wrong_text_model_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -18023,7 +18001,7 @@ def test_wrong_text_model_callbacks_preserve_precompile_contract(
         "re",
         _source_tree_contract_workload(
             source_workload,
-            spec=_wrong_text_model_contract_builder_spec(owner_spec),
+            spec=owner_spec.contract_builder_spec(),
         ),
     )
 
@@ -18771,7 +18749,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
     owner_spec = _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC
     manifest = _source_tree_contract_manifest(
         (source_workload,),
-        spec=_wrong_text_model_contract_builder_spec(owner_spec),
+        spec=owner_spec.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -19504,7 +19482,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
 ) -> None:
     manifest = _source_tree_contract_manifest(
         (source_workload,),
-        spec=_compiled_pattern_module_compile_contract_builder_spec(case_group),
+        spec=case_group.contract_builder_spec(),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
