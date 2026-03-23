@@ -5696,11 +5696,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 983,
-                "module_workloads": 975,
+                "measured_workloads": 991,
+                "module_workloads": 983,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 983,
+                "total_workloads": 991,
             },
         )
 
