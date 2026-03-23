@@ -15793,6 +15793,15 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         )
         return selector()
 
+    def expected_build_calls(
+        self,
+        source_workload: Workload,
+    ) -> list[tuple[object, ...]]:
+        return _compiled_pattern_contract_expected_build_calls(
+            source_workload,
+            label="module helper keyword",
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class _SourceTreeContractBuilderSpec:
@@ -15996,12 +16005,14 @@ def _compiled_pattern_module_helper_contract_expected_field_names(
         raise AssertionError(
             "unexpected compiled-pattern module helper keyword workload "
             f"{source_workload.workload_id!r}"
-        )
+    )
     return (f"kwargs.{keyword_parameter}",)
 
 
-def _compiled_pattern_module_helper_contract_expected_build_calls(
+def _compiled_pattern_contract_expected_build_calls(
     source_workload: Workload,
+    *,
+    label: str,
 ) -> list[tuple[object, ...]]:
     compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
     if source_workload.cache_mode == "purged":
@@ -16009,7 +16020,7 @@ def _compiled_pattern_module_helper_contract_expected_build_calls(
     if source_workload.cache_mode == "warm":
         return [compile_call]
     raise AssertionError(
-        "unexpected compiled-pattern module helper keyword workload cache mode "
+        f"unexpected compiled-pattern {label} workload cache mode "
         f"{source_workload.cache_mode!r}"
     )
 
@@ -16344,9 +16355,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
     contract_surface: _CompiledPatternModuleHelperKeywordContractSurface,
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = (
-        _compiled_pattern_module_helper_contract_expected_build_calls(source_workload)
-    )
+    expected_build_calls = contract_surface.expected_build_calls(source_workload)
     expected_callback_call = (
         _compiled_pattern_module_helper_contract_expected_callback_call(source_workload)
     )
@@ -16414,6 +16423,15 @@ class CompiledPatternModuleSuccessOwnerSpec:
                 "compiled-pattern module contract source workloads drifted from the "
                 f"{self.case_id} owner-spec surface"
             ),
+        )
+
+    def expected_build_calls(
+        self,
+        source_workload: Workload,
+    ) -> list[tuple[object, ...]]:
+        return _compiled_pattern_contract_expected_build_calls(
+            source_workload,
+            label=f"{self.case_id} success",
         )
 
 
@@ -16625,22 +16643,6 @@ def _assert_compiled_pattern_module_success_payload_round_trip(
         and source_workload.replacement is not None
     ):
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
-
-
-def _compiled_pattern_module_contract_expected_build_calls(
-    source_workload: Workload,
-    *,
-    label: str,
-) -> list[tuple[object, ...]]:
-    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
-    if source_workload.cache_mode == "purged":
-        return [compile_call, ("purge",)]
-    if source_workload.cache_mode == "warm":
-        return [compile_call]
-    raise AssertionError(
-        f"unexpected compiled-pattern {label} workload cache mode "
-        f"{source_workload.cache_mode!r}"
-    )
 
 
 def _contract_source_workload_params(
@@ -16859,10 +16861,7 @@ def test_compiled_pattern_module_collection_replacement_success_and_compiled_pat
     owner_spec: CompiledPatternModuleSuccessOwnerSpec,
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = _compiled_pattern_module_contract_expected_build_calls(
-        source_workload,
-        label=f"{owner_spec.case_id} success",
-    )
+    expected_build_calls = owner_spec.expected_build_calls(source_workload)
     expected_callback_call = owner_spec.expected_callback_call(source_workload)
     module = _RecordingBenchmarkModule()
     callback = build_callable(
@@ -17029,6 +17028,15 @@ class CompiledPatternModuleCompileContractCase:
         if self._uses_keyword_flags():
             return source_workload.keyword_arguments()["flags"]
         return source_workload.flags
+
+    def expected_build_calls(
+        self,
+        source_workload: Workload,
+    ) -> list[tuple[object, ...]]:
+        return _compiled_pattern_contract_expected_build_calls(
+            source_workload,
+            label="module.compile contract",
+        )
 
 
 _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE = (
@@ -17212,23 +17220,6 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
         expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
     ),
 )
-
-
-def _compiled_pattern_module_compile_contract_expected_build_calls(
-    source_workload: Workload,
-) -> list[tuple[object, ...]]:
-    build_calls: list[tuple[object, ...]] = [
-        ("compile", source_workload.pattern_payload(), source_workload.flags)
-    ]
-    if source_workload.cache_mode == "purged":
-        return [*build_calls, ("purge",)]
-    if source_workload.cache_mode == "warm":
-        return build_calls
-    raise AssertionError(
-        "unexpected compiled-pattern module.compile contract workload cache mode "
-        f"{source_workload.cache_mode!r}"
-    )
-
 
 def _expected_exception_instance(
     expected_exception: dict[str, str],
@@ -17466,9 +17457,7 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_
     contract_case: CompiledPatternModuleCompileContractCase,
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = _compiled_pattern_module_compile_contract_expected_build_calls(
-        source_workload
-    )
+    expected_build_calls = contract_case.expected_build_calls(source_workload)
     compile_exception = (
         None
         if source_workload.expected_exception is None
@@ -17840,7 +17829,7 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
         note_surface="collection/replacement",
         expected_callback_result=_compiled_pattern_wrong_text_model_expected_callback_result,
         expected_callback_call=_compiled_pattern_wrong_text_model_expected_callback_call,
-        expected_build_calls=lambda workload: _compiled_pattern_module_contract_expected_build_calls(
+        expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
             workload,
             label="module helper wrong-text-model",
         ),
@@ -17868,7 +17857,7 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = (
         note_surface="module-boundary",
         expected_callback_result=_compiled_pattern_wrong_text_model_expected_callback_result,
         expected_callback_call=_compiled_pattern_wrong_text_model_expected_callback_call,
-        expected_build_calls=lambda workload: _compiled_pattern_module_contract_expected_build_calls(
+        expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
             workload,
             label="module helper wrong-text-model",
         ),

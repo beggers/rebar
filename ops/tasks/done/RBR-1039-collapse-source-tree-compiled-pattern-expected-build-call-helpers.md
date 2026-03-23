@@ -1,6 +1,6 @@
 ## RBR-1039: Collapse source-tree compiled-pattern expected-build-call helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -58,3 +58,10 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently defines `_compiled_pattern_module_helper_contract_expected_build_calls(...)` at line `16003`, `_compiled_pattern_module_contract_expected_build_calls(...)` at line `16630`, and `_compiled_pattern_module_compile_contract_expected_build_calls(...)` at line `17217`;
   - the targeted pytest slice in Verification currently passes (`56 passed, 665 deselected in 0.15s`); and
   - the negative `rg` check in Verification currently fails only because those exact helper definitions are still present.
+
+## Completion Note
+- 2026-03-23: Replaced the three detached compiled-pattern expected-build-call helpers in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with one shared `_compiled_pattern_contract_expected_build_calls(...)` route.
+- Wired the existing compiled-pattern carriers onto that route through `_CompiledPatternModuleHelperKeywordContractSurface.expected_build_calls()`, `CompiledPatternModuleSuccessOwnerSpec.expected_build_calls()`, `CompiledPatternModuleCompileContractCase.expected_build_calls()`, and the compiled-pattern `WrongTextModelOwnerSpec` entries, preserving the existing label-specific cache-mode error wording.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing or wrong_text_model_callbacks_preserve_precompile_contract'`
+  - `bash -lc "! rg -n 'def _compiled_pattern_module_helper_contract_expected_build_calls\\(|def _compiled_pattern_module_contract_expected_build_calls\\(|def _compiled_pattern_module_compile_contract_expected_build_calls\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
