@@ -1,0 +1,1352 @@
+    1: """Differential correctness harness for parser and Python-visible `re` behavior."""
+       
+    1: from __future__ import annotations
+       
+    1: import argparse
+    1: import copy
+    1: import json
+    1: import pathlib
+    1: import re as cpython_re
+    1: import sys
+    1: import warnings
+    1: from dataclasses import dataclass, replace
+    1: from datetime import UTC, datetime
+    1: from functools import lru_cache
+    1: from typing import Any, Callable, Iterable, Sequence
+       
+       
+    1: REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+       
+    1: import rebar
+    1: from rebar_harness.scorecard_io import (
+           build_cpython_baseline,
+           build_published_subset_registry,
+           build_scorecard_report_descriptor,
+           load_unique_record_collection,
+           load_python_dict_attribute,
+           materialize_descriptor_value,
+           select_published_subset_paths,
+       )
+       
+       
+    1: TARGET_CPYTHON_SERIES = "3.12.x"
+    1: REPORT_SCHEMA_VERSION = "1.0"
+    1: FIXTURE_SCHEMA_VERSION = 1
+    2: SCORECARD_REPORT = build_scorecard_report_descriptor(
+    1:     published_path=REPO_ROOT / "reports" / "correctness" / "latest.py",
+    1:     scorecard_kind="correctness",
+       )
+    1: DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
+    1: CORRECTNESS_FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"
+    1: PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR = "published-full-suite"
+    1: COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "counted-repeat-quantified-group"
+    1: QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR = "quantified-alternation"
+    1: SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR = "simple-backreference"
+    1: CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR = "conditional-group-exists"
+    1: CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR = (
+    1:     "conditional-group-exists-replacement"
+       )
+    1: COLLECTION_REPLACEMENT_FIXTURE_SELECTOR = "collection-replacement"
+    1: GROUPED_REPLACEMENT_FIXTURE_SELECTOR = "grouped-replacement"
+    1: GROUPED_CAPTURE_FIXTURE_SELECTOR = "grouped-capture"
+    1: WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = (
+    1:     "wider-ranged-repeat-quantified-group"
+       )
+    1: BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR = "branch-local-backreference"
+    1: LITERAL_FLAG_FIXTURE_SELECTOR = "literal-flag"
+    1: CALLABLE_REPLACEMENT_FIXTURE_SELECTOR = "callable-replacement"
+    1: OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR = (
+    1:     "open-ended-quantified-group-replacement-template"
+       )
+    1: NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR = (
+    1:     "nested-broader-range-open-ended-replacement"
+       )
+    1: NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR = (
+    1:     "nested-broader-range-open-ended-conditional-replacement"
+       )
+    1: OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "open-ended-quantified-group"
+    1: MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR = "module-workflow-surface"
+    1: PUBLIC_SURFACE_FIXTURE_SELECTOR = "public-surface"
+    1: PARSER_PARITY_FIXTURE_SELECTOR = "parser-parity"
+       
+    1: _PUBLISHED_CORRECTNESS_FIXTURE_FILENAMES = (
+               "parser_matrix.py",
+               "public_api_surface.py",
+               "match_behavior_smoke.py",
+               "exported_symbol_surface.py",
+               "pattern_object_surface.py",
+               "module_workflow_surface.py",
+               "collection_replacement_workflows.py",
+               "literal_flag_workflows.py",
+               "grouped_match_workflows.py",
+               "named_group_workflows.py",
+               "named_group_replacement_workflows.py",
+               "named_backreference_workflows.py",
+               "numbered_backreference_workflows.py",
+               "grouped_segment_workflows.py",
+               "nested_group_workflows.py",
+               "nested_group_alternation_workflows.py",
+               "nested_group_alternation_replacement_workflows.py",
+               "nested_group_replacement_workflows.py",
+               "quantified_nested_group_replacement_workflows.py",
+               "quantified_nested_group_callable_replacement_workflows.py",
+               "nested_group_callable_replacement_workflows.py",
+               "nested_group_alternation_callable_replacement_workflows.py",
+               "quantified_nested_group_alternation_callable_replacement_workflows.py",
+               "literal_alternation_workflows.py",
+               "grouped_alternation_workflows.py",
+               "grouped_alternation_replacement_workflows.py",
+               "grouped_alternation_callable_replacement_workflows.py",
+               "branch_local_backreference_workflows.py",
+               "conditional_group_exists_branch_local_backreference_workflows.py",
+               "quantified_branch_local_backreference_workflows.py",
+               "optional_group_workflows.py",
+               "exact_repeat_quantified_group_workflows.py",
+               "exact_repeat_quantified_group_alternation_workflows.py",
+               "ranged_repeat_quantified_group_workflows.py",
+               "wider_ranged_repeat_quantified_group_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
+               "wider_ranged_repeat_quantified_group_alternation_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
+               "open_ended_quantified_group_alternation_workflows.py",
+               "nested_open_ended_quantified_group_alternation_workflows.py",
+               "broader_range_open_ended_quantified_group_alternation_workflows.py",
+               "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+               "open_ended_quantified_group_alternation_conditional_workflows.py",
+               "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+               "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "optional_group_alternation_workflows.py",
+               "optional_group_alternation_branch_local_backreference_workflows.py",
+               "optional_group_conditional_workflows.py",
+               "conditional_group_exists_workflows.py",
+               "conditional_group_exists_no_else_workflows.py",
+               "conditional_group_exists_no_else_alternation_workflows.py",
+               "conditional_group_exists_no_else_nested_workflows.py",
+               "conditional_group_exists_replacement_workflows.py",
+               "conditional_group_exists_replacement_template_workflows.py",
+               "conditional_group_exists_alternation_replacement_workflows.py",
+               "conditional_group_exists_nested_replacement_workflows.py",
+               "conditional_group_exists_quantified_replacement_workflows.py",
+               "conditional_group_exists_quantified_alternation_replacement_workflows.py",
+               "conditional_group_exists_no_else_replacement_workflows.py",
+               "conditional_group_exists_no_else_quantified_workflows.py",
+               "conditional_group_exists_empty_else_workflows.py",
+               "conditional_group_exists_empty_else_replacement_workflows.py",
+               "conditional_group_exists_empty_else_alternation_workflows.py",
+               "conditional_group_exists_empty_else_nested_workflows.py",
+               "conditional_group_exists_empty_else_quantified_workflows.py",
+               "conditional_group_exists_empty_yes_else_workflows.py",
+               "conditional_group_exists_empty_yes_else_alternation_workflows.py",
+               "conditional_group_exists_empty_yes_else_nested_workflows.py",
+               "conditional_group_exists_empty_yes_else_quantified_workflows.py",
+               "conditional_group_exists_fully_empty_alternation_workflows.py",
+               "conditional_group_exists_fully_empty_quantified_workflows.py",
+               "conditional_group_exists_fully_empty_nested_workflows.py",
+               "conditional_group_exists_alternation_workflows.py",
+               "conditional_group_exists_nested_workflows.py",
+               "conditional_group_exists_empty_yes_else_replacement_workflows.py",
+               "conditional_group_exists_fully_empty_replacement_workflows.py",
+               "conditional_group_exists_fully_empty_workflows.py",
+               "conditional_group_exists_assertion_diagnostics.py",
+               "conditional_group_exists_quantified_workflows.py",
+               "conditional_group_exists_quantified_alternation_workflows.py",
+               "quantified_alternation_conditional_workflows.py",
+               "quantified_alternation_workflows.py",
+               "quantified_alternation_branch_local_backreference_workflows.py",
+               "quantified_alternation_nested_branch_workflows.py",
+               "quantified_alternation_backtracking_heavy_workflows.py",
+               "quantified_alternation_broader_range_workflows.py",
+               "quantified_alternation_open_ended_workflows.py",
+               "quantified_nested_group_alternation_workflows.py",
+               "nested_group_alternation_branch_local_backreference_workflows.py",
+               "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+               "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+               "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+               "conditional_group_exists_callable_replacement_workflows.py",
+       )
+    1: _PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX = (
+    1:     "unknown published correctness fixture filename(s): "
+       )
+       
+   19: _NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES = {
+    1:     COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: (
+               "exact_repeat_quantified_group_workflows.py",
+               "ranged_repeat_quantified_group_workflows.py",
+           ),
+    1:     QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR: (
+               "exact_repeat_quantified_group_alternation_workflows.py",
+               "literal_alternation_workflows.py",
+               "quantified_alternation_workflows.py",
+               "quantified_alternation_backtracking_heavy_workflows.py",
+               "quantified_alternation_broader_range_workflows.py",
+               "quantified_alternation_conditional_workflows.py",
+               "quantified_nested_group_alternation_workflows.py",
+               "quantified_alternation_open_ended_workflows.py",
+               "quantified_alternation_nested_branch_workflows.py",
+           ),
+    1:     PARSER_PARITY_FIXTURE_SELECTOR: (
+               "parser_matrix.py",
+               "conditional_group_exists_assertion_diagnostics.py",
+           ),
+    1:     SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: (
+               "named_backreference_workflows.py",
+               "numbered_backreference_workflows.py",
+           ),
+    1:     CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR: (
+               "optional_group_conditional_workflows.py",
+               "conditional_group_exists_workflows.py",
+               "conditional_group_exists_no_else_workflows.py",
+               "conditional_group_exists_empty_else_workflows.py",
+               "conditional_group_exists_empty_yes_else_workflows.py",
+               "conditional_group_exists_fully_empty_workflows.py",
+               "conditional_group_exists_quantified_workflows.py",
+               "conditional_group_exists_quantified_alternation_workflows.py",
+               "conditional_group_exists_no_else_quantified_workflows.py",
+               "conditional_group_exists_empty_else_quantified_workflows.py",
+               "conditional_group_exists_empty_yes_else_quantified_workflows.py",
+               "conditional_group_exists_fully_empty_quantified_workflows.py",
+               "conditional_group_exists_nested_workflows.py",
+               "conditional_group_exists_no_else_nested_workflows.py",
+               "conditional_group_exists_empty_else_nested_workflows.py",
+               "conditional_group_exists_empty_yes_else_nested_workflows.py",
+               "conditional_group_exists_fully_empty_nested_workflows.py",
+               "conditional_group_exists_alternation_workflows.py",
+               "conditional_group_exists_no_else_alternation_workflows.py",
+               "conditional_group_exists_empty_else_alternation_workflows.py",
+               "conditional_group_exists_empty_yes_else_alternation_workflows.py",
+               "conditional_group_exists_fully_empty_alternation_workflows.py",
+           ),
+    1:     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR: (
+               "conditional_group_exists_alternation_replacement_workflows.py",
+               "conditional_group_exists_empty_else_replacement_workflows.py",
+               "conditional_group_exists_empty_yes_else_replacement_workflows.py",
+               "conditional_group_exists_fully_empty_replacement_workflows.py",
+               "conditional_group_exists_nested_replacement_workflows.py",
+               "conditional_group_exists_no_else_replacement_workflows.py",
+               "conditional_group_exists_quantified_alternation_replacement_workflows.py",
+               "conditional_group_exists_quantified_replacement_workflows.py",
+               "conditional_group_exists_replacement_workflows.py",
+               "conditional_group_exists_replacement_template_workflows.py",
+           ),
+    1:     COLLECTION_REPLACEMENT_FIXTURE_SELECTOR: (
+               "collection_replacement_workflows.py",
+           ),
+    1:     MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR: (
+               "module_workflow_surface.py",
+               "match_behavior_smoke.py",
+           ),
+    1:     PUBLIC_SURFACE_FIXTURE_SELECTOR: (
+               "public_api_surface.py",
+               "exported_symbol_surface.py",
+               "pattern_object_surface.py",
+           ),
+    1:     GROUPED_REPLACEMENT_FIXTURE_SELECTOR: (
+               "collection_replacement_workflows.py",
+               "grouped_alternation_replacement_workflows.py",
+               "named_group_replacement_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+               "nested_group_alternation_replacement_workflows.py",
+               "nested_group_replacement_workflows.py",
+               "quantified_nested_group_replacement_workflows.py",
+           ),
+    1:     GROUPED_CAPTURE_FIXTURE_SELECTOR: (
+               "grouped_match_workflows.py",
+               "named_group_workflows.py",
+               "grouped_segment_workflows.py",
+               "grouped_alternation_workflows.py",
+               "optional_group_workflows.py",
+               "optional_group_alternation_workflows.py",
+               "nested_group_workflows.py",
+               "nested_group_alternation_workflows.py",
+           ),
+    1:     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: (
+               "wider_ranged_repeat_quantified_group_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
+               "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+               "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+               "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+           ),
+    1:     BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR: (
+               "branch_local_backreference_workflows.py",
+               "quantified_branch_local_backreference_workflows.py",
+               "optional_group_alternation_branch_local_backreference_workflows.py",
+               "conditional_group_exists_branch_local_backreference_workflows.py",
+               "nested_group_alternation_branch_local_backreference_workflows.py",
+               "quantified_alternation_branch_local_backreference_workflows.py",
+               "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
+           ),
+    1:     LITERAL_FLAG_FIXTURE_SELECTOR: (
+               "literal_flag_workflows.py",
+           ),
+    1:     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: (
+               "conditional_group_exists_callable_replacement_workflows.py",
+               "grouped_alternation_callable_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+               "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "nested_group_alternation_callable_replacement_workflows.py",
+               "nested_group_callable_replacement_workflows.py",
+               "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+               "quantified_nested_group_alternation_callable_replacement_workflows.py",
+               "quantified_nested_group_callable_replacement_workflows.py",
+           ),
+    1:     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR: (
+               "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+           ),
+    1:     NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_FIXTURE_SELECTOR: (
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+           ),
+    1:     NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_FIXTURE_SELECTOR: (
+               "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+           ),
+    1:     OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: (
+               "open_ended_quantified_group_alternation_workflows.py",
+               "open_ended_quantified_group_alternation_conditional_workflows.py",
+               "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "broader_range_open_ended_quantified_group_alternation_workflows.py",
+               "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+               "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+               "nested_open_ended_quantified_group_alternation_workflows.py",
+           ),
+       }
+       
+    2: _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = build_published_subset_registry(
+    1:     _PUBLISHED_CORRECTNESS_FIXTURE_FILENAMES,
+    1:     _NONDEFAULT_CORRECTNESS_FIXTURE_SELECTOR_REQUESTED_FILENAMES,
+    1:     full_suite_selector=PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR,
+           missing_filename_error_prefix=(
+    1:         _PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX
+           ),
+       )
+       
+       
+    1: def select_correctness_fixture_paths(selector: str) -> tuple[pathlib.Path, ...]:
+    2:     return select_published_subset_paths(
+    1:         selector,
+    1:         filenames_by_selector=_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR,
+    1:         root=CORRECTNESS_FIXTURES_ROOT,
+    1:         unknown_selector_error_prefix="unknown correctness fixture selector",
+           )
+       
+       
+    2: DEFAULT_FIXTURE_PATHS = select_correctness_fixture_paths(
+    1:     PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+       )
+    1: PHASE_BY_LAYER = {
+    1:     "parser_acceptance_and_diagnostics": "phase1-parser-conformance-pack",
+    1:     "module_api_surface": "phase2-public-api-surface-pack",
+    1:     "pattern_object_parity": "phase2-pattern-object-pack",
+    1:     "match_behavior": "phase3-match-behavior-pack",
+    1:     "module_workflow": "phase3-module-workflow-pack",
+    1:     "regression_and_coverage": "phase4-regression-and-coverage-pack",
+       }
+    1: PHASE_ORDER = tuple(PHASE_BY_LAYER)
+       
+       
+    3: @dataclass(frozen=True)
+    2: class FixtureManifest:
+    1:     path: pathlib.Path
+    1:     manifest_id: str
+    1:     layer: str
+    1:     suite_id: str
+    1:     schema_version: int
+    1:     defaults: dict[str, Any]
+    1:     cases: list["FixtureCase"]
+       
+       
+    3: @dataclass(frozen=True)
+    2: class FixtureCase:
+    1:     """Single differential correctness case."""
+       
+    1:     case_id: str
+    1:     manifest_id: str
+    1:     suite_id: str
+    1:     layer: str
+    1:     family: str
+    1:     operation: str
+    1:     notes: list[str]
+    1:     categories: list[str]
+    1:     pattern: str | None
+    1:     flags: int | None
+    1:     text_model: str | None
+    1:     pattern_encoding: str
+    1:     helper: str | None
+    1:     source_args: list[Any]
+    1:     source_kwargs: dict[str, Any]
+    1:     args: list[Any]
+    1:     kwargs: dict[str, Any]
+    1:     use_compiled_pattern: bool = False
+    1:     include_pattern_arg: bool = False
+       
+    2:     @classmethod
+    2:     def from_dict(cls, manifest: FixtureManifest, raw_case: dict[str, Any]) -> "FixtureCase":
+               defaults = manifest.defaults
+               source_args = copy.deepcopy(
+                   raw_case["args"] if "args" in raw_case else defaults.get("args", [])
+               )
+               source_kwargs = copy.deepcopy(
+                   raw_case["kwargs"] if "kwargs" in raw_case else defaults.get("kwargs", {})
+               )
+               raw_pattern = raw_case.get("pattern")
+               raw_flags = raw_case.get("flags", defaults.get("flags"))
+               raw_text_model = raw_case.get("text_model", defaults.get("text_model"))
+               raw_helper = raw_case.get("helper")
+               return cls(
+                   case_id=str(raw_case["id"]),
+                   manifest_id=manifest.manifest_id,
+                   suite_id=str(raw_case.get("suite_id", manifest.suite_id)),
+                   layer=str(raw_case.get("layer", manifest.layer)),
+                   family=str(raw_case.get("family", defaults.get("family", manifest.manifest_id))),
+                   operation=str(raw_case.get("operation", defaults.get("operation", "compile"))),
+                   notes=[str(note) for note in raw_case.get("notes", [])],
+                   categories=[str(category) for category in raw_case.get("categories", [])],
+                   pattern=None if raw_pattern is None else str(raw_pattern),
+                   flags=None if raw_flags is None else int(raw_flags),
+                   text_model=None if raw_text_model is None else str(raw_text_model),
+                   pattern_encoding=str(
+                       raw_case.get(
+                           "pattern_encoding",
+                           defaults.get("pattern_encoding", "latin-1"),
+                       )
+                   ),
+                   helper=None if raw_helper is None else str(raw_helper),
+                   source_args=source_args,
+                   source_kwargs=source_kwargs,
+                   args=materialize_descriptor_value(
+                       source_args,
+                       callback_module_name="rebar_harness.correctness",
+                   ),
+                   kwargs=materialize_descriptor_value(
+                       source_kwargs,
+                       callback_module_name="rebar_harness.correctness",
+                   ),
+                   use_compiled_pattern=bool(
+                       raw_case.get(
+                           "use_compiled_pattern",
+                           defaults.get("use_compiled_pattern", False),
+                       )
+                   ),
+                   include_pattern_arg=bool(
+                       raw_case.get(
+                           "include_pattern_arg",
+                           defaults.get("include_pattern_arg", False),
+                       )
+                   ),
+               )
+       
+    1:     def pattern_payload(self) -> str | bytes:
+               if self.pattern is None:
+                   raise ValueError(f"case {self.case_id!r} is missing a pattern payload")
+               if self.text_model == "str":
+                   return self.pattern
+               if self.text_model == "bytes":
+                   return self.pattern.encode(self.pattern_encoding)
+               raise ValueError(f"unsupported text model {self.text_model!r}")
+       
+    1:     def serialized_args(self) -> list[Any]:
+               return [_normalize_value(argument) for argument in self.args]
+       
+    1:     def serialized_kwargs(self) -> dict[str, Any]:
+               return {key: _normalize_value(value) for key, value in sorted(self.kwargs.items())}
+       
+    1:     def module_call_args(self, compiled_pattern: Any | None = None) -> list[Any]:
+               if not self.use_compiled_pattern:
+                   if self.include_pattern_arg:
+                       return [self.pattern_payload(), *self.args]
+                   return list(self.args)
+               if compiled_pattern is None:
+                   raise ValueError(
+                       f"case {self.case_id!r} requires a compiled pattern helper argument"
+                   )
+               return [compiled_pattern, *self.args]
+       
+       
+    1: def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
+           if path.suffix != ".py":
+               raise ValueError(f"fixture manifests must be Python modules; got {path}")
+           raw_manifest = load_python_dict_attribute(
+               path,
+               module_name_prefix="_rebar_fixture",
+               attribute_name="MANIFEST",
+               load_error_label="Python fixture module",
+               missing_error_label="Python fixture module",
+               type_error_label="fixture manifest",
+           )
+           schema_version = raw_manifest.get("schema_version")
+           if schema_version != FIXTURE_SCHEMA_VERSION:
+               raise ValueError(
+                   f"unsupported fixture schema version {schema_version!r}; "
+                   f"expected {FIXTURE_SCHEMA_VERSION}"
+               )
+       
+           defaults = raw_manifest.get("defaults", {})
+           if not isinstance(defaults, dict):
+               raise ValueError("fixture manifest defaults must be an object")
+       
+           default_operation = str(defaults.get("operation", "compile"))
+           default_suite_id = str(
+               raw_manifest.get(
+                   "suite_id",
+                   "parser.compile"
+                   if raw_manifest.get("layer", "parser_acceptance_and_diagnostics")
+                   == "parser_acceptance_and_diagnostics"
+                   and default_operation == "compile"
+                   else raw_manifest["manifest_id"],
+               )
+           )
+       
+           manifest = FixtureManifest(
+               path=path,
+               manifest_id=str(raw_manifest["manifest_id"]),
+               layer=str(raw_manifest.get("layer", "parser_acceptance_and_diagnostics")),
+               suite_id=default_suite_id,
+               schema_version=schema_version,
+               defaults=defaults,
+               cases=[],
+           )
+           cases = [FixtureCase.from_dict(manifest, raw_case) for raw_case in raw_manifest.get("cases", [])]
+           return replace(manifest, cases=cases)
+       
+       
+    1: def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> list[FixtureManifest]:
+           return load_unique_record_collection(
+               paths,
+               load_record=load_fixture_manifest,
+               record_id=lambda manifest: manifest.manifest_id,
+               record_path=lambda manifest: manifest.path,
+               duplicate_record_error=lambda manifest_id, prior_path, current_path: (
+                   "duplicate fixture manifest id "
+                   f"{manifest_id!r} in {prior_path} and {current_path}"
+               ),
+               nested_ids=lambda manifest: (case.case_id for case in manifest.cases),
+               duplicate_nested_error=lambda case_id, prior_path, current_path: (
+                   "duplicate fixture case id "
+                   f"{case_id!r} in {prior_path} and {current_path}"
+               ),
+           )
+       
+       
+    2: @lru_cache(maxsize=1)
+    2: def published_fixture_manifests() -> tuple[FixtureManifest, ...]:
+           return tuple(load_fixture_manifests(DEFAULT_FIXTURE_PATHS))
+       
+       
+    1: def normalize_warning_records(records: list[warnings.WarningMessage]) -> list[dict[str, str]]:
+           return [
+               {
+                   "category": record.category.__name__,
+                   "message": str(record.message),
+               }
+               for record in records
+           ]
+       
+       
+    1: def normalize_pattern_value(pattern: str | bytes) -> str | dict[str, str]:
+           if isinstance(pattern, bytes):
+               return {
+                   "encoding": "latin-1",
+                   "value": pattern.decode("latin-1"),
+               }
+           return pattern
+       
+       
+    1: def normalize_pattern_metadata(compiled_pattern: Any) -> dict[str, Any]:
+           groupindex = getattr(compiled_pattern, "groupindex", {})
+           return {
+               "pattern": normalize_pattern_value(compiled_pattern.pattern),
+               "flags": compiled_pattern.flags,
+               "groups": compiled_pattern.groups,
+               "groupindex": dict(sorted(groupindex.items())),
+               "pattern_type": type(compiled_pattern.pattern).__name__,
+           }
+       
+       
+    1: def normalize_pattern_object_metadata(compiled_pattern: Any) -> dict[str, Any]:
+           return {
+               **normalize_pattern_metadata(compiled_pattern),
+               "compiled_type": {
+                   "module": type(compiled_pattern).__module__,
+                   "qualname": type(compiled_pattern).__qualname__,
+                   "repr": repr(type(compiled_pattern)),
+               },
+           }
+       
+       
+    1: def normalize_match_metadata(match: Any) -> dict[str, Any]:
+           groupindex = getattr(match.re, "groupindex", {})
+           payload = {
+               "matched": bool(match),
+               "group0": _normalize_value(match.group(0)),
+               "groups": [_normalize_value(group) for group in match.groups()],
+               "groupdict": {
+                   key: _normalize_value(value) for key, value in sorted(match.groupdict().items())
+               },
+               "lastgroup": match.lastgroup,
+               "lastindex": match.lastindex,
+               "pos": match.pos,
+               "endpos": match.endpos,
+               "span": list(match.span()),
+               "string_type": type(match.string).__name__,
+           }
+           if groupindex:
+               payload["named_groups"] = {
+                   name: _normalize_value(match.group(name)) for name in sorted(groupindex)
+               }
+               payload["named_group_spans"] = {
+                   name: list(match.span(name)) for name in sorted(groupindex)
+               }
+           if match.re.groups >= 1:
+               payload["group1"] = _normalize_value(match.group(1))
+               payload["span1"] = list(match.span(1))
+               payload["group_spans"] = [
+                   None if span is None else list(span)
+                   for span in (match.span(group_index) for group_index in range(1, match.re.groups + 1))
+               ]
+           return payload
+       
+       
+    1: def _normalize_value(value: Any) -> Any:
+           if value is None or isinstance(value, (bool, int, float, str)):
+               return value
+           if isinstance(value, bytes):
+               return normalize_pattern_value(value)
+           if isinstance(value, list):
+               return [_normalize_value(item) for item in value]
+           if isinstance(value, tuple):
+               return [_normalize_value(item) for item in value]
+           if isinstance(value, dict):
+               return {str(key): _normalize_value(item) for key, item in sorted(value.items())}
+           if callable(value) and not isinstance(value, type):
+               return {
+                   "type": "callable",
+                   "module": getattr(value, "__module__", type(value).__module__),
+                   "qualname": getattr(value, "__qualname__", getattr(value, "__name__", type(value).__qualname__)),
+               }
+           if hasattr(value, "__iter__") and hasattr(value, "__next__"):
+               items = [_normalize_value(item) for item in value]
+               return {
+                   "items": items,
+                   "exhausted": next(value, None) is None,
+               }
+           if all(hasattr(value, attribute) for attribute in ("pattern", "flags", "groups", "groupindex")):
+               return normalize_pattern_metadata(value)
+           if all(hasattr(value, attribute) for attribute in ("span", "group", "groups", "groupdict")):
+               return normalize_match_metadata(value)
+           return {
+               "type": type(value).__name__,
+               "repr": repr(value),
+           }
+       
+       
+    1: def normalize_exception(exc: BaseException) -> dict[str, Any]:
+           payload: dict[str, Any] = {
+               "type": type(exc).__name__,
+               "message": str(exc),
+           }
+           for attribute in ("pos", "lineno", "colno"):
+               if hasattr(exc, attribute):
+                   value = getattr(exc, attribute)
+                   if value is not None:
+                       payload[attribute] = value
+           return payload
+       
+       
+    1: def normalize_exported_symbol_value(value: Any) -> dict[str, Any]:
+           if value is None:
+               return {
+                   "present": False,
+                   "type_name": None,
+                   "value": None,
+               }
+       
+           payload: dict[str, Any] = {
+               "present": True,
+               "type_name": type(value).__name__,
+               "value": _normalize_value(value),
+           }
+           if hasattr(value, "name"):
+               payload["name"] = getattr(value, "name")
+           return payload
+       
+       
+    1: def normalize_exported_symbol_metadata(value: Any) -> dict[str, Any]:
+           if value is None:
+               return {
+                   "present": False,
+                   "callable": False,
+                   "is_type": False,
+                   "type_name": None,
+               }
+       
+           payload: dict[str, Any] = {
+               "present": True,
+               "callable": callable(value),
+               "is_type": isinstance(value, type),
+               "type_name": type(value).__name__,
+           }
+       
+           if isinstance(value, type):
+               payload.update(
+                   {
+                       "module": value.__module__,
+                       "qualname": value.__qualname__,
+                       "repr": repr(value),
+                       "mro": [f"{cls.__module__}.{cls.__qualname__}" for cls in value.__mro__],
+                   }
+               )
+               if hasattr(value, "__members__"):
+                   payload["members"] = {
+                       name: int(member) for name, member in sorted(value.__members__.items())
+                   }
+           else:
+               payload["repr"] = repr(value)
+       
+           return payload
+       
+       
+    2: class Adapter:
+    1:     """Adapter boundary for correctness observations."""
+       
+    1:     adapter_name: str
+    1:     module: Any
+       
+    1:     def observe(self, case: FixtureCase) -> dict[str, Any]:
+               if case.operation == "cache_workflow":
+                   return self.observe_cache_workflow(case)
+               if case.operation == "cache_distinct_workflow":
+                   return self.observe_cache_distinct_workflow(case)
+               if case.operation == "compile":
+                   return self.observe_compile(case)
+               if case.operation == "pattern_metadata":
+                   return self.observe_pattern_metadata(case)
+               if case.operation == "pattern_call":
+                   return self.observe_pattern_call(case)
+               if case.operation == "purge_workflow":
+                   return self.observe_purge_workflow(case)
+               if case.operation == "module_has_attr":
+                   return self.observe_module_has_attr(case)
+               if case.operation == "module_call":
+                   return self.observe_module_call(case)
+               if case.operation == "module_attr_value":
+                   return self.observe_module_attr_value(case)
+               if case.operation == "module_attr_metadata":
+                   return self.observe_module_attr_metadata(case)
+               raise ValueError(f"unsupported operation {case.operation!r}")
+       
+    1:     def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
+               return self._observe_compiled_pattern(case, normalize_pattern_metadata)
+       
+    1:     def observe_pattern_metadata(self, case: FixtureCase) -> dict[str, Any]:
+               return self._observe_compiled_pattern(case, normalize_pattern_object_metadata)
+       
+    1:     def observe_pattern_call(self, case: FixtureCase) -> dict[str, Any]:
+               if case.helper is None:
+                   raise ValueError(f"case {case.case_id!r} requires a helper name")
+       
+               def observe_bound_helper(compiled_pattern: Any) -> Any:
+                   result = getattr(compiled_pattern, case.helper)(*case.args, **case.kwargs)
+                   return _normalize_value(result)
+       
+               return self._observe_compiled_pattern(case, observe_bound_helper)
+       
+    1:     def observe_cache_workflow(self, case: FixtureCase) -> dict[str, Any]:
+               def collect_cache_state() -> dict[str, Any]:
+                   self._purge_module_cache()
+                   first = self._compile_pattern(case)
+                   second = self._compile_pattern(case)
+                   return {
+                       "first": normalize_pattern_metadata(first),
+                       "second": normalize_pattern_metadata(second),
+                       "same_object": first is second,
+                   }
+       
+               return self._observe_cache_state(case, collect_cache_state)
+       
+    1:     def observe_cache_distinct_workflow(self, case: FixtureCase) -> dict[str, Any]:
+               alias_flags = int(case.kwargs.get("alias_flags", case.flags or 0))
+               distinct_flags = int(case.kwargs["distinct_flags"])
+       
+               def collect_cache_distinct_state() -> dict[str, Any]:
+                   self._purge_module_cache()
+                   first = self._compile_pattern(case)
+                   alias = self.module.compile(case.pattern_payload(), alias_flags)
+                   distinct = self.module.compile(case.pattern_payload(), distinct_flags)
+                   return {
+                       "first": normalize_pattern_metadata(first),
+                       "alias": normalize_pattern_metadata(alias),
+                       "distinct": normalize_pattern_metadata(distinct),
+                       "same_object_as_alias": first is alias,
+                       "same_object_as_distinct": first is distinct,
+                   }
+       
+               return self._observe_cache_state(case, collect_cache_distinct_state)
+       
+    1:     def observe_purge_workflow(self, case: FixtureCase) -> dict[str, Any]:
+               def collect_purge_state() -> dict[str, Any]:
+                   self._purge_module_cache()
+                   first = self._compile_pattern(case)
+                   second = self._compile_pattern(case)
+                   purge_result = self._purge_module_cache()
+                   third = self._compile_pattern(case)
+                   fourth = self._compile_pattern(case)
+                   return {
+                       "before_purge": normalize_pattern_metadata(first),
+                       "before_purge_same_object": first is second,
+                       "purge_result": _normalize_value(purge_result),
+                       "after_purge": normalize_pattern_metadata(third),
+                       "after_purge_new_object": third is not first,
+                       "after_purge_cache_hit": third is fourth,
+                   }
+       
+               return self._observe_cache_state(case, collect_purge_state)
+       
+    1:     def observe_module_has_attr(self, case: FixtureCase) -> dict[str, Any]:
+               if case.helper is None:
+                   raise ValueError(f"case {case.case_id!r} requires a helper name")
+               attribute = getattr(self.module, case.helper, None)
+               return finalize_observation(
+                   adapter=self.adapter_name,
+                   case=case,
+                   outcome="success",
+                   warnings_payload=[],
+                   result={
+                       "present": attribute is not None,
+                       "callable": callable(attribute) if attribute is not None else None,
+                   },
+               )
+       
+    1:     def observe_module_call(self, case: FixtureCase) -> dict[str, Any]:
+               if case.helper is None:
+                   raise ValueError(f"case {case.case_id!r} requires a helper name")
+       
+               helper = getattr(self.module, case.helper)
+               with warnings.catch_warnings(record=True) as caught:
+                   warnings.simplefilter("always")
+                   try:
+                       compiled_pattern = (
+                           self._compile_pattern(case) if case.use_compiled_pattern else None
+                       )
+                       result = helper(
+                           *case.module_call_args(compiled_pattern),
+                           **case.kwargs,
+                       )
+                   except NotImplementedError as exc:
+                       return finalize_observation(
+                           adapter=self.adapter_name,
+                           case=case,
+                           outcome="unimplemented",
+                           warnings_payload=normalize_warning_records(caught),
+                           exception=normalize_exception(exc),
+                       )
+                   except Exception as exc:  # pragma: no cover - exercised by fixtures
+                       return finalize_observation(
+                           adapter=self.adapter_name,
+                           case=case,
+                           outcome="exception",
+                           warnings_payload=normalize_warning_records(caught),
+                           exception=normalize_exception(exc),
+                       )
+       
+               return finalize_observation(
+                   adapter=self.adapter_name,
+                   case=case,
+                   outcome="success",
+                   warnings_payload=normalize_warning_records(caught),
+                   result=_normalize_value(result),
+               )
+       
+    1:     def observe_module_attr_value(self, case: FixtureCase) -> dict[str, Any]:
+               if case.helper is None:
+                   raise ValueError(f"case {case.case_id!r} requires a helper name")
+       
+               attribute = getattr(self.module, case.helper, None)
+               return finalize_observation(
+                   adapter=self.adapter_name,
+                   case=case,
+                   outcome="success",
+                   warnings_payload=[],
+                   result=normalize_exported_symbol_value(attribute),
+               )
+       
+    1:     def observe_module_attr_metadata(self, case: FixtureCase) -> dict[str, Any]:
+               if case.helper is None:
+                   raise ValueError(f"case {case.case_id!r} requires a helper name")
+       
+               attribute = getattr(self.module, case.helper, None)
+               return finalize_observation(
+                   adapter=self.adapter_name,
+                   case=case,
+                   outcome="success",
+                   warnings_payload=[],
+                   result=normalize_exported_symbol_metadata(attribute),
+               )
+       
+    1:     def _purge_module_cache(self) -> Any:
+               purge_helper = getattr(self.module, "purge")
+               return purge_helper()
+       
+    1:     def _compile_pattern(self, case: FixtureCase) -> Any:
+               return self.module.compile(case.pattern_payload(), case.flags or 0)
+       
+    4:     def _observe_cache_state(
+               self,
+    1:         case: FixtureCase,
+    1:         observe_cache_state: Callable[[], dict[str, Any]],
+    1:     ) -> dict[str, Any]:
+               # Cache workflow observations differ only by adapter-specific exception mapping.
+               with warnings.catch_warnings(record=True) as caught:
+                   warnings.simplefilter("always")
+                   try:
+                       result = observe_cache_state()
+                   except Exception as exc:  # pragma: no cover - exercised by fixtures
+                       return finalize_observation(
+                           adapter=self.adapter_name,
+                           case=case,
+                           outcome=self._observation_outcome_for_exception(exc),
+                           warnings_payload=normalize_warning_records(caught),
+                           exception=normalize_exception(exc),
+                       )
+       
+               self._purge_module_cache()
+               return finalize_observation(
+                   adapter=self.adapter_name,
+                   case=case,
+                   outcome="success",
+                   warnings_payload=normalize_warning_records(caught),
+                   result=result,
+               )
+       
+    4:     def _observe_compiled_pattern(
+               self,
+    1:         case: FixtureCase,
+    1:         observe_compiled_pattern: Callable[[Any], Any],
+    1:     ) -> dict[str, Any]:
+               with warnings.catch_warnings(record=True) as caught:
+                   warnings.simplefilter("always")
+                   try:
+                       compiled_pattern = self._compile_pattern(case)
+                       result = observe_compiled_pattern(compiled_pattern)
+                   except Exception as exc:  # pragma: no cover - exercised by fixtures
+                       return finalize_observation(
+                           adapter=self.adapter_name,
+                           case=case,
+                           outcome=self._observation_outcome_for_exception(exc),
+                           warnings_payload=normalize_warning_records(caught),
+                           exception=normalize_exception(exc),
+                       )
+       
+               return finalize_observation(
+                   adapter=self.adapter_name,
+                   case=case,
+                   outcome="success",
+                   warnings_payload=normalize_warning_records(caught),
+                   result=result,
+               )
+       
+    1:     def _observation_outcome_for_exception(self, exc: BaseException) -> str:
+               return "exception"
+       
+       
+    2: class CpythonReAdapter(Adapter):
+    1:     adapter_name = "cpython.re"
+    1:     module = cpython_re
+       
+       
+    2: class RebarAdapter(Adapter):
+    1:     adapter_name = "rebar"
+    1:     module = rebar
+       
+    1:     def _observation_outcome_for_exception(self, exc: BaseException) -> str:
+               if isinstance(exc, NotImplementedError):
+                   return "unimplemented"
+               return "exception"
+       
+       
+    8: def finalize_observation(
+           *,
+    1:     adapter: str,
+    1:     case: FixtureCase,
+    1:     outcome: str,
+    1:     warnings_payload: list[dict[str, str]],
+    2:     result: dict[str, Any] | list[Any] | str | int | float | bool | None = None,
+    2:     exception: dict[str, Any] | None = None,
+    1: ) -> dict[str, Any]:
+           return {
+               "adapter": adapter,
+               "operation": case.operation,
+               "outcome": outcome,
+               "warnings": warnings_payload,
+               "result": result,
+               "exception": exception,
+           }
+       
+       
+    4: def compare_observations(
+    2:     cpython_observation: dict[str, Any], rebar_observation: dict[str, Any]
+    1: ) -> tuple[str, list[str]]:
+           if rebar_observation["outcome"] == "unimplemented":
+               return "unimplemented", ["rebar adapter reports support as unimplemented"]
+       
+           mismatches: list[str] = []
+           if cpython_observation["outcome"] != rebar_observation["outcome"]:
+               mismatches.append(
+                   "outcome mismatch: "
+                   f"{cpython_observation['outcome']} != {rebar_observation['outcome']}"
+               )
+       
+           if cpython_observation["warnings"] != rebar_observation["warnings"]:
+               mismatches.append("warning payload mismatch")
+       
+           if cpython_observation["result"] != rebar_observation["result"]:
+               mismatches.append("result payload mismatch")
+       
+           if cpython_observation["exception"] != rebar_observation["exception"]:
+               mismatches.append("exception payload mismatch")
+       
+           return ("pass", []) if not mismatches else ("fail", mismatches)
+       
+       
+    1: def evaluate_case(case: FixtureCase, cpython_adapter: Adapter, rebar_adapter: Adapter) -> dict[str, Any]:
+           cpython_observation = cpython_adapter.observe(case)
+           rebar_observation = rebar_adapter.observe(case)
+           comparison, mismatch_notes = compare_observations(cpython_observation, rebar_observation)
+       
+           result = {
+               "id": case.case_id,
+               "manifest_id": case.manifest_id,
+               "suite_id": case.suite_id,
+               "layer": case.layer,
+               "family": case.family,
+               "operation": case.operation,
+               "notes": case.notes,
+               "categories": case.categories,
+               "comparison": comparison,
+               "comparison_notes": mismatch_notes,
+               "observations": {
+                   "cpython": cpython_observation,
+                   "rebar": rebar_observation,
+               },
+           }
+       
+           if case.text_model is not None:
+               result["text_model"] = case.text_model
+           if case.pattern is not None:
+               result["pattern"] = case.pattern
+           if case.flags is not None:
+               result["flags"] = case.flags
+           if case.helper is not None:
+               result["helper"] = case.helper
+           if case.use_compiled_pattern:
+               result["use_compiled_pattern"] = True
+           if case.args:
+               result["args"] = case.serialized_args()
+           if case.kwargs:
+               result["kwargs"] = case.serialized_kwargs()
+           return result
+       
+       
+    1: def build_summary(case_results: list[dict[str, Any]]) -> dict[str, int]:
+           comparison_counts = {"pass": 0, "fail": 0, "unimplemented": 0, "skipped": 0}
+           for result in case_results:
+               comparison_counts[result["comparison"]] += 1
+       
+           return {
+               "total_cases": len(case_results),
+               "executed_cases": len(case_results),
+               "passed_cases": comparison_counts["pass"],
+               "failed_cases": comparison_counts["fail"],
+               "unimplemented_cases": comparison_counts["unimplemented"],
+               "skipped_cases": comparison_counts["skipped"],
+           }
+       
+       
+    1: def build_observation_summary(observations: list[dict[str, Any]]) -> dict[str, Any]:
+           outcomes: dict[str, int] = {}
+           warning_categories: dict[str, int] = {}
+           exception_types: dict[str, int] = {}
+           warning_case_count = 0
+           exception_case_count = 0
+       
+           for observation in observations:
+               outcome = str(observation["outcome"])
+               outcomes[outcome] = outcomes.get(outcome, 0) + 1
+       
+               warnings_payload = observation.get("warnings", [])
+               if warnings_payload:
+                   warning_case_count += 1
+                   for warning_record in warnings_payload:
+                       category = str(warning_record["category"])
+                       warning_categories[category] = warning_categories.get(category, 0) + 1
+       
+               exception = observation.get("exception")
+               if exception is not None:
+                   exception_case_count += 1
+                   exception_type = str(exception["type"])
+                   exception_types[exception_type] = exception_types.get(exception_type, 0) + 1
+       
+           return {
+               "outcomes": dict(sorted(outcomes.items())),
+               "warning_case_count": warning_case_count,
+               "exception_case_count": exception_case_count,
+               "warning_categories": dict(sorted(warning_categories.items())),
+               "exception_types": dict(sorted(exception_types.items())),
+           }
+       
+       
+    1: def build_diagnostics_summary(case_results: list[dict[str, Any]]) -> dict[str, Any]:
+           return {
+               "by_adapter": {
+                   "cpython": build_observation_summary(
+                       [result["observations"]["cpython"] for result in case_results]
+                   ),
+                   "rebar": build_observation_summary(
+                       [result["observations"]["rebar"] for result in case_results]
+                   ),
+               }
+           }
+       
+       
+    1: def _sorted_unique_strings(values: Iterable[Any]) -> list[str]:
+           return sorted({str(value) for value in values if value is not None})
+       
+       
+    6: def build_suite_summary(
+           *,
+    1:     suite_id: str,
+    1:     layer: str,
+    1:     manifest_ids: list[str],
+    1:     case_results: list[dict[str, Any]],
+    1: ) -> dict[str, Any]:
+           return {
+               "id": suite_id,
+               "layer": layer,
+               "manifest_ids": manifest_ids,
+               "case_count": len(case_results),
+               "families": _sorted_unique_strings(result["family"] for result in case_results),
+               "operations": _sorted_unique_strings(result["operation"] for result in case_results),
+               "text_models": _sorted_unique_strings(result.get("text_model") for result in case_results),
+               "summary": build_summary(case_results),
+               "diagnostics": build_diagnostics_summary(case_results),
+           }
+       
+       
+    1: def determine_phase(layer_summaries: dict[str, Any]) -> str:
+           active_layers = [layer for layer in PHASE_ORDER if layer in layer_summaries]
+           if not active_layers:
+               return PHASE_BY_LAYER["parser_acceptance_and_diagnostics"]
+           return PHASE_BY_LAYER[active_layers[-1]]
+       
+       
+    1: def build_fixture_summary(manifests: Sequence[FixtureManifest], case_results: list[dict[str, Any]]) -> dict[str, Any]:
+           summary = {
+               "manifest_count": len(manifests),
+               "manifest_ids": [manifest.manifest_id for manifest in manifests],
+               "paths": [str(manifest.path.relative_to(REPO_ROOT)) for manifest in manifests],
+               "case_count": len(case_results),
+           }
+           if len(manifests) == 1:
+               manifest = manifests[0]
+               summary.update(
+                   {
+                       "path": str(manifest.path.relative_to(REPO_ROOT)),
+                       "schema_version": manifest.schema_version,
+                       "manifest_id": manifest.manifest_id,
+                   }
+               )
+           return summary
+       
+       
+    4: def build_suite_summaries(
+    2:     manifests: Sequence[FixtureManifest], case_results: list[dict[str, Any]]
+    1: ) -> list[dict[str, Any]]:
+           suite_summaries: list[dict[str, Any]] = []
+           for manifest in manifests:
+               manifest_cases = [result for result in case_results if result["manifest_id"] == manifest.manifest_id]
+               if not manifest_cases:
+                   continue
+       
+               suite_summaries.append(
+                   build_suite_summary(
+                       suite_id=manifest.suite_id,
+                       layer=manifest.layer,
+                       manifest_ids=[manifest.manifest_id],
+                       case_results=manifest_cases,
+                   )
+               )
+       
+               text_models = _sorted_unique_strings(result.get("text_model") for result in manifest_cases)
+               for text_model in text_models:
+                   suite_summaries.append(
+                       build_suite_summary(
+                           suite_id=f"{manifest.suite_id}.{text_model}",
+                           layer=manifest.layer,
+                           manifest_ids=[manifest.manifest_id],
+                           case_results=[
+                               result for result in manifest_cases if result.get("text_model") == text_model
+                           ],
+                       )
+                   )
+       
+               operations = _sorted_unique_strings(result["operation"] for result in manifest_cases)
+               if len(operations) > 1:
+                   for operation in operations:
+                       suite_summaries.append(
+                           build_suite_summary(
+                               suite_id=f"{manifest.suite_id}.{operation}",
+                               layer=manifest.layer,
+                               manifest_ids=[manifest.manifest_id],
+                               case_results=[
+                                   result for result in manifest_cases if result["operation"] == operation
+                               ],
+                           )
+                       )
+       
+           return suite_summaries
+       
+       
+    4: def build_scorecard(
+           *,
+    1:     manifests: Sequence[FixtureManifest],
+    1:     case_results: list[dict[str, Any]],
+    1: ) -> dict[str, Any]:
+           summary = build_summary(case_results)
+           layers: dict[str, Any] = {}
+           for layer in _sorted_unique_strings(result["layer"] for result in case_results):
+               layer_cases = [result for result in case_results if result["layer"] == layer]
+               layers[layer] = {
+                   "manifest_ids": _sorted_unique_strings(result["manifest_id"] for result in layer_cases),
+                   "suite_ids": _sorted_unique_strings(result["suite_id"] for result in layer_cases),
+                   "case_count": len(layer_cases),
+                   "families": _sorted_unique_strings(result["family"] for result in layer_cases),
+                   "operations": _sorted_unique_strings(result["operation"] for result in layer_cases),
+                   "text_models": _sorted_unique_strings(result.get("text_model") for result in layer_cases),
+                   "summary": build_summary(layer_cases),
+                   "diagnostics": build_diagnostics_summary(layer_cases),
+               }
+       
+           families: list[dict[str, Any]] = []
+           for family in _sorted_unique_strings(result["family"] for result in case_results):
+               family_cases = [result for result in case_results if result["family"] == family]
+               families.append(
+                   {
+                       "id": family,
+                       "case_count": len(family_cases),
+                       "layers": _sorted_unique_strings(
+                           result["layer"] for result in family_cases
+                       ),
+                       "operations": _sorted_unique_strings(
+                           result["operation"] for result in family_cases
+                       ),
+                       "text_models": _sorted_unique_strings(
+                           result.get("text_model") for result in family_cases
+                       ),
+                       "summary": build_summary(family_cases),
+                   }
+               )
+       
+           return {
+               "schema_version": REPORT_SCHEMA_VERSION,
+               "suite": "correctness",
+               "phase": determine_phase(layers),
+               "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
+               "generator": "python -m rebar_harness.correctness",
+               "baseline": {
+                   **build_cpython_baseline(version_family=TARGET_CPYTHON_SERIES),
+                   "oracle": "cpython-stdlib-re",
+                   "target_module": "rebar",
+               },
+               "fixtures": build_fixture_summary(manifests, case_results),
+               "summary": summary,
+               "layers": layers,
+               "diagnostics": build_diagnostics_summary(case_results),
+               "suites": build_suite_summaries(manifests, case_results),
+               "families": families,
+               "cases": case_results,
+           }
+       
+    4: def run_correctness_harness(
+    2:     fixture_paths: Sequence[pathlib.Path] = DEFAULT_FIXTURE_PATHS,
+    2:     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
+    1: ) -> dict[str, Any]:
+           resolved_fixture_paths = [path.resolve() for path in fixture_paths]
+           resolved_report_path = SCORECARD_REPORT.validate_path(report_path)
+           manifests = load_fixture_manifests(resolved_fixture_paths)
+           cases = [case for manifest in manifests for case in manifest.cases]
+           cpython_adapter = CpythonReAdapter()
+           rebar_adapter = RebarAdapter()
+           case_results = [evaluate_case(case, cpython_adapter, rebar_adapter) for case in cases]
+           scorecard = build_scorecard(manifests=manifests, case_results=case_results)
+           SCORECARD_REPORT.write(scorecard, resolved_report_path)
+           return scorecard
+       
+       
+    1: def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+           parser = argparse.ArgumentParser(description=__doc__)
+           parser.add_argument(
+               "--fixtures",
+               type=pathlib.Path,
+               nargs="+",
+               default=list(DEFAULT_FIXTURE_PATHS),
+               help="One or more correctness fixture manifests to execute.",
+           )
+           parser.add_argument(
+               "--report",
+               type=pathlib.Path,
+               default=DEFAULT_REPORT_PATH,
+               help="Path to the output scorecard; the tracked default is a Python module and explicit .json outputs remain supported.",
+           )
+           return parser.parse_args(argv)
+       
+       
+    1: def main(argv: list[str] | None = None) -> int:
+           args = parse_args(argv)
+           try:
+               scorecard = run_correctness_harness(
+                   fixture_paths=args.fixtures,
+                   report_path=args.report,
+               )
+           except ValueError as exc:
+               print(f"error: {exc}", file=sys.stderr)
+               return 2
+           print(json.dumps(scorecard["summary"], sort_keys=True))
+           return 0
+       
+       
+    1: if __name__ == "__main__":
+           raise SystemExit(main())
