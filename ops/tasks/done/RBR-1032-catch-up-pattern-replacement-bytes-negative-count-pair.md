@@ -1,6 +1,6 @@
 # RBR-1032: Catch up the direct `Pattern.sub()` / `Pattern.subn()` bytes negative-count pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,13 @@ Created: 2026-03-23
   - `rg -n 'pattern-sub-bytes-negative-count-purged-bytes|pattern-subn-bytes-negative-count-purged-bytes' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact benchmark workload ids are still absent from the tracked owner-path surfaces;
   - direct runtime probes confirm `rebar.compile(b"abc").sub(b"x", b"abcabc", -1) == re.compile(b"abc").sub(b"x", b"abcabc", -1)` and `rebar.compile(b"abc").subn(b"x", b"abcabc", -1) == re.compile(b"abc").subn(b"x", b"abcabc", -1)` on the live branch; and
   - synthetic benchmark probes built through `rebar_harness.benchmarks.Workload.from_dict(...)`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` return `status == "measured"` for both adapters on hypothetical workloads `pattern-sub-bytes-negative-count-purged-bytes` and `pattern-subn-bytes-negative-count-purged-bytes`, so the benchmark catch-up can stay on the existing Python-path owner route instead of needing another implementation prerequisite first.
+
+## Completion Notes
+- Added the two direct compiled-pattern `bytes` negative-count workloads to `benchmarks/workloads/collection_replacement_boundary.py` on the existing literal-replacement owner path, preserving the twelve-row measured workload order required by this task.
+- Extended the shared benchmark expectation tuple and summary assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the new workload ids anchor to `pattern-sub-bytes-negative-count` and `pattern-subn-bytes-negative-count` on the existing collection/replacement contract path.
+- Regenerated `reports/benchmarks/latest.py` on the tracked source-tree-shim path. The tracked report now publishes `963` total workloads, `963` measured workloads, `0` known gaps, `955` module workloads, `8` parser workloads, `8` regression workloads, `{"cold": 104, "purged": 412, "warm": 447}` by cache mode, and `124` workloads on `collection-replacement-boundary`, with both new workload ids marked `measured`.
+- Verification run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and bytes-negative-count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1032-pattern-replacement-bytes-negative-count-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

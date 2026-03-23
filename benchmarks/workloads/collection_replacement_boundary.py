@@ -3135,6 +3135,37 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-sub-bytes-negative-count-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": -1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "sub",
+        "bytes",
+        "negative-count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "cache-purge",
+        "positional-count"
+      ],
+      "notes": [
+        "Purged bytes precompiled Pattern.sub helper path that keeps the bounded negative-count literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "pattern-finditer-literal-warm-str",
       "bucket": "pattern-finditer",
       "family": "module",
@@ -4064,6 +4095,37 @@ MANIFEST = {
       ],
       "notes": [
         "Purged bytes precompiled Pattern.subn helper path that keeps the bounded literal repeated-match replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-subn-bytes-negative-count-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": -1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "negative-count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "cache-purge",
+        "positional-count"
+      ],
+      "notes": [
+        "Purged bytes precompiled Pattern.subn helper path that keeps the bounded negative-count literal replacement workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {
