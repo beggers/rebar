@@ -7427,6 +7427,120 @@ def test_collection_and_replacement_helpers_use_native_boundary_hooks(
         rebar.purge()
 
 
+@pytest.mark.parametrize(
+    (
+        "entry_point",
+        "helper",
+        "pattern",
+        "replacement",
+        "string",
+        "count",
+        "expected_result",
+        "expected_calls",
+    ),
+    (
+        pytest.param(
+            "module",
+            "sub",
+            "abc",
+            "x",
+            "abcabc",
+            1,
+            "native-subn",
+            (
+                ("compile", "abc", 0),
+                ("subn", "abc", 8192, "x", "abcabc", 1),
+            ),
+            id="module-sub-str",
+        ),
+        pytest.param(
+            "module",
+            "sub",
+            b"abc",
+            b"x",
+            b"abcabc",
+            1,
+            b"native-bytes-subn",
+            (
+                ("compile", b"abc", 0),
+                ("subn", b"abc", 4096, b"x", b"abcabc", 1),
+            ),
+            id="module-sub-bytes",
+        ),
+        pytest.param(
+            "pattern",
+            "subn",
+            "abc",
+            "x",
+            "abcabc",
+            1,
+            ("native-subn", 9),
+            (
+                ("compile", "abc", 0),
+                ("subn", "abc", 8192, "x", "abcabc", 1),
+            ),
+            id="pattern-subn-str",
+        ),
+        pytest.param(
+            "pattern",
+            "subn",
+            b"abc",
+            b"x",
+            b"abcabc",
+            1,
+            (b"native-bytes-subn", 7),
+            (
+                ("compile", b"abc", 0),
+                ("subn", b"abc", 4096, b"x", b"abcabc", 1),
+            ),
+            id="pattern-subn-bytes",
+        ),
+    ),
+)
+def test_native_replacement_helpers_cover_remaining_entry_points(
+    monkeypatch: pytest.MonkeyPatch,
+    entry_point: str,
+    helper: str,
+    pattern: str | bytes,
+    replacement: str | bytes,
+    string: str | bytes,
+    count: int,
+    expected_result: object,
+    expected_calls: tuple[tuple[object, ...], ...],
+) -> None:
+    fake_native = _ModuleWorkflowFakeNativeBoundary(
+        str_compile_flags=8192,
+        bytes_compile_flags=4096,
+    )
+
+    rebar.purge()
+    try:
+        with monkeypatch.context() as native_patch:
+            native_patch.setattr(rebar, "_native", fake_native)
+
+            if entry_point == "module":
+                observed = getattr(rebar, helper)(
+                    pattern,
+                    replacement,
+                    string,
+                    count=count,
+                )
+            elif entry_point == "pattern":
+                compiled = rebar.compile(pattern)
+                observed = getattr(compiled, helper)(
+                    replacement,
+                    string,
+                    count=count,
+                )
+            else:
+                raise AssertionError(f"unexpected replacement entry point {entry_point!r}")
+
+            assert observed == expected_result
+            assert fake_native.calls == list(expected_calls)
+    finally:
+        rebar.purge()
+
+
 def test_module_and_pattern_placeholders_still_surface_for_unsupported_native_results(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
