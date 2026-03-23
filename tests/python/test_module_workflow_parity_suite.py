@@ -589,6 +589,11 @@ class _CollectionHelperCase(Protocol):
 _CollectionCaseT = TypeVar("_CollectionCaseT", bound=_CollectionHelperCase)
 
 
+class _HelperCallCase(Protocol):
+    helper: str
+    args: tuple[object, ...]
+
+
 @dataclass(frozen=True)
 class WorkflowNumericCoercionCase:
     case_id: str
@@ -3843,15 +3848,16 @@ def _call_module_helper_with_flag_mode(
     raise AssertionError(f"unsupported module helper flag mode {flag_mode!r}")
 
 
-def _call_module_keyword_case(regex_api: object, case: ModuleKeywordCallCase) -> object:
-    return getattr(regex_api, case.helper)(*case.args, **case.kwargs)
-
-
-def _call_module_positional_indexlike_case(
-    regex_api: object,
-    case: ModulePositionalIndexLikeCallCase,
+def _call_helper_case(
+    target: object,
+    case: _HelperCallCase,
+    *prefix_args: object,
 ) -> object:
-    return getattr(regex_api, case.helper)(*case.args)
+    helper = getattr(target, case.helper)
+    kwargs = getattr(case, "kwargs", None)
+    if kwargs is None:
+        return helper(*prefix_args, *case.args)
+    return helper(*prefix_args, *case.args, **kwargs)
 
 
 def _call_compiled_pattern_module_keyword_case(
@@ -3859,18 +3865,7 @@ def _call_compiled_pattern_module_keyword_case(
     case: CompiledPatternModuleKeywordCallCase | CompiledPatternModuleKeywordErrorCase,
 ) -> object:
     compiled_pattern = _compile_compiled_pattern_case(regex_api, case.pattern, case.flags)
-    return getattr(regex_api, case.helper)(compiled_pattern, *case.args, **case.kwargs)
-
-
-def _call_pattern_keyword_case(pattern: object, case: PatternKeywordCallCase) -> object:
-    return getattr(pattern, case.helper)(*case.args, **case.kwargs)
-
-
-def _call_pattern_positional_indexlike_case(
-    pattern: object,
-    case: PatternPositionalIndexLikeCallCase,
-) -> object:
-    return getattr(pattern, case.helper)(*case.args)
+    return _call_helper_case(regex_api, case, compiled_pattern)
 
 
 def _pattern_dual_indexlike_window_bounds(
@@ -5971,8 +5966,8 @@ def test_module_keyword_argument_calls_match_cpython(
     case: ModuleKeywordCallCase,
 ) -> None:
     backend_name, backend = regex_backend
-    observed = _call_module_keyword_case(backend, case)
-    expected = _call_module_keyword_case(re, case)
+    observed = _call_helper_case(backend, case)
+    expected = _call_helper_case(re, case)
 
     if case.result_kind == "match":
         assert_match_result_parity(backend_name, observed, expected, check_regs=True)
@@ -5995,8 +5990,8 @@ def test_module_positional_indexlike_argument_calls_match_cpython(
     _, backend = regex_backend
 
     assert_value_parity(
-        _call_module_positional_indexlike_case(backend, case),
-        _call_module_positional_indexlike_case(re, case),
+        _call_helper_case(backend, case),
+        _call_helper_case(re, case),
     )
 
 
@@ -6013,8 +6008,8 @@ def test_pattern_keyword_argument_calls_match_cpython(
         case.flags,
     )
 
-    observed = _call_pattern_keyword_case(observed_pattern, case)
-    expected = _call_pattern_keyword_case(expected_pattern, case)
+    observed = _call_helper_case(observed_pattern, case)
+    expected = _call_helper_case(expected_pattern, case)
 
     if case.result_kind == "match":
         assert_match_result_parity(backend_name, observed, expected, check_regs=True)
@@ -6046,8 +6041,8 @@ def test_pattern_positional_indexlike_argument_calls_match_cpython(
         case.flags,
     )
 
-    observed = _call_pattern_positional_indexlike_case(observed_pattern, case)
-    expected = _call_pattern_positional_indexlike_case(expected_pattern, case)
+    observed = _call_helper_case(observed_pattern, case)
+    expected = _call_helper_case(expected_pattern, case)
 
     if case.result_kind == "match":
         assert_match_result_parity(backend_name, observed, expected, check_regs=True)
