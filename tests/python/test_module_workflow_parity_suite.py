@@ -52,7 +52,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    published_fixture_bundles_by_manifest_id,
+    load_published_fixture_bundles,
 )
 
 MATURIN = shutil.which("maturin")
@@ -171,15 +171,12 @@ def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
 
 
-MODULE_WORKFLOW_SURFACE_BUNDLES = tuple(
-    build_selected_fixture_bundle(path)
-    for path in MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
-)
+(
+    MODULE_WORKFLOW_SURFACE_BUNDLES,
+    MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID,
+) = load_published_fixture_bundles(MODULE_WORKFLOW_SURFACE_FIXTURE_SELECTOR)
 assert {bundle.manifest.path for bundle in MODULE_WORKFLOW_SURFACE_BUNDLES} == set(
     MODULE_WORKFLOW_SURFACE_FIXTURE_PATHS
-)
-MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
-    MODULE_WORKFLOW_SURFACE_BUNDLES
 )
 MODULE_WORKFLOW_BUNDLE = MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID[
     MODULE_WORKFLOW_MANIFEST_ID
@@ -412,15 +409,12 @@ NON_INSTANTIABLE_EXPORTS = (
 PUBLIC_SURFACE_FIXTURE_PATHS = select_correctness_fixture_paths(
     PUBLIC_SURFACE_FIXTURE_SELECTOR
 )
-PUBLIC_SURFACE_BUNDLES = tuple(
-    build_selected_fixture_bundle(
-        path,
-        pattern_extractor=_public_surface_case_contract_token,
-    )
-    for path in PUBLIC_SURFACE_FIXTURE_PATHS
-)
-PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
-    PUBLIC_SURFACE_BUNDLES
+(
+    PUBLIC_SURFACE_BUNDLES,
+    PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID,
+) = load_published_fixture_bundles(
+    PUBLIC_SURFACE_FIXTURE_SELECTOR,
+    pattern_extractor=_public_surface_case_contract_token,
 )
 PUBLIC_API_BUNDLE = PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID["public-api-surface"]
 EXPORTED_SYMBOL_BUNDLE = PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID[

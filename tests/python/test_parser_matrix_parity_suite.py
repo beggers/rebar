@@ -11,7 +11,6 @@ import rebar
 from rebar_harness.correctness import (
     FixtureCase,
     PARSER_PARITY_FIXTURE_SELECTOR,
-    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -22,7 +21,7 @@ from tests.python.fixture_parity_support import (
     build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
-    published_fixture_bundles_by_manifest_id,
+    load_published_fixture_bundles,
 )
 
 # Keep the parser-focused direct parity suite on parser-specific rows; the literal
@@ -32,12 +31,8 @@ KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS = (
     "bytes-literal-success",
 )
 
-OWNER_FIXTURE_BUNDLES = tuple(
-    build_selected_fixture_bundle(path)
-    for path in select_correctness_fixture_paths(PARSER_PARITY_FIXTURE_SELECTOR)
-)
-OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
-    OWNER_FIXTURE_BUNDLES
+_, OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
+    PARSER_PARITY_FIXTURE_SELECTOR
 )
 PARSER_MATRIX_OWNER_BUNDLE = OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID["parser-matrix"]
 CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE = OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID[

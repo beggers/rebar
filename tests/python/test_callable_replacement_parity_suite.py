@@ -29,6 +29,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     case_replacement_argument,
     case_text_argument,
+    load_published_fixture_bundles,
     published_fixture_bundles_by_manifest_id,
     str_case_pattern,
 )
@@ -1150,11 +1151,8 @@ COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID = "module-sub-callable-str"
 COLLECTION_REPLACEMENT_OWNER_BUNDLE = build_selected_fixture_bundle(
     COLLECTION_REPLACEMENT_FIXTURE_PATHS[0]
 )
-FIXTURE_BUNDLES = tuple(
-    build_selected_fixture_bundle(path) for path in CALLABLE_FIXTURE_PATHS
-)
-FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id(
-    FIXTURE_BUNDLES
+FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
+    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
 )
 PUBLISHED_CALLABLE_CASES = tuple(
     case for bundle in FIXTURE_BUNDLES for case in bundle.cases

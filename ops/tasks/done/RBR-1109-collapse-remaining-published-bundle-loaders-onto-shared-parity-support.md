@@ -1,6 +1,6 @@
 # RBR-1109: Collapse remaining published bundle loaders onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -55,3 +55,9 @@ Created: 2026-03-23
 - The focused parity slice is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_callable_replacement_parity_suite.py` returned `4696 passed, 29 skipped` in this run.
 - The negative `rg` verification currently fails exactly on the targeted owner-local boilerplate above, so it is an acceptance check for this cleanup rather than unrelated repo drift.
+
+## Completion
+- 2026-03-23: Replaced the remaining top-level published bundle tuple-plus-manifest-index boilerplate in the three scoped parity owners with `load_published_fixture_bundles(...)`, while preserving selector-owned order, manifest-id aliases, and the public-surface contract-token extraction path.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_callable_replacement_parity_suite.py`
+  - `bash -lc "! rg -n '^OWNER_FIXTURE_BUNDLES = tuple\\(|^OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id\\(|^MODULE_WORKFLOW_SURFACE_BUNDLES = tuple\\(|^MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id\\(|^PUBLIC_SURFACE_BUNDLES = tuple\\(|^PUBLIC_SURFACE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id\\(|^FIXTURE_BUNDLES = tuple\\(|^FIXTURE_BUNDLES_BY_MANIFEST_ID = published_fixture_bundles_by_manifest_id\\(' tests/python/test_parser_matrix_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_callable_replacement_parity_suite.py"`
