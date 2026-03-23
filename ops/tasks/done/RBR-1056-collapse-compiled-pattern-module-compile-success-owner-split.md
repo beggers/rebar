@@ -1,6 +1,6 @@
 # RBR-1056: Collapse the compiled-pattern `module.compile` success owner split
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -56,3 +56,6 @@ Created: 2026-03-23
   - `_is_module_workflow_compiled_pattern_compile_literal_success_workload(...)` and `_is_module_workflow_compiled_pattern_compile_named_group_success_workload(...)` still sit at lines `7353` and `7364`;
   - the two success anchor-definition blocks still sit at lines `9819` and `9844`; and
   - `_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_CASE` still hard-codes the paired selector split at line `17162`.
+
+## Completion
+- 2026-03-23: Replaced the literal-versus-named-group compiled-pattern `module.compile` success selector split with a shared same-file success-owner-spec surface, rewired the two unchanged success anchors and the combined success contract case through it, and verified the focused benchmark-contract pytest slice (`75 passed, 647 deselected, 18 subtests passed`) plus selector removal via `rg`.
