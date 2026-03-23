@@ -1,6 +1,6 @@
 # RBR-1100: Collapse parametrize id lambdas in wider-ranged-repeat quantified-group parity suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -50,3 +50,9 @@ Created: 2026-03-23
   - `rg -n 'ids=lambda' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` returned the remaining inline id adapters at lines `470`, `484`, `688`, `711`, `802`, `820`, `834`, `843`, `857`, `871`, `885`, `899`, `914`, `932`, `945`, `969`, `989`, `1010`, `1039`, `1064`, `1087`, and `1102` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` returned `1353 passed` in this run.
+
+## Completion
+- Replaced every remaining file-local `ids=lambda ...` adapter in `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` with named helpers and a shared `DIRECT_BYTES_FOLLOW_ON_CASES` tuple, preserving the existing collected ids for fixture bundles, direct-bytes surfaces, fixture cases, bounded-window cases, direct-bytes follow-on cases, and backtracking trace rows.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`
+  - `bash -lc "! rg -n 'ids=lambda' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"`
