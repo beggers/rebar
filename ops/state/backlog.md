@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives in this checkout.
+Implement bounded bytes callable-replacement parity for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives in this checkout.
+1. Implement the exact bytes callable-replacement parity slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` through bounded module/pattern `sub()` present-capture and `subn(count=1)` absent-capture-exception workflows on the existing callable owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

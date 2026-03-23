@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1645 cases across 114 manifests, with all 1645 passing in the current slice; the benchmark publication covers 1003/1003 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives in this checkout.
+- `RBR-1125` is the surviving ready feature follow-on: implement bounded bytes callable-replacement parity for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1645 cases across 114 manifests, with all 1645 pass
 The published correctness slice now covers 1645 cases across 114 manifests, all passing, and 1003 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- No ready feature follow-on currently survives in this checkout.
+- `RBR-1125` is the surviving ready feature follow-on, implementing bounded bytes callable-replacement parity for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
 - No blocked or in-progress feature task currently survives in this checkout.
 
 ## What Exists
