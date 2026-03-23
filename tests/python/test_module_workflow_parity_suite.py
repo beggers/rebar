@@ -6579,6 +6579,53 @@ def test_source_package_compile_rejects_non_pattern_inputs() -> None:
     assert str(raised.value) == "first argument must be string or compiled pattern"
 
 
+@pytest.mark.parametrize(
+    "pattern",
+    (
+        pytest.param("abc", id="str"),
+        pytest.param(b"abc", id="bytes"),
+    ),
+)
+def test_source_package_compile_rejects_foreign_compiled_patterns_like_cpython(
+    pattern: str | bytes,
+) -> None:
+    observed_error = _capture_error(lambda: rebar.compile(re.compile(pattern)))
+    expected_error = _capture_error(lambda: re.compile(rebar.compile(pattern)))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args == (
+        "first argument must be string or compiled pattern",
+    )
+
+
+@pytest.mark.parametrize(
+    ("helper", "pattern", "args"),
+    (
+        pytest.param("search", "abc", ("zabc",), id="search-str"),
+        pytest.param("fullmatch", b"abc", (b"abc",), id="fullmatch-bytes"),
+        pytest.param("split", "abc", ("zabcz",), id="split-str"),
+        pytest.param("finditer", b"abc", (b"zabcabc",), id="finditer-bytes"),
+        pytest.param("subn", "abc", ("x", "zabcabc"), id="subn-str"),
+    ),
+)
+def test_source_package_module_helpers_reject_foreign_compiled_patterns_like_cpython(
+    helper: str,
+    pattern: str | bytes,
+    args: tuple[object, ...],
+) -> None:
+    observed_error = _capture_error(
+        lambda: getattr(rebar, helper)(re.compile(pattern), *args)
+    )
+    expected_error = _capture_error(
+        lambda: getattr(re, helper)(rebar.compile(pattern), *args)
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args == (
+        "first argument must be string or compiled pattern",
+    )
+
+
 def test_source_package_module_literal_match_contract_matches_cpython() -> None:
     search_match = rebar.search("abc", "zzabczz")
     expected_search = re.search("abc", "zzabczz")
