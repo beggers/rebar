@@ -1,6 +1,6 @@
 # RBR-1025: Collapse owner-path publication fixture-id map
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -115,3 +115,7 @@ PY`
   - the pytest selector in Verification currently passes (`5 passed, 1446 deselected`);
   - the inline owner-path contract probe in Verification currently reports `ok`; and
   - the final `! rg ...` check currently fails exactly on the detached map being queued for removal here.
+
+## Completion
+- Replaced the local `fixture_cases_by_id` map in `_assert_owner_path_publication_contract()` with `_cases_with_ids(fixture_cases, *_owner_path_fixture_case_ids(rows))`, keeping fixture selection on the existing file-local canonical tuples.
+- Verified the five targeted publication tests pass, the inline owner-path contract probe reports `ok`, and `rg` finds no remaining `fixture_cases_by_id = ` definition in `tests/python/test_module_workflow_parity_suite.py`.

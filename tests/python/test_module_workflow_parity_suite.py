@@ -2466,9 +2466,9 @@ def _assert_owner_path_publication_contract(
     expected_text_model_counts: Counter[str] | None = None,
     direct_case_helper: Callable[[_DirectCaseT], str] | None = None,
 ) -> tuple[tuple[FixtureCase, ...], tuple[_DirectCaseT, ...]]:
-    fixture_cases_by_id = {case.case_id: case for case in fixture_cases}
-    published_fixture_cases = tuple(
-        fixture_cases_by_id[row.fixture_case_id] for row in rows
+    published_fixture_cases = _cases_with_ids(
+        fixture_cases,
+        *_owner_path_fixture_case_ids(rows),
     )
     selected_direct_cases = tuple(row.direct_case for row in rows)
 
