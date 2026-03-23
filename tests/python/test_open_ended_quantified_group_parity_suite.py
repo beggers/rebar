@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     PatternTraceCase as OpenEndedTraceCase,
     SupplementalCase,
+    assert_mixed_text_model_case_pairs,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_bounded_pattern_case_match_parity,
@@ -739,11 +740,8 @@ def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_
 def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     spec: BytesCaseSurfaceSpec,
 ) -> None:
-    bundle_str_cases = tuple(
-        case for case in spec.bundle.cases if case.text_model == "str"
-    )
-    bundle_bytes_cases = tuple(
-        case for case in spec.bundle.cases if case.text_model == "bytes"
+    bundle_str_cases, bundle_bytes_cases = assert_mixed_text_model_case_pairs(
+        spec.bundle
     )
     expected_compile_patterns = frozenset(
         case_pattern(case)
@@ -761,12 +759,8 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     )
     assert len(spec.cases) == 2
     assert {case.pattern for case in spec.cases} == expected_compile_patterns
-    assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(
-        spec.expected_operation_helper_counts.values()
-    )
-    assert {case.case_id for case in bundle_bytes_cases} == {
-        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
-    }
+    assert len(bundle_str_cases) == len(bundle_bytes_cases)
+    assert len(bundle_bytes_cases) == sum(spec.expected_operation_helper_counts.values())
     assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == (
         spec.expected_operation_helper_counts
     )
