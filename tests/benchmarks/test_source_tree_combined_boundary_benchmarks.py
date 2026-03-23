@@ -11236,6 +11236,329 @@ def _expected_anchored_pairs(
     return tuple(anchored_pairs)
 
 
+def _summary_contract_workload_payload(
+    *,
+    manifest_id: str,
+    workload_id: str,
+    family: str = "module",
+    operation: str | None = None,
+    cache_mode: str = "warm",
+    smoke: bool = False,
+) -> dict[str, object]:
+    resolved_operation = operation
+    if resolved_operation is None:
+        resolved_operation = "compile" if family == "parser" else "module.search"
+
+    return {
+        "manifest_id": manifest_id,
+        "workload_id": workload_id,
+        "bucket": workload_id,
+        "family": family,
+        "operation": resolved_operation,
+        "pattern": "abc",
+        "haystack": None if resolved_operation == "compile" else "abc",
+        "replacement": None,
+        "expected_exception": None,
+        "flags": 0,
+        "use_compiled_pattern": False,
+        "count": 0,
+        "maxsplit": 0,
+        "pos": None,
+        "endpos": None,
+        "kwargs": {},
+        "text_model": "str",
+        "haystack_text_model": None,
+        "cache_mode": cache_mode,
+        "timing_scope": "compile-call" if resolved_operation == "compile" else "module-helper-call",
+        "warmup_iterations": 1,
+        "sample_iterations": 1,
+        "timed_samples": 1,
+        "notes": [],
+        "categories": [],
+        "syntax_features": [],
+        "smoke": smoke,
+    }
+
+
+def _summary_contract_workload_record(
+    *,
+    manifest_id: str,
+    workload_id: str,
+    family: str = "module",
+    operation: str | None = None,
+    cache_mode: str = "warm",
+    status: str = "measured",
+    baseline_ns: int | None = 100,
+    implementation_ns: int | None = 80,
+    speedup_vs_cpython: float | None = 1.25,
+) -> dict[str, Any]:
+    payload = _summary_contract_workload_payload(
+        manifest_id=manifest_id,
+        workload_id=workload_id,
+        family=family,
+        operation=operation,
+        cache_mode=cache_mode,
+    )
+    if status != "measured":
+        baseline_ns = None
+        implementation_ns = None
+        speedup_vs_cpython = None
+    return {
+        "manifest_id": payload["manifest_id"],
+        "workload_id": payload["workload_id"],
+        "family": payload["family"],
+        "operation": payload["operation"],
+        "cache_mode": payload["cache_mode"],
+        "status": status,
+        "baseline_ns": baseline_ns,
+        "implementation_ns": implementation_ns,
+        "speedup_vs_cpython": speedup_vs_cpython,
+    }
+
+
+def _summary_contract_manifest(
+    *,
+    manifest_id: str,
+    workload_ids: tuple[str, ...],
+    family: str = "module",
+    operation: str | None = None,
+    smoke_workload_ids: tuple[str, ...] = (),
+    spec_refs: tuple[str, ...] = (),
+    notes: tuple[str, ...] = (),
+) -> BenchmarkManifest:
+    workloads = [
+        workload_from_payload(
+            _summary_contract_workload_payload(
+                manifest_id=manifest_id,
+                workload_id=workload_id,
+                family=family,
+                operation=operation,
+                smoke=workload_id in set(smoke_workload_ids),
+            )
+        )
+        for workload_id in workload_ids
+    ]
+    return BenchmarkManifest(
+        path=pathlib.Path(f"{manifest_id}.py"),
+        manifest_id=manifest_id,
+        schema_version=benchmarks.MANIFEST_SCHEMA_VERSION,
+        workloads=workloads,
+        spec_refs=list(spec_refs),
+        notes=list(notes),
+    )
+
+
+def test_build_family_summary_marks_partial_parser_family_and_keeps_parser_proxy_note() -> None:
+    summary = benchmarks.build_family_summary(
+        [
+            _summary_contract_workload_record(
+                manifest_id="compile-matrix",
+                workload_id="parser-measured",
+                family="parser",
+                cache_mode="cold",
+                baseline_ns=120,
+                implementation_ns=90,
+                speedup_vs_cpython=1.3333,
+            ),
+            _summary_contract_workload_record(
+                manifest_id="compile-matrix",
+                workload_id="parser-gap",
+                family="parser",
+                cache_mode="warm",
+                status="known-gap",
+            ),
+            _summary_contract_workload_record(
+                manifest_id="module-boundary",
+                workload_id="module-measured",
+                family="module",
+                cache_mode="warm",
+                baseline_ns=200,
+                implementation_ns=180,
+                speedup_vs_cpython=1.1111,
+            ),
+        ],
+        "parser",
+    )
+
+    assert summary["workload_count"] == 2
+    assert summary["known_gap_count"] == 1
+    assert summary["readiness"] == "partial"
+    assert summary["median_baseline_ns"] == 120
+    assert summary["median_implementation_ns"] == 90
+    assert summary["median_speedup_vs_cpython"] == 1.3333
+    assert summary["cache_modes"]["cold"] == {
+        "workload_count": 1,
+        "known_gap_count": 0,
+        "median_baseline_ns": 120,
+        "median_implementation_ns": 90,
+        "median_speedup_vs_cpython": 1.3333,
+    }
+    assert summary["cache_modes"]["warm"] == {
+        "workload_count": 1,
+        "known_gap_count": 1,
+        "median_baseline_ns": None,
+        "median_implementation_ns": None,
+        "median_speedup_vs_cpython": None,
+    }
+    assert summary["cache_modes"]["purged"] == {
+        "workload_count": 0,
+        "known_gap_count": 0,
+        "median_baseline_ns": None,
+        "median_implementation_ns": None,
+        "median_speedup_vs_cpython": None,
+    }
+    assert summary["notes"] == [
+        "Phase 1 compile-path suite uses compile() as a parser proxy until a narrower benchmark hook exists."
+    ]
+
+
+def test_build_family_summary_marks_absent_module_family_and_keeps_deferred_note() -> None:
+    summary = benchmarks.build_family_summary(
+        [
+            _summary_contract_workload_record(
+                manifest_id="compile-matrix",
+                workload_id="parser-measured",
+                family="parser",
+                cache_mode="cold",
+            )
+        ],
+        "module",
+    )
+
+    assert summary["workload_count"] == 0
+    assert summary["known_gap_count"] == 0
+    assert summary["readiness"] == "absent"
+    assert summary["median_baseline_ns"] is None
+    assert summary["median_implementation_ns"] is None
+    assert summary["median_speedup_vs_cpython"] is None
+    assert summary["cache_modes"] == {
+        "cold": {
+            "workload_count": 0,
+            "known_gap_count": 0,
+            "median_baseline_ns": None,
+            "median_implementation_ns": None,
+            "median_speedup_vs_cpython": None,
+        },
+        "warm": {
+            "workload_count": 0,
+            "known_gap_count": 0,
+            "median_baseline_ns": None,
+            "median_implementation_ns": None,
+            "median_speedup_vs_cpython": None,
+        },
+        "purged": {
+            "workload_count": 0,
+            "known_gap_count": 0,
+            "median_baseline_ns": None,
+            "median_implementation_ns": None,
+            "median_speedup_vs_cpython": None,
+        },
+    }
+    assert summary["notes"] == ["Module-boundary timings remain deferred to RBR-0015."]
+
+
+def test_build_family_summary_marks_scaffold_only_module_family_when_every_row_is_a_gap() -> None:
+    summary = benchmarks.build_family_summary(
+        [
+            _summary_contract_workload_record(
+                manifest_id="module-boundary",
+                workload_id="module-gap",
+                family="module",
+                cache_mode="warm",
+                status="known-gap",
+            )
+        ],
+        "module",
+    )
+
+    assert summary["workload_count"] == 1
+    assert summary["known_gap_count"] == 1
+    assert summary["readiness"] == "scaffold-only"
+    assert summary["median_baseline_ns"] is None
+    assert summary["median_implementation_ns"] is None
+    assert summary["median_speedup_vs_cpython"] is None
+    assert summary["cache_modes"]["warm"] == {
+        "workload_count": 1,
+        "known_gap_count": 1,
+        "median_baseline_ns": None,
+        "median_implementation_ns": None,
+        "median_speedup_vs_cpython": None,
+    }
+    assert summary["notes"] == [
+        "Phase 2 module-boundary timings use tiny import and helper-call workloads so the scorecard stays focused on public API overhead."
+    ]
+
+
+def test_build_manifest_summaries_marks_empty_module_boundary_selection_absent() -> None:
+    manifest = _summary_contract_manifest(
+        manifest_id="module-boundary",
+        workload_ids=("module-boundary-workload",),
+        family="module",
+        spec_refs=("spec:module-boundary",),
+    )
+
+    summary = benchmarks.build_manifest_summaries(
+        manifests=[manifest],
+        workloads=[],
+        selection_mode="focused",
+    )["module-boundary"]
+
+    assert summary["workload_count"] == 1
+    assert summary["selected_workload_count"] == 0
+    assert summary["measured_workloads"] == 0
+    assert summary["known_gap_count"] == 0
+    assert summary["readiness"] == "absent"
+    assert summary["median_speedup_vs_cpython"] is None
+    assert summary["families"] == []
+    assert summary["operations"] == []
+    assert summary["selection_mode"] == "focused"
+    assert summary["smoke_workload_ids"] == []
+    assert summary["available_smoke_workload_count"] == 0
+    assert summary["spec_refs"] == ["spec:module-boundary"]
+    assert summary["notes"] == [
+        "Module-boundary workloads keep haystacks intentionally small so the timings emphasize public helper overhead."
+    ]
+
+
+def test_build_manifest_summaries_marks_all_gap_regression_selection_scaffold_only() -> None:
+    manifest = _summary_contract_manifest(
+        manifest_id="regression-matrix",
+        workload_ids=("regression-gap",),
+        family="module",
+        smoke_workload_ids=("regression-gap",),
+        spec_refs=("spec:regression",),
+    )
+
+    summary = benchmarks.build_manifest_summaries(
+        manifests=[manifest],
+        workloads=[
+            _summary_contract_workload_record(
+                manifest_id="regression-matrix",
+                workload_id="regression-gap",
+                family="module",
+                status="known-gap",
+            )
+        ],
+        selection_mode="smoke",
+    )["regression-matrix"]
+
+    assert summary["workload_count"] == 1
+    assert summary["selected_workload_count"] == 1
+    assert summary["measured_workloads"] == 0
+    assert summary["known_gap_count"] == 1
+    assert summary["readiness"] == "scaffold-only"
+    assert summary["median_speedup_vs_cpython"] is None
+    assert summary["families"] == ["module"]
+    assert summary["operations"] == ["module.search"]
+    assert summary["selection_mode"] == "smoke"
+    assert summary["smoke_workload_ids"] == ["regression-gap"]
+    assert summary["available_smoke_workload_count"] == 1
+    assert summary["spec_refs"] == ["spec:regression"]
+    assert summary["notes"] == [
+        "Regression/stability workloads track small, curated performance-cliff probes instead of broad engine-throughput claims."
+    ]
+
+
 def test_default_benchmark_manifest_selector_rejects_unknown_selector() -> None:
     with pytest.raises(ValueError, match="unknown benchmark manifest selector"):
         select_benchmark_manifest_paths("missing-selector")
