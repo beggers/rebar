@@ -1959,7 +1959,6 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         slice_id="quantified-nested-group",
         required_syntax_features=(
             "callable-replacement",
-            "pattern-text-model",
             "quantifiers",
         ),
         excluded_syntax_features=("alternation", "branch-local-backreferences"),
@@ -1984,7 +1983,6 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "replacement",
             "callable",
             "quantified",
-            "bytes",
         ),
     ),
     _combined_slice_expectation(
@@ -5287,6 +5285,23 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 ("regression-module-compile-verbose-purged-bytes", "measured"),
             ),
         )
+
+    def test_source_tree_combined_slice_filters_match_expected_manifest_rows(self) -> None:
+        for manifest_id in source_tree_combined_slice_manifest_ids():
+            with self.subTest(manifest_id=manifest_id):
+                manifest = source_tree_combined_case(manifest_id).target_manifest
+                for expectation in source_tree_combined_slice_expectations(manifest_id):
+                    with self.subTest(slice_id=expectation.slice_id):
+                        self.assertEqual(
+                            tuple(
+                                workload.workload_id
+                                for workload in select_source_tree_combined_slice_rows(
+                                    manifest,
+                                    expectation,
+                                )
+                            ),
+                            expectation.expected_workload_ids,
+                        )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
         for manifest_id in source_tree_combined_slice_derived_manifest_ids():
