@@ -1,6 +1,6 @@
 # RBR-1033: Collapse source-tree compiled-pattern contract-builder triplets
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -71,3 +71,7 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently keeps three separate contract-builder triplets rooted at lines `15830`, `15853`, `15877`; `16522`, `16546`, `16603`; and `17868`, `17893`, `17917`;
   - the negative `rg` check in Verification currently fails only because those exact duplicated helpers are still present; and
   - the targeted pytest slice in Verification currently passes (`139 passed, 581 deselected in 0.25s`).
+
+## Completion
+- Replaced the three duplicated compiled-pattern/wrong-text-model payload/workload/manifest triplets with one shared `_SourceTreeContractBuilderSpec` plus the file-local `_source_tree_contract_manifest_payload(...)`, `_source_tree_contract_workload(...)`, and `_source_tree_contract_manifest(...)` route, keeping the existing source workload selectors and owner-specific builder semantics in the same test file.
+- Verified with `./.venv/bin/python -m py_compile tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the targeted pytest slice (`139 passed, 581 deselected`), and the negative `rg` helper-name check from this task.
