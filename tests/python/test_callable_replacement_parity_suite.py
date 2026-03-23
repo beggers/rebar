@@ -18,6 +18,7 @@ from rebar_harness.correctness import (
     normalize_exception,
     select_correctness_fixture_paths,
 )
+from tests.conftest import manifest_records_by_id
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -449,11 +450,7 @@ CALLABLE_MANIFEST_SPECS = (
         ),
     ),
 )
-CALLABLE_MANIFEST_SPECS_BY_ID = {
-    spec.manifest_id: spec for spec in CALLABLE_MANIFEST_SPECS
-}
-if len(CALLABLE_MANIFEST_SPECS_BY_ID) != len(CALLABLE_MANIFEST_SPECS):
-    raise AssertionError("duplicate callable manifest ids in CALLABLE_MANIFEST_SPECS")
+CALLABLE_MANIFEST_SPECS_BY_ID = manifest_records_by_id(CALLABLE_MANIFEST_SPECS)
 CALLABLE_NEAR_MISS_CASE_SPECS = (
     CallableNearMissCase(
         id="module-numbered-sub-no-match-present-branch-rejects-no-arm",
