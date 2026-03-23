@@ -535,6 +535,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-nested-group-numbered-str",
             "module-subn-callable-nested-group-numbered-str",
             "pattern-sub-callable-nested-group-named-str",
+            "module-sub-callable-nested-group-numbered-bytes",
+            "pattern-subn-callable-nested-group-numbered-bytes",
+            "module-sub-callable-nested-group-named-bytes",
+            "pattern-subn-callable-nested-group-named-bytes",
         ),
     ),
     "nested-group-alternation-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(

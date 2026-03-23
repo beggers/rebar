@@ -1,6 +1,6 @@
 # RBR-1097: Publish nested-group callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -46,3 +46,11 @@ Created: 2026-03-23
   - the public-path bytes probes for `rebar.sub(rb"a((b))d", ...)` and `rebar.compile(rb"a(?P<outer>(?P<inner>b))d").subn(...)` now match `re` on this checkout;
   - `tests/conformance/fixtures/nested_group_callable_replacement_workflows.py` still publishes only the `str` rows for this manifest today; and
   - the existing benchmark owner path in `benchmarks/workloads/nested_group_callable_replacement_boundary.py` also still stops at the `str` rows, so correctness catch-up remains the next same-family follow-on before any benchmark task.
+
+## Completion
+- Added the eight bounded bytes publication rows to `tests/conformance/fixtures/nested_group_callable_replacement_workflows.py` without widening beyond the existing manifest, and updated the combined scorecard contract to require representative bytes ids for this manifest.
+- Regenerated the tracked published scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `1613` total cases, `1613` passed, `0` failed, and `0` unimplemented, with the new nested-group callable bytes ids present on the published owner path.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'nested_group_callable_bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
