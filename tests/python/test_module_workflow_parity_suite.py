@@ -15,7 +15,7 @@ import sys
 import tempfile
 import textwrap
 from types import SimpleNamespace
-from typing import Protocol, TypeVar
+from typing import Generic, Protocol, TypeVar
 
 import pytest
 
@@ -528,23 +528,6 @@ class CompiledPatternCompileCase:
 
 
 @dataclass(frozen=True)
-class CompiledPatternModuleHelperOwnerPathRow:
-    fixture_case_id: str
-    direct_case: (
-        CompiledPatternCompileCase
-        | CompiledPatternModuleHelperCase
-        | CompiledPatternModuleKeywordCallCase
-        | CompiledPatternModuleKeywordErrorCase
-        | PatternHelperErrorCase
-        | BoundedWildcardModuleCase
-    )
-
-    @property
-    def text_model(self) -> str:
-        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
-
-
-@dataclass(frozen=True)
 class ModuleKeywordCallCase:
     case_id: str
     helper: str
@@ -554,33 +537,10 @@ class ModuleKeywordCallCase:
 
 
 @dataclass(frozen=True)
-class ModuleKeywordOwnerPathRow:
-    fixture_case_id: str
-    direct_case: ModuleKeywordCallCase | ModuleKeywordErrorCase
-
-    @property
-    def text_model(self) -> str:
-        pattern = self.direct_case.args[0]
-        return "bytes" if isinstance(pattern, bytes) else "str"
-
-
-@dataclass(frozen=True)
 class ModulePositionalIndexLikeCallCase:
     case_id: str
     helper: str
     args: tuple[object, ...]
-
-
-@dataclass(frozen=True)
-class ModulePositionalIndexLikeOwnerPathRow:
-    fixture_case_id: str
-    direct_case: ModulePositionalIndexLikeCallCase
-
-    @property
-    def text_model(self) -> str:
-        pattern = self.direct_case.args[0]
-        return "bytes" if isinstance(pattern, bytes) else "str"
-
 
 @dataclass(frozen=True)
 class PatternKeywordCallCase:
@@ -594,36 +554,6 @@ class PatternKeywordCallCase:
 
 
 @dataclass(frozen=True)
-class PatternKeywordPublicationOwnerPathRow:
-    fixture_case_id: str
-    direct_case: PatternKeywordCallCase
-
-    @property
-    def text_model(self) -> str:
-        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
-
-
-@dataclass(frozen=True)
-class BoundedWildcardModuleOwnerPathRow:
-    fixture_case_id: str
-    direct_case: BoundedWildcardModuleCase
-
-    @property
-    def text_model(self) -> str:
-        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
-
-
-@dataclass(frozen=True)
-class PatternTypeErrorOwnerPathRow:
-    fixture_case_id: str
-    direct_case: PatternHelperErrorCase
-
-    @property
-    def text_model(self) -> str:
-        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
-
-
-@dataclass(frozen=True)
 class PatternPositionalIndexLikeCallCase:
     case_id: str
     helper: str
@@ -633,17 +563,62 @@ class PatternPositionalIndexLikeCallCase:
     flags: int = 0
 
 
-@dataclass(frozen=True)
-class PatternPositionalIndexLikeOwnerPathRow:
-    fixture_case_id: str
-    direct_case: PatternPositionalIndexLikeCallCase
-
-    @property
-    def text_model(self) -> str:
-        return "bytes" if isinstance(self.direct_case.pattern, bytes) else "str"
-
-
 _DirectCaseT = TypeVar("_DirectCaseT")
+
+
+@dataclass(frozen=True)
+class _CanonicalOwnerPathRow(Generic[_DirectCaseT]):
+    fixture_case_id: str
+    direct_case: _DirectCaseT
+    text_model: str
+
+
+class _PatternOwnerPathDirectCase(Protocol):
+    pattern: str | bytes
+
+
+_PatternOwnerPathDirectCaseT = TypeVar(
+    "_PatternOwnerPathDirectCaseT",
+    bound=_PatternOwnerPathDirectCase,
+)
+
+
+class _ModuleArgsOwnerPathDirectCase(Protocol):
+    args: tuple[object, ...]
+
+
+_ModuleArgsOwnerPathDirectCaseT = TypeVar(
+    "_ModuleArgsOwnerPathDirectCaseT",
+    bound=_ModuleArgsOwnerPathDirectCase,
+)
+
+
+def _owner_path_text_model(pattern: str | bytes) -> str:
+    return "bytes" if isinstance(pattern, bytes) else "str"
+
+
+def _pattern_owner_path_row(
+    fixture_case_id: str,
+    direct_case: _PatternOwnerPathDirectCaseT,
+) -> _CanonicalOwnerPathRow[_PatternOwnerPathDirectCaseT]:
+    return _CanonicalOwnerPathRow(
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+        text_model=_owner_path_text_model(direct_case.pattern),
+    )
+
+
+def _module_args_owner_path_row(
+    fixture_case_id: str,
+    direct_case: _ModuleArgsOwnerPathDirectCaseT,
+) -> _CanonicalOwnerPathRow[_ModuleArgsOwnerPathDirectCaseT]:
+    pattern = direct_case.args[0]
+    assert isinstance(pattern, (str, bytes))
+    return _CanonicalOwnerPathRow(
+        fixture_case_id=fixture_case_id,
+        direct_case=direct_case,
+        text_model=_owner_path_text_model(pattern),
+    )
 
 
 class _OwnerPathRow(Protocol[_DirectCaseT]):
@@ -1365,7 +1340,7 @@ BOUNDED_WILDCARD_MODULE_MATCH_CASES = (
     ),
 )
 BOUNDED_WILDCARD_RAW_MODULE_HELPER_OWNER_PATH_ROWS = tuple(
-    BoundedWildcardModuleOwnerPathRow(
+    _pattern_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -1516,7 +1491,7 @@ BOUND_PATTERN_TYPE_ERROR_CASES = (
     ),
 )
 _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS = tuple(
-    PatternTypeErrorOwnerPathRow(
+    _pattern_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -1538,7 +1513,7 @@ _PATTERN_KEYWORD_ERROR_OWNER_PATH_ROWS = tuple(
     )
 )
 _PATTERN_WRONG_TEXT_MODEL_OWNER_PATH_ROWS = tuple(
-    PatternTypeErrorOwnerPathRow(
+    _pattern_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -2012,7 +1987,7 @@ MODULE_KEYWORD_CALL_CASES = (
     ),
 )
 MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
-    ModuleKeywordOwnerPathRow(
+    _module_args_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -2068,7 +2043,7 @@ MODULE_POSITIONAL_INDEXLIKE_CALL_CASES = (
     ),
 )
 MODULE_POSITIONAL_INDEXLIKE_PUBLICATION_OWNER_PATH_ROWS = tuple(
-    ModulePositionalIndexLikeOwnerPathRow(
+    _module_args_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -2301,7 +2276,7 @@ PATTERN_KEYWORD_CALL_CASES = (
     ),
 )
 PATTERN_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
-    PatternKeywordPublicationOwnerPathRow(
+    _pattern_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -2411,7 +2386,7 @@ PATTERN_POSITIONAL_INDEXLIKE_CALL_CASES = (
     ),
 )
 PATTERN_POSITIONAL_INDEXLIKE_PUBLICATION_OWNER_PATH_ROWS = tuple(
-    PatternPositionalIndexLikeOwnerPathRow(
+    _pattern_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -3068,7 +3043,7 @@ MODULE_KEYWORD_ERROR_CASES = (
     MODULE_SUBN_COUNT_ALIAS_KEYWORD_BYTES_ERROR_CASE,
 ) = MODULE_KEYWORD_ERROR_CASES
 MODULE_KEYWORD_ERROR_PUBLICATION_OWNER_PATH_ROWS = tuple(
-    ModuleKeywordOwnerPathRow(
+    _module_args_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )
@@ -3372,7 +3347,7 @@ COMPILED_PATTERN_MODULE_KEYWORD_ERROR_CASES = (
     ),
 )
 COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS = tuple(
-    CompiledPatternModuleHelperOwnerPathRow(
+    _pattern_owner_path_row(
         fixture_case_id=fixture_case_id,
         direct_case=direct_case,
     )

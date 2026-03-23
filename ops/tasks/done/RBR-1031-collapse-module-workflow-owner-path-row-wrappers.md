@@ -1,6 +1,6 @@
 # RBR-1031: Collapse module-workflow owner-path row wrappers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -44,6 +44,10 @@ Created: 2026-03-23
 - Do not edit correctness fixtures, benchmark workloads, reports, README/current-status/backlog prose, or the Rust/Python implementation.
 
 ## Notes
+- Completed 2026-03-23: replaced the seven bespoke owner-path wrapper dataclasses in `tests/python/test_module_workflow_parity_suite.py` with one canonical `_CanonicalOwnerPathRow` plus two local builders that derive `text_model` from either `direct_case.pattern` or the module-call pattern argument.
+- Preserved the existing owner-path row tables, fixture ordering, `str`/`bytes` partitions, direct-case pairings, and helper-count assertions for the bounded wildcard, keyword, positional-indexlike, pattern-type-error, and compiled-pattern module-helper publication lanes.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'owner_path_publication_contract or owner_path_case_ids_stay_in_fixture_order or bounded_wildcard or type_error_owner_path or module_keyword or positional_indexlike or pattern_keyword or compiled_pattern_module_helper'` (`415 passed, 1036 deselected`).
+- Verified removal with `bash -lc "! rg -n 'class (CompiledPatternModuleHelperOwnerPathRow|ModuleKeywordOwnerPathRow|ModulePositionalIndexLikeOwnerPathRow|PatternKeywordPublicationOwnerPathRow|BoundedWildcardModuleOwnerPathRow|PatternTypeErrorOwnerPathRow|PatternPositionalIndexLikeOwnerPathRow)' tests/python/test_module_workflow_parity_suite.py"`.
 - `RBR-1031` is the next available unreserved task id in the current checkout:
   - `rg -n "RBR-103[1-9]|RBR-104[0-9]|RBR-105[0-9]" ops/state/current_status.md ops/state/backlog.md` returned no matches in this run; and
   - `ls -1 ops/tasks/done | tail -n 40` shows `RBR-1030` as the newest landed task.
