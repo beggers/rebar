@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -1893,6 +1894,57 @@ class ReadmeReportingTest(unittest.TestCase):
                     ["--selector", "focused"],
                     report_name="custom-scorecard.py",
                 )
+
+    def test_run_harness_scorecard_rejects_non_json_reports_without_scorecard_loader(
+        self,
+    ) -> None:
+        summary_payload = {"suite": "custom", "status": "ok"}
+
+        def fake_run_harness_cli(
+            module_name: str,
+            cli_args: list[str],
+            *,
+            check: bool = True,
+        ) -> subprocess.CompletedProcess[str]:
+            self.assertEqual(module_name, "custom.scorecard.module")
+            self.assertTrue(check)
+            observed_cli_args = tuple(cli_args)
+            report_index = observed_cli_args.index("--report")
+            report_path = pathlib.Path(observed_cli_args[report_index + 1])
+            report_path.write_text("REPORT = {'suite': 'custom'}\n", encoding="utf-8")
+            return completed_process(
+                module_name,
+                *observed_cli_args,
+                stdout=json.dumps(summary_payload),
+            )
+
+        missing_loader_modules = (
+            SimpleNamespace(),
+            SimpleNamespace(SCORECARD_REPORT=SimpleNamespace()),
+        )
+
+        for imported_module in missing_loader_modules:
+            with self.subTest(imported_module=imported_module):
+                with mock.patch.object(
+                    test_support,
+                    "run_harness_cli",
+                    side_effect=fake_run_harness_cli,
+                ):
+                    with mock.patch.object(
+                        test_support.importlib,
+                        "import_module",
+                        return_value=imported_module,
+                    ):
+                        with self.assertRaisesRegex(
+                            ValueError,
+                            "run_harness_scorecard cannot load a non-JSON report for "
+                            "'custom.scorecard.module'",
+                        ):
+                            run_harness_scorecard(
+                                "custom.scorecard.module",
+                                ["--selector", "focused"],
+                                report_name="custom-scorecard.py",
+                            )
 
     def test_scorecard_report_loaders_and_writers_reject_malformed_inputs(
         self,
