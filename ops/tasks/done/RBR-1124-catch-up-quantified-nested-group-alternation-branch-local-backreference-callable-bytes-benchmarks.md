@@ -1,6 +1,6 @@
 # RBR-1124: Catch up quantified nested-group alternation branch-local-backreference callable bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -41,6 +41,7 @@ Created: 2026-03-23
 - Do not create a second benchmark manifest or detach this slice from `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
 
 ## Notes
+- Completed on 2026-03-23: added the adjacent four bytes quantified branch-local callable rows to `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, refreshed the combined benchmark assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and republished the tracked benchmark scorecard in `reports/benchmarks/latest.py`; the tracked report now publishes `1007` total / `1007` measured / `0` known gaps with `workloads_by_cache_mode == {"cold": 104, "purged": 437, "warm": 466}`, and `nested-group-callable-replacement-boundary` now reports `workload_count == 104`, `measured_workloads == 104`, and `known_gap_count == 0`.
 - `RBR-1124` is the next available unreserved feature task id in this checkout:
   - the highest live task id across `ops/tasks/ready/`, `ops/tasks/in_progress/`, `ops/tasks/done/`, and `ops/tasks/blocked/` is `1123`; and
   - `rg -n 'RBR-1124|RBR-1125|RBR-1126' ops/tasks ops/state -g '*.md'` returned only historical mentions inside done-task notes in this run.
