@@ -1,6 +1,6 @@
 # RBR-1060: Collapse direct literal replacement publication routing
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -95,3 +95,8 @@ Created: 2026-03-23
   - the three hand-maintained published/unpublished case-id tuples still sit at lines `170`, `187`, and `192`; and
   - the remaining module-only ordering helper still sits at lines `245` through `280`.
 - The focused verification slice already passes in the live checkout: `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'module_literal_replacement_publication_gaps_stay_explicit or collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'` returned `3 passed, 1302 deselected`.
+
+## Completion
+- Replaced the parallel direct literal replacement publication tuples and module-only ordering helper in `tests/python/test_fixture_backed_replacement_parity_suite.py` with one shared same-file `DIRECT_LITERAL_REPLACEMENT_PUBLICATION_ROUTE` plus generalized direct-literal case-id selection helpers reused by the module gap assertion and both manifest-order assertions.
+- Preserved the direct module and direct pattern publication contracts, including the published ordering, unpublished module follow-ons, existing manifest payload expectations, and the direct parity parametrization against `DIRECT_LITERAL_MODULE_REPLACEMENT_CASES` and `DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES`.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'module_literal_replacement_publication_gaps_stay_explicit or collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'` (`3 passed, 1302 deselected`), `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'source_package_module_literal_replacement_helpers_match_cpython or source_package_pattern_literal_replacement_helpers_match_cpython'` (`19 passed, 1286 deselected`), and `bash -lc \"! rg -n '^(PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS|UNPUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS|PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS|_DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER)\\\\b|^def _ordered_direct_module_literal_replacement_case_ids\\\\(' tests/python/test_fixture_backed_replacement_parity_suite.py\"`.

@@ -167,47 +167,57 @@ DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES = [
     pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
     pytest.param(b"abc", b"x", b"abcabc", -1, id="bytes-negative-count"),
 ]
-PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
-    "module-sub-str-no-match",
-    "module-sub-str-single-match",
-    "module-sub-str-repeated",
-    "module-sub-str-count-one",
-    "module-sub-str-negative-count",
-    "module-subn-str-count",
-    "module-subn-str-repeated",
-    "module-subn-str-negative-count",
-    "module-sub-bytes-no-match",
-    "module-sub-bytes-single-match",
-    "module-sub-bytes-repeated",
-    "module-sub-bytes-count-one",
-    "module-subn-bytes-count",
-    "module-subn-bytes-single-match",
-    "module-subn-bytes-repeated",
-)
-UNPUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
-    "module-subn-str-single-match",
-    "module-subn-str-no-match",
-    "module-subn-bytes-no-match",
-)
-PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
-    "pattern-sub-str-no-match",
-    "pattern-sub-str-single-match",
-    "pattern-sub-str-repeated",
-    "pattern-sub-str-count-one",
-    "pattern-sub-str-negative-count",
-    "pattern-subn-str-count",
-    "pattern-subn-str-repeated",
-    "pattern-subn-str-negative-count",
-    "pattern-sub-bytes-no-match",
-    "pattern-sub-bytes-single-match",
-    "pattern-sub-bytes-repeated",
-    "pattern-sub-bytes-count-one",
-    "pattern-sub-bytes-negative-count",
-    "pattern-subn-bytes-count",
-    "pattern-subn-bytes-single-match",
-    "pattern-subn-bytes-repeated",
-    "pattern-subn-bytes-negative-count",
-)
+_DIRECT_LITERAL_REPLACEMENT_HELPER_ORDER = ("sub", "subn")
+_DIRECT_LITERAL_REPLACEMENT_TEXT_MODEL_ORDER = ("str", "bytes")
+_DIRECT_LITERAL_REPLACEMENT_SUFFIX_ORDER = {
+    "sub": ("no-match", "single-match", "repeated", "count-one", "negative-count"),
+    "subn": ("count", "single-match", "repeated", "negative-count", "no-match"),
+}
+DIRECT_LITERAL_REPLACEMENT_PUBLICATION_ROUTE = {
+    "module": {
+        "case_prefix": "module",
+        "cases": DIRECT_LITERAL_MODULE_REPLACEMENT_CASES,
+        "published_suffixes": {
+            ("sub", "str"): (
+                "no-match",
+                "single-match",
+                "repeated",
+                "count-one",
+                "negative-count",
+            ),
+            ("subn", "str"): ("count", "repeated", "negative-count"),
+            ("sub", "bytes"): ("no-match", "single-match", "repeated", "count-one"),
+            ("subn", "bytes"): ("count", "single-match", "repeated"),
+        },
+    },
+    "pattern": {
+        "case_prefix": "pattern",
+        "cases": DIRECT_LITERAL_PATTERN_REPLACEMENT_CASES,
+        "published_suffixes": {
+            ("sub", "str"): (
+                "no-match",
+                "single-match",
+                "repeated",
+                "count-one",
+                "negative-count",
+            ),
+            ("subn", "str"): ("count", "repeated", "negative-count"),
+            ("sub", "bytes"): (
+                "no-match",
+                "single-match",
+                "repeated",
+                "count-one",
+                "negative-count",
+            ),
+            ("subn", "bytes"): (
+                "count",
+                "single-match",
+                "repeated",
+                "negative-count",
+            ),
+        },
+    },
+}
 DIRECT_WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abc", 0, id="single-match"),
     pytest.param("abc", r"\g<0>x", "abcabc", 0, id="repeated-matches"),
@@ -242,50 +252,105 @@ _LITERAL_REPLACEMENT_COUNT_COERCION_VALUES = (
     pytest.param(_INDEXLIKE_ONE, id="indexlike-one"),
     pytest.param(_INDEXLIKE_TWO, id="indexlike-two"),
 )
-_DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER = {
-    "sub": ("no-match", "single-match", "repeated", "count-one", "negative-count"),
-    "subn": ("count", "single-match", "repeated", "negative-count", "no-match"),
-}
 
 
-def _ordered_direct_module_literal_replacement_case_ids(
+def _direct_literal_replacement_case_suffix(
+    string: TextValue,
+    count: int,
     *,
+    helper: str,
+    text_model: str,
+) -> str:
+    if count == 1:
+        return "count" if helper == "subn" else "count-one"
+    if count == -1:
+        return "negative-count"
+    if string == (b"zzz" if text_model == "bytes" else "zzz"):
+        return "no-match"
+    if string == (b"zabczz" if text_model == "bytes" else "zabczz"):
+        return "single-match"
+    if string in ((b"abcabc", b"zabcabc") if text_model == "bytes" else ("abcabc",)):
+        return "repeated"
+    raise AssertionError(
+        "unexpected direct literal replacement case: "
+        f"string={string!r}, count={count!r}, helper={helper!r}, text_model={text_model!r}"
+    )
+
+
+def _ordered_direct_literal_replacement_case_ids(
+    *,
+    case_prefix: str,
+    cases: list[pytest.ParameterSet],
     helper: str,
     text_model: str,
 ) -> tuple[str, ...]:
     case_ids = []
-    for case in DIRECT_LITERAL_MODULE_REPLACEMENT_CASES:
+    for case in cases:
         pattern, _replacement, string, count = case.values
         case_text_model = "bytes" if isinstance(pattern, bytes) else "str"
         if case_text_model != text_model:
             continue
-        if count == 1:
-            suffix = "count" if helper == "subn" else "count-one"
-        elif count == -1:
-            suffix = "negative-count"
-        elif string == (b"zzz" if text_model == "bytes" else "zzz"):
-            suffix = "no-match"
-        elif string == (b"zabczz" if text_model == "bytes" else "zabczz"):
-            suffix = "single-match"
-        elif string == (b"zabcabc" if text_model == "bytes" else "abcabc"):
-            suffix = "repeated"
-        else:
-            raise AssertionError(
-                "unexpected direct module literal replacement case: "
-                f"pattern={pattern!r}, string={string!r}, count={count!r}"
-            )
-        case_ids.append(
-            f"module-{helper}-{text_model}-{suffix}"
+        suffix = _direct_literal_replacement_case_suffix(
+            string,
+            count,
+            helper=helper,
+            text_model=text_model,
         )
-    suffix_order = _DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER[helper]
+        case_ids.append(f"{case_prefix}-{helper}-{text_model}-{suffix}")
+    suffix_order = _DIRECT_LITERAL_REPLACEMENT_SUFFIX_ORDER[helper]
     return tuple(
         sorted(
             case_ids,
             key=lambda case_id: suffix_order.index(
-                case_id.removeprefix(f"module-{helper}-{text_model}-")
+                case_id.removeprefix(f"{case_prefix}-{helper}-{text_model}-")
             ),
         )
     )
+
+
+def _direct_literal_replacement_publication_case_ids(
+    *,
+    surface: str,
+    selection: str = "published",
+) -> tuple[str, ...]:
+    route = DIRECT_LITERAL_REPLACEMENT_PUBLICATION_ROUTE[surface]
+    all_case_ids: list[str] = []
+    published_case_ids: list[str] = []
+    published_suffixes = route["published_suffixes"]
+    case_prefix = route["case_prefix"]
+    cases = route["cases"]
+
+    for text_model in _DIRECT_LITERAL_REPLACEMENT_TEXT_MODEL_ORDER:
+        for helper in _DIRECT_LITERAL_REPLACEMENT_HELPER_ORDER:
+            ordered_case_ids = _ordered_direct_literal_replacement_case_ids(
+                case_prefix=case_prefix,
+                cases=cases,
+                helper=helper,
+                text_model=text_model,
+            )
+            all_case_ids.extend(ordered_case_ids)
+            prefix = f"{case_prefix}-{helper}-{text_model}-"
+            selected_case_ids = tuple(
+                case_id
+                for case_id in ordered_case_ids
+                if case_id.removeprefix(prefix)
+                in published_suffixes[(helper, text_model)]
+            )
+            assert tuple(
+                case_id.removeprefix(prefix) for case_id in selected_case_ids
+            ) == published_suffixes[(helper, text_model)]
+            published_case_ids.extend(selected_case_ids)
+
+    if selection == "published":
+        return tuple(published_case_ids)
+    if selection == "unpublished":
+        published_case_id_set = frozenset(published_case_ids)
+        return tuple(
+            case_id for case_id in all_case_ids if case_id not in published_case_id_set
+        )
+    if selection == "all":
+        return tuple(all_case_ids)
+    raise AssertionError(f"unknown direct literal publication selection: {selection!r}")
 
 
 def _literal_replacement_matrix_payloads(
@@ -2530,26 +2595,17 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
 
 
 def test_module_literal_replacement_publication_gaps_stay_explicit() -> None:
-    direct_case_ids = (
-        _ordered_direct_module_literal_replacement_case_ids(
-            helper="sub",
-            text_model="str",
-        )
-        + _ordered_direct_module_literal_replacement_case_ids(
-            helper="subn",
-            text_model="str",
-        )
-        + _ordered_direct_module_literal_replacement_case_ids(
-            helper="sub",
-            text_model="bytes",
-        )
-        + _ordered_direct_module_literal_replacement_case_ids(
-            helper="subn",
-            text_model="bytes",
-        )
+    direct_case_ids = _direct_literal_replacement_publication_case_ids(
+        surface="module",
+        selection="all",
     )
-    published_case_ids = PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
-    unpublished_case_ids = UNPUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS
+    published_case_ids = _direct_literal_replacement_publication_case_ids(
+        surface="module",
+    )
+    unpublished_case_ids = _direct_literal_replacement_publication_case_ids(
+        surface="module",
+        selection="unpublished",
+    )
 
     assert frozenset(published_case_ids) & frozenset(unpublished_case_ids) == frozenset()
     assert tuple(
@@ -2588,7 +2644,9 @@ def _assert_direct_literal_replacement_publication_contract(
 def test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order(
 ) -> None:
     _assert_direct_literal_replacement_publication_contract(
-        selected_case_ids=PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS,
+        selected_case_ids=_direct_literal_replacement_publication_case_ids(
+            surface="module",
+        ),
         operation="module_call",
         expected_args_by_case_id={
             "module-sub-str-no-match": ("abc", "x", "zzz"),
@@ -2647,7 +2705,9 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
 def test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order(
 ) -> None:
     _assert_direct_literal_replacement_publication_contract(
-        selected_case_ids=PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS,
+        selected_case_ids=_direct_literal_replacement_publication_case_ids(
+            surface="pattern",
+        ),
         operation="pattern_call",
         expected_args_by_case_id={
             "pattern-sub-str-no-match": ("x", "zzz"),
