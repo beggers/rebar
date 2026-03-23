@@ -1330,6 +1330,30 @@ class ReadmeReportingTest(unittest.TestCase):
             },
         )
 
+    def test_scorecard_materialize_descriptor_value_treats_unknown_type_dicts_as_plain_mappings(
+        self,
+    ) -> None:
+        payload = {
+            "type": "opaque-metadata",
+            "value": "alpha",
+            "nested": {
+                "type": "bytes",
+                "encoding": "latin-1",
+                "value": "beta",
+            },
+            7: "gamma",
+        }
+
+        self.assertEqual(
+            scorecard_io.materialize_descriptor_value(payload, text_model="bytes"),
+            {
+                "type": b"opaque-metadata",
+                "value": b"alpha",
+                "nested": b"beta",
+                "7": b"gamma",
+            },
+        )
+
     def test_scorecard_materialize_descriptor_value_builds_indexlike_carriers(
         self,
     ) -> None:
