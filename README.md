@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1613 cases across 114 manifests, with all 1613 passing in the current slice; the benchmark publication covers 991/991 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
+| Delivery estimate | Published correctness covers 1621 cases across 114 manifests, with all 1621 passing in the current slice; the benchmark publication covers 991/991 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
 | Current milestone | No ready feature follow-on currently survives in this checkout. |
-| Work queue | `0` ready, `0` in progress, `1105` done, `0` blocked |
+| Work queue | `0` ready, `0` in progress, `1107` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1613` |
-| Passing in published slice | `1613` |
+| Published cases | `1621` |
+| Passing in published slice | `1621` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1613 cases across 114 manifests, with all 1613 passing in the current slice; the benchmark publication covers 991/991 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1621 cases across 114 manifests, with all 1621 passing in the current slice; the benchmark publication covers 991/991 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
 
 ### Benchmark Snapshot
 
