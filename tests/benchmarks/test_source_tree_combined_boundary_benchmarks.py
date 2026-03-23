@@ -553,6 +553,29 @@ class SourceTreeCombinedManifestExpectationDefinition:
 
 
 @dataclass(frozen=True, slots=True)
+class _CollectionReplacementLiteralReplacementRoute:
+    workload_case_pairs: tuple[tuple[str, str], ...]
+    expected_operation: str
+    operation_prefix: str
+    operations: tuple[str, ...]
+    text_models: tuple[str, ...]
+    args_offset: int
+    allowed_counts: tuple[int, ...] | None = None
+
+    def workload_ids(self) -> tuple[str, ...]:
+        return _workload_case_pairs_workload_ids(self.workload_case_pairs)
+
+    def case_ids(self) -> tuple[str, ...]:
+        return _workload_case_pairs_case_ids(self.workload_case_pairs)
+
+    def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
+        return _workload_case_pair_anchor_expectations(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            self.workload_case_pairs,
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class SourceTreeCombinedSliceExpectation:
     manifest_id: str
     slice_id: str
@@ -3738,9 +3761,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             expected_measured_workload_ids,
-            _workload_case_pairs_workload_ids(
-                _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
-            ),
+            _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"].workload_ids(),
         )
         self.assertEqual(len(expected_measured_workload_ids), 17)
         self._assert_zero_gap_manifest_workloads_measured(
@@ -3762,9 +3783,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             expected_measured_workload_ids,
-            _workload_case_pairs_workload_ids(
-                _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
-            ),
+            _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"].workload_ids(),
         )
         self.assertEqual(len(expected_measured_workload_ids), 15)
         self._assert_zero_gap_manifest_workloads_measured(
@@ -8271,73 +8290,89 @@ _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS = (
     ("pattern-split-maxsplit-purged-bytes", "pattern-split-bytes-maxsplit"),
 )
 
-_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
-    ("pattern-sub-no-match-warm-str", "pattern-sub-str-no-match"),
-    ("pattern-sub-single-match-warm-str", "pattern-sub-str-single-match"),
-    ("pattern-sub-repeated-warm-str", "pattern-sub-str-repeated"),
-    ("pattern-sub-count-one-warm-str", "pattern-sub-str-count-one"),
-    ("pattern-sub-negative-count-warm-str", "pattern-sub-str-negative-count"),
-    ("pattern-sub-bytes-no-match-purged-bytes", "pattern-sub-bytes-no-match"),
-    (
-        "pattern-sub-bytes-single-match-purged-bytes",
-        "pattern-sub-bytes-single-match",
+_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
+    "pattern": _CollectionReplacementLiteralReplacementRoute(
+        workload_case_pairs=(
+            ("pattern-sub-no-match-warm-str", "pattern-sub-str-no-match"),
+            ("pattern-sub-single-match-warm-str", "pattern-sub-str-single-match"),
+            ("pattern-sub-repeated-warm-str", "pattern-sub-str-repeated"),
+            ("pattern-sub-count-one-warm-str", "pattern-sub-str-count-one"),
+            ("pattern-sub-negative-count-warm-str", "pattern-sub-str-negative-count"),
+            ("pattern-sub-bytes-no-match-purged-bytes", "pattern-sub-bytes-no-match"),
+            (
+                "pattern-sub-bytes-single-match-purged-bytes",
+                "pattern-sub-bytes-single-match",
+            ),
+            (
+                "pattern-sub-bytes-repeated-purged-bytes",
+                "pattern-sub-bytes-repeated",
+            ),
+            (
+                "pattern-sub-bytes-count-one-purged-bytes",
+                "pattern-sub-bytes-count-one",
+            ),
+            (
+                "pattern-sub-bytes-negative-count-purged-bytes",
+                "pattern-sub-bytes-negative-count",
+            ),
+            ("pattern-subn-count-warm-str", "pattern-subn-str-count"),
+            ("pattern-subn-repeated-warm-str", "pattern-subn-str-repeated"),
+            ("pattern-subn-negative-count-warm-str", "pattern-subn-str-negative-count"),
+            ("pattern-subn-bytes-count-purged-bytes", "pattern-subn-bytes-count"),
+            (
+                "pattern-subn-bytes-single-match-purged-bytes",
+                "pattern-subn-bytes-single-match",
+            ),
+            (
+                "pattern-subn-bytes-repeated-purged-bytes",
+                "pattern-subn-bytes-repeated",
+            ),
+            (
+                "pattern-subn-bytes-negative-count-purged-bytes",
+                "pattern-subn-bytes-negative-count",
+            ),
+        ),
+        expected_operation="pattern_call",
+        operation_prefix="pattern",
+        operations=("pattern.sub", "pattern.subn"),
+        text_models=("str", "bytes"),
+        args_offset=0,
     ),
-    (
-        "pattern-sub-bytes-repeated-purged-bytes",
-        "pattern-sub-bytes-repeated",
+    "module": _CollectionReplacementLiteralReplacementRoute(
+        workload_case_pairs=(
+            ("module-sub-str-no-match-purged-str", "module-sub-str-no-match"),
+            ("module-sub-str-single-match-purged-str", "module-sub-str-single-match"),
+            ("module-sub-str-repeated-purged-str", "module-sub-str-repeated"),
+            ("module-sub-str-count-one-purged-str", "module-sub-str-count-one"),
+            ("module-sub-str-negative-count-purged-str", "module-sub-str-negative-count"),
+            ("module-subn-str-count-purged-str", "module-subn-str-count"),
+            ("module-subn-str-repeated-purged-str", "module-subn-str-repeated"),
+            (
+                "module-subn-str-negative-count-purged-str",
+                "module-subn-str-negative-count",
+            ),
+            ("module-sub-bytes-no-match-purged-bytes", "module-sub-bytes-no-match"),
+            (
+                "module-sub-bytes-single-match-purged-bytes",
+                "module-sub-bytes-single-match",
+            ),
+            ("module-sub-bytes-repeated-purged-bytes", "module-sub-bytes-repeated"),
+            ("module-sub-bytes-count-one-purged-bytes", "module-sub-bytes-count-one"),
+            ("module-subn-bytes-count-purged-bytes", "module-subn-bytes-count"),
+            (
+                "module-subn-bytes-single-match-purged-bytes",
+                "module-subn-bytes-single-match",
+            ),
+            ("module-subn-bytes-repeated-purged-bytes", "module-subn-bytes-repeated"),
+        ),
+        expected_operation="module_call",
+        operation_prefix="module",
+        operations=("module.sub", "module.subn"),
+        text_models=("str", "bytes"),
+        args_offset=1,
+        allowed_counts=(-1, 0, 1),
     ),
-    (
-        "pattern-sub-bytes-count-one-purged-bytes",
-        "pattern-sub-bytes-count-one",
-    ),
-    (
-        "pattern-sub-bytes-negative-count-purged-bytes",
-        "pattern-sub-bytes-negative-count",
-    ),
-    ("pattern-subn-count-warm-str", "pattern-subn-str-count"),
-    ("pattern-subn-repeated-warm-str", "pattern-subn-str-repeated"),
-    ("pattern-subn-negative-count-warm-str", "pattern-subn-str-negative-count"),
-    ("pattern-subn-bytes-count-purged-bytes", "pattern-subn-bytes-count"),
-    (
-        "pattern-subn-bytes-single-match-purged-bytes",
-        "pattern-subn-bytes-single-match",
-    ),
-    (
-        "pattern-subn-bytes-repeated-purged-bytes",
-        "pattern-subn-bytes-repeated",
-    ),
-    (
-        "pattern-subn-bytes-negative-count-purged-bytes",
-        "pattern-subn-bytes-negative-count",
-    ),
-)
-
-_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
-    ("module-sub-str-no-match-purged-str", "module-sub-str-no-match"),
-    ("module-sub-str-single-match-purged-str", "module-sub-str-single-match"),
-    ("module-sub-str-repeated-purged-str", "module-sub-str-repeated"),
-    ("module-sub-str-count-one-purged-str", "module-sub-str-count-one"),
-    ("module-sub-str-negative-count-purged-str", "module-sub-str-negative-count"),
-    ("module-subn-str-count-purged-str", "module-subn-str-count"),
-    ("module-subn-str-repeated-purged-str", "module-subn-str-repeated"),
-    (
-        "module-subn-str-negative-count-purged-str",
-        "module-subn-str-negative-count",
-    ),
-    ("module-sub-bytes-no-match-purged-bytes", "module-sub-bytes-no-match"),
-    (
-        "module-sub-bytes-single-match-purged-bytes",
-        "module-sub-bytes-single-match",
-    ),
-    ("module-sub-bytes-repeated-purged-bytes", "module-sub-bytes-repeated"),
-    ("module-sub-bytes-count-one-purged-bytes", "module-sub-bytes-count-one"),
-    ("module-subn-bytes-count-purged-bytes", "module-subn-bytes-count"),
-    (
-        "module-subn-bytes-single-match-purged-bytes",
-        "module-subn-bytes-single-match",
-    ),
-    ("module-subn-bytes-repeated-purged-bytes", "module-subn-bytes-repeated"),
-)
+}
 
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
     "pattern-search-verbose-regression-warm-str",
@@ -8568,14 +8603,11 @@ def _pattern_collection_replacement_split_workload_signature(
 def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
     *,
-    case_ids: tuple[str, ...] | None,
-    expected_operation: str,
-    operation_prefix: str,
-    args_offset: int,
+    route: _CollectionReplacementLiteralReplacementRoute,
 ) -> tuple[Any, ...] | None:
-    if case_ids is not None and case.case_id not in case_ids:
+    if case.case_id not in route.case_ids():
         return None
-    if case.operation != expected_operation or case.kwargs:
+    if case.operation != route.expected_operation or case.kwargs:
         return None
     if case.helper not in {"sub", "subn"}:
         return None
@@ -8584,17 +8616,17 @@ def _collection_replacement_literal_replacement_correctness_case_signature(
     pattern = case_pattern(case)
     if pattern not in {"abc", b"abc"}:
         return None
-    if len(case.args) <= args_offset:
+    if len(case.args) <= route.args_offset:
         return None
-    if case.args[args_offset] not in {"x", b"x"}:
+    if case.args[route.args_offset] not in {"x", b"x"}:
         return None
-    trailing_args = case.args[args_offset:]
+    trailing_args = case.args[route.args_offset:]
     if len(trailing_args) not in {2, 3}:
         return None
     if len(trailing_args) == 3 and type(trailing_args[2]) is not int:
         return None
     return (
-        f"{operation_prefix}.{case.helper}",
+        f"{route.operation_prefix}.{case.helper}",
         pattern,
         freeze_signature_value(list(trailing_args)),
         (),
@@ -8608,12 +8640,7 @@ def _pattern_collection_replacement_literal_replacement_correctness_case_signatu
 ) -> tuple[Any, ...] | None:
     return _collection_replacement_literal_replacement_correctness_case_signature(
         case,
-        case_ids=_workload_case_pairs_case_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
-        ),
-        expected_operation="pattern_call",
-        operation_prefix="pattern",
-        args_offset=0,
+        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
     )
 
 
@@ -8622,12 +8649,7 @@ def _module_collection_replacement_literal_replacement_correctness_case_signatur
 ) -> tuple[Any, ...] | None:
     return _collection_replacement_literal_replacement_correctness_case_signature(
         case,
-        case_ids=_workload_case_pairs_case_ids(
-            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
-        ),
-        expected_operation="module_call",
-        operation_prefix="module",
-        args_offset=1,
+        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
     )
 
 
@@ -8681,20 +8703,18 @@ def _pattern_collection_replacement_literal_replacement_workload_signature(
 def _is_collection_replacement_literal_replacement_workload(
     workload: Any,
     *,
-    workload_ids: tuple[str, ...] | None,
-    operations: tuple[str, ...],
-    text_models: tuple[str, ...],
-    allowed_counts: tuple[int, ...] | None = None,
+    route: _CollectionReplacementLiteralReplacementRoute,
+    workload_ids: tuple[str, ...] | None = None,
 ) -> bool:
     return (
         (workload_ids is None or workload.workload_id in workload_ids)
-        and workload.operation in operations
+        and workload.operation in route.operations
         and workload.pattern == "abc"
         and workload.replacement == "x"
         and workload.expected_exception is None
         and not workload.use_compiled_pattern
-        and workload.text_model in text_models
-        and (allowed_counts is None or workload.count in allowed_counts)
+        and workload.text_model in route.text_models
+        and (route.allowed_counts is None or workload.count in route.allowed_counts)
         and workload.pos is None
         and workload.endpos is None
         and not workload.kwargs
@@ -8706,12 +8726,10 @@ def _is_collection_replacement_module_literal_replacement_workload(
 ) -> bool:
     return _is_collection_replacement_literal_replacement_workload(
         workload,
-        workload_ids=_workload_case_pairs_workload_ids(
-            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
-        ),
-        operations=("module.sub", "module.subn"),
-        text_models=("str", "bytes"),
-        allowed_counts=(-1, 0, 1),
+        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+        workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "module"
+        ].workload_ids(),
     )
 
 
@@ -8720,10 +8738,7 @@ def _is_any_collection_replacement_module_literal_replacement_workload(
 ) -> bool:
     return _is_collection_replacement_literal_replacement_workload(
         workload,
-        workload_ids=None,
-        operations=("module.sub", "module.subn"),
-        text_models=("str", "bytes"),
-        allowed_counts=(-1, 0, 1),
+        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
     )
 
 
@@ -8770,11 +8785,10 @@ def _is_collection_replacement_pattern_literal_replacement_workload(
 ) -> bool:
     return _is_collection_replacement_literal_replacement_workload(
         workload,
-        workload_ids=_workload_case_pairs_workload_ids(
-            _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
-        ),
-        operations=("pattern.sub", "pattern.subn"),
-        text_models=("str", "bytes"),
+        route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+        workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "pattern"
+        ].workload_ids(),
     )
 
 
@@ -9839,10 +9853,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-module-literal-replacement",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
-        ),
+        expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "module"
+        ].anchor_expectations(),
         include_workload=(
             _is_collection_replacement_module_literal_replacement_workload
         ),
@@ -9857,10 +9870,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-pattern-literal-replacement",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
-        ),
+        expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "pattern"
+        ].anchor_expectations(),
         include_workload=(
             _is_collection_replacement_pattern_literal_replacement_workload
         ),

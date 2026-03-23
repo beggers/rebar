@@ -1,6 +1,6 @@
 # RBR-1062: Collapse collection/replacement literal benchmark routing
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -120,3 +120,8 @@ Created: 2026-03-23
   - `rg -n '_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS|_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns ten matches, including the two tuple definitions and their downstream consumers; and
   - the same direct literal replacement benchmark routing is currently threaded through measured-row checks, correctness-anchor signatures, workload selectors, and standard anchor-contract definitions in that one file.
 - The focused benchmark verification slice already passes in the live checkout: `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured or collection-replacement-module-literal-replacement or collection-replacement-pattern-literal-replacement'` returned `10 passed, 712 deselected, 32 subtests passed`.
+
+## Completion
+- Replaced the separate module and pattern literal-replacement workload/case pair tables with one file-local `_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES` routing surface reused by the measured-row assertions, correctness-case selectors, workload selectors, and standard anchor contracts.
+- Verified the focused benchmark contract slice with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured or collection-replacement-module-literal-replacement or collection-replacement-pattern-literal-replacement'`.
+- Verified the deleted table names no longer appear with `bash -lc "! rg -n '^_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS\\b|^_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.
