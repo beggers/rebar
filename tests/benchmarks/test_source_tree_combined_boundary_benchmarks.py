@@ -1996,6 +1996,10 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-numbered-quantified-nested-group-alternation-c-branch-first-match-only-warm-str",
             "pattern-sub-callable-named-quantified-nested-group-alternation-repeated-mixed-purged-str",
             "pattern-subn-callable-named-quantified-nested-group-alternation-c-branch-first-match-only-purged-str",
+            "module-sub-callable-numbered-quantified-nested-group-alternation-lower-bound-b-branch-warm-bytes",
+            "module-subn-callable-numbered-quantified-nested-group-alternation-c-branch-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-quantified-nested-group-alternation-repeated-mixed-purged-bytes",
+            "pattern-subn-callable-named-quantified-nested-group-alternation-c-branch-first-match-only-purged-bytes",
         ),
         expected_patterns={
             r"a((b|c)+)d",
@@ -5722,11 +5726,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 995,
-                "module_workloads": 987,
+                "measured_workloads": 999,
+                "module_workloads": 991,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 995,
+                "total_workloads": 999,
             },
         )
 

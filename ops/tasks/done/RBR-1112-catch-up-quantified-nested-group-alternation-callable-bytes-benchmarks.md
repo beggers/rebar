@@ -1,6 +1,6 @@
 # RBR-1112: Catch up quantified nested-group alternation callable bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -52,3 +52,12 @@ Created: 2026-03-23
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` defines the `quantified-nested-alternation` slice on `nested-group-callable-replacement-boundary` with the four current `str` ids; and
   - the bytes callable runtime and correctness prerequisites are already satisfied by `RBR-1108` and `RBR-1110`, so this is benchmark publication catch-up rather than another implementation prerequisite.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly describe the post-drain frontier for a single ready feature task: no ready feature follow-on currently survives in this checkout, so this run does not need tracked state-prose edits.
+
+## Completion
+- Extended `benchmarks/workloads/nested_group_callable_replacement_boundary.py` with only the adjacent four bytes quantified nested-group alternation callable rows on the existing `quantified-nested-alternation` owner slice, keeping the existing `str` rows and surrounding callable families unchanged.
+- Refreshed `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the combined benchmark contract now requires representative bytes ids for that slice and so the full published-suite summary expectation matches the widened tracked benchmark surface.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `999` total / `999` measured / `0` known gaps, `workloads_by_cache_mode == {'cold': 104, 'purged': 433, 'warm': 462}`, and `nested-group-callable-replacement-boundary` at `96` selected / `96` measured / `0` known gaps / `96` total workloads.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
