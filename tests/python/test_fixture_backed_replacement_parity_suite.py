@@ -234,7 +234,13 @@ def _direct_literal_replacement_publication_case_ids(
                 "count-one",
                 "negative-count",
             ),
-            ("subn", "str"): ("count", "single-match", "repeated", "negative-count"),
+            ("subn", "str"): (
+                "count",
+                "single-match",
+                "repeated",
+                "negative-count",
+                "no-match",
+            ),
             ("sub", "bytes"): (
                 "no-match",
                 "single-match",
@@ -2708,9 +2714,7 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
         ),
         pytest.param(
             "pattern",
-            (
-                "pattern-subn-str-no-match",
-            ),
+            (),
             id="pattern",
         ),
     ),
@@ -2844,6 +2848,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "pattern-subn-str-single-match": ("x", "zabczz"),
             "pattern-subn-str-repeated": ("x", "abcabc"),
             "pattern-subn-str-negative-count": ("x", "abcabc", -1),
+            "pattern-subn-str-no-match": ("x", "zzz"),
             "pattern-sub-bytes-no-match": (b"x", b"zzz"),
             "pattern-sub-bytes-single-match": (b"x", b"zabczz"),
             "pattern-sub-bytes-repeated": (b"x", b"abcabc"),
@@ -2865,6 +2870,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "subn",
             "subn",
             "subn",
+            "subn",
             "sub",
             "sub",
             "sub",
@@ -2877,6 +2883,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "subn",
         ),
         expected_text_models=(
+            "str",
             "str",
             "str",
             "str",

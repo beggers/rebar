@@ -1,8 +1,19 @@
 # RBR-1069: Publish the direct `Pattern.subn()` str no-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
+
+## Completion
+- Added the single published `pattern-subn-str-no-match` `pattern_call` row to `tests/conformance/fixtures/collection_replacement_workflows.py` immediately after `pattern-subn-str-negative-count`, keeping `pattern-sub-bytes-no-match` immediately after it.
+- Updated the shared direct-pattern literal replacement publication selector in `tests/python/test_fixture_backed_replacement_parity_suite.py` so the published owner-path order now includes `pattern-subn-str-no-match`, the direct-pattern unpublished gap set is empty, and the in-order fixture assertion now checks `("x", "zzz")` for that row.
+- Regenerated `reports/correctness/latest.py`; the tracked combined summary is now `1594` total / `1594` passed / `0` failed / `0` unimplemented across `114` manifests, `collection.replacement.workflow` is `57/57`, `collection.replacement.workflow.bytes` remains `23/23`, `collection.replacement.workflow.str` is `34/34`, and `collection.replacement.workflow.pattern_call` is `32/32` with `pattern-subn-str-no-match` present in the tracked case list.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and str-no-match'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order or test_literal_replacement_publication_gaps_stay_explicit'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1069-pattern-subn-str-no-match.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
 
 ## Goal
 - Reopen the shared `collection-replacement-workflows` correctness frontier with the still-unpublished direct compiled-pattern `str` `subn()` no-match row that the live source-package runtime already matches against CPython, publishing that exact owner-path outcome before the matching Python-path benchmark catch-up, direct raw-module `subn()` follow-ons, grouped-template rows, callable replacement rows, or another owner family reopens the queue.

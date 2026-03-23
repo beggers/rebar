@@ -667,6 +667,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-subn-str-no-match",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "helper": "subn",
+      "args": ["x", "zzz"],
+      "categories": ["workflow", "subn", "literal", "str", "no-match"],
+      "notes": [
+        "Publishes the direct Pattern.subn str no-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "pattern-sub-bytes-no-match",
       "operation": "pattern_call",
       "family": "replacement_workflow",
