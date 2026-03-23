@@ -11118,6 +11118,75 @@ def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_sel
     assert tuple(manifest.path for manifest in manifests) == published_manifest_paths
 
 
+def test_published_benchmark_manifests_cache_clear_reloads_current_default_selector(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    first_path = _write_test_manifest(
+        tmp_path,
+        "cached_benchmark_manifest_a.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "cached-benchmark-manifest-a",
+            "workloads": [
+                {
+                    "id": "cached-benchmark-workload-a",
+                    "operation": "module.search",
+                    "pattern": "abc",
+                    "haystack": "zabc",
+                },
+            ],
+        }
+        """,
+    )
+    second_path = _write_test_manifest(
+        tmp_path,
+        "cached_benchmark_manifest_b.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "cached-benchmark-manifest-b",
+            "workloads": [
+                {
+                    "id": "cached-benchmark-workload-b",
+                    "operation": "module.search",
+                    "pattern": "def",
+                    "haystack": "zdef",
+                },
+            ],
+        }
+        """,
+    )
+    requested_paths = (second_path, first_path)
+    loader_calls: list[tuple[pathlib.Path, ...]] = []
+    real_load_manifests = benchmarks.load_manifests
+
+    def _recording_selector(selector: str) -> tuple[pathlib.Path, ...]:
+        assert selector == PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+        return requested_paths
+
+    def _recording_loader(paths: list[pathlib.Path]) -> list[object]:
+        loader_calls.append(tuple(paths))
+        return real_load_manifests(paths)
+
+    monkeypatch.setattr(benchmarks, "select_benchmark_manifest_paths", _recording_selector)
+    monkeypatch.setattr(benchmarks, "load_manifests", _recording_loader)
+    benchmarks.published_benchmark_manifests.cache_clear()
+    try:
+        manifests = published_benchmark_manifests()
+
+        assert tuple(manifest.path for manifest in manifests) == requested_paths
+        assert tuple(manifest.manifest_id for manifest in manifests) == (
+            "cached-benchmark-manifest-b",
+            "cached-benchmark-manifest-a",
+        )
+        assert published_benchmark_manifests() is manifests
+        assert loader_calls == [requested_paths]
+    finally:
+        benchmarks.published_benchmark_manifests.cache_clear()
+
+
 def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_workload_ids() -> None:
     manifests = published_benchmark_manifests()
     manifest_ids = [manifest.manifest_id for manifest in manifests]
