@@ -115,6 +115,40 @@ CALLABLE_MANIFEST_SPECS = (
         expected_near_miss_patterns=frozenset(),
     ),
     CallableManifestSpec(
+        manifest_id="nested-group-callable-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-group-numbered-str",
+                "module-subn-callable-nested-group-numbered-str",
+                "pattern-sub-callable-nested-group-numbered-str",
+                "pattern-subn-callable-nested-group-numbered-str",
+                "module-sub-callable-nested-group-named-str",
+                "module-subn-callable-nested-group-named-str",
+                "pattern-sub-callable-nested-group-named-str",
+                "pattern-subn-callable-nested-group-named-str",
+                "module-sub-callable-nested-group-numbered-bytes",
+                "module-subn-callable-nested-group-numbered-bytes",
+                "pattern-sub-callable-nested-group-numbered-bytes",
+                "pattern-subn-callable-nested-group-numbered-bytes",
+                "module-sub-callable-nested-group-named-bytes",
+                "module-subn-callable-nested-group-named-bytes",
+                "pattern-sub-callable-nested-group-named-bytes",
+                "pattern-subn-callable-nested-group-named-bytes",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b))d",
+                r"a(?P<outer>(?P<inner>b))d",
+                rb"a((b))d",
+                rb"a(?P<outer>(?P<inner>b))d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+    ),
+    CallableManifestSpec(
         manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
         expected_case_ids=frozenset(
             {
@@ -1515,7 +1549,7 @@ def test_published_fixture_bundle_loading_preserves_selector_path_order() -> Non
         assert bundle.expected_case_ids is None
         assert bundle.manifest.manifest_id == bundle.expected_manifest_id
         assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
-        assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+        assert {case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
         assert {case.text_model for case in bundle.cases} == bundle.expected_text_models
         assert Counter((case.operation, case.helper) for case in bundle.cases) == (
             bundle.expected_operation_helper_counts
