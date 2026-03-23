@@ -946,7 +946,7 @@ def assert_callable_replacement_exception_parity(
     assert len(observed_matches) == 1
 
 
-def assert_pattern_callable_replacement_return_type_error_parity(
+def assert_callable_replacement_return_type_error_parity(
     *,
     backend_name: str,
     backend: object,
@@ -954,6 +954,7 @@ def assert_pattern_callable_replacement_return_type_error_parity(
     pattern: TextValue,
     string: TextValue,
     count: int,
+    use_compiled_pattern: bool,
 ) -> None:
     observed_matches: list[object] = []
     expected_matches: list[re.Match[str] | re.Match[bytes]] = []
@@ -967,21 +968,37 @@ def assert_pattern_callable_replacement_return_type_error_parity(
         expected_matches.append(match)
         return wrong_type_replacement
 
-    expected_target = re.compile(pattern)
     with pytest.raises(TypeError) as expected_error:
-        getattr(expected_target, helper)(
-            expected_replacement,
-            string,
-            count=count,
-        )
+        if use_compiled_pattern:
+            expected_target = re.compile(pattern)
+            getattr(expected_target, helper)(
+                expected_replacement,
+                string,
+                count=count,
+            )
+        else:
+            getattr(re, helper)(
+                pattern,
+                expected_replacement,
+                string,
+                count=count,
+            )
 
-    observed_target = backend.compile(pattern)
     with pytest.raises(TypeError) as observed_error:
-        getattr(observed_target, helper)(
-            observed_replacement,
-            string,
-            count=count,
-        )
+        if use_compiled_pattern:
+            observed_target = backend.compile(pattern)
+            getattr(observed_target, helper)(
+                observed_replacement,
+                string,
+                count=count,
+            )
+        else:
+            getattr(backend, helper)(
+                pattern,
+                observed_replacement,
+                string,
+                count=count,
+            )
 
     assert type(observed_error.value) is type(expected_error.value)
     assert observed_error.value.args == expected_error.value.args
@@ -1132,7 +1149,7 @@ def _manifest_matches_return_type_error_frontier(manifest_id: str) -> bool:
     )
 
 
-def _pattern_return_type_error_expected_manifest_ids() -> frozenset[str]:
+def _callable_return_type_error_expected_manifest_ids() -> frozenset[str]:
     spec_manifest_ids = frozenset(
         spec.manifest_id
         for spec in CALLABLE_MANIFEST_SPECS
@@ -1149,6 +1166,11 @@ def _pattern_return_type_error_expected_manifest_ids() -> frozenset[str]:
     return spec_manifest_ids | default_manifest_ids
 
 
+MODULE_RETURN_TYPE_ERROR_CASES = tuple(
+    case
+    for case in MODULE_CASES
+    if _manifest_matches_return_type_error_frontier(case.manifest_id)
+)
 PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     case
     for case in PATTERN_CASES
@@ -2074,6 +2096,23 @@ def test_mixed_text_callable_manifest_partitions_track_pending_or_landed_bytes_c
         }
 
 
+def test_module_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
+) -> None:
+    assert MODULE_RETURN_TYPE_ERROR_CASES
+    assert {case.text_model for case in MODULE_RETURN_TYPE_ERROR_CASES} == {
+        "bytes",
+        "str",
+    }
+    assert not {
+        case.case_id
+        for case in MODULE_RETURN_TYPE_ERROR_CASES
+        if _is_pending_rebar_callable_case(case)
+    }
+    assert {
+        case.manifest_id for case in MODULE_RETURN_TYPE_ERROR_CASES
+    } == _callable_return_type_error_expected_manifest_ids()
+
+
 def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
 ) -> None:
     assert PATTERN_RETURN_TYPE_ERROR_CASES
@@ -2083,7 +2122,7 @@ def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_c
     }
     assert {
         case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_CASES
-    } == _pattern_return_type_error_expected_manifest_ids()
+    } == _callable_return_type_error_expected_manifest_ids()
 
 
 def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
@@ -2743,11 +2782,12 @@ def test_pattern_callable_replacement_wrong_return_type_matches_cpython(
     assert case.helper is not None
 
     _skip_pending_rebar_callable_parity(backend_name, case)
-    assert_pattern_callable_replacement_return_type_error_parity(
+    assert_callable_replacement_return_type_error_parity(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
         pattern=case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
+        use_compiled_pattern=True,
     )
