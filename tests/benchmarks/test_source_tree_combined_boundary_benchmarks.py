@@ -17238,70 +17238,16 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = (
 )
 
 
-def _compiled_pattern_module_compile_contract_manifest_payload(
-    source_workload: Workload,
-    *,
+def _compiled_pattern_module_compile_contract_builder_spec(
     contract_case: CompiledPatternModuleCompileContractCase,
-) -> dict[str, object]:
-    payload = workload_to_payload(source_workload)
-    return {
-        "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key
-            not in contract_case.manifest_excluded_fields()
-        },
-        "timing_scope": "module-helper-call",
-        "notes": [contract_case.note()],
-    }
-
-
-def _compiled_pattern_module_compile_contract_workload(
-    source_workload: Workload,
-    *,
-    contract_case: CompiledPatternModuleCompileContractCase,
-) -> Workload:
-    manifest_payload = _compiled_pattern_module_compile_contract_manifest_payload(
-        source_workload,
-        contract_case=contract_case,
+) -> _SourceTreeContractBuilderSpec:
+    return _SourceTreeContractBuilderSpec(
+        manifest_id="module-boundary",
+        excluded_fields=contract_case.manifest_excluded_fields(),
+        manifest_timed_samples=2,
+        timing_scope="module-helper-call",
+        notes=(contract_case.note(),),
     )
-    return workload_from_payload(
-        {
-            "manifest_id": "module-boundary",
-            "workload_id": str(manifest_payload["id"]),
-            **{key: value for key, value in manifest_payload.items() if key != "id"},
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
-
-
-def _compiled_pattern_module_compile_contract_manifest(
-    source_workloads: tuple[Workload, ...],
-    *,
-    contract_case: CompiledPatternModuleCompileContractCase,
-) -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": "module-boundary",
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 2,
-        },
-        "workloads": [
-            _compiled_pattern_module_compile_contract_manifest_payload(
-                workload,
-                contract_case=contract_case,
-            )
-            for workload in source_workloads
-        ],
-    }
 
 
 def _compiled_pattern_module_compile_contract_expected_build_calls(
@@ -17358,9 +17304,9 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
     contract_case: CompiledPatternModuleCompileContractCase,
 ) -> None:
     source_workloads = contract_case.source_workloads()
-    manifest = _compiled_pattern_module_compile_contract_manifest(
+    manifest = _source_tree_contract_manifest(
         source_workloads,
-        contract_case=contract_case,
+        spec=_compiled_pattern_module_compile_contract_builder_spec(contract_case),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -17425,9 +17371,9 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_rows_stay_
     tmp_path: pathlib.Path,
     contract_case: CompiledPatternModuleCompileContractCase,
 ) -> None:
-    manifest = _compiled_pattern_module_compile_contract_manifest(
+    manifest = _source_tree_contract_manifest(
         contract_case.source_workloads(),
-        contract_case=contract_case,
+        spec=_compiled_pattern_module_compile_contract_builder_spec(contract_case),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -17480,9 +17426,9 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
     case_group: CompiledPatternModuleCompileContractCase,
     source_workload: Workload,
 ) -> None:
-    workload = _compiled_pattern_module_compile_contract_workload(
+    workload = _source_tree_contract_workload(
         source_workload,
-        contract_case=case_group,
+        spec=_compiled_pattern_module_compile_contract_builder_spec(case_group),
     )
     observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
@@ -17526,9 +17472,9 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _compiled_pattern_module_compile_contract_workload(
+    workload = _source_tree_contract_workload(
         source_workload,
-        contract_case=contract_case,
+        spec=_compiled_pattern_module_compile_contract_builder_spec(contract_case),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -17569,9 +17515,11 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_
     callback = build_callable(
         module,
         "re",
-        _compiled_pattern_module_compile_contract_workload(
+        _source_tree_contract_workload(
             source_workload,
-            contract_case=contract_case,
+            spec=_compiled_pattern_module_compile_contract_builder_spec(
+                contract_case
+            ),
         ),
     )
 
@@ -19585,9 +19533,9 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
     case_group: CompiledPatternModuleCompileContractCase,
     source_workload: Workload,
 ) -> None:
-    manifest = _compiled_pattern_module_compile_contract_manifest(
+    manifest = _source_tree_contract_manifest(
         (source_workload,),
-        contract_case=case_group,
+        spec=_compiled_pattern_module_compile_contract_builder_spec(case_group),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
