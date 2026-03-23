@@ -1808,6 +1808,90 @@ def test_fixture_manifest_defaults_suite_id_from_layer_and_operation(
     assert cases[0].operation == expected_operation
 
 
+def test_fixture_manifest_loads_supported_scalar_defaults_and_case_overrides(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_fixture_module(
+        tmp_path,
+        "scalar_default_contract.py",
+        """
+        import re
+
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "scalar-default-contract",
+            "layer": "module_workflow",
+            "defaults": {
+                "family": "default-family",
+                "operation": "module_call",
+                "flags": re.IGNORECASE,
+                "text_model": "bytes",
+                "pattern_encoding": "utf-8",
+                "use_compiled_pattern": True,
+                "include_pattern_arg": False,
+            },
+            "cases": [
+                {
+                    "id": "defaulted-module-search",
+                    "helper": "search",
+                    "pattern": "caf\\u00e9",
+                    "args": [b"zzcaf\\xc3\\xa9zz"],
+                },
+                {
+                    "id": "overridden-module-search",
+                    "helper": "search",
+                    "family": "override-family",
+                    "pattern": "abc",
+                    "flags": re.MULTILINE,
+                    "text_model": "str",
+                    "pattern_encoding": "latin-1",
+                    "use_compiled_pattern": False,
+                    "include_pattern_arg": True,
+                    "args": ["zzabczz"],
+                },
+            ],
+        }
+        """,
+    )
+
+    manifest = load_fixture_manifest(fixture_path)
+    defaulted_case, overridden_case = manifest.cases
+    compiled_pattern = object()
+
+    assert manifest.defaults == {
+        "family": "default-family",
+        "operation": "module_call",
+        "flags": re.IGNORECASE,
+        "text_model": "bytes",
+        "pattern_encoding": "utf-8",
+        "use_compiled_pattern": True,
+        "include_pattern_arg": False,
+    }
+
+    assert defaulted_case.family == "default-family"
+    assert defaulted_case.operation == "module_call"
+    assert defaulted_case.flags == int(re.IGNORECASE)
+    assert defaulted_case.text_model == "bytes"
+    assert defaulted_case.pattern_encoding == "utf-8"
+    assert defaulted_case.use_compiled_pattern is True
+    assert defaulted_case.include_pattern_arg is False
+    assert defaulted_case.pattern_payload() == b"caf\xc3\xa9"
+    assert defaulted_case.module_call_args(compiled_pattern) == [
+        compiled_pattern,
+        b"zzcaf\xc3\xa9zz",
+    ]
+
+    assert overridden_case.family == "override-family"
+    assert overridden_case.operation == "module_call"
+    assert overridden_case.flags == int(re.MULTILINE)
+    assert overridden_case.text_model == "str"
+    assert overridden_case.pattern_encoding == "latin-1"
+    assert overridden_case.use_compiled_pattern is False
+    assert overridden_case.include_pattern_arg is True
+    assert overridden_case.pattern_payload() == "abc"
+    assert overridden_case.module_call_args(compiled_pattern) == ["abc", "zzabczz"]
+
+
 def test_fixture_manifest_loader_isolates_default_args_and_kwargs_per_case(
     tmp_path: pathlib.Path,
 ) -> None:
