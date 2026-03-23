@@ -1,8 +1,9 @@
 # RBR-1094: Collapse parametrize id lambdas in literal-flag parity suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
+Completed: 2026-03-23
 
 ## Goal
 - Remove the remaining trivial `pytest.mark.parametrize(..., ids=lambda case: case.id)` adapters from `tests/python/test_literal_flag_parity_suite.py` so the literal-flag parity suite names its parametrized rows through named same-file helpers, or a strictly smaller equivalent, instead of seven one-purpose anonymous wrappers.
@@ -53,3 +54,8 @@ Created: 2026-03-23
   - `rg -n 'ids=lambda case: case\\.id' tests/python/test_literal_flag_parity_suite.py` returned the seven remaining trivial id adapters at lines `505`, `517`, `587`, `601`, `619`, `641`, and `674` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_literal_flag_parity_suite.py -k 'literal_ignorecase_module_helpers_match_cpython or literal_ignorecase_compiled_helpers_match_cpython or native_literal_flag_module_workflows_match_cpython or native_literal_flag_compiled_workflows_match_cpython or native_literal_flag_compile_metadata_matches_cpython or native_literal_flag_module_helpers_accept_compiled_patterns_with_cpython_parity or fake_native_boundary_preserves_literal_flag_search_sequences'` returned `37 passed, 6 deselected` in this run.
+
+## Completion
+- Replaced the seven `ids=lambda case: case.id` adapters in `tests/python/test_literal_flag_parity_suite.py` with one same-file `_case_id()` helper reused across the existing parametrized tests.
+- Verified the scoped literal-flag pytest slice still passes with `37 passed, 6 deselected`.
+- Verified `rg` no longer finds any `ids=lambda case: case.id` adapters in `tests/python/test_literal_flag_parity_suite.py`.
