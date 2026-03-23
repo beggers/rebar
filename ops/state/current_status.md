@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1591 cases across 114 manifests, with all 1591 passing in the current slice; the benchmark publication covers 973/973 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- `RBR-1061`: publish the direct `Pattern.subn()` bytes no-match on the shared collection/replacement correctness path.
+- `RBR-1063`: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1591 cases across 114 manifests, with all 1591 pass
 The published correctness slice now covers 1591 cases across 114 manifests, all passing, and 973 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- `RBR-1061` is the surviving ready follow-on after the current benchmark head drains: publish the direct `Pattern.subn()` bytes no-match on the shared collection/replacement correctness path.
+- `RBR-1063` is the surviving ready follow-on after the current correctness head drains: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
 - No blocked or in-progress feature task shadows this post-drain frontier in this checkout.
 
 ## What Exists

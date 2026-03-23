@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-1061` is the surviving ready follow-on after the current benchmark head drains: publish the direct `Pattern.subn()` bytes no-match on the shared collection/replacement correctness path.
+`RBR-1063` is the surviving ready follow-on after the current correctness head drains: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
 
 ## Ordered Work
-1. `RBR-1061`: publish the direct `Pattern.subn()` bytes no-match on the shared collection/replacement correctness path.
+1. `RBR-1063`: catch up the direct `Pattern.subn()` bytes no-match on the shared Python-path collection/replacement benchmark surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
