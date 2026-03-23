@@ -1,6 +1,6 @@
 # RBR-1036: Catch up the direct `Pattern.sub()` str repeated/count-one pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -60,3 +60,12 @@ Created: 2026-03-23
   - the shared source-package parity route in `tests/python/test_fixture_backed_replacement_parity_suite.py` already carries the `str-repeated-match` and `str-count-one` direct compiled-pattern cases, confirming the runtime behavior exists on the live branch;
   - `rg -n 'pattern-sub-repeated-warm-str|pattern-sub-count-one-warm-str' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, confirming the exact benchmark workload ids are still absent from the tracked owner-path surfaces; and
   - the current benchmark owner-route pair list still exposes only the twelve-row direct-pattern literal replacement slice rooted at `_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS`, so this benchmark catch-up remains the next bounded same-family follow-on instead of widening into bytes repeated/count-one rows or another owner path.
+
+## Completion Note
+- 2026-03-23: Added `pattern-sub-repeated-warm-str` and `pattern-sub-count-one-warm-str` to `benchmarks/workloads/collection_replacement_boundary.py` on the existing direct compiled-pattern replacement block, updated the shared owner-route assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and republished `reports/benchmarks/latest.py` on the tracked source-tree-shim path.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (str-repeated-match or str-count-one)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1036-pattern-sub-str-repeated-count-one-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
+- Published benchmark report now records `965` total / `965` measured / `0` known gaps across `30` manifests, with `module_workloads == 957`, `parser_workloads == 8`, `regression_workloads == 8`, `workloads_by_cache_mode == {"cold": 104, "purged": 412, "warm": 449}`, and `collection-replacement-boundary` at `126` selected/measured workloads with both new workload ids published as `measured`.

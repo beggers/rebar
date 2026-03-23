@@ -3711,7 +3711,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
             ),
         )
-        self.assertEqual(len(expected_measured_workload_ids), 12)
+        self.assertEqual(len(expected_measured_workload_ids), 14)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5417,11 +5417,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 963,
-                "module_workloads": 955,
+                "measured_workloads": 965,
+                "module_workloads": 957,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 963,
+                "total_workloads": 965,
             },
         )
 
@@ -8058,6 +8058,8 @@ _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS = (
 _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
     ("pattern-sub-no-match-warm-str", "pattern-sub-str-no-match"),
     ("pattern-sub-single-match-warm-str", "pattern-sub-str-single-match"),
+    ("pattern-sub-repeated-warm-str", "pattern-sub-str-repeated"),
+    ("pattern-sub-count-one-warm-str", "pattern-sub-str-count-one"),
     ("pattern-sub-negative-count-warm-str", "pattern-sub-str-negative-count"),
     ("pattern-sub-bytes-no-match-purged-bytes", "pattern-sub-bytes-no-match"),
     (
