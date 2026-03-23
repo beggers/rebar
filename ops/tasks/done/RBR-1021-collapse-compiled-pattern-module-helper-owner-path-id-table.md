@@ -1,6 +1,6 @@
 # RBR-1021: Collapse compiled-pattern module-helper owner-path id table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -79,3 +79,7 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases or compiled_pattern_module_keyword_frontier_publishes_after_positional_count_cases_on_shared_owner_path'` currently passes (`2 passed, 1449 deselected`);
   - the inline owner-path probe in Verification currently fails exactly because the rows still expose `direct_case_id`; and
   - `bash -lc "! rg -n '\\bdirect_case_id\\b' tests/python/test_module_workflow_parity_suite.py"` currently fails exactly on the detached id-table cleanup being queued here.
+
+## Completion
+- Replaced `CompiledPatternModuleHelperOwnerPathRow.direct_case_id` with direct-case ownership and rebuilt `COMPILED_PATTERN_MODULE_HELPER_OWNER_PATH_ROWS` from ordered fixture-id tuples zipped against file-local case slices and concatenations.
+- Verified the targeted publication tests still pass, the owner-path probe reports `ok`, and `rg` finds no remaining `direct_case_id` references in `tests/python/test_module_workflow_parity_suite.py`.
