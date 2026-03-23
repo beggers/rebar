@@ -1,6 +1,6 @@
 # RBR-0986: Collapse bounded wildcard fixture wrapper helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -124,3 +124,7 @@ PY`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard_compile_metadata_matches_cpython or bounded_wildcard_pattern_match_helpers_match_cpython or bounded_wildcard_pattern_collection_helpers_match_cpython or module_workflow_surface_bundle_contract_covers_regression_compile_cases'` currently passes (`17 passed, 1434 deselected`);
   - the generic bounded-wildcard probe in Verification currently passes (`ok`), confirming that `_published_bounded_wildcard_fixture_cases(COMPILE_CASES)` and `_published_bounded_wildcard_fixture_cases(PATTERN_CASES)` already preserve the live compile slice, full pattern slice, match-helper subset, and collection-helper subset without relying on wrapper-specific behavior; and
   - `rg -n '^def _published_bounded_wildcard_compile_fixture_cases\\(|^def _published_bounded_wildcard_pattern_fixture_cases\\(|^def _published_bounded_wildcard_pattern_fixture_cases_for_helpers\\(' tests/python/test_module_workflow_parity_suite.py` currently finds the wrapper definitions at lines `314`, `318`, and `322`, so the structural no-match check will fail until this cleanup lands.
+
+## Completion
+- Removed the three bounded-wildcard wrapper helpers from `tests/python/test_module_workflow_parity_suite.py` and switched the affected contract assertions and parametrized tests to call `_published_bounded_wildcard_fixture_cases(...)` directly, with inline helper filtering for the pattern helper subsets.
+- Verified with the targeted pytest slice (`17 passed, 1434 deselected`), the direct selector-order probe (`ok`), and the structural `rg` no-match check.

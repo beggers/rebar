@@ -311,24 +311,6 @@ def _published_bounded_wildcard_fixture_cases(
     )
 
 
-def _published_bounded_wildcard_compile_fixture_cases() -> tuple[FixtureCase, ...]:
-    return _published_bounded_wildcard_fixture_cases(COMPILE_CASES)
-
-
-def _published_bounded_wildcard_pattern_fixture_cases() -> tuple[FixtureCase, ...]:
-    return _published_bounded_wildcard_fixture_cases(PATTERN_CASES)
-
-
-def _published_bounded_wildcard_pattern_fixture_cases_for_helpers(
-    helpers: tuple[str, ...],
-) -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in _published_bounded_wildcard_pattern_fixture_cases()
-        if case.helper in helpers
-    )
-
-
 def _public_surface_case_contract_token(case: FixtureCase) -> str:
     return case.case_id
 
@@ -4241,8 +4223,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         VERBOSE_BYTES_COMPILE_CASE_ID,
         MULTILINE_BYTES_COMPILE_CASE_ID,
     } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
+    bounded_wildcard_pattern_cases = _published_bounded_wildcard_fixture_cases(PATTERN_CASES)
     bounded_wildcard_pattern_case_ids = tuple(
-        case.case_id for case in _published_bounded_wildcard_pattern_fixture_cases()
+        case.case_id for case in bounded_wildcard_pattern_cases
     )
     assert {
         *bounded_wildcard_pattern_case_ids,
@@ -4269,8 +4252,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
 
     verbose_cases_by_id = {case.case_id: case for case in VERBOSE_COMPILE_WORKFLOW_CASES}
     verbose_bytes_pattern = case_pattern(VERBOSE_BYTES_COMPILE_CASE)
-    bounded_wildcard_compile_cases = _published_bounded_wildcard_compile_fixture_cases()
-    bounded_wildcard_pattern_cases = _published_bounded_wildcard_pattern_fixture_cases()
+    bounded_wildcard_compile_cases = _published_bounded_wildcard_fixture_cases(COMPILE_CASES)
 
     assert all(case.text_model == "str" for case in bounded_wildcard_compile_cases)
     assert tuple(
@@ -7377,7 +7359,7 @@ def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> Non
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_compile_fixture_cases(),
+    _published_bounded_wildcard_fixture_cases(COMPILE_CASES),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_compile_metadata_matches_cpython(
@@ -7496,8 +7478,10 @@ def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() ->
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_pattern_fixture_cases_for_helpers(
-        ("search", "match", "fullmatch")
+    tuple(
+        case
+        for case in _published_bounded_wildcard_fixture_cases(PATTERN_CASES)
+        if case.helper in {"search", "match", "fullmatch"}
     ),
     ids=lambda case: case.case_id,
 )
@@ -7524,7 +7508,7 @@ def test_bounded_wildcard_pattern_match_helpers_match_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_compile_fixture_cases(),
+    _published_bounded_wildcard_fixture_cases(COMPILE_CASES),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_generated_module_match_matrix_matches_cpython(
@@ -7572,7 +7556,7 @@ def test_bounded_wildcard_generated_module_match_matrix_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_compile_fixture_cases(),
+    _published_bounded_wildcard_fixture_cases(COMPILE_CASES),
     ids=lambda case: case.case_id,
 )
 def test_bounded_wildcard_generated_pattern_match_matrix_with_windows_matches_cpython(
@@ -7618,8 +7602,10 @@ def test_bounded_wildcard_generated_pattern_match_matrix_with_windows_matches_cp
 
 @pytest.mark.parametrize(
     "case",
-    _published_bounded_wildcard_pattern_fixture_cases_for_helpers(
-        ("findall", "finditer")
+    tuple(
+        case
+        for case in _published_bounded_wildcard_fixture_cases(PATTERN_CASES)
+        if case.helper in {"findall", "finditer"}
     ),
     ids=lambda case: case.case_id,
 )
