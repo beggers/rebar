@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-1065` is the surviving ready follow-on after the current benchmark head drains: publish the direct `Pattern.subn()` str single-match on the shared collection/replacement correctness surface.
+No ready feature follow-on currently survives beyond the active direct compiled-pattern `Pattern.subn()` str single-match benchmark catch-up slice on the shared collection/replacement owner path.
 
 ## Ordered Work
-1. `RBR-1065`: publish the direct `Pattern.subn()` str single-match on the shared collection/replacement correctness surface.
+1. No ready feature follow-on currently survives beyond the active direct compiled-pattern `Pattern.subn()` str single-match benchmark catch-up slice on the shared collection/replacement owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

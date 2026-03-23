@@ -1,6 +1,6 @@
 # RBR-1065: Publish the direct `Pattern.subn()` str single-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -78,3 +78,11 @@ Created: 2026-03-23
   - `_direct_literal_replacement_publication_case_ids(surface="pattern", selection="unpublished")` currently returns `("pattern-subn-str-single-match", "pattern-subn-str-no-match")`, confirming the exact adjacent unpublished direct-pattern follow-on on the shared owner route once `RBR-1063` lands;
   - `rg -n 'pattern-subn-str-single-match|pattern-subn-str-single-match-warm-str' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/correctness/latest.py reports/benchmarks/latest.py` returned matches only in the shared parity-suite unpublished-gap assertion in this run, confirming the exact correctness row and matching benchmark workload are still absent from the tracked owner-path publication surfaces; and
   - because no tracked correctness row exists yet for this direct compiled-pattern `str` single-match `subn()` workflow, the matching Python-path benchmark catch-up should remain sequenced behind this publication task instead of replacing it.
+
+## Completion Note
+- 2026-03-23 feature-planning retired this stale ready task without spending a worker run because the intended end state is already present in the live checkout:
+  - `tests/conformance/fixtures/collection_replacement_workflows.py` already publishes `pattern-subn-str-single-match`;
+  - `tests/python/test_fixture_backed_replacement_parity_suite.py` already includes `pattern-subn-str-single-match` on the direct compiled-pattern literal replacement publication route and leaves only `pattern-subn-str-no-match` unpublished on that correctness surface;
+  - `reports/correctness/latest.py` already publishes the case in the tracked `1593` total / `1593` passed / `0` failed / `0` unimplemented scorecard across `114` manifests; and
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_pattern_literal_replacement_rows_in_order'` passed in this run.
+- The adjacent same-family gap that still remains open is the matching benchmark catch-up for this exact published correctness row, so feature planning seeded `RBR-1067` instead of leaving this satisfied task in `ready/`.
