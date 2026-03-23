@@ -3759,7 +3759,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
             ),
         )
-        self.assertEqual(len(expected_measured_workload_ids), 13)
+        self.assertEqual(len(expected_measured_workload_ids), 14)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -8129,6 +8129,10 @@ _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
         "module-subn-str-negative-count",
     ),
     ("module-sub-bytes-no-match-purged-bytes", "module-sub-bytes-no-match"),
+    (
+        "module-sub-bytes-single-match-purged-bytes",
+        "module-sub-bytes-single-match",
+    ),
     ("module-sub-bytes-repeated-purged-bytes", "module-sub-bytes-repeated"),
     ("module-sub-bytes-count-one-purged-bytes", "module-sub-bytes-count-one"),
     ("module-subn-bytes-count-purged-bytes", "module-subn-bytes-count"),

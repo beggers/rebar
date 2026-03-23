@@ -1060,6 +1060,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-bytes-single-match-purged-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "zabczz",
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "bytes",
+        "single-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.sub helper path that keeps the raw single-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-sub-bytes-repeated-purged-bytes",
       "bucket": "module-sub",
       "family": "module",
