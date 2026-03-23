@@ -124,6 +124,22 @@ def test_regex_backend_skips_matching_unsupported_backend_with_default_reason() 
         )
 
 
+def test_regex_backend_treats_empty_reason_as_request_for_default_skip_message() -> None:
+    with pytest.raises(
+        pytest.skip.Exception,
+        match="rebar backend unsupported for this parity case",
+    ):
+        _invoke_regex_backend(
+            "rebar",
+            parametrized_values={
+                "case": _BackendCase(
+                    unsupported_backends=("rebar",),
+                    unsupported_backend_reason="",
+                ),
+            },
+        )
+
+
 def test_regex_backend_ignores_unsupported_backend_metadata_for_other_backends() -> None:
     backend_name, backend = _invoke_regex_backend(
         "stdlib",
@@ -166,6 +182,29 @@ def test_regex_backend_treats_none_unsupported_backends_as_unfiltered() -> None:
 
     assert backend_name == "rebar"
     assert backend is rebar
+
+
+@pytest.mark.parametrize(
+    ("backend_param", "unsupported_backends"),
+    (
+        pytest.param("stdlib", ["stdlib"], id="list"),
+        pytest.param("rebar", frozenset({"rebar"}), id="frozenset"),
+    ),
+)
+def test_regex_backend_accepts_non_tuple_backend_collections(
+    backend_param: str,
+    unsupported_backends: object,
+) -> None:
+    with pytest.raises(pytest.skip.Exception, match="normalized backend metadata"):
+        _invoke_regex_backend(
+            backend_param,
+            parametrized_values={
+                "case": _BackendCase(
+                    unsupported_backends=unsupported_backends,  # type: ignore[arg-type]
+                    unsupported_backend_reason="normalized backend metadata",
+                ),
+            },
+        )
 
 
 def test_regex_backend_ignores_orphan_reason_without_unsupported_backends() -> None:
