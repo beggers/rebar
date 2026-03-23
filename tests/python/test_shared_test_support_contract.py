@@ -13,8 +13,10 @@ import pytest
 import tests.conftest as test_support
 from tests.conftest import (
     REPO_ROOT,
+    assert_declared_string_selector_registry_contract,
     assert_published_manifest_helper_contract,
     assert_published_manifest_helper_reload_contract,
+    assert_published_selector_subset_paths_contract,
     completed_process,
     declared_string_constants_by_suffix,
     duplicate_items,
@@ -80,6 +82,47 @@ def test_declared_string_constants_by_suffix_returns_empty_dict_without_matching
     module.NON_STRING_SELECTOR = 3
 
     assert declared_string_constants_by_suffix(module, name_suffix="_SELECTOR") == {}
+
+
+def test_assert_declared_string_selector_registry_contract_accepts_aligned_unique_registry() -> None:
+    module = ModuleType("aligned_selector_contract_module")
+    module.DEFAULT_FIXTURE_SELECTOR = "default"
+    module.PUBLISHED_FIXTURE_SELECTOR = "published"
+
+    declared = assert_declared_string_selector_registry_contract(
+        module,
+        name_suffix="_FIXTURE_SELECTOR",
+        selector_registry={
+            "default": ("default_fixture.py",),
+            "published": ("published_fixture.py",),
+        },
+    )
+
+    assert tuple(declared.items()) == (
+        ("DEFAULT_FIXTURE_SELECTOR", "default"),
+        ("PUBLISHED_FIXTURE_SELECTOR", "published"),
+    )
+
+
+def test_assert_published_selector_subset_paths_contract_preserves_published_order(
+    tmp_path: pathlib.Path,
+) -> None:
+    alpha_path = tmp_path / "alpha.py"
+    beta_path = tmp_path / "beta.py"
+    gamma_path = tmp_path / "gamma.py"
+
+    for path in (alpha_path, beta_path, gamma_path):
+        path.write_text("MANIFEST = {}\n", encoding="utf-8")
+
+    published_paths = (gamma_path, alpha_path, beta_path)
+    resolved_paths = (gamma_path, beta_path)
+
+    assert_published_selector_subset_paths_contract(
+        published_paths,
+        resolved_paths,
+        root_path=tmp_path,
+        expected_filenames=("gamma.py", "beta.py"),
+    )
 
 
 def test_assert_published_manifest_helper_contract_checks_cache_order_and_post_clear_reload(

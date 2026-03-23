@@ -39,6 +39,59 @@ def declared_string_constants_by_suffix(
     }
 
 
+def assert_declared_string_selector_registry_contract(
+    module: ModuleType,
+    *,
+    name_suffix: str,
+    selector_registry: dict[str, object],
+) -> dict[str, str]:
+    declared_selectors = declared_string_constants_by_suffix(
+        module,
+        name_suffix=name_suffix,
+    )
+
+    assert declared_selectors
+    assert len(declared_selectors) == len(set(declared_selectors.values()))
+    assert set(declared_selectors.values()) == set(selector_registry)
+    return declared_selectors
+
+
+def assert_published_selector_subset_paths_contract(
+    published_full_suite_paths: tuple[pathlib.Path, ...],
+    resolved_paths: tuple[pathlib.Path, ...],
+    *,
+    root_path: pathlib.Path,
+    expected_filenames: tuple[str, ...] | None = None,
+) -> None:
+    assert resolved_paths
+    assert len(resolved_paths) == len(set(resolved_paths))
+
+    if expected_filenames is None:
+        expected_ordered_subset = tuple(
+            path for path in published_full_suite_paths if path in set(resolved_paths)
+        )
+    else:
+        expected_filename_set = set(expected_filenames)
+        assert len(expected_filenames) == len(expected_filename_set)
+        expected_ordered_subset = tuple(
+            path
+            for path in published_full_suite_paths
+            if path.name in expected_filename_set
+        )
+        assert tuple(path.name for path in expected_ordered_subset) == expected_filenames
+        assert tuple(path.name for path in resolved_paths) == expected_filenames
+
+    assert expected_ordered_subset
+    assert len(expected_ordered_subset) == len(resolved_paths)
+    assert resolved_paths == expected_ordered_subset
+
+    for path in resolved_paths:
+        assert path.is_relative_to(root_path)
+        assert path.is_file()
+        assert path.suffix == ".py"
+        assert path in published_full_suite_paths
+
+
 def assert_published_manifest_helper_contract(
     published_loader: Callable[[], object],
     *,

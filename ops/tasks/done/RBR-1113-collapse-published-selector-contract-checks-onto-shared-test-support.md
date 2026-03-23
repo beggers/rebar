@@ -1,6 +1,6 @@
 # RBR-1113: Collapse published selector contract checks onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -62,3 +62,8 @@ Created: 2026-03-23
 - The focused verification slice is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned `1144 passed, 3 skipped, 1743 subtests passed` in this run.
 - The negative `rg` verification currently fails exactly on the duplicated selector-contract boilerplate above, so it is an acceptance check for this cleanup rather than unrelated repo drift.
+
+## Completion
+- Added shared selector-contract helpers to `tests/conftest.py` for declared-selector registry alignment and published-subset path-order or exact-membership assertions, then routed the duplicated correctness and benchmark selector checks through those helpers.
+- Extended `tests/python/test_shared_test_support_contract.py` with focused synthetic success coverage for both helper surfaces, including a published-order subset case.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_shared_test_support_contract.py tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`1146 passed, 3 skipped, 1743 subtests passed`) and `bash -lc "! rg -n 'declared_selectors = declared_string_constants_by_suffix\\(|expected_ordered_subset = tuple\\(|published_ordered_subset = tuple\\(' tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.

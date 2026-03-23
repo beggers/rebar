@@ -42,9 +42,10 @@ from rebar_harness.scorecard_io import (
 )
 from tests.conftest import (
     REPO_ROOT,
+    assert_declared_string_selector_registry_contract,
     assert_published_manifest_helper_contract,
     assert_published_manifest_helper_reload_contract,
-    declared_string_constants_by_suffix,
+    assert_published_selector_subset_paths_contract,
     duplicate_items,
     run_harness_scorecard,
 )
@@ -11267,19 +11268,12 @@ def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants
         PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     )
     selected_paths = select_benchmark_manifest_paths(selector)
-    selected_path_set = set(selected_paths)
-    expected_ordered_subset = tuple(
-        path for path in published_manifest_paths if path in selected_path_set
-    )
 
-    assert selected_paths
-    assert len(selected_paths) == len(selected_path_set)
-    assert selected_paths == expected_ordered_subset
-    for path in selected_paths:
-        assert path.is_relative_to(BENCHMARK_WORKLOADS_ROOT)
-        assert path.is_file()
-        assert path.suffix == ".py"
-        assert path in published_manifest_paths
+    assert_published_selector_subset_paths_contract(
+        published_manifest_paths,
+        selected_paths,
+        root_path=BENCHMARK_WORKLOADS_ROOT,
+    )
 
 
 def test_built_native_smoke_manifest_selector_keeps_membership_contract() -> None:
@@ -11289,17 +11283,13 @@ def test_built_native_smoke_manifest_selector_keeps_membership_contract() -> Non
             selector
         ]
     )
-    published_manifest_paths = select_benchmark_manifest_paths(
-        PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
-    )
-    published_ordered_subset = tuple(
-        path.name for path in published_manifest_paths if path.name in set(expected_filenames)
-    )
-
-    assert published_ordered_subset == expected_filenames
     assert benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[selector] == expected_filenames
-    assert tuple(path.name for path in select_benchmark_manifest_paths(selector)) == (
-        expected_filenames
+
+    assert_published_selector_subset_paths_contract(
+        select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR),
+        select_benchmark_manifest_paths(selector),
+        root_path=BENCHMARK_WORKLOADS_ROOT,
+        expected_filenames=expected_filenames,
     )
 
 
@@ -11322,16 +11312,13 @@ def test_benchmark_selector_subset_helper_keeps_benchmark_specific_missing_filen
 
 
 def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
-    declared_selectors = declared_string_constants_by_suffix(
+    declared_selectors = assert_declared_string_selector_registry_contract(
         benchmarks,
         name_suffix="_MANIFEST_SELECTOR",
+        selector_registry=benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR,
     )
 
     assert declared_selectors
-    assert len(declared_selectors) == len(set(declared_selectors.values()))
-    assert set(declared_selectors.values()) == set(
-        benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR
-    )
 
 
 def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
