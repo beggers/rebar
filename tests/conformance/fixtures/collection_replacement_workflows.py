@@ -875,6 +875,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "pattern-subn-bytes-no-match",
+      "operation": "pattern_call",
+      "family": "replacement_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "helper": "subn",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzz"
+        }
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "no-match"],
+      "notes": [
+        "Publishes the direct Pattern.subn bytes no-match path on the shared collection replacement frontier."
+      ]
+    },
+    {
       "id": "module-sub-template-str",
       "operation": "module_call",
       "family": "replacement_workflow",

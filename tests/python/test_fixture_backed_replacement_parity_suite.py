@@ -210,6 +210,7 @@ DIRECT_LITERAL_REPLACEMENT_PUBLICATION_ROUTE = {
                 "single-match",
                 "repeated",
                 "negative-count",
+                "no-match",
             ),
         },
     },
@@ -2596,7 +2597,6 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
             (
                 "pattern-subn-str-single-match",
                 "pattern-subn-str-no-match",
-                "pattern-subn-bytes-no-match",
             ),
             id="pattern",
         ),
@@ -2739,6 +2739,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "pattern-subn-bytes-single-match": (b"x", b"zabczz"),
             "pattern-subn-bytes-repeated": (b"x", b"abcabc"),
             "pattern-subn-bytes-negative-count": (b"x", b"abcabc", -1),
+            "pattern-subn-bytes-no-match": (b"x", b"zzz"),
         },
         expected_helpers=(
             "sub",
@@ -2758,6 +2759,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "subn",
             "subn",
             "subn",
+            "subn",
         ),
         expected_text_models=(
             "str",
@@ -2768,6 +2770,7 @@ def test_collection_replacement_manifest_publishes_direct_pattern_literal_replac
             "str",
             "str",
             "str",
+            "bytes",
             "bytes",
             "bytes",
             "bytes",

@@ -1,6 +1,6 @@
 # RBR-1061: Publish the direct `Pattern.subn()` bytes no-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -77,3 +77,6 @@ Created: 2026-03-23
   - `_direct_literal_replacement_publication_case_ids(surface="pattern", selection="unpublished")` currently returns `("pattern-subn-str-single-match", "pattern-subn-str-no-match", "pattern-subn-bytes-no-match")`, confirming the exact adjacent unpublished direct-pattern follow-on on the shared owner route;
   - `rg -n 'pattern-subn-bytes-no-match|pattern-subn-bytes-no-match-purged-bytes' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/correctness/latest.py reports/benchmarks/latest.py` returns no matches in this checkout, confirming the exact owner-path publication gap remains open; and
   - `reports/correctness/latest.py` currently reports `1591` total / `1591` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow` at `54/54`, `collection.replacement.workflow.bytes` at `22/22`, and `collection.replacement.workflow.pattern_call` at `29/29`.
+
+## Completion Note
+- 2026-03-23: Added `pattern-subn-bytes-no-match` to `tests/conformance/fixtures/collection_replacement_workflows.py`, published it on the existing direct-pattern literal replacement route in `tests/python/test_fixture_backed_replacement_parity_suite.py`, refreshed the representative combined-scorecard expectation in `tests/conformance/test_combined_correctness_scorecards.py`, and republished `reports/correctness/latest.py` at `1592/1592` total/passed with `collection.replacement.workflow` at `55/55`, `collection.replacement.workflow.bytes` at `23/23`, `collection.replacement.workflow.str` unchanged at `32/32`, and `collection.replacement.workflow.pattern_call` at `30/30`.
