@@ -3910,7 +3910,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
             ),
         )
-        self.assertEqual(len(expected_measured_workload_ids), 2)
+        self.assertEqual(len(expected_measured_workload_ids), 4)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5612,11 +5612,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 981,
-                "module_workloads": 973,
+                "measured_workloads": 983,
+                "module_workloads": 975,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 981,
+                "total_workloads": 983,
             },
         )
 
@@ -8175,7 +8175,7 @@ def _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
         and getattr(workload, "haystack_text_model", None) is None
         and workload.expected_exception is None
         and workload.pattern == "a.c"
-        and workload.text_model == "str"
+        and workload.text_model in {"str", "bytes"}
     )
 
 
@@ -8581,9 +8581,14 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
 }
 _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS = (
     ("module-sub-callable-grouped-warm-str", "module-sub-callable-grouped-str"),
+    ("module-sub-callable-grouped-warm-bytes", "module-sub-callable-grouped-bytes"),
     (
         "pattern-subn-callable-named-grouped-warm-str",
         "pattern-subn-callable-named-grouped-str",
+    ),
+    (
+        "pattern-subn-callable-named-grouped-purged-bytes",
+        "pattern-subn-callable-named-grouped-bytes",
     ),
 )
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
@@ -8685,7 +8690,7 @@ def _is_pattern_bounded_wildcard_workload(workload: Any) -> bool:
         and workload.pattern == "a.c"
         and workload.expected_exception is None
         and not workload.use_compiled_pattern
-        and workload.text_model == "str"
+        and workload.text_model in {"str", "bytes"}
         and workload.pos is not None
         and workload.endpos is not None
         and not workload.kwargs
@@ -8877,10 +8882,15 @@ def _is_collection_replacement_grouped_callable_workload(workload: Any) -> bool:
             _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
         )
         and workload.operation in {"module.sub", "pattern.subn"}
-        and workload.pattern in {"(abc)", "(?P<word>abc)"}
+        and workload.pattern in {
+            "(abc)",
+            b"(abc)",
+            "(?P<word>abc)",
+            b"(?P<word>abc)",
+        }
         and workload.expected_exception is None
         and not workload.use_compiled_pattern
-        and workload.text_model == "str"
+        and workload.text_model in {"str", "bytes"}
         and workload.pos is None
         and workload.endpos is None
         and not workload.kwargs

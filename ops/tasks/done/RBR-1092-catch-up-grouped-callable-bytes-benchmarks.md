@@ -1,6 +1,6 @@
 # RBR-1092: Catch up grouped callable bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -58,3 +58,13 @@ Created: 2026-03-23
   - `benchmarks/workloads/collection_replacement_boundary.py` currently contains `module-sub-callable-grouped-warm-str` and `pattern-subn-callable-named-grouped-warm-str`, but no adjacent bytes grouped callable workload ids on that same owner path;
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently anchors only the str grouped callable workload pair on `_COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS`; and
   - `reports/benchmarks/latest.py` currently contains neither `module-sub-callable-grouped-warm-bytes` nor `pattern-subn-callable-named-grouped-purged-bytes`, confirming the exact gap is on the published Python-path benchmark surface rather than in the runtime or correctness owner paths.
+
+## Completion Note
+- Added `module-sub-callable-grouped-warm-bytes` and `pattern-subn-callable-named-grouped-purged-bytes` to `benchmarks/workloads/collection_replacement_boundary.py` on the existing collection/replacement owner path.
+- Extended the shared owner-path benchmark assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the grouped callable selection, anchor mapping, and full-suite summary now include both bytes workloads.
+- Regenerated `reports/benchmarks/latest.py` on the tracked source-tree-shim path. The tracked artifact now publishes `983` total / `983` measured / `0` known gaps overall, `{'cold': 104, 'purged': 425, 'warm': 454}` by cache mode, and `144` selected / measured workloads for `collection-replacement-boundary`, with both new workload ids marked `measured`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_module_matches_cpython or grouped_callable_replacement_pattern_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement or compiled_pattern_module_collection_replacement or standard_benchmark_manifest_preserves_collection_replacement_keyword_descriptors_until_helper_invocation'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-1092-grouped-callable-bytes-benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
