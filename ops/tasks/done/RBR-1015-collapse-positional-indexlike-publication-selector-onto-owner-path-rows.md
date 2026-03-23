@@ -1,6 +1,6 @@
 # RBR-1015: Collapse positional-indexlike publication selector onto owner-path rows
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -78,6 +78,8 @@ Created: 2026-03-23
 - Do not edit fixture manifests, harness modules, benchmark workloads/tests, reports, or README/current-status/backlog prose in this run.
 
 ## Notes
+- Completed 2026-03-23: collapsed the positional-indexlike publication side path in `tests/python/test_module_workflow_parity_suite.py` onto explicit module and pattern owner-path rows, repointed the direct-test bucket plus both publication tests through `_published_owner_path_fixture_cases(...)` / `_assert_noncompiled_owner_path_publication_contract(...)`, and deleted the old signature-matching selector helpers.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_workflow_direct_test_buckets_cover_selected_frontier or module_workflow_surface_publishes_module_positional_indexlike_slice_from_direct_cases or module_workflow_surface_publishes_pattern_positional_indexlike_slice_from_direct_cases'` (`3 passed, 1448 deselected`).
 - `RBR-1015` is the next available unreserved task id in the current checkout:
   - `python3` inspection over `ops/state/backlog.md`, `ops/state/current_status.md`, and the task queues reported `next_free 1015`, with `RBR-1013` and `RBR-1014` already occupied and no reservation for `RBR-1015`.
 - No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in the current checkout.
