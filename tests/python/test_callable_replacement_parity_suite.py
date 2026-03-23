@@ -1087,9 +1087,6 @@ def assert_callable_replacement_return_type_error_parity(
     )
 
 
-CALLABLE_FIXTURE_PATHS = select_correctness_fixture_paths(
-    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
-)
 LITERAL_CALLABLE_PARITY_VARIANTS = (
     pytest.param("sub", 0, False, id="literal-module-sub-replace-all"),
     pytest.param("subn", 1, False, id="literal-module-subn-first-match-only"),
@@ -1534,7 +1531,9 @@ def test_pending_rebar_callable_frontier_matches_live_unimplemented_cases() -> N
 
 
 def test_callable_replacement_selector_tracks_published_callable_manifests() -> None:
-    expected_paths = CALLABLE_FIXTURE_PATHS
+    expected_paths = select_correctness_fixture_paths(
+        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
+    )
 
     assert expected_paths
     assert tuple(bundle.manifest.path for bundle in FIXTURE_BUNDLES) == expected_paths
