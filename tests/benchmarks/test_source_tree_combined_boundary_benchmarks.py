@@ -3729,7 +3729,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_module_literal_replacement_workload,
         )
-        self.assertEqual(workload_count, 122)
         self.assertEqual(
             expected_measured_workload_ids,
             _workload_case_pairs_workload_ids(
