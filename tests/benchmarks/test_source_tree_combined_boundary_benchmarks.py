@@ -3720,12 +3720,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_module_literal_replacement_workload,
         )
-        self.assertEqual(workload_count, 116)
+        self.assertEqual(workload_count, 118)
         self.assertEqual(
             expected_measured_workload_ids,
             _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 6)
+        self.assertEqual(len(expected_measured_workload_ids), 8)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5407,11 +5407,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 955,
-                "module_workloads": 947,
+                "measured_workloads": 957,
+                "module_workloads": 949,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 955,
+                "total_workloads": 957,
             },
         )
 
@@ -8057,18 +8057,22 @@ _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
 _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
     "module-sub-str-no-match-purged-str",
     "module-sub-str-single-match-purged-str",
+    "module-sub-str-repeated-purged-str",
     "module-subn-str-count-purged-str",
     "module-subn-str-repeated-purged-str",
     "module-sub-bytes-no-match-purged-bytes",
+    "module-subn-bytes-count-purged-bytes",
     "module-subn-bytes-repeated-purged-bytes",
 )
 
 _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
     "module-sub-str-no-match",
     "module-sub-str-single-match",
+    "module-sub-str-repeated",
     "module-subn-str-count",
     "module-subn-str-repeated",
     "module-sub-bytes-no-match",
+    "module-subn-bytes-count",
     "module-subn-bytes-repeated",
 )
 
@@ -9564,6 +9568,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 "module-sub-str-single-match-purged-str": (
                     "module-sub-str-single-match",
                 ),
+                "module-sub-str-repeated-purged-str": (
+                    "module-sub-str-repeated",
+                ),
                 "module-subn-str-count-purged-str": (
                     "module-subn-str-count",
                 ),
@@ -9572,6 +9579,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
                 "module-sub-bytes-no-match-purged-bytes": (
                     "module-sub-bytes-no-match",
+                ),
+                "module-subn-bytes-count-purged-bytes": (
+                    "module-subn-bytes-count",
                 ),
                 "module-subn-bytes-repeated-purged-bytes": (
                     "module-subn-bytes-repeated",

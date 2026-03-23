@@ -857,6 +857,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-str-repeated-purged-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "literal",
+        "repeated",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "cache-purge"
+      ],
+      "notes": [
+        "Str module.sub helper path that keeps the raw repeated-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
       "id": "module-subn-str-count-purged-str",
       "bucket": "module-subn",
       "family": "module",
@@ -941,6 +970,35 @@ MANIFEST = {
       ],
       "notes": [
         "Bytes module.sub helper path that keeps the raw no-match literal replacement workflow on the shared collection/replacement benchmark surface."
+      ]
+    },
+    {
+      "id": "module-subn-bytes-count-purged-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "abc",
+      "replacement": "x",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "subn",
+        "bytes",
+        "count",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.subn helper path that keeps the raw count-limited literal replacement workflow on the shared collection/replacement benchmark surface."
       ]
     },
     {
