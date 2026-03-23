@@ -408,10 +408,60 @@ def _paired_mixed_text_contract_bundle() -> FixtureBundle:
     )
 
 
+def _normalized_bytes_payload(value: bytes) -> dict[str, str]:
+    return {
+        "type": "bytes",
+        "encoding": "latin-1",
+        "value": value.decode("latin-1"),
+    }
+
+
 def test_assert_mixed_text_model_case_pairs_returns_str_and_bytes_rows() -> None:
     bundle = _paired_mixed_text_contract_bundle()
 
     str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+
+    assert tuple(case.case_id for case in str_cases) == (
+        "synthetic-mixed-module-search-str",
+        "synthetic-mixed-pattern-search-str",
+    )
+    assert tuple(case.case_id for case in bytes_cases) == (
+        "synthetic-mixed-module-search-bytes",
+        "synthetic-mixed-pattern-search-bytes",
+    )
+
+
+def test_assert_mixed_text_model_case_pairs_accepts_normalized_bytes_payload_rows(
+) -> None:
+    bundle = _paired_mixed_text_contract_bundle()
+    normalized_module_case = replace(
+        bundle.cases[2],
+        source_args=[
+            _normalized_bytes_payload(SYNTHETIC_CASE_PATTERN.encode("latin-1")),
+            _normalized_bytes_payload(b"zzabczz"),
+        ],
+        args=[
+            _normalized_bytes_payload(SYNTHETIC_CASE_PATTERN.encode("latin-1")),
+            _normalized_bytes_payload(b"zzabczz"),
+        ],
+    )
+    normalized_pattern_case = replace(
+        bundle.cases[3],
+        source_args=[_normalized_bytes_payload(b"zzabczz")],
+        args=[_normalized_bytes_payload(b"zzabczz")],
+    )
+
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(
+        replace(
+            bundle,
+            cases=(
+                bundle.cases[0],
+                bundle.cases[1],
+                normalized_module_case,
+                normalized_pattern_case,
+            ),
+        )
+    )
 
     assert tuple(case.case_id for case in str_cases) == (
         "synthetic-mixed-module-search-str",
