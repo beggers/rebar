@@ -1,6 +1,6 @@
 # RBR-1110: Publish quantified nested-group alternation callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,13 @@ Created: 2026-03-23
   - `tests/conformance/test_combined_correctness_scorecards.py` still requires only four representative `str` ids for that manifest, and `reports/correctness/latest.py` still reports `collection.replacement.quantified_nested_group_alternation.callable` with `text_models == ['str']`; and
   - direct public-path probes in this run showed the exact numbered and named bytes `sub()` / `subn(count=1)` calls above now match CPython, so the runtime prerequisite has already landed.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on currently survives after the likely same-cycle drain, so this one-task refill does not need tracked state-prose changes.
+
+## Completion
+- Extended `tests/conformance/fixtures/quantified_nested_group_alternation_callable_replacement_workflows.py` with the adjacent eight bytes callable rows only, keeping the existing `str` rows intact while publishing numbered and named module/pattern `sub()` and `subn(count=1)` workflows for the bounded `rb"a((b|c)+)d"` and `rb"a(?P<outer>(?P<inner>b|c)+)d"` slice.
+- Refreshed the representative manifest expectations in `tests/conformance/test_combined_correctness_scorecards.py` and the adjacent callable fixture-shape contract in `tests/python/test_callable_replacement_parity_suite.py` so the widened published manifest now requires bytes ids and mixed `str`/`bytes` text-model coverage on the existing owner path.
+- Regenerated `reports/correctness/latest.py`; the tracked publication now reports `1629` total / `1629` passed / `0` failed / `0` unimplemented cases, keeps `REPORT["fixtures"]["manifest_count"] == 114`, moves `quantified-nested-group-alternation-callable-replacement-workflows` to `16` total / `16` passed / `0` failed / `0` unimplemented, and shows `collection.replacement.quantified_nested_group_alternation.callable` with `text_models == ['bytes', 'str']`.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'quantified_nested_group_alternation and callable and bytes'`
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

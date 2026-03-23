@@ -565,6 +565,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-str",
             "module-sub-callable-quantified-nested-group-alternation-named-lower-bound-c-branch-str",
             "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-str",
+            "module-sub-callable-quantified-nested-group-alternation-numbered-lower-bound-b-branch-bytes",
+            "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-bytes",
+            "module-sub-callable-quantified-nested-group-alternation-named-mixed-branches-bytes",
+            "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-bytes",
         ),
     ),
     "optional-group-alternation-workflows": CorrectnessScorecardManifestExpectation(

@@ -161,16 +161,26 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-quantified-nested-group-alternation-named-first-match-only-b-branch-str",
                 "pattern-sub-callable-quantified-nested-group-alternation-named-mixed-branches-str",
                 "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-str",
+                "module-sub-callable-quantified-nested-group-alternation-numbered-lower-bound-b-branch-bytes",
+                "module-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-c-branch-bytes",
+                "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-b-branch-bytes",
+                "module-sub-callable-quantified-nested-group-alternation-named-mixed-branches-bytes",
+                "module-subn-callable-quantified-nested-group-alternation-named-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-quantified-nested-group-alternation-named-mixed-branches-bytes",
+                "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
             {
                 r"a((b|c)+)d",
                 r"a(?P<outer>(?P<inner>b|c)+)d",
+                rb"a((b|c)+)d",
+                rb"a(?P<outer>(?P<inner>b|c)+)d",
             }
         ),
-        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
-        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(
             {
                 r"a((b|c)+)d",
