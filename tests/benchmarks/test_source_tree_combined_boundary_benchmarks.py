@@ -16665,18 +16665,15 @@ def _compiled_pattern_module_helper_route(
     )
 
 
-def _contract_source_workload_params(
-    owner_specs: tuple[object, ...],
-) -> tuple[object, ...]:
-    return tuple(
-        pytest.param(
-            owner_spec,
-            source_workload,
-            id=f"{owner_spec.case_id}-{source_workload.workload_id}",
-        )
-        for owner_spec in owner_specs
-        for source_workload in owner_spec.source_workloads()
+_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
+    pytest.param(
+        owner_spec,
+        source_workload,
+        id=f"{owner_spec.case_id}-{source_workload.workload_id}",
     )
+    for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+    for source_workload in owner_spec.source_workloads()
+)
 
 
 @pytest.mark.parametrize(
@@ -16738,7 +16735,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS),
+    _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -16779,7 +16776,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_collection
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS),
+    _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing(
     owner_spec: CompiledPatternModuleSuccessOwnerSpec,
@@ -16806,7 +16803,6 @@ def test_compiled_pattern_module_collection_replacement_success_and_compiled_pat
     assert last_call[0] == expected_callback_call[0]
     assert last_call[1] is compiled_pattern
     assert last_call[2:] == expected_callback_call[1:]
-
 
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
     {
@@ -17189,6 +17185,16 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
     *COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS,
 )
 
+_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = tuple(
+    pytest.param(
+        contract_case,
+        source_workload,
+        id=f"{contract_case.case_id}-{source_workload.workload_id}",
+    )
+    for contract_case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    for source_workload in contract_case.source_workloads()
+)
+
 
 @dataclass(frozen=True)
 class _CompiledPatternModuleContractAnchorLane:
@@ -17412,7 +17418,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES),
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -17452,7 +17458,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _contract_source_workload_params(_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES),
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing(
     contract_case: CompiledPatternModuleCompileContractCase,
@@ -17816,6 +17822,16 @@ WRONG_TEXT_MODEL_OWNER_SPECS = (
     _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC,
 )
 
+_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_PARAMS = tuple(
+    pytest.param(
+        owner_spec,
+        source_workload,
+        id=f"{owner_spec.case_id}-{source_workload.workload_id}",
+    )
+    for owner_spec in WRONG_TEXT_MODEL_OWNER_SPECS
+    for source_workload in owner_spec.source_workloads()
+)
+
 
 @pytest.mark.parametrize(
     "owner_spec",
@@ -17885,7 +17901,7 @@ def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helpe
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(WRONG_TEXT_MODEL_OWNER_SPECS),
+    _WRONG_TEXT_MODEL_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -17926,7 +17942,7 @@ def test_run_internal_workload_probe_measures_wrong_text_model_contract_workload
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    _contract_source_workload_params(WRONG_TEXT_MODEL_OWNER_SPECS),
+    _WRONG_TEXT_MODEL_SOURCE_WORKLOAD_PARAMS,
 )
 def test_wrong_text_model_callbacks_preserve_precompile_contract(
     owner_spec: WrongTextModelOwnerSpec,
