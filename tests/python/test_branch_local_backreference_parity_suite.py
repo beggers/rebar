@@ -460,12 +460,12 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
         },
     ),
 )
-
-
-def _direct_bytes_follow_on_cases() -> tuple[BranchLocalBackreferenceBytesFollowOnCase, ...]:
-    return tuple(
-        case for spec in DIRECT_BYTES_FOLLOW_ON_SPECS for case in spec.cases
-    )
+DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
+    case for spec in DIRECT_BYTES_FOLLOW_ON_SPECS for case in spec.cases
+)
+DIRECT_BYTES_FOLLOW_ON_PARAMS = tuple(
+    pytest.param(case, id=case.id) for case in DIRECT_BYTES_FOLLOW_ON_CASES
+)
 
 
 def _iter_fixture_cases() -> Iterator[FixtureCase]:
@@ -484,7 +484,7 @@ def _simple_backreference_workflow_case_ids() -> tuple[str, ...]:
 
 SUPPORTED_DIRECT_BYTES_PATTERNS = frozenset(
     case.pattern
-    for case in _direct_bytes_follow_on_cases()
+    for case in DIRECT_BYTES_FOLLOW_ON_CASES
     if not case.unsupported_backends
 )
 CASES_BY_ID = {case.case_id: case for case in _iter_fixture_cases()}
@@ -1381,9 +1381,7 @@ def test_published_workflows_match_cpython(
         assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
-)
+@pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_PARAMS)
 def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     case: BranchLocalBackreferenceBytesFollowOnCase,
@@ -1392,9 +1390,7 @@ def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
     compile_with_cpython_parity(backend_name, backend, case.pattern)
 
 
-@pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
-)
+@pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_PARAMS)
 def test_direct_bytes_follow_on_module_search_matches_cpython(
     regex_backend: tuple[str, object],
     case: BranchLocalBackreferenceBytesFollowOnCase,
@@ -1410,9 +1406,7 @@ def test_direct_bytes_follow_on_module_search_matches_cpython(
         assert_match_result_parity(backend_name, observed, expected, check_regs=True)
 
 
-@pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
-)
+@pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_PARAMS)
 def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: BranchLocalBackreferenceBytesFollowOnCase,
@@ -1428,9 +1422,7 @@ def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpyt
         assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
-)
+@pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_PARAMS)
 def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: BranchLocalBackreferenceBytesFollowOnCase,
@@ -1447,9 +1439,7 @@ def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython
         assert_invalid_match_group_access_parity(observed, expected)
 
 
-@pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
-)
+@pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_PARAMS)
 def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
     case: BranchLocalBackreferenceBytesFollowOnCase,
@@ -1478,9 +1468,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
         )
 
 
-@pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
-)
+@pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_PARAMS)
 def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: BranchLocalBackreferenceBytesFollowOnCase,
@@ -1501,9 +1489,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_
         assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize(
-    "case", _direct_bytes_follow_on_cases(), ids=lambda case: case.id
-)
+@pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_PARAMS)
 def test_direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: BranchLocalBackreferenceBytesFollowOnCase,
