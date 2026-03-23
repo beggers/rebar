@@ -389,6 +389,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-bytes-single-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        }
+      ],
+      "categories": ["workflow", "sub", "literal", "bytes", "single-match"],
+      "notes": [
+        "Publishes the raw bytes module sub helper outcome for a single literal match."
+      ]
+    },
+    {
       "id": "module-sub-bytes-repeated",
       "operation": "module_call",
       "family": "replacement_workflow",
