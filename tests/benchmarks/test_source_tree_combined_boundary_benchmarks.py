@@ -3707,7 +3707,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             expected_measured_workload_ids,
-            _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+            _workload_case_pairs_workload_ids(
+                _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+            ),
         )
         self.assertEqual(len(expected_measured_workload_ids), 10)
         self._assert_zero_gap_manifest_workloads_measured(
@@ -3730,7 +3732,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(workload_count, 122)
         self.assertEqual(
             expected_measured_workload_ids,
-            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+            _workload_case_pairs_workload_ids(
+                _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+            ),
         )
         self.assertEqual(len(expected_measured_workload_ids), 10)
         self._assert_zero_gap_manifest_workloads_measured(
@@ -8052,56 +8056,39 @@ _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_CASE_PAIRS = (
     ("pattern-split-maxsplit-purged-bytes", "pattern-split-bytes-maxsplit"),
 )
 
-_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
-    "pattern-sub-no-match-warm-str",
-    "pattern-sub-single-match-warm-str",
-    "pattern-sub-negative-count-warm-str",
-    "pattern-sub-bytes-no-match-purged-bytes",
-    "pattern-sub-bytes-single-match-purged-bytes",
-    "pattern-subn-count-warm-str",
-    "pattern-subn-repeated-warm-str",
-    "pattern-subn-negative-count-warm-str",
-    "pattern-subn-bytes-count-purged-bytes",
-    "pattern-subn-bytes-repeated-purged-bytes",
+_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
+    ("pattern-sub-no-match-warm-str", "pattern-sub-str-no-match"),
+    ("pattern-sub-single-match-warm-str", "pattern-sub-str-single-match"),
+    ("pattern-sub-negative-count-warm-str", "pattern-sub-str-negative-count"),
+    ("pattern-sub-bytes-no-match-purged-bytes", "pattern-sub-bytes-no-match"),
+    (
+        "pattern-sub-bytes-single-match-purged-bytes",
+        "pattern-sub-bytes-single-match",
+    ),
+    ("pattern-subn-count-warm-str", "pattern-subn-str-count"),
+    ("pattern-subn-repeated-warm-str", "pattern-subn-str-repeated"),
+    ("pattern-subn-negative-count-warm-str", "pattern-subn-str-negative-count"),
+    ("pattern-subn-bytes-count-purged-bytes", "pattern-subn-bytes-count"),
+    (
+        "pattern-subn-bytes-repeated-purged-bytes",
+        "pattern-subn-bytes-repeated",
+    ),
 )
 
-_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
-    "pattern-sub-str-no-match",
-    "pattern-sub-str-single-match",
-    "pattern-sub-str-negative-count",
-    "pattern-sub-bytes-no-match",
-    "pattern-sub-bytes-single-match",
-    "pattern-subn-str-count",
-    "pattern-subn-str-repeated",
-    "pattern-subn-str-negative-count",
-    "pattern-subn-bytes-count",
-    "pattern-subn-bytes-repeated",
-)
-
-_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
-    "module-sub-str-no-match-purged-str",
-    "module-sub-str-single-match-purged-str",
-    "module-sub-str-repeated-purged-str",
-    "module-sub-str-negative-count-purged-str",
-    "module-subn-str-count-purged-str",
-    "module-subn-str-repeated-purged-str",
-    "module-subn-str-negative-count-purged-str",
-    "module-sub-bytes-no-match-purged-bytes",
-    "module-subn-bytes-count-purged-bytes",
-    "module-subn-bytes-repeated-purged-bytes",
-)
-
-_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
-    "module-sub-str-no-match",
-    "module-sub-str-single-match",
-    "module-sub-str-repeated",
-    "module-sub-str-negative-count",
-    "module-subn-str-count",
-    "module-subn-str-repeated",
-    "module-subn-str-negative-count",
-    "module-sub-bytes-no-match",
-    "module-subn-bytes-count",
-    "module-subn-bytes-repeated",
+_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
+    ("module-sub-str-no-match-purged-str", "module-sub-str-no-match"),
+    ("module-sub-str-single-match-purged-str", "module-sub-str-single-match"),
+    ("module-sub-str-repeated-purged-str", "module-sub-str-repeated"),
+    ("module-sub-str-negative-count-purged-str", "module-sub-str-negative-count"),
+    ("module-subn-str-count-purged-str", "module-subn-str-count"),
+    ("module-subn-str-repeated-purged-str", "module-subn-str-repeated"),
+    (
+        "module-subn-str-negative-count-purged-str",
+        "module-subn-str-negative-count",
+    ),
+    ("module-sub-bytes-no-match-purged-bytes", "module-sub-bytes-no-match"),
+    ("module-subn-bytes-count-purged-bytes", "module-subn-bytes-count"),
+    ("module-subn-bytes-repeated-purged-bytes", "module-subn-bytes-repeated"),
 )
 
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
@@ -8359,7 +8346,9 @@ def _pattern_collection_replacement_literal_replacement_correctness_case_signatu
 ) -> tuple[Any, ...] | None:
     return _collection_replacement_literal_replacement_correctness_case_signature(
         case,
-        case_ids=_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS,
+        case_ids=_workload_case_pairs_case_ids(
+            _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+        ),
         expected_operation="pattern_call",
         operation_prefix="pattern",
         args_offset=0,
@@ -8371,7 +8360,9 @@ def _module_collection_replacement_literal_replacement_correctness_case_signatur
 ) -> tuple[Any, ...] | None:
     return _collection_replacement_literal_replacement_correctness_case_signature(
         case,
-        case_ids=_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS,
+        case_ids=_workload_case_pairs_case_ids(
+            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+        ),
         expected_operation="module_call",
         operation_prefix="module",
         args_offset=1,
@@ -8453,7 +8444,9 @@ def _is_collection_replacement_module_literal_replacement_workload(
 ) -> bool:
     return _is_collection_replacement_literal_replacement_workload(
         workload,
-        workload_ids=_MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+        workload_ids=_workload_case_pairs_workload_ids(
+            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+        ),
         operations=("module.sub", "module.subn"),
         text_models=("str", "bytes"),
         allowed_counts=(-1, 0, 1),
@@ -8503,7 +8496,9 @@ def _is_collection_replacement_pattern_literal_replacement_workload(
 ) -> bool:
     return _is_collection_replacement_literal_replacement_workload(
         workload,
-        workload_ids=_PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+        workload_ids=_workload_case_pairs_workload_ids(
+            _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+        ),
         operations=("pattern.sub", "pattern.subn"),
         text_models=("str", "bytes"),
     )
@@ -9570,40 +9565,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-module-literal-replacement",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
+        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
             COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            {
-                "module-sub-str-no-match-purged-str": (
-                    "module-sub-str-no-match",
-                ),
-                "module-sub-str-single-match-purged-str": (
-                    "module-sub-str-single-match",
-                ),
-                "module-sub-str-repeated-purged-str": (
-                    "module-sub-str-repeated",
-                ),
-                "module-sub-str-negative-count-purged-str": (
-                    "module-sub-str-negative-count",
-                ),
-                "module-subn-str-count-purged-str": (
-                    "module-subn-str-count",
-                ),
-                "module-subn-str-repeated-purged-str": (
-                    "module-subn-str-repeated",
-                ),
-                "module-subn-str-negative-count-purged-str": (
-                    "module-subn-str-negative-count",
-                ),
-                "module-sub-bytes-no-match-purged-bytes": (
-                    "module-sub-bytes-no-match",
-                ),
-                "module-subn-bytes-count-purged-bytes": (
-                    "module-subn-bytes-count",
-                ),
-                "module-subn-bytes-repeated-purged-bytes": (
-                    "module-subn-bytes-repeated",
-                ),
-            },
+            _MODULE_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
         ),
         include_workload=(
             _is_collection_replacement_module_literal_replacement_workload
@@ -9619,40 +9583,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-pattern-literal-replacement",
         manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
+        expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
             COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            {
-                "pattern-sub-no-match-warm-str": (
-                    "pattern-sub-str-no-match",
-                ),
-                "pattern-sub-single-match-warm-str": (
-                    "pattern-sub-str-single-match",
-                ),
-                "pattern-sub-negative-count-warm-str": (
-                    "pattern-sub-str-negative-count",
-                ),
-                "pattern-sub-bytes-no-match-purged-bytes": (
-                    "pattern-sub-bytes-no-match",
-                ),
-                "pattern-sub-bytes-single-match-purged-bytes": (
-                    "pattern-sub-bytes-single-match",
-                ),
-                "pattern-subn-count-warm-str": (
-                    "pattern-subn-str-count",
-                ),
-                "pattern-subn-repeated-warm-str": (
-                    "pattern-subn-str-repeated",
-                ),
-                "pattern-subn-negative-count-warm-str": (
-                    "pattern-subn-str-negative-count",
-                ),
-                "pattern-subn-bytes-count-purged-bytes": (
-                    "pattern-subn-bytes-count",
-                ),
-                "pattern-subn-bytes-repeated-purged-bytes": (
-                    "pattern-subn-bytes-repeated",
-                ),
-            },
+            _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
         ),
         include_workload=(
             _is_collection_replacement_pattern_literal_replacement_workload
