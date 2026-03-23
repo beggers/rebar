@@ -563,13 +563,14 @@ class PatternPositionalIndexLikeCallCase:
     flags: int = 0
 
 
+_OwnerPathDirectCaseT = TypeVar("_OwnerPathDirectCaseT", covariant=True)
 _DirectCaseT = TypeVar("_DirectCaseT")
 
 
 @dataclass(frozen=True)
-class _CanonicalOwnerPathRow(Generic[_DirectCaseT]):
+class _CanonicalOwnerPathRow(Generic[_OwnerPathDirectCaseT]):
     fixture_case_id: str
-    direct_case: _DirectCaseT
+    direct_case: _OwnerPathDirectCaseT
     text_model: str
 
 
@@ -619,14 +620,6 @@ def _module_args_owner_path_row(
         direct_case=direct_case,
         text_model=_owner_path_text_model(pattern),
     )
-
-
-class _OwnerPathRow(Protocol[_DirectCaseT]):
-    fixture_case_id: str
-    direct_case: _DirectCaseT
-
-    @property
-    def text_model(self) -> str: ...
 
 
 class _CollectionHelperCase(Protocol):
@@ -2015,7 +2008,7 @@ MODULE_KEYWORD_PUBLICATION_OWNER_PATH_ROWS = tuple(
 
 
 def _owner_path_fixture_case_ids(
-    rows: tuple[_OwnerPathRow[object], ...],
+    rows: tuple[_CanonicalOwnerPathRow[object], ...],
     text_model: str | None = None,
 ) -> tuple[str, ...]:
     return tuple(
@@ -2434,7 +2427,7 @@ PATTERN_DUAL_INDEXLIKE_WINDOW_CASES = tuple(
 
 def _assert_owner_path_publication_contract(
     fixture_cases: tuple[FixtureCase, ...],
-    rows: tuple[_OwnerPathRow[_DirectCaseT], ...],
+    rows: tuple[_CanonicalOwnerPathRow[_DirectCaseT], ...],
     *,
     expected_count: int,
     expected_helper_counts: Counter[str],
@@ -2500,7 +2493,7 @@ _NonCompiledPublicationDirectCase = (
 
 def _assert_noncompiled_owner_path_publication_contract(
     fixture_cases: tuple[FixtureCase, ...],
-    rows: tuple[_OwnerPathRow[_NonCompiledPublicationDirectCase], ...],
+    rows: tuple[_CanonicalOwnerPathRow[_NonCompiledPublicationDirectCase], ...],
     *,
     expected_count: int,
     expected_helper_counts: Counter[str],
