@@ -1,8 +1,9 @@
 # RBR-1053: Publish the direct `module.subn()` bytes single-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
+Completed: 2026-03-23
 
 ## Goal
 - Reopen the shared `collection-replacement-workflows` correctness frontier with the still-unpublished direct raw-module `bytes` `subn()` single-match row that the live source-package runtime already matches against CPython, publishing that exact owner-path outcome before the matching Python-path benchmark catch-up, direct raw-module `bytes` negative-count or no-match follow-ons, pattern `subn()` follow-ons, grouped-template rows, callable replacement rows, or another owner family reopens the queue.
@@ -65,6 +66,7 @@ Created: 2026-03-23
 - Keep the scope pinned to the one direct raw-module `bytes` `subn()` single-match row above. Leave the matching Python-path benchmark catch-up on `benchmarks/workloads/collection_replacement_boundary.py`, direct raw-module `bytes` negative-count or no-match follow-ons, pattern `subn()` bytes single-match, grouped-template rows, callable replacement rows, and deeper direct replacement expansion for later tasks.
 
 ## Notes
+- Completed 2026-03-23: published `module-subn-bytes-single-match` on the shared `collection-replacement-workflows` correctness path, extended the shared direct-module literal replacement publication selector/order assertions, kept the owner path bounded to the existing manifest/parity suite, and regenerated `reports/correctness/latest.py` to `1590` total / `1590` passed / `0` failed / `0` unimplemented across `114` manifests. Verified with the two targeted parity checks, the full `tests/python/test_fixture_backed_replacement_parity_suite.py` and `tests/conformance/test_combined_correctness_scorecards.py` gate, a narrow manifest-local correctness run (`53`/`53`), and the published combined correctness refresh.
 - `RBR-1053` is the next available feature task id in the current checkout:
   - `RBR-1052` is already occupied by the active collection/replacement benchmark catch-up task in `ops/tasks/ready/`; and
   - no blocked feature task exists to reopen first because `ops/tasks/blocked/` is empty in this checkout.

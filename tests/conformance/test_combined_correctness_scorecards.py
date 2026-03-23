@@ -283,6 +283,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-bytes-repeated",
             "module-sub-bytes-count-one",
             "module-subn-bytes-count",
+            "module-subn-bytes-single-match",
             "module-subn-bytes-repeated",
             "pattern-sub-bytes-no-match",
             "pattern-sub-bytes-single-match",

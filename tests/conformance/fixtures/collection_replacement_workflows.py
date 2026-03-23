@@ -503,6 +503,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-bytes-single-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabczz"
+        }
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "single-match"],
+      "notes": [
+        "Publishes the raw bytes module subn helper outcome for a single literal match."
+      ]
+    },
+    {
       "id": "module-subn-bytes-repeated",
       "operation": "module_call",
       "family": "replacement_workflow",

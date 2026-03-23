@@ -181,13 +181,13 @@ PUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
     "module-sub-bytes-repeated",
     "module-sub-bytes-count-one",
     "module-subn-bytes-count",
+    "module-subn-bytes-single-match",
     "module-subn-bytes-repeated",
 )
 UNPUBLISHED_DIRECT_LITERAL_MODULE_REPLACEMENT_CASE_IDS = (
-    "module-subn-str-no-match",
     "module-subn-str-single-match",
+    "module-subn-str-no-match",
     "module-subn-bytes-no-match",
-    "module-subn-bytes-single-match",
 )
 PUBLISHED_DIRECT_LITERAL_PATTERN_REPLACEMENT_CASE_IDS = (
     "pattern-sub-str-no-match",
@@ -243,7 +243,7 @@ _LITERAL_REPLACEMENT_COUNT_COERCION_VALUES = (
 )
 _DIRECT_MODULE_LITERAL_REPLACEMENT_SUFFIX_ORDER = {
     "sub": ("no-match", "single-match", "repeated", "count-one", "negative-count"),
-    "subn": ("count", "repeated", "negative-count", "no-match", "single-match"),
+    "subn": ("count", "single-match", "repeated", "negative-count", "no-match"),
 }
 
 
@@ -2635,6 +2635,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "module-sub-bytes-repeated": (b"abc", b"x", b"zabcabc"),
             "module-sub-bytes-count-one": (b"abc", b"x", b"abcabc", 1),
             "module-subn-bytes-count": (b"abc", b"x", b"abcabc", 1),
+            "module-subn-bytes-single-match": (b"abc", b"x", b"zabczz"),
             "module-subn-bytes-repeated": (b"abc", b"x", b"abcabc"),
         },
         expected_helpers=(
@@ -2652,6 +2653,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "sub",
             "subn",
             "subn",
+            "subn",
         ),
         expected_text_models=(
             "str",
@@ -2662,6 +2664,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "str",
             "str",
             "str",
+            "bytes",
             "bytes",
             "bytes",
             "bytes",
