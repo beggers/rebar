@@ -43,6 +43,7 @@ const VERBOSE_COMPILE_REGRESSION_BYTES_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOS
 const VERBOSE_COMPILE_REGRESSION_GROUP_NAME: &str = "key";
 const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
     r"(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\d{2}))?(?:(?<=foo)bar)?(?P=lemma)";
+const BYTES_GROUPED_LITERAL_PATTERN: &[u8] = br"(abc)";
 const BYTES_NAMED_GROUP_LITERAL_PATTERN: &[u8] = br"(?P<word>abc)";
 const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
@@ -2873,6 +2874,18 @@ fn compile_known_supported_case(
                     name: "lemma".to_string(),
                     index: 1,
                 }],
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if pattern == BYTES_GROUPED_LITERAL_PATTERN && normalized_flags == 0 =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: Vec::new(),
                 warning: None,
             })
         }
@@ -10228,6 +10241,63 @@ pub fn grouped_literal_captures_find_spans_str(
     }
 }
 
+/// Discover repeated spans for the exact grouped-literal callable replacement
+/// bytes slice while preserving the single capture span on each match.
+#[must_use]
+pub fn grouped_literal_captures_find_spans_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    if pattern != BYTES_GROUPED_LITERAL_PATTERN && pattern != BYTES_NAMED_GROUP_LITERAL_PATTERN {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+    if flags != 0 {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((start, end)) = find_match_span_bytes(
+        b"abc",
+        flags,
+        MatchMode::Search,
+        string,
+        next_start,
+        normalized_endpos,
+    ) {
+        matches.push(CapturedMatchSpan {
+            span: (start, end),
+            group_spans: vec![Some((start, end))],
+        });
+        next_start = end;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
 /// Discover repeated spans for the bounded grouped-alternation replacement
 /// slice while preserving first-capture spans for template expansion.
 #[must_use]
@@ -17538,10 +17608,11 @@ mod tests {
         conditional_group_exists_no_else_find_spans_str,
         conditional_group_exists_quantified_find_spans_str, escape_bytes, escape_str,
         expand_literal_replacement_template_str, grouped_alternation_find_spans_str,
-        grouped_literal_captures_find_spans_str, grouped_literal_find_spans_str, literal_find_spans, literal_match,
-        nested_capture_find_spans_str, CapturedMatchSpan, CompileStatus,
-        GroupedAlternationMatchSpan, MatchMode, MatchStatus, NamedGroup, PatternRef, FLAG_ASCII,
-        FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE, PARSER_STRESS_COMPILE_PROXY_PATTERN,
+        grouped_literal_captures_find_spans_str, grouped_literal_find_spans_str,
+        literal_find_spans, literal_match, nested_capture_find_spans_str, CapturedMatchSpan,
+        CompileStatus, GroupedAlternationMatchSpan, MatchMode, MatchStatus, NamedGroup, PatternRef,
+        FLAG_ASCII, FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE,
+        PARSER_STRESS_COMPILE_PROXY_PATTERN,
     };
 
     #[test]

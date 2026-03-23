@@ -18,6 +18,7 @@ use rebar_core::{
     expand_literal_replacement_template_bytes as core_expand_literal_replacement_template_bytes,
     expand_literal_replacement_template_str as core_expand_literal_replacement_template_str,
     grouped_alternation_find_spans_str as core_grouped_alternation_find_spans_str,
+    grouped_literal_captures_find_spans_bytes as core_grouped_literal_captures_find_spans_bytes,
     grouped_literal_captures_find_spans_str as core_grouped_literal_captures_find_spans_str,
     grouped_literal_find_spans_str as core_grouped_literal_find_spans_str,
     literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
@@ -464,6 +465,35 @@ fn boundary_grouped_literal_finditer(
     Vec<Vec<Option<(usize, usize)>>>,
 ) {
     let outcome = core_grouped_literal_captures_find_spans_str(pattern, flags, string, pos, endpos);
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_grouped_literal_finditer_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome =
+        core_grouped_literal_captures_find_spans_bytes(pattern, flags, string, pos, endpos);
     (
         workflow_status(outcome.status),
         outcome.pos,
@@ -1716,8 +1746,9 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
         boundary_grouped_alternation_finditer,
         module
     )?)?;
+    module.add_function(wrap_pyfunction!(boundary_grouped_literal_finditer, module)?)?;
     module.add_function(wrap_pyfunction!(
-        boundary_grouped_literal_finditer,
+        boundary_grouped_literal_finditer_bytes,
         module
     )?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_subn, module)?)?;

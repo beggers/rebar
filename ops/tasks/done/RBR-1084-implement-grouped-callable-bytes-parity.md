@@ -1,6 +1,6 @@
 # RBR-1084: Implement grouped callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -54,3 +54,12 @@ Created: 2026-03-23
   - `rebar.sub(rb"(abc)", lambda m: b"<" + m.group(1) + b">", b"abcabc")` still raises `NotImplementedError` while CPython returns `b"<abc><abc>"`;
   - `rebar.compile(rb"(?P<word>abc)").subn(lambda m: b"<" + m.group("word") + b">", b"abcabc", 1)` still raises `NotImplementedError` while CPython returns `(b"<abc>abc", 1)`; and
   - adjacent same-family publication and benchmark anchors already exist and are green in the tracked reports (`nested-group-callable-replacement-workflows`, `grouped-alternation-callable-replacement-workflows`, `nested-group-callable-replacement-boundary`, and `grouped-alternation-callable-replacement-boundary`), so the remaining missing work here is the exact simple grouped bytes implementation prerequisite rather than a report-only catch-up slice.
+
+## Completion
+- Added exact Rust-backed bytes grouped-callable support for `rb"(abc)"` and `rb"(?P<word>abc)"` on the existing callable replacement path, including `subn(count=1)` parity for module and compiled-pattern flows.
+- Verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_module_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_pattern_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'test_module_callable_replacement_matches_cpython or test_pattern_callable_replacement_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation or test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases'`
+- No correctness fixture manifests, benchmark manifests, published reports, README text, or tracked state prose changed in this task.

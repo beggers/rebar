@@ -2530,16 +2530,20 @@ def test_pattern_bytes_callable_replacement_none_count_matches_cpython_typeerror
 
 
 @pytest.mark.parametrize(
-    ("helper", "count"),
+    ("helper", "count", "pattern", "string"),
     (
-        pytest.param("sub", 0, id="sub"),
-        pytest.param("subn", 1, id="subn-count-one"),
+        pytest.param("sub", 0, "(abc)", "abcabc", id="str-sub"),
+        pytest.param("subn", 1, "(abc)", "abcabc", id="str-subn-count-one"),
+        pytest.param("sub", 0, rb"(abc)", b"abcabc", id="bytes-sub"),
+        pytest.param("subn", 1, rb"(abc)", b"abcabc", id="bytes-subn-count-one"),
     ),
 )
 def test_grouped_callable_replacement_module_matches_cpython(
     regex_backend: tuple[str, object],
     helper: str,
     count: int,
+    pattern: TextValue,
+    string: TextValue,
 ) -> None:
     backend_name, backend = regex_backend
 
@@ -2547,23 +2551,39 @@ def test_grouped_callable_replacement_module_matches_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=helper,
-        pattern="(abc)",
-        string="abcabc",
+        pattern=pattern,
+        string=string,
         count=count,
     )
 
 
 @pytest.mark.parametrize(
-    ("helper", "count"),
+    ("helper", "count", "pattern", "string"),
     (
-        pytest.param("sub", 0, id="sub"),
-        pytest.param("subn", 1, id="subn-count-one"),
+        pytest.param("sub", 0, "(?P<word>abc)", "abcabc", id="str-sub"),
+        pytest.param(
+            "subn",
+            1,
+            "(?P<word>abc)",
+            "abcabc",
+            id="str-subn-count-one",
+        ),
+        pytest.param("sub", 0, rb"(?P<word>abc)", b"abcabc", id="bytes-sub"),
+        pytest.param(
+            "subn",
+            1,
+            rb"(?P<word>abc)",
+            b"abcabc",
+            id="bytes-subn-count-one",
+        ),
     ),
 )
 def test_grouped_callable_replacement_pattern_matches_cpython(
     regex_backend: tuple[str, object],
     helper: str,
     count: int,
+    pattern: TextValue,
+    string: TextValue,
 ) -> None:
     backend_name, backend = regex_backend
 
@@ -2571,8 +2591,8 @@ def test_grouped_callable_replacement_pattern_matches_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=helper,
-        pattern="(?P<word>abc)",
-        string="abcabc",
+        pattern=pattern,
+        string=string,
         count=count,
         group_names=("word",),
         use_compiled_pattern=True,
