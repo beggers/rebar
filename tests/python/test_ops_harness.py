@@ -1475,6 +1475,49 @@ class ReadmeReportingTest(unittest.TestCase):
                             type_error_label="correctness scorecard",
                         )
 
+    def test_scorecard_load_python_dict_attribute_surfaces_syntax_errors_from_module_execution(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = pathlib.Path(temp_dir) / "syntax_error.py"
+            report_path.write_text("REPORT = {\n", encoding="utf-8")
+
+            with self.assertRaises(SyntaxError) as raised:
+                scorecard_io.load_python_dict_attribute(
+                    report_path,
+                    module_name_prefix="_scorecard_io_contract",
+                    attribute_name="REPORT",
+                    load_error_label="Python correctness scorecard",
+                    missing_error_label="Python correctness scorecard module",
+                    type_error_label="correctness scorecard",
+                )
+
+            self.assertEqual(raised.exception.filename, str(report_path))
+            self.assertEqual(raised.exception.lineno, 1)
+
+    def test_scorecard_load_python_dict_attribute_surfaces_runtime_errors_from_module_execution(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = pathlib.Path(temp_dir) / "runtime_error.py"
+            report_path.write_text(
+                'raise RuntimeError("boom loading scorecard")\n',
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                RuntimeError,
+                re.escape("boom loading scorecard"),
+            ):
+                scorecard_io.load_python_dict_attribute(
+                    report_path,
+                    module_name_prefix="_scorecard_io_contract",
+                    attribute_name="REPORT",
+                    load_error_label="Python correctness scorecard",
+                    missing_error_label="Python correctness scorecard module",
+                    type_error_label="correctness scorecard",
+                )
+
     def test_scorecard_report_round_trips_for_supported_extensions(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = pathlib.Path(temp_dir)
