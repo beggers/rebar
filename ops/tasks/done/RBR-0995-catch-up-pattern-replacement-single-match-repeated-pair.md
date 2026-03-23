@@ -1,6 +1,6 @@
 # RBR-0995: Catch up the direct `Pattern.sub()` / `Pattern.subn()` single-match/repeated pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -61,3 +61,13 @@ Created: 2026-03-23
   - `rg -n 'pattern-sub-single-match-warm-str|pattern-subn-repeated-warm-str' benchmarks/workloads/collection_replacement_boundary.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py reports/benchmarks/latest.py` currently returns no matches, while `rg -n 'pattern-sub-str-single-match|pattern-subn-str-repeated' tests/conformance/fixtures/collection_replacement_workflows.py tests/python/test_fixture_backed_replacement_parity_suite.py reports/correctness/latest.py` finds both published correctness anchors, confirming the benchmark ids are still absent from the tracked Python-path benchmark surface;
   - a direct synthetic workload probe through `rebar_harness.benchmarks.Workload.from_dict(...)`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` returns `status == "measured"` for both adapters on both hypothetical workloads `pattern-sub-single-match-warm-str` and `pattern-subn-repeated-warm-str`; and
   - `reports/benchmarks/latest.py` currently reports `943` total / `943` measured / `0` known gaps overall, with `collection-replacement-boundary` at `104` selected / `104` measured / `104` workload-count rows.
+
+## Completion
+- 2026-03-23: Added `pattern-sub-single-match-warm-str` and `pattern-subn-repeated-warm-str` to `benchmarks/workloads/collection_replacement_boundary.py` in the required owner-route order immediately after `pattern-sub-no-match-warm-str` and `pattern-subn-count-warm-str`.
+- Extended the shared owner-path assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the direct literal replacement contract now maps the ordered workload ids `pattern-sub-no-match-warm-str`, `pattern-sub-single-match-warm-str`, `pattern-subn-count-warm-str`, and `pattern-subn-repeated-warm-str` to the published correctness anchors `pattern-sub-str-no-match`, `pattern-sub-str-single-match`, `pattern-subn-str-count`, and `pattern-subn-str-repeated`, while updating the manifest-size and full-suite summary expectations to `106` manifest rows and `945` total measured workloads.
+- Regenerated the tracked `reports/benchmarks/latest.py` publication on the source-tree-shim path; the tracked scorecard now reports `945` total / `945` measured / `0` known gaps overall, with `module_workloads == 937`, `parser_workloads == 8`, `regression_workloads == 8`, and `collection-replacement-boundary` at `106` selected / `106` measured / `106` workload-count rows. The tracked artifact also publishes both `pattern-sub-single-match-warm-str` and `pattern-subn-repeated-warm-str` with `status == "measured"`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_pattern_literal_replacement_helpers_match_cpython and (str-single-match or str-repeated-match)'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured or standard_benchmark_anchor_contract or published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/collection_replacement_boundary.py --report .rebar/tmp/rbr-0995-pattern-replacement-single-match-repeated-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

@@ -3674,7 +3674,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_pattern_split_workload,
         )
-        self.assertEqual(workload_count, 104)
+        self.assertEqual(workload_count, 106)
         self.assertEqual(
             expected_measured_workload_ids,
             _PATTERN_COLLECTION_REPLACEMENT_SPLIT_WORKLOAD_IDS,
@@ -3697,12 +3697,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_pattern_literal_replacement_workload,
         )
-        self.assertEqual(workload_count, 104)
+        self.assertEqual(workload_count, 106)
         self.assertEqual(
             expected_measured_workload_ids,
             _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 2)
+        self.assertEqual(len(expected_measured_workload_ids), 4)
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -5384,11 +5384,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 943,
-                "module_workloads": 935,
+                "measured_workloads": 945,
+                "module_workloads": 937,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 943,
+                "total_workloads": 945,
             },
         )
 
@@ -8011,12 +8011,16 @@ _PATTERN_COLLECTION_REPLACEMENT_SPLIT_CASE_IDS = (
 
 _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_WORKLOAD_IDS = (
     "pattern-sub-no-match-warm-str",
+    "pattern-sub-single-match-warm-str",
     "pattern-subn-count-warm-str",
+    "pattern-subn-repeated-warm-str",
 )
 
 _PATTERN_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_CASE_IDS = (
     "pattern-sub-str-no-match",
+    "pattern-sub-str-single-match",
     "pattern-subn-str-count",
+    "pattern-subn-str-repeated",
 )
 
 _PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
