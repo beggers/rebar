@@ -90,6 +90,20 @@ def test_regex_backend_ignores_unsupported_backend_metadata_for_other_backends()
     assert backend is python_conftest.re
 
 
+def test_regex_backend_ignores_plain_param_values_without_backend_metadata() -> None:
+    backend_name, backend = _invoke_regex_backend(
+        "stdlib",
+        parametrized_values={
+            "case": "literal-case-id",
+            "count": 2,
+            "carrier": SimpleNamespace(marker="value"),
+        },
+    )
+
+    assert backend_name == "stdlib"
+    assert backend is python_conftest.re
+
+
 def test_regex_backend_treats_none_unsupported_backends_as_unfiltered() -> None:
     backend_name, backend = _invoke_regex_backend(
         "rebar",
@@ -97,6 +111,20 @@ def test_regex_backend_treats_none_unsupported_backends_as_unfiltered() -> None:
             "case": _BackendCase(
                 unsupported_backends=None,
                 unsupported_backend_reason="ignored metadata",
+            ),
+        },
+    )
+
+    assert backend_name == "rebar"
+    assert backend is rebar
+
+
+def test_regex_backend_ignores_orphan_reason_without_unsupported_backends() -> None:
+    backend_name, backend = _invoke_regex_backend(
+        "rebar",
+        parametrized_values={
+            "case": SimpleNamespace(
+                unsupported_backend_reason="orphan fixture gap",
             ),
         },
     )
