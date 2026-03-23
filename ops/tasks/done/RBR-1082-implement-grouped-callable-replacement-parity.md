@@ -1,6 +1,6 @@
 # RBR-1082: Implement grouped callable replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -53,3 +53,9 @@ Created: 2026-03-23
   - a direct runtime probe showed `rebar.sub("(abc)", lambda m: f"<{m.group(1)}>", "abcabc")` still raises `NotImplementedError: rebar.sub() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet` while CPython returns `"<abc><abc>"`;
   - a direct runtime probe showed `rebar.compile("(?P<word>abc)").sub(lambda m: f"<{m.group('word')}>", "abcabc")` still raises `NotImplementedError: rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet` while CPython returns `"<abc><abc>"`; and
   - `tests/python/test_callable_replacement_parity_suite.py -k 'callable and (module or pattern)'` is already green on the adjacent literal callable owner path, so the missing work is the grouped callable implementation slice itself rather than generic callable harness scaffolding.
+
+## Completion Notes
+- Added a capture-aware grouped-literal repeat helper on the Rust replacement path, exposed it through the PyO3 boundary, and wired Python callable replacement dispatch to use it for the exact `(abc)` and `(?P<word>abc)` grouped callable slice.
+- Added bounded direct parity coverage in `tests/python/test_callable_replacement_parity_suite.py` for the numbered module `sub()` path, the named compiled-pattern `sub()` path, and their `subn(count=1)` variants without widening into new manifests or scorecard publication.
+- Verified the Rust helper compiles via `cargo build -p rebar-cpython`, the direct grouped callable tests pass, the adjacent literal callable parity gates stay green, and the existing unsupported fixture-backed placeholder checks still pass.
+- The task-provided first two `pytest -k` expressions were syntactically invalid as written (`grouped callable and module` / `grouped callable and pattern`), so I reran them as the equivalent valid expressions `grouped and callable and module` and `grouped and callable and pattern`.

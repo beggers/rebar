@@ -10169,6 +10169,65 @@ pub fn grouped_literal_find_spans_str(
     }
 }
 
+/// Discover repeated spans for the bounded grouped-literal callable
+/// replacement slice while preserving the single capture span on each match.
+#[must_use]
+pub fn grouped_literal_captures_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let string_chars: Vec<char> = string.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    let Some(grouped_pattern) = parse_capture_literal_pattern_str(pattern) else {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != FLAG_UNICODE {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let pattern_chars = grouped_pattern.pattern_chars();
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((start, end)) = find_match_span_str(
+        pattern_chars.as_slice(),
+        flags,
+        MatchMode::Search,
+        &string_chars,
+        next_start,
+        normalized_endpos,
+    ) {
+        matches.push(CapturedMatchSpan {
+            span: (start, end),
+            group_spans: vec![Some((start, end))],
+        });
+        next_start = end;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
 /// Discover repeated spans for the bounded grouped-alternation replacement
 /// slice while preserving first-capture spans for template expansion.
 #[must_use]
@@ -17479,7 +17538,7 @@ mod tests {
         conditional_group_exists_no_else_find_spans_str,
         conditional_group_exists_quantified_find_spans_str, escape_bytes, escape_str,
         expand_literal_replacement_template_str, grouped_alternation_find_spans_str,
-        grouped_literal_find_spans_str, literal_find_spans, literal_match,
+        grouped_literal_captures_find_spans_str, grouped_literal_find_spans_str, literal_find_spans, literal_match,
         nested_capture_find_spans_str, CapturedMatchSpan, CompileStatus,
         GroupedAlternationMatchSpan, MatchMode, MatchStatus, NamedGroup, PatternRef, FLAG_ASCII,
         FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE, PARSER_STRESS_COMPILE_PROXY_PATTERN,
@@ -21860,6 +21919,28 @@ mod tests {
         assert_eq!(outcome.pos, 1);
         assert_eq!(outcome.endpos, 7);
         assert_eq!(outcome.spans, vec![(1, 4), (4, 7)]);
+    }
+
+    #[test]
+    fn grouped_literal_captures_find_spans_reports_repeated_matches_and_capture_spans() {
+        let outcome =
+            grouped_literal_captures_find_spans_str("(abc)", FLAG_UNICODE, "zabcabcx", 1, Some(7));
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.pos, 1);
+        assert_eq!(outcome.endpos, 7);
+        assert_eq!(
+            outcome.matches,
+            vec![
+                CapturedMatchSpan {
+                    span: (1, 4),
+                    group_spans: vec![Some((1, 4))],
+                },
+                CapturedMatchSpan {
+                    span: (4, 7),
+                    group_spans: vec![Some((4, 7))],
+                },
+            ]
+        );
     }
 
     #[test]

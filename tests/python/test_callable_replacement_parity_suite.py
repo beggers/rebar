@@ -2529,6 +2529,56 @@ def test_pattern_bytes_callable_replacement_none_count_matches_cpython_typeerror
     )
 
 
+@pytest.mark.parametrize(
+    ("helper", "count"),
+    (
+        pytest.param("sub", 0, id="sub"),
+        pytest.param("subn", 1, id="subn-count-one"),
+    ),
+)
+def test_grouped_callable_replacement_module_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+) -> None:
+    backend_name, backend = regex_backend
+
+    assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=helper,
+        pattern="(abc)",
+        string="abcabc",
+        count=count,
+    )
+
+
+@pytest.mark.parametrize(
+    ("helper", "count"),
+    (
+        pytest.param("sub", 0, id="sub"),
+        pytest.param("subn", 1, id="subn-count-one"),
+    ),
+)
+def test_grouped_callable_replacement_pattern_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+) -> None:
+    backend_name, backend = regex_backend
+
+    assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=helper,
+        pattern="(?P<word>abc)",
+        string="abcabc",
+        count=count,
+        group_names=("word",),
+        use_compiled_pattern=True,
+    )
+
+
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_callable_replacement_matches_cpython(
     regex_backend: tuple[str, object],
