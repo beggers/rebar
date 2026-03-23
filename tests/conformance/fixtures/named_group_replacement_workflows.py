@@ -68,6 +68,47 @@ MANIFEST = {
       "notes": [
         "Publishes the bound Pattern.subn named-group replacement-template count path without claiming named-template support is implemented."
       ]
+    },
+    {
+      "id": "pattern-sub-callable-named-grouped-str",
+      "operation": "pattern_call",
+      "family": "named_group_callable_replacement_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "sub",
+      "args": [
+        {
+          "type": "callable_match_group",
+          "group": "word",
+          "prefix": "<",
+          "suffix": ">"
+        },
+        "abcabc"
+      ],
+      "categories": ["workflow", "sub", "callable-replacement", "named-group", "pattern", "str"],
+      "notes": [
+        "Publishes the bounded Pattern.sub named-group callable replacement path for the tiny `word` capture already covered by direct parity tests."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-grouped-str",
+      "operation": "pattern_call",
+      "family": "named_group_callable_replacement_count_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "subn",
+      "args": [
+        {
+          "type": "callable_match_group",
+          "group": "word",
+          "prefix": "<",
+          "suffix": ">"
+        },
+        "abcabc",
+        1
+      ],
+      "categories": ["workflow", "subn", "callable-replacement", "named-group", "pattern", "str", "count"],
+      "notes": [
+        "Publishes the bounded Pattern.subn named-group callable replacement first-match-only path so the compiled named grouped callback slice is explicit in the shared correctness surface."
+      ]
     }
   ]
 }

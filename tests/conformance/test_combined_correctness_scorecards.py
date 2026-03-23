@@ -307,6 +307,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-template-str",
             "module-sub-callable-str",
             "module-sub-grouping-template",
+            "module-sub-callable-grouped-str",
+            "module-subn-callable-grouped-str",
             "module-findall-nonliteral-str",
         ),
     ),
@@ -343,6 +345,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-template-named-group-str",
             "pattern-sub-template-named-group-str",
             "pattern-subn-template-named-group-str",
+            "pattern-sub-callable-named-grouped-str",
+            "pattern-subn-callable-named-grouped-str",
         ),
     ),
     "named-backreference-workflows": CorrectnessScorecardManifestExpectation(

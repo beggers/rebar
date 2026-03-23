@@ -1013,6 +1013,47 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-grouped-str",
+      "operation": "module_call",
+      "family": "grouped_callable_replacement_workflow",
+      "helper": "sub",
+      "args": [
+        "(abc)",
+        {
+          "type": "callable_match_group",
+          "group": 1,
+          "prefix": "<",
+          "suffix": ">"
+        },
+        "abcabc"
+      ],
+      "categories": ["workflow", "sub", "callable-replacement", "grouped", "numbered-group", "module", "str"],
+      "notes": [
+        "Publishes the bounded module-level grouped callable replacement path for a tiny numbered capture without widening into bytes publication or broader grouped callback workflows."
+      ]
+    },
+    {
+      "id": "module-subn-callable-grouped-str",
+      "operation": "module_call",
+      "family": "grouped_callable_replacement_count_workflow",
+      "helper": "subn",
+      "args": [
+        "(abc)",
+        {
+          "type": "callable_match_group",
+          "group": 1,
+          "prefix": "<",
+          "suffix": ">"
+        },
+        "abcabc",
+        1
+      ],
+      "categories": ["workflow", "subn", "callable-replacement", "grouped", "numbered-group", "module", "str", "count"],
+      "notes": [
+        "Publishes the bounded module-level grouped callable replacement first-match-only path for the same numbered capture so `subn(count=1)` stays explicit on the collection owner path."
+      ]
+    },
+    {
       "id": "module-findall-nonliteral-str",
       "operation": "module_call",
       "family": "bounded_wildcard_collection_workflow",

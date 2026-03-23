@@ -1297,7 +1297,17 @@ def _grouped_replacement_collection_case_ids(
         case.case_id
         for case in bundle.cases
         if case.family == "grouped_template_replacement_workflow"
-        or "callable-replacement" in case.categories
+        or case.case_id == GROUPED_TEMPLATE_CALLABLE_CASE_ID
+    )
+
+
+def _grouped_replacement_named_case_ids(
+    bundle: FixtureBundle,
+) -> tuple[str, ...]:
+    return tuple(
+        case.case_id
+        for case in bundle.cases
+        if "replacement-template" in case.categories
     )
 
 
@@ -1318,6 +1328,9 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
             collection_bundle
         )
         selected_collection_case_id_set = frozenset(selected_collection_case_ids)
+        named_bundle = bundles_by_manifest_id[GROUPED_REPLACEMENT_NAMED_MANIFEST_ID]
+        selected_named_case_ids = _grouped_replacement_named_case_ids(named_bundle)
+        selected_named_case_id_set = frozenset(selected_named_case_ids)
         adjusted_collection_bundle = build_selected_fixture_bundle(
             collection_bundle.manifest.path,
             selected_case_ids=selected_collection_case_ids,
@@ -1328,12 +1341,24 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
                 if case.case_id in selected_collection_case_id_set
             ),
         )
+        adjusted_named_bundle = build_selected_fixture_bundle(
+            named_bundle.manifest.path,
+            selected_case_ids=selected_named_case_ids,
+            pattern_extractor=spec.pattern_extractor,
+            expected_text_models=frozenset(
+                case.text_model or "str"
+                for case in named_bundle.cases
+                if case.case_id in selected_named_case_id_set
+            ),
+        )
         adjusted_bundles = tuple(
             adjusted_collection_bundle
             if (
                 bundle.expected_manifest_id
                 == GROUPED_REPLACEMENT_COLLECTION_MANIFEST_ID
             )
+            else adjusted_named_bundle
+            if bundle.expected_manifest_id == GROUPED_REPLACEMENT_NAMED_MANIFEST_ID
             else bundle
             for bundle in bundles
         )

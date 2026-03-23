@@ -1,6 +1,6 @@
 # RBR-1086: Publish grouped callable replacement workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -55,3 +55,17 @@ Created: 2026-03-23
   - `tests/conformance/fixtures/named_group_replacement_workflows.py` still publishes only grouped template rows for `(?P<word>abc)`;
   - `reports/correctness/latest.py` already includes deeper same-family callable rows such as `module-sub-callable-grouped-alternation-str` and `module-sub-callable-nested-group-numbered-str`, but it does not yet include `module-sub-callable-grouped-str` or `pattern-sub-callable-named-grouped-str`; and
   - `reports/benchmarks/latest.py` does not yet include the paired simple grouped callable workload ids on the collection/replacement benchmark path, so benchmark catch-up remains a later same-family follow-on instead of this task.
+
+## Completion
+- Added the four bounded str grouped callable publication rows on the existing owner-path manifests:
+  - `module-sub-callable-grouped-str`
+  - `module-subn-callable-grouped-str`
+  - `pattern-sub-callable-named-grouped-str`
+  - `pattern-subn-callable-named-grouped-str`
+- Regenerated `reports/correctness/latest.py`; the tracked published scorecard now reports `1601` executed cases, `1601` passes, `0` failures, and `0` unimplemented cases.
+- Tightened the grouped-template fixture-backed selection helper in `tests/python/test_fixture_backed_replacement_parity_suite.py` so the new callable publication rows do not accidentally widen the existing template-only surface.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'grouped_callable_replacement_module_matches_cpython or grouped_callable_replacement_pattern_matches_cpython'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'grouped_replacement_surface_keeps_selected_bundle_ownership_explicit or bundle_pattern_projection_and_case_source_payloads_cover_published_fixtures or case_argument_helpers_cover_module_and_pattern_replacement_rows'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`
