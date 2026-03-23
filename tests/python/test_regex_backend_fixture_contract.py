@@ -27,6 +27,29 @@ def _invoke_regex_backend(
     return python_conftest.regex_backend.__wrapped__(request)
 
 
+def test_regex_backend_fixture_declares_expected_backend_params_in_order() -> None:
+    marker = python_conftest.regex_backend._fixture_function_marker
+
+    assert tuple(parameter_set.id for parameter_set in marker.params) == ("stdlib", "rebar")
+    assert tuple(parameter_set.values for parameter_set in marker.params) == (
+        ("stdlib",),
+        ("rebar",),
+    )
+
+
+def test_regex_backend_fixture_marks_only_rebar_param_with_native_skipif() -> None:
+    marker = python_conftest.regex_backend._fixture_function_marker
+    stdlib_param, rebar_param = marker.params
+
+    assert stdlib_param.marks == ()
+
+    assert len(rebar_param.marks) == 1
+    (rebar_mark,) = rebar_param.marks
+    assert rebar_mark.name == "skipif"
+    assert rebar_mark.args == (not rebar.native_module_loaded(),)
+    assert rebar_mark.kwargs == {"reason": "backend parity requires rebar._rebar"}
+
+
 def test_regex_backend_returns_stdlib_backend_without_callspec_filters() -> None:
     backend_name, backend = _invoke_regex_backend("stdlib")
 
