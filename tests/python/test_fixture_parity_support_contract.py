@@ -59,6 +59,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
+    load_single_published_fixture_bundle,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
@@ -3987,6 +3988,47 @@ def test_load_published_fixture_bundles_preserves_selected_path_order(
     )
     assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID] is bundles[0]
     assert bundles_by_manifest_id[BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID] is bundles[1]
+
+
+def test_load_single_published_fixture_bundle_returns_expected_manifest_contract(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "select_correctness_fixture_paths",
+        lambda selector: (str_path,) if selector == "single-selector" else (),
+    )
+
+    bundle = load_single_published_fixture_bundle("single-selector")
+
+    assert bundle.manifest.path == str_path
+    assert bundle.manifest.path.name == BUNDLE_LOADER_CONTRACT_STR_FILENAME
+    assert bundle.expected_manifest_id == BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID
+
+
+def test_load_single_published_fixture_bundle_rejects_multi_manifest_selector(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "select_correctness_fixture_paths",
+        lambda selector: (str_path, mixed_path) if selector == "multi-selector" else (),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "correctness fixture selector 'multi-selector' resolved to 2 "
+            "published fixture paths; expected exactly 1"
+        ),
+    ):
+        load_single_published_fixture_bundle("multi-selector")
 
 
 def test_load_published_fixture_bundles_rejects_duplicate_manifest_ids(

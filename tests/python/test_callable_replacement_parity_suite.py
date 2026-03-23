@@ -25,10 +25,10 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_valid_match_group_access_parity,
-    build_selected_fixture_bundle,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
+    load_single_published_fixture_bundle,
     load_published_fixture_bundles,
     str_case_pattern,
 )
@@ -1090,9 +1090,6 @@ def assert_callable_replacement_return_type_error_parity(
 CALLABLE_FIXTURE_PATHS = select_correctness_fixture_paths(
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
 )
-COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
-    COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
-)
 LITERAL_CALLABLE_PARITY_VARIANTS = (
     pytest.param("sub", 0, False, id="literal-module-sub-replace-all"),
     pytest.param("subn", 1, False, id="literal-module-subn-first-match-only"),
@@ -1157,8 +1154,8 @@ def _pending_rebar_bytes_patterns() -> frozenset[bytes]:
     )
 
 COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID = "module-sub-callable-str"
-COLLECTION_REPLACEMENT_OWNER_BUNDLE = build_selected_fixture_bundle(
-    COLLECTION_REPLACEMENT_FIXTURE_PATHS[0]
+COLLECTION_REPLACEMENT_OWNER_BUNDLE = load_single_published_fixture_bundle(
+    COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
 )
 FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
@@ -1999,7 +1996,9 @@ def test_fixture_manifest_loader_materializes_bytes_callables_without_aliasing_d
 def test_literal_callable_case_stays_aligned_with_published_collection_fixture() -> None:
     case = _literal_callable_case()
     source_replacement = _source_callable_replacement(case)
-    (expected_fixture_path,) = COLLECTION_REPLACEMENT_FIXTURE_PATHS
+    (expected_fixture_path,) = select_correctness_fixture_paths(
+        COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
+    )
 
     assert COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.path == expected_fixture_path
     assert COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.manifest_id == (

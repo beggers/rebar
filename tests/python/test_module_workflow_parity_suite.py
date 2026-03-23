@@ -48,10 +48,10 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     assert_placeholder_message_contains,
     assert_value_parity,
-    build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
+    load_single_published_fixture_bundle,
     load_published_fixture_bundles,
 )
 
@@ -1129,11 +1129,8 @@ def _is_collection_type_error_fixture_case(case: FixtureCase) -> bool:
     raise AssertionError(f"unexpected collection fixture text model {text_model!r}")
 
 
-COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
+COLLECTION_REPLACEMENT_BUNDLE = load_single_published_fixture_bundle(
     COLLECTION_REPLACEMENT_FIXTURE_SELECTOR
-)
-COLLECTION_REPLACEMENT_BUNDLE = build_selected_fixture_bundle(
-    COLLECTION_REPLACEMENT_FIXTURE_PATHS[0]
 )
 
 
@@ -6841,12 +6838,10 @@ def test_source_package_escape_preserves_explicit_bytes_cases(
 
 
 def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() -> None:
-    (expected_fixture_path,) = COLLECTION_REPLACEMENT_FIXTURE_PATHS
-
     assert_fixture_bundle_contract(
         COLLECTION_REPLACEMENT_BUNDLE,
         pattern_extractor=case_pattern,
-        expected_fixture_path=expected_fixture_path,
+        expected_fixture_path=COLLECTION_REPLACEMENT_BUNDLE.manifest.path,
         expected_ordered_case_ids=_published_case_ids(COLLECTION_REPLACEMENT_BUNDLE),
     )
 

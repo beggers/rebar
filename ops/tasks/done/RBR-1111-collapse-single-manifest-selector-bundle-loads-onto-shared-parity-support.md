@@ -1,6 +1,6 @@
 # RBR-1111: Collapse single-manifest selector bundle loads onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -63,3 +63,12 @@ Created: 2026-03-23
 - The focused verification slice is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_literal_flag_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_callable_replacement_parity_suite.py` returned `5232 passed, 1 skipped` in this run.
 - The negative `rg` verification currently fails exactly on the targeted owner-local boilerplate above, so it is an acceptance check for this cleanup rather than unrelated repo drift.
+
+## Completion
+- Added `load_single_published_fixture_bundle()` on `tests/python/fixture_parity_support.py` so single-manifest correctness selectors resolve through one shared exact-one-path helper that still delegates to `build_selected_fixture_bundle(...)`.
+- Extended `tests/python/test_fixture_parity_support_contract.py` with contract coverage for the new helper's exact-one-path success case and its multi-path rejection error.
+- Replaced the remaining owner-local single-manifest selector-to-`[0]` bundle loads in `tests/python/test_literal_flag_parity_suite.py`, `tests/python/test_module_workflow_parity_suite.py`, and `tests/python/test_callable_replacement_parity_suite.py` without changing the backing manifest ids, selected case slices, or fixture-path assertions.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_literal_flag_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_callable_replacement_parity_suite.py`
+- `bash -lc "! rg -n 'select_correctness_fixture_paths\\(LITERAL_FLAG_FIXTURE_SELECTOR\\)\\[0\\]|^COLLECTION_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths\\(|COLLECTION_REPLACEMENT_FIXTURE_PATHS\\[0\\]' tests/python/test_literal_flag_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_callable_replacement_parity_suite.py"`

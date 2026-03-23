@@ -298,6 +298,16 @@ def build_selected_fixture_bundle(
     )
 
 
+def load_single_published_fixture_bundle(selector: str) -> FixtureBundle:
+    fixture_paths = select_correctness_fixture_paths(selector)
+    if len(fixture_paths) != 1:
+        raise ValueError(
+            f"correctness fixture selector {selector!r} resolved to "
+            f"{len(fixture_paths)} published fixture paths; expected exactly 1"
+        )
+    return build_selected_fixture_bundle(fixture_paths[0])
+
+
 def load_published_fixture_bundles(
     fixture_selectors: str | Iterable[str],
     *,

@@ -19,9 +19,9 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     assert_pattern_parity,
-    build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
+    load_single_published_fixture_bundle,
 )
 
 
@@ -184,8 +184,8 @@ class _FakeNativeBoundary(RecordingNativeBoundary):
             return ("matched", 0, len(string), (0, 3))
         return ("unsupported", 0, len(string), None)
 
-LITERAL_FLAG_FIXTURE_BUNDLE = build_selected_fixture_bundle(
-    select_correctness_fixture_paths(LITERAL_FLAG_FIXTURE_SELECTOR)[0]
+LITERAL_FLAG_FIXTURE_BUNDLE = load_single_published_fixture_bundle(
+    LITERAL_FLAG_FIXTURE_SELECTOR
 )
 LITERAL_FLAG_CASES_BY_ID = {
     case.case_id: case for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases
