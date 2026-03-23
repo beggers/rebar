@@ -1,6 +1,6 @@
 # RBR-1093: Collapse singleton monkeypatch lambdas in source-tree anchor support tests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -57,3 +57,7 @@ Created: 2026-03-23
   - `rg -n 'monkeypatch\\.setattr\\(support, \"published_fixture_manifests\", lambda: \\(manifest,\\)\\)|monkeypatch\\.setattr\\(support, \"published_cases_by_id\", lambda: \\{\"case-1\": case\\}\\)|monkeypatch\\.setattr\\(support, \"published_cases_by_id\", lambda: \\{\\}\\)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the remaining singleton wrappers at lines `20139`, `20196`, `20231`, and `20367` in this run.
 - The focused verification slice is green in the live checkout:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'published_case_ids_by_signature_groups_duplicate_case_ids or expected_anchored_workload_case_pairs_return_matching_objects or manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries or expected_anchored_workload_case_pairs_rejects_manifest_name_drift or expected_anchored_workload_case_pairs_rejects_multiple_case_ids or expected_anchored_workload_case_pairs_rejects_missing_workload or expected_anchored_workload_case_pairs_rejects_unpublished_case or assert_anchored_workload_case_result_parity_delegates_expected_values'` returned `8 passed, 724 deselected` in this run.
+
+## Completion
+- Replaced the targeted singleton `monkeypatch.setattr(..., lambda: ...)` wrappers in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with file-local helpers using `partial(_single_manifest_tuple, ...)` and `_published_cases_lookup`.
+- Verified the focused pytest slice still passes and confirmed the targeted singleton monkeypatch lambdas no longer appear in the file.

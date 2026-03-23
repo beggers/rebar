@@ -6354,6 +6354,14 @@ def _synthetic_manifest_loader(
     return _synthetic_manifest(workloads=workloads)
 
 
+def _single_manifest_tuple(manifest: Any) -> tuple[Any, ...]:
+    return (manifest,)
+
+
+def _published_cases_lookup(*cases: Any) -> dict[str, Any]:
+    return {case.case_id: case for case in cases}
+
+
 def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
     return workload.signature
 
@@ -20136,7 +20144,11 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
             _synthetic_case("ignored", None),
         )
     )
-    monkeypatch.setattr(support, "published_fixture_manifests", lambda: (manifest,))
+    monkeypatch.setattr(
+        support,
+        "published_fixture_manifests",
+        partial(_single_manifest_tuple, manifest),
+    )
 
     observed = support.published_case_ids_by_signature(lambda case: case.signature)
 
@@ -20193,7 +20205,11 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
         "load_manifest",
         partial(_synthetic_manifest_loader, workloads=(workload,)),
     )
-    monkeypatch.setattr(support, "published_cases_by_id", lambda: {"case-1": case})
+    monkeypatch.setattr(
+        support,
+        "published_cases_by_id",
+        partial(_published_cases_lookup, case),
+    )
 
     anchored_pairs = support.expected_anchored_workload_case_pairs(
         manifest_path,
@@ -20228,7 +20244,11 @@ def test_manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries(
         return _synthetic_manifest(workloads=workloads)
 
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
-    monkeypatch.setattr(support, "published_cases_by_id", lambda: {"case-1": case})
+    monkeypatch.setattr(
+        support,
+        "published_cases_by_id",
+        partial(_published_cases_lookup, case),
+    )
 
     anchor_case_ids = {("shared",): ("case-1",)}
 
@@ -20277,7 +20297,7 @@ def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
     monkeypatch.setattr(
         support,
         "published_cases_by_id",
-        lambda: {"case-1": SimpleNamespace(case_id="case-1")},
+        partial(_published_cases_lookup, SimpleNamespace(case_id="case-1")),
     )
 
     with pytest.raises(AssertionError, match="does not match"):
@@ -20304,10 +20324,11 @@ def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
     monkeypatch.setattr(
         support,
         "published_cases_by_id",
-        lambda: {
-            "case-1": SimpleNamespace(case_id="case-1"),
-            "case-2": SimpleNamespace(case_id="case-2"),
-        },
+        partial(
+            _published_cases_lookup,
+            SimpleNamespace(case_id="case-1"),
+            SimpleNamespace(case_id="case-2"),
+        ),
     )
 
     with pytest.raises(
@@ -20337,7 +20358,7 @@ def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
     monkeypatch.setattr(
         support,
         "published_cases_by_id",
-        lambda: {"case-1": SimpleNamespace(case_id="case-1")},
+        partial(_published_cases_lookup, SimpleNamespace(case_id="case-1")),
     )
 
     with pytest.raises(
@@ -20364,7 +20385,7 @@ def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
             workloads=(_synthetic_workload("anchored", ("shared",)),),
         ),
     )
-    monkeypatch.setattr(support, "published_cases_by_id", lambda: {})
+    monkeypatch.setattr(support, "published_cases_by_id", _published_cases_lookup)
 
     with pytest.raises(
         AssertionError,
