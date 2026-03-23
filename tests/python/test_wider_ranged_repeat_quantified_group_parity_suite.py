@@ -24,6 +24,7 @@ from tests.python.fixture_parity_support import (
     assert_bounded_pattern_case_match_parity,
     assert_fixture_case_optional_match_parity,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -539,6 +540,15 @@ def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_
             "wider-ranged-repeat quantified group direct-test case-id buckets"
         ),
     )
+
+
+def test_wider_ranged_repeat_quantified_group_parity_suite_tracks_published_case_frontier(
+) -> None:
+    for bundle in FIXTURE_BUNDLES:
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=tuple(case.case_id for case in bundle.cases),
+        )
 
 
 @pytest.mark.parametrize(
