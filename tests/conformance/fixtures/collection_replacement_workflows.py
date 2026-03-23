@@ -306,6 +306,17 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-str-count-one",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "sub",
+      "args": ["abc", "x", "abcabc", 1],
+      "categories": ["workflow", "sub", "literal", "str", "count-one"],
+      "notes": [
+        "Publishes the raw str module sub helper outcome for the direct count-one singleton."
+      ]
+    },
+    {
       "id": "module-sub-str-negative-count",
       "operation": "module_call",
       "family": "replacement_workflow",

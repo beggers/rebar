@@ -270,6 +270,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-str-no-match",
             "module-sub-str-single-match",
             "module-sub-str-repeated",
+            "module-sub-str-count-one",
             "module-sub-str-negative-count",
             "module-subn-str-count",
             "module-subn-str-repeated",

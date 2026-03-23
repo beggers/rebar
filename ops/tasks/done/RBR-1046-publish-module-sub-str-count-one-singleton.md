@@ -1,6 +1,6 @@
 # RBR-1046: Publish the direct `module.sub()` str count-one singleton
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -75,3 +75,13 @@ Created: 2026-03-23
   - `rg -n 'module-sub-str-count-one' tests/conformance/fixtures/collection_replacement_workflows.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` returned no matches in this run, confirming the exact correctness publication id is still absent from the tracked owner-path surfaces; and
   - the matching benchmark-side workload id `module-sub-str-count-one-purged-str` is also still absent from `benchmarks/workloads/collection_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so Python-path benchmark catch-up should stay sequenced behind this correctness publication instead of replacing it.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a tracked state refresh in the same run.
+
+## Completion Note
+- 2026-03-23: Added `module-sub-str-count-one` to `tests/conformance/fixtures/collection_replacement_workflows.py` in the required owner-path order, updated the shared direct-module publication selector and order assertion in `tests/python/test_fixture_backed_replacement_parity_suite.py`, extended the combined-scorecard representative case coverage in `tests/conformance/test_combined_correctness_scorecards.py`, and regenerated `reports/correctness/latest.py`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and str-count-one'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1046-module-sub-str-count-one-singleton.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Verified from the tracked published report that `reports/correctness/latest.py` now contains `module-sub-str-count-one`, the combined summary is `1588` total / `1588` passed / `0` failed / `0` unimplemented across `114` manifests, and the `collection.replacement.workflow` suite summaries are `51` total / `51` passed overall, `32` / `32` for `.str`, `19` / `19` for `.bytes`, `23` / `23` for `.module_call`, and `28` / `28` for `.pattern_call`.
