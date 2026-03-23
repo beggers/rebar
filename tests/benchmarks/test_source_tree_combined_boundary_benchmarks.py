@@ -14993,129 +14993,6 @@ def test_run_internal_workload_probe_measures_pattern_helper_keyword_error_workl
     )
 
 
-def _pattern_collection_replacement_wrong_text_model_expected_callback_result(
-    workload: Workload,
-) -> object:
-    if workload.operation == "pattern.subn":
-        return ("pattern-result", 0)
-    return "pattern-result"
-
-
-def _pattern_collection_replacement_wrong_text_model_expected_build_calls(
-    workload: Workload,
-) -> list[tuple[object, ...]]:
-    compile_call = ("compile", workload.pattern_payload(), workload.flags)
-    if workload.cache_mode == "purged":
-        return [compile_call, ("purge",)]
-    if workload.cache_mode == "warm":
-        return [compile_call]
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"cache mode {workload.cache_mode!r}"
-    )
-
-
-def _pattern_collection_replacement_wrong_text_model_expected_callback_call(
-    workload: Workload,
-) -> tuple[object, ...]:
-    if workload.operation == "pattern.split":
-        return (
-            "pattern.split",
-            workload.haystack_payload(),
-            (workload.maxsplit_argument(),),
-            {},
-        )
-    if workload.operation in {"pattern.sub", "pattern.subn"}:
-        return (
-            workload.operation,
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            (workload.count_argument(),),
-            {},
-        )
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"workload operation {workload.operation!r}"
-    )
-
-
-def _run_cpython_pattern_collection_replacement_wrong_text_model_workload(
-    workload: Workload,
-) -> object:
-    helper_name = workload.operation.removeprefix("pattern.")
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-
-    if workload.operation == "pattern.split":
-        return getattr(compiled_pattern, helper_name)(
-            workload.haystack_payload(),
-            workload.maxsplit_argument(),
-        )
-
-    if workload.operation in {"pattern.sub", "pattern.subn"}:
-        return getattr(compiled_pattern, helper_name)(
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            workload.count_argument(),
-        )
-
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"workload operation {workload.operation!r}"
-    )
-
-
-def _pattern_boundary_wrong_text_model_expected_callback_result(
-    workload: Workload,
-) -> object:
-    if workload.operation in {
-        "pattern.search",
-        "pattern.match",
-        "pattern.fullmatch",
-    }:
-        return "pattern-result"
-    raise AssertionError(
-        "unexpected pattern-boundary wrong-text-model workload "
-        f"operation {workload.operation!r}"
-    )
-
-
-def _pattern_boundary_wrong_text_model_expected_callback_call(
-    workload: Workload,
-) -> tuple[object, ...]:
-    if workload.operation not in {
-        "pattern.search",
-        "pattern.match",
-        "pattern.fullmatch",
-    }:
-        raise AssertionError(
-            "unexpected pattern-boundary wrong-text-model workload "
-            f"operation {workload.operation!r}"
-        )
-    return (
-        workload.operation,
-        workload.haystack_payload(),
-        (),
-        {},
-    )
-
-
-def _run_cpython_pattern_boundary_wrong_text_model_workload(
-    workload: Workload,
-) -> object:
-    if workload.operation not in {
-        "pattern.search",
-        "pattern.match",
-        "pattern.fullmatch",
-    }:
-        raise AssertionError(
-            "unexpected pattern-boundary wrong-text-model workload "
-            f"operation {workload.operation!r}"
-        )
-    helper_name = workload.operation.removeprefix("pattern.")
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return getattr(compiled_pattern, helper_name)(workload.haystack_payload())
-
-
 def test_pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -17560,10 +17437,10 @@ class WrongTextModelOwnerSpec:
     timing_scope: str
     excluded_fields: frozenset[str]
     note_surface: str | None
-    callback_result_handler: Callable[[Workload], object] | None
-    callback_call_handler: Callable[[Workload], tuple[object, ...]] | None
-    expected_build_calls: Callable[[Workload], list[tuple[object, ...]]]
-    cpython_workload_runner: Callable[[Workload], object] | None
+    direct_pattern_route: str | None
+    compiled_pattern_expected_build_calls: (
+        Callable[[Workload], list[tuple[object, ...]]] | None
+    )
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
         notes: tuple[str, ...] = ()
@@ -17599,12 +17476,50 @@ class WrongTextModelOwnerSpec:
                 return ["module-finditer-result"]
             return "module-result"
 
-        if self.callback_result_handler is None:
-            raise AssertionError(
-                "missing wrong-text-model callback-result handler for "
-                f"{self.case_id!r}"
-            )
-        return self.callback_result_handler(source_workload)
+        route = self._direct_pattern_route_label()
+        if route == "collection/replacement":
+            if source_workload.operation == "pattern.subn":
+                return ("pattern-result", 0)
+            if source_workload.operation in {"pattern.split", "pattern.sub"}:
+                return "pattern-result"
+        elif route == "pattern-boundary" and source_workload.operation in {
+            "pattern.search",
+            "pattern.match",
+            "pattern.fullmatch",
+        }:
+            return "pattern-result"
+        raise AssertionError(
+            "unexpected direct Pattern "
+            f"{route} wrong-text-model workload operation "
+            f"{source_workload.operation!r}"
+        )
+
+    def expected_build_calls(
+        self,
+        source_workload: Workload,
+    ) -> list[tuple[object, ...]]:
+        if self.use_compiled_pattern:
+            if self.compiled_pattern_expected_build_calls is None:
+                raise AssertionError(
+                    "missing wrong-text-model expected-build-calls handler for "
+                    f"{self.case_id!r}"
+                )
+            return self.compiled_pattern_expected_build_calls(source_workload)
+
+        compile_call = (
+            "compile",
+            source_workload.pattern_payload(),
+            source_workload.flags,
+        )
+        if source_workload.cache_mode == "warm":
+            return [compile_call]
+        if source_workload.cache_mode == "purged":
+            return [compile_call, ("purge",)]
+        raise AssertionError(
+            "unexpected direct Pattern "
+            f"{self._direct_pattern_route_label()} wrong-text-model cache mode "
+            f"{source_workload.cache_mode!r}"
+        )
 
     def expected_callback_call(
         self,
@@ -17650,12 +17565,39 @@ class WrongTextModelOwnerSpec:
                 f"workload operation {source_workload.operation!r}"
             )
 
-        if self.callback_call_handler is None:
-            raise AssertionError(
-                "missing wrong-text-model callback-call handler for "
-                f"{self.case_id!r}"
+        route = self._direct_pattern_route_label()
+        if route == "collection/replacement":
+            if source_workload.operation == "pattern.split":
+                return (
+                    "pattern.split",
+                    source_workload.haystack_payload(),
+                    (source_workload.maxsplit_argument(),),
+                    {},
+                )
+            if source_workload.operation in {"pattern.sub", "pattern.subn"}:
+                return (
+                    source_workload.operation,
+                    source_workload.replacement_payload(),
+                    source_workload.haystack_payload(),
+                    (source_workload.count_argument(),),
+                    {},
+                )
+        elif route == "pattern-boundary" and source_workload.operation in {
+            "pattern.search",
+            "pattern.match",
+            "pattern.fullmatch",
+        }:
+            return (
+                source_workload.operation,
+                source_workload.haystack_payload(),
+                (),
+                {},
             )
-        return self.callback_call_handler(source_workload)
+        raise AssertionError(
+            "unexpected direct Pattern "
+            f"{route} wrong-text-model workload operation "
+            f"{source_workload.operation!r}"
+        )
 
     def run_cpython_workload(self, workload: Workload) -> object:
         if self.use_compiled_pattern:
@@ -17709,12 +17651,42 @@ class WrongTextModelOwnerSpec:
                 f"workload operation {workload.operation!r}"
             )
 
-        if self.cpython_workload_runner is None:
+        route = self._direct_pattern_route_label()
+        helper_name = workload.operation.removeprefix("pattern.")
+        compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+
+        if route == "collection/replacement":
+            if workload.operation == "pattern.split":
+                return getattr(compiled_pattern, helper_name)(
+                    workload.haystack_payload(),
+                    workload.maxsplit_argument(),
+                )
+            if workload.operation in {"pattern.sub", "pattern.subn"}:
+                return getattr(compiled_pattern, helper_name)(
+                    workload.replacement_payload(),
+                    workload.haystack_payload(),
+                    workload.count_argument(),
+                )
+        elif route == "pattern-boundary" and workload.operation in {
+            "pattern.search",
+            "pattern.match",
+            "pattern.fullmatch",
+        }:
+            return getattr(compiled_pattern, helper_name)(workload.haystack_payload())
+
+        raise AssertionError(
+            "unexpected direct Pattern "
+            f"{route} wrong-text-model workload operation "
+            f"{workload.operation!r}"
+        )
+
+    def _direct_pattern_route_label(self) -> str:
+        if self.direct_pattern_route is None:
             raise AssertionError(
-                "missing wrong-text-model CPython workload runner for "
+                "missing direct Pattern wrong-text-model route for "
                 f"{self.case_id!r}"
             )
-        return self.cpython_workload_runner(workload)
+        return self.direct_pattern_route
 
 
 _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
@@ -17780,16 +17752,8 @@ _PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwne
     timing_scope="pattern-helper-call",
     excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
     note_surface=None,
-    callback_result_handler=(
-        _pattern_collection_replacement_wrong_text_model_expected_callback_result
-    ),
-    callback_call_handler=(
-        _pattern_collection_replacement_wrong_text_model_expected_callback_call
-    ),
-    expected_build_calls=(
-        _pattern_collection_replacement_wrong_text_model_expected_build_calls
-    ),
-    cpython_workload_runner=_run_cpython_pattern_collection_replacement_wrong_text_model_workload,
+    direct_pattern_route="collection/replacement",
+    compiled_pattern_expected_build_calls=None,
 )
 
 _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
@@ -17809,12 +17773,8 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
     timing_scope="pattern-helper-call",
     excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
     note_surface=None,
-    callback_result_handler=_pattern_boundary_wrong_text_model_expected_callback_result,
-    callback_call_handler=_pattern_boundary_wrong_text_model_expected_callback_call,
-    expected_build_calls=(
-        _pattern_collection_replacement_wrong_text_model_expected_build_calls
-    ),
-    cpython_workload_runner=_run_cpython_pattern_boundary_wrong_text_model_workload,
+    direct_pattern_route="pattern-boundary",
+    compiled_pattern_expected_build_calls=None,
 )
 
 _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
@@ -17839,13 +17799,11 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
         timing_scope="module-helper-call",
         excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="collection/replacement",
-        callback_result_handler=None,
-        callback_call_handler=None,
-        expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
+        direct_pattern_route=None,
+        compiled_pattern_expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
             workload,
             label="module helper wrong-text-model",
         ),
-        cpython_workload_runner=None,
     )
 )
 
@@ -17867,13 +17825,11 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = (
         timing_scope="module-helper-call",
         excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="module-boundary",
-        callback_result_handler=None,
-        callback_call_handler=None,
-        expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
+        direct_pattern_route=None,
+        compiled_pattern_expected_build_calls=lambda workload: _compiled_pattern_contract_expected_build_calls(
             workload,
             label="module helper wrong-text-model",
         ),
-        cpython_workload_runner=None,
     )
 )
 

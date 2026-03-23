@@ -1,6 +1,6 @@
 # RBR-1045: Collapse direct-Pattern wrong-text-model helper routes
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-23
 
@@ -69,7 +69,13 @@ Created: 2026-03-23
 - The shared-ready-queue stall rule does not apply in this checkout:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, and `blocked: 0`; and
   - the latest dashboard shows both task workers finishing `done`, with no inherited-dirty checkpoint churn or stalled post-task refresh path.
-- The duplication target is concrete in the live checkout:
-  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently defines `WrongTextModelOwnerSpec` at line `17552`, `_pattern_collection_replacement_wrong_text_model_expected_callback_result(...)` at line `14996`, `_pattern_collection_replacement_wrong_text_model_expected_build_calls(...)` at line `15004`, `_pattern_collection_replacement_wrong_text_model_expected_callback_call(...)` at line `15018`, `_run_cpython_pattern_collection_replacement_wrong_text_model_workload(...)` at line `15042`, `_pattern_boundary_wrong_text_model_expected_callback_result(...)` at line `15067`, `_pattern_boundary_wrong_text_model_expected_callback_call(...)` at line `15082`, `_run_cpython_pattern_boundary_wrong_text_model_workload(...)` at line `15102`, `_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC` at line `17766`, and `_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC` at line `17795`;
-  - the targeted pytest slice in Verification currently passes (`50 passed, 671 deselected in 0.20s`); and
-  - the negative `rg` check in Verification currently fails only because those exact helper definitions are still present.
+- The duplication target was concrete in the pre-run checkout:
+  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` defined `WrongTextModelOwnerSpec` at line `17552`, `_pattern_collection_replacement_wrong_text_model_expected_callback_result(...)` at line `14996`, `_pattern_collection_replacement_wrong_text_model_expected_build_calls(...)` at line `15004`, `_pattern_collection_replacement_wrong_text_model_expected_callback_call(...)` at line `15018`, `_run_cpython_pattern_collection_replacement_wrong_text_model_workload(...)` at line `15042`, `_pattern_boundary_wrong_text_model_expected_callback_result(...)` at line `15067`, `_pattern_boundary_wrong_text_model_expected_callback_call(...)` at line `15082`, `_run_cpython_pattern_boundary_wrong_text_model_workload(...)` at line `15102`, `_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC` at line `17766`, and `_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC` at line `17795`;
+  - the targeted pytest slice in Verification already passed (`50 passed, 671 deselected in 0.20s`); and
+  - the negative `rg` check in Verification failed only because those exact helper definitions were still present.
+
+## Completion Note
+- 2026-03-23: Moved the direct-pattern wrong-text-model callback-result, callback-call, build-call, and CPython dispatch semantics into `WrongTextModelOwnerSpec` behind one file-local `direct_pattern_route`, removed the seven detached helper functions, and rewired the two direct-pattern owner specs plus the compiled-pattern build-call field names accordingly.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract or pattern_helper_collection_replacement_wrong_text_model_rows_stay_anchored_to_published_correctness_cases or standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'`
+  - `bash -lc "! rg -n 'def _pattern_collection_replacement_wrong_text_model_expected_callback_result\\(|def _pattern_collection_replacement_wrong_text_model_expected_build_calls\\(|def _pattern_collection_replacement_wrong_text_model_expected_callback_call\\(|def _run_cpython_pattern_collection_replacement_wrong_text_model_workload\\(|def _pattern_boundary_wrong_text_model_expected_callback_result\\(|def _pattern_boundary_wrong_text_model_expected_callback_call\\(|def _run_cpython_pattern_boundary_wrong_text_model_workload\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
