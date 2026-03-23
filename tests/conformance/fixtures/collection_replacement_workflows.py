@@ -581,6 +581,34 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-bytes-no-match",
+      "operation": "module_call",
+      "family": "replacement_workflow",
+      "helper": "subn",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzz"
+        }
+      ],
+      "categories": ["workflow", "subn", "literal", "bytes", "no-match"],
+      "notes": [
+        "Publishes the raw bytes module subn helper outcome when no literal match is present."
+      ]
+    },
+    {
       "id": "pattern-sub-str-no-match",
       "operation": "pattern_call",
       "family": "replacement_workflow",

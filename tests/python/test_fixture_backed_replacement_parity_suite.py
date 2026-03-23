@@ -228,7 +228,7 @@ def _direct_literal_replacement_publication_case_ids(
                 "no-match",
             ),
             ("sub", "bytes"): ("no-match", "single-match", "repeated", "count-one"),
-            ("subn", "bytes"): ("count", "single-match", "repeated"),
+            ("subn", "bytes"): ("count", "single-match", "repeated", "no-match"),
         }
     elif surface == "pattern":
         case_prefix = "pattern"
@@ -2711,7 +2711,7 @@ def test_source_package_pattern_literal_replacement_helpers_match_cpython(
     (
         pytest.param(
             "module",
-            ("module-subn-bytes-no-match",),
+            (),
             id="module",
         ),
         pytest.param(
@@ -2797,6 +2797,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "module-subn-bytes-count": (b"abc", b"x", b"abcabc", 1),
             "module-subn-bytes-single-match": (b"abc", b"x", b"zabczz"),
             "module-subn-bytes-repeated": (b"abc", b"x", b"abcabc"),
+            "module-subn-bytes-no-match": (b"abc", b"x", b"zzz"),
         },
         expected_helpers=(
             "sub",
@@ -2816,6 +2817,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "subn",
             "subn",
             "subn",
+            "subn",
         ),
         expected_text_models=(
             "str",
@@ -2828,6 +2830,7 @@ def test_collection_replacement_manifest_publishes_direct_module_literal_replace
             "str",
             "str",
             "str",
+            "bytes",
             "bytes",
             "bytes",
             "bytes",

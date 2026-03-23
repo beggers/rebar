@@ -1,6 +1,6 @@
 # RBR-1075: Publish the direct module `subn()` bytes no-match
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -76,3 +76,13 @@ Created: 2026-03-23
   - a direct runtime probe in this run confirmed `rebar.subn(b"abc", b"x", b"zzz") == re.subn(b"abc", b"x", b"zzz")` on the live branch;
   - `test_source_package_module_literal_replacement_helpers_match_cpython` in `tests/python/test_fixture_backed_replacement_parity_suite.py` already exercises the direct raw-module `bytes` no-match replacement parity path and asserts `subn()` equality on the shared owner route; and
   - `rg -n "module-subn-bytes-no-match" tests/conformance/fixtures/collection_replacement_workflows.py reports/correctness/latest.py` returned no matches in this run, confirming the exact correctness row is still absent from the tracked owner-path publication surfaces.
+
+## Completion
+- Landed the single `module-subn-bytes-no-match` `module_call` row in `tests/conformance/fixtures/collection_replacement_workflows.py` immediately after `module-subn-bytes-repeated`, kept the shared collection/replacement publication selector on the existing owner path, and removed the final direct-module unpublished literal replacement gap.
+- Regenerated `reports/correctness/latest.py`; the tracked published scorecard now reads `1597` total / `1597` passed / `0` failed / `0` unimplemented across `114` manifests, with `collection.replacement.workflow == 60/60`, `collection.replacement.workflow.bytes == 24/24`, and `collection.replacement.workflow.module_call == 28/28`, and the tracked report includes `module-subn-bytes-no-match` as a representative `collection-replacement-workflows` case.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_source_package_module_literal_replacement_helpers_match_cpython and bytes-no-match'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'test_collection_replacement_manifest_publishes_direct_module_literal_replacement_rows_in_order or test_literal_replacement_publication_gaps_stay_explicit'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-1075-module-subn-bytes-no-match.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
