@@ -233,6 +233,10 @@ class FixtureBundle:
     def expected_manifest_id(self) -> str:
         return self.manifest.manifest_id
 
+    @property
+    def published_case_ids(self) -> tuple[str, ...]:
+        return tuple(case.case_id for case in self.manifest.cases)
+
 
 def build_selected_fixture_bundle(
     fixture_path: pathlib.Path,
@@ -885,8 +889,7 @@ def assert_fixture_bundle_tracks_published_case_frontier(
             f"{overlapping_case_ids}"
         )
 
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
-    published_case_id_set = frozenset(published_case_ids)
+    published_case_id_set = frozenset(bundle.published_case_ids)
     expected_case_id_set = selected_case_id_set | frozenset(
         ordered_expected_uncovered_case_ids
     )
@@ -896,7 +899,9 @@ def assert_fixture_bundle_tracks_published_case_frontier(
         if case_id not in published_case_id_set
     )
     unexpected_case_ids = tuple(
-        case_id for case_id in published_case_ids if case_id not in expected_case_id_set
+        case_id
+        for case_id in bundle.published_case_ids
+        if case_id not in expected_case_id_set
     )
     if missing_case_ids or unexpected_case_ids:
         raise AssertionError(
@@ -906,7 +911,9 @@ def assert_fixture_bundle_tracks_published_case_frontier(
         )
 
     ordered_uncovered_case_ids = tuple(
-        case_id for case_id in published_case_ids if case_id not in selected_case_id_set
+        case_id
+        for case_id in bundle.published_case_ids
+        if case_id not in selected_case_id_set
     )
     if ordered_uncovered_case_ids != ordered_expected_uncovered_case_ids:
         raise AssertionError(

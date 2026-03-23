@@ -428,7 +428,7 @@ def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[
     selected_case_ids = grouped_match_case_ids[-2:]
     uncovered_case_ids = grouped_match_case_ids[:-2]
 
-    assert tuple(case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.manifest.cases) == (
+    assert GROUPED_MATCH_FIXTURE_BUNDLE.published_case_ids == (
         *uncovered_case_ids,
         *selected_case_ids,
     )

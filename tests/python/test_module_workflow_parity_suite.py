@@ -164,10 +164,6 @@ MODULE_WORKFLOW_MANIFEST_ID = "module-workflow-surface"
 MATCH_BEHAVIOR_MANIFEST_ID = "match-behavior-smoke"
 
 
-def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
-    return tuple(case.case_id for case in bundle.manifest.cases)
-
-
 (
     MODULE_WORKFLOW_SURFACE_BUNDLES,
     MODULE_WORKFLOW_SURFACE_BUNDLES_BY_MANIFEST_ID,
@@ -3970,14 +3966,14 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=MODULE_WORKFLOW_BUNDLE.manifest.path,
-        expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
+        expected_ordered_case_ids=MODULE_WORKFLOW_BUNDLE.published_case_ids,
     )
 
 
 def test_module_workflow_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         MODULE_WORKFLOW_BUNDLE,
-        selected_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
+        selected_case_ids=MODULE_WORKFLOW_BUNDLE.published_case_ids,
     )
 
 
@@ -4011,7 +4007,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             ),
             "escape": frozenset(case.case_id for case in ESCAPE_CASES),
         },
-        selected_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
+        selected_case_ids=MODULE_WORKFLOW_BUNDLE.published_case_ids,
         coverage_label="module workflow direct-test case-id buckets",
     )
 
@@ -4141,7 +4137,7 @@ def test_compiled_pattern_module_keyword_frontier_publishes_after_positional_cou
 def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
     assert (
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
-        == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
+        == MODULE_WORKFLOW_BUNDLE.published_case_ids
     )
     assert len(MODULE_WORKFLOW_BUNDLE.cases) == 182
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
@@ -4179,7 +4175,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=MODULE_WORKFLOW_BUNDLE.manifest.path,
-        expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
+        expected_ordered_case_ids=MODULE_WORKFLOW_BUNDLE.published_case_ids,
     )
     assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
     assert {
@@ -4915,14 +4911,14 @@ def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> N
         MATCH_BEHAVIOR_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=MATCH_BEHAVIOR_BUNDLE.manifest.path,
-        expected_ordered_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
+        expected_ordered_case_ids=MATCH_BEHAVIOR_BUNDLE.published_case_ids,
     )
 
 
 def test_match_behavior_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         MATCH_BEHAVIOR_BUNDLE,
-        selected_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
+        selected_case_ids=MATCH_BEHAVIOR_BUNDLE.published_case_ids,
     )
 
 
@@ -4933,7 +4929,7 @@ def test_match_behavior_direct_test_bucket_covers_selected_frontier() -> None:
                 case.case_id for case in MATCH_BEHAVIOR_BUNDLE.cases
             )
         },
-        selected_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
+        selected_case_ids=MATCH_BEHAVIOR_BUNDLE.published_case_ids,
         coverage_label="match behavior direct-test case-id bucket",
     )
 
@@ -6833,7 +6829,7 @@ def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() ->
         COLLECTION_REPLACEMENT_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=COLLECTION_REPLACEMENT_BUNDLE.manifest.path,
-        expected_ordered_case_ids=_published_case_ids(COLLECTION_REPLACEMENT_BUNDLE),
+        expected_ordered_case_ids=COLLECTION_REPLACEMENT_BUNDLE.published_case_ids,
     )
 
 
@@ -8310,7 +8306,7 @@ def test_public_surface_parity_suite_stays_aligned_with_published_fixtures(
     assert bundle.manifest.manifest_id == bundle.expected_manifest_id
     assert len(bundle.cases) == len({case.case_id for case in bundle.cases})
     assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
-    assert tuple(case.case_id for case in bundle.cases) == _published_case_ids(bundle)
+    assert tuple(case.case_id for case in bundle.cases) == bundle.published_case_ids
     assert {
         _public_surface_case_contract_token(case) for case in bundle.cases
     } == bundle.expected_patterns
@@ -8326,7 +8322,7 @@ def test_public_surface_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in PUBLIC_SURFACE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
             bundle,
-            selected_case_ids=_published_case_ids(bundle),
+            selected_case_ids=bundle.published_case_ids,
         )
 
 

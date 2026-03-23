@@ -2005,10 +2005,7 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     )
     assert tuple(
         fixture_case.case_id for fixture_case in COLLECTION_REPLACEMENT_OWNER_BUNDLE.cases
-    ) == tuple(
-        fixture_case.case_id
-        for fixture_case in COLLECTION_REPLACEMENT_OWNER_BUNDLE.manifest.cases
-    )
+    ) == COLLECTION_REPLACEMENT_OWNER_BUNDLE.published_case_ids
     assert case.case_id == COLLECTION_REPLACEMENT_LITERAL_CALLABLE_CASE_ID
     assert case.operation == "module_call"
     assert case.helper == "sub"

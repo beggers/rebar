@@ -4901,7 +4901,7 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_accepts_selected_a
     tmp_path: pathlib.Path,
 ) -> None:
     bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    published_case_ids = bundle.published_case_ids
 
     assert_fixture_bundle_tracks_published_case_frontier(
         bundle,
@@ -4914,7 +4914,7 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_accepts_selected_a
     tmp_path: pathlib.Path,
 ) -> None:
     bundle = _load_bundle_loader_contract_mixed_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    published_case_ids = bundle.published_case_ids
 
     assert_fixture_bundle_tracks_published_case_frontier(
         bundle,
@@ -4927,7 +4927,7 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_empty_sele
     tmp_path: pathlib.Path,
 ) -> None:
     bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    published_case_ids = bundle.published_case_ids
 
     with pytest.raises(
         AssertionError,
@@ -4948,7 +4948,7 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_duplicate_
     duplicate_source: str,
 ) -> None:
     bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    published_case_ids = bundle.published_case_ids
 
     if duplicate_source == "selected":
         selected_case_ids = (published_case_ids[0], published_case_ids[0])
@@ -4983,7 +4983,7 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_selected_u
     tmp_path: pathlib.Path,
 ) -> None:
     bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    published_case_ids = bundle.published_case_ids
     overlapping_case_id = published_case_ids[1]
 
     with pytest.raises(
@@ -5004,7 +5004,7 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_missing_an
     tmp_path: pathlib.Path,
 ) -> None:
     bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    published_case_ids = bundle.published_case_ids
     missing_case_id = "missing-case-id"
 
     with pytest.raises(
@@ -5026,7 +5026,7 @@ def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_uncovered_
     tmp_path: pathlib.Path,
 ) -> None:
     bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
-    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    published_case_ids = bundle.published_case_ids
     expected_uncovered_case_ids = (published_case_ids[2], published_case_ids[1])
 
     with pytest.raises(
