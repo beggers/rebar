@@ -38,7 +38,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_for_operation,
-    grouped_quantified_bytes_surface_follow_on_id,
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
@@ -398,7 +397,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 @pytest.mark.parametrize(
     "surface",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=grouped_quantified_bytes_surface_follow_on_id,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract(
     surface: GroupedQuantifiedBytesSurfaceSpec,
@@ -600,7 +599,7 @@ def test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_resolve_to_exp
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=grouped_quantified_bytes_surface_follow_on_id,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: GroupedQuantifiedBytesSurfaceSpec,
@@ -623,7 +622,7 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=grouped_quantified_bytes_surface_follow_on_id,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: GroupedQuantifiedBytesSurfaceSpec,

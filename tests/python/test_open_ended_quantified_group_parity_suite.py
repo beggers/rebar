@@ -38,8 +38,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_for_operation,
-    grouped_quantified_bytes_surface_follow_on_id,
-    grouped_quantified_bytes_surface_manifest_id,
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
@@ -713,7 +711,7 @@ def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_
 @pytest.mark.parametrize(
     "spec",
     OPEN_ENDED_BYTES_CASE_SURFACES,
-    ids=grouped_quantified_bytes_surface_manifest_id,
+    ids=lambda spec: spec.bundle.expected_manifest_id,
 )
 def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     spec: GroupedQuantifiedBytesSurfaceSpec,
@@ -775,7 +773,7 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
 @pytest.mark.parametrize(
     "spec",
     tuple(spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is None),
-    ids=grouped_quantified_bytes_surface_manifest_id,
+    ids=lambda spec: spec.bundle.expected_manifest_id,
 )
 def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
     spec: GroupedQuantifiedBytesSurfaceSpec,
@@ -814,7 +812,7 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
     tuple(
         spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
     ),
-    ids=grouped_quantified_bytes_surface_follow_on_id,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: GroupedQuantifiedBytesSurfaceSpec,
