@@ -1389,6 +1389,13 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES = (
     ),
 )
 
+# Keep manifest-owned near-miss coverage separate from explicit bytes-mirror tables.
+PRIMARY_CALLABLE_NEAR_MISS_CASE_SPECS = (
+    CALLABLE_NEAR_MISS_CASE_SPECS
+    + CONDITIONAL_GROUP_EXISTS_NESTED_NEAR_MISS_CASES
+    + CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES
+)
+
 
 class CallbackExplosion(RuntimeError):
     pass
@@ -1822,21 +1829,33 @@ def _is_negative_count_callable_case(case: FixtureCase) -> bool:
     return _case_count(case) < 0
 
 
+def _is_no_match_callable_case(case: FixtureCase) -> bool:
+    return "no-match" in case.categories
+
+
 MODULE_CALLBACK_EXCEPTION_CASES = tuple(
-    case for case in MODULE_CASES if not _is_negative_count_callable_case(case)
+    case
+    for case in MODULE_CASES
+    if not _is_negative_count_callable_case(case)
+    and not _is_no_match_callable_case(case)
 )
 PATTERN_CALLBACK_EXCEPTION_CASES = tuple(
-    case for case in PATTERN_CASES if not _is_negative_count_callable_case(case)
+    case
+    for case in PATTERN_CASES
+    if not _is_negative_count_callable_case(case)
+    and not _is_no_match_callable_case(case)
 )
 BYTES_MODULE_CALLBACK_EXCEPTION_CASES = tuple(
     case
     for case in BYTES_MODULE_CASES
     if not _is_negative_count_callable_case(case)
+    and not _is_no_match_callable_case(case)
 )
 BYTES_PATTERN_CALLBACK_EXCEPTION_CASES = tuple(
     case
     for case in BYTES_PATTERN_CASES
     if not _is_negative_count_callable_case(case)
+    and not _is_no_match_callable_case(case)
 )
 
 
@@ -1887,7 +1906,7 @@ def _near_miss_patterns_for_manifest(
 ) -> frozenset[str | bytes]:
     return frozenset(
         near_miss_case.pattern
-        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+        for near_miss_case in PRIMARY_CALLABLE_NEAR_MISS_CASE_SPECS
         if near_miss_case.manifest_id == manifest_id
     )
 
@@ -2970,7 +2989,7 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     assert observed_near_miss_patterns == manifest_spec.expected_near_miss_patterns
     assert any(
         near_miss_case.manifest_id == manifest_spec.manifest_id
-        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+        for near_miss_case in PRIMARY_CALLABLE_NEAR_MISS_CASE_SPECS
     ) is bool(
         manifest_spec.expected_near_miss_patterns
     )
@@ -3103,12 +3122,12 @@ def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
     )
     near_miss_str_patterns = frozenset(
         near_miss_case.pattern
-        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+        for near_miss_case in PRIMARY_CALLABLE_NEAR_MISS_CASE_SPECS
         if isinstance(near_miss_case.pattern, str)
     )
     near_miss_bytes_patterns = frozenset(
         near_miss_case.pattern
-        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+        for near_miss_case in PRIMARY_CALLABLE_NEAR_MISS_CASE_SPECS
         if isinstance(near_miss_case.pattern, bytes)
     )
 
@@ -3763,7 +3782,7 @@ def test_conditional_group_exists_quantified_near_miss_cases_stay_on_published_s
     )
 
 
-def test_callable_replacement_callback_exception_case_pools_exclude_negative_count_rows(
+def test_callable_replacement_callback_exception_case_pools_exclude_negative_count_and_no_match_rows(
 ) -> None:
     module_negative_count_case_ids = {
         case.case_id
@@ -3785,6 +3804,18 @@ def test_callable_replacement_callback_exception_case_pools_exclude_negative_cou
         for case in BYTES_PATTERN_CASES
         if _is_negative_count_callable_case(case)
     }
+    module_no_match_case_ids = {
+        case.case_id for case in MODULE_CASES if _is_no_match_callable_case(case)
+    }
+    pattern_no_match_case_ids = {
+        case.case_id for case in PATTERN_CASES if _is_no_match_callable_case(case)
+    }
+    bytes_module_no_match_case_ids = {
+        case.case_id for case in BYTES_MODULE_CASES if _is_no_match_callable_case(case)
+    }
+    bytes_pattern_no_match_case_ids = {
+        case.case_id for case in BYTES_PATTERN_CASES if _is_no_match_callable_case(case)
+    }
 
     assert module_negative_count_case_ids
     assert pattern_negative_count_case_ids
@@ -3795,36 +3826,60 @@ def test_callable_replacement_callback_exception_case_pools_exclude_negative_cou
         pattern_negative_count_case_ids
         & {case.case_id for case in BYTES_PATTERN_CASES}
     )
+    assert module_no_match_case_ids
+    assert pattern_no_match_case_ids
+    assert bytes_module_no_match_case_ids == (
+        module_no_match_case_ids & {case.case_id for case in BYTES_MODULE_CASES}
+    )
+    assert bytes_pattern_no_match_case_ids == (
+        pattern_no_match_case_ids & {case.case_id for case in BYTES_PATTERN_CASES}
+    )
     assert {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}.isdisjoint(
         module_negative_count_case_ids
     )
+    assert {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}.isdisjoint(
+        module_no_match_case_ids
+    )
     assert {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}.isdisjoint(
         pattern_negative_count_case_ids
+    )
+    assert {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}.isdisjoint(
+        pattern_no_match_case_ids
     )
     assert {
         case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES
     }.isdisjoint(bytes_module_negative_count_case_ids)
     assert {
+        case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES
+    }.isdisjoint(bytes_module_no_match_case_ids)
+    assert {
         case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES
     }.isdisjoint(bytes_pattern_negative_count_case_ids)
+    assert {
+        case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES
+    }.isdisjoint(bytes_pattern_no_match_case_ids)
     assert (
         {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}
         | module_negative_count_case_ids
+        | module_no_match_case_ids
         == {case.case_id for case in MODULE_CASES}
     )
     assert (
         {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}
         | pattern_negative_count_case_ids
+        | pattern_no_match_case_ids
         == {case.case_id for case in PATTERN_CASES}
     )
     assert (
         {case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES}
         | bytes_module_negative_count_case_ids
+        | bytes_module_no_match_case_ids
         == {case.case_id for case in BYTES_MODULE_CASES}
     )
     assert (
         {case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES}
         | bytes_pattern_negative_count_case_ids
+        | bytes_pattern_no_match_case_ids
         == {case.case_id for case in BYTES_PATTERN_CASES}
     )
 
