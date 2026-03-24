@@ -1,6 +1,6 @@
 ## RBR-1180: Extract compiled-pattern module success owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -65,3 +65,10 @@ Created: 2026-03-24
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` currently fails with `ERROR: file or directory not found: tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py`, which belongs to the exact cleanup queued here.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success or compiled_pattern_module_boundary_success or compiled_pattern_validation_matches_manifest_and_payload_entry_points'` returned `44 passed, 590 deselected` in this run.
+
+## Completion
+- Extracted the live compiled-pattern module-success selector/signature and owner-spec support into `tests/benchmarks/compiled_pattern_module_success_benchmark_support.py`, including the bounded verbose-bytes module-boundary rows, and deleted the dead anchor-spec mini-layer instead of rehoming it.
+- Moved the three dedicated owner-contract tests into `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` and trimmed `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` back to imports plus the remaining shared validation coverage.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` -> `41 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_collection_replacement_success or compiled_pattern_module_boundary_success or compiled_pattern_validation_matches_manifest_and_payload_entry_points'` -> `3 passed, 590 deselected`
