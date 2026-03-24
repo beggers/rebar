@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import product
 import re
@@ -92,12 +91,6 @@ FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles
         "conditional-group-exists-fully-empty-alternation-workflows",
     ),
 )
-
-
-def _iter_fixture_cases() -> Iterator[FixtureCase]:
-    for bundle in FIXTURE_BUNDLES:
-        yield from bundle.cases
-
 
 CASES_BY_ID = fixture_cases_by_id(FIXTURE_BUNDLES)
 CONDITIONAL_VARIANT_ORDER = {
