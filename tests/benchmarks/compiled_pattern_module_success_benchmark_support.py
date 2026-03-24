@@ -15,11 +15,12 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_wrong_text_model_haystack_index,
 )
+from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+    compiled_pattern_contract_expected_build_calls,
+)
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _compiled_pattern_module_helper_route,
-)
-from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
-    _compiled_pattern_contract_expected_build_calls,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     freeze_signature_value,
@@ -223,19 +224,8 @@ def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
     )
 
 
-_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "notes",
-        "smoke",
-    }
-)
 _COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
-    _COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
     | {
         "categories",
         "syntax_features",
@@ -284,7 +274,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
         self,
         source_workload: Workload,
     ) -> list[tuple[object, ...]]:
-        return _compiled_pattern_contract_expected_build_calls(
+        return compiled_pattern_contract_expected_build_calls(
             source_workload,
             label=f"{self.case_id} success",
         )

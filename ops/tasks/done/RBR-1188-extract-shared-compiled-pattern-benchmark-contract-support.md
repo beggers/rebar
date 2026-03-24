@@ -1,6 +1,6 @@
 # RBR-1188: Extract shared compiled-pattern benchmark contract support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -57,3 +57,6 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_contract_benchmark_support.py` is expected to fail right now because that focused support test file does not exist yet, and that failure belongs to the exact cleanup queued here.
   - `.venv/bin/python -m pytest tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` returned `125 passed in 0.19s` in this run.
+
+## Completion Note
+- 2026-03-24: Added `tests/benchmarks/compiled_pattern_contract_benchmark_support.py` for the shared compiled-pattern cache-build-call helper and shared excluded-fields constant, switched the helper-keyword, module-success, module-compile, and wrong-text-model support modules to import that shared support directly, added `tests/benchmarks/test_compiled_pattern_contract_benchmark_support.py`, and verified the scoped benchmark-support pytest targets passed (`4 passed` and `177 passed`).

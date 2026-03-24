@@ -15,6 +15,9 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
 )
+from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
+    compiled_pattern_contract_expected_build_calls,
+)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _selected_manifest_workloads,
     assert_benchmark_workload_matches_expected_result,
@@ -119,7 +122,7 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         self,
         source_workload: Workload,
     ) -> list[tuple[object, ...]]:
-        return _compiled_pattern_contract_expected_build_calls(
+        return compiled_pattern_contract_expected_build_calls(
             source_workload,
             label="module helper keyword",
         )
@@ -320,23 +323,6 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
         materializes_positional_keyword_field=True,
     )
 )
-
-
-def _compiled_pattern_contract_expected_build_calls(
-    source_workload: Workload,
-    *,
-    label: str,
-) -> list[tuple[object, ...]]:
-    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
-    if source_workload.cache_mode == "purged":
-        return [compile_call, ("purge",)]
-    if source_workload.cache_mode == "warm":
-        return [compile_call]
-    raise AssertionError(
-        f"unexpected compiled-pattern {label} workload cache mode "
-        f"{source_workload.cache_mode!r}"
-    )
-
 
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
     _selected_manifest_workloads(

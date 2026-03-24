@@ -20,6 +20,9 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _compiled_pattern_module_helper_route,
     _run_cpython_compiled_pattern_module_helper_workload,
 )
+from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+)
 from tests.benchmarks.source_tree_contract_benchmark_support import (
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
@@ -45,18 +48,6 @@ _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
         "smoke",
     }
 )
-_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "notes",
-        "smoke",
-    }
-)
-
 
 @dataclass(frozen=True, slots=True)
 class WrongTextModelOwnerSpec:
@@ -159,7 +150,7 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
         ),
         use_compiled_pattern=True,
         timing_scope="module-helper-call",
-        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        excluded_fields=COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="collection/replacement",
         direct_pattern_route=None,
     )
@@ -181,7 +172,7 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = (
         ),
         use_compiled_pattern=True,
         timing_scope="module-helper-call",
-        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        excluded_fields=COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         note_surface="module-boundary",
         direct_pattern_route=None,
     )

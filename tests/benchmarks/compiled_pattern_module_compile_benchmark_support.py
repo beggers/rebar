@@ -13,8 +13,9 @@ from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     Workload,
 )
-from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
-    _compiled_pattern_contract_expected_build_calls,
+from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+    compiled_pattern_contract_expected_build_calls,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
     _SourceTreeContractBuilderSpec,
@@ -31,18 +32,6 @@ from tests.benchmarks.standard_benchmark_anchor_support import (
 from tests.python.fixture_parity_support import case_pattern
 
 MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
-
-_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "notes",
-        "smoke",
-    }
-)
 
 _COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE = (
     ("flags", "int", 0),
@@ -523,7 +512,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE = (
     _CompiledPatternModuleCompileContractRoute(
         surface_label="success",
         excluded_fields=(
-            _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS
+            COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
         ),
         note=(
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
@@ -554,7 +543,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE = (
     _CompiledPatternModuleCompileContractRoute(
         surface_label="keyword",
         excluded_fields=(
-            _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS
+            COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
             | {"categories", "syntax_features"}
         ),
         note=(
@@ -667,7 +656,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
             anchor_contract_filename=self.anchor_contract_filename,
             expected_anchor_pairs=self.expected_anchor_pairs,
             expected_build_calls_builder=partial(
-                _compiled_pattern_contract_expected_build_calls,
+                compiled_pattern_contract_expected_build_calls,
                 label="module.compile contract",
             ),
             expected_exception=self.expected_exception,
@@ -1090,7 +1079,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
     build_compiled_pattern_module_compile_contract_cases(
         manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
         expected_build_calls_builder=partial(
-            _compiled_pattern_contract_expected_build_calls,
+            compiled_pattern_contract_expected_build_calls,
             label="module.compile contract",
         ),
         success_owner_specs=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
