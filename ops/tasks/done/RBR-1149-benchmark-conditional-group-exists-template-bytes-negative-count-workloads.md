@@ -1,6 +1,6 @@
 # RBR-1149: Benchmark conditional group-exists template bytes negative-count workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -54,3 +54,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-template-boundary.py` completed successfully with `96` measured workloads and `0` known gaps, confirming the benchmark owner path is live and the runtime prerequisite is already landed.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_template_bytes_manifest_promotes_minimal_replacement_rows_to_measured or conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured'` returned `2 passed, 759 deselected`.
+
+## Completion
+- Added the exact four bytes `count=-1` conditional replacement-template workloads on the existing `conditional-group-exists-boundary` benchmark manifest owner path, keeping scope pinned to the numbered module `sub()`, named module `subn()`, numbered compiled-pattern `sub()`, and named compiled-pattern `subn()` cases on `b"abcdaceabcd"`.
+- Updated the shared benchmark assertion module so the conditional replacement-template slice expectations, representative measured bytes rows, and bytes round-trip/result checks include the new negative-count workloads and preserve the existing str, bytes, callable, alternation-heavy, nested, and quantified neighbors.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `1031` measured workloads out of `1031` total with `known_gap_count == 0`, and `conditional-group-exists-boundary` now reports `100` measured workloads with `0` known gaps.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_template_bytes_manifest_promotes_minimal_replacement_rows_to_measured or conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured or conditional_group_exists_template_bytes_workloads_keep_bytes_template_payloads_through_round_trip'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1149-conditional-template-negative-count-bytes.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
