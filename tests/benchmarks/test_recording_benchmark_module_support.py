@@ -10,41 +10,6 @@ from tests.benchmarks.recording_benchmark_module_support import (
 )
 
 
-def _module_search_cache_contract_workload(
-    *,
-    cache_mode: str,
-    expected_exception: dict[str, str] | None = None,
-):
-    return synthetic_workload(
-        manifest_id="python-benchmark-module-helper-cache-contract",
-        workload_id=f"module-search-{cache_mode}-cache-contract",
-        bucket="module-search",
-        family="module",
-        operation="module.search",
-        pattern="abc",
-        haystack="zabcabc",
-        expected_exception=expected_exception,
-        text_model="str",
-        cache_mode=cache_mode,
-        timing_scope="module-helper-call",
-    )
-
-
-def _pattern_search_cache_contract_workload(*, cache_mode: str):
-    return synthetic_workload(
-        manifest_id="python-benchmark-pattern-helper-cache-contract",
-        workload_id=f"pattern-search-{cache_mode}-cache-contract",
-        bucket="pattern-search",
-        family="module",
-        operation="pattern.search",
-        pattern="abc",
-        haystack="zabcabc",
-        text_model="str",
-        cache_mode=cache_mode,
-        timing_scope="pattern-helper-call",
-    )
-
-
 def test_compile_only_support_records_compile_calls_and_reuses_compiled_patterns() -> None:
     module = RecordingBenchmarkModule()
     compiled_pattern = module.compile("abc", 0)
@@ -145,7 +110,18 @@ def test_module_helper_cache_modes_preserve_expected_purge_and_warmup_order(
     callback = build_callable(
         module,
         "re",
-        _module_search_cache_contract_workload(cache_mode=cache_mode),
+        synthetic_workload(
+            manifest_id="python-benchmark-module-helper-cache-contract",
+            workload_id=f"module-search-{cache_mode}-cache-contract",
+            bucket="module-search",
+            family="module",
+            operation="module.search",
+            pattern="abc",
+            haystack="zabcabc",
+            text_model="str",
+            cache_mode=cache_mode,
+            timing_scope="module-helper-call",
+        ),
     )
 
     assert module.calls == expected_build_calls
@@ -161,12 +137,21 @@ def test_module_helper_warm_expected_exception_prewarms_compile_cache_without_in
     callback = build_callable(
         module,
         "re",
-        _module_search_cache_contract_workload(
-            cache_mode="warm",
+        synthetic_workload(
+            manifest_id="python-benchmark-module-helper-cache-contract",
+            workload_id="module-search-warm-cache-contract",
+            bucket="module-search",
+            family="module",
+            operation="module.search",
+            pattern="abc",
+            haystack="zabcabc",
             expected_exception={
                 "type": "TypeError",
                 "message_substring": "unexpected keyword argument 'missing'",
             },
+            text_model="str",
+            cache_mode="warm",
+            timing_scope="module-helper-call",
         ),
     )
 
@@ -224,7 +209,18 @@ def test_pattern_helper_cache_modes_preserve_expected_compile_and_purge_order(
     callback = build_callable(
         module,
         "re",
-        _pattern_search_cache_contract_workload(cache_mode=cache_mode),
+        synthetic_workload(
+            manifest_id="python-benchmark-pattern-helper-cache-contract",
+            workload_id=f"pattern-search-{cache_mode}-cache-contract",
+            bucket="pattern-search",
+            family="module",
+            operation="pattern.search",
+            pattern="abc",
+            haystack="zabcabc",
+            text_model="str",
+            cache_mode=cache_mode,
+            timing_scope="pattern-helper-call",
+        ),
     )
 
     assert module.calls == expected_build_calls
