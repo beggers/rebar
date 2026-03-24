@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1725 cases across 114 manifests, with all 1725 passing in the current slice; the benchmark publication covers 1075/1075 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1725 cases across 114 manifests, with all 1725 passing in the current slice; the benchmark publication covers 1083/1083 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
 - No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
-- The published benchmark surface is still bounded at 1075 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 1083 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1725 cases across 114 manifests, all passing, and 1075 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1725 cases across 114 manifests, all passing, and 1083 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
 - No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
@@ -316,7 +316,7 @@ The published correctness slice now covers 1725 cases across 114 manifests, all 
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1725 cases, with all 1725 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree-shim path while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 1075 workloads across 30 manifests with 1075 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
+- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 1083 workloads across 30 manifests with 1083 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -332,8 +332,8 @@ The published correctness slice now covers 1725 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The next surviving frontier is the bounded quantified conditional callable `bytes` benchmark catch-up slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` owner path.
+- No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface is still bounded at 1075 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
+- The published benchmark surface is still bounded at 1083 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
