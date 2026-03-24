@@ -47,13 +47,20 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_has_expected_unexpected_keyword_error,
     _collection_replacement_keyword_correctness_case_signature,
     _collection_replacement_keyword_parameter_name,
+    _collection_replacement_pattern_wrong_text_model_correctness_case_signature,
+    _collection_replacement_pattern_wrong_text_model_workload_signature,
     _collection_replacement_keyword_workload_args,
     _collection_replacement_keyword_workload_signature,
     _collection_replacement_positional_indexlike_workload_args,
     _collection_replacement_positional_indexlike_workload_signature,
     _collection_replacement_positional_keyword_field,
+    _collection_replacement_wrong_text_model_haystack_index,
+    _collection_replacement_wrong_text_model_correctness_case_signature,
+    _collection_replacement_wrong_text_model_workload_signature,
     _is_collection_replacement_keyword_workload,
+    _is_collection_replacement_pattern_wrong_text_model_workload,
     _is_collection_replacement_positional_indexlike_workload,
+    _is_collection_replacement_wrong_text_model_workload,
     _is_encoded_indexlike_payload,
     _module_workflow_positional_indexlike_correctness_case_signature,
 )
@@ -7497,17 +7504,6 @@ def _is_collection_replacement_compiled_pattern_keyword_error_workload(
     )
 
 
-def _collection_replacement_wrong_text_model_haystack_index(operation: str) -> int:
-    if operation in {"module.split", "module.findall", "module.finditer"}:
-        return 0
-    if operation in {"module.sub", "module.subn"}:
-        return 1
-    raise AssertionError(
-        "unexpected collection/replacement wrong-text-model workload operation "
-        f"{operation!r}"
-    )
-
-
 def _collection_replacement_compiled_pattern_success_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -7594,195 +7590,6 @@ def _is_collection_replacement_compiled_pattern_success_workload(
         }
         and workload.expected_exception is None
         and workload.pattern == "abc"
-    )
-
-
-def _collection_replacement_wrong_text_model_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
-        return None
-    if case.helper not in {"split", "findall", "finditer", "sub", "subn"}:
-        return None
-    operation = f"module.{case.helper}"
-    haystack_index = _collection_replacement_wrong_text_model_haystack_index(operation)
-    if len(case.args) <= haystack_index:
-        return None
-    haystack = case.args[haystack_index]
-    case_text_model = case.text_model or "str"
-    if case_text_model == "str" and not isinstance(haystack, bytes):
-        return None
-    if case_text_model == "bytes" and not isinstance(haystack, str):
-        return None
-    return (
-        operation,
-        case_pattern(case),
-        freeze_signature_value(list(case.args)),
-        case.use_compiled_pattern,
-        case.flags or 0,
-        case_text_model,
-    )
-
-
-def _collection_replacement_wrong_text_model_workload_args(
-    workload: Any,
-) -> tuple[object, ...]:
-    if workload.operation == "module.split":
-        return (
-            workload.haystack_payload(),
-            workload.maxsplit_argument(),
-        )
-    if workload.operation in {"module.findall", "module.finditer"}:
-        return (workload.haystack_payload(),)
-    if workload.operation in {"module.sub", "module.subn"}:
-        return (
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            workload.count_argument(),
-        )
-    raise AssertionError(
-        "unexpected collection/replacement wrong-text-model workload operation "
-        f"{workload.operation!r}"
-    )
-
-
-def _collection_replacement_wrong_text_model_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    if not _is_collection_replacement_wrong_text_model_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement wrong-text-model workload "
-            f"{workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(
-            list(_collection_replacement_wrong_text_model_workload_args(workload))
-        ),
-        workload.use_compiled_pattern,
-        workload.flags,
-        workload.text_model,
-    )
-
-
-def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
-    return (
-        getattr(workload, "haystack_text_model", None) is not None
-        and not workload.kwargs
-        and workload.use_compiled_pattern
-        and workload.operation
-        in {
-            "module.split",
-            "module.findall",
-            "module.finditer",
-            "module.sub",
-            "module.subn",
-        }
-        and workload.expected_exception is not None
-        and workload.expected_exception.get("type") == "TypeError"
-    )
-
-
-def _pattern_collection_replacement_wrong_text_model_haystack_index(
-    operation: str,
-) -> int:
-    if operation == "pattern.split":
-        return 0
-    if operation in {"pattern.sub", "pattern.subn"}:
-        return 1
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"workload operation {operation!r}"
-    )
-
-
-def _collection_replacement_pattern_wrong_text_model_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    if case.operation != "pattern_call" or case.kwargs:
-        return None
-    if case.helper not in {"split", "sub", "subn"}:
-        return None
-    operation = f"pattern.{case.helper}"
-    haystack_index = _pattern_collection_replacement_wrong_text_model_haystack_index(
-        operation
-    )
-    case_args = list(case.args)
-    if len(case_args) <= haystack_index:
-        return None
-    haystack = case_args[haystack_index]
-    case_text_model = case.text_model or "str"
-    if case_text_model == "str" and not isinstance(haystack, bytes):
-        return None
-    if case_text_model == "bytes" and not isinstance(haystack, str):
-        return None
-    return (
-        operation,
-        case_pattern(case),
-        freeze_signature_value(case_args),
-        (),
-        case.flags or 0,
-        case_text_model,
-    )
-
-
-def _collection_replacement_pattern_wrong_text_model_workload_args(
-    workload: Any,
-) -> tuple[object, ...]:
-    if workload.operation == "pattern.split":
-        args: list[object] = [workload.haystack_payload()]
-        if workload.maxsplit:
-            args.append(workload.maxsplit_argument())
-        return tuple(args)
-    if workload.operation in {"pattern.sub", "pattern.subn"}:
-        args = [
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-        ]
-        if workload.count:
-            args.append(workload.count_argument())
-        return tuple(args)
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"workload operation {workload.operation!r}"
-    )
-
-
-def _collection_replacement_pattern_wrong_text_model_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    if not _is_collection_replacement_pattern_wrong_text_model_workload(workload):
-        raise AssertionError(
-            "unexpected direct Pattern collection/replacement wrong-text-model "
-            f"workload {workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(
-            list(
-                _collection_replacement_pattern_wrong_text_model_workload_args(
-                    workload
-                )
-            )
-        ),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
-
-
-def _is_collection_replacement_pattern_wrong_text_model_workload(
-    workload: Any,
-) -> bool:
-    return (
-        getattr(workload, "haystack_text_model", None) is not None
-        and not workload.kwargs
-        and not workload.use_compiled_pattern
-        and workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}
-        and workload.expected_exception is not None
-        and workload.expected_exception.get("type") == "TypeError"
     )
 
 

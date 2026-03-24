@@ -1,6 +1,6 @@
 ## RBR-1162: Collapse collection-replacement wrong-text-model anchor helpers onto shared support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,10 @@ Created: 2026-03-24
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` returned `6 passed` in this run.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(collection-replacement-compiled-pattern-wrong-text-model or pattern-helper-collection-replacement-wrong-text-model or compiled_pattern_module_helper_wrong_text_model or pattern_helper_collection_replacement_wrong_text_model) and (keeps_expected_workloads_in_scope or stay_anchored_to_published_correctness_cases or stay_pinned_to_exact_case_ids or preserves_wrong_text_model_rows_until_helper_invocation or wrong_text_model_callbacks_preserve_precompile_contract or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time)'` returned `35 passed, 718 deselected` in this run.
+
+## Completion Note
+- Moved the remaining collection-replacement wrong-text-model helper family out of `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, including the shared haystack-index helper still used by the compiled-pattern success route.
+- Added focused support coverage for compiled-pattern and direct-`Pattern` wrong-text-model inclusion rules plus split-vs-replacement signature shape differences in `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`.
+- Verified the extracted support directly and re-ran the targeted combined-owner contract slice after the move:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` returned `9 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(collection-replacement-compiled-pattern-wrong-text-model or pattern-helper-collection-replacement-wrong-text-model or compiled_pattern_module_helper_wrong_text_model or pattern_helper_collection_replacement_wrong_text_model) and (keeps_expected_workloads_in_scope or stay_anchored_to_published_correctness_cases or stay_pinned_to_exact_case_ids or preserves_wrong_text_model_rows_until_helper_invocation or wrong_text_model_callbacks_preserve_precompile_contract or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time)'` returned `35 passed, 718 deselected`.

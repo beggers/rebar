@@ -11,6 +11,7 @@ from tests.python.fixture_parity_support import IndexLike
 
 def _collection_replacement_workload(
     *,
+    manifest_id: str = "collection-replacement-boundary",
     workload_id: str,
     operation: str,
     haystack: str,
@@ -21,11 +22,12 @@ def _collection_replacement_workload(
     kwargs: dict[str, object] | None = None,
     expected_exception: dict[str, str] | None = None,
     text_model: str = "str",
+    haystack_text_model: str | None = None,
     use_compiled_pattern: bool = False,
 ) -> object:
     return workload_from_payload(
         {
-            "manifest_id": "python-benchmark-collection-replacement-anchor-support",
+            "manifest_id": manifest_id,
             "workload_id": workload_id,
             "bucket": operation.replace(".", "-"),
             "family": "module",
@@ -40,6 +42,7 @@ def _collection_replacement_workload(
             "maxsplit": maxsplit,
             "kwargs": {} if kwargs is None else kwargs,
             "text_model": text_model,
+            "haystack_text_model": haystack_text_model,
             "cache_mode": "warm",
             "timing_scope": "module-helper-call",
             "warmup_iterations": 1,
@@ -332,4 +335,231 @@ def test_keyword_correctness_case_signature_preserves_call_shape_and_compiled_pa
         False,
         0,
         "str",
+    )
+
+
+def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_signatures() -> None:
+    split_workload = _collection_replacement_workload(
+        workload_id="module-split-wrong-text-model",
+        operation="module.split",
+        haystack="abcabc",
+        maxsplit=2,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+    )
+    subn_workload = _collection_replacement_workload(
+        workload_id="module-subn-wrong-text-model",
+        operation="module.subn",
+        haystack="abcabc",
+        replacement="x",
+        count=1,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+    )
+    direct_pattern_workload = _collection_replacement_workload(
+        workload_id="pattern-sub-wrong-text-model",
+        operation="pattern.sub",
+        haystack="abcabc",
+        replacement="x",
+        text_model="str",
+        haystack_text_model="bytes",
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+    )
+
+    assert support._is_collection_replacement_wrong_text_model_workload(split_workload)
+    assert support._collection_replacement_wrong_text_model_workload_signature(
+        split_workload
+    ) == (
+        "module.split",
+        "abc",
+        (b"abcabc", 2),
+        True,
+        0,
+        "str",
+    )
+
+    assert support._is_collection_replacement_wrong_text_model_workload(subn_workload)
+    assert support._collection_replacement_wrong_text_model_workload_signature(
+        subn_workload
+    ) == (
+        "module.subn",
+        "abc",
+        ("x", b"abcabc", 1),
+        True,
+        0,
+        "str",
+    )
+
+    assert not support._is_collection_replacement_wrong_text_model_workload(
+        direct_pattern_workload
+    )
+
+
+def test_wrong_text_model_correctness_case_signatures_keep_haystack_positions_for_compiled_pattern_and_pattern_routes() -> None:
+    compiled_split_case = _collection_replacement_case(
+        helper="split",
+        operation="module_call",
+        args=(b"abcabc", 2),
+        use_compiled_pattern=True,
+    )
+    compiled_sub_case = _collection_replacement_case(
+        helper="sub",
+        operation="module_call",
+        args=("x", b"abcabc", 1),
+        use_compiled_pattern=True,
+    )
+    pattern_split_case = _collection_replacement_case(
+        helper="split",
+        operation="pattern_call",
+        args=(b"abcabc", 2),
+    )
+    pattern_subn_case = _collection_replacement_case(
+        helper="subn",
+        operation="pattern_call",
+        args=("x", b"abcabc", 1),
+    )
+
+    assert support._collection_replacement_wrong_text_model_correctness_case_signature(
+        compiled_split_case
+    ) == (
+        "module.split",
+        "abc",
+        (b"abcabc", 2),
+        True,
+        0,
+        "str",
+    )
+    assert support._collection_replacement_wrong_text_model_correctness_case_signature(
+        compiled_sub_case
+    ) == (
+        "module.sub",
+        "abc",
+        ("x", b"abcabc", 1),
+        True,
+        0,
+        "str",
+    )
+    assert (
+        support._collection_replacement_wrong_text_model_correctness_case_signature(
+            _collection_replacement_case(
+                helper="sub",
+                operation="module_call",
+                args=(b"abcabc", "x", 1),
+                use_compiled_pattern=True,
+            )
+        )
+        is None
+    )
+
+    assert (
+        support._collection_replacement_pattern_wrong_text_model_correctness_case_signature(
+            pattern_split_case
+        )
+        == (
+            "pattern.split",
+            "abc",
+            (b"abcabc", 2),
+            (),
+            0,
+            "str",
+        )
+    )
+    assert (
+        support._collection_replacement_pattern_wrong_text_model_correctness_case_signature(
+            pattern_subn_case
+        )
+        == (
+            "pattern.subn",
+            "abc",
+            ("x", b"abcabc", 1),
+            (),
+            0,
+            "str",
+        )
+    )
+
+
+def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() -> None:
+    split_workload = _collection_replacement_workload(
+        workload_id="pattern-split-wrong-text-model",
+        operation="pattern.split",
+        haystack="abcabc",
+        maxsplit=2,
+        text_model="str",
+        haystack_text_model="bytes",
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+    )
+    sub_workload = _collection_replacement_workload(
+        workload_id="pattern-sub-wrong-text-model",
+        operation="pattern.sub",
+        haystack="abcabc",
+        replacement="x",
+        count=1,
+        text_model="str",
+        haystack_text_model="bytes",
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+    )
+    compiled_pattern_workload = _collection_replacement_workload(
+        workload_id="module-sub-wrong-text-model",
+        operation="module.sub",
+        haystack="abcabc",
+        replacement="x",
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+    )
+
+    assert support._is_collection_replacement_pattern_wrong_text_model_workload(
+        split_workload
+    )
+    assert support._collection_replacement_pattern_wrong_text_model_workload_signature(
+        split_workload
+    ) == (
+        "pattern.split",
+        "abc",
+        (b"abcabc", 2),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._is_collection_replacement_pattern_wrong_text_model_workload(
+        sub_workload
+    )
+    assert support._collection_replacement_pattern_wrong_text_model_workload_signature(
+        sub_workload
+    ) == (
+        "pattern.sub",
+        "abc",
+        ("x", b"abcabc", 1),
+        (),
+        0,
+        "str",
+    )
+
+    assert not support._is_collection_replacement_pattern_wrong_text_model_workload(
+        compiled_pattern_workload
     )
