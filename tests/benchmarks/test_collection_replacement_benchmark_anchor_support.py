@@ -559,6 +559,125 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
     )
 
 
+def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_signature() -> None:
+    split_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
+        workload_id="module-split-literal-compiled-pattern",
+        operation="module.split",
+        haystack="zabcabc",
+        maxsplit=2,
+        use_compiled_pattern=True,
+    )
+    subn_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
+        workload_id="module-subn-literal-compiled-pattern-bytes",
+        operation="module.subn",
+        haystack="abcabc",
+        replacement="x",
+        count=1,
+        text_model="bytes",
+        use_compiled_pattern=True,
+    )
+
+    assert support._is_collection_replacement_compiled_pattern_success_workload(
+        split_workload
+    )
+    assert support._collection_replacement_compiled_pattern_success_workload_signature(
+        split_workload
+    ) == (
+        "module.split",
+        "abc",
+        ("zabcabc", 2),
+        True,
+        0,
+        "str",
+    )
+
+    assert support._is_collection_replacement_compiled_pattern_success_workload(
+        subn_workload
+    )
+    assert support._collection_replacement_compiled_pattern_success_workload_signature(
+        subn_workload
+    ) == (
+        "module.subn",
+        b"abc",
+        (b"x", b"abcabc", 1),
+        True,
+        0,
+        "bytes",
+    )
+
+
+def test_compiled_pattern_success_workload_filter_rejects_non_matching_rows() -> None:
+    keyword_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
+        workload_id="module-split-compiled-pattern-keyword",
+        operation="module.split",
+        haystack="zabcabc",
+        kwargs={"maxsplit": 1},
+        use_compiled_pattern=True,
+    )
+    wrong_pattern_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
+        workload_id="module-findall-bounded-wildcard-compiled-pattern",
+        operation="module.findall",
+        pattern="a.c",
+        haystack="abcabc",
+        use_compiled_pattern=True,
+    )
+
+    assert not support._is_collection_replacement_compiled_pattern_success_workload(
+        keyword_workload
+    )
+    assert not support._is_collection_replacement_compiled_pattern_success_workload(
+        wrong_pattern_workload
+    )
+
+
+def test_compiled_pattern_success_correctness_case_signature_requires_collection_call_shape() -> None:
+    matching_case = _collection_replacement_case(
+        helper="finditer",
+        operation="module_call",
+        args=("zabcabc",),
+        use_compiled_pattern=True,
+    )
+    wrong_haystack_case = _collection_replacement_case(
+        helper="sub",
+        operation="module_call",
+        args=("x", b"abcabc", 1),
+        use_compiled_pattern=True,
+    )
+    unsupported_helper_case = _collection_replacement_case(
+        helper="search",
+        operation="module_call",
+        args=("zabcabc",),
+        use_compiled_pattern=True,
+    )
+
+    assert support._collection_replacement_compiled_pattern_success_correctness_case_signature(
+        matching_case
+    ) == (
+        "module.finditer",
+        "abc",
+        ("zabcabc",),
+        True,
+        0,
+        "str",
+    )
+    assert (
+        support._collection_replacement_compiled_pattern_success_correctness_case_signature(
+            wrong_haystack_case
+        )
+        is None
+    )
+    assert (
+        support._collection_replacement_compiled_pattern_success_correctness_case_signature(
+            unsupported_helper_case
+        )
+        is None
+    )
+
+
 _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS = frozenset(
     {
         "manifest_id",

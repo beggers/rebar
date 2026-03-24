@@ -47,9 +47,12 @@ from tests.benchmarks.benchmark_test_support import (
     manifest_workload_ids_matching as _manifest_workload_ids_matching,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    _collection_replacement_compiled_pattern_success_correctness_case_signature,
+    _collection_replacement_compiled_pattern_success_workload_signature,
     _collection_replacement_keyword_correctness_case_signature,
     _collection_replacement_pattern_wrong_text_model_correctness_case_signature,
     _collection_replacement_pattern_wrong_text_model_workload_signature,
+    _is_collection_replacement_compiled_pattern_success_workload,
     _collection_replacement_keyword_workload_signature,
     _collection_replacement_positional_indexlike_workload_signature,
     _collection_replacement_wrong_text_model_correctness_case_signature,
@@ -94,21 +97,16 @@ from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
     _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
 )
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
-    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-)
-from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
-    _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
-    _is_collection_replacement_compiled_pattern_keyword_error_workload,
-)
-from tests.benchmarks.compiled_pattern_module_success_benchmark_support import (
-    _collection_replacement_compiled_pattern_success_correctness_case_signature,
-    _collection_replacement_compiled_pattern_success_workload_signature,
-    _is_collection_replacement_compiled_pattern_success_workload,
     _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
     _is_module_workflow_compiled_pattern_literal_success_workload,
     _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
     _module_workflow_compiled_pattern_correctness_case_signature,
     _module_workflow_compiled_pattern_workload_signature,
+    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
+)
+from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
+    _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
+    _is_collection_replacement_compiled_pattern_keyword_error_workload,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _grouped_alternation_correctness_case_signature,

@@ -264,6 +264,95 @@ def _collection_replacement_keyword_workload_signature(
     )
 
 
+def _collection_replacement_compiled_pattern_success_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
+        return None
+    if case.helper not in {"split", "findall", "finditer", "sub", "subn"}:
+        return None
+    operation = f"module.{case.helper}"
+    haystack_index = _collection_replacement_wrong_text_model_haystack_index(operation)
+    if len(case.args) <= haystack_index:
+        return None
+    haystack = case.args[haystack_index]
+    case_text_model = case.text_model or "str"
+    if case_text_model == "str" and not isinstance(haystack, str):
+        return None
+    if case_text_model == "bytes" and not isinstance(haystack, bytes):
+        return None
+    return (
+        operation,
+        case_pattern(case),
+        freeze_signature_value(list(case.args)),
+        case.use_compiled_pattern,
+        case.flags or 0,
+        case_text_model,
+    )
+
+
+def _collection_replacement_compiled_pattern_success_workload_args(
+    workload: Any,
+) -> tuple[object, ...]:
+    if workload.operation == "module.split":
+        return (
+            workload.haystack_payload(),
+            workload.maxsplit_argument(),
+        )
+    if workload.operation in {"module.findall", "module.finditer"}:
+        return (workload.haystack_payload(),)
+    if workload.operation in {"module.sub", "module.subn"}:
+        return (
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+            workload.count_argument(),
+        )
+    raise AssertionError(
+        "unexpected collection/replacement compiled-pattern success workload "
+        f"operation {workload.operation!r}"
+    )
+
+
+def _collection_replacement_compiled_pattern_success_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_collection_replacement_compiled_pattern_success_workload(workload):
+        raise AssertionError(
+            "unexpected collection/replacement compiled-pattern success workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value(
+            list(_collection_replacement_compiled_pattern_success_workload_args(workload))
+        ),
+        workload.use_compiled_pattern,
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_collection_replacement_compiled_pattern_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        getattr(workload, "haystack_text_model", None) is None
+        and not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation
+        in {
+            "module.split",
+            "module.findall",
+            "module.finditer",
+            "module.sub",
+            "module.subn",
+        }
+        and workload.expected_exception is None
+        and workload.pattern == "abc"
+    )
+
+
 def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
     keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
     if keyword_parameter is None or not workload.kwargs:

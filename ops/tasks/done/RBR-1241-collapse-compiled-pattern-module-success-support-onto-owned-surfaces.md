@@ -1,6 +1,6 @@
 ## RBR-1241: Collapse compiled-pattern module success support onto owned surfaces
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -78,3 +78,10 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `108 tests collected`.
   - `bash -lc "! test -e tests/benchmarks/compiled_pattern_module_success_benchmark_support.py"` currently fails because the bridge module still exists, and that failure belongs to the exact cleanup queued here.
   - The broader execution command `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` is intentionally not the task acceptance command because `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` is already red in the current checkout for unrelated alternation-heavy callable-replacement expectation drift.
+
+## Completion
+- 2026-03-24: Moved the collection/replacement compiled-pattern success selectors onto `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, moved the module-boundary compiled-pattern success selectors onto `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`, rehomed the contract-owner scaffolding into `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py`, updated the combined benchmark suite imports, and deleted `tests/benchmarks/compiled_pattern_module_success_benchmark_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! test -e tests/benchmarks/compiled_pattern_module_success_benchmark_support.py"`

@@ -22,6 +22,11 @@ from tests.benchmarks.benchmark_test_support import (
 )
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _compiled_pattern_module_helper_route,
+    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+    _is_module_workflow_compiled_pattern_literal_success_workload,
+    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+    _module_workflow_compiled_pattern_correctness_case_signature,
+    _module_workflow_compiled_pattern_workload_signature,
     _is_module_workflow_compiled_pattern_wrong_text_model_workload,
     _run_cpython_compiled_pattern_module_helper_workload,
 )
@@ -271,6 +276,140 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missin
     assert not _is_module_workflow_compiled_pattern_wrong_text_model_workload(
         wrong_exception_type
     )
+
+
+def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workloads() -> None:
+    literal_workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation("module.search"),
+        workload_id="module-search-literal-compiled-pattern",
+        operation="module.search",
+        pattern="abc",
+        haystack="zzabczz",
+        use_compiled_pattern=True,
+    )
+    wildcard_workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation("module.fullmatch"),
+        workload_id="module-fullmatch-bounded-wildcard-compiled-pattern",
+        operation="module.fullmatch",
+        pattern="a.c",
+        haystack="abc",
+        text_model="bytes",
+        use_compiled_pattern=True,
+    )
+    verbose_workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation("module.search"),
+        workload_id="module-search-verbose-bytes-compiled-pattern",
+        operation="module.search",
+        pattern=r"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $",
+        haystack="FOO = 123",
+        text_model="bytes",
+        flags=re.VERBOSE | re.MULTILINE,
+        use_compiled_pattern=True,
+    )
+
+    assert _is_module_workflow_compiled_pattern_literal_success_workload(literal_workload)
+    assert (
+        _module_workflow_compiled_pattern_workload_signature(literal_workload)
+        == ("module.search", "abc", ("zzabczz",), True, 0, "str")
+    )
+
+    assert _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        wildcard_workload
+    )
+    assert (
+        _module_workflow_compiled_pattern_workload_signature(wildcard_workload)
+        == ("module.fullmatch", b"a.c", (b"abc",), True, 0, "bytes")
+    )
+
+    assert _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
+        verbose_workload
+    )
+    assert (
+        _module_workflow_compiled_pattern_workload_signature(verbose_workload)
+        == (
+            "module.search",
+            b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+            (b"FOO = 123",),
+            True,
+            re.VERBOSE | re.MULTILINE,
+            "bytes",
+        )
+    )
+
+
+def test_module_workflow_compiled_pattern_success_selectors_reject_non_matching_rows() -> None:
+    direct_pattern_workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation("module.search"),
+        workload_id="module-search-direct-pattern",
+        operation="module.search",
+        pattern="abc",
+        haystack="zzabczz",
+    )
+    wrong_haystack_model = synthetic_workload(
+        manifest_id=_manifest_id_for_operation("module.match"),
+        workload_id="module-match-wrong-text-model",
+        operation="module.match",
+        pattern="abc",
+        haystack="zzabczz",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={"type": "TypeError", "message_substring": "wrong type"},
+    )
+
+    assert not _is_module_workflow_compiled_pattern_literal_success_workload(
+        direct_pattern_workload
+    )
+    assert not _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        wrong_haystack_model
+    )
+
+
+def test_module_workflow_compiled_pattern_correctness_case_signature_requires_compiled_module_call_shape() -> None:
+    matching_case = _fake_workload(
+        workload_id="unused",
+        operation="module_call",
+        use_compiled_pattern=True,
+    )
+    matching_case.helper = "search"
+    matching_case.args = ("zzabczz",)
+    matching_case.pattern = "abc"
+    matching_case.pattern_payload = lambda: "abc"
+    matching_case.text_model = "str"
+    matching_case.flags = 0
+
+    missing_args_case = _fake_workload(
+        workload_id="unused-missing-args",
+        operation="module_call",
+        use_compiled_pattern=True,
+    )
+    missing_args_case.helper = "search"
+    missing_args_case.args = ()
+    missing_args_case.pattern = "abc"
+    missing_args_case.pattern_payload = lambda: "abc"
+    missing_args_case.text_model = "str"
+    missing_args_case.flags = 0
+
+    unsupported_helper_case = _fake_workload(
+        workload_id="unused-split",
+        operation="module_call",
+        use_compiled_pattern=True,
+    )
+    unsupported_helper_case.helper = "split"
+    unsupported_helper_case.args = ("zzabczz",)
+    unsupported_helper_case.pattern = "abc"
+    unsupported_helper_case.pattern_payload = lambda: "abc"
+    unsupported_helper_case.text_model = "str"
+    unsupported_helper_case.flags = 0
+
+    assert _module_workflow_compiled_pattern_correctness_case_signature(
+        matching_case
+    ) == ("module.search", "abc", ("zzabczz",), True, 0, "str")
+    assert _module_workflow_compiled_pattern_correctness_case_signature(
+        missing_args_case
+    ) is None
+    assert _module_workflow_compiled_pattern_correctness_case_signature(
+        unsupported_helper_case
+    ) is None
 
 
 _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
