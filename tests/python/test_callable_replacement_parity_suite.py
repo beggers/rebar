@@ -1796,6 +1796,22 @@ CONDITIONAL_GROUP_EXISTS_NESTED_ABSENT_EXCEPTION_CASES = (
 )
 
 
+CONDITIONAL_GROUP_EXISTS_NESTED_NEGATIVE_COUNT_CASES = (
+    (r"a(b)?c(?(1)(?(1)d|e)|f)", "sub", "zzabcdzz"),
+    (r"a(b)?c(?(1)(?(1)d|e)|f)", "subn", "zzacfzz"),
+    (
+        r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        "sub",
+        "zzabcdzz",
+    ),
+    (
+        r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        "subn",
+        "zzacfzz",
+    ),
+)
+
+
 def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
@@ -4334,6 +4350,38 @@ def test_conditional_group_exists_nested_callable_replacement_absent_capture_typ
         helper=helper,
         string=string,
         count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "helper", "string"),
+    CONDITIONAL_GROUP_EXISTS_NESTED_NEGATIVE_COUNT_CASES,
+    ids=(
+        "numbered-sub-present",
+        "numbered-subn-absent",
+        "named-sub-present",
+        "named-subn-absent",
+    ),
+)
+def test_conditional_group_exists_nested_callable_replacement_negative_count_short_circuits_without_callback(
+    regex_backend: tuple[str, object],
+    pattern: str,
+    helper: str,
+    string: str,
+    use_compiled_pattern: bool,
+) -> None:
+    _, backend = regex_backend
+    assert_callable_replacement_negative_count_short_circuits(
+        backend=backend,
+        helper=helper,
+        pattern=pattern,
+        string=string,
         use_compiled_pattern=use_compiled_pattern,
     )
 
