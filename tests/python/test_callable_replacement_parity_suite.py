@@ -2744,7 +2744,6 @@ def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
 
 def test_conditional_group_exists_bytes_near_miss_cases_mirror_str_cases() -> None:
     manifest_id = "conditional-group-exists-callable-replacement-workflows"
-    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
     str_cases = tuple(
         case
         for case in CALLABLE_NEAR_MISS_CASE_SPECS
@@ -2756,7 +2755,7 @@ def test_conditional_group_exists_bytes_near_miss_cases_mirror_str_cases() -> No
 
     assert set(bytes_cases_by_id) == {f"{case.id}-bytes" for case in str_cases}
     assert {case.pattern for case in CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES} == {
-        pattern for pattern in bundle.expected_patterns if isinstance(pattern, bytes)
+        case.pattern.encode("latin-1") for case in str_cases
     }
     assert {
         case.pattern for case in CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES
