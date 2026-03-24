@@ -32,9 +32,7 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
 )
-from tests.benchmarks.test_source_tree_combined_boundary_benchmarks import (
-    COLLECTION_REPLACEMENT_MANIFEST_PATH,
-)
+
 @pytest.mark.parametrize(
     (
         "workload",
@@ -371,7 +369,7 @@ def test_wrong_text_model_callbacks_preserve_precompile_contract(
     tuple(
         pytest.param(workload, id=workload.workload_id)
         for workload in _selected_manifest_workloads(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
             include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
         )
     ),
