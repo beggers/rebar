@@ -2686,6 +2686,31 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
     ) == selected_case_ids[:8]
 
 
+def test_conditional_replacement_template_keeps_bytes_match_snapshots_pending(
+) -> None:
+    manifest_id = "conditional-group-exists-replacement-template-workflows"
+    surface = _replacement_surface_by_id("conditional-group-exists-replacement")
+    bundle = published_fixture_bundles_by_manifest_id(surface.bundles)[manifest_id]
+
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    str_case_ids = tuple(case.case_id for case in str_cases)
+    bytes_case_ids = tuple(case.case_id for case in bytes_cases)
+    match_snapshot_case_ids = tuple(
+        case.case_id
+        for case in surface.match_snapshot_cases
+        if case.manifest_id == manifest_id
+    )
+    template_expand_case_ids = tuple(
+        case.case_id
+        for case in surface.template_expand_cases
+        if case.manifest_id == manifest_id
+    )
+
+    assert match_snapshot_case_ids == str_case_ids
+    assert template_expand_case_ids == match_snapshot_case_ids
+    assert frozenset(match_snapshot_case_ids).isdisjoint(bytes_case_ids)
+
+
 @pytest.mark.parametrize(("surface", "pattern"), _compile_pattern_params())
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
