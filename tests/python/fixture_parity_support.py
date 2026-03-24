@@ -600,6 +600,8 @@ class GroupedQuantifiedBytesSurfaceSpec:
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
     follow_on_id: str | None = None
+    expected_unsupported_backends: tuple[str, ...] = ()
+    expected_unsupported_backend_reason: str | None = None
 
 
 OPEN_ENDED_ALTERNATION_BYTES_CASES = (

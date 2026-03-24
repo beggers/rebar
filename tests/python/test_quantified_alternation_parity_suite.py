@@ -14,6 +14,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
+    GroupedQuantifiedBytesSurfaceSpec,
     PatternTraceCase as BacktrackingTraceCase,
     SupplementalCase,
     WRAPPER_PAIRS,
@@ -59,13 +60,6 @@ class SupplementalNoMatchCase:
     target: str
     pattern: str
     text: str
-
-
-@dataclass(frozen=True)
-class QuantifiedAlternationDirectBytesFollowOnSpec:
-    follow_on_id: str
-    bundle: FixtureBundle
-    cases: tuple[SupplementalCase, ...]
 
 
 @dataclass(frozen=True)
@@ -299,36 +293,137 @@ QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES = (
         fullmatch_misses=(b"abccd",),
     ),
 )
+
+
+def _expected_operation_helper_counts(
+    cases: tuple[SupplementalCase, ...],
+) -> Counter[tuple[str, str | None]]:
+    return Counter(
+        {
+            ("compile", None): len(cases),
+            ("module_call", "search"): sum(len(case.search_matches) for case in cases),
+            ("pattern_call", "fullmatch"): sum(
+                len(case.fullmatch_matches) + len(case.fullmatch_misses)
+                for case in cases
+            ),
+        }
+    )
+
+
+def _expected_module_search_texts_by_pattern(
+    cases: tuple[SupplementalCase, ...],
+) -> dict[bytes, frozenset[bytes]]:
+    return {
+        case.pattern: frozenset(case.search_matches)
+        for case in cases
+    }
+
+
+def _expected_pattern_fullmatch_texts_by_pattern(
+    cases: tuple[SupplementalCase, ...],
+) -> dict[bytes, frozenset[bytes]]:
+    return {
+        case.pattern: frozenset((*case.fullmatch_matches, *case.fullmatch_misses))
+        for case in cases
+    }
+
+
 DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
-    QuantifiedAlternationDirectBytesFollowOnSpec(
-        follow_on_id="bounded",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+        expected_operation_helper_counts=_expected_operation_helper_counts(
+            QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES
+        ),
+        expected_module_search_texts_by_pattern=_expected_module_search_texts_by_pattern(
+            QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES
+        ),
+        expected_pattern_fullmatch_texts_by_pattern=(
+            _expected_pattern_fullmatch_texts_by_pattern(
+                QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES
+            )
+        ),
+        follow_on_id="bounded",
     ),
-    QuantifiedAlternationDirectBytesFollowOnSpec(
-        follow_on_id="broader-range",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES,
+        expected_operation_helper_counts=_expected_operation_helper_counts(
+            QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES
+        ),
+        expected_module_search_texts_by_pattern=_expected_module_search_texts_by_pattern(
+            QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES
+        ),
+        expected_pattern_fullmatch_texts_by_pattern=(
+            _expected_pattern_fullmatch_texts_by_pattern(
+                QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES
+            )
+        ),
+        follow_on_id="broader-range",
     ),
-    QuantifiedAlternationDirectBytesFollowOnSpec(
-        follow_on_id="conditional",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES,
+        expected_operation_helper_counts=_expected_operation_helper_counts(
+            QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES
+        ),
+        expected_module_search_texts_by_pattern=_expected_module_search_texts_by_pattern(
+            QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES
+        ),
+        expected_pattern_fullmatch_texts_by_pattern=(
+            _expected_pattern_fullmatch_texts_by_pattern(
+                QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES
+            )
+        ),
+        follow_on_id="conditional",
     ),
-    QuantifiedAlternationDirectBytesFollowOnSpec(
-        follow_on_id="open-ended",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES,
+        expected_operation_helper_counts=_expected_operation_helper_counts(
+            QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES
+        ),
+        expected_module_search_texts_by_pattern=_expected_module_search_texts_by_pattern(
+            QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES
+        ),
+        expected_pattern_fullmatch_texts_by_pattern=(
+            _expected_pattern_fullmatch_texts_by_pattern(
+                QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES
+            )
+        ),
+        follow_on_id="open-ended",
     ),
-    QuantifiedAlternationDirectBytesFollowOnSpec(
-        follow_on_id="nested-branch",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES,
+        expected_operation_helper_counts=_expected_operation_helper_counts(
+            QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES
+        ),
+        expected_module_search_texts_by_pattern=_expected_module_search_texts_by_pattern(
+            QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES
+        ),
+        expected_pattern_fullmatch_texts_by_pattern=(
+            _expected_pattern_fullmatch_texts_by_pattern(
+                QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES
+            )
+        ),
+        follow_on_id="nested-branch",
     ),
-    QuantifiedAlternationDirectBytesFollowOnSpec(
-        follow_on_id="backtracking-heavy",
+    GroupedQuantifiedBytesSurfaceSpec(
         bundle=BACKTRACKING_HEAVY_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES,
+        expected_operation_helper_counts=_expected_operation_helper_counts(
+            QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES
+        ),
+        expected_module_search_texts_by_pattern=_expected_module_search_texts_by_pattern(
+            QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES
+        ),
+        expected_pattern_fullmatch_texts_by_pattern=(
+            _expected_pattern_fullmatch_texts_by_pattern(
+                QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES
+            )
+        ),
+        follow_on_id="backtracking-heavy",
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
@@ -725,7 +820,7 @@ def test_direct_bytes_follow_on_case_surfaces_keep_expected_ids() -> None:
     ids=follow_on_pytest_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
-    spec: QuantifiedAlternationDirectBytesFollowOnSpec,
+    spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
     _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         spec.bundle,
@@ -748,7 +843,7 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
     ids=follow_on_pytest_id,
 )
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
-    spec: QuantifiedAlternationDirectBytesFollowOnSpec,
+    spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
     bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         spec.bundle,
@@ -761,34 +856,27 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
         for case in fixture_cases_for_operation((spec.bundle,), "compile")
         if case.text_model == "bytes"
     )
-    expected_operation_helper_counts = Counter(
-        {
-            ("compile", None): len(spec.cases),
-            ("module_call", "search"): sum(
-                len(case.search_matches) for case in spec.cases
-            ),
-            ("pattern_call", "fullmatch"): sum(
-                len(case.fullmatch_matches) + len(case.fullmatch_misses)
-                for case in spec.cases
-            ),
-        }
-    )
-
     assert len(spec.cases) == 2
     assert {case.pattern for case in spec.cases} == expected_compile_patterns
     assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(
-        expected_operation_helper_counts.values()
+        spec.expected_operation_helper_counts.values()
     )
     assert {case.case_id for case in bundle_bytes_cases} == {
         f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
     }
     assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == (
-        expected_operation_helper_counts
+        spec.expected_operation_helper_counts
     )
 
     for case in spec.cases:
-        assert case.unsupported_backends == ()
-        assert case.unsupported_backend_reason is None
+        assert case.unsupported_backends == spec.expected_unsupported_backends
+        assert case.unsupported_backend_reason == spec.expected_unsupported_backend_reason
+        assert frozenset(case.search_matches) == spec.expected_module_search_texts_by_pattern[
+            case.pattern
+        ]
+        assert frozenset((*case.fullmatch_matches, *case.fullmatch_misses)) == (
+            spec.expected_pattern_fullmatch_texts_by_pattern[case.pattern]
+        )
         assert set(case.search_matches).isdisjoint(case.fullmatch_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(

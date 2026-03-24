@@ -1,6 +1,6 @@
 # RBR-1142: Collapse remaining direct-bytes follow-on specs onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -42,6 +42,10 @@ Created: 2026-03-24
 - Preserve current manifest ids, case ids, bytes follow-on routing, published text expectations, and unsupported-backend behavior exactly.
 
 ## Notes
+- Completed 2026-03-24:
+  - extended `GroupedQuantifiedBytesSurfaceSpec` with shared unsupported-backend expectation fields and routed both remaining parity suites through that shared spec plus `SupplementalCase`;
+  - removed the suite-local direct-bytes wrapper dataclasses from quantified alternation and branch-local backreference while preserving existing follow-on ids, manifest pairings, case tables, published bytes text expectations, and pytest ids; and
+  - tightened `tests/python/test_fixture_parity_support_contract.py` with three shared-surface checks covering follow-on/bundle identity, branch-local counts plus published text maps, and unsupported-backend metadata on the shared case payload.
 - `RBR-1142` is the next available unreserved architecture task id in this checkout:
   - `ops/tasks/ready/` and `ops/tasks/in_progress/` are empty in this run;
   - the highest live task id across `ops/tasks/done/` and `ops/tasks/blocked/` is `1141`; and
@@ -58,4 +62,4 @@ Created: 2026-03-24
 - Verification status in this run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py -k 'direct_bytes_follow_on'` returned `181 passed, 597 deselected`.
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py -k 'direct_bytes_follow_on'` returned `146 passed, 415 deselected`.
-  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'grouped_quantified_bytes_surface_spec'` returned `2 passed, 413 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py -k 'grouped_quantified_bytes_surface_spec'` returned `3 passed, 413 deselected`.

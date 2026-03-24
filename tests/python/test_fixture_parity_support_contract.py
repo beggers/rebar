@@ -4214,156 +4214,140 @@ def test_load_published_fixture_bundles_rejects_duplicate_manifest_ids(
         )
 
 
-def test_grouped_quantified_bytes_surface_spec_preserves_bundle_order_and_optional_follow_on_ids(
+def test_grouped_quantified_bytes_surface_spec_preserves_follow_on_id_and_bundle_identity(
 ) -> None:
-    fixture_paths = (
-        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT
-        / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT
-        / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_workflows.py",
+        pattern_extractor=case_pattern,
     )
-    bundles = tuple(
-        build_selected_fixture_bundle(path, pattern_extractor=case_pattern)
-        for path in fixture_paths
-    )
-    surfaces = (
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[0],
-            cases=fixture_parity_support.OPEN_ENDED_ALTERNATION_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
+    cases = (
+        SupplementalCase(
+            id="quantified-alternation-numbered-bytes",
+            pattern=rb"a(b|c){1,2}d",
+            search_matches=(b"zzacdz",),
+            fullmatch_matches=(b"abcd",),
         ),
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[1],
-            cases=fixture_parity_support.BROADER_RANGE_CONDITIONAL_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
-            follow_on_id="broader-range-conditional",
-        ),
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[2],
-            cases=fixture_parity_support.NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
-            follow_on_id="nested-broader-range-alternation",
+        SupplementalCase(
+            id="quantified-alternation-named-bytes",
+            pattern=rb"a(?P<word>b|c){1,2}d",
+            search_matches=(b"zzacbdzz",),
+            fullmatch_matches=(b"abd",),
         ),
     )
+    surface = fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
+        bundle=bundle,
+        cases=cases,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            cases[0].pattern: frozenset(cases[0].search_matches),
+            cases[1].pattern: frozenset(cases[1].search_matches),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            cases[0].pattern: frozenset(cases[0].fullmatch_matches),
+            cases[1].pattern: frozenset(cases[1].fullmatch_matches),
+        },
+        follow_on_id="bounded",
+    )
 
-    assert tuple(bundle.expected_manifest_id for bundle in bundles) == tuple(
-        bundle.manifest.manifest_id for bundle in bundles
+    assert surface.bundle is bundle
+    assert surface.bundle.expected_manifest_id == "quantified-alternation-workflows"
+    assert tuple(case.id for case in surface.cases) == (
+        "quantified-alternation-numbered-bytes",
+        "quantified-alternation-named-bytes",
     )
-    assert tuple(spec.bundle.expected_manifest_id for spec in surfaces) == tuple(
-        bundle.expected_manifest_id for bundle in bundles
-    )
-    assert tuple(spec.bundle for spec in surfaces) == bundles
-    assert tuple(spec.follow_on_id for spec in surfaces) == (
-        None,
-        "broader-range-conditional",
-        "nested-broader-range-alternation",
-    )
-    assert tuple(spec.follow_on_id for spec in surfaces if spec.follow_on_id is not None) == (
-        "broader-range-conditional",
-        "nested-broader-range-alternation",
-    )
+    assert surface.follow_on_id == "bounded"
 
 
-def test_grouped_quantified_bytes_surface_spec_keeps_wider_ranged_repeat_payloads_reachable(
+def test_grouped_quantified_bytes_surface_spec_preserves_branch_local_counts_and_text_maps(
 ) -> None:
-    fixture_paths = (
+    bundle = build_selected_fixture_bundle(
         CORRECTNESS_FIXTURES_ROOT
-        / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT
-        / "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT
-        / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT
-        / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        CORRECTNESS_FIXTURES_ROOT
-        / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        / "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+        pattern_extractor=case_pattern,
     )
-    bundles = tuple(
-        build_selected_fixture_bundle(path, pattern_extractor=case_pattern)
-        for path in fixture_paths
+    cases = (
+        SupplementalCase(
+            id="quantified-nested-group-alternation-branch-local-numbered-bytes",
+            pattern=rb"a((b|c)+)\2d",
+            search_matches=(b"zzabbdzz",),
+            fullmatch_matches=(b"accd", b"abbbd"),
+            fullmatch_misses=(b"abcd",),
+        ),
+        SupplementalCase(
+            id="quantified-nested-group-alternation-branch-local-named-bytes",
+            pattern=rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+            search_matches=(b"zzaccdzz",),
+            fullmatch_matches=(b"abbd", b"abccd"),
+            fullmatch_misses=(b"acbd",),
+        ),
     )
-    surfaces = (
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[0],
-            cases=fixture_parity_support.BROADER_RANGE_CONDITIONAL_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
-            follow_on_id="broader-range-conditional",
+    surface = fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
+        bundle=bundle,
+        cases=cases,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 6,
+            }
         ),
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[1],
-            cases=fixture_parity_support.BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
-            follow_on_id="broader-range-backtracking-heavy",
-        ),
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[2],
-            cases=fixture_parity_support.NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
-            follow_on_id="nested-broader-range-alternation",
-        ),
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[3],
-            cases=fixture_parity_support.NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
-            follow_on_id="nested-broader-range-conditional",
-        ),
-        fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
-            bundle=bundles[4],
-            cases=fixture_parity_support.NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
-            expected_operation_helper_counts=Counter(),
-            expected_module_search_texts_by_pattern={},
-            expected_pattern_fullmatch_texts_by_pattern={},
-            follow_on_id="nested-broader-range-backtracking-heavy",
-        ),
+        expected_module_search_texts_by_pattern={
+            cases[0].pattern: frozenset(cases[0].search_matches),
+            cases[1].pattern: frozenset(cases[1].search_matches),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            cases[0].pattern: frozenset(
+                (*cases[0].fullmatch_matches, *cases[0].fullmatch_misses)
+            ),
+            cases[1].pattern: frozenset(
+                (*cases[1].fullmatch_matches, *cases[1].fullmatch_misses)
+            ),
+        },
     )
 
-    assert tuple(spec.cases for spec in surfaces) == (
-        fixture_parity_support.BROADER_RANGE_CONDITIONAL_BYTES_CASES,
-        fixture_parity_support.BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
-        fixture_parity_support.NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES,
-        fixture_parity_support.NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES,
-        fixture_parity_support.NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
+    assert surface.bundle.expected_manifest_id == (
+        "quantified-nested-group-alternation-branch-local-backreference-workflows"
     )
-    assert tuple(tuple(case.id for case in spec.cases) for spec in surfaces) == (
-        (
-            "broader-range-wider-ranged-repeat-conditional-numbered-bytes",
-            "broader-range-wider-ranged-repeat-conditional-named-bytes",
-        ),
-        (
-            "broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
-            "broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
-        ),
-        (
-            "nested-broader-range-wider-ranged-repeat-grouped-alternation-numbered-bytes",
-            "nested-broader-range-wider-ranged-repeat-grouped-alternation-named-bytes",
-        ),
-        (
-            "nested-broader-range-wider-ranged-repeat-grouped-conditional-numbered-bytes",
-            "nested-broader-range-wider-ranged-repeat-grouped-conditional-named-bytes",
-        ),
-        (
-            "nested-broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
-            "nested-broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
-        ),
+    assert surface.expected_operation_helper_counts == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 2,
+            ("pattern_call", "fullmatch"): 6,
+        }
     )
-    assert tuple(
-        spec.bundle.manifest.path.name for spec in surfaces
-    ) == tuple(path.name for path in fixture_paths)
+    assert surface.expected_module_search_texts_by_pattern == {
+        rb"a((b|c)+)\2d": frozenset({b"zzabbdzz"}),
+        rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d": frozenset({b"zzaccdzz"}),
+    }
+    assert surface.expected_pattern_fullmatch_texts_by_pattern == {
+        rb"a((b|c)+)\2d": frozenset({b"accd", b"abbbd", b"abcd"}),
+        rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d": frozenset(
+            {b"abbd", b"abccd", b"acbd"}
+        ),
+    }
+
+
+def test_grouped_quantified_bytes_surface_spec_preserves_supplemental_case_unsupported_backend_metadata(
+) -> None:
+    case = SupplementalCase(
+        id="direct-bytes-case",
+        pattern=rb"a((b|c)\2){1,2}d",
+        search_matches=(b"zzabbdzz",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason="known gap",
+    )
+
+    assert case.id == "direct-bytes-case"
+    assert case.pattern == rb"a((b|c)\2){1,2}d"
+    assert case.search_matches == (b"zzabbdzz",)
+    assert case.unsupported_backends == ("rebar",)
+    assert case.unsupported_backend_reason == "known gap"
 
 
 def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
