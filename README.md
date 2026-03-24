@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1853 cases across 114 manifests, with all 1853 passing in the current slice; the benchmark publication covers 1219/1219 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | No ready feature follow-on currently survives on the broader conditional callable count-contract owner path. |
-| Work queue | `0` ready, `0` in progress, `1244` done, `0` blocked |
+| Current milestone | The surviving feature frontier is the quantified nested-group alternation module wrong-return-type parity slice on the callable replacement owner path, pinned to `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`. |
+| Work queue | `0` ready, `0` in progress, `1246` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No ready feature follow-on currently survives on the broader conditional callable count-contract owner path.
+- The surviving feature frontier is the quantified nested-group alternation module wrong-return-type parity slice on the callable replacement owner path, pinned to `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
 
 ### Current Risks
 

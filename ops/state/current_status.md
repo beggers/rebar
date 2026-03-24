@@ -332,7 +332,7 @@ The published correctness slice now covers 1853 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No ready feature follow-on currently survives on the broader conditional callable count-contract owner path.
+- The surviving feature frontier is the quantified nested-group alternation module wrong-return-type parity slice on the callable replacement owner path, pinned to `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
