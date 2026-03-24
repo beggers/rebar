@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives; `RBR-1133` and `RBR-1135` remain the post-drain conditional-group-exists template-bytes frontier once the queued mirrored numbered-pattern and named-module runtime prerequisite lands.
+- No ready feature follow-on currently survives; the remaining bounded conditional-group-exists template-bytes publication and benchmark pair is blocked in `RBR-1133` and `RBR-1135`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -23,7 +23,7 @@ The published correctness slice now covers 1653 cases across 114 manifests, all 
 
 ## Queue Frontier
 - No ready feature follow-on currently survives.
-- The post-drain frontier remains the blocked conditional-group-exists template-bytes publication and benchmark pair in `RBR-1133` and `RBR-1135`; a single bounded prerequisite now restores the missing mirrored numbered-pattern and named-module bytes template runtime those tasks require.
+- The post-drain frontier remains the blocked conditional-group-exists template-bytes publication and benchmark pair in `RBR-1133` and `RBR-1135`.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -333,7 +333,7 @@ The published correctness slice now covers 1653 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No ready feature follow-on currently survives; the remaining bounded conditional-group-exists bytes work is blocked in `RBR-1133` and `RBR-1135`.
+- No ready feature follow-on currently survives; the remaining bounded conditional-group-exists template-bytes publication and benchmark pair is blocked in `RBR-1133` and `RBR-1135`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
