@@ -35,6 +35,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
+    ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     record_generated_match_failure,
@@ -1178,9 +1179,7 @@ def test_branch_local_backreference_direct_test_case_id_buckets_cover_selected_f
                 for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
             ),
         ),
-        selected_case_ids=tuple(
-            case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
-        ),
+        selected_case_ids=ordered_fixture_bundle_case_ids(FIXTURE_BUNDLES),
         coverage_label="branch-local-backreference direct-test case-id buckets",
     )
 

@@ -1,6 +1,6 @@
 # RBR-1132: Collapse grouped quantified bundle-id and case-id mirrors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -45,6 +45,8 @@ Created: 2026-03-24
 - Preserve the current direct-test bucket labels, published bundle ordering, and selected case-id ordering in all four suites.
 
 ## Notes
+- Completed 2026-03-24: added `ordered_fixture_bundle_case_ids()` plus the missing grouped-quantified surface id helpers on `tests/python/fixture_parity_support.py`, switched the grouped-quantified suites to `bundle.expected_manifest_id` and the shared ordered-case-id helper, and extended `tests/python/test_fixture_parity_support_contract.py` with focused ordering/alignment coverage.
+- Verified with the task's targeted pytest selection (`7 passed`) and the negative `rg` check for both stale `fixture_bundle_manifest_id` imports/usages and the duplicated whole-bundle `selected_case_ids` comprehension.
 - `RBR-1132` is the next available unreserved task id in this checkout:
   - the highest live task id across `ops/tasks/ready/`, `ops/tasks/in_progress/`, `ops/tasks/done/`, and `ops/tasks/blocked/` is `1131`; and
   - `rg -n 'RBR-1132|RBR-1133|RBR-1134|RBR-1135' ops/state/backlog.md ops/state/current_status.md ops/tasks -g '*.md'` returned no reserved future ids in this run.

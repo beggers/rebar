@@ -37,10 +37,10 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
-    fixture_bundle_manifest_id,
     fixture_cases_for_operation,
     grouped_quantified_bytes_surface_follow_on_id,
     load_published_fixture_bundles,
+    ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     requested_published_fixture_bundles,
@@ -384,7 +384,7 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=fixture_bundle_manifest_id,
+    ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
@@ -450,9 +450,7 @@ def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_
                 for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
             ),
         ),
-        selected_case_ids=tuple(
-            case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
-        ),
+        selected_case_ids=ordered_fixture_bundle_case_ids(FIXTURE_BUNDLES),
         coverage_label=(
             "wider-ranged-repeat quantified group direct-test case-id buckets"
         ),

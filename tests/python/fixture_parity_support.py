@@ -373,6 +373,12 @@ def flatten_fixture_bundles(
     return tuple(case for bundle in bundles for case in bundle.cases)
 
 
+def ordered_fixture_bundle_case_ids(
+    bundles: Iterable[FixtureBundle],
+) -> tuple[str, ...]:
+    return tuple(case.case_id for case in flatten_fixture_bundles(bundles))
+
+
 def fixture_cases_by_id(
     fixtures: Iterable[FixtureBundle] | Iterable[FixtureCase],
 ) -> dict[str, FixtureCase]:
@@ -426,6 +432,22 @@ class GroupedQuantifiedBytesSurfaceSpec:
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
     follow_on_id: str | None = None
+
+
+def grouped_quantified_bytes_surface_manifest_id(
+    spec: GroupedQuantifiedBytesSurfaceSpec,
+) -> str:
+    return spec.bundle.expected_manifest_id
+
+
+def grouped_quantified_bytes_surface_follow_on_id(
+    spec: GroupedQuantifiedBytesSurfaceSpec,
+) -> str:
+    if spec.follow_on_id is None:
+        raise AssertionError(
+            "grouped quantified bytes surface spec is missing a follow-on id"
+        )
+    return spec.follow_on_id
 
 
 OPEN_ENDED_ALTERNATION_BYTES_CASES = (

@@ -65,6 +65,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_single_published_fixture_bundle,
+    ordered_fixture_bundle_case_ids,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
@@ -5134,6 +5135,62 @@ def test_flatten_fixture_bundles_preserves_bundle_and_case_order(
         "bundle-loader-contract-mixed-compile-bytes",
         "bundle-loader-contract-pattern-search-str",
         "bundle-loader-contract-compile-str",
+    )
+
+
+def test_ordered_fixture_bundle_case_ids_preserve_bundle_and_case_order(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    mixed_bundle = build_selected_fixture_bundle(
+        mixed_path,
+        selected_case_ids=(
+            "bundle-loader-contract-mixed-module-search-str",
+            "bundle-loader-contract-mixed-compile-bytes",
+        ),
+        pattern_extractor=case_pattern,
+    )
+    str_bundle = build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=(
+            "bundle-loader-contract-pattern-search-str",
+            "bundle-loader-contract-compile-str",
+        ),
+        pattern_extractor=str_case_pattern,
+    )
+
+    assert ordered_fixture_bundle_case_ids((mixed_bundle, str_bundle)) == (
+        "bundle-loader-contract-mixed-module-search-str",
+        "bundle-loader-contract-mixed-compile-bytes",
+        "bundle-loader-contract-pattern-search-str",
+        "bundle-loader-contract-compile-str",
+    )
+
+
+def test_ordered_fixture_bundle_case_ids_match_flattened_case_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    mixed_bundle = build_selected_fixture_bundle(
+        mixed_path,
+        selected_case_ids=(
+            "bundle-loader-contract-mixed-module-search-str",
+            "bundle-loader-contract-mixed-compile-bytes",
+        ),
+        pattern_extractor=case_pattern,
+    )
+    str_bundle = build_selected_fixture_bundle(
+        str_path,
+        selected_case_ids=(
+            "bundle-loader-contract-pattern-search-str",
+            "bundle-loader-contract-compile-str",
+        ),
+        pattern_extractor=str_case_pattern,
+    )
+    bundles = (mixed_bundle, str_bundle)
+
+    assert ordered_fixture_bundle_case_ids(bundles) == tuple(
+        case.case_id for case in flatten_fixture_bundles(bundles)
     )
 
 
