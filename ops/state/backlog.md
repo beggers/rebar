@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives on the conditional callable replacement owner path; the next accepted same-family slice is not yet concrete from the live direct parity and benchmark anchors.
+The surviving post-drain frontier on the conditional callable replacement owner path is the adjacent alternation-heavy callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the conditional callable replacement owner path; seed the next bounded same-family slice only when an adjacent direct parity or benchmark anchor already exposes one exact accepted workflow family.
+1. Keep the post-drain frontier pinned to the alternation-heavy conditional callable `count=None` benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py`, immediately behind the newly queued correctness publication on the same owner route.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
