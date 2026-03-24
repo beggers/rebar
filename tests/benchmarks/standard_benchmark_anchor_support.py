@@ -64,27 +64,20 @@ def _expected_anchor_case_ids_for_manifest(
     }
 
 
-def _anchored_case_ids_for_manifest(
-    definition: StandardBenchmarkAnchorContract,
-    manifest_path: pathlib.Path,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=published_case_ids_by_signature(
-            definition.correctness_case_signature
-        ),
-        workload_signature=definition.workload_signature,
-        include_workload=definition.includes_workload,
-    )
-
-
 def _anchored_case_ids(
     definition: StandardBenchmarkAnchorContract,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
     anchored_case_ids: dict[tuple[str, str], tuple[str, ...]] = {}
     for manifest_path in definition.manifest_paths:
         anchored_case_ids.update(
-            _anchored_case_ids_for_manifest(definition, manifest_path)
+            anchored_workload_case_ids(
+                manifest_path,
+                anchor_case_ids=published_case_ids_by_signature(
+                    definition.correctness_case_signature
+                ),
+                workload_signature=definition.workload_signature,
+                include_workload=definition.includes_workload,
+            )
         )
     return anchored_case_ids
 
@@ -92,6 +85,8 @@ def _anchored_case_ids(
 def _unanchored_case_ids(
     definition: StandardBenchmarkAnchorContract,
     manifest_path: pathlib.Path,
+    *,
+    include_special_unanchored: bool = False,
 ) -> tuple[str, ...]:
     return unanchored_workload_ids(
         manifest_path,
@@ -99,20 +94,9 @@ def _unanchored_case_ids(
             definition.correctness_case_signature
         ),
         workload_signature=definition.workload_signature,
-        include_workload=definition.includes_workload,
-    )
-
-
-def _all_unanchored_case_ids(
-    definition: StandardBenchmarkAnchorContract,
-    manifest_path: pathlib.Path,
-) -> tuple[str, ...]:
-    return unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=published_case_ids_by_signature(
-            definition.correctness_case_signature
+        include_workload=(
+            None if include_special_unanchored else definition.includes_workload
         ),
-        workload_signature=definition.workload_signature,
     )
 
 

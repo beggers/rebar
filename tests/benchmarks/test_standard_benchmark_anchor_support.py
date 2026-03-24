@@ -129,7 +129,11 @@ def test_anchor_helpers_resolve_anchored_and_unanchored_workloads(
         ("synthetic_boundary.py", "unanchored"): (),
     }
     assert support._unanchored_case_ids(definition, manifest_path) == ("unanchored",)
-    assert support._all_unanchored_case_ids(definition, manifest_path) == (
+    assert support._unanchored_case_ids(
+        definition,
+        manifest_path,
+        include_special_unanchored=True,
+    ) == (
         "unanchored",
         "special-unanchored",
     )

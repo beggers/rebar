@@ -56,7 +56,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     unanchored_workload_ids,
 )
 from tests.benchmarks.standard_benchmark_anchor_support import (
-    _all_unanchored_case_ids,
     _anchored_case_ids,
     _expected_anchored_pairs,
     _expected_callback_anchor_case_ids,
@@ -20553,7 +20552,11 @@ def test_standard_benchmark_special_unanchored_workloads_stay_explicit(
     assert tuple(
         workload_id
         for manifest_path in definition.manifest_paths
-        for workload_id in _all_unanchored_case_ids(definition, manifest_path)
+        for workload_id in _unanchored_case_ids(
+            definition,
+            manifest_path,
+            include_special_unanchored=True,
+        )
     ) == definition.expected_special_unanchored_workload_ids
 
 
