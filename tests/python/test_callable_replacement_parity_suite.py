@@ -1410,6 +1410,28 @@ def _case_count(case: FixtureCase) -> int:
     return 0
 
 
+def _is_negative_count_callable_case(case: FixtureCase) -> bool:
+    return _case_count(case) < 0
+
+
+MODULE_CALLBACK_EXCEPTION_CASES = tuple(
+    case for case in MODULE_CASES if not _is_negative_count_callable_case(case)
+)
+PATTERN_CALLBACK_EXCEPTION_CASES = tuple(
+    case for case in PATTERN_CASES if not _is_negative_count_callable_case(case)
+)
+BYTES_MODULE_CALLBACK_EXCEPTION_CASES = tuple(
+    case
+    for case in BYTES_MODULE_CASES
+    if not _is_negative_count_callable_case(case)
+)
+BYTES_PATTERN_CALLBACK_EXCEPTION_CASES = tuple(
+    case
+    for case in BYTES_PATTERN_CASES
+    if not _is_negative_count_callable_case(case)
+)
+
+
 def _case_group_names(case: FixtureCase) -> tuple[str, ...]:
     return tuple(re.compile(case_pattern(case), case.flags or 0).groupindex)
 
@@ -2463,6 +2485,72 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
         )
 
 
+def test_callable_replacement_callback_exception_case_pools_exclude_negative_count_rows(
+) -> None:
+    module_negative_count_case_ids = {
+        case.case_id
+        for case in MODULE_CASES
+        if _is_negative_count_callable_case(case)
+    }
+    pattern_negative_count_case_ids = {
+        case.case_id
+        for case in PATTERN_CASES
+        if _is_negative_count_callable_case(case)
+    }
+    bytes_module_negative_count_case_ids = {
+        case.case_id
+        for case in BYTES_MODULE_CASES
+        if _is_negative_count_callable_case(case)
+    }
+    bytes_pattern_negative_count_case_ids = {
+        case.case_id
+        for case in BYTES_PATTERN_CASES
+        if _is_negative_count_callable_case(case)
+    }
+
+    assert module_negative_count_case_ids
+    assert pattern_negative_count_case_ids
+    assert bytes_module_negative_count_case_ids == (
+        module_negative_count_case_ids & {case.case_id for case in BYTES_MODULE_CASES}
+    )
+    assert bytes_pattern_negative_count_case_ids == (
+        pattern_negative_count_case_ids
+        & {case.case_id for case in BYTES_PATTERN_CASES}
+    )
+    assert {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}.isdisjoint(
+        module_negative_count_case_ids
+    )
+    assert {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}.isdisjoint(
+        pattern_negative_count_case_ids
+    )
+    assert {
+        case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES
+    }.isdisjoint(bytes_module_negative_count_case_ids)
+    assert {
+        case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES
+    }.isdisjoint(bytes_pattern_negative_count_case_ids)
+    assert (
+        {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}
+        | module_negative_count_case_ids
+        == {case.case_id for case in MODULE_CASES}
+    )
+    assert (
+        {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}
+        | pattern_negative_count_case_ids
+        == {case.case_id for case in PATTERN_CASES}
+    )
+    assert (
+        {case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES}
+        | bytes_module_negative_count_case_ids
+        == {case.case_id for case in BYTES_MODULE_CASES}
+    )
+    assert (
+        {case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES}
+        | bytes_pattern_negative_count_case_ids
+        == {case.case_id for case in BYTES_PATTERN_CASES}
+    )
+
+
 def test_callable_replacement_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         {
@@ -3311,7 +3399,11 @@ def test_module_callable_replacement_callback_match_objects_match_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    MODULE_CALLBACK_EXCEPTION_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_module_callable_replacement_callback_exception_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -3351,7 +3443,11 @@ def test_module_bytes_callable_replacement_callback_match_objects_match_cpython(
     )
 
 
-@pytest.mark.parametrize("case", BYTES_MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    BYTES_MODULE_CALLBACK_EXCEPTION_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_module_bytes_callable_replacement_callback_exception_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -3783,7 +3879,11 @@ def test_pattern_bytes_callable_replacement_callback_match_objects_match_cpython
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_CALLBACK_EXCEPTION_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_pattern_callable_replacement_callback_exception_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -3886,7 +3986,11 @@ def test_conditional_group_exists_pattern_bytes_callable_replacement_absent_capt
     assert len(observed_matches) == 1
 
 
-@pytest.mark.parametrize("case", BYTES_PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    BYTES_PATTERN_CALLBACK_EXCEPTION_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_pattern_bytes_callable_replacement_callback_exception_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
