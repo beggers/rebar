@@ -1561,6 +1561,14 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
                 "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
                 "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+                "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+                "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+                "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+                "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+                "module-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+                "module-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+                "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+                "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
             ),
         ),
     ),
@@ -3152,13 +3160,21 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
             "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
             "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-str",
+            "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-str",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-str",
+            "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-str",
+            "module-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-str",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-str",
+            "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-str",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-str",
         ),
         expected_patterns={
             r"a(b)?c(?(1)d|e){2}",
             r"a(?P<word>b)?c(?(word)d|e){2}",
         },
         expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcddzz", "zzaceezz"},
+        expected_haystacks={"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"},
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -3195,13 +3211,21 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
             "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
             "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+            "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+            "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+            "module-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+            "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
         ),
         expected_patterns={
             r"a(b)?c(?(1)d|e){2}",
             r"a(?P<word>b)?c(?(word)d|e){2}",
         },
         expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcddzz", "zzaceezz"},
+        expected_haystacks={"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"},
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -3985,6 +4009,14 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS = (
     "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
     "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
     "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-str",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-str",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-str",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-str",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-str",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-str",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-str",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-str",
 )
 CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = (
     "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-bytes",
@@ -3995,6 +4027,14 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = (
     "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
     "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
     "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-warm-bytes",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
 )
 CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
     "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
@@ -5565,16 +5605,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             Counter((workload.operation, workload.count) for workload in matched_rows),
             Counter(
                 {
-                    ("module.sub", 0): 2,
-                    ("module.subn", 1): 2,
-                    ("pattern.sub", 0): 2,
-                    ("pattern.subn", 1): 2,
+                    ("module.sub", 0): 4,
+                    ("module.subn", 1): 4,
+                    ("pattern.sub", 0): 4,
+                    ("pattern.subn", 1): 4,
                 }
             ),
         )
         self.assertEqual(
             Counter("exception" in workload.categories for workload in matched_rows),
-            Counter({False: 4, True: 4}),
+            Counter({False: 12, True: 4}),
         )
         for workload_id in expected_workload_ids:
             with self.subTest(workload_id=workload_id):
