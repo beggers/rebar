@@ -4676,6 +4676,68 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=expected_workload_count,
         )
 
+    def test_conditional_group_exists_template_bytes_workloads_keep_bytes_template_payloads_through_round_trip(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        case = source_tree_combined_case(manifest_id)
+        workloads_by_id = records_by_string_id(
+            (
+                workload
+                for workload in case.target_manifest.workloads
+                if workload.workload_id
+                in CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
+            ),
+            id_attr="workload_id",
+        )
+
+        self.assertEqual(
+            tuple(workloads_by_id),
+            CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
+        )
+
+        for workload_id in CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
+            expected_template_payload = (
+                b"\\g<word>x" if "-named-" in workload_id else b"\\1x"
+            )
+            expected_serialized_replacement = (
+                "\\g<word>x" if "-named-" in workload_id else "\\1x"
+            )
+            expected_result = (
+                (b"zzxzz", 1) if "-subn-" in workload_id else b"zzbxzz"
+            )
+
+            with self.subTest(workload_id=workload_id):
+                workload = workloads_by_id[workload_id]
+                payload = workload_to_payload(workload)
+                round_tripped = workload_from_payload(payload)
+
+                self.assertEqual(workload.text_model, "bytes")
+                self.assertEqual(payload["text_model"], "bytes")
+                self.assertEqual(payload["replacement"], expected_serialized_replacement)
+                self.assertIsInstance(workload.pattern_payload(), bytes)
+                self.assertIsInstance(workload.haystack_payload(), bytes)
+                self.assertEqual(
+                    workload.replacement_payload(),
+                    expected_template_payload,
+                )
+                self.assertEqual(
+                    run_benchmark_workload_with_cpython(workload),
+                    expected_result,
+                )
+
+                self.assertEqual(round_tripped.text_model, "bytes")
+                self.assertIsInstance(round_tripped.pattern_payload(), bytes)
+                self.assertIsInstance(round_tripped.haystack_payload(), bytes)
+                self.assertEqual(
+                    round_tripped.replacement_payload(),
+                    expected_template_payload,
+                )
+                self.assertEqual(
+                    run_benchmark_workload_with_cpython(round_tripped),
+                    expected_result,
+                )
+
     def test_conditional_group_exists_callable_bytes_manifest_promotes_replacement_and_exception_rows_to_measured(
         self,
     ) -> None:
