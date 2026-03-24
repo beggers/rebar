@@ -1494,6 +1494,26 @@ def _bytes_mirror_expected_result(expected_result: object) -> object:
     return (text.encode("latin-1"), count)
 
 
+def _assert_bytes_direct_case_table_mirrors_str_table(
+    *,
+    str_cases: tuple[tuple[str, int | str, str, str, int], ...],
+    bytes_cases: tuple[tuple[bytes, int | str, str, bytes, int], ...],
+) -> None:
+    assert len(str_cases) == len(bytes_cases)
+
+    for str_case, bytes_case in zip(str_cases, bytes_cases):
+        str_pattern, str_group_ref, str_helper, str_text, str_count = str_case
+        bytes_pattern, bytes_group_ref, bytes_helper, bytes_text, bytes_count = (
+            bytes_case
+        )
+
+        assert bytes_pattern == str_pattern.encode("latin-1")
+        assert bytes_group_ref == str_group_ref
+        assert bytes_helper == str_helper
+        assert bytes_text == str_text.encode("latin-1")
+        assert bytes_count == str_count
+
+
 def _normalize_source_text_fragment(fragment: object) -> str:
     if isinstance(fragment, str):
         return fragment
@@ -2611,6 +2631,18 @@ def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_wi
     assert present_rows == set(CONDITIONAL_GROUP_EXISTS_ALTERNATION_GROUP_ACCESS_CASES)
     assert absent_rows == set(
         CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES
+    )
+
+
+def test_conditional_group_exists_alternation_bytes_direct_case_tables_mirror_str_tables(
+) -> None:
+    _assert_bytes_direct_case_table_mirrors_str_table(
+        str_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_GROUP_ACCESS_CASES,
+        bytes_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_GROUP_ACCESS_CASES,
+    )
+    _assert_bytes_direct_case_table_mirrors_str_table(
+        str_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES,
+        bytes_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES,
     )
 
 
