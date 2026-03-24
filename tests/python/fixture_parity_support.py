@@ -1954,34 +1954,6 @@ def assert_invalid_match_group_access_parity(
             assert observed_error.args == expected_error.args
 
 
-def record_generated_match_failure(
-    failures: list[str],
-    *,
-    label: str,
-    backend_name: str,
-    observed: object,
-    expected: re.Match[str] | re.Match[bytes] | None,
-) -> None:
-    try:
-        assert_match_result_parity(
-            backend_name,
-            observed,
-            expected,
-            check_regs=True,
-        )
-        if expected is None:
-            return
-
-        _assert_match_follow_on_checks(
-            observed,
-            expected,
-            check_convenience_api=True,
-            check_group_access=True,
-        )
-    except AssertionError as exc:
-        failures.append(f"{label}: {exc}")
-
-
 _GENERATED_MATRIX_HELPERS = ("search", "match", "fullmatch")
 _GENERATED_FAILURE_PREVIEW_LIMIT = 20
 
@@ -2013,19 +1985,41 @@ def assert_generated_text_matrix_matches_cpython(
     )
 
     failures: list[str] = []
+
+    def record_failure(
+        *,
+        label: str,
+        observed: object,
+        expected: re.Match[str] | re.Match[bytes] | None,
+    ) -> None:
+        try:
+            assert_match_result_parity(
+                backend_name,
+                observed,
+                expected,
+                check_regs=True,
+            )
+            if expected is None:
+                return
+
+            _assert_match_follow_on_checks(
+                observed,
+                expected,
+                check_convenience_api=True,
+                check_group_access=True,
+            )
+        except AssertionError as exc:
+            failures.append(f"{label}: {exc}")
+
     for text in candidate_texts:
         for helper in _GENERATED_MATRIX_HELPERS:
-            record_generated_match_failure(
-                failures,
+            record_failure(
                 label=f"module.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
                 observed=getattr(backend, helper)(pattern, text),
                 expected=getattr(re, helper)(pattern, text),
             )
-            record_generated_match_failure(
-                failures,
+            record_failure(
                 label=f"pattern.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
                 observed=getattr(observed_pattern, helper)(text),
                 expected=getattr(expected_pattern, helper)(text),
             )

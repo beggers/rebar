@@ -6675,254 +6675,6 @@ def test_invalid_match_group_access_parity_rejects_non_raising_accessors(
         assert_invalid_match_group_access_parity(permissive_match, expected_match)
 
 
-def test_record_generated_match_failure_skips_match_specific_checks_for_no_match(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    failures: list[str] = []
-    calls: list[tuple[str, object]] = []
-
-    def _record_match_result(
-        backend_name: str,
-        observed: object,
-        expected: object,
-        *,
-        check_regs: bool = False,
-    ) -> None:
-        calls.append(
-            ("result", backend_name, observed, expected, check_regs)
-        )
-
-    def _unexpected_follow_on(*args: object, **kwargs: object) -> None:
-        raise AssertionError("unexpected follow-on helper call")
-
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_match_result_parity",
-        _record_match_result,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_match_convenience_api_parity",
-        _unexpected_follow_on,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_valid_match_group_access_parity",
-        _unexpected_follow_on,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_invalid_match_group_access_parity",
-        _unexpected_follow_on,
-    )
-
-    fixture_parity_support.record_generated_match_failure(
-        failures,
-        label="generated-no-match",
-        backend_name="stdlib",
-        observed=None,
-        expected=None,
-    )
-
-    assert failures == []
-    assert calls == [("result", "stdlib", None, None, True)]
-
-
-def test_record_generated_match_failure_runs_follow_on_checks_for_expected_match(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    failures: list[str] = []
-    calls: list[str] = []
-    observed = object()
-    expected = object()
-
-    def _record_match_result(
-        backend_name: str,
-        match_observed: object,
-        match_expected: object,
-        *,
-        check_regs: bool = False,
-    ) -> None:
-        calls.append("result")
-        assert backend_name == "stdlib"
-        assert match_observed is observed
-        assert match_expected is expected
-        assert check_regs is True
-
-    def _record_convenience(
-        match_observed: object,
-        match_expected: object,
-    ) -> None:
-        calls.append("convenience")
-        assert match_observed is observed
-        assert match_expected is expected
-
-    def _record_valid_group_access(
-        match_observed: object,
-        match_expected: object,
-    ) -> None:
-        calls.append("valid-group-access")
-        assert match_observed is observed
-        assert match_expected is expected
-
-    def _record_invalid_group_access(
-        match_observed: object,
-        match_expected: object,
-    ) -> None:
-        calls.append("invalid-group-access")
-        assert match_observed is observed
-        assert match_expected is expected
-
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_match_result_parity",
-        _record_match_result,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_match_convenience_api_parity",
-        _record_convenience,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_valid_match_group_access_parity",
-        _record_valid_group_access,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_invalid_match_group_access_parity",
-        _record_invalid_group_access,
-    )
-
-    fixture_parity_support.record_generated_match_failure(
-        failures,
-        label="generated-match",
-        backend_name="stdlib",
-        observed=observed,
-        expected=expected,
-    )
-
-    assert failures == []
-    assert calls == [
-        "result",
-        "convenience",
-        "valid-group-access",
-        "invalid-group-access",
-    ]
-
-
-@pytest.mark.parametrize(
-    ("failing_stage", "expected_calls"),
-    (
-        pytest.param("result", ("result",), id="match-result"),
-        pytest.param(
-            "convenience",
-            ("result", "convenience"),
-            id="convenience",
-        ),
-        pytest.param(
-            "valid-group-access",
-            ("result", "convenience", "valid-group-access"),
-            id="valid-group-access",
-        ),
-        pytest.param(
-            "invalid-group-access",
-            (
-                "result",
-                "convenience",
-                "valid-group-access",
-                "invalid-group-access",
-            ),
-            id="invalid-group-access",
-        ),
-    ),
-)
-def test_record_generated_match_failure_appends_labelled_first_helper_failure(
-    monkeypatch: pytest.MonkeyPatch,
-    failing_stage: str,
-    expected_calls: tuple[str, ...],
-) -> None:
-    failures: list[str] = []
-    calls: list[str] = []
-    observed = object()
-    expected = object()
-    failure_message = f"{failing_stage} drift"
-
-    def _maybe_raise(stage: str) -> None:
-        calls.append(stage)
-        if stage == failing_stage:
-            raise AssertionError(failure_message)
-
-    def _record_match_result(
-        backend_name: str,
-        match_observed: object,
-        match_expected: object,
-        *,
-        check_regs: bool = False,
-    ) -> None:
-        assert backend_name == "stdlib"
-        assert match_observed is observed
-        assert match_expected is expected
-        assert check_regs is True
-        _maybe_raise("result")
-
-    def _record_convenience(
-        match_observed: object,
-        match_expected: object,
-    ) -> None:
-        assert match_observed is observed
-        assert match_expected is expected
-        _maybe_raise("convenience")
-
-    def _record_valid_group_access(
-        match_observed: object,
-        match_expected: object,
-    ) -> None:
-        assert match_observed is observed
-        assert match_expected is expected
-        _maybe_raise("valid-group-access")
-
-    def _record_invalid_group_access(
-        match_observed: object,
-        match_expected: object,
-    ) -> None:
-        assert match_observed is observed
-        assert match_expected is expected
-        _maybe_raise("invalid-group-access")
-
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_match_result_parity",
-        _record_match_result,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_match_convenience_api_parity",
-        _record_convenience,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_valid_match_group_access_parity",
-        _record_valid_group_access,
-    )
-    monkeypatch.setattr(
-        fixture_parity_support,
-        "assert_invalid_match_group_access_parity",
-        _record_invalid_group_access,
-    )
-
-    fixture_parity_support.record_generated_match_failure(
-        failures,
-        label="generated-case",
-        backend_name="stdlib",
-        observed=observed,
-        expected=expected,
-    )
-
-    assert failures == [f"generated-case: {failure_message}"]
-    assert calls == list(expected_calls)
-
-
 class _GeneratedMatrixBackendContract:
     def __init__(self, label: str) -> None:
         self.label = label
@@ -6951,6 +6703,17 @@ class _GeneratedMatrixPatternContract:
         return f"{self.label}.fullmatch({text!r})"
 
 
+class _GeneratedNoMatchPatternContract:
+    def search(self, text: str | bytes) -> None:
+        return None
+
+    def match(self, text: str | bytes) -> None:
+        return None
+
+    def fullmatch(self, text: str | bytes) -> None:
+        return None
+
+
 def _generated_matrix_case_contract(
     pattern: str | bytes,
     *,
@@ -6968,7 +6731,7 @@ def test_assert_generated_text_matrix_matches_cpython_executes_module_and_patter
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     compile_calls: list[tuple[str, str, int]] = []
-    recorded_calls: list[tuple[str, str, object, object]] = []
+    recorded_calls: list[tuple[str, object, object, bool]] = []
     regex_backend = ("stdlib", _GeneratedMatrixBackendContract("backend"))
     observed_pattern = _GeneratedMatrixPatternContract("observed-pattern")
     expected_pattern = _GeneratedMatrixPatternContract("expected-pattern")
@@ -6989,19 +6752,36 @@ def test_assert_generated_text_matrix_matches_cpython_executes_module_and_patter
         compile_calls.append((backend_name, pattern, flags))
         return observed_pattern, expected_pattern
 
-    def _record(
-        failures: list[str],
-        *,
-        label: str,
+    def _record_result(
         backend_name: str,
         observed: object,
         expected: object,
+        *,
+        check_regs: bool = False,
     ) -> None:
-        assert failures == []
-        recorded_calls.append((label, backend_name, observed, expected))
+        recorded_calls.append((backend_name, observed, expected, check_regs))
 
     monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
-    monkeypatch.setattr(fixture_parity_support, "record_generated_match_failure", _record)
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        _record_result,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        lambda observed, expected: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        lambda observed, expected: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        lambda observed, expected: None,
+    )
     monkeypatch.setattr(
         fixture_parity_support.re,
         "search",
@@ -7029,78 +6809,228 @@ def test_assert_generated_text_matrix_matches_cpython_executes_module_and_patter
     assert compile_calls == [("stdlib", r"a(b|c){1,2}d", 4)]
     assert recorded_calls == [
         (
-            "module.search('a(b|c){1,2}d', 'zzabdzz')",
             "stdlib",
             "backend.search('a(b|c){1,2}d', 'zzabdzz')",
             "cpython.search('a(b|c){1,2}d', 'zzabdzz')",
+            True,
         ),
         (
-            "pattern.search('a(b|c){1,2}d', 'zzabdzz')",
             "stdlib",
             "observed-pattern.search('zzabdzz')",
             "expected-pattern.search('zzabdzz')",
+            True,
         ),
         (
-            "module.match('a(b|c){1,2}d', 'zzabdzz')",
             "stdlib",
             "backend.match('a(b|c){1,2}d', 'zzabdzz')",
             "cpython.match('a(b|c){1,2}d', 'zzabdzz')",
+            True,
         ),
         (
-            "pattern.match('a(b|c){1,2}d', 'zzabdzz')",
             "stdlib",
             "observed-pattern.match('zzabdzz')",
             "expected-pattern.match('zzabdzz')",
+            True,
         ),
         (
-            "module.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
             "stdlib",
             "backend.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
             "cpython.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
+            True,
         ),
         (
-            "pattern.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
             "stdlib",
             "observed-pattern.fullmatch('zzabdzz')",
             "expected-pattern.fullmatch('zzabdzz')",
+            True,
         ),
         (
-            "module.search('a(b|c){1,2}d', 'zzacdzz')",
             "stdlib",
             "backend.search('a(b|c){1,2}d', 'zzacdzz')",
             "cpython.search('a(b|c){1,2}d', 'zzacdzz')",
+            True,
         ),
         (
-            "pattern.search('a(b|c){1,2}d', 'zzacdzz')",
             "stdlib",
             "observed-pattern.search('zzacdzz')",
             "expected-pattern.search('zzacdzz')",
+            True,
         ),
         (
-            "module.match('a(b|c){1,2}d', 'zzacdzz')",
             "stdlib",
             "backend.match('a(b|c){1,2}d', 'zzacdzz')",
             "cpython.match('a(b|c){1,2}d', 'zzacdzz')",
+            True,
         ),
         (
-            "pattern.match('a(b|c){1,2}d', 'zzacdzz')",
             "stdlib",
             "observed-pattern.match('zzacdzz')",
             "expected-pattern.match('zzacdzz')",
+            True,
         ),
         (
-            "module.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
             "stdlib",
             "backend.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
             "cpython.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
+            True,
         ),
         (
-            "pattern.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
             "stdlib",
             "observed-pattern.fullmatch('zzacdzz')",
             "expected-pattern.fullmatch('zzacdzz')",
+            True,
         ),
     ]
+
+
+def test_assert_generated_text_matrix_matches_cpython_skips_follow_on_checks_for_no_match(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    regex_backend = ("stdlib", _GeneratedMatrixBackendContract("backend"))
+    case = _generated_matrix_case_contract(r"a(b)?c(?(1)d|e){2}")
+    candidate_texts = ("text-0",)
+    recorded_calls: list[tuple[str, object, object, bool]] = []
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "compile_with_cpython_parity",
+        lambda *args, **kwargs: (
+            _GeneratedNoMatchPatternContract(),
+            _GeneratedNoMatchPatternContract(),
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        lambda backend_name, observed, expected, *, check_regs=False: recorded_calls.append(
+            (backend_name, observed, expected, check_regs)
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("unexpected convenience helper call")
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("unexpected valid-group-access helper call")
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("unexpected invalid-group-access helper call")
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "search",
+        lambda pattern, text: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "match",
+        lambda pattern, text: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "fullmatch",
+        lambda pattern, text: None,
+    )
+
+    fixture_parity_support.assert_generated_text_matrix_matches_cpython(
+        regex_backend,
+        case,
+        candidate_texts=candidate_texts,
+        pattern_extractor=str_case_pattern,
+        failure_prefix="generated no-match drifted",
+    )
+
+    assert recorded_calls == [
+        ("stdlib", "backend.search('a(b)?c(?(1)d|e){2}', 'text-0')", None, True),
+        ("stdlib", None, None, True),
+        ("stdlib", "backend.match('a(b)?c(?(1)d|e){2}', 'text-0')", None, True),
+        ("stdlib", None, None, True),
+        ("stdlib", "backend.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0')", None, True),
+        ("stdlib", None, None, True),
+    ]
+
+
+def test_assert_generated_text_matrix_matches_cpython_appends_labelled_first_helper_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    regex_backend = ("stdlib", _GeneratedMatrixBackendContract("backend"))
+    case = _generated_matrix_case_contract(r"a(b)?c(?(1)d|e){2}")
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "compile_with_cpython_parity",
+        lambda *args, **kwargs: (
+            _GeneratedMatrixPatternContract("observed-pattern"),
+            _GeneratedMatrixPatternContract("expected-pattern"),
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        lambda observed, expected: (_ for _ in ()).throw(
+            AssertionError("convenience drift")
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "search",
+        lambda pattern, text: "expected-search-match",
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "match",
+        lambda pattern, text: "expected-match-match",
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "fullmatch",
+        lambda pattern, text: "expected-fullmatch-match",
+    )
+
+    with pytest.raises(AssertionError) as exc_info:
+        fixture_parity_support.assert_generated_text_matrix_matches_cpython(
+            regex_backend,
+            case,
+            candidate_texts=("text-0",),
+            pattern_extractor=str_case_pattern,
+            failure_prefix="generated helper drifted",
+        )
+
+    assert str(exc_info.value) == (
+        "generated helper drifted:\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-0'): convenience drift\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-0'): convenience drift\n"
+        "module.match('a(b)?c(?(1)d|e){2}', 'text-0'): convenience drift\n"
+        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-0'): convenience drift\n"
+        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0'): convenience drift\n"
+        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0'): convenience drift"
+    )
 
 
 def test_assert_generated_text_matrix_matches_cpython_truncates_failure_preview(
@@ -7120,23 +7050,40 @@ def test_assert_generated_text_matrix_matches_cpython_truncates_failure_preview(
     )
     monkeypatch.setattr(
         fixture_parity_support,
-        "record_generated_match_failure",
-        lambda failures, **kwargs: failures.append(kwargs["label"]),
+        "assert_match_result_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        lambda observed, expected: (_ for _ in ()).throw(
+            AssertionError("preview drift")
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        lambda *args, **kwargs: None,
     )
     monkeypatch.setattr(
         fixture_parity_support.re,
         "search",
-        lambda pattern, text: None,
+        lambda pattern, text: "expected-search-match",
     )
     monkeypatch.setattr(
         fixture_parity_support.re,
         "match",
-        lambda pattern, text: None,
+        lambda pattern, text: "expected-match-match",
     )
     monkeypatch.setattr(
         fixture_parity_support.re,
         "fullmatch",
-        lambda pattern, text: None,
+        lambda pattern, text: "expected-fullmatch-match",
     )
 
     with pytest.raises(AssertionError) as exc_info:
@@ -7150,26 +7097,26 @@ def test_assert_generated_text_matrix_matches_cpython_truncates_failure_preview(
 
     assert str(exc_info.value) == (
         "generated preview drifted:\n"
-        "module.search('a(b)?c(?(1)d|e){2}', 'text-0')\n"
-        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-0')\n"
-        "module.match('a(b)?c(?(1)d|e){2}', 'text-0')\n"
-        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-0')\n"
-        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0')\n"
-        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0')\n"
-        "module.search('a(b)?c(?(1)d|e){2}', 'text-1')\n"
-        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-1')\n"
-        "module.match('a(b)?c(?(1)d|e){2}', 'text-1')\n"
-        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-1')\n"
-        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-1')\n"
-        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-1')\n"
-        "module.search('a(b)?c(?(1)d|e){2}', 'text-2')\n"
-        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-2')\n"
-        "module.match('a(b)?c(?(1)d|e){2}', 'text-2')\n"
-        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-2')\n"
-        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-2')\n"
-        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-2')\n"
-        "module.search('a(b)?c(?(1)d|e){2}', 'text-3')\n"
-        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-3')\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-0'): preview drift\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-0'): preview drift\n"
+        "module.match('a(b)?c(?(1)d|e){2}', 'text-0'): preview drift\n"
+        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-0'): preview drift\n"
+        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0'): preview drift\n"
+        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0'): preview drift\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-1'): preview drift\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-1'): preview drift\n"
+        "module.match('a(b)?c(?(1)d|e){2}', 'text-1'): preview drift\n"
+        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-1'): preview drift\n"
+        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-1'): preview drift\n"
+        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-1'): preview drift\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-2'): preview drift\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-2'): preview drift\n"
+        "module.match('a(b)?c(?(1)d|e){2}', 'text-2'): preview drift\n"
+        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-2'): preview drift\n"
+        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-2'): preview drift\n"
+        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-2'): preview drift\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-3'): preview drift\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-3'): preview drift\n"
         "... 4 more"
     )
 
@@ -7226,8 +7173,23 @@ def test_assert_generated_text_matrix_matches_cpython_accepts_current_pattern_ex
     monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
     monkeypatch.setattr(
         fixture_parity_support,
-        "record_generated_match_failure",
-        lambda failures, **kwargs: None,
+        "assert_match_result_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        lambda *args, **kwargs: None,
     )
     monkeypatch.setattr(
         fixture_parity_support.re,
