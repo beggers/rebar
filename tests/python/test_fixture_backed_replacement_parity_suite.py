@@ -891,6 +891,46 @@ CONDITIONAL_SUPPLEMENTAL_REPEATED_CASES = (
         expected_result=(b"zzxzz", 1),
     ),
     SupplementalReplacementCase(
+        id="module-named-bytes-sub-template-present-capture",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        replacement=rb"\g<word>x",
+        string=b"zzabcdzz",
+        count=0,
+        expected_result=b"zzbxzz",
+    ),
+    SupplementalReplacementCase(
+        id="module-named-bytes-subn-template-absent-capture",
+        use_compiled_pattern=False,
+        helper="subn",
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        replacement=rb"\g<word>x",
+        string=b"zzacezz",
+        count=1,
+        expected_result=(b"zzxzz", 1),
+    ),
+    SupplementalReplacementCase(
+        id="pattern-numbered-bytes-sub-template-present-capture",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=rb"a(b)?c(?(1)d|e)",
+        replacement=rb"\1x",
+        string=b"zzabcdzz",
+        count=0,
+        expected_result=b"zzbxzz",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-numbered-bytes-subn-template-absent-capture",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=rb"a(b)?c(?(1)d|e)",
+        replacement=rb"\1x",
+        string=b"zzacezz",
+        count=1,
+        expected_result=(b"zzxzz", 1),
+    ),
+    SupplementalReplacementCase(
         id="pattern-named-bytes-sub-template-present-capture",
         use_compiled_pattern=True,
         helper="sub",
@@ -2289,6 +2329,10 @@ def test_conditional_replacement_supplemental_bytes_cases_keep_exact_frontier_ex
     expected_case_ids = (
         "module-numbered-bytes-sub-template-present-capture",
         "module-numbered-bytes-subn-template-absent-capture",
+        "module-named-bytes-sub-template-present-capture",
+        "module-named-bytes-subn-template-absent-capture",
+        "pattern-numbered-bytes-sub-template-present-capture",
+        "pattern-numbered-bytes-subn-template-absent-capture",
         "pattern-named-bytes-sub-template-present-capture",
         "pattern-named-bytes-subn-template-absent-capture",
     )
@@ -2302,16 +2346,28 @@ def test_conditional_replacement_supplemental_bytes_cases_keep_exact_frontier_ex
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         {
             "module-sub": frozenset(
-                {"module-numbered-bytes-sub-template-present-capture"}
+                {
+                    "module-numbered-bytes-sub-template-present-capture",
+                    "module-named-bytes-sub-template-present-capture",
+                }
             ),
             "module-subn": frozenset(
-                {"module-numbered-bytes-subn-template-absent-capture"}
+                {
+                    "module-numbered-bytes-subn-template-absent-capture",
+                    "module-named-bytes-subn-template-absent-capture",
+                }
             ),
             "pattern-sub": frozenset(
-                {"pattern-named-bytes-sub-template-present-capture"}
+                {
+                    "pattern-numbered-bytes-sub-template-present-capture",
+                    "pattern-named-bytes-sub-template-present-capture",
+                }
             ),
             "pattern-subn": frozenset(
-                {"pattern-named-bytes-subn-template-absent-capture"}
+                {
+                    "pattern-numbered-bytes-subn-template-absent-capture",
+                    "pattern-named-bytes-subn-template-absent-capture",
+                }
             ),
         },
         selected_case_ids=expected_case_ids,
@@ -2340,6 +2396,42 @@ def test_conditional_replacement_supplemental_bytes_cases_keep_exact_frontier_ex
         ),
         "module-numbered-bytes-subn-template-absent-capture": (
             False,
+            "subn",
+            1,
+            rb"a(b)?c(?(1)d|e)",
+            rb"\1x",
+            b"zzacezz",
+            (b"zzxzz", 1),
+        ),
+        "module-named-bytes-sub-template-present-capture": (
+            False,
+            "sub",
+            0,
+            rb"a(?P<word>b)?c(?(word)d|e)",
+            rb"\g<word>x",
+            b"zzabcdzz",
+            b"zzbxzz",
+        ),
+        "module-named-bytes-subn-template-absent-capture": (
+            False,
+            "subn",
+            1,
+            rb"a(?P<word>b)?c(?(word)d|e)",
+            rb"\g<word>x",
+            b"zzacezz",
+            (b"zzxzz", 1),
+        ),
+        "pattern-numbered-bytes-sub-template-present-capture": (
+            True,
+            "sub",
+            0,
+            rb"a(b)?c(?(1)d|e)",
+            rb"\1x",
+            b"zzabcdzz",
+            b"zzbxzz",
+        ),
+        "pattern-numbered-bytes-subn-template-absent-capture": (
+            True,
             "subn",
             1,
             rb"a(b)?c(?(1)d|e)",

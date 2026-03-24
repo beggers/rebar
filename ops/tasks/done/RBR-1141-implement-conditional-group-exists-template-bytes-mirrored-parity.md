@@ -1,6 +1,6 @@
 # RBR-1141: Implement conditional group-exists template bytes mirrored parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -52,3 +52,8 @@ Created: 2026-03-24
   - `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py` still publishes only the eight `str` rows for `conditional-group-exists-replacement-template-workflows`;
   - `tests/python/test_fixture_backed_replacement_parity_suite.py` keeps the conditional bytes template direct coverage bounded to the four already-landed cases above; and
   - `ops/state/current_status.md` and `ops/state/backlog.md` both already record that no ready feature follow-on survives beyond the blocked publication and benchmark pair, so restoring this mirrored runtime half is the exact step that reopens the post-drain frontier.
+
+## Completion Note
+- Closed by extending `tests/python/test_fixture_backed_replacement_parity_suite.py` with the four mirrored bytes case IDs for the existing conditional replacement owner path and updating the frontier assertions to cover the full numbered/named plus module/pattern matrix.
+- The native bytes template runtime was already behaving with CPython parity in this checkout for the mirrored compiled-numbered and module-named entrypoints, so no Rust or wrapper changes were required in this run.
+- Verified with `cargo build -p rebar-cpython`, the four-case narrow pytest selector, and the broader `conditional and replacement and template and bytes` parity selector.
