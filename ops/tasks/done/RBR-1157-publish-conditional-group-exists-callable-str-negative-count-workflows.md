@@ -1,6 +1,6 @@
 # RBR-1157: Publish conditional group-exists callable str negative-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,15 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_module_callable_replacement_negative_count_short_circuits_without_callback tests/python/test_callable_replacement_parity_suite.py::test_pattern_callable_replacement_negative_count_short_circuits_without_callback` returned `432 passed` in this run;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_mixed_text_feature_scorecards_mirror_representative_bytes_rows tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models` returned `2 passed, 51 subtests passed` in this run; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-callable-current.py` returned `16` executed and passing cases in this run.
+
+## Completion
+- Added the four bounded `str count=-1` callable replacement rows to `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` on the existing conditional callable owner path and widened the representative combined scorecard sample in `tests/conformance/test_combined_correctness_scorecards.py` to keep the new asymmetric mixed-text publication slice explicit.
+- Left `tests/python/test_callable_replacement_parity_suite.py` unchanged because its shared negative-count parity coverage already parameterizes over this manifest and picked up the new rows without extra helper logic.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_module_callable_replacement_negative_count_short_circuits_without_callback tests/python/test_callable_replacement_parity_suite.py::test_pattern_callable_replacement_negative_count_short_circuits_without_callback` -> `440 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_mixed_text_feature_scorecards_mirror_representative_bytes_rows tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_conditional_group_exists_callable_scorecards_keep_str_negative_count_follow_on_cases_in_sync` -> `3 passed, 51 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1157-conditional-callable-negative-count-str.py` -> `20 executed, 20 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> republished the tracked combined scorecard
+- Tracked report readback from `reports/correctness/latest.py` after republishing:
+  - `conditional-group-exists-callable-replacement-workflows` now carries `20` cases with `20` passes, including the four new `str` negative-count rows.
+  - Combined published correctness now reports `1673` total/executed/passing cases across `114` manifests.
