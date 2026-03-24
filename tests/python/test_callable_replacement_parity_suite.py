@@ -1177,6 +1177,89 @@ CONDITIONAL_GROUP_EXISTS_NESTED_BYTES_NEAR_MISS_CASES = (
     ),
 )
 
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES = (
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-quantified-present-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=r"a(b)?c(?(1)d|e){2}",
+        helper="sub",
+        text="zzabcdezz",
+        count=0,
+        expected_result="zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-quantified-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=r"a(b)?c(?(1)d|e){2}",
+        helper="subn",
+        text="zzacedzz",
+        count=1,
+        expected_result=("zzacedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-sub-no-match-quantified-present-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=r"a(b)?c(?(1)d|e){2}",
+        helper="sub",
+        text="zzabcdezz",
+        count=0,
+        expected_result="zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-subn-no-match-quantified-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=r"a(b)?c(?(1)d|e){2}",
+        helper="subn",
+        text="zzacedzz",
+        count=1,
+        expected_result=("zzacedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-named-sub-no-match-quantified-present-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=r"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="sub",
+        text="zzabcdezz",
+        count=0,
+        expected_result="zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="module-named-subn-no-match-quantified-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=r"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="subn",
+        text="zzacedzz",
+        count=1,
+        expected_result=("zzacedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-quantified-present-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="sub",
+        text="zzabcdezz",
+        count=0,
+        expected_result="zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-quantified-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="subn",
+        text="zzacedzz",
+        count=1,
+        expected_result=("zzacedzz", 0),
+    ),
+)
+
 
 class CallbackExplosion(RuntimeError):
     pass
@@ -3383,6 +3466,22 @@ def test_conditional_group_exists_nested_callable_replacement_near_miss_paths_le
     ids=lambda case: case.id,
 )
 def test_conditional_group_exists_nested_bytes_callable_replacement_near_miss_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    near_miss_case: CallableNearMissCase,
+) -> None:
+    _, backend = regex_backend
+    assert_callable_replacement_near_miss_path_leaves_input_unchanged(
+        backend=backend,
+        near_miss_case=near_miss_case,
+    )
+
+
+@pytest.mark.parametrize(
+    "near_miss_case",
+    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES,
+    ids=lambda case: case.id,
+)
+def test_conditional_group_exists_quantified_callable_replacement_near_miss_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
     near_miss_case: CallableNearMissCase,
 ) -> None:
