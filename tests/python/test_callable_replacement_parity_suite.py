@@ -335,6 +335,10 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-nested-absent-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-nested-present-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
+                "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+                "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
+                "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
                 "module-sub-callable-conditional-group-exists-quantified-present-bytes",
                 "module-subn-callable-conditional-group-exists-quantified-absent-bytes",
                 "pattern-sub-callable-conditional-group-exists-quantified-present-bytes",
@@ -367,10 +371,10 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 19,
-                ("module_call", "subn"): 19,
-                ("pattern_call", "sub"): 19,
-                ("pattern_call", "subn"): 19,
+                ("module_call", "sub"): 20,
+                ("module_call", "subn"): 20,
+                ("pattern_call", "sub"): 20,
+                ("pattern_call", "subn"): 20,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
@@ -3255,9 +3259,26 @@ def test_conditional_group_exists_nested_negative_count_rows_stay_aligned_with_p
     assert len(nested_negative_count_cases) == len(
         CONDITIONAL_GROUP_EXISTS_NESTED_NEGATIVE_COUNT_CASES
     )
-    assert not bytes_nested_negative_count_cases
+    assert len(bytes_nested_negative_count_cases) == len(
+        CONDITIONAL_GROUP_EXISTS_NESTED_NEGATIVE_COUNT_CASES
+    )
+    _assert_published_callable_bytes_cases_mirror_str_cases(
+        manifest_id=manifest_id,
+        str_cases=nested_negative_count_cases,
+        bytes_cases=bytes_nested_negative_count_cases,
+    )
     assert Counter(
         (case.operation, case.helper) for case in nested_negative_count_cases
+    ) == Counter(
+        {
+            ("module_call", "sub"): 1,
+            ("module_call", "subn"): 1,
+            ("pattern_call", "sub"): 1,
+            ("pattern_call", "subn"): 1,
+        }
+    )
+    assert Counter(
+        (case.operation, case.helper) for case in bytes_nested_negative_count_cases
     ) == Counter(
         {
             ("module_call", "sub"): 1,

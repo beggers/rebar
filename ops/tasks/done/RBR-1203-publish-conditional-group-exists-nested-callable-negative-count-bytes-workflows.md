@@ -1,6 +1,6 @@
 # RBR-1203: Publish conditional group-exists nested callable negative-count bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,15 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'negative_count_follow_on_cases'` returned `2 passed, 43 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-nested-negative-count-bytes-current.py` returned `76 executed / 76 passed`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1729 executed / 1729 passed`.
+
+## Completion
+- Added the four nested conditional callable negative-count `bytes` publication rows on the existing `conditional-group-exists-callable-replacement-workflows` manifest path, and updated the shared callable parity/scorecard expectations to mirror the widened bounded `bytes` slice without widening the family beyond this task.
+- Verification passed:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and nested and negative_count'` returned `17 passed, 5057 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'negative_count_follow_on_cases'` returned `2 passed, 43 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1203-conditional-nested-negative-count-bytes.py` returned `80 executed / 80 passed`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1733 executed / 1733 passed`.
+- Verified from the tracked `reports/correctness/latest.py` artifact after regeneration:
+  - combined correctness is `1733` total / `1733` passed across `114` manifests;
+  - `collection.replacement.conditional_group_exists.callable` now publishes `80` total / `80` passed; and
+  - the `bytes` and `str` callable sub-summaries each publish `40` total / `40` passed.

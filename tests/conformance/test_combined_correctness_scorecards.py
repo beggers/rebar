@@ -962,6 +962,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
             "pattern-subn-callable-named-conditional-group-exists-negative-count-bytes",
+            "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+            "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
+            "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
         ),
     ),
     "conditional-group-exists-replacement-template-workflows": CorrectnessScorecardManifestExpectation(
@@ -5190,6 +5194,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
             "pattern-subn-callable-named-conditional-group-exists-negative-count-bytes",
+            "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+            "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
+            "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
         )
         manifest = manifest_records_by_id(
             correctness.published_fixture_manifests()
@@ -5252,6 +5260,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             "pattern-subn-callable-conditional-group-exists-nested-absent-bytes",
             "module-sub-callable-named-conditional-group-exists-nested-present-bytes",
             "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
+            "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+            "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
+            "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
         )
         self.assertEqual(
             tuple(
@@ -5297,7 +5309,6 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             tuple(
                 f"{case_id.removesuffix('-str')}-bytes"
                 for case_id in representative_str_case_ids
-                if "nested-negative-count" not in case_id
             ),
         )
         self.assertEqual(
@@ -5334,10 +5345,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 1,
-                    ("module_call", "subn"): 1,
-                    ("pattern_call", "sub"): 1,
-                    ("pattern_call", "subn"): 1,
+                    ("module_call", "sub"): 2,
+                    ("module_call", "subn"): 2,
+                    ("pattern_call", "sub"): 2,
+                    ("pattern_call", "subn"): 2,
                 }
             ),
         )
