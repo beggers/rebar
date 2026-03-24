@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Conditional callable replacement work survives on the alternation-heavy `count=-1` correctness publication slice for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))`.
+No ready feature follow-on currently survives on the conditional callable replacement owner path; the next accepted same-family slice is not yet concrete from the live direct parity and benchmark anchors.
 
 ## Ordered Work
-1. Publish the bounded alternation-heavy conditional callable `count=-1` workflows for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` on the shared correctness owner path, keeping the slice limited to the existing numbered/named module/pattern `str` and `bytes` rows that already mirror the direct parity route.
+1. No ready feature follow-on currently survives on the conditional callable replacement owner path; seed the next bounded same-family slice only when an adjacent direct parity or benchmark anchor already exposes one exact accepted workflow family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
