@@ -31,7 +31,6 @@ from tests.python.fixture_parity_support import (
     direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_cases_by_id,
     fixture_cases_for_operation,
-    fixture_bundle_manifest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
@@ -641,7 +640,7 @@ SUPPLEMENTAL_NO_MATCH_CASES = _build_supplemental_no_match_cases()
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=fixture_bundle_manifest_id,
+    ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
@@ -652,7 +651,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 @pytest.mark.parametrize(
     "spec",
     GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS,
-    ids=lambda spec: fixture_bundle_manifest_id(spec.bundle),
+    ids=lambda spec: spec.bundle.expected_manifest_id,
 )
 def test_generated_quantified_alternation_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedAlternationParitySpec,

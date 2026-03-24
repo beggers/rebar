@@ -343,11 +343,6 @@ def load_published_fixture_bundles(
     )
     return bundles, published_fixture_bundles_by_manifest_id(bundles)
 
-
-def fixture_bundle_manifest_id(bundle: FixtureBundle) -> str:
-    return bundle.expected_manifest_id
-
-
 def case_pattern(case: FixtureCase) -> str | bytes:
     pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
     assert isinstance(pattern, (str, bytes))
@@ -701,15 +696,17 @@ def direct_test_case_id_buckets_for_follow_on_bundles(
 def published_fixture_bundles_by_manifest_id(
     bundles: Iterable[FixtureBundle],
 ) -> dict[str, FixtureBundle]:
-    indexed_bundles: dict[str, FixtureBundle] = {}
-    for bundle in bundles:
-        manifest_id = bundle.manifest.manifest_id
-        if manifest_id in indexed_bundles:
-            raise ValueError(
-                f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
-            )
-        indexed_bundles[manifest_id] = bundle
-    return indexed_bundles
+    return records_by_string_id(
+        bundles,
+        id_attr="expected_manifest_id",
+        duplicate_error=lambda duplicate_ids: ValueError(
+            "published fixture bundles contain duplicate manifest_id "
+            f"{duplicate_ids[0]!r}"
+            if len(duplicate_ids) == 1
+            else "published fixture bundles contain duplicate manifest_id values: "
+            f"{duplicate_ids!r}"
+        ),
+    )
 
 
 def requested_published_fixture_bundles(

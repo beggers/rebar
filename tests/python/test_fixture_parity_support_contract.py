@@ -3919,20 +3919,25 @@ def test_published_fixture_bundles_by_manifest_id_rejects_duplicate_manifest_ids
 ) -> None:
     str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
     bundle = build_selected_fixture_bundle(str_path)
+    duplicate_bundle = replace(
+        bundle,
+        manifest=replace(
+            bundle.manifest,
+            path=bundle.manifest.path.with_name(
+                f"duplicate_{bundle.manifest.path.name}"
+            ),
+        ),
+    )
 
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "requested fixture manifest ids contain duplicates: "
-            f"('{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}',)"
+            "published fixture bundles contain duplicate manifest_id "
+            f"'{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}'"
         ),
     ):
-        fixture_parity_support.requested_published_fixture_bundles(
-            fixture_parity_support.published_fixture_bundles_by_manifest_id((bundle,)),
-            (
-                BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
-                BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
-            ),
+        fixture_parity_support.published_fixture_bundles_by_manifest_id(
+            (bundle, duplicate_bundle)
         )
 
 
@@ -4150,9 +4155,9 @@ def test_grouped_quantified_bytes_surface_spec_preserves_bundle_order_and_option
         ),
     )
 
-    assert tuple(
-        fixture_parity_support.fixture_bundle_manifest_id(bundle) for bundle in bundles
-    ) == tuple(bundle.expected_manifest_id for bundle in bundles)
+    assert tuple(bundle.expected_manifest_id for bundle in bundles) == tuple(
+        bundle.manifest.manifest_id for bundle in bundles
+    )
     assert tuple(
         fixture_parity_support.grouped_quantified_bytes_surface_manifest_id(spec)
         for spec in surfaces
