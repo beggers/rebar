@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1007/1007 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | Catch up bounded bytes callable-replacement benchmarks for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`. |
-| Work queue | `1` ready, `0` in progress, `1130` done, `0` blocked |
+| Current milestone | Land bounded bytes replacement-template parity for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`. |
+| Work queue | `2` ready, `0` in progress, `1131` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-1128` is the surviving ready feature follow-on: catch the bounded bytes callable-replacement benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` up on the existing conditional callable Python-path benchmark owner path.
+- Ready queue head: `RBR-1128`, which catches the bounded bytes callable-replacement benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on the existing conditional callable Python-path benchmark owner path. `RBR-1130` remains queued immediately behind it for the adjacent bytes replacement-template parity slice.
 
 ### Current Risks
 
