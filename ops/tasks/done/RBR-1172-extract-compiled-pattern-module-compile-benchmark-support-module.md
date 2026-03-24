@@ -1,6 +1,6 @@
 ## RBR-1172: Extract compiled-pattern module compile benchmark support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -38,6 +38,12 @@ Created: 2026-03-24
 ## Verification
 - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile'`
 
+## Completion
+- Extracted the compiled-pattern `module.compile` contract support into `tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py`, added focused coverage in `tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py`, and rewired `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to consume the support module while keeping the live owner-spec inventory and contract rows unchanged.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile'`
+
 ## Constraints
 - Keep the cleanup structural and limited to the three files above. Do not widen it into benchmark manifests, harness implementation code, correctness fixtures, README text, reports, or tracked ops state prose.
 - Prefer deleting the inline compiled-pattern `module.compile` contract block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` over leaving wrappers there that only forward into the new support module.
@@ -52,10 +58,4 @@ Created: 2026-03-24
   - `.rebar/runtime/dashboard.md` reports `tracked_json_blob_count: 0` and `tracked_json_blob_delta: 0`;
   - `git ls-files '*.json' | wc -l` returned `0`; and
   - `rg --files -g '*.json' | wc -l` returned `0`.
-- The remaining simplification is concrete and still cross-file in the current checkout:
-  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` is `20510` lines in this run;
-  - `rg -n '^def _compiled_pattern_module_compile_keyword_signature\\(|^class CompiledPatternModuleCompileContractCase|^class _CompiledPatternModuleContractAnchorLane|^def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation|^def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases|^def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time|^def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads|^def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned the remaining contract-support block at lines `17249`, `17455`, `17672`, `17727`, `17794`, `17840`, `17885`, and `17918`;
-  - the owner-spec inventory earlier in the same file still instantiates `CompiledPatternModuleCompileContractCase` directly at lines `8036` and `8051`; and
-  - the current compile-contract tests still span manifest synthesis, anchoring, callback materialization, workload probing, and precompile-before-timing behavior through that same inline support layer.
-- Verification status in this run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile'` returned `82 passed, 672 deselected, 22 subtests passed` in this run.
+- The tracked task source in this checkout lived under `ops/tasks/ready/`, so completion archived that tracked file into `ops/tasks/done/` after landing the extraction.
