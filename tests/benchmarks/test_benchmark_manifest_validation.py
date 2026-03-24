@@ -25,6 +25,37 @@ from tests.benchmarks.wrong_text_model_benchmark_owner_support import (
     _assert_wrong_text_model_payload_round_trip,
 )
 
+
+def _validation_payload(**overrides: object) -> dict[str, object]:
+    return {
+        "warmup_iterations": 1,
+        "sample_iterations": 1,
+        "timed_samples": 1,
+        "notes": [],
+        "categories": [],
+        "syntax_features": [],
+        "smoke": False,
+        **overrides,
+    }
+
+
+def _assert_manifest_and_payload_entry_points_raise(
+    *,
+    tmp_path: pathlib.Path,
+    filename: str,
+    manifest_source: str,
+    payload: dict[str, object],
+    error_pattern: str,
+) -> None:
+    manifest_path = _write_test_manifest(tmp_path, filename, manifest_source)
+
+    with pytest.raises(ValueError, match=error_pattern):
+        load_manifest(manifest_path)
+
+    with pytest.raises(ValueError, match=error_pattern):
+        workload_from_payload(payload)
+
+
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -416,43 +447,32 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
     }}
     """
 
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_invalid_compiled_pattern_module_compile_contract.py",
-        manifest_source,
+    payload = _validation_payload(
+        manifest_id=manifest_id,
+        workload_id="module-compile-invalid-compiled-pattern-contract",
+        bucket="module-compile",
+        family="module",
+        operation="module.compile",
+        pattern=pattern,
+        expected_exception=expected_exception,
+        flags=flags,
+        use_compiled_pattern=True,
+        count=0,
+        maxsplit=0,
+        text_model=text_model,
+        cache_mode="warm",
+        timing_scope="module-helper-call",
     )
-
-    with pytest.raises(ValueError, match=error_pattern):
-        load_manifest(manifest_path)
-
-    payload = {
-        "manifest_id": manifest_id,
-        "workload_id": "module-compile-invalid-compiled-pattern-contract",
-        "bucket": "module-compile",
-        "family": "module",
-        "operation": "module.compile",
-        "pattern": pattern,
-        "expected_exception": expected_exception,
-        "flags": flags,
-        "use_compiled_pattern": True,
-        "count": 0,
-        "maxsplit": 0,
-        "text_model": text_model,
-        "cache_mode": "warm",
-        "timing_scope": "module-helper-call",
-        "warmup_iterations": 1,
-        "sample_iterations": 1,
-        "timed_samples": 1,
-        "notes": [],
-        "categories": [],
-        "syntax_features": [],
-        "smoke": False,
-    }
     if kwargs_payload is not None:
         payload["kwargs"] = kwargs_payload
 
-    with pytest.raises(ValueError, match=error_pattern):
-        workload_from_payload(payload)
+    _assert_manifest_and_payload_entry_points_raise(
+        tmp_path=tmp_path,
+        filename="python_benchmark_invalid_compiled_pattern_module_compile_contract.py",
+        manifest_source=manifest_source,
+        payload=payload,
+        error_pattern=error_pattern,
+    )
 
 
 @pytest.mark.parametrize(
@@ -570,42 +590,29 @@ def test_standard_benchmark_compiled_pattern_validation_matches_manifest_and_pay
     }}
     """
 
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_invalid_compiled_pattern_contract.py",
-        manifest_source,
+    _assert_manifest_and_payload_entry_points_raise(
+        tmp_path=tmp_path,
+        filename="python_benchmark_invalid_compiled_pattern_contract.py",
+        manifest_source=manifest_source,
+        payload=_validation_payload(
+            manifest_id=manifest_id,
+            workload_id="compiled-pattern-invalid-workload-contract",
+            bucket=bucket,
+            family=family,
+            operation=operation,
+            pattern="abc",
+            haystack="abc",
+            expected_exception=None,
+            flags=0,
+            use_compiled_pattern=True,
+            count=0,
+            maxsplit=0,
+            text_model="str",
+            cache_mode=cache_mode,
+            timing_scope="module-helper-call",
+        ),
+        error_pattern=error_pattern,
     )
-
-    with pytest.raises(ValueError, match=error_pattern):
-        load_manifest(manifest_path)
-
-    with pytest.raises(ValueError, match=error_pattern):
-        workload_from_payload(
-            {
-                "manifest_id": manifest_id,
-                "workload_id": "compiled-pattern-invalid-workload-contract",
-                "bucket": bucket,
-                "family": family,
-                "operation": operation,
-                "pattern": "abc",
-                "haystack": "abc",
-                "expected_exception": None,
-                "flags": 0,
-                "use_compiled_pattern": True,
-                "count": 0,
-                "maxsplit": 0,
-                "text_model": "str",
-                "cache_mode": cache_mode,
-                "timing_scope": "module-helper-call",
-                "warmup_iterations": 1,
-                "sample_iterations": 1,
-                "timed_samples": 1,
-                "notes": [],
-                "categories": [],
-                "syntax_features": [],
-                "smoke": False,
-            }
-        )
 
 
 @pytest.mark.parametrize(
@@ -685,42 +692,29 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
     }}
     """
 
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_invalid_expected_exception_contract.py",
-        manifest_source,
+    _assert_manifest_and_payload_entry_points_raise(
+        tmp_path=tmp_path,
+        filename="python_benchmark_invalid_expected_exception_contract.py",
+        manifest_source=manifest_source,
+        payload=_validation_payload(
+            manifest_id="python-benchmark-invalid-expected-exception-contract",
+            workload_id="module-sub-invalid-expected-exception-contract",
+            bucket="module-sub",
+            family="module",
+            operation="module.sub",
+            pattern="abc",
+            haystack="abc",
+            replacement="x",
+            expected_exception=invalid_expected_exception,
+            flags=0,
+            count=0,
+            maxsplit=0,
+            text_model="str",
+            cache_mode="warm",
+            timing_scope="module-helper-call",
+        ),
+        error_pattern=error_pattern,
     )
-
-    with pytest.raises(ValueError, match=error_pattern):
-        load_manifest(manifest_path)
-
-    with pytest.raises(ValueError, match=error_pattern):
-        workload_from_payload(
-            {
-                "manifest_id": "python-benchmark-invalid-expected-exception-contract",
-                "workload_id": "module-sub-invalid-expected-exception-contract",
-                "bucket": "module-sub",
-                "family": "module",
-                "operation": "module.sub",
-                "pattern": "abc",
-                "haystack": "abc",
-                "replacement": "x",
-                "expected_exception": invalid_expected_exception,
-                "flags": 0,
-                "count": 0,
-                "maxsplit": 0,
-                "text_model": "str",
-                "cache_mode": "warm",
-                "timing_scope": "module-helper-call",
-                "warmup_iterations": 1,
-                "sample_iterations": 1,
-                "timed_samples": 1,
-                "notes": [],
-                "categories": [],
-                "syntax_features": [],
-                "smoke": False,
-            }
-        )
 
 
 @pytest.mark.parametrize(
@@ -1071,47 +1065,34 @@ def test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_
     }}
     """
 
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_invalid_haystack_text_model_contract.py",
-        manifest_source,
+    _assert_manifest_and_payload_entry_points_raise(
+        tmp_path=tmp_path,
+        filename="python_benchmark_invalid_haystack_text_model_contract.py",
+        manifest_source=manifest_source,
+        payload=_validation_payload(
+            manifest_id=manifest_id,
+            workload_id="module-sub-invalid-haystack-text-model-contract",
+            bucket=bucket,
+            family="module",
+            operation=operation,
+            pattern="abc",
+            haystack="abc",
+            replacement="x",
+            expected_exception=expected_exception,
+            flags=0,
+            use_compiled_pattern=use_compiled_pattern,
+            count=1,
+            maxsplit=0,
+            pos=pos,
+            endpos=endpos,
+            kwargs=kwargs_payload,
+            text_model=text_model,
+            haystack_text_model=haystack_text_model,
+            cache_mode="warm",
+            timing_scope="module-helper-call",
+        ),
+        error_pattern=error_pattern,
     )
-
-    with pytest.raises(ValueError, match=error_pattern):
-        load_manifest(manifest_path)
-
-    with pytest.raises(ValueError, match=error_pattern):
-        workload_from_payload(
-            {
-                "manifest_id": manifest_id,
-                "workload_id": "module-sub-invalid-haystack-text-model-contract",
-                "bucket": bucket,
-                "family": "module",
-                "operation": operation,
-                "pattern": "abc",
-                "haystack": "abc",
-                "replacement": "x",
-                "expected_exception": expected_exception,
-                "flags": 0,
-                "use_compiled_pattern": use_compiled_pattern,
-                "count": 1,
-                "maxsplit": 0,
-                "pos": pos,
-                "endpos": endpos,
-                "kwargs": kwargs_payload,
-                "text_model": text_model,
-                "haystack_text_model": haystack_text_model,
-                "cache_mode": "warm",
-                "timing_scope": "module-helper-call",
-                "warmup_iterations": 1,
-                "sample_iterations": 1,
-                "timed_samples": 1,
-                "notes": [],
-                "categories": [],
-                "syntax_features": [],
-                "smoke": False,
-            }
-        )
 
 
 @pytest.mark.parametrize(
@@ -1211,41 +1192,28 @@ def test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_
     }}
     """
 
-    manifest_path = _write_test_manifest(
-        tmp_path,
-        "python_benchmark_invalid_compiled_pattern_module_boundary_contract.py",
-        manifest_source,
+    _assert_manifest_and_payload_entry_points_raise(
+        tmp_path=tmp_path,
+        filename="python_benchmark_invalid_compiled_pattern_module_boundary_contract.py",
+        manifest_source=manifest_source,
+        payload=_validation_payload(
+            manifest_id=manifest_id,
+            workload_id="module-search-invalid-compiled-pattern-boundary-contract",
+            bucket="module-search",
+            family="module",
+            operation=operation,
+            pattern="abc",
+            haystack="abc",
+            expected_exception=expected_exception,
+            flags=0,
+            use_compiled_pattern=True,
+            count=0,
+            maxsplit=0,
+            kwargs=kwargs_payload,
+            text_model="str",
+            haystack_text_model=haystack_text_model,
+            cache_mode="warm",
+            timing_scope="module-helper-call",
+        ),
+        error_pattern=error_pattern,
     )
-
-    with pytest.raises(ValueError, match=error_pattern):
-        load_manifest(manifest_path)
-
-    with pytest.raises(ValueError, match=error_pattern):
-        workload_from_payload(
-            {
-                "manifest_id": manifest_id,
-                "workload_id": "module-search-invalid-compiled-pattern-boundary-contract",
-                "bucket": "module-search",
-                "family": "module",
-                "operation": operation,
-                "pattern": "abc",
-                "haystack": "abc",
-                "expected_exception": expected_exception,
-                "flags": 0,
-                "use_compiled_pattern": True,
-                "count": 0,
-                "maxsplit": 0,
-                "kwargs": kwargs_payload,
-                "text_model": "str",
-                "haystack_text_model": haystack_text_model,
-                "cache_mode": "warm",
-                "timing_scope": "module-helper-call",
-                "warmup_iterations": 1,
-                "sample_iterations": 1,
-                "timed_samples": 1,
-                "notes": [],
-                "categories": [],
-                "syntax_features": [],
-                "smoke": False,
-            }
-        )
