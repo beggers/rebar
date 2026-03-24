@@ -3037,6 +3037,10 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-str",
             "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str",
             "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+            "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-str",
+            "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-str",
+            "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-purged-str",
         ),
         expected_patterns={
             r"a(b)?c(?(1)(?(1)d|e)|f)",
@@ -3866,6 +3870,10 @@ CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS = (
     "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-str",
     "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str",
     "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-str",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-str",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-str",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-purged-str",
 )
 CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS = (
     "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
@@ -5414,15 +5422,19 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             Counter(
                 {
                     ("module.sub", 0): 2,
+                    ("module.sub", -1): 1,
                     ("module.subn", 1): 2,
+                    ("module.subn", -1): 1,
                     ("pattern.sub", 0): 2,
+                    ("pattern.sub", -1): 1,
                     ("pattern.subn", 1): 2,
+                    ("pattern.subn", -1): 1,
                 }
             ),
         )
         self.assertEqual(
             Counter("exception" in workload.categories for workload in matched_rows),
-            Counter({False: 4, True: 4}),
+            Counter({False: 8, True: 4}),
         )
         for workload_id in expected_workload_ids:
             with self.subTest(workload_id=workload_id):

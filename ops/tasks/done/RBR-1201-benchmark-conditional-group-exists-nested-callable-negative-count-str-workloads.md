@@ -1,6 +1,6 @@
 # RBR-1201: Benchmark conditional group-exists nested callable negative-count str workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,11 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists and nested_callable'` returned `1 passed, 533 deselected, 16 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-group-exists-boundary-current.py` returned `152 measured workloads / 0 known gaps`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` returned `1083 measured workloads / 0 known gaps`.
+
+## Completion
+- Added the four nested conditional callable negative-count `str` benchmark rows on the existing `conditional-group-exists-boundary` manifest for the numbered module/pattern `sub()` and named module/pattern `subn()` workflows.
+- Updated the shared source-tree combined benchmark expectations so the nested callable slice now includes the new negative-count rows and treats them as representative measured workloads alongside the existing present and absent-exception rows.
+- Verification in this implementation run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists and nested_callable'` returned `1 passed, 533 deselected, 24 subtests passed`;
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1201-conditional-group-exists-boundary.py` returned `156 measured workloads / 0 known gaps`; and
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` returned `1087 measured workloads / 0 known gaps`, with the tracked `reports/benchmarks/latest.py` artifact showing `conditional-group-exists-boundary` at `156` workloads and the combined published summary at `1087/1087`.
