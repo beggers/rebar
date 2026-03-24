@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1701 cases across 114 manifests, with all 1701 passing in the current slice; the benchmark publication covers 1067/1067 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The next surviving frontier is bytes nested conditional callable correctness publication on the shared callable owner path.
+- The next surviving frontier is bytes nested conditional callable benchmark catch-up on the shared callable owner path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1701 cases across 114 manifests, with all 1701 pass
 The published correctness slice now covers 1701 cases across 114 manifests, all passing, and 1067 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- The next surviving frontier is the bounded bytes nested conditional callable correctness-publication slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
+- The next surviving frontier is the bounded bytes nested conditional callable benchmark-catch-up slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -332,7 +332,7 @@ The published correctness slice now covers 1701 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The next surviving frontier is bytes nested conditional callable correctness publication on the shared callable owner path.
+- The next surviving frontier is bytes nested conditional callable benchmark catch-up on the shared callable owner path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
