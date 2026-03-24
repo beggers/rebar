@@ -1243,6 +1243,62 @@ def assert_grouped_quantified_direct_bytes_surface_spec(
         module_cases=module_cases,
         pattern_cases=pattern_cases,
     )
+    bundle_str_cases, bundle_bytes_cases = assert_grouped_quantified_bytes_surface_spec(
+        spec,
+        bundle_str_cases=bundle_str_cases,
+        bundle_bytes_cases=bundle_bytes_cases,
+    )
+    manifest_id = spec.bundle.manifest.manifest_id
+    drift_messages: list[str] = []
+
+    expected_bytes_case_ids = {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
+    actual_bytes_case_ids = {case.case_id for case in bundle_bytes_cases}
+    if actual_bytes_case_ids != expected_bytes_case_ids:
+        drift_messages.append(
+            "mixed-text case id pairing drifted; expected bytes case ids "
+            f"{tuple(sorted(expected_bytes_case_ids))}, got "
+            f"{tuple(sorted(actual_bytes_case_ids))}"
+        )
+
+    for supplemental_case in spec.cases:
+        if frozenset(supplemental_case.search_matches) != (
+            spec.expected_module_search_texts_by_pattern[supplemental_case.pattern]
+        ):
+            drift_messages.append(
+                f"{supplemental_case.pattern!r} search matches drifted; expected "
+                f"{spec.expected_module_search_texts_by_pattern[supplemental_case.pattern]}, got "
+                f"{frozenset(supplemental_case.search_matches)}"
+            )
+        if frozenset(
+            (*supplemental_case.fullmatch_matches, *supplemental_case.fullmatch_misses)
+        ) != spec.expected_pattern_fullmatch_texts_by_pattern[
+            supplemental_case.pattern
+        ]:
+            drift_messages.append(
+                f"{supplemental_case.pattern!r} fullmatch texts drifted; expected "
+                f"{spec.expected_pattern_fullmatch_texts_by_pattern[supplemental_case.pattern]}, got "
+                f"{frozenset((*supplemental_case.fullmatch_matches, *supplemental_case.fullmatch_misses))}"
+            )
+
+    if drift_messages:
+        raise AssertionError(
+            f"{manifest_id} grouped quantified direct-bytes surface drifted; "
+            + "; ".join(drift_messages)
+        )
+
+    return bundle_str_cases, bundle_bytes_cases
+
+
+def assert_grouped_quantified_bytes_surface_spec(
+    spec: GroupedQuantifiedBytesSurfaceSpec,
+    *,
+    bundle_str_cases: Iterable[FixtureCase],
+    bundle_bytes_cases: Iterable[FixtureCase],
+) -> tuple[tuple[FixtureCase, ...], tuple[FixtureCase, ...]]:
+    bundle_str_cases = tuple(bundle_str_cases)
+    bundle_bytes_cases = tuple(bundle_bytes_cases)
     manifest_id = spec.bundle.manifest.manifest_id
     expected_compile_patterns = frozenset(
         case_pattern(case)
@@ -1270,17 +1326,6 @@ def assert_grouped_quantified_direct_bytes_surface_spec(
         drift_messages.append(
             "bytes follow-on row count drifted; "
             f"expected {expected_row_count}, got {len(bundle_bytes_cases)}"
-        )
-
-    expected_bytes_case_ids = {
-        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
-    }
-    actual_bytes_case_ids = {case.case_id for case in bundle_bytes_cases}
-    if actual_bytes_case_ids != expected_bytes_case_ids:
-        drift_messages.append(
-            "mixed-text case id pairing drifted; expected bytes case ids "
-            f"{tuple(sorted(expected_bytes_case_ids))}, got "
-            f"{tuple(sorted(actual_bytes_case_ids))}"
         )
 
     actual_operation_helper_counts = Counter(
@@ -1325,22 +1370,6 @@ def assert_grouped_quantified_direct_bytes_surface_spec(
                 f"{pattern!r} unsupported backend reason drifted; expected "
                 f"{spec.expected_unsupported_backend_reason!r}, got "
                 f"{supplemental_case.unsupported_backend_reason!r}"
-            )
-        if frozenset(supplemental_case.search_matches) != (
-            spec.expected_module_search_texts_by_pattern[pattern]
-        ):
-            drift_messages.append(
-                f"{pattern!r} search matches drifted; expected "
-                f"{spec.expected_module_search_texts_by_pattern[pattern]}, got "
-                f"{frozenset(supplemental_case.search_matches)}"
-            )
-        if frozenset(
-            (*supplemental_case.fullmatch_matches, *supplemental_case.fullmatch_misses)
-        ) != spec.expected_pattern_fullmatch_texts_by_pattern[pattern]:
-            drift_messages.append(
-                f"{pattern!r} fullmatch texts drifted; expected "
-                f"{spec.expected_pattern_fullmatch_texts_by_pattern[pattern]}, got "
-                f"{frozenset((*supplemental_case.fullmatch_matches, *supplemental_case.fullmatch_misses))}"
             )
         if not set(supplemental_case.search_matches).isdisjoint(
             supplemental_case.search_misses

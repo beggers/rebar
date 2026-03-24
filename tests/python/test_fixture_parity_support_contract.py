@@ -4518,6 +4518,63 @@ def test_grouped_quantified_bytes_surface_spec_preserves_branch_local_unsupporte
     }
 
 
+def test_grouped_quantified_bytes_surface_spec_accepts_generic_mixed_text_bundle_cases(
+) -> None:
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT
+        / "open_ended_quantified_group_alternation_conditional_workflows.py",
+        pattern_extractor=case_pattern,
+    )
+    surface = fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
+        bundle=bundle,
+        cases=fixture_parity_support.OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 6,
+                ("pattern_call", "fullmatch"): 5,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            rb"a((bc|de){1,})?(?(1)d|e)": frozenset(
+                {b"zzaezz", b"zzabcdzz", b"zzadedzz"}
+            ),
+            rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)": frozenset(
+                {b"zzaezz", b"zzadedzz", b"zzadedededzz"}
+            ),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            rb"a((bc|de){1,})?(?(1)d|e)": frozenset(
+                {b"abcded", b"abcbcded", b"abcde"}
+            ),
+            rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)": frozenset({b"abcbcded", b"ad"}),
+        },
+    )
+
+    bundle_str_cases, bundle_bytes_cases = (
+        fixture_parity_support.assert_mixed_text_model_case_pairs(bundle)
+    )
+
+    observed_str_cases, observed_bytes_cases = (
+        fixture_parity_support.assert_grouped_quantified_bytes_surface_spec(
+            surface,
+            bundle_str_cases=bundle_str_cases,
+            bundle_bytes_cases=bundle_bytes_cases,
+        )
+    )
+
+    assert len(observed_str_cases) == len(observed_bytes_cases) == 13
+    assert Counter(
+        (case.operation, case.helper) for case in observed_bytes_cases
+    ) == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 6,
+            ("pattern_call", "fullmatch"): 5,
+        }
+    )
+
+
 def test_grouped_quantified_bytes_surface_spec_rejects_direct_follow_on_surface_drift(
 ) -> None:
     bundle = build_selected_fixture_bundle(

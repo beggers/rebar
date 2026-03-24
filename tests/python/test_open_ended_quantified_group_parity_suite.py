@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     PatternTraceCase as OpenEndedTraceCase,
     SupplementalCase,
+    assert_grouped_quantified_bytes_surface_spec,
     assert_grouped_quantified_direct_bytes_surface_spec,
     assert_mixed_text_model_case_pairs,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -47,7 +48,6 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
-    published_bytes_texts_by_pattern,
     requested_published_fixture_bundles,
 )
 
@@ -583,46 +583,10 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     bundle_str_cases, bundle_bytes_cases = assert_mixed_text_model_case_pairs(
         spec.bundle
     )
-    expected_compile_patterns = frozenset(
-        case_pattern(case)
-        for case in fixture_cases_for_operation((spec.bundle,), "compile")
-        if case.text_model == "bytes"
-    )
-
-    assert len(spec.cases) == 2
-    assert {case.pattern for case in spec.cases} == expected_compile_patterns
-    assert len(bundle_str_cases) == len(bundle_bytes_cases)
-    assert len(bundle_bytes_cases) == sum(spec.expected_operation_helper_counts.values())
-    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == (
-        spec.expected_operation_helper_counts
-    )
-
-    for case in spec.cases:
-        assert case.unsupported_backends == ()
-        assert case.unsupported_backend_reason is None
-        assert set(case.search_matches).isdisjoint(case.search_misses)
-        assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
-        assert all(
-            isinstance(text, bytes)
-            for text in (
-                *case.search_matches,
-                *case.search_misses,
-                *case.fullmatch_matches,
-                *case.fullmatch_misses,
-            )
-        )
-
-    (
-        published_module_texts_by_pattern,
-        published_fullmatch_texts_by_pattern,
-    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
-    assert (
-        published_module_texts_by_pattern
-        == spec.expected_module_search_texts_by_pattern
-    )
-    assert (
-        published_fullmatch_texts_by_pattern
-        == spec.expected_pattern_fullmatch_texts_by_pattern
+    assert_grouped_quantified_bytes_surface_spec(
+        spec,
+        bundle_str_cases=bundle_str_cases,
+        bundle_bytes_cases=bundle_bytes_cases,
     )
 
 
