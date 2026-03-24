@@ -974,6 +974,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-none-count-absent-str",
             "pattern-sub-callable-named-conditional-group-exists-none-count-present-str",
             "pattern-subn-callable-named-conditional-group-exists-none-count-absent-str",
+            "module-sub-callable-conditional-group-exists-alternation-none-count-present-first-arm-str",
+            "module-subn-callable-named-conditional-group-exists-alternation-none-count-absent-second-arm-str",
+            "pattern-sub-callable-conditional-group-exists-alternation-none-count-present-first-arm-str",
+            "pattern-subn-callable-named-conditional-group-exists-alternation-none-count-absent-second-arm-str",
             "module-sub-callable-conditional-group-exists-none-count-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-none-count-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-none-count-negative-count-str",
@@ -1038,6 +1042,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-none-count-absent-bytes",
             "pattern-sub-callable-named-conditional-group-exists-none-count-present-bytes",
             "pattern-subn-callable-named-conditional-group-exists-none-count-absent-bytes",
+            "module-sub-callable-conditional-group-exists-alternation-none-count-present-first-arm-bytes",
+            "module-subn-callable-named-conditional-group-exists-alternation-none-count-absent-second-arm-bytes",
+            "pattern-sub-callable-conditional-group-exists-alternation-none-count-present-first-arm-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-alternation-none-count-absent-second-arm-bytes",
             "module-sub-callable-conditional-group-exists-none-count-negative-count-bytes",
             "module-subn-callable-named-conditional-group-exists-none-count-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-none-count-negative-count-bytes",
@@ -5762,7 +5770,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             len(manifest_none_count_str_case_ids),
             len(manifest_none_count_bytes_case_ids),
         )
-        self.assertEqual(len(manifest_none_count_str_case_ids), 12)
+        self.assertEqual(len(manifest_none_count_str_case_ids), 16)
         self.assertEqual(
             manifest_none_count_bytes_case_ids,
             mirrored_bytes_case_ids(manifest_none_count_str_case_ids),
@@ -5805,10 +5813,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 3,
-                    ("module_call", "subn"): 3,
-                    ("pattern_call", "sub"): 3,
-                    ("pattern_call", "subn"): 3,
+                    ("module_call", "sub"): 4,
+                    ("module_call", "subn"): 4,
+                    ("pattern_call", "sub"): 4,
+                    ("pattern_call", "subn"): 4,
                 }
             ),
         )
@@ -5820,10 +5828,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 3,
-                    ("module_call", "subn"): 3,
-                    ("pattern_call", "sub"): 3,
-                    ("pattern_call", "subn"): 3,
+                    ("module_call", "sub"): 4,
+                    ("module_call", "subn"): 4,
+                    ("pattern_call", "sub"): 4,
+                    ("pattern_call", "subn"): 4,
                 }
             ),
         )
