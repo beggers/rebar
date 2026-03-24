@@ -35,6 +35,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     bundle_manifest_pytest_id,
+    build_pattern_trace_cases,
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
@@ -234,43 +235,31 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
     case for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES for case in spec.cases
 )
-def _build_backtracking_trace_cases(
-    *,
-    prefix: str,
-    numbered_pattern: str,
-    named_pattern: str,
-) -> tuple[BacktrackingTraceCase, ...]:
-    cases: list[BacktrackingTraceCase] = []
-    for variant, pattern in (
-        ("numbered", numbered_pattern),
-        ("named", named_pattern),
-    ):
-        for repetition_count in range(1, 5):
-            for branch_order in product(("short", "long"), repeat=repetition_count):
-                body = "".join(BACKTRACKING_BRANCH_TEXT[branch] for branch in branch_order)
-                branch_id = "-".join(branch_order)
-                fullmatch_text = f"a{body}d"
-                cases.append(
-                    BacktrackingTraceCase(
-                        id=f"{prefix}-{variant}-{branch_id}",
-                        pattern=pattern,
-                        search_text=f"zz{fullmatch_text}zz",
-                        fullmatch_text=fullmatch_text,
-                    )
-                )
-    return tuple(cases)
-
-
 BACKTRACKING_TRACE_CASES = (
-    *_build_backtracking_trace_cases(
-        prefix="broader-range-wider-ranged-repeat-backtracking",
-        numbered_pattern=r"a((bc|b)c){1,4}d",
-        named_pattern=r"a(?P<word>(bc|b)c){1,4}d",
+    *build_pattern_trace_cases(
+        trace_specs=(
+            ("broader-range-wider-ranged-repeat-backtracking-numbered", r"a((bc|b)c){1,4}d"),
+            (
+                "broader-range-wider-ranged-repeat-backtracking-named",
+                r"a(?P<word>(bc|b)c){1,4}d",
+            ),
+        ),
+        branch_text_by_id=BACKTRACKING_BRANCH_TEXT,
+        repetition_counts=range(1, 5),
     ),
-    *_build_backtracking_trace_cases(
-        prefix="nested-broader-range-wider-ranged-repeat-backtracking",
-        numbered_pattern=r"a(((bc|b)c){1,4})d",
-        named_pattern=r"a(?P<outer>((bc|b)c){1,4})d",
+    *build_pattern_trace_cases(
+        trace_specs=(
+            (
+                "nested-broader-range-wider-ranged-repeat-backtracking-numbered",
+                r"a(((bc|b)c){1,4})d",
+            ),
+            (
+                "nested-broader-range-wider-ranged-repeat-backtracking-named",
+                r"a(?P<outer>((bc|b)c){1,4})d",
+            ),
+        ),
+        branch_text_by_id=BACKTRACKING_BRANCH_TEXT,
+        repetition_counts=range(1, 5),
     ),
 )
 EXPECTED_BACKTRACKING_FULLMATCH_TEXTS = frozenset(

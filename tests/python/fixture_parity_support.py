@@ -255,6 +255,109 @@ class PatternTraceCase:
     fullmatch_text: str | bytes
 
 
+def compile_case_trace_prefix(case: FixtureCase) -> str:
+    for suffix in ("-compile-metadata-str", "-compile-metadata-bytes"):
+        if case.case_id.endswith(suffix):
+            return case.case_id.removesuffix(suffix)
+    raise AssertionError(f"unexpected compile case id {case.case_id!r}")
+
+
+def build_pattern_trace_cases(
+    *,
+    trace_specs: Iterable[tuple[str, str | bytes]],
+    branch_text_by_id: Mapping[str, str | bytes],
+    repetition_counts: Iterable[int],
+    case_id_suffix: str = "",
+) -> tuple[PatternTraceCase, ...]:
+    ordered_branch_ids = tuple(branch_text_by_id)
+    ordered_specs = tuple(trace_specs)
+    cases: list[PatternTraceCase] = []
+
+    for prefix, pattern in ordered_specs:
+        if isinstance(pattern, bytes):
+            typed_branch_text_by_id = {
+                branch_id: text
+                for branch_id, text in branch_text_by_id.items()
+                if isinstance(text, bytes)
+            }
+            if len(typed_branch_text_by_id) != len(branch_text_by_id):
+                raise AssertionError(
+                    f"{prefix!r} bytes trace builder requires bytes branch texts"
+                )
+            for repetition_count in repetition_counts:
+                for branch_order in product(ordered_branch_ids, repeat=repetition_count):
+                    body = b"".join(
+                        typed_branch_text_by_id[branch_id] for branch_id in branch_order
+                    )
+                    branch_id = "-".join(branch_order)
+                    fullmatch_text = b"a" + body + b"d"
+                    case_id = (
+                        f"{prefix}{case_id_suffix}-{branch_id}"
+                        if case_id_suffix
+                        else f"{prefix}-{branch_id}"
+                    )
+                    cases.append(
+                        PatternTraceCase(
+                            id=case_id,
+                            pattern=pattern,
+                            search_text=b"zz" + fullmatch_text + b"zz",
+                            fullmatch_text=fullmatch_text,
+                        )
+                    )
+            continue
+
+        typed_branch_text_by_id = {
+            branch_id: text
+            for branch_id, text in branch_text_by_id.items()
+            if isinstance(text, str)
+        }
+        if len(typed_branch_text_by_id) != len(branch_text_by_id):
+            raise AssertionError(
+                f"{prefix!r} str trace builder requires str branch texts"
+            )
+        for repetition_count in repetition_counts:
+            for branch_order in product(ordered_branch_ids, repeat=repetition_count):
+                body = "".join(
+                    typed_branch_text_by_id[branch_id] for branch_id in branch_order
+                )
+                branch_id = "-".join(branch_order)
+                fullmatch_text = f"a{body}d"
+                case_id = (
+                    f"{prefix}{case_id_suffix}-{branch_id}"
+                    if case_id_suffix
+                    else f"{prefix}-{branch_id}"
+                )
+                cases.append(
+                    PatternTraceCase(
+                        id=case_id,
+                        pattern=pattern,
+                        search_text=f"zz{fullmatch_text}zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+
+    return tuple(cases)
+
+
+def build_compile_case_pattern_trace_cases(
+    compile_cases: Iterable[FixtureCase],
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes],
+    branch_text_by_id: Mapping[str, str | bytes],
+    repetition_counts: Iterable[int],
+    case_id_suffix: str = "",
+) -> tuple[PatternTraceCase, ...]:
+    return build_pattern_trace_cases(
+        trace_specs=tuple(
+            (compile_case_trace_prefix(case), pattern_extractor(case))
+            for case in compile_cases
+        ),
+        branch_text_by_id=branch_text_by_id,
+        repetition_counts=repetition_counts,
+        case_id_suffix=case_id_suffix,
+    )
+
+
 @dataclass(frozen=True)
 class FixtureBundle:
     manifest: FixtureManifest
