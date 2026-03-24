@@ -14,6 +14,18 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _selected_manifest_workloads,
 )
 
+COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+    }
+)
+
 
 @dataclass(frozen=True, slots=True)
 class _SourceTreeContractBuilderSpec:
@@ -110,3 +122,19 @@ def _contract_source_workloads(
     ):
         raise AssertionError(drift_message)
     return source_workloads
+
+
+def compiled_pattern_contract_expected_build_calls(
+    source_workload: Workload,
+    *,
+    label: str,
+) -> list[tuple[object, ...]]:
+    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
+    if source_workload.cache_mode == "purged":
+        return [compile_call, ("purge",)]
+    if source_workload.cache_mode == "warm":
+        return [compile_call]
+    raise AssertionError(
+        f"unexpected compiled-pattern {label} workload cache mode "
+        f"{source_workload.cache_mode!r}"
+    )

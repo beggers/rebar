@@ -15,15 +15,13 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
 )
-from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
-    compiled_pattern_contract_expected_build_calls,
-)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _selected_manifest_workloads,
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
+    compiled_pattern_contract_expected_build_calls,
     _SourceTreeContractBuilderSpec,
 )
 

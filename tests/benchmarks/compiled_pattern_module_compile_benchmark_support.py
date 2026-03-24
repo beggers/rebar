@@ -13,13 +13,11 @@ from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     Workload,
 )
-from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
-    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
-    compiled_pattern_contract_expected_build_calls,
-)
 from tests.benchmarks.source_tree_contract_benchmark_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
+    compiled_pattern_contract_expected_build_calls,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     published_case_ids_by_signature,

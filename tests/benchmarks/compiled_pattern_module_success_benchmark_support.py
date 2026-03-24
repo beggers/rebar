@@ -15,8 +15,10 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_wrong_text_model_haystack_index,
 )
-from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
+from tests.benchmarks.source_tree_contract_benchmark_support import (
     COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+    _SourceTreeContractBuilderSpec,
+    _contract_source_workloads,
     compiled_pattern_contract_expected_build_calls,
 )
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
@@ -24,10 +26,6 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     freeze_signature_value,
-)
-from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _SourceTreeContractBuilderSpec,
-    _contract_source_workloads,
 )
 from tests.python.fixture_parity_support import case_pattern
 

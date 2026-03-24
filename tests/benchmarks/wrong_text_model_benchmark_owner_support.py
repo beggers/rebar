@@ -20,10 +20,8 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _compiled_pattern_module_helper_route,
     _run_cpython_compiled_pattern_module_helper_workload,
 )
-from tests.benchmarks.compiled_pattern_contract_benchmark_support import (
-    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
-)
 from tests.benchmarks.source_tree_contract_benchmark_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
 )
