@@ -64,9 +64,7 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
 from tests.benchmarks.grouped_alternation_benchmark_anchor_support import (
     _grouped_alternation_correctness_case_signature,
     _grouped_alternation_replacement_correctness_case_signature,
-    _grouped_alternation_replacement_workload_args,
     _grouped_alternation_replacement_workload_signature,
-    _grouped_alternation_workload_args,
     _grouped_alternation_workload_signature,
 )
 from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
