@@ -5149,6 +5149,9 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
             "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
         )
+        manifest = manifest_records_by_id(
+            correctness.published_fixture_manifests()
+        )[manifest_id]
         combined_expectation = COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS[manifest_id]
         combined_case = correctness_scorecard_case("combined", manifest_id)
 
@@ -5165,25 +5168,46 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             for case in combined_case.representative_cases
             if case.text_model == "bytes"
         )
+        manifest_negative_count_str_case_ids = tuple(
+            case.case_id
+            for case in manifest.cases
+            if case.text_model == "str" and "negative-count" in case.categories
+        )
+        manifest_negative_count_bytes_case_ids = tuple(
+            case.case_id
+            for case in manifest.cases
+            if case.text_model == "bytes" and "negative-count" in case.categories
+        )
+        non_negative_representative_str_case_ids = representative_str_case_ids[
+            : len(representative_str_case_ids) - len(manifest_negative_count_str_case_ids)
+        ]
 
         self.assertEqual(
             combined_case_ids,
             combined_expectation.representative_case_ids,
         )
-        self.assertEqual(len(combined_case_ids), 12)
-        self.assertEqual(len(representative_str_case_ids), 8)
-        self.assertEqual(len(representative_bytes_case_ids), 4)
         self.assertEqual(
-            representative_str_case_ids[-len(expected_negative_count_str_case_ids) :],
+            manifest_negative_count_str_case_ids,
             expected_negative_count_str_case_ids,
+        )
+        self.assertEqual(manifest_negative_count_bytes_case_ids, ())
+        self.assertEqual(
+            len(combined_case_ids),
+            len(representative_str_case_ids) + len(representative_bytes_case_ids),
+        )
+        self.assertEqual(
+            len(representative_str_case_ids) - len(representative_bytes_case_ids),
+            len(manifest_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_str_case_ids[-len(manifest_negative_count_str_case_ids) :],
+            manifest_negative_count_str_case_ids,
         )
         self.assertEqual(
             representative_bytes_case_ids,
             tuple(
                 f"{case_id.removesuffix('-str')}-bytes"
-                for case_id in representative_str_case_ids[
-                    :-len(expected_negative_count_str_case_ids)
-                ]
+                for case_id in non_negative_representative_str_case_ids
             ),
         )
         self.assertTrue(
