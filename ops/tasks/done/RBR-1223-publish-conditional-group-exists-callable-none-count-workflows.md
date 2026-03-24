@@ -1,6 +1,6 @@
 # RBR-1223: Publish conditional group-exists callable None-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -54,3 +54,10 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `3 passed, 44 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report .rebar/tmp/feature-planning-correctness-current.py` returned `1797 total / 1797 passed / 0 failed / 0 unimplemented`.
 - 2026-03-24T19:04:43+00:00: harness requeued after failed or incomplete run after run `20260324T190328Z-feature-implementation-RBR-1223-publish-conditional-group-exists-callable-none-count-workflows` (exit=1, timed_out=false).
+- Completed 2026-03-24: published the twenty-four top-level conditional callable `count=None` rows on the shared owner path, updated the shared callable parity/spec plumbing for explicit `None` counts, and republished `reports/correctness/latest.py` with `168/168` passing cases for `collection.replacement.conditional_group_exists.callable` and `1821/1821` passing cases across `114` manifests.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'none_count_matches_cpython_typeerror and conditional-group-exists and not alternation and not nested and not quantified'` -> `144 passed, 5828 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_cases_stay_aligned_with_published_fixture tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_callback_exception_case_pools_exclude_negative_count_none_count_and_no_match_rows` -> `11 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` -> `4 passed, 44 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1223-conditional-callable-none-count.py` -> `168 executed / 168 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> `1821 executed / 1821 passed`

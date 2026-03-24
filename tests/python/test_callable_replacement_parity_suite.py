@@ -287,6 +287,18 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-negative-count-str",
                 "pattern-sub-callable-conditional-group-exists-negative-count-str",
                 "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
+                "module-sub-callable-conditional-group-exists-none-count-present-str",
+                "module-subn-callable-conditional-group-exists-none-count-absent-str",
+                "pattern-sub-callable-conditional-group-exists-none-count-present-str",
+                "pattern-subn-callable-conditional-group-exists-none-count-absent-str",
+                "module-sub-callable-named-conditional-group-exists-none-count-present-str",
+                "module-subn-callable-named-conditional-group-exists-none-count-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-none-count-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-none-count-absent-str",
+                "module-sub-callable-conditional-group-exists-none-count-negative-count-str",
+                "module-subn-callable-named-conditional-group-exists-none-count-negative-count-str",
+                "pattern-sub-callable-conditional-group-exists-none-count-negative-count-str",
+                "pattern-subn-callable-named-conditional-group-exists-none-count-negative-count-str",
                 "module-sub-callable-conditional-group-exists-nested-present-str",
                 "module-subn-callable-conditional-group-exists-nested-absent-str",
                 "pattern-sub-callable-conditional-group-exists-nested-present-str",
@@ -359,6 +371,18 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
                 "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-negative-count-bytes",
+                "module-sub-callable-conditional-group-exists-none-count-present-bytes",
+                "module-subn-callable-conditional-group-exists-none-count-absent-bytes",
+                "pattern-sub-callable-conditional-group-exists-none-count-present-bytes",
+                "pattern-subn-callable-conditional-group-exists-none-count-absent-bytes",
+                "module-sub-callable-named-conditional-group-exists-none-count-present-bytes",
+                "module-subn-callable-named-conditional-group-exists-none-count-absent-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-none-count-present-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-none-count-absent-bytes",
+                "module-sub-callable-conditional-group-exists-none-count-negative-count-bytes",
+                "module-subn-callable-named-conditional-group-exists-none-count-negative-count-bytes",
+                "pattern-sub-callable-conditional-group-exists-none-count-negative-count-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-none-count-negative-count-bytes",
                 "module-sub-callable-conditional-group-exists-nested-present-bytes",
                 "module-subn-callable-conditional-group-exists-nested-absent-bytes",
                 "pattern-sub-callable-conditional-group-exists-nested-present-bytes",
@@ -435,10 +459,10 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 36,
-                ("module_call", "subn"): 36,
-                ("pattern_call", "sub"): 36,
-                ("pattern_call", "subn"): 36,
+                ("module_call", "sub"): 42,
+                ("module_call", "subn"): 42,
+                ("pattern_call", "sub"): 42,
+                ("pattern_call", "subn"): 42,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
@@ -1863,45 +1887,71 @@ def _case_string(case: FixtureCase) -> TextValue:
     return string
 
 
-def _case_count(case: FixtureCase) -> int:
+def _case_count_value(case: FixtureCase) -> object:
     if "count" in case.kwargs:
-        return int(case.kwargs["count"])
+        return case.kwargs["count"]
 
     count_index = 3 if case.operation == "module_call" else 2
     if len(case.args) > count_index:
-        return int(case.args[count_index])
+        return case.args[count_index]
     return 0
 
 
+def _case_count(case: FixtureCase) -> int:
+    value = _case_count_value(case)
+    if value is None:
+        raise TypeError("case count is None")
+    return int(value)
+
+
 def _is_negative_count_callable_case(case: FixtureCase) -> bool:
-    return _case_count(case) < 0
+    value = _case_count_value(case)
+    return value is not None and int(value) < 0
+
+
+def _is_none_count_callable_case(case: FixtureCase) -> bool:
+    return _case_count_value(case) is None
 
 
 def _is_no_match_callable_case(case: FixtureCase) -> bool:
     return "no-match" in case.categories
 
 
+MODULE_VALID_COUNT_CASES = tuple(
+    case for case in MODULE_CASES if not _is_none_count_callable_case(case)
+)
+PATTERN_VALID_COUNT_CASES = tuple(
+    case for case in PATTERN_CASES if not _is_none_count_callable_case(case)
+)
+BYTES_MODULE_VALID_COUNT_CASES = tuple(
+    case for case in BYTES_MODULE_CASES if not _is_none_count_callable_case(case)
+)
+BYTES_PATTERN_VALID_COUNT_CASES = tuple(
+    case for case in BYTES_PATTERN_CASES if not _is_none_count_callable_case(case)
+)
+
+
 MODULE_CALLBACK_EXCEPTION_CASES = tuple(
     case
-    for case in MODULE_CASES
+    for case in MODULE_VALID_COUNT_CASES
     if not _is_negative_count_callable_case(case)
     and not _is_no_match_callable_case(case)
 )
 PATTERN_CALLBACK_EXCEPTION_CASES = tuple(
     case
-    for case in PATTERN_CASES
+    for case in PATTERN_VALID_COUNT_CASES
     if not _is_negative_count_callable_case(case)
     and not _is_no_match_callable_case(case)
 )
 BYTES_MODULE_CALLBACK_EXCEPTION_CASES = tuple(
     case
-    for case in BYTES_MODULE_CASES
+    for case in BYTES_MODULE_VALID_COUNT_CASES
     if not _is_negative_count_callable_case(case)
     and not _is_no_match_callable_case(case)
 )
 BYTES_PATTERN_CALLBACK_EXCEPTION_CASES = tuple(
     case
-    for case in BYTES_PATTERN_CASES
+    for case in BYTES_PATTERN_VALID_COUNT_CASES
     if not _is_negative_count_callable_case(case)
     and not _is_no_match_callable_case(case)
 )
@@ -4077,7 +4127,7 @@ def test_conditional_group_exists_quantified_near_miss_cases_stay_on_published_s
     )
 
 
-def test_callable_replacement_callback_exception_case_pools_exclude_negative_count_and_no_match_rows(
+def test_callable_replacement_callback_exception_case_pools_exclude_negative_count_none_count_and_no_match_rows(
 ) -> None:
     module_negative_count_case_ids = {
         case.case_id
@@ -4098,6 +4148,22 @@ def test_callable_replacement_callback_exception_case_pools_exclude_negative_cou
         case.case_id
         for case in BYTES_PATTERN_CASES
         if _is_negative_count_callable_case(case)
+    }
+    module_none_count_case_ids = {
+        case.case_id for case in MODULE_CASES if _is_none_count_callable_case(case)
+    }
+    pattern_none_count_case_ids = {
+        case.case_id for case in PATTERN_CASES if _is_none_count_callable_case(case)
+    }
+    bytes_module_none_count_case_ids = {
+        case.case_id
+        for case in BYTES_MODULE_CASES
+        if _is_none_count_callable_case(case)
+    }
+    bytes_pattern_none_count_case_ids = {
+        case.case_id
+        for case in BYTES_PATTERN_CASES
+        if _is_none_count_callable_case(case)
     }
     module_no_match_case_ids = {
         case.case_id for case in MODULE_CASES if _is_no_match_callable_case(case)
@@ -4121,6 +4187,14 @@ def test_callable_replacement_callback_exception_case_pools_exclude_negative_cou
         pattern_negative_count_case_ids
         & {case.case_id for case in BYTES_PATTERN_CASES}
     )
+    assert module_none_count_case_ids
+    assert pattern_none_count_case_ids
+    assert bytes_module_none_count_case_ids == (
+        module_none_count_case_ids & {case.case_id for case in BYTES_MODULE_CASES}
+    )
+    assert bytes_pattern_none_count_case_ids == (
+        pattern_none_count_case_ids & {case.case_id for case in BYTES_PATTERN_CASES}
+    )
     assert module_no_match_case_ids
     assert pattern_no_match_case_ids
     assert bytes_module_no_match_case_ids == (
@@ -4133,10 +4207,16 @@ def test_callable_replacement_callback_exception_case_pools_exclude_negative_cou
         module_negative_count_case_ids
     )
     assert {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}.isdisjoint(
+        module_none_count_case_ids
+    )
+    assert {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}.isdisjoint(
         module_no_match_case_ids
     )
     assert {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}.isdisjoint(
         pattern_negative_count_case_ids
+    )
+    assert {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}.isdisjoint(
+        pattern_none_count_case_ids
     )
     assert {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}.isdisjoint(
         pattern_no_match_case_ids
@@ -4146,34 +4226,44 @@ def test_callable_replacement_callback_exception_case_pools_exclude_negative_cou
     }.isdisjoint(bytes_module_negative_count_case_ids)
     assert {
         case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES
+    }.isdisjoint(bytes_module_none_count_case_ids)
+    assert {
+        case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES
     }.isdisjoint(bytes_module_no_match_case_ids)
     assert {
         case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES
     }.isdisjoint(bytes_pattern_negative_count_case_ids)
     assert {
         case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES
+    }.isdisjoint(bytes_pattern_none_count_case_ids)
+    assert {
+        case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES
     }.isdisjoint(bytes_pattern_no_match_case_ids)
     assert (
         {case.case_id for case in MODULE_CALLBACK_EXCEPTION_CASES}
         | module_negative_count_case_ids
+        | module_none_count_case_ids
         | module_no_match_case_ids
         == {case.case_id for case in MODULE_CASES}
     )
     assert (
         {case.case_id for case in PATTERN_CALLBACK_EXCEPTION_CASES}
         | pattern_negative_count_case_ids
+        | pattern_none_count_case_ids
         | pattern_no_match_case_ids
         == {case.case_id for case in PATTERN_CASES}
     )
     assert (
         {case.case_id for case in BYTES_MODULE_CALLBACK_EXCEPTION_CASES}
         | bytes_module_negative_count_case_ids
+        | bytes_module_none_count_case_ids
         | bytes_module_no_match_case_ids
         == {case.case_id for case in BYTES_MODULE_CASES}
     )
     assert (
         {case.case_id for case in BYTES_PATTERN_CALLBACK_EXCEPTION_CASES}
         | bytes_pattern_negative_count_case_ids
+        | bytes_pattern_none_count_case_ids
         | bytes_pattern_no_match_case_ids
         == {case.case_id for case in BYTES_PATTERN_CASES}
     )
@@ -5071,7 +5161,7 @@ def test_literal_callable_replacement_callback_exception_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_VALID_COUNT_CASES, ids=lambda case: case.case_id)
 def test_module_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -5115,7 +5205,11 @@ def test_module_callable_replacement_callback_exception_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", BYTES_MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    BYTES_MODULE_VALID_COUNT_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_module_bytes_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -6002,7 +6096,11 @@ def test_conditional_group_exists_bytes_callable_replacement_absent_capture_type
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_VALID_COUNT_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_pattern_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -6023,7 +6121,11 @@ def test_pattern_callable_replacement_callback_match_objects_match_cpython(
     )
 
 
-@pytest.mark.parametrize("case", BYTES_PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize(
+    "case",
+    BYTES_PATTERN_VALID_COUNT_CASES,
+    ids=lambda case: case.case_id,
+)
 def test_pattern_bytes_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,

@@ -962,6 +962,18 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
             "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
+            "module-sub-callable-conditional-group-exists-none-count-present-str",
+            "module-subn-callable-conditional-group-exists-none-count-absent-str",
+            "pattern-sub-callable-conditional-group-exists-none-count-present-str",
+            "pattern-subn-callable-conditional-group-exists-none-count-absent-str",
+            "module-sub-callable-named-conditional-group-exists-none-count-present-str",
+            "module-subn-callable-named-conditional-group-exists-none-count-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-none-count-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-none-count-absent-str",
+            "module-sub-callable-conditional-group-exists-none-count-negative-count-str",
+            "module-subn-callable-named-conditional-group-exists-none-count-negative-count-str",
+            "pattern-sub-callable-conditional-group-exists-none-count-negative-count-str",
+            "pattern-subn-callable-named-conditional-group-exists-none-count-negative-count-str",
             "module-sub-callable-conditional-group-exists-nested-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
@@ -1010,6 +1022,18 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
             "pattern-subn-callable-named-conditional-group-exists-negative-count-bytes",
+            "module-sub-callable-conditional-group-exists-none-count-present-bytes",
+            "module-subn-callable-conditional-group-exists-none-count-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-none-count-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-none-count-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-none-count-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-none-count-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-none-count-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-none-count-absent-bytes",
+            "module-sub-callable-conditional-group-exists-none-count-negative-count-bytes",
+            "module-subn-callable-named-conditional-group-exists-none-count-negative-count-bytes",
+            "pattern-sub-callable-conditional-group-exists-none-count-negative-count-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-none-count-negative-count-bytes",
             "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
             "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
@@ -5373,12 +5397,6 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             mirrored_bytes_case_ids(manifest_legacy_negative_count_str_case_ids),
         )
         self.assertEqual(
-            representative_str_case_ids[
-                -len(representative_negative_count_str_case_ids) :
-            ],
-            representative_negative_count_str_case_ids,
-        )
-        self.assertEqual(
             representative_negative_count_str_case_ids,
             representative_quantified_negative_count_str_case_ids
             + representative_legacy_negative_count_str_case_ids,
@@ -5460,6 +5478,167 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                     ("module_call", "subn"): 6,
                     ("pattern_call", "sub"): 6,
                     ("pattern_call", "subn"): 6,
+                }
+            ),
+        )
+
+    def test_conditional_group_exists_callable_scorecards_keep_none_count_follow_on_cases_in_sync(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-callable-replacement-workflows"
+
+        def selected_case_ids(
+            cases: Iterable[FixtureCase],
+            *,
+            text_model: str,
+            required_categories: tuple[str, ...],
+            excluded_categories: tuple[str, ...] = (),
+        ) -> tuple[str, ...]:
+            return tuple(
+                case.case_id
+                for case in cases
+                if case.text_model == text_model
+                and all(category in case.categories for category in required_categories)
+                and all(category not in case.categories for category in excluded_categories)
+            )
+
+        def mirrored_bytes_case_ids(str_case_ids: tuple[str, ...]) -> tuple[str, ...]:
+            return tuple(
+                f"{case_id.removesuffix('-str')}-bytes" for case_id in str_case_ids
+            )
+
+        manifest = manifest_records_by_id(
+            correctness.published_fixture_manifests()
+        )[manifest_id]
+        combined_expectation = COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS[manifest_id]
+        combined_case = correctness_scorecard_case("combined", manifest_id)
+
+        combined_case_ids = tuple(
+            case.case_id for case in combined_case.representative_cases
+        )
+        representative_str_case_ids = tuple(
+            case.case_id
+            for case in combined_case.representative_cases
+            if case.text_model == "str"
+        )
+        representative_bytes_case_ids = tuple(
+            case.case_id
+            for case in combined_case.representative_cases
+            if case.text_model == "bytes"
+        )
+        manifest_none_count_str_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="str",
+            required_categories=("none-count",),
+        )
+        manifest_none_count_bytes_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="bytes",
+            required_categories=("none-count",),
+        )
+        representative_none_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("none-count",),
+        )
+        representative_none_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("none-count",),
+        )
+        representative_legacy_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified", "nested"),
+        )
+        representative_nested_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count", "nested"),
+        )
+        representative_legacy_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified", "nested"),
+        )
+        representative_nested_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count", "nested"),
+        )
+
+        self.assertEqual(
+            combined_case_ids,
+            combined_expectation.representative_case_ids,
+        )
+        self.assertEqual(
+            len(manifest_none_count_str_case_ids),
+            len(manifest_none_count_bytes_case_ids),
+        )
+        self.assertEqual(len(manifest_none_count_str_case_ids), 12)
+        self.assertEqual(
+            manifest_none_count_bytes_case_ids,
+            mirrored_bytes_case_ids(manifest_none_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_none_count_str_case_ids,
+            manifest_none_count_str_case_ids,
+        )
+        self.assertEqual(
+            representative_none_count_bytes_case_ids,
+            mirrored_bytes_case_ids(representative_none_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_str_case_ids[
+                representative_str_case_ids.index(
+                    representative_legacy_negative_count_str_case_ids[0]
+                ) : representative_str_case_ids.index(
+                    representative_nested_negative_count_str_case_ids[0]
+                )
+            ],
+            representative_legacy_negative_count_str_case_ids
+            + representative_none_count_str_case_ids,
+        )
+        self.assertEqual(
+            representative_bytes_case_ids[
+                representative_bytes_case_ids.index(
+                    representative_legacy_negative_count_bytes_case_ids[0]
+                ) : representative_bytes_case_ids.index(
+                    representative_nested_negative_count_bytes_case_ids[0]
+                )
+            ],
+            representative_legacy_negative_count_bytes_case_ids
+            + representative_none_count_bytes_case_ids,
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in representative_none_count_str_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 3,
+                    ("module_call", "subn"): 3,
+                    ("pattern_call", "sub"): 3,
+                    ("pattern_call", "subn"): 3,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in representative_none_count_bytes_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 3,
+                    ("module_call", "subn"): 3,
+                    ("pattern_call", "sub"): 3,
+                    ("pattern_call", "subn"): 3,
                 }
             ),
         )
