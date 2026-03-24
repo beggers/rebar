@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.compile_proxy_benchmark_anchor_support import (
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
@@ -21,21 +22,6 @@ def _synthetic_case(
         operation=operation,
         pattern=pattern,
         args=args,
-        flags=flags,
-        text_model=text_model,
-        pattern_payload=lambda: pattern,
-    )
-
-
-def _synthetic_workload(
-    *,
-    operation: str,
-    pattern: str | bytes,
-    flags: int,
-    text_model: str,
-) -> SimpleNamespace:
-    return SimpleNamespace(
-        operation=operation,
         flags=flags,
         text_model=text_model,
         pattern_payload=lambda: pattern,
@@ -61,9 +47,11 @@ def test_compile_proxy_correctness_case_signature_uses_compile_shape() -> None:
 
 
 def test_compile_proxy_workload_signature_uses_compile_shape() -> None:
-    workload = _synthetic_workload(
+    workload = synthetic_workload(
+        manifest_id="compile-proxy-benchmark-support",
+        workload_id="module-compile-literal",
         operation="module.compile",
-        pattern=b"literal",
+        pattern="literal",
         flags=8,
         text_model="bytes",
     )
@@ -79,21 +67,33 @@ def test_compile_proxy_workload_signature_uses_compile_shape() -> None:
 
 
 def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
-    assert is_compile_proxy_workload(_synthetic_workload(
-        operation="compile",
-        pattern="literal",
-        flags=0,
-        text_model="str",
-    ))
-    assert is_compile_proxy_workload(_synthetic_workload(
-        operation="module.compile",
-        pattern="literal",
-        flags=0,
-        text_model="str",
-    ))
-    assert not is_compile_proxy_workload(_synthetic_workload(
-        operation="module.search",
-        pattern="literal",
-        flags=0,
-        text_model="str",
-    ))
+    assert is_compile_proxy_workload(
+        synthetic_workload(
+            manifest_id="compile-proxy-benchmark-support",
+            workload_id="compile-literal",
+            operation="compile",
+            pattern="literal",
+            flags=0,
+            text_model="str",
+        )
+    )
+    assert is_compile_proxy_workload(
+        synthetic_workload(
+            manifest_id="compile-proxy-benchmark-support",
+            workload_id="module-compile-literal",
+            operation="module.compile",
+            pattern="literal",
+            flags=0,
+            text_model="str",
+        )
+    )
+    assert not is_compile_proxy_workload(
+        synthetic_workload(
+            manifest_id="compile-proxy-benchmark-support",
+            workload_id="module-search-literal",
+            operation="module.search",
+            pattern="literal",
+            flags=0,
+            text_model="str",
+        )
+    )
