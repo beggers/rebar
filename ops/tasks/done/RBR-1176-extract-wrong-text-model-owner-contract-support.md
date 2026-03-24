@@ -1,6 +1,6 @@
 ## RBR-1176: Extract wrong-text-model owner contract support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,9 @@ Created: 2026-03-24
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` returned `6 passed` in this run.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio or compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions'` returned `13 passed, 748 deselected` in this run.
+
+## Completion
+- 2026-03-24: Moved the remaining wrong-text-model owner-spec inventory into `tests/benchmarks/wrong_text_model_benchmark_owner_support.py`, moved the three focused owner-contract tests into `tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py`, and removed the inline owner-spec/test block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` while keeping the pattern-boundary validation test pinned to the imported owner spec.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` -> `52 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio or compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions'` -> `13 passed, 748 deselected`

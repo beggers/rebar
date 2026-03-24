@@ -1,11 +1,38 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
+import pathlib
 import re
+from typing import Any
 
-from rebar_harness.benchmarks import Workload
+import pytest
+
+from rebar_harness.benchmarks import (
+    BENCHMARK_WORKLOADS_ROOT,
+    Workload,
+)
+from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    _is_collection_replacement_pattern_wrong_text_model_workload,
+    _is_collection_replacement_wrong_text_model_workload,
+)
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _compiled_pattern_module_helper_route,
     _run_cpython_compiled_pattern_module_helper_workload,
+)
+from tests.benchmarks.source_tree_contract_benchmark_support import (
+    _SourceTreeContractBuilderSpec,
+    _contract_source_workloads,
+)
+from tests.benchmarks.wrong_text_model_benchmark_anchor_support import (
+    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
+    _is_pattern_boundary_wrong_text_model_workload,
+)
+
+MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
+PATTERN_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py"
+COLLECTION_REPLACEMENT_MANIFEST_PATH = (
+    BENCHMARK_WORKLOADS_ROOT / "collection_replacement_boundary.py"
 )
 
 _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
@@ -17,6 +44,164 @@ _WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS = frozenset(
         "timed_samples",
         "smoke",
     }
+)
+_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+    }
+)
+
+
+@dataclass(frozen=True, slots=True)
+class WrongTextModelOwnerSpec:
+    case_id: str
+    manifest_path: pathlib.Path
+    include_workload_selectors: tuple[Callable[[Any], bool], ...]
+    contract_manifest_id: str
+    contract_filename_stem: str
+    expected_source_workload_ids: tuple[str, ...]
+    use_compiled_pattern: bool
+    timing_scope: str
+    excluded_fields: frozenset[str]
+    note_surface: str | None
+    direct_pattern_route: str | None
+
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        notes: tuple[str, ...] = ()
+        if self.note_surface is not None:
+            notes = (
+                "Ensures benchmark manifests keep the bounded "
+                "compiled-pattern-first-argument wrong-text-model "
+                f"{self.note_surface} rows unresolved until helper invocation.",
+            )
+        return _SourceTreeContractBuilderSpec(
+            manifest_id=self.contract_manifest_id,
+            excluded_fields=self.excluded_fields,
+            timing_scope=self.timing_scope,
+            notes=notes,
+        )
+
+    def source_workloads(self) -> tuple[Workload, ...]:
+        return _contract_source_workloads(
+            manifest_path=self.manifest_path,
+            include_workload_selectors=self.include_workload_selectors,
+            expected_source_workload_ids=self.expected_source_workload_ids,
+            drift_message=(
+                "wrong-text-model contract source workloads drifted from the "
+                f"{self.case_id} owner-spec surface"
+            ),
+        )
+
+
+_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
+    case_id="pattern_helper_collection_replacement_wrong_text_model",
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload_selectors=(
+        _is_collection_replacement_pattern_wrong_text_model_workload,
+    ),
+    contract_manifest_id="collection-replacement-boundary",
+    contract_filename_stem="pattern_collection_replacement_wrong_text_model",
+    expected_source_workload_ids=(
+        "pattern-split-on-bytes-string-warm-str",
+        "pattern-sub-on-bytes-string-warm-str",
+        "pattern-subn-on-str-string-purged-bytes",
+    ),
+    use_compiled_pattern=False,
+    timing_scope="pattern-helper-call",
+    excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
+    note_surface=None,
+    direct_pattern_route="collection/replacement",
+)
+
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = WrongTextModelOwnerSpec(
+    case_id="pattern_boundary_wrong_text_model",
+    manifest_path=PATTERN_BOUNDARY_MANIFEST_PATH,
+    include_workload_selectors=(
+        _is_pattern_boundary_wrong_text_model_workload,
+    ),
+    contract_manifest_id="pattern-boundary",
+    contract_filename_stem="pattern_boundary_wrong_text_model",
+    expected_source_workload_ids=(
+        "pattern-search-on-bytes-string-warm-str",
+        "pattern-match-on-str-string-purged-bytes",
+        "pattern-fullmatch-on-bytes-string-warm-str",
+    ),
+    use_compiled_pattern=False,
+    timing_scope="pattern-helper-call",
+    excluded_fields=_WRONG_TEXT_MODEL_PATTERN_CONTRACT_EXCLUDED_FIELDS,
+    note_surface=None,
+    direct_pattern_route="pattern-boundary",
+)
+
+_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC = (
+    WrongTextModelOwnerSpec(
+        case_id="compiled_pattern_module_helper_wrong_text_model",
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_collection_replacement_wrong_text_model_workload,
+        ),
+        contract_manifest_id="collection-replacement-boundary",
+        contract_filename_stem=(
+            "compiled_pattern_collection_replacement_wrong_text_model"
+        ),
+        expected_source_workload_ids=(
+            "module-split-on-bytes-string-purged-str-compiled-pattern",
+            "module-findall-on-str-string-purged-bytes-compiled-pattern",
+            "module-finditer-on-bytes-string-warm-str-compiled-pattern",
+            "module-sub-on-bytes-string-warm-str-compiled-pattern",
+            "module-subn-on-str-string-purged-bytes-compiled-pattern",
+        ),
+        use_compiled_pattern=True,
+        timing_scope="module-helper-call",
+        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        note_surface="collection/replacement",
+        direct_pattern_route=None,
+    )
+)
+
+_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC = (
+    WrongTextModelOwnerSpec(
+        case_id="compiled_pattern_module_boundary_wrong_text_model",
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_module_workflow_compiled_pattern_wrong_text_model_workload,
+        ),
+        contract_manifest_id="module-boundary",
+        contract_filename_stem="compiled_pattern_module_boundary_wrong_text_model",
+        expected_source_workload_ids=(
+            "module-search-on-bytes-string-warm-str-compiled-pattern",
+            "module-match-on-str-string-purged-bytes-compiled-pattern",
+            "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+        ),
+        use_compiled_pattern=True,
+        timing_scope="module-helper-call",
+        excluded_fields=_COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        note_surface="module-boundary",
+        direct_pattern_route=None,
+    )
+)
+
+WRONG_TEXT_MODEL_OWNER_SPECS = (
+    _PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC,
+    _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC,
+    _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC,
+    _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC,
+)
+
+_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_PARAMS = tuple(
+    pytest.param(
+        owner_spec,
+        source_workload,
+        id=f"{owner_spec.case_id}-{source_workload.workload_id}",
+    )
+    for owner_spec in WRONG_TEXT_MODEL_OWNER_SPECS
+    for source_workload in owner_spec.source_workloads()
 )
 
 
