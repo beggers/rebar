@@ -1,6 +1,6 @@
 # RBR-1194: Extract benchmark manifest validation tests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -63,3 +63,7 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py` currently fails with `ERROR: file or directory not found: tests/benchmarks/test_benchmark_manifest_validation.py`, which belongs exactly to the cleanup queued here.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'keyword_kwargs_validation_matches_manifest_and_payload_entry_points or compiled_pattern_module_compile_validation_matches_manifest_and_payload_entry_points'` returned `13 passed, 583 deselected` in this run.
   - `bash -lc "! rg -n 'test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing|test_standard_benchmark_manifest_replacement_payload_rejects_unsupported_text_model|test_standard_benchmark_manifest_rejects_missing_and_non_dict_manifest_values|test_benchmark_workload_value_normalization_recursively_preserves_literals_and_stringifies_mapping_keys|test_benchmark_workload_value_normalization_rejects_non_literal_containers|test_benchmark_expected_exception_normalization_stringifies_scalar_fields|test_standard_benchmark_expected_exception_validation_matches_manifest_and_payload_entry_points|test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio|test_standard_benchmark_haystack_text_model_validation_matches_manifest_and_payload_entry_points|test_standard_benchmark_compiled_pattern_module_boundary_validation_matches_manifest_and_payload_entry_points' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails exactly on this cleanup because the moved tests still live in the combined suite.
+
+## Completion
+- Extracted the ten manifest and payload validation tests into `tests/benchmarks/test_benchmark_manifest_validation.py` without changing their assertions or helper ownership, and deleted the moved block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py`, `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'keyword_kwargs_validation_matches_manifest_and_payload_entry_points or compiled_pattern_module_compile_validation_matches_manifest_and_payload_entry_points'`, and the negative `rg` check named in this task.
