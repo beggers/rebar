@@ -9,6 +9,7 @@ from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     Workload,
     load_manifest,
+    load_manifests,
     workload_from_payload,
     workload_to_payload,
 )
@@ -162,6 +163,345 @@ def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_
         ],
     }
 
+
+def test_standard_benchmark_manifest_materializes_callable_replacement_descriptors(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-loader-contract",
+        "defaults": {
+            "warmup_iterations": 2,
+            "sample_iterations": 3,
+            "timed_samples": 4,
+            "text_model": "str",
+            "cache_mode": "warm",
+            "timing_scope": "module-helper-call",
+        },
+        "workloads": [
+            {
+                "id": "module-sub-callable-numbered-contract-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": r"a((bc)+)d",
+                "replacement": {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "suffix": "x",
+                },
+                "haystack": "zzabcbcdzz",
+                "count": 0,
+                "categories": ["replacement", "callable", "numbered-group", "str"],
+                "notes": [
+                    "Ensures Python-backed benchmark manifests materialize numbered callable replacement descriptors."
+                ],
+            },
+            {
+                "id": "pattern-subn-callable-named-contract-str",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": r"a(?P<outer>(?P<inner>bc)+)d",
+                "replacement": {
+                    "type": "callable_match_group",
+                    "group": "inner",
+                    "prefix": "<",
+                    "suffix": ">",
+                },
+                "haystack": "zzabcbcdabcbcdzz",
+                "count": 1,
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "categories": ["replacement", "callable", "named-group", "str"],
+                "notes": [
+                    "Ensures Python-backed benchmark manifests materialize named callable replacement descriptors."
+                ],
+            },
+            {
+                "id": "module-sub-callable-constant-contract-bytes",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": r"a((bc)+)d",
+                "replacement": {
+                    "type": "callable_constant",
+                    "value": {
+                        "type": "bytes",
+                        "value": "CONST",
+                        "encoding": "ascii",
+                    },
+                },
+                "haystack": "zzabcbcdzz",
+                "text_model": "bytes",
+                "categories": ["replacement", "callable", "constant", "bytes"],
+                "notes": [
+                    "Ensures Python-backed benchmark manifests keep bytes-aware callable constants available for subprocess serialization and runtime materialization."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_loader_contract.py",
+        manifest_source,
+    )
+    manifest = load_manifest(manifest_path)
+    workloads = manifest.workloads
+
+    assert manifest.manifest_id == "python-benchmark-loader-contract"
+    assert not hasattr(manifest, "defaults")
+    assert [workload.workload_id for workload in workloads] == [
+        "module-sub-callable-numbered-contract-str",
+        "pattern-subn-callable-named-contract-str",
+        "module-sub-callable-constant-contract-bytes",
+    ]
+
+    numbered_workload = workloads[0]
+    assert numbered_workload.warmup_iterations == 2
+    assert numbered_workload.sample_iterations == 3
+    assert numbered_workload.timed_samples == 4
+    assert numbered_workload.pattern_payload() == r"a((bc)+)d"
+    assert numbered_workload.haystack_payload() == "zzabcbcdzz"
+    numbered_replacement = numbered_workload.replacement_payload()
+    assert callable(numbered_replacement)
+    assert numbered_replacement.__module__ == "rebar_harness.benchmarks"
+    assert numbered_replacement.__qualname__ == "callable_match_group"
+    numbered_match = re.search(
+        numbered_workload.pattern_payload(),
+        numbered_workload.haystack_payload(),
+    )
+    assert numbered_match is not None
+    assert numbered_replacement(numbered_match) == "bcbcx"
+    assert workload_to_payload(numbered_workload)["replacement"] == {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x",
+    }
+
+    named_workload = workloads[1]
+    assert named_workload.cache_mode == "purged"
+    assert named_workload.timing_scope == "pattern-helper-call"
+    named_replacement = named_workload.replacement_payload()
+    assert callable(named_replacement)
+    assert named_replacement.__module__ == "rebar_harness.benchmarks"
+    assert named_replacement.__qualname__ == "callable_match_group"
+    named_match = re.search(
+        named_workload.pattern_payload(),
+        named_workload.haystack_payload(),
+    )
+    assert named_match is not None
+    assert named_replacement(named_match) == "<bc>"
+    assert workload_to_payload(named_workload)["replacement"] == {
+        "type": "callable_match_group",
+        "group": "inner",
+        "prefix": "<",
+        "suffix": ">",
+    }
+
+    constant_bytes_workload = workloads[2]
+    assert constant_bytes_workload.text_model == "bytes"
+    assert constant_bytes_workload.pattern_payload() == rb"a((bc)+)d"
+    assert constant_bytes_workload.haystack_payload() == b"zzabcbcdzz"
+    constant_bytes_replacement = constant_bytes_workload.replacement_payload()
+    assert callable(constant_bytes_replacement)
+    assert constant_bytes_replacement.__module__ == "rebar_harness.benchmarks"
+    assert constant_bytes_replacement.__qualname__ == "callable_constant"
+    constant_bytes_match = re.search(
+        constant_bytes_workload.pattern_payload(),
+        constant_bytes_workload.haystack_payload(),
+    )
+    assert constant_bytes_match is not None
+    assert constant_bytes_replacement(constant_bytes_match) == b"CONST"
+    assert workload_to_payload(constant_bytes_workload)["replacement"] == {
+        "type": "callable_constant",
+        "value": {
+            "type": "bytes",
+            "value": "CONST",
+            "encoding": "ascii",
+        },
+    }
+
+
+def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    duplicate_modules = (
+        (
+            (
+                "duplicate_benchmark_manifest_a.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "duplicate-benchmark-manifest-id",
+                    "workloads": [
+                        {
+                            "id": "benchmark-workload-a",
+                            "operation": "module.search",
+                            "pattern": "abc",
+                            "haystack": "abc",
+                        },
+                    ],
+                }
+                """,
+            ),
+            (
+                "duplicate_benchmark_manifest_b.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "duplicate-benchmark-manifest-id",
+                    "workloads": [
+                        {
+                            "id": "benchmark-workload-b",
+                            "operation": "module.search",
+                            "pattern": "def",
+                            "haystack": "def",
+                        },
+                    ],
+                }
+                """,
+            ),
+            r"duplicate benchmark manifest id .*duplicate-benchmark-manifest-id",
+        ),
+        (
+            (
+                "duplicate_benchmark_workload_a.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "duplicate-benchmark-workload-a",
+                    "workloads": [
+                        {
+                            "id": "duplicate-benchmark-workload-id",
+                            "operation": "module.search",
+                            "pattern": "abc",
+                            "haystack": "abc",
+                        },
+                    ],
+                }
+                """,
+            ),
+            (
+                "duplicate_benchmark_workload_b.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "duplicate-benchmark-workload-b",
+                    "workloads": [
+                        {
+                            "id": "duplicate-benchmark-workload-id",
+                            "operation": "module.search",
+                            "pattern": "def",
+                            "haystack": "def",
+                        },
+                    ],
+                }
+                """,
+            ),
+            r"duplicate benchmark workload id .*duplicate-benchmark-workload-id",
+        ),
+    )
+
+    for first_module, second_module, error_pattern in duplicate_modules:
+        first_path = _write_test_manifest(tmp_path, *first_module)
+        second_path = _write_test_manifest(tmp_path, *second_module)
+        with pytest.raises(ValueError, match=error_pattern):
+            load_manifests([first_path, second_path])
+
+
+def test_standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-bytes-template-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            {
+                "id": "module-sub-template-numbered-conditional-contract-bytes",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": r"a((b|c){2,})\\2(?(2)d|e)",
+                "replacement": r"\\1x",
+                "haystack": "abbbd",
+                "text_model": "bytes",
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "categories": [
+                    "replacement",
+                    "template",
+                    "numbered-group",
+                    "bytes",
+                ],
+                "notes": [
+                    "Ensures bytes benchmark manifests materialize numbered template replacements through the same published nested-group helper path."
+                ],
+            },
+            {
+                "id": "pattern-subn-template-named-conditional-contract-bytes",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+                "replacement": r"\\g<inner>x",
+                "haystack": "zzacccdabcbccdzz",
+                "count": 1,
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "categories": [
+                    "replacement",
+                    "template",
+                    "named-group",
+                    "bytes",
+                ],
+                "notes": [
+                    "Ensures bytes benchmark manifests materialize named template replacements through the same published nested-group helper path."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_bytes_template_contract.py",
+        manifest_source,
+    )
+    manifest = load_manifest(manifest_path)
+    workloads = manifest.workloads
+
+    assert manifest.manifest_id == "python-benchmark-bytes-template-contract"
+    assert [workload.workload_id for workload in workloads] == [
+        "module-sub-template-numbered-conditional-contract-bytes",
+        "pattern-subn-template-named-conditional-contract-bytes",
+    ]
+
+    numbered_workload = workloads[0]
+    assert numbered_workload.text_model == "bytes"
+    assert numbered_workload.pattern_payload() == rb"a((b|c){2,})\2(?(2)d|e)"
+    assert numbered_workload.haystack_payload() == b"abbbd"
+    assert numbered_workload.replacement_payload() == b"\\1x"
+    assert workload_to_payload(numbered_workload)["replacement"] == "\\1x"
+
+    named_workload = workloads[1]
+    assert named_workload.text_model == "bytes"
+    assert named_workload.pattern_payload() == (
+        rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"
+    )
+    assert named_workload.haystack_payload() == b"zzacccdabcbccdzz"
+    assert named_workload.replacement_payload() == b"\\g<inner>x"
+    assert workload_to_payload(named_workload)["replacement"] == "\\g<inner>x"
 
 def test_standard_benchmark_manifest_replacement_payload_rejects_unsupported_text_model(
     tmp_path: pathlib.Path,

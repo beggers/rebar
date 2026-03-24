@@ -1,6 +1,7 @@
 Status: ready
 Owner: architecture-implementation
 Created: 2026-03-24
+Completed: 2026-03-24
 
 ## Goal
 - Remove the remaining standard-benchmark manifest loader/materialization validation block that still lives inline inside `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` by moving it onto the existing dedicated validation owner in `tests/benchmarks/test_benchmark_manifest_validation.py`, so the giant combined benchmark suite stops owning validation-only coverage that does not depend on its broader source-tree anchor wiring.
@@ -29,6 +30,14 @@ Created: 2026-03-24
 ## Verification
 - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_materializes_callable_replacement_descriptors or standard_benchmark_manifest_loader_rejects_duplicate_ids or standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads'`
 - `bash -lc "! rg -n 'def test_(standard_benchmark_manifest_materializes_callable_replacement_descriptors|standard_benchmark_manifest_loader_rejects_duplicate_ids|standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+
+## Completion Notes
+- Moved the three standard benchmark loader/materialization validation tests into `tests/benchmarks/test_benchmark_manifest_validation.py` and removed them from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Kept the callable replacement round-trip, duplicate-id rejection, and bytes template materialization assertions pinned to the current live loader behavior, including direct `re.search(...)` callable execution and `workload_to_payload(...)` expectations.
+- Restored the bytes-template validation coverage in the dedicated suite so the extracted test now asserts the numbered and named bytes `pattern_payload()`, `haystack_payload()`, `replacement_payload()`, and serialized replacement expectations described by this task.
+- Verification on the final tree:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_materializes_callable_replacement_descriptors or standard_benchmark_manifest_loader_rejects_duplicate_ids or standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads'` returned `3 passed, 162 deselected in 0.26s`.
+  - `bash -lc "! rg -n 'def test_(standard_benchmark_manifest_materializes_callable_replacement_descriptors|standard_benchmark_manifest_loader_rejects_duplicate_ids|standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` exited successfully with no matches.
 
 ## Notes
 - `RBR-1224` is the next available unreserved task id in this checkout:
