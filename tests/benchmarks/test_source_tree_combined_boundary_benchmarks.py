@@ -1450,6 +1450,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
                 "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
                 "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+                "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-bytes",
+                "module-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
+                "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-bytes",
+                "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
                 "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-bytes",
                 "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-bytes",
                 "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-purged-bytes",
@@ -3166,6 +3170,10 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
             "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
             "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-str",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-str",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
             "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-str",
             "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-str",
             "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-purged-str",
@@ -3233,6 +3241,10 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
             "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
             "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-bytes",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-bytes",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
             "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-bytes",
             "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-bytes",
             "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-purged-bytes",
@@ -4098,6 +4110,10 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS = (
     "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
     "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
     "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-str",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-str",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
     "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-str",
     "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-str",
     "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-purged-str",
@@ -4132,6 +4148,10 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = (
     "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
     "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
     "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-bytes",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-bytes",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
     "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-bytes",
     "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm-bytes",
     "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-purged-bytes",
@@ -5805,19 +5825,23 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             Counter(
                 {
                     ("module.sub", 0): 4,
+                    ("module.sub", None): 1,
                     ("module.sub", -1): 4,
                     ("module.subn", 1): 4,
+                    ("module.subn", None): 1,
                     ("module.subn", -1): 4,
                     ("pattern.sub", 0): 4,
+                    ("pattern.sub", None): 1,
                     ("pattern.sub", -1): 4,
                     ("pattern.subn", 1): 4,
+                    ("pattern.subn", None): 1,
                     ("pattern.subn", -1): 4,
                 }
             ),
         )
         self.assertEqual(
             Counter("exception" in workload.categories for workload in matched_rows),
-            Counter({False: 28, True: 4}),
+            Counter({False: 28, True: 8}),
         )
         for workload_id in expected_workload_ids:
             with self.subTest(workload_id=workload_id):
@@ -8314,6 +8338,16 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             text_model="bytes",
             required_categories=("negative-count", "no-match"),
         )
+        manifest_none_count_str_workload_ids = _selected_workload_ids(
+            str_rows,
+            text_model="str",
+            required_categories=("none-count",),
+        )
+        manifest_none_count_bytes_workload_ids = _selected_workload_ids(
+            bytes_rows,
+            text_model="bytes",
+            required_categories=("none-count",),
+        )
         manifest_plain_no_match_str_workload_ids = _selected_workload_ids(
             str_rows,
             text_model="str",
@@ -8345,6 +8379,16 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             workload_id
             for workload_id in representative_bytes_workload_ids
             if workload_id in manifest_negative_count_no_match_bytes_workload_ids
+        )
+        representative_none_count_str_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_str_workload_ids
+            if workload_id in manifest_none_count_str_workload_ids
+        )
+        representative_none_count_bytes_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_bytes_workload_ids
+            if workload_id in manifest_none_count_bytes_workload_ids
         )
         representative_plain_no_match_str_workload_ids = tuple(
             workload_id
@@ -8418,6 +8462,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(len(manifest_negative_count_str_workload_ids), 16)
         self.assertEqual(
+            len(manifest_none_count_str_workload_ids),
+            len(manifest_none_count_bytes_workload_ids),
+        )
+        self.assertEqual(len(manifest_none_count_str_workload_ids), 4)
+        self.assertEqual(
             len(manifest_negative_count_no_match_str_workload_ids),
             len(manifest_negative_count_no_match_bytes_workload_ids),
         )
@@ -8436,6 +8485,10 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             _mirrored_bytes_workload_ids(
                 manifest_negative_count_no_match_str_workload_ids
             ),
+        )
+        self.assertEqual(
+            manifest_none_count_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(manifest_none_count_str_workload_ids),
         )
         self.assertEqual(
             manifest_plain_no_match_bytes_workload_ids,
@@ -8458,6 +8511,14 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             _mirrored_bytes_workload_ids(
                 representative_negative_count_no_match_str_workload_ids
             ),
+        )
+        self.assertEqual(
+            representative_none_count_str_workload_ids,
+            manifest_none_count_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_none_count_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(representative_none_count_str_workload_ids),
         )
         self.assertEqual(
             representative_plain_no_match_str_workload_ids,

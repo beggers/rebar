@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'quantified_callable and promotes'` returned `2 passed, 106 deselected, 160 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'quantified_callable and scorecards'` returned `1 passed, 107 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-quantified-current.py` returned `280 measured workloads / 0 known gaps / 280 total workloads`.
+
+## Completion
+- Landed the exact eight quantified conditional callable `count=None` benchmark workloads on the shared conditional owner path: the four scoped `str` rows and the four mirrored `bytes` rows, all still using the existing `callable_match_group` helper pinned to group `1` or `"word"`.
+- Kept `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` aligned with the widened quantified slice by updating the workload-id tables, combined-slice expectations, representative bytes subset, quantified str counter buckets, and mixed-text scorecard sync checks for the new `none-count` quartet.
+- Republished the tracked combined benchmark scorecard in `reports/benchmarks/latest.py`; the tracked artifact now shows `conditional-group-exists-boundary` at `288` workloads / `288` measured / `0` known gaps, and the combined benchmark summary at `1219/1219` measured workloads across `30` manifests.
+- Verification in this run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'quantified_callable and promotes'` returned `2 passed, 106 deselected, 180 subtests passed`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'quantified_callable and scorecards'` returned `1 passed, 107 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1242-conditional-group-exists-boundary.py` returned `288 measured workloads / 0 known gaps / 288 total workloads`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` returned `1219 measured workloads / 0 known gaps / 1219 total workloads`.
