@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next bounded same-family slice has not been pinned yet.
+No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next adjacent slice after the newly pinned nested callable `bytes` present/absent benchmark catch-up is not yet pinned.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next bounded same-family slice has not been pinned yet.
+1. No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next adjacent slice after the newly pinned nested callable `bytes` present/absent benchmark catch-up is not yet pinned.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
