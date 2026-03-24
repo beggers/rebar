@@ -3755,6 +3755,21 @@ CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS = (
 )
 
 
+@cache
+def _conditional_group_exists_alternation_callable_bytes_workloads(
+) -> tuple[Workload, ...]:
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in load_manifest(
+            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
+        ).workloads
+    }
+    return tuple(
+        workloads_by_id[workload_id]
+        for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+    )
+
+
 def _split_workload_ids_by_text_model(
     workload_ids: tuple[str, ...],
 ) -> tuple[tuple[str, ...], tuple[str, ...]]:
@@ -5169,6 +5184,65 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertEqual(
                     run_benchmark_workload_with_cpython(round_tripped),
                     expected_result,
+                )
+
+    def test_conditional_group_exists_alternation_callable_bytes_workloads_round_trip_preserves_outcomes(
+        self,
+    ) -> None:
+        for source_workload in (
+            _conditional_group_exists_alternation_callable_bytes_workloads()
+        ):
+            with self.subTest(workload_id=source_workload.workload_id):
+                payload = workload_to_payload(source_workload)
+                round_tripped = workload_from_payload(payload)
+
+                self.assertEqual(payload["text_model"], "bytes")
+                self.assertEqual(round_tripped.text_model, "bytes")
+                self.assertEqual(
+                    payload["expected_exception"],
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.expected_exception,
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.pattern_payload(),
+                    source_workload.pattern_payload(),
+                )
+                self.assertEqual(
+                    round_tripped.haystack_payload(),
+                    source_workload.haystack_payload(),
+                )
+                self.assertEqual(
+                    _text_model_agnostic_callable_match_group_signature(
+                        round_tripped.replacement_payload()
+                    ),
+                    _text_model_agnostic_callable_match_group_signature(
+                        source_workload.replacement_payload()
+                    ),
+                )
+
+                if source_workload.expected_exception is None:
+                    assert_benchmark_workload_matches_expected_result(
+                        round_tripped,
+                        run_benchmark_workload_with_cpython(source_workload),
+                    )
+                    continue
+
+                expected_exception = source_workload.expected_exception
+                assert expected_exception is not None
+
+                with pytest.raises(
+                    TypeError,
+                    match=re.escape(expected_exception["message_substring"]),
+                ) as expected_error:
+                    run_benchmark_workload_with_cpython(source_workload)
+                with pytest.raises(TypeError) as observed_error:
+                    run_benchmark_workload_with_cpython(round_tripped)
+                self.assertEqual(
+                    str(observed_error.value),
+                    str(expected_error.value),
                 )
 
     def test_nested_group_alternation_manifest_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
