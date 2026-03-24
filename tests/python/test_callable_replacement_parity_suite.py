@@ -1663,6 +1663,46 @@ CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES = (
 )
 
 
+CONDITIONAL_GROUP_EXISTS_NESTED_GROUP_ACCESS_CASES = (
+    (r"a(b)?c(?(1)(?(1)d|e)|f)", 1, "sub", "zzabcdzz", 0),
+    (r"a(b)?c(?(1)(?(1)d|e)|f)", 1, "subn", "zzabcdzz", 1),
+    (
+        r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        "word",
+        "sub",
+        "zzabcdzz",
+        0,
+    ),
+    (
+        r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        "word",
+        "subn",
+        "zzabcdzz",
+        1,
+    ),
+)
+
+
+CONDITIONAL_GROUP_EXISTS_NESTED_ABSENT_EXCEPTION_CASES = (
+    (r"a(b)?c(?(1)(?(1)d|e)|f)", 1, "sub", "zzacfzz", 0),
+    (r"a(b)?c(?(1)(?(1)d|e)|f)", 1, "subn", "zzacfzz", 1),
+    (
+        r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        "word",
+        "sub",
+        "zzacfzz",
+        0,
+    ),
+    (
+        r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        "word",
+        "subn",
+        "zzacfzz",
+        1,
+    ),
+)
+
+
 def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
@@ -4056,6 +4096,80 @@ def test_conditional_group_exists_alternation_callable_replacement_group_access_
     ),
 )
 def test_conditional_group_exists_alternation_callable_replacement_absent_capture_typeerror_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: str,
+    group_ref: int | str,
+    helper: str,
+    string: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_callable_absent_capture_typeerror_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
+    CONDITIONAL_GROUP_EXISTS_NESTED_GROUP_ACCESS_CASES,
+    ids=(
+        "numbered-sub-present",
+        "numbered-subn-present",
+        "named-sub-present",
+        "named-subn-present",
+    ),
+)
+def test_conditional_group_exists_nested_callable_replacement_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: str,
+    group_ref: int | str,
+    helper: str,
+    string: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_callable_group_access_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
+    CONDITIONAL_GROUP_EXISTS_NESTED_ABSENT_EXCEPTION_CASES,
+    ids=(
+        "numbered-sub-absent",
+        "numbered-subn-absent",
+        "named-sub-absent",
+        "named-subn-absent",
+    ),
+)
+def test_conditional_group_exists_nested_callable_replacement_absent_capture_typeerror_matches_cpython(
     regex_backend: tuple[str, object],
     pattern: str,
     group_ref: int | str,

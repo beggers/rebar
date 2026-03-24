@@ -163,7 +163,8 @@ fn collect_capture_sensitive_template_matches_bytes(
     if pattern == EXACT_NUMBERED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN
         || pattern == EXACT_NAMED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN
     {
-        let outcome = core_conditional_group_exists_find_spans_bytes(pattern, flags, string, 0, None);
+        let outcome =
+            core_conditional_group_exists_find_spans_bytes(pattern, flags, string, 0, None);
         return Ok((outcome.status, outcome.matches));
     }
     if pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN
@@ -1118,6 +1119,35 @@ fn boundary_nested_broader_range_open_ended_quantified_group_alternation_branch_
 }
 
 #[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_conditional_group_exists_nested_finditer(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome =
+        core_conditional_group_exists_nested_find_spans_str(pattern, flags, string, pos, endpos);
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
 fn boundary_conditional_group_exists_finditer(
     pattern: &str,
     flags: i32,
@@ -1132,7 +1162,8 @@ fn boundary_conditional_group_exists_finditer(
     Vec<Vec<Option<(usize, usize)>>>,
 ) {
     let outcome = {
-        let outcome = core_conditional_group_exists_find_spans_str(pattern, flags, string, pos, endpos);
+        let outcome =
+            core_conditional_group_exists_find_spans_str(pattern, flags, string, pos, endpos);
         if outcome.status != MatchStatus::Unsupported {
             outcome
         } else {
@@ -1953,6 +1984,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?)?;
     module.add_function(wrap_pyfunction!(
         boundary_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_finditer_bytes,
+        module
+    )?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_conditional_group_exists_nested_finditer,
         module
     )?)?;
     module.add_function(wrap_pyfunction!(

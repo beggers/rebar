@@ -1,6 +1,6 @@
 # RBR-1177: Implement conditional group-exists nested callable parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -56,3 +56,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_alternation_callable_replacement_group_access_matches_cpython or conditional_group_exists_alternation_callable_replacement_absent_capture_typeerror_matches_cpython or conditional_group_exists_alternation_bytes_callable_replacement_group_access_matches_cpython or conditional_group_exists_alternation_bytes_callable_replacement_absent_capture_typeerror_matches_cpython'` returned `64 passed, 4186 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_mixed_text_feature_scorecards_mirror_representative_bytes_rows tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models` returned `2 passed, 51 subtests passed`; and
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` direct probes showed `rebar.sub(...)` / `rebar.compile(...).subn(...)` still raise scaffold `NotImplementedError` for both exact nested conditional spellings above while `re` already returns `zzbxzz` on the present paths and the expected `TypeError` on the absent-capture paths.
+
+## Completion
+- Added a dedicated nested-conditional callable `str` span bridge in `crates/rebar-cpython/src/lib.rs` and routed `python/rebar/__init__.py` callable replacement dispatch through it before the broader conditional callable bridge, keeping bytes behavior unchanged.
+- Added bounded direct parity coverage in `tests/python/test_callable_replacement_parity_suite.py` for numbered and named nested conditional callable `sub()`/`subn()` present and absent paths across module and compiled-pattern entrypoints.
+- Verification:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_nested_callable_replacement or conditional_group_exists_alternation_callable_replacement or conditional_group_exists_bytes_callable_replacement or conditional_group_exists_pattern_bytes_callable_replacement'` returned `104 passed, 4178 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_callable_scorecards_keep_negative_count_follow_on_workloads_in_sync or conditional_group_exists_callable_scorecards_include_alternation_heavy_rows'` returned `2 passed, 707 deselected, 16 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` republished the tracked combined scorecard; the tracked artifact still reports `1693` executed, `1693` passed, `0` failed, and `0` unimplemented cases, with only the generation timestamp changing in this run.
