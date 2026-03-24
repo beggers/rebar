@@ -24,7 +24,10 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     flatten_fixture_bundles,
+    fixture_bundle_manifest_pytest_id,
+    fixture_case_pytest_id,
     fixture_cases_by_id,
+    id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     requested_published_fixture_bundles,
@@ -534,7 +537,7 @@ def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> No
 @pytest.mark.parametrize(
     "case",
     GROUPED_SEGMENT_LEADING_CAPTURE_CASES,
-    ids=lambda case: case.case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_grouped_segment_leading_capture_groups_match_cpython(
     regex_backend: tuple[str, object],
@@ -574,7 +577,7 @@ def test_fixture_bundles_load_expected_published_owner_order() -> None:
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=lambda bundle: bundle.expected_manifest_id,
+    ids=fixture_bundle_manifest_pytest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
     assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
@@ -720,7 +723,7 @@ def test_grouped_capture_direct_test_buckets_cover_selected_frontier() -> None:
     )
 
 
-@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=id_attribute_pytest_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     case: CompileCase,
@@ -730,7 +733,7 @@ def test_compile_metadata_matches_cpython(
     compile_with_cpython_parity(backend_name, backend, case.pattern, case.flags)
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_pytest_id)
 def test_module_helper_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -751,7 +754,7 @@ def test_module_helper_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=id_attribute_pytest_id)
 def test_module_helper_misses_match_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalMissCase,
@@ -764,7 +767,7 @@ def test_module_helper_misses_match_cpython(
         assert _module_call_with_text(re, module_case, text) is None
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_pytest_id)
 def test_pattern_helper_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -791,7 +794,7 @@ def test_pattern_helper_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=id_attribute_pytest_id)
 def test_pattern_helper_bounds_matches_cpython(
     regex_backend: tuple[str, object],
     case: BoundedPatternCase,
@@ -815,7 +818,7 @@ def test_pattern_helper_bounds_matches_cpython(
     assert_invalid_match_group_access_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=fixture_case_pytest_id)
 def test_match_group_accessors_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -833,7 +836,7 @@ def test_match_group_accessors_match_cpython(
     assert_valid_match_group_access_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=fixture_case_pytest_id)
 def test_invalid_match_group_access_errors_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -851,7 +854,7 @@ def test_invalid_match_group_access_errors_match_cpython(
     assert_invalid_match_group_access_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=fixture_case_pytest_id)
 def test_match_metadata_apis_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -879,7 +882,7 @@ def test_match_metadata_apis_match_cpython(
 @pytest.mark.parametrize(
     "case",
     OPTIONAL_GROUP_ABSENT_EXPAND_CASES,
-    ids=lambda case: case.id,
+    ids=id_attribute_pytest_id,
 )
 def test_optional_group_absent_match_expand_preserves_whole_match_and_clears_group_reference(
     regex_backend: tuple[str, object],
@@ -903,7 +906,7 @@ def test_optional_group_absent_match_expand_preserves_whole_match_and_clears_gro
     assert observed_expansion == expected_expansion == case.expected_expansion
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_pytest_id)
 def test_module_helper_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -919,7 +922,7 @@ def test_module_helper_match_convenience_api_matches_cpython(
     assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_pytest_id)
 def test_pattern_helper_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -941,7 +944,7 @@ def test_pattern_helper_match_convenience_api_matches_cpython(
     assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=id_attribute_pytest_id)
 def test_pattern_helper_misses_match_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalMissCase,
@@ -960,7 +963,7 @@ def test_pattern_helper_misses_match_cpython(
         assert _pattern_call_with_text(expected_pattern, pattern_case, text) is None
 
 
-@pytest.mark.parametrize("case", PATTERN_BOUNDS_NO_MATCH_CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_NO_MATCH_CASES, ids=id_attribute_pytest_id)
 def test_pattern_helper_bounds_no_match_paths_match_cpython(
     regex_backend: tuple[str, object],
     case: BoundedPatternCase,
