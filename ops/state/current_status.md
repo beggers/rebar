@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1821 cases across 114 manifests, with all 1821 passing in the current slice; the benchmark publication covers 1163/1163 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- No exact post-drain feature follow-on is pinned yet on the shared conditional callable replacement owner path.
+- Conditional callable replacement work survives on the alternation-heavy `count=-1` correctness publication slice for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1821 cases across 114 manifests, with all 1821 pass
 The published correctness slice now covers 1821 cases across 114 manifests, all passing, and 1163 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- No exact post-drain feature follow-on is pinned yet on the shared conditional callable replacement owner path.
+- Conditional callable replacement work survives on the alternation-heavy `count=-1` correctness publication slice for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))`.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
