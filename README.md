@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1725 cases across 114 manifests, with all 1725 passing in the current slice; the benchmark publication covers 1083/1083 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
+| Delivery estimate | Published correctness covers 1729 cases across 114 manifests, with all 1729 passing in the current slice; the benchmark publication covers 1083/1083 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
 | Current milestone | No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice. |
-| Work queue | `0` ready, `0` in progress, `1199` done, `0` blocked |
+| Work queue | `0` ready, `0` in progress, `1201` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1725` |
-| Passing in published slice | `1725` |
+| Published cases | `1729` |
+| Passing in published slice | `1729` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1725 cases across 114 manifests, with all 1725 passing in the current slice; the benchmark publication covers 1083/1083 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1729 cases across 114 manifests, with all 1729 passing in the current slice; the benchmark publication covers 1083/1083 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
 
 ### Benchmark Snapshot
 
