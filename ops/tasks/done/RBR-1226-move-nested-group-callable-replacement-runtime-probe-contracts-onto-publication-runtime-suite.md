@@ -1,6 +1,6 @@
 # RBR-1226: Move nested-group callable replacement runtime-probe contracts onto publication-runtime suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -34,6 +34,7 @@ Created: 2026-03-24
 - `bash -lc "! rg -n 'def test_(nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads_round_trip_preserves_callback_results|run_internal_workload_probe_measures_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
 
 ## Notes
+- Completed 2026-03-24: moved the bounded nested-group callable-replacement bytes runtime helper and both probe/round-trip tests into `tests/benchmarks/test_benchmark_publication_runtime_contracts.py`, deleted the duplicate block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and kept the existing bytes-only slice selection, payload round-trip, and `run_internal_workload_probe(...)` assertions unchanged.
 - `RBR-1226` is the next available unreserved task id in this checkout:
   - `ops/tasks/ready/` currently contains only `RBR-1225`, and `ops/tasks/in_progress/` plus `ops/tasks/blocked/` are empty in this run; and
   - `rg -n "RBR-1226|RBR-1227|RBR-1228" ops/state/current_status.md ops/state/backlog.md ops/tasks -g '*.md'` matched only historical mentions inside completed task files and did not reveal a live reservation or sibling task at `RBR-1226`.

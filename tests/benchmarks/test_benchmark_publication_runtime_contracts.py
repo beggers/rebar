@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass
+from functools import cache
 import json
 import pathlib
 import re
@@ -15,6 +17,7 @@ from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     BenchmarkManifest,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
+    Workload,
     load_manifest,
     published_benchmark_manifests,
     run_internal_workload_probe,
@@ -23,7 +26,14 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.scorecard_io import ordered_published_subset_filenames
-from tests.benchmarks.benchmark_test_support import _write_test_manifest
+from tests.benchmarks.benchmark_test_support import (
+    _write_test_manifest,
+    live_manifest_workloads,
+)
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    assert_benchmark_workload_matches_expected_result,
+    run_benchmark_workload_with_cpython,
+)
 from tests.conftest import (
     REPO_ROOT,
     assert_declared_string_selector_registry_contract,
@@ -40,6 +50,40 @@ _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
 )
 _MISSING_MATURIN_PATTERN = "no `maturin` executable was found on PATH"
+_NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
+    BENCHMARK_WORKLOADS_ROOT / "nested_group_callable_replacement_boundary.py"
+)
+
+
+@dataclass(frozen=True, slots=True)
+class _SourceTreeCombinedSliceExpectation:
+    slice_id: str
+    expected_workload_ids: tuple[str, ...]
+
+
+def source_tree_combined_slice_expectations(
+    manifest_id: str,
+) -> tuple[_SourceTreeCombinedSliceExpectation, ...]:
+    if manifest_id != "nested-group-callable-replacement-boundary":
+        raise AssertionError(
+            f"unknown source-tree combined slice expectation manifest {manifest_id!r}"
+        )
+
+    return (
+        _SourceTreeCombinedSliceExpectation(
+            slice_id="quantified-branch-local-backreference",
+            expected_workload_ids=(
+                "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+                "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+                "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-str",
+                "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+                "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
+                "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
+                "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-bytes",
+                "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-bytes",
+            ),
+        ),
+    )
 
 
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
@@ -833,6 +877,84 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
         "status": "unavailable",
         "reason": "ValueError: unsupported benchmark operation 'module.escape'",
     }
+
+
+@cache
+def _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
+) -> tuple[Workload, ...]:
+    manifest_id = "nested-group-callable-replacement-boundary"
+    slice_expectation = next(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(manifest_id)
+        if expectation.slice_id == "quantified-branch-local-backreference"
+    )
+    return live_manifest_workloads(
+        _NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
+        tuple(
+            workload_id
+            for workload_id in slice_expectation.expected_workload_ids
+            if workload_id.endswith("-bytes")
+        ),
+    )
+
+
+_NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_BACKREFERENCE_BYTES_WORKLOAD_PARAMS = tuple(
+    pytest.param(workload, id=workload.workload_id)
+    for workload in (
+        _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads()
+    )
+)
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    _NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_BACKREFERENCE_BYTES_WORKLOAD_PARAMS,
+)
+def test_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads_round_trip_preserves_callback_results(
+    source_workload: Workload,
+) -> None:
+    payload = workload_to_payload(source_workload)
+    round_tripped = workload_from_payload(payload)
+
+    assert payload["text_model"] == "bytes"
+    assert round_tripped.text_model == "bytes"
+    assert round_tripped.pattern_payload() == source_workload.pattern_payload()
+    assert round_tripped.haystack_payload() == source_workload.haystack_payload()
+
+    assert_benchmark_workload_matches_expected_result(
+        round_tripped,
+        run_benchmark_workload_with_cpython(source_workload),
+    )
+
+
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+@pytest.mark.parametrize(
+    "source_workload",
+    _NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_BACKREFERENCE_BYTES_WORKLOAD_PARAMS,
+)
+def test_run_internal_workload_probe_measures_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    payload = workload_to_payload(source_workload)
+    round_tripped = workload_from_payload(payload)
+
+    assert round_tripped.text_model == "bytes"
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
 
 
 @pytest.mark.parametrize(
