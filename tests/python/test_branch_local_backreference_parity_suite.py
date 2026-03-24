@@ -24,6 +24,7 @@ from tests.python.fixture_parity_support import (
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
+    assert_generated_text_matrix_matches_cpython,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -45,7 +46,6 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
-    record_generated_match_failure,
     requested_published_fixture_bundles,
     SupplementalMissCase,
     str_case_pattern,
@@ -65,9 +65,7 @@ class GeneratedQuantifiedBranchLocalParitySpec:
     failure_prefix: str
 
 
-HELPERS = ("search", "match", "fullmatch")
 BODY_ATOMS = ("b", "c", "e")
-FAILURE_PREVIEW_LIMIT = 20
 STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
 
 
@@ -1226,37 +1224,13 @@ def test_generated_quantified_branch_local_text_matrix_matches_cpython(
         case.manifest_id,
         owner_label="generated branch-local",
     )
-    backend_name, backend = regex_backend
-    pattern = case_pattern(case)
-    observed_pattern, expected_pattern = compile_with_cpython_parity(
-        backend_name,
-        backend,
-        pattern,
-        case.flags or 0,
+    assert_generated_text_matrix_matches_cpython(
+        regex_backend,
+        case,
+        candidate_texts=_generated_branch_local_candidate_texts(spec, case),
+        pattern_extractor=case_pattern,
+        failure_prefix=spec.failure_prefix,
     )
-
-    failures: list[str] = []
-    for text in _generated_branch_local_candidate_texts(spec, case):
-        for helper in HELPERS:
-            record_generated_match_failure(
-                failures,
-                label=f"module.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
-                observed=getattr(backend, helper)(pattern, text),
-                expected=getattr(re, helper)(pattern, text),
-            )
-            record_generated_match_failure(
-                failures,
-                label=f"pattern.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
-                observed=getattr(observed_pattern, helper)(text),
-                expected=getattr(expected_pattern, helper)(text),
-            )
-
-    failure_preview = "\n".join(failures[:FAILURE_PREVIEW_LIMIT])
-    if len(failures) > FAILURE_PREVIEW_LIMIT:
-        failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
-    assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
 
 
 @pytest.mark.parametrize("case", WORKFLOW_CASES, ids=fixture_case_pytest_id)

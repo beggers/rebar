@@ -1982,6 +1982,57 @@ def record_generated_match_failure(
         failures.append(f"{label}: {exc}")
 
 
+_GENERATED_MATRIX_HELPERS = ("search", "match", "fullmatch")
+_GENERATED_FAILURE_PREVIEW_LIMIT = 20
+
+
+def _generated_failure_preview(failures: list[str]) -> str:
+    preview = "\n".join(failures[:_GENERATED_FAILURE_PREVIEW_LIMIT])
+    if len(failures) > _GENERATED_FAILURE_PREVIEW_LIMIT:
+        preview += (
+            f"\n... {len(failures) - _GENERATED_FAILURE_PREVIEW_LIMIT} more"
+        )
+    return preview
+
+
+def assert_generated_text_matrix_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+    *,
+    candidate_texts: Iterable[str | bytes],
+    pattern_extractor: Callable[[FixtureCase], str | bytes],
+    failure_prefix: str,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = pattern_extractor(case)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        case.flags or 0,
+    )
+
+    failures: list[str] = []
+    for text in candidate_texts:
+        for helper in _GENERATED_MATRIX_HELPERS:
+            record_generated_match_failure(
+                failures,
+                label=f"module.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(backend, helper)(pattern, text),
+                expected=getattr(re, helper)(pattern, text),
+            )
+            record_generated_match_failure(
+                failures,
+                label=f"pattern.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(observed_pattern, helper)(text),
+                expected=getattr(expected_pattern, helper)(text),
+            )
+
+    assert not failures, f"{failure_prefix}:\n{_generated_failure_preview(failures)}"
+
+
 def assert_placeholder_message_contains(
     error: BaseException,
     expected_fragment: str,

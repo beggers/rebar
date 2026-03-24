@@ -14,6 +14,7 @@ from tests.python.fixture_parity_support import (
     CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
     WRAPPER_PAIRS,
+    assert_generated_text_matrix_matches_cpython,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -31,7 +32,6 @@ from tests.python.fixture_parity_support import (
     id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
-    record_generated_match_failure,
     requested_published_fixture_bundles,
     SupplementalMissCase,
     str_case_pattern,
@@ -64,9 +64,6 @@ class GeneratedFullyEmptyAlternationParitySpec:
     candidate_texts: tuple[str, ...]
     failure_prefix: str
 
-
-HELPERS = ("search", "match", "fullmatch")
-FAILURE_PREVIEW_LIMIT = 20
 
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
 QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
@@ -834,39 +831,15 @@ def test_generated_quantified_conditional_text_matrix_matches_cpython(
         case.manifest_id,
         owner_label="generated quantified conditional",
     )
-    backend_name, backend = regex_backend
-    pattern = str_case_pattern(case)
-    observed_pattern, expected_pattern = compile_with_cpython_parity(
-        backend_name,
-        backend,
-        pattern,
-        case.flags or 0,
+    assert_generated_text_matrix_matches_cpython(
+        regex_backend,
+        case,
+        candidate_texts=GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+            spec.bundle.expected_manifest_id
+        ],
+        pattern_extractor=str_case_pattern,
+        failure_prefix=spec.failure_prefix,
     )
-
-    failures: list[str] = []
-    for text in GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
-        spec.bundle.expected_manifest_id
-    ]:
-        for helper in HELPERS:
-            record_generated_match_failure(
-                failures,
-                label=f"module.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
-                observed=getattr(backend, helper)(pattern, text),
-                expected=getattr(re, helper)(pattern, text),
-            )
-            record_generated_match_failure(
-                failures,
-                label=f"pattern.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
-                observed=getattr(observed_pattern, helper)(text),
-                expected=getattr(expected_pattern, helper)(text),
-            )
-
-    failure_preview = "\n".join(failures[:FAILURE_PREVIEW_LIMIT])
-    if len(failures) > FAILURE_PREVIEW_LIMIT:
-        failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
-    assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
 
 
 @pytest.mark.parametrize(
@@ -881,39 +854,12 @@ def test_generated_fully_empty_alternation_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    backend_name, backend = regex_backend
-    pattern = str_case_pattern(case)
-    observed_pattern, expected_pattern = compile_with_cpython_parity(
-        backend_name,
-        backend,
-        pattern,
-        case.flags or 0,
-    )
-
-    failures: list[str] = []
-    for text in GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.candidate_texts:
-        for helper in HELPERS:
-            record_generated_match_failure(
-                failures,
-                label=f"module.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
-                observed=getattr(backend, helper)(pattern, text),
-                expected=getattr(re, helper)(pattern, text),
-            )
-            record_generated_match_failure(
-                failures,
-                label=f"pattern.{helper}({pattern!r}, {text!r})",
-                backend_name=backend_name,
-                observed=getattr(observed_pattern, helper)(text),
-                expected=getattr(expected_pattern, helper)(text),
-            )
-
-    failure_preview = "\n".join(failures[:FAILURE_PREVIEW_LIMIT])
-    if len(failures) > FAILURE_PREVIEW_LIMIT:
-        failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
-    assert not failures, (
-        f"{GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.failure_prefix}:\n"
-        f"{failure_preview}"
+    assert_generated_text_matrix_matches_cpython(
+        regex_backend,
+        case,
+        candidate_texts=GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.candidate_texts,
+        pattern_extractor=str_case_pattern,
+        failure_prefix=GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.failure_prefix,
     )
 
 

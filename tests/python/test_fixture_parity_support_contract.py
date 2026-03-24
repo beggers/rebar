@@ -6923,6 +6923,339 @@ def test_record_generated_match_failure_appends_labelled_first_helper_failure(
     assert calls == list(expected_calls)
 
 
+class _GeneratedMatrixBackendContract:
+    def __init__(self, label: str) -> None:
+        self.label = label
+
+    def search(self, pattern: str | bytes, text: str | bytes) -> str:
+        return f"{self.label}.search({pattern!r}, {text!r})"
+
+    def match(self, pattern: str | bytes, text: str | bytes) -> str:
+        return f"{self.label}.match({pattern!r}, {text!r})"
+
+    def fullmatch(self, pattern: str | bytes, text: str | bytes) -> str:
+        return f"{self.label}.fullmatch({pattern!r}, {text!r})"
+
+
+class _GeneratedMatrixPatternContract:
+    def __init__(self, label: str) -> None:
+        self.label = label
+
+    def search(self, text: str | bytes) -> str:
+        return f"{self.label}.search({text!r})"
+
+    def match(self, text: str | bytes) -> str:
+        return f"{self.label}.match({text!r})"
+
+    def fullmatch(self, text: str | bytes) -> str:
+        return f"{self.label}.fullmatch({text!r})"
+
+
+def _generated_matrix_case_contract(
+    pattern: str | bytes,
+    *,
+    flags: int = 0,
+) -> SimpleNamespace:
+    return SimpleNamespace(
+        pattern=pattern,
+        args=(),
+        flags=flags,
+        pattern_payload=lambda: pattern,
+    )
+
+
+def test_assert_generated_text_matrix_matches_cpython_executes_module_and_pattern_matrix(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    compile_calls: list[tuple[str, str, int]] = []
+    recorded_calls: list[tuple[str, str, object, object]] = []
+    regex_backend = ("stdlib", _GeneratedMatrixBackendContract("backend"))
+    observed_pattern = _GeneratedMatrixPatternContract("observed-pattern")
+    expected_pattern = _GeneratedMatrixPatternContract("expected-pattern")
+    case = _generated_matrix_case_contract(r"a(b|c){1,2}d", flags=4)
+    candidate_texts = ("zzabdzz", "zzacdzz")
+
+    def _compile(
+        backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+        *,
+        check_cache_identity: bool = True,
+    ) -> tuple[object, object]:
+        assert backend_name == "stdlib"
+        assert backend is regex_backend[1]
+        assert check_cache_identity is True
+        compile_calls.append((backend_name, pattern, flags))
+        return observed_pattern, expected_pattern
+
+    def _record(
+        failures: list[str],
+        *,
+        label: str,
+        backend_name: str,
+        observed: object,
+        expected: object,
+    ) -> None:
+        assert failures == []
+        recorded_calls.append((label, backend_name, observed, expected))
+
+    monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
+    monkeypatch.setattr(fixture_parity_support, "record_generated_match_failure", _record)
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "search",
+        lambda pattern, text: f"cpython.search({pattern!r}, {text!r})",
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "match",
+        lambda pattern, text: f"cpython.match({pattern!r}, {text!r})",
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "fullmatch",
+        lambda pattern, text: f"cpython.fullmatch({pattern!r}, {text!r})",
+    )
+
+    fixture_parity_support.assert_generated_text_matrix_matches_cpython(
+        regex_backend,
+        case,
+        candidate_texts=candidate_texts,
+        pattern_extractor=str_case_pattern,
+        failure_prefix="generated matrix drifted",
+    )
+
+    assert compile_calls == [("stdlib", r"a(b|c){1,2}d", 4)]
+    assert recorded_calls == [
+        (
+            "module.search('a(b|c){1,2}d', 'zzabdzz')",
+            "stdlib",
+            "backend.search('a(b|c){1,2}d', 'zzabdzz')",
+            "cpython.search('a(b|c){1,2}d', 'zzabdzz')",
+        ),
+        (
+            "pattern.search('a(b|c){1,2}d', 'zzabdzz')",
+            "stdlib",
+            "observed-pattern.search('zzabdzz')",
+            "expected-pattern.search('zzabdzz')",
+        ),
+        (
+            "module.match('a(b|c){1,2}d', 'zzabdzz')",
+            "stdlib",
+            "backend.match('a(b|c){1,2}d', 'zzabdzz')",
+            "cpython.match('a(b|c){1,2}d', 'zzabdzz')",
+        ),
+        (
+            "pattern.match('a(b|c){1,2}d', 'zzabdzz')",
+            "stdlib",
+            "observed-pattern.match('zzabdzz')",
+            "expected-pattern.match('zzabdzz')",
+        ),
+        (
+            "module.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
+            "stdlib",
+            "backend.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
+            "cpython.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
+        ),
+        (
+            "pattern.fullmatch('a(b|c){1,2}d', 'zzabdzz')",
+            "stdlib",
+            "observed-pattern.fullmatch('zzabdzz')",
+            "expected-pattern.fullmatch('zzabdzz')",
+        ),
+        (
+            "module.search('a(b|c){1,2}d', 'zzacdzz')",
+            "stdlib",
+            "backend.search('a(b|c){1,2}d', 'zzacdzz')",
+            "cpython.search('a(b|c){1,2}d', 'zzacdzz')",
+        ),
+        (
+            "pattern.search('a(b|c){1,2}d', 'zzacdzz')",
+            "stdlib",
+            "observed-pattern.search('zzacdzz')",
+            "expected-pattern.search('zzacdzz')",
+        ),
+        (
+            "module.match('a(b|c){1,2}d', 'zzacdzz')",
+            "stdlib",
+            "backend.match('a(b|c){1,2}d', 'zzacdzz')",
+            "cpython.match('a(b|c){1,2}d', 'zzacdzz')",
+        ),
+        (
+            "pattern.match('a(b|c){1,2}d', 'zzacdzz')",
+            "stdlib",
+            "observed-pattern.match('zzacdzz')",
+            "expected-pattern.match('zzacdzz')",
+        ),
+        (
+            "module.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
+            "stdlib",
+            "backend.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
+            "cpython.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
+        ),
+        (
+            "pattern.fullmatch('a(b|c){1,2}d', 'zzacdzz')",
+            "stdlib",
+            "observed-pattern.fullmatch('zzacdzz')",
+            "expected-pattern.fullmatch('zzacdzz')",
+        ),
+    ]
+
+
+def test_assert_generated_text_matrix_matches_cpython_truncates_failure_preview(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    regex_backend = ("stdlib", _GeneratedMatrixBackendContract("backend"))
+    case = _generated_matrix_case_contract(r"a(b)?c(?(1)d|e){2}")
+    candidate_texts = tuple(f"text-{index}" for index in range(4))
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "compile_with_cpython_parity",
+        lambda *args, **kwargs: (
+            _GeneratedMatrixPatternContract("observed-pattern"),
+            _GeneratedMatrixPatternContract("expected-pattern"),
+        ),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "record_generated_match_failure",
+        lambda failures, **kwargs: failures.append(kwargs["label"]),
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "search",
+        lambda pattern, text: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "match",
+        lambda pattern, text: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "fullmatch",
+        lambda pattern, text: None,
+    )
+
+    with pytest.raises(AssertionError) as exc_info:
+        fixture_parity_support.assert_generated_text_matrix_matches_cpython(
+            regex_backend,
+            case,
+            candidate_texts=candidate_texts,
+            pattern_extractor=str_case_pattern,
+            failure_prefix="generated preview drifted",
+        )
+
+    assert str(exc_info.value) == (
+        "generated preview drifted:\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-0')\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-0')\n"
+        "module.match('a(b)?c(?(1)d|e){2}', 'text-0')\n"
+        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-0')\n"
+        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0')\n"
+        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-0')\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-1')\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-1')\n"
+        "module.match('a(b)?c(?(1)d|e){2}', 'text-1')\n"
+        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-1')\n"
+        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-1')\n"
+        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-1')\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-2')\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-2')\n"
+        "module.match('a(b)?c(?(1)d|e){2}', 'text-2')\n"
+        "pattern.match('a(b)?c(?(1)d|e){2}', 'text-2')\n"
+        "module.fullmatch('a(b)?c(?(1)d|e){2}', 'text-2')\n"
+        "pattern.fullmatch('a(b)?c(?(1)d|e){2}', 'text-2')\n"
+        "module.search('a(b)?c(?(1)d|e){2}', 'text-3')\n"
+        "pattern.search('a(b)?c(?(1)d|e){2}', 'text-3')\n"
+        "... 4 more"
+    )
+
+
+@pytest.mark.parametrize(
+    ("pattern_extractor", "case", "candidate_texts", "expected_pattern", "expected_flags"),
+    (
+        pytest.param(
+            case_pattern,
+            _generated_matrix_case_contract(rb"a((b|c)+)\2d", flags=1),
+            (b"abbd",),
+            rb"a((b|c)+)\2d",
+            1,
+            id="case-pattern-bytes",
+        ),
+        pytest.param(
+            str_case_pattern,
+            _generated_matrix_case_contract(r"a(b)?c(?(1)|(?:|))", flags=2),
+            ("abc",),
+            r"a(b)?c(?(1)|(?:|))",
+            2,
+            id="str-case-pattern-str",
+        ),
+    ),
+)
+def test_assert_generated_text_matrix_matches_cpython_accepts_current_pattern_extractors(
+    monkeypatch: pytest.MonkeyPatch,
+    pattern_extractor: Callable[[FixtureCase], str | bytes],
+    case: FixtureCase,
+    candidate_texts: tuple[str | bytes, ...],
+    expected_pattern: str | bytes,
+    expected_flags: int,
+) -> None:
+    regex_backend = ("stdlib", _GeneratedMatrixBackendContract("backend"))
+    compile_calls: list[tuple[str | bytes, int]] = []
+
+    def _compile(
+        backend_name: str,
+        backend: object,
+        pattern: str | bytes,
+        flags: int = 0,
+        *,
+        check_cache_identity: bool = True,
+    ) -> tuple[object, object]:
+        assert backend_name == "stdlib"
+        assert backend is regex_backend[1]
+        assert check_cache_identity is True
+        compile_calls.append((pattern, flags))
+        return (
+            _GeneratedMatrixPatternContract("observed-pattern"),
+            _GeneratedMatrixPatternContract("expected-pattern"),
+        )
+
+    monkeypatch.setattr(fixture_parity_support, "compile_with_cpython_parity", _compile)
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "record_generated_match_failure",
+        lambda failures, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "search",
+        lambda pattern, text: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "match",
+        lambda pattern, text: None,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support.re,
+        "fullmatch",
+        lambda pattern, text: None,
+    )
+
+    fixture_parity_support.assert_generated_text_matrix_matches_cpython(
+        regex_backend,
+        case,
+        candidate_texts=candidate_texts,
+        pattern_extractor=pattern_extractor,
+        failure_prefix="generated extractor drifted",
+    )
+
+    assert compile_calls == [(expected_pattern, expected_flags)]
+
+
 @pytest.mark.parametrize(
     ("template", "use_compiled_pattern"),
     (
