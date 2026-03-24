@@ -1165,6 +1165,26 @@ SUPPLEMENTAL_NEGATIVE_COUNT_CASES = (
         expected_result="abcdaceabcd",
     ),
     SupplementalReplacementCase(
+        id="module-named-conditional-template-negative-count",
+        use_compiled_pattern=False,
+        helper="subn",
+        pattern=r"a(?P<word>b)?c(?(word)d|e)",
+        replacement=r"\g<word>x",
+        string="abcdaceabcd",
+        count=-1,
+        expected_result=("abcdaceabcd", 0),
+    ),
+    SupplementalReplacementCase(
+        id="pattern-numbered-conditional-template-negative-count",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=r"a(b)?c(?(1)d|e)",
+        replacement=r"\1x",
+        string="abcdaceabcd",
+        count=-1,
+        expected_result="abcdaceabcd",
+    ),
+    SupplementalReplacementCase(
         id="pattern-named-conditional-template-negative-count",
         use_compiled_pattern=True,
         helper="subn",
@@ -2599,6 +2619,88 @@ def test_conditional_replacement_template_negative_count_bytes_cases_keep_exact_
             rb"\g<word>x",
             b"abcdaceabcd",
             (b"abcdaceabcd", 0),
+        ),
+    }
+
+
+def test_conditional_replacement_template_negative_count_str_cases_keep_exact_frontier_explicit(
+) -> None:
+    expected_case_ids = (
+        "module-conditional-template-negative-count",
+        "module-named-conditional-template-negative-count",
+        "pattern-numbered-conditional-template-negative-count",
+        "pattern-named-conditional-template-negative-count",
+    )
+    str_cases = tuple(
+        case
+        for case in SUPPLEMENTAL_NEGATIVE_COUNT_CASES
+        if "conditional-template-negative-count" in case.id
+    )
+
+    assert tuple(case.id for case in str_cases) == expected_case_ids
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        {
+            "module-sub": frozenset({"module-conditional-template-negative-count"}),
+            "module-subn": frozenset(
+                {"module-named-conditional-template-negative-count"}
+            ),
+            "pattern-sub": frozenset(
+                {"pattern-numbered-conditional-template-negative-count"}
+            ),
+            "pattern-subn": frozenset(
+                {"pattern-named-conditional-template-negative-count"}
+            ),
+        },
+        selected_case_ids=expected_case_ids,
+        coverage_label="conditional replacement negative-count str case-id buckets",
+    )
+    assert {
+        case.id: (
+            case.use_compiled_pattern,
+            case.helper,
+            case.count,
+            case.pattern,
+            case.replacement,
+            case.string,
+            case.expected_result,
+        )
+        for case in str_cases
+    } == {
+        "module-conditional-template-negative-count": (
+            False,
+            "sub",
+            -1,
+            r"a(b)?c(?(1)d|e)",
+            r"\1x",
+            "abcdaceabcd",
+            "abcdaceabcd",
+        ),
+        "module-named-conditional-template-negative-count": (
+            False,
+            "subn",
+            -1,
+            r"a(?P<word>b)?c(?(word)d|e)",
+            r"\g<word>x",
+            "abcdaceabcd",
+            ("abcdaceabcd", 0),
+        ),
+        "pattern-numbered-conditional-template-negative-count": (
+            True,
+            "sub",
+            -1,
+            r"a(b)?c(?(1)d|e)",
+            r"\1x",
+            "abcdaceabcd",
+            "abcdaceabcd",
+        ),
+        "pattern-named-conditional-template-negative-count": (
+            True,
+            "subn",
+            -1,
+            r"a(?P<word>b)?c(?(word)d|e)",
+            r"\g<word>x",
+            "abcdaceabcd",
+            ("abcdaceabcd", 0),
         ),
     }
 

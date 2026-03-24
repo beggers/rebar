@@ -1,6 +1,6 @@
 # RBR-1151: Implement conditional group-exists template str negative-count parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -50,3 +50,10 @@ Created: 2026-03-24
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'negative_replacement_counts_short_circuit_like_cpython and conditional-template-negative-count'` returned `4 passed, 1506 deselected` under collection and `2 passed, 1508 deselected` per exact case-id filter in this run; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional_replacement_template_publication_keeps_mixed_text_frontier_explicit'` returned `1 passed, 1509 deselected` in this run.
+
+## Completion
+- Closed by expanding `tests/python/test_fixture_backed_replacement_parity_suite.py` to cover the full four-row `str count=-1` conditional replacement-template owner path: numbered and named, plus module and compiled-pattern entrypoints.
+- The bounded Rust-backed behavior was already present on this branch; no correctness publication or benchmark artifacts changed in this run.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'negative_replacement_counts_short_circuit_like_cpython and conditional-template-negative-count'` -> `8 passed, 1507 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional_replacement_template_publication_keeps_mixed_text_frontier_explicit or conditional_replacement_template_negative_count_str_cases_keep_exact_frontier_explicit'` -> `2 passed, 1513 deselected`
