@@ -1,6 +1,6 @@
 # RBR-1193: Implement conditional group-exists quantified callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -52,3 +52,12 @@ Created: 2026-03-24
   - `cargo build -p rebar-cpython` finished successfully;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and module'` returned `56 passed, 4719 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and pattern'` returned `64 passed, 4711 deselected`.
+
+## Completion
+- Landed bounded quantified conditional callable `bytes` parity on the native owner path by adding compile acceptance plus callable span discovery for `rb"a(b)?c(?(1)d|e){2}"` and `rb"a(?P<word>b)?c(?(word)d|e){2}"` in `/home/ubuntu/rebar/crates/rebar-core/src/lib.rs`, then routing the bytes conditional bridge through `/home/ubuntu/rebar/crates/rebar-cpython/src/lib.rs`.
+- Extended `/home/ubuntu/rebar/python/rebar/__init__.py` to allow the exact quantified bytes pair through the existing native callable passthrough set.
+- Added direct module and compiled-pattern bytes `sub()`/`subn()` parity coverage in `/home/ubuntu/rebar/tests/python/test_callable_replacement_parity_suite.py` for present-path replacement results and absent-capture `TypeError` parity on the quantified conditional slice.
+- Verification in this run:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and module'` -> `72 passed, 4735 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and pattern'` -> `80 passed, 4727 deselected`

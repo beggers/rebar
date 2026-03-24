@@ -2062,6 +2062,46 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_ABSENT_EXCEPTION_CASES = (
 )
 
 
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_GROUP_ACCESS_CASES = (
+    (rb"a(b)?c(?(1)d|e){2}", 1, "sub", b"zzabcddzz", 0),
+    (rb"a(b)?c(?(1)d|e){2}", 1, "subn", b"zzabcddzz", 1),
+    (
+        rb"a(?P<word>b)?c(?(word)d|e){2}",
+        "word",
+        "sub",
+        b"zzabcddzz",
+        0,
+    ),
+    (
+        rb"a(?P<word>b)?c(?(word)d|e){2}",
+        "word",
+        "subn",
+        b"zzabcddzz",
+        1,
+    ),
+)
+
+
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_ABSENT_EXCEPTION_CASES = (
+    (rb"a(b)?c(?(1)d|e){2}", 1, "sub", b"zzaceezz", 0),
+    (rb"a(b)?c(?(1)d|e){2}", 1, "subn", b"zzaceezz", 1),
+    (
+        rb"a(?P<word>b)?c(?(word)d|e){2}",
+        "word",
+        "sub",
+        b"zzaceezz",
+        0,
+    ),
+    (
+        rb"a(?P<word>b)?c(?(word)d|e){2}",
+        "word",
+        "subn",
+        b"zzaceezz",
+        1,
+    ),
+)
+
+
 CONDITIONAL_GROUP_EXISTS_NESTED_NEGATIVE_COUNT_CASES = (
     (r"a(b)?c(?(1)(?(1)d|e)|f)", "sub", "zzabcdzz"),
     (r"a(b)?c(?(1)(?(1)d|e)|f)", "subn", "zzacfzz"),
@@ -5029,6 +5069,80 @@ def test_conditional_group_exists_quantified_callable_replacement_absent_capture
 ) -> None:
     backend_name, backend = regex_backend
     _assert_conditional_group_exists_alternation_callable_absent_capture_typeerror_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
+    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_GROUP_ACCESS_CASES,
+    ids=(
+        "numbered-sub-present",
+        "numbered-subn-present",
+        "named-sub-present",
+        "named-subn-present",
+    ),
+)
+def test_conditional_group_exists_quantified_bytes_callable_replacement_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+    helper: str,
+    string: bytes,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_bytes_callable_group_access_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
+    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_ABSENT_EXCEPTION_CASES,
+    ids=(
+        "numbered-sub-absent",
+        "numbered-subn-absent",
+        "named-sub-absent",
+        "named-subn-absent",
+    ),
+)
+def test_conditional_group_exists_quantified_bytes_callable_replacement_absent_capture_typeerror_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+    helper: str,
+    string: bytes,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_bytes_callable_absent_capture_typeerror_parity(
         backend_name=backend_name,
         backend=backend,
         pattern=pattern,

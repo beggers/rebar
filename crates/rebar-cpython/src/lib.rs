@@ -16,6 +16,7 @@ use rebar_core::{
     conditional_group_exists_nested_find_spans_str as core_conditional_group_exists_nested_find_spans_str,
     conditional_group_exists_no_else_find_spans_str as core_conditional_group_exists_no_else_find_spans_str,
     conditional_group_exists_quantified_alternation_find_spans_str as core_conditional_group_exists_quantified_alternation_find_spans_str,
+    conditional_group_exists_quantified_find_spans_bytes as core_conditional_group_exists_quantified_find_spans_bytes,
     conditional_group_exists_quantified_find_spans_str as core_conditional_group_exists_quantified_find_spans_str,
     escape_bytes as core_escape_bytes, escape_str as core_escape_str,
     expand_literal_replacement_template_bytes as core_expand_literal_replacement_template_bytes,
@@ -1251,13 +1252,24 @@ fn boundary_conditional_group_exists_finditer_bytes(
             if outcome.status != MatchStatus::Unsupported {
                 outcome
             } else {
-                core_conditional_group_exists_alternation_find_spans_bytes(
+                let outcome = core_conditional_group_exists_quantified_find_spans_bytes(
                     pattern.as_bytes(),
                     flags,
                     string.as_bytes(),
                     pos,
                     endpos,
-                )
+                );
+                if outcome.status != MatchStatus::Unsupported {
+                    outcome
+                } else {
+                    core_conditional_group_exists_alternation_find_spans_bytes(
+                        pattern.as_bytes(),
+                        flags,
+                        string.as_bytes(),
+                        pos,
+                        endpos,
+                    )
+                }
             }
         }
     };
