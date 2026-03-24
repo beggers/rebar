@@ -1,8 +1,9 @@
 # RBR-1220: Move module-pattern keyword materialization contracts onto dedicated suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
+Completed: 2026-03-24
 
 ## Goal
 - Remove the remaining generic module/pattern keyword normalization and callback-time materialization contract block that still lives inline inside `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` by moving it onto the existing keyword owner in `tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py`, so the giant combined benchmark suite stops owning another generic keyword-contract surface.
@@ -34,6 +35,12 @@ Created: 2026-03-24
 ## Verification
 - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'benchmark_keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows or benchmark_keyword_kwargs_normalization_does_not_expand_expected_exception_passthrough or pattern_helper_keyword_kwargs_materialize_at_callback_time or pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_endpos_rows or module_helper_workflow_keyword_flags_materialize_at_callback_time'`
 - `bash -lc "! rg -n 'def test_(benchmark_keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows|benchmark_keyword_kwargs_normalization_does_not_expand_expected_exception_passthrough|pattern_helper_keyword_kwargs_materialize_at_callback_time|pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_endpos_rows|module_helper_workflow_keyword_flags_materialize_at_callback_time)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+
+## Completion Notes
+- Moved the five keyword normalization and callback-time materialization contract tests into `tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` and removed them from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, keeping the assertion surface and shared helper usage unchanged.
+- Verification on the final tree:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'benchmark_keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows or benchmark_keyword_kwargs_normalization_does_not_expand_expected_exception_passthrough or pattern_helper_keyword_kwargs_materialize_at_callback_time or pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_endpos_rows or module_helper_workflow_keyword_flags_materialize_at_callback_time'` returned `17 passed, 145 deselected in 0.32s`.
+  - `bash -lc "! rg -n 'def test_(benchmark_keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows|benchmark_keyword_kwargs_normalization_does_not_expand_expected_exception_passthrough|pattern_helper_keyword_kwargs_materialize_at_callback_time|pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_endpos_rows|module_helper_workflow_keyword_flags_materialize_at_callback_time)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` exited successfully with no matches.
 
 ## Notes
 - `RBR-1220` is the next available unreserved task id in this checkout:

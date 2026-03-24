@@ -3,16 +3,22 @@ from __future__ import annotations
 import pathlib
 import re
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 
+from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
+    build_callable,
     load_manifest,
     workload_from_payload,
     workload_to_payload,
 )
-from tests.benchmarks.benchmark_test_support import synthetic_workload
-from tests.benchmarks.benchmark_test_support import _write_test_manifest
+from tests.benchmarks.benchmark_test_support import (
+    _record_numeric_materialization_fields,
+    _write_test_manifest,
+    synthetic_workload,
+)
 from tests.benchmarks import (
     module_pattern_keyword_benchmark_anchor_support as support,
 )
@@ -586,6 +592,627 @@ def test_standard_benchmark_keyword_kwargs_validation_matches_manifest_and_paylo
                 "smoke": False,
             }
         )
+
+
+@pytest.mark.parametrize(
+    ("operation", "kwargs_payload", "expected_kwargs"),
+    (
+        pytest.param(
+            "module.subn",
+            {
+                "missing": 1,
+                "count": {"type": "indexlike", "value": 2},
+            },
+            {
+                "count": {"type": "indexlike", "value": 2},
+                "missing": 1,
+            },
+            id="module-subn-unexpected-keyword-passthrough",
+        ),
+        pytest.param(
+            "pattern.split",
+            {
+                "missing": {"type": "indexlike", "value": 1},
+                "maxsplit": False,
+            },
+            {
+                "maxsplit": False,
+                "missing": {"type": "indexlike", "value": 1},
+            },
+            id="pattern-split-unexpected-keyword-passthrough",
+        ),
+    ),
+)
+def test_benchmark_keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows(
+    operation: str,
+    kwargs_payload: dict[str, object],
+    expected_kwargs: dict[str, object],
+) -> None:
+    assert benchmarks.normalize_keyword_workload_arguments(
+        kwargs_payload,
+        operation=operation,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "unexpected keyword argument 'missing'",
+        },
+    ) == expected_kwargs
+
+
+@pytest.mark.parametrize(
+    ("operation", "kwargs_payload", "error_pattern"),
+    (
+        pytest.param(
+            "pattern.search",
+            {"missing": 1},
+            re.escape(
+                "benchmark workload kwargs for pattern.search only supports the "
+                "`endpos` and `pos` keys; got unsupported keys ['missing']"
+            ),
+            id="pattern-search-still-rejects-unexpected-keyword",
+        ),
+        pytest.param(
+            "module.compile",
+            {"missing": 1},
+            re.escape(
+                "benchmark workload kwargs are only supported for pattern.search, "
+                "pattern.match, pattern.fullmatch, pattern.findall, "
+                "pattern.finditer, pattern.split, pattern.sub, pattern.subn, "
+                "module.search, module.match, module.fullmatch, module.split, "
+                "module.sub, and module.subn"
+            ),
+            id="module-compile-still-rejects-generic-kwargs",
+        ),
+    ),
+)
+def test_benchmark_keyword_kwargs_normalization_does_not_expand_expected_exception_passthrough(
+    operation: str,
+    kwargs_payload: dict[str, object],
+    error_pattern: str,
+) -> None:
+    with pytest.raises(ValueError, match=error_pattern):
+        benchmarks.normalize_keyword_workload_arguments(
+            kwargs_payload,
+            operation=operation,
+            expected_exception={
+                "type": "TypeError",
+                "message_substring": "unexpected keyword argument 'missing'",
+            },
+        )
+
+
+@pytest.mark.parametrize(
+    (
+        "workload_payload",
+        "expected_field_names",
+        "expected_index_calls",
+        "expected_result",
+    ),
+    (
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-findall-window-keyword-contract-str",
+                "bucket": "pattern-findall",
+                "family": "module",
+                "operation": "pattern.findall",
+                "pattern": "abc",
+                "haystack": "zabcabcz",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": 1,
+                    "endpos": 7,
+                },
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [],
+            ["abc", "abc"],
+            id="pattern-findall-window-keyword-str",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-findall-window-indexlike-keyword-contract-str",
+                "bucket": "pattern-findall",
+                "family": "module",
+                "operation": "pattern.findall",
+                "pattern": "abc",
+                "haystack": "zabcabcabcz",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": {"type": "indexlike", "value": 1},
+                    "endpos": {"type": "indexlike", "value": 7},
+                },
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [("kwargs.pos", 1), ("kwargs.endpos", 7)],
+            re.compile("abc").findall("zabcabcabcz", pos=1, endpos=7),
+            id="pattern-findall-window-indexlike-keyword-str",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-fullmatch-window-indexlike-keyword-contract-bytes",
+                "bucket": "pattern-fullmatch",
+                "family": "module",
+                "operation": "pattern.fullmatch",
+                "pattern": "abc",
+                "haystack": "zabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": {"type": "indexlike", "value": 1},
+                    "endpos": {"type": "indexlike", "value": 4},
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [("kwargs.pos", 1), ("kwargs.endpos", 4)],
+            re.compile(b"abc").fullmatch(b"zabc", pos=1, endpos=4),
+            id="pattern-fullmatch-window-indexlike-keyword-bytes",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-finditer-window-keyword-contract-bytes",
+                "bucket": "pattern-finditer",
+                "family": "module",
+                "operation": "pattern.finditer",
+                "pattern": "abc",
+                "haystack": "zabcabcz",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": 1,
+                    "endpos": 7,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [],
+            list(re.compile(b"abc").finditer(b"zabcabcz", pos=1, endpos=7)),
+            id="pattern-finditer-window-keyword-bytes",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-finditer-window-indexlike-keyword-contract-bytes",
+                "bucket": "pattern-finditer",
+                "family": "module",
+                "operation": "pattern.finditer",
+                "pattern": "abc",
+                "haystack": "zabcabcabcz",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": {"type": "indexlike", "value": 1},
+                    "endpos": {"type": "indexlike", "value": 7},
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [("kwargs.pos", 1), ("kwargs.endpos", 7)],
+            list(re.compile(b"abc").finditer(b"zabcabcabcz", pos=1, endpos=7)),
+            id="pattern-finditer-window-indexlike-keyword-bytes",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-finditer-bool-window-keyword-contract-bytes",
+                "bucket": "pattern-finditer",
+                "family": "module",
+                "operation": "pattern.finditer",
+                "pattern": "abc",
+                "haystack": "zabcabcz",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": True,
+                    "endpos": 7,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            ["kwargs.endpos", "kwargs.pos"],
+            [],
+            list(re.compile(b"abc").finditer(b"zabcabcz", pos=True, endpos=7)),
+            id="pattern-finditer-bool-window-keyword-bytes",
+        ),
+    ),
+)
+def test_pattern_helper_keyword_kwargs_materialize_at_callback_time(
+    monkeypatch,
+    workload_payload,
+    expected_field_names,
+    expected_index_calls,
+    expected_result,
+) -> None:
+    workload = workload_from_payload(workload_payload)
+    observed_field_names: list[str] = []
+    index_calls: list[tuple[str, int]] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    class _RecordingIndexLike:
+        def __init__(self, field_name: str, value: int) -> None:
+            self.field_name = field_name
+            self.value = value
+
+        def __index__(self) -> int:
+            index_calls.append((self.field_name, self.value))
+            return self.value
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        normalized = benchmarks.normalize_numeric_workload_argument(
+            value,
+            field_name=field_name,
+        )
+        if isinstance(normalized, dict) and normalized.get("type") == "indexlike":
+            return _RecordingIndexLike(field_name, int(normalized["value"]))
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        observed_result = callback()
+
+        assert observed_field_names == expected_field_names
+        assert index_calls == expected_index_calls
+        if workload.operation == "pattern.finditer":
+            assert len(observed_result) == len(expected_result) == 2
+            for observed_match, expected_match in zip(
+                observed_result,
+                expected_result,
+                strict=True,
+            ):
+                assert_match_result_parity(
+                    "stdlib",
+                    observed_match,
+                    expected_match,
+                    check_regs=True,
+                )
+        elif workload.operation == "pattern.findall":
+            assert observed_result == expected_result
+        else:
+            assert_match_result_parity(
+                "stdlib",
+                observed_result,
+                expected_result,
+                check_regs=True,
+            )
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    ("workload_payload", "expected_match", "expected_field_names", "expected_index_calls"),
+    (
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-search-bool-endpos-keyword-contract-str",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "z",
+                "haystack": "zabcabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {"endpos": True},
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            re.compile("z").search("zabcabc", endpos=True),
+            ["kwargs.endpos"],
+            [],
+            id="pattern-search-bool-endpos-keyword-str",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-search-endpos-keyword-contract-bytes",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {"endpos": 4},
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            re.compile(b"abc").search(b"zabcabc", endpos=4),
+            ["kwargs.endpos"],
+            [],
+            id="pattern-search-endpos-keyword-bytes",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-search-pos-indexlike-keyword-contract-str",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "pos": {"type": "indexlike", "value": 2},
+                },
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            re.compile("abc").search("zabcabc", pos=2),
+            ["kwargs.pos"],
+            [2],
+            id="pattern-search-pos-indexlike-keyword-str",
+        ),
+        pytest.param(
+            {
+                "manifest_id": "python-benchmark-pattern-keyword-window-contract",
+                "workload_id": "pattern-search-endpos-indexlike-keyword-contract-bytes",
+                "bucket": "pattern-search",
+                "family": "module",
+                "operation": "pattern.search",
+                "pattern": "abc",
+                "haystack": "zabcabc",
+                "flags": 0,
+                "count": 0,
+                "maxsplit": 0,
+                "kwargs": {
+                    "endpos": {"type": "indexlike", "value": 4},
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 1,
+                "notes": [],
+                "categories": [],
+                "syntax_features": [],
+                "smoke": False,
+            },
+            re.compile(b"abc").search(b"zabcabc", endpos=4),
+            ["kwargs.endpos"],
+            [4],
+            id="pattern-search-endpos-indexlike-bytes",
+        ),
+    ),
+)
+def test_pattern_helper_keyword_kwargs_materialize_at_callback_time_for_search_endpos_rows(
+    monkeypatch,
+    workload_payload,
+    expected_match,
+    expected_field_names,
+    expected_index_calls,
+) -> None:
+    workload = workload_from_payload(workload_payload)
+    observed_field_names: list[str] = []
+    index_calls: list[int] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    class _RecordingIndexLike:
+        def __init__(self, value: int) -> None:
+            self.value = value
+
+        def __index__(self) -> int:
+            index_calls.append(self.value)
+            return self.value
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        normalized = benchmarks.normalize_numeric_workload_argument(
+            value,
+            field_name=field_name,
+        )
+        if isinstance(normalized, dict) and normalized.get("type") == "indexlike":
+            return _RecordingIndexLike(int(normalized["value"]))
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        observed_match = callback()
+
+        assert observed_field_names == expected_field_names
+        assert index_calls == expected_index_calls
+        assert_match_result_parity(
+            "stdlib",
+            observed_match,
+            expected_match,
+            check_regs=True,
+        )
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    ("operation", "haystack", "text_model"),
+    (
+        pytest.param(
+            "module.search",
+            "zAbc",
+            "str",
+            id="module-search-flags-keyword",
+        ),
+        pytest.param(
+            "module.match",
+            "Abc",
+            "bytes",
+            id="module-match-flags-keyword",
+        ),
+        pytest.param(
+            "module.fullmatch",
+            "Abc",
+            "str",
+            id="module-fullmatch-flags-keyword",
+        ),
+    ),
+)
+def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
+    monkeypatch,
+    operation: str,
+    haystack: str,
+    text_model: str,
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-module-workflow-keyword-flags-contract",
+            "workload_id": f"{operation}-keyword-flags-materialization-contract",
+            "bucket": operation.replace("module.", "module-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "flags": 0,
+            "count": 0,
+            "maxsplit": 0,
+            "kwargs": {"flags": 2},
+            "text_model": text_model,
+            "cache_mode": "purged",
+            "timing_scope": "module-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+
+    helper_name = operation.removeprefix("module.")
+    expected_result = getattr(re, helper_name)(
+        workload.pattern_payload(),
+        workload.haystack_payload(),
+        flags=re.IGNORECASE,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        observed_result = callback()
+
+        assert observed_field_names == ["kwargs.flags"]
+        assert_match_result_parity(
+            "stdlib",
+            observed_result,
+            expected_result,
+            check_regs=True,
+        )
+    finally:
+        re.purge()
 
 
 def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation(
