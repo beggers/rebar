@@ -1165,6 +1165,46 @@ SUPPLEMENTAL_NEGATIVE_COUNT_CASES = (
         expected_result=("abcdaceabcd", 0),
     ),
     SupplementalReplacementCase(
+        id="module-numbered-conditional-bytes-template-negative-count",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=rb"a(b)?c(?(1)d|e)",
+        replacement=rb"\1x",
+        string=b"abcdaceabcd",
+        count=-1,
+        expected_result=b"abcdaceabcd",
+    ),
+    SupplementalReplacementCase(
+        id="module-named-conditional-bytes-template-negative-count",
+        use_compiled_pattern=False,
+        helper="subn",
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        replacement=rb"\g<word>x",
+        string=b"abcdaceabcd",
+        count=-1,
+        expected_result=(b"abcdaceabcd", 0),
+    ),
+    SupplementalReplacementCase(
+        id="pattern-numbered-conditional-bytes-template-negative-count",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=rb"a(b)?c(?(1)d|e)",
+        replacement=rb"\1x",
+        string=b"abcdaceabcd",
+        count=-1,
+        expected_result=b"abcdaceabcd",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-named-conditional-bytes-template-negative-count",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        replacement=rb"\g<word>x",
+        string=b"abcdaceabcd",
+        count=-1,
+        expected_result=(b"abcdaceabcd", 0),
+    ),
+    SupplementalReplacementCase(
         id="module-numbered-bytes-template-negative-count",
         use_compiled_pattern=False,
         helper="sub",
@@ -2456,6 +2496,90 @@ def test_conditional_replacement_supplemental_bytes_cases_keep_exact_frontier_ex
             rb"\g<word>x",
             b"zzacezz",
             (b"zzxzz", 1),
+        ),
+    }
+
+
+def test_conditional_replacement_template_negative_count_bytes_cases_keep_exact_frontier_explicit(
+) -> None:
+    expected_case_ids = (
+        "module-numbered-conditional-bytes-template-negative-count",
+        "module-named-conditional-bytes-template-negative-count",
+        "pattern-numbered-conditional-bytes-template-negative-count",
+        "pattern-named-conditional-bytes-template-negative-count",
+    )
+    bytes_cases = tuple(
+        case
+        for case in SUPPLEMENTAL_NEGATIVE_COUNT_CASES
+        if "conditional-bytes" in case.id
+    )
+
+    assert tuple(case.id for case in bytes_cases) == expected_case_ids
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        {
+            "module-sub": frozenset(
+                {"module-numbered-conditional-bytes-template-negative-count"}
+            ),
+            "module-subn": frozenset(
+                {"module-named-conditional-bytes-template-negative-count"}
+            ),
+            "pattern-sub": frozenset(
+                {"pattern-numbered-conditional-bytes-template-negative-count"}
+            ),
+            "pattern-subn": frozenset(
+                {"pattern-named-conditional-bytes-template-negative-count"}
+            ),
+        },
+        selected_case_ids=expected_case_ids,
+        coverage_label="conditional replacement negative-count bytes case-id buckets",
+    )
+    assert {
+        case.id: (
+            case.use_compiled_pattern,
+            case.helper,
+            case.count,
+            case.pattern,
+            case.replacement,
+            case.string,
+            case.expected_result,
+        )
+        for case in bytes_cases
+    } == {
+        "module-numbered-conditional-bytes-template-negative-count": (
+            False,
+            "sub",
+            -1,
+            rb"a(b)?c(?(1)d|e)",
+            rb"\1x",
+            b"abcdaceabcd",
+            b"abcdaceabcd",
+        ),
+        "module-named-conditional-bytes-template-negative-count": (
+            False,
+            "subn",
+            -1,
+            rb"a(?P<word>b)?c(?(word)d|e)",
+            rb"\g<word>x",
+            b"abcdaceabcd",
+            (b"abcdaceabcd", 0),
+        ),
+        "pattern-numbered-conditional-bytes-template-negative-count": (
+            True,
+            "sub",
+            -1,
+            rb"a(b)?c(?(1)d|e)",
+            rb"\1x",
+            b"abcdaceabcd",
+            b"abcdaceabcd",
+        ),
+        "pattern-named-conditional-bytes-template-negative-count": (
+            True,
+            "subn",
+            -1,
+            rb"a(?P<word>b)?c(?(word)d|e)",
+            rb"\g<word>x",
+            b"abcdaceabcd",
+            (b"abcdaceabcd", 0),
         ),
     }
 
