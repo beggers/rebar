@@ -39,17 +39,6 @@ def _collection_replacement_keyword_parameter_name(
     return None
 
 
-def _collection_replacement_parameter_payload(
-    workload: Any,
-) -> object | None:
-    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
-    if keyword_parameter == "maxsplit":
-        return workload.maxsplit
-    if keyword_parameter == "count":
-        return workload.count
-    return None
-
-
 def _collection_replacement_has_expected_unexpected_keyword_error(
     workload: Any,
 ) -> bool:
@@ -136,12 +125,17 @@ def _collection_replacement_positional_indexlike_workload_signature(
 
 
 def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> bool:
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if keyword_parameter == "maxsplit":
+        parameter_payload = workload.maxsplit
+    elif keyword_parameter == "count":
+        parameter_payload = workload.count
+    else:
+        parameter_payload = None
     return (
         not workload.kwargs
         and workload.expected_exception is None
-        and _is_encoded_indexlike_payload(
-            _collection_replacement_parameter_payload(workload)
-        )
+        and _is_encoded_indexlike_payload(parameter_payload)
     )
 
 

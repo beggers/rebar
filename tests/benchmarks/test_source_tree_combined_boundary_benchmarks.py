@@ -49,7 +49,6 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_keyword_parameter_name,
     _collection_replacement_keyword_workload_args,
     _collection_replacement_keyword_workload_signature,
-    _collection_replacement_parameter_payload,
     _collection_replacement_positional_indexlike_workload_args,
     _collection_replacement_positional_indexlike_workload_signature,
     _collection_replacement_positional_keyword_field,
