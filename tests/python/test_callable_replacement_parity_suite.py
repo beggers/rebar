@@ -3508,6 +3508,34 @@ def test_conditional_group_exists_quantified_direct_case_tables_stay_aligned_wit
         and case.text_model == "str"
         and "absent" in case.categories
     }
+    bytes_module_present_rows = {
+        normalized_case_row(case)
+        for case in quantified_cases
+        if case.operation == "module_call"
+        and case.text_model == "bytes"
+        and "present" in case.categories
+    }
+    bytes_pattern_present_rows = {
+        normalized_case_row(case)
+        for case in quantified_cases
+        if case.operation == "pattern_call"
+        and case.text_model == "bytes"
+        and "present" in case.categories
+    }
+    bytes_module_absent_rows = {
+        normalized_case_row(case)
+        for case in quantified_cases
+        if case.operation == "module_call"
+        and case.text_model == "bytes"
+        and "absent" in case.categories
+    }
+    bytes_pattern_absent_rows = {
+        normalized_case_row(case)
+        for case in quantified_cases
+        if case.operation == "pattern_call"
+        and case.text_model == "bytes"
+        and "absent" in case.categories
+    }
     expected_present_rows = {
         row for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_GROUP_ACCESS_CASES if row[2] == "sub"
     }
@@ -3516,21 +3544,40 @@ def test_conditional_group_exists_quantified_direct_case_tables_stay_aligned_wit
         for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_ABSENT_EXCEPTION_CASES
         if row[2] == "subn"
     }
+    expected_bytes_present_rows = {
+        row
+        for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_GROUP_ACCESS_CASES
+        if row[2] == "sub"
+    }
+    expected_bytes_absent_rows = {
+        row
+        for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_ABSENT_EXCEPTION_CASES
+        if row[2] == "subn"
+    }
 
-    assert len(quantified_cases) == 8
-    assert {case.text_model for case in quantified_cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in quantified_cases) == Counter(
+    assert len(quantified_cases) == 16
+    assert Counter(
+        (case.text_model, case.operation, case.helper) for case in quantified_cases
+    ) == Counter(
         {
-            ("module_call", "sub"): 2,
-            ("module_call", "subn"): 2,
-            ("pattern_call", "sub"): 2,
-            ("pattern_call", "subn"): 2,
+            ("str", "module_call", "sub"): 2,
+            ("str", "module_call", "subn"): 2,
+            ("str", "pattern_call", "sub"): 2,
+            ("str", "pattern_call", "subn"): 2,
+            ("bytes", "module_call", "sub"): 2,
+            ("bytes", "module_call", "subn"): 2,
+            ("bytes", "pattern_call", "sub"): 2,
+            ("bytes", "pattern_call", "subn"): 2,
         }
     )
     assert module_present_rows == expected_present_rows
     assert pattern_present_rows == expected_present_rows
     assert module_absent_rows == expected_absent_rows
     assert pattern_absent_rows == expected_absent_rows
+    assert bytes_module_present_rows == expected_bytes_present_rows
+    assert bytes_pattern_present_rows == expected_bytes_present_rows
+    assert bytes_module_absent_rows == expected_bytes_absent_rows
+    assert bytes_pattern_absent_rows == expected_bytes_absent_rows
 
 
 def test_conditional_group_exists_quantified_bytes_direct_case_tables_mirror_str_tables(
@@ -3550,7 +3597,9 @@ def test_conditional_group_exists_quantified_near_miss_cases_stay_on_published_s
     manifest_id = "conditional-group-exists-callable-replacement-workflows"
     bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
     quantified_patterns = frozenset(
-        case_pattern(case) for case in bundle.cases if "quantified" in case.categories
+        case_pattern(case)
+        for case in bundle.cases
+        if "quantified" in case.categories and case.text_model == "str"
     )
     near_miss_patterns = frozenset(
         case.pattern for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES
