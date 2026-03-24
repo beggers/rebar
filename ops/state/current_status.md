@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1837 cases across 114 manifests, with all 1837 passing in the current slice; the benchmark publication covers 1195/1195 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The surviving post-drain frontier is the alternation-heavy conditional callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface.
+- No ready feature follow-on currently survives on the conditional callable replacement owner path once the bounded alternation-heavy callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface lands.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1837 cases across 114 manifests, with all 1837 pass
 The published correctness slice now covers 1837 cases across 114 manifests, all passing, and 1195 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- The surviving post-drain frontier is the alternation-heavy conditional callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface.
+- No ready feature follow-on currently survives on the conditional callable replacement owner path once the bounded alternation-heavy callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface lands.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.

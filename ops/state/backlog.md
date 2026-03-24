@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The surviving post-drain frontier on the conditional callable replacement owner path is the adjacent alternation-heavy callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface.
+No ready feature follow-on currently survives on the conditional callable replacement owner path once the bounded alternation-heavy callable `count=None` benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py` lands.
 
 ## Ordered Work
-1. Keep the post-drain frontier pinned to the alternation-heavy conditional callable `count=None` benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py`, immediately behind the newly queued correctness publication on the same owner route.
+1. Keep the queue focused on the bounded alternation-heavy conditional callable `count=None` benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py`; no adjacent feature-implementation follow-on is pinned yet beyond that slice.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
