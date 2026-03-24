@@ -38,16 +38,12 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
 )
 
 
-def _contract_cases():
-    return support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
-
-
-def _contract_case(case_id: str):
-    return next(case for case in _contract_cases() if case.case_id == case_id)
-
-
 def test_compiled_pattern_module_compile_success_payload_round_trip_on_live_workload() -> None:
-    contract_case = _contract_case("success")
+    contract_case = next(
+        case
+        for case in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == "success"
+    )
     source_workload = contract_case.source_workloads()[0]
     workload = _source_tree_contract_workload(
         source_workload,
@@ -68,7 +64,11 @@ def test_compiled_pattern_module_compile_success_payload_round_trip_on_live_work
 
 
 def test_compiled_pattern_module_compile_keyword_payload_round_trip_preserves_keyword_type() -> None:
-    contract_case = _contract_case("bool-false")
+    contract_case = next(
+        case
+        for case in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == "bool-false"
+    )
     source_workload = contract_case.source_workloads()[0]
     workload = _source_tree_contract_workload(
         source_workload,
@@ -94,14 +94,22 @@ def test_compiled_pattern_module_compile_keyword_payload_round_trip_preserves_ke
 
 
 def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_keyword_lanes() -> None:
-    success_case = _contract_case("success")
+    success_case = next(
+        case
+        for case in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == "success"
+    )
     success_source_workload = success_case.source_workloads()[0]
     success_workload = _source_tree_contract_workload(
         success_source_workload,
         spec=success_case.contract_builder_spec(),
     )
 
-    keyword_case = _contract_case("bool-false")
+    keyword_case = next(
+        case
+        for case in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == "bool-false"
+    )
     keyword_source_workload = keyword_case.source_workloads()[0]
     keyword_workload = _source_tree_contract_workload(
         keyword_source_workload,
@@ -118,7 +126,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 
 
 def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to_live_rows() -> None:
-    contract_cases = _contract_cases()
+    contract_cases = support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
     anchor_lanes = support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
 
     success_case = next(case for case in contract_cases if case.case_id == "success")
