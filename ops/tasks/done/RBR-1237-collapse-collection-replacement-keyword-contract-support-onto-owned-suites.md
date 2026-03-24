@@ -1,6 +1,6 @@
 ## RBR-1237: Collapse collection-replacement keyword contract support onto owned suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -65,3 +65,11 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` passed with `193 passed`.
   - `bash -lc "! test -e tests/benchmarks/collection_replacement_keyword_contract_benchmark_support.py"` currently fails because the broker module still exists, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved `_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(...)` onto `tests/benchmarks/benchmark_test_support.py` and added focused success/error-path coverage in `tests/benchmarks/test_benchmark_test_support.py`.
+- Rehomed the collection-replacement-only workload builders, selectors, source-workload tuples, and probe helper into `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`, preserving the existing source-workload ordering and probe behavior.
+- Updated `tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` to import only the shared callback helper from the shared benchmark support surface and deleted `tests/benchmarks/collection_replacement_keyword_contract_benchmark_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` -> `195 passed`
+  - `bash -lc "! test -e tests/benchmarks/collection_replacement_keyword_contract_benchmark_support.py"`

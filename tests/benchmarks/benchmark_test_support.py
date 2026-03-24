@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import cache
 import pathlib
+import re
 import textwrap
 from typing import Any
 
@@ -319,3 +320,32 @@ def _record_numeric_materialization_fields(
         record_numeric_materialization,
     )
     return observed_field_names
+
+
+def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    monkeypatch: pytest.MonkeyPatch,
+    workload: Workload,
+    *,
+    expected_result: object | None,
+    expected_exception_message: str | None = None,
+    expected_field_names: list[str] | tuple[str, ...],
+) -> None:
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+
+    re.purge()
+    try:
+        callback = benchmarks.build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        if expected_exception_message is None:
+            assert callback() == expected_result
+            assert callback() == expected_result
+        else:
+            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
+                callback()
+            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
+                callback()
+
+        assert observed_field_names == list(expected_field_names) * 2
+    finally:
+        re.purge()

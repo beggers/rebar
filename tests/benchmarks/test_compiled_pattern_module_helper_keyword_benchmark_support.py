@@ -16,11 +16,9 @@ from tests.benchmarks import (
     compiled_pattern_module_helper_keyword_benchmark_support as support,
 )
 from tests.benchmarks.benchmark_test_support import (
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _record_numeric_materialization_fields,
     _write_test_manifest,
-)
-from tests.benchmarks.collection_replacement_keyword_contract_benchmark_support import (
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
 )
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,

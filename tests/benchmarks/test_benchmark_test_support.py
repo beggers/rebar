@@ -12,6 +12,7 @@ from tests.benchmarks.benchmark_anchor_support_test_helpers import (
     anchor_support_cache_guard,
 )
 from tests.benchmarks.benchmark_test_support import (
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
     is_compile_proxy_workload,
@@ -74,6 +75,55 @@ def test_record_numeric_materialization_fields_collects_names_and_preserves_retu
     assert type(observed_value) is type(expected_value)
     assert repr(observed_value) == repr(expected_value)
     assert observed_value.value == expected_value.value
+
+
+def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call_success_path(
+    monkeypatch,
+) -> None:
+    workload = synthetic_workload(
+        manifest_id="collection-replacement-benchmark-support",
+        workload_id="pattern-sub-count-indexlike-keyword-contract",
+        operation="pattern.sub",
+        pattern="abc",
+        haystack="abcabcabc",
+        replacement="x",
+        kwargs={"count": {"type": "indexlike", "value": 2}},
+        timing_scope="pattern-helper-call",
+    )
+
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result="xxabc",
+        expected_field_names=("kwargs.count",),
+    )
+
+
+def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call_type_error_path(
+    monkeypatch,
+) -> None:
+    workload = synthetic_workload(
+        manifest_id="collection-replacement-benchmark-support",
+        workload_id="pattern-split-duplicate-maxsplit-keyword-contract",
+        operation="pattern.split",
+        pattern="abc",
+        haystack="abcabc",
+        maxsplit=1,
+        kwargs={"maxsplit": {"type": "indexlike", "value": 1}},
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "split() takes at most 2 arguments (3 given)",
+        },
+        timing_scope="pattern-helper-call",
+    )
+
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result=None,
+        expected_exception_message="split() takes at most 2 arguments (3 given)",
+        expected_field_names=("maxsplit", "kwargs.maxsplit"),
+    )
 
 
 def test_manifest_workloads_resolve_and_cache_manifest_loads(
