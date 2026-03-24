@@ -3,77 +3,21 @@ from __future__ import annotations
 from functools import partial
 import pathlib
 from types import SimpleNamespace
-from typing import Any
 
 import pytest
 
+from tests.benchmarks.benchmark_anchor_support_test_helpers import (
+    _single_manifest_tuple,
+    _synthetic_case,
+    _synthetic_manifest,
+    _synthetic_manifest_loader,
+    _synthetic_workload,
+    _synthetic_workload_is_included,
+    _synthetic_workload_signature,
+    anchor_support_cache_guard,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import records_by_string_id
-
-
-@pytest.fixture
-def anchor_support_cache_guard() -> None:
-    for cached_function in (
-        support._manifest_workloads,
-        support.published_case_ids_by_signature,
-        support.published_cases_by_id,
-    ):
-        cache_clear = getattr(cached_function, "cache_clear", None)
-        if cache_clear is not None:
-            cache_clear()
-    yield
-    for cached_function in (
-        support._manifest_workloads,
-        support.published_case_ids_by_signature,
-        support.published_cases_by_id,
-    ):
-        cache_clear = getattr(cached_function, "cache_clear", None)
-        if cache_clear is not None:
-            cache_clear()
-
-
-def _synthetic_manifest(
-    *,
-    cases: tuple[object, ...] = (),
-    workloads: tuple[object, ...] = (),
-) -> SimpleNamespace:
-    return SimpleNamespace(cases=list(cases), workloads=list(workloads))
-
-
-def _synthetic_case(
-    case_id: str,
-    signature: tuple[object, ...] | None,
-) -> SimpleNamespace:
-    return SimpleNamespace(case_id=case_id, signature=signature)
-
-
-def _synthetic_workload(
-    workload_id: str,
-    signature: tuple[object, ...],
-    *,
-    include: bool = True,
-) -> SimpleNamespace:
-    return SimpleNamespace(workload_id=workload_id, signature=signature, include=include)
-
-
-def _synthetic_manifest_loader(
-    _: pathlib.Path,
-    *,
-    workloads: tuple[object, ...],
-) -> SimpleNamespace:
-    return _synthetic_manifest(workloads=workloads)
-
-
-def _single_manifest_tuple(manifest: Any) -> tuple[Any, ...]:
-    return (manifest,)
-
-
-def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
-    return workload.signature
-
-
-def _synthetic_workload_is_included(workload: Any) -> bool:
-    return workload.include
 
 
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:

@@ -1,6 +1,6 @@
 ## RBR-1154: Collapse duplicated benchmark anchor test scaffolding onto shared helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -47,3 +47,8 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py` returned `16 passed` in this run, so the current support-contract slice is already isolated and green;
   - `rg -n '^def (anchor_support_cache_guard|_synthetic_case|_synthetic_workload|_synthetic_manifest_loader|_synthetic_workload_signature|_synthetic_case_signature|_synthetic_workload_is_included)\(' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py` currently shows the same cache-reset and synthetic-helper family defined in both files; and
   - `wc -l tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py` reports `452` and `221` lines respectively in this run, so the duplicated scaffolding is still large enough to justify one bounded extraction.
+
+## Completion
+- Added `tests/benchmarks/benchmark_anchor_support_test_helpers.py` as the shared test-only home for the duplicated cache-reset fixture and synthetic benchmark-anchor builders used by both support suites.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_standard_benchmark_anchor_support.py` to import the shared helper surface while keeping source-tree-specific and standard-definition assertions local to their existing files.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py`, which returned `16 passed` in this run.

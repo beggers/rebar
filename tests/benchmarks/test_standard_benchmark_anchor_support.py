@@ -4,35 +4,22 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
 import pathlib
-from types import SimpleNamespace
 from typing import Any
 
 import pytest
 
+from tests.benchmarks.benchmark_anchor_support_test_helpers import (
+    _synthetic_case,
+    _synthetic_case_signature,
+    _synthetic_manifest_loader,
+    _synthetic_workload,
+    _synthetic_workload_is_included,
+    _synthetic_workload_signature,
+    anchor_support_cache_guard,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import standard_benchmark_anchor_support as support
 from tests.conftest import records_by_string_id
-
-
-@pytest.fixture
-def anchor_support_cache_guard() -> None:
-    for cached_function in (
-        anchor_support._manifest_workloads,
-        anchor_support.published_case_ids_by_signature,
-        anchor_support.published_cases_by_id,
-    ):
-        cache_clear = getattr(cached_function, "cache_clear", None)
-        if cache_clear is not None:
-            cache_clear()
-    yield
-    for cached_function in (
-        anchor_support._manifest_workloads,
-        anchor_support.published_case_ids_by_signature,
-        anchor_support.published_cases_by_id,
-    ):
-        cache_clear = getattr(cached_function, "cache_clear", None)
-        if cache_clear is not None:
-            cache_clear()
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,42 +38,6 @@ class _SyntheticStandardBenchmarkDefinition:
             workload.workload_id not in self.expected_special_unanchored_workload_ids
             and self.include_workload(workload)
         )
-
-
-def _synthetic_case(
-    case_id: str,
-    signature: tuple[Any, ...] | None,
-) -> SimpleNamespace:
-    return SimpleNamespace(case_id=case_id, signature=signature)
-
-
-def _synthetic_workload(
-    workload_id: str,
-    signature: tuple[Any, ...],
-    *,
-    include: bool = True,
-) -> SimpleNamespace:
-    return SimpleNamespace(workload_id=workload_id, signature=signature, include=include)
-
-
-def _synthetic_manifest_loader(
-    _: pathlib.Path,
-    *,
-    workloads: tuple[Any, ...],
-) -> SimpleNamespace:
-    return SimpleNamespace(workloads=list(workloads))
-
-
-def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
-    return workload.signature
-
-
-def _synthetic_case_signature(case: Any) -> tuple[Any, ...] | None:
-    return case.signature
-
-
-def _synthetic_workload_is_included(workload: Any) -> bool:
-    return workload.include
 
 
 def test_expected_workload_ids_filter_to_manifest_name() -> None:
