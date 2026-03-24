@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next adjacent slice after the newly pinned nested callable `bytes` present/absent benchmark catch-up is not yet pinned.
+The surviving frontier on the shared conditional callable replacement owner path is the adjacent nested callable near-miss benchmark catch-up for the bounded `str` and `bytes` `sub()`/`subn()` no-match workflows of `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next adjacent slice after the newly pinned nested callable `bytes` present/absent benchmark catch-up is not yet pinned.
+1. The surviving frontier on the shared conditional callable replacement owner path is the adjacent nested callable near-miss benchmark catch-up for the bounded `str` and `bytes` `sub()`/`subn()` no-match workflows of `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
