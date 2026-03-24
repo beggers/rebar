@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -52,3 +52,14 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'test_module_callable_replacement_negative_count_short_circuits_without_callback and conditional-group-exists-quantified'` returned `32 passed, 5394 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards and negative_count'` returned `1 passed, 46 deselected`; and
   - a direct import probe against `reports/correctness/latest.py` and `reports/benchmarks/latest.py` confirmed the current tracked summaries remain `1765/1765/0/0` across `114` manifests for correctness and `1131/1131/0` across `30` benchmark manifests before this new slice lands.
+
+## Completion
+- Added the thirty-two quantified conditional callable `count=-1` publication rows on the existing `conditional-group-exists-callable-replacement-workflows` owner path and kept the direct parity owner tables as the source anchor.
+- Updated the callable scorecard expectations plus the parity-suite owner-path alignment checks needed to distinguish quantified negative-count rows from the pre-existing quantified present/absent/near-miss publication slice.
+- Republished `reports/correctness/latest.py`; the tracked combined correctness report now shows `1797` total / `1797` passed / `0` failed / `0` unimplemented across `114` manifests, and the callable manifest slice reports `72` executed / `72` passed / `0` unimplemented.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'test_module_callable_replacement_negative_count_short_circuits_without_callback and conditional-group-exists-quantified'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_quantified_negative_count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards and negative_count'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards and quantified_no_match'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

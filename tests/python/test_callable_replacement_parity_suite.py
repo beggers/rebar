@@ -323,6 +323,22 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
                 "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+                "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+                "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+                "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+                "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+                "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+                "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+                "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+                "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+                "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+                "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+                "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+                "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
                 "module-sub-callable-conditional-group-exists-present-bytes",
                 "module-subn-callable-conditional-group-exists-absent-bytes",
                 "pattern-sub-callable-conditional-group-exists-present-bytes",
@@ -379,6 +395,22 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
+                "module-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
+                "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
+                "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
+                "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
+                "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+                "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+                "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+                "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+                "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
+                "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
+                "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+                "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
@@ -403,10 +435,10 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 28,
-                ("module_call", "subn"): 28,
-                ("pattern_call", "sub"): 28,
-                ("pattern_call", "subn"): 28,
+                ("module_call", "sub"): 36,
+                ("module_call", "subn"): 36,
+                ("pattern_call", "sub"): 36,
+                ("pattern_call", "subn"): 36,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
@@ -3271,6 +3303,7 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
         if case.text_model == "str"
         and "negative-count" in case.categories
         and "nested" not in case.categories
+        and "quantified" not in case.categories
     )
     bytes_cases_by_id = {
         case.case_id: case
@@ -3278,6 +3311,7 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
         if case.text_model == "bytes"
         and "negative-count" in case.categories
         and "nested" not in case.categories
+        and "quantified" not in case.categories
     }
 
     assert len(str_cases) == len(bytes_cases_by_id) == 4
@@ -3288,6 +3322,35 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
     )
     assert all(_case_count(case) == -1 for case in str_cases)
     assert all(_case_count(case) == -1 for case in bytes_cases_by_id.values())
+
+
+def test_conditional_group_exists_quantified_negative_count_bytes_cases_mirror_str_cases(
+) -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+    str_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "str"
+        and "negative-count" in case.categories
+        and "quantified" in case.categories
+    )
+    bytes_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "bytes"
+        and "negative-count" in case.categories
+        and "quantified" in case.categories
+    )
+
+    assert len(str_cases) == len(bytes_cases) == 16
+    _assert_published_callable_bytes_cases_mirror_str_cases(
+        manifest_id=manifest_id,
+        str_cases=str_cases,
+        bytes_cases=bytes_cases,
+    )
+    assert all(_case_count(case) == -1 for case in str_cases)
+    assert all(_case_count(case) == -1 for case in bytes_cases)
 
 
 def test_conditional_group_exists_nested_negative_count_rows_stay_aligned_with_published_fixture(
@@ -3644,7 +3707,9 @@ def test_conditional_group_exists_quantified_direct_case_tables_stay_aligned_wit
         return pattern, group_ref, case.helper, text, _case_count(case)
 
     quantified_cases = tuple(
-        case for case in bundle.cases if "quantified" in case.categories
+        case
+        for case in bundle.cases
+        if "quantified" in case.categories and "negative-count" not in case.categories
     )
     module_present_rows = {
         normalized_case_row(case)
@@ -3764,6 +3829,180 @@ def test_conditional_group_exists_quantified_direct_case_tables_stay_aligned_wit
     assert len(quantified_cases) == 32
     assert Counter(
         (case.text_model, case.operation, case.helper) for case in quantified_cases
+    ) == Counter(
+        {
+            ("str", "module_call", "sub"): 4,
+            ("str", "module_call", "subn"): 4,
+            ("str", "pattern_call", "sub"): 4,
+            ("str", "pattern_call", "subn"): 4,
+            ("bytes", "module_call", "sub"): 4,
+            ("bytes", "module_call", "subn"): 4,
+            ("bytes", "pattern_call", "sub"): 4,
+            ("bytes", "pattern_call", "subn"): 4,
+        }
+    )
+    assert module_present_rows == expected_present_rows
+    assert pattern_present_rows == expected_present_rows
+    assert module_absent_rows == expected_absent_rows
+    assert pattern_absent_rows == expected_absent_rows
+    assert bytes_module_present_rows == expected_bytes_present_rows
+    assert bytes_pattern_present_rows == expected_bytes_present_rows
+    assert bytes_module_absent_rows == expected_bytes_absent_rows
+    assert bytes_pattern_absent_rows == expected_bytes_absent_rows
+
+
+def test_conditional_group_exists_quantified_negative_count_rows_stay_aligned_with_published_fixture(
+) -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+
+    def normalized_case_row(
+        case: FixtureCase,
+    ) -> tuple[str | bytes, int | str, str, str | bytes, int]:
+        pattern = case_pattern(case)
+        text = case_text_argument(case)
+        replacement = _source_callable_replacement(case)
+
+        assert case.helper is not None
+        assert isinstance(pattern, (str, bytes))
+        assert isinstance(text, (str, bytes))
+        assert isinstance(replacement, dict)
+
+        group_ref = replacement["group"]
+        assert isinstance(group_ref, (int, str))
+        return pattern, group_ref, case.helper, text, _case_count(case)
+
+    def with_negative_count(
+        rows: tuple[tuple[str | bytes, int | str, str, str | bytes, int], ...],
+    ) -> tuple[tuple[str | bytes, int | str, str, str | bytes, int], ...]:
+        return tuple((pattern, group_ref, helper, text, -1) for pattern, group_ref, helper, text, _ in rows)
+
+    quantified_negative_count_cases = tuple(
+        case
+        for case in bundle.cases
+        if "quantified" in case.categories and "negative-count" in case.categories
+    )
+    module_present_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "module_call"
+        and case.text_model == "str"
+        and "present" in case.categories
+    }
+    pattern_present_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "pattern_call"
+        and case.text_model == "str"
+        and "present" in case.categories
+    }
+    module_absent_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "module_call"
+        and case.text_model == "str"
+        and "absent" in case.categories
+    }
+    pattern_absent_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "pattern_call"
+        and case.text_model == "str"
+        and "absent" in case.categories
+    }
+    bytes_module_present_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "module_call"
+        and case.text_model == "bytes"
+        and "present" in case.categories
+    }
+    bytes_pattern_present_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "pattern_call"
+        and case.text_model == "bytes"
+        and "present" in case.categories
+    }
+    bytes_module_absent_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "module_call"
+        and case.text_model == "bytes"
+        and "absent" in case.categories
+    }
+    bytes_pattern_absent_rows = {
+        normalized_case_row(case)
+        for case in quantified_negative_count_cases
+        if case.operation == "pattern_call"
+        and case.text_model == "bytes"
+        and "absent" in case.categories
+    }
+    expected_present_rows = {
+        row
+        for row in with_negative_count(CONDITIONAL_GROUP_EXISTS_QUANTIFIED_GROUP_ACCESS_CASES)
+        if row[2] == "sub"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            -1,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES
+        if case.helper == "sub"
+    }
+    expected_absent_rows = {
+        row
+        for row in with_negative_count(CONDITIONAL_GROUP_EXISTS_QUANTIFIED_ABSENT_EXCEPTION_CASES)
+        if row[2] == "subn"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            -1,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES
+        if case.helper == "subn"
+    }
+    expected_bytes_present_rows = {
+        row
+        for row in with_negative_count(CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_GROUP_ACCESS_CASES)
+        if row[2] == "sub"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            -1,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES
+        if case.helper == "sub"
+    }
+    expected_bytes_absent_rows = {
+        row
+        for row in with_negative_count(CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_ABSENT_EXCEPTION_CASES)
+        if row[2] == "subn"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            -1,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES
+        if case.helper == "subn"
+    }
+
+    assert len(quantified_negative_count_cases) == 32
+    assert Counter(
+        (case.text_model, case.operation, case.helper)
+        for case in quantified_negative_count_cases
     ) == Counter(
         {
             ("str", "module_call", "sub"): 4,

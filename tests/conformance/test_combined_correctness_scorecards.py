@@ -942,6 +942,22 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-callable-named-conditional-group-exists-nested-near-miss-absent-str",
             "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
             "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
             "module-sub-callable-conditional-group-exists-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
@@ -974,6 +990,22 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-callable-named-conditional-group-exists-nested-near-miss-absent-bytes",
             "pattern-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
             "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
             "module-sub-callable-conditional-group-exists-negative-count-bytes",
             "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
@@ -5195,7 +5227,49 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-callable-replacement-workflows"
-        expected_negative_count_str_case_ids = (
+        expected_manifest_negative_count_str_case_ids = (
+            "module-sub-callable-conditional-group-exists-negative-count-str",
+            "module-subn-callable-named-conditional-group-exists-negative-count-str",
+            "pattern-sub-callable-conditional-group-exists-negative-count-str",
+            "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
+            "module-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
+            "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+        )
+        expected_representative_negative_count_str_case_ids = (
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
             "module-sub-callable-conditional-group-exists-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
@@ -5205,7 +5279,23 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
             "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
         )
-        expected_negative_count_bytes_case_ids = (
+        expected_manifest_negative_count_bytes_case_ids = (
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
             "module-sub-callable-conditional-group-exists-negative-count-bytes",
             "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
@@ -5214,6 +5304,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
             "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
+        )
+        expected_representative_negative_count_bytes_case_ids = tuple(
+            f"{case_id.removesuffix('-str')}-bytes"
+            for case_id in expected_representative_negative_count_str_case_ids
         )
         manifest = manifest_records_by_id(
             correctness.published_fixture_manifests()
@@ -5251,22 +5345,24 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         )
         self.assertEqual(
             manifest_negative_count_str_case_ids,
-            expected_negative_count_str_case_ids,
+            expected_manifest_negative_count_str_case_ids,
         )
         self.assertEqual(
             manifest_negative_count_bytes_case_ids,
-            expected_negative_count_bytes_case_ids,
+            expected_manifest_negative_count_bytes_case_ids,
         )
         self.assertEqual(
             len(combined_case_ids),
             len(representative_str_case_ids) + len(representative_bytes_case_ids),
         )
         self.assertEqual(
-            representative_str_case_ids[-len(manifest_negative_count_str_case_ids) :],
-            manifest_negative_count_str_case_ids,
+            representative_str_case_ids[-len(expected_representative_negative_count_str_case_ids) :],
+            expected_representative_negative_count_str_case_ids,
         )
         quantified_str_only_case_ids = tuple(
-            case_id for case_id in representative_str_case_ids if "-quantified-" in case_id
+            case_id
+            for case_id in representative_str_case_ids
+            if "-quantified-" in case_id and "negative-count" not in case_id
         )
         self.assertEqual(
             quantified_str_only_case_ids,
@@ -5281,43 +5377,40 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
             ),
         )
+        quantified_negative_count_str_case_ids = tuple(
+            case_id
+            for case_id in representative_str_case_ids
+            if "-quantified-" in case_id and "negative-count" in case_id
+        )
+        self.assertEqual(
+            quantified_negative_count_str_case_ids,
+            expected_representative_negative_count_str_case_ids[:16],
+        )
         quantified_bytes_case_ids = tuple(
-            case_id for case_id in representative_bytes_case_ids if "-quantified-" in case_id
+            case_id
+            for case_id in representative_bytes_case_ids
+            if "-quantified-" in case_id and "negative-count" not in case_id
         )
         self.assertEqual(
             quantified_bytes_case_ids,
             tuple(f"{case_id.removesuffix('-str')}-bytes" for case_id in quantified_str_only_case_ids),
         )
         self.assertEqual(
-            representative_bytes_case_ids,
-            tuple(
-                f"{case_id.removesuffix('-str')}-bytes"
-                for case_id in representative_str_case_ids
-            ),
-        )
-        self.assertEqual(
-            representative_bytes_case_ids[-len(manifest_negative_count_bytes_case_ids) :],
-            manifest_negative_count_bytes_case_ids,
-        )
-        self.assertEqual(
-            tuple(
-                f"{case_id.removesuffix('-bytes')}-str"
-                for case_id in manifest_negative_count_bytes_case_ids
-            ),
-            expected_negative_count_str_case_ids[: len(expected_negative_count_bytes_case_ids)],
+            representative_bytes_case_ids[-len(expected_representative_negative_count_bytes_case_ids) :],
+            expected_representative_negative_count_bytes_case_ids,
         )
         self.assertEqual(
             Counter(
                 (case.operation, case.helper)
                 for case in combined_case.representative_cases
-                if case.case_id in expected_negative_count_str_case_ids
+                if case.case_id in expected_representative_negative_count_str_case_ids
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 2,
-                    ("module_call", "subn"): 2,
-                    ("pattern_call", "sub"): 2,
-                    ("pattern_call", "subn"): 2,
+                    ("module_call", "sub"): 6,
+                    ("module_call", "subn"): 6,
+                    ("pattern_call", "sub"): 6,
+                    ("pattern_call", "subn"): 6,
                 }
             ),
         )
@@ -5325,14 +5418,14 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             Counter(
                 (case.operation, case.helper)
                 for case in combined_case.representative_cases
-                if case.case_id in expected_negative_count_bytes_case_ids
+                if case.case_id in expected_representative_negative_count_bytes_case_ids
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 2,
-                    ("module_call", "subn"): 2,
-                    ("pattern_call", "sub"): 2,
-                    ("pattern_call", "subn"): 2,
+                    ("module_call", "sub"): 6,
+                    ("module_call", "subn"): 6,
+                    ("pattern_call", "sub"): 6,
+                    ("pattern_call", "subn"): 6,
                 }
             ),
         )
@@ -5431,6 +5524,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             for case in combined_case.representative_cases
             if case.text_model == "str"
             and "quantified" in case.categories
+            and "negative-count" not in case.categories
             and "no-match" in case.categories
         )
         representative_quantified_no_match_bytes_cases = tuple(
@@ -5438,6 +5532,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             for case in combined_case.representative_cases
             if case.text_model == "bytes"
             and "quantified" in case.categories
+            and "negative-count" not in case.categories
             and "no-match" in case.categories
         )
 
