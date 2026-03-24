@@ -50,6 +50,9 @@ _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
 )
 _MISSING_MATURIN_PATTERN = "no `maturin` executable was found on PATH"
+_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
+    BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
+)
 _NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
     BENCHMARK_WORKLOADS_ROOT / "nested_group_callable_replacement_boundary.py"
 )
@@ -954,6 +957,116 @@ def test_run_internal_workload_probe_measures_nested_group_callable_replacement_
     )
 
     assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
+@cache
+def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload, ...]:
+    manifest = load_manifest(_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
+    workload_ids = tuple(
+        workload.workload_id
+        for workload in manifest.workloads
+        if workload.count is None
+        and workload.operation
+        in {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        and workload.expected_exception == {
+            "type": "TypeError",
+            "message_substring": "NoneType",
+        }
+    )
+    return live_manifest_workloads(
+        _CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        workload_ids,
+    )
+
+
+_CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_PARAMS = tuple(
+    pytest.param(workload, id=workload.workload_id)
+    for workload in _conditional_group_exists_callable_none_count_workloads()
+)
+
+
+def test_conditional_group_exists_callable_none_count_workload_slice_keeps_runtime_contract_span(
+) -> None:
+    workloads = _conditional_group_exists_callable_none_count_workloads()
+
+    assert workloads
+    assert {workload.operation for workload in workloads} == {
+        "module.sub",
+        "module.subn",
+        "pattern.sub",
+        "pattern.subn",
+    }
+    assert {workload.text_model for workload in workloads} == {"str", "bytes"}
+    assert {workload.cache_mode for workload in workloads} == {"warm", "purged"}
+    assert all(workload.count is None for workload in workloads)
+    assert all(not workload.use_compiled_pattern for workload in workloads)
+    assert all(
+        workload.expected_exception
+        == {
+            "type": "TypeError",
+            "message_substring": "NoneType",
+        }
+        for workload in workloads
+    )
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    _CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_PARAMS,
+)
+def test_conditional_group_exists_callable_none_count_workloads_round_trip_preserves_expected_exception_contract(
+    source_workload: Workload,
+) -> None:
+    payload = workload_to_payload(source_workload)
+    round_tripped = workload_from_payload(payload)
+    expected_exception = source_workload.expected_exception
+
+    assert expected_exception is not None
+    assert payload["count"] is None
+    assert payload["expected_exception"] == expected_exception
+    assert round_tripped.count is None
+    assert round_tripped.count_argument() is None
+    assert round_tripped.expected_exception == expected_exception
+    assert round_tripped.text_model == source_workload.text_model
+    assert round_tripped.pattern_payload() == source_workload.pattern_payload()
+    assert round_tripped.haystack_payload() == source_workload.haystack_payload()
+    assert callable(round_tripped.replacement_payload())
+
+    with pytest.raises(
+        TypeError,
+        match=re.escape(expected_exception["message_substring"]),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped)
+
+
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+@pytest.mark.parametrize(
+    "source_workload",
+    _CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_PARAMS,
+)
+def test_run_internal_workload_probe_measures_conditional_group_exists_callable_none_count_workloads(
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    payload = workload_to_payload(source_workload)
+
+    assert payload["count"] is None
+    probe = run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["adapter"] == adapter_name
     assert probe["median_ns"] > 0
 
 
