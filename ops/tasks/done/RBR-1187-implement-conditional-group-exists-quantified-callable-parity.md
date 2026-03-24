@@ -1,6 +1,6 @@
 # RBR-1187: Implement conditional group-exists quantified callable parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,8 @@ Created: 2026-03-24
   - `cargo build -p rebar-cpython` finished successfully;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_nested_callable_replacement or conditional_group_exists_nested_bytes_callable_replacement'` returned `112 passed, 4513 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` returned `45 passed, 2340 subtests passed`.
+
+## Completion
+- 2026-03-24: Added a native `boundary_conditional_group_exists_quantified_finditer` bridge in `crates/rebar-cpython/src/lib.rs`, routed the callable owner path through it in `python/rebar/__init__.py`, and added bounded direct `str` parity coverage for numbered and named module/pattern `sub()` and `subn()` quantified conditional workflows in `tests/python/test_callable_replacement_parity_suite.py`.
+- Verified the exact slice with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_nested_callable_replacement or conditional_group_exists_nested_bytes_callable_replacement or conditional_group_exists_quantified_callable_replacement'` (`144 passed, 4513 deselected`), and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` (`45 passed, 2340 subtests passed`).
+- The tracked published correctness scorecard did not change in this run; `reports/correctness/latest.py` was not edited or republished.

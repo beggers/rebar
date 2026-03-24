@@ -1149,6 +1149,36 @@ fn boundary_conditional_group_exists_nested_finditer(
 }
 
 #[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_conditional_group_exists_quantified_finditer(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome = core_conditional_group_exists_quantified_find_spans_str(
+        pattern, flags, string, pos, endpos,
+    );
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
 fn boundary_conditional_group_exists_finditer(
     pattern: &str,
     flags: i32,
@@ -2000,6 +2030,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?)?;
     module.add_function(wrap_pyfunction!(
         boundary_conditional_group_exists_nested_finditer,
+        module
+    )?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_conditional_group_exists_quantified_finditer,
         module
     )?)?;
     module.add_function(wrap_pyfunction!(
