@@ -3211,12 +3211,16 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
     str_cases = tuple(
         case
         for case in bundle.cases
-        if case.text_model == "str" and "negative-count" in case.categories
+        if case.text_model == "str"
+        and "negative-count" in case.categories
+        and "nested" not in case.categories
     )
     bytes_cases_by_id = {
         case.case_id: case
         for case in bundle.cases
-        if case.text_model == "bytes" and "negative-count" in case.categories
+        if case.text_model == "bytes"
+        and "negative-count" in case.categories
+        and "nested" not in case.categories
     }
 
     assert len(str_cases) == len(bytes_cases_by_id) == 4
@@ -3227,6 +3231,50 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
     )
     assert all(_case_count(case) == -1 for case in str_cases)
     assert all(_case_count(case) == -1 for case in bytes_cases_by_id.values())
+
+
+def test_conditional_group_exists_nested_negative_count_rows_stay_aligned_with_published_fixture(
+) -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+    nested_negative_count_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "str"
+        and "negative-count" in case.categories
+        and "nested" in case.categories
+    )
+    bytes_nested_negative_count_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "bytes"
+        and "negative-count" in case.categories
+        and "nested" in case.categories
+    )
+
+    assert len(nested_negative_count_cases) == len(
+        CONDITIONAL_GROUP_EXISTS_NESTED_NEGATIVE_COUNT_CASES
+    )
+    assert not bytes_nested_negative_count_cases
+    assert Counter(
+        (case.operation, case.helper) for case in nested_negative_count_cases
+    ) == Counter(
+        {
+            ("module_call", "sub"): 1,
+            ("module_call", "subn"): 1,
+            ("pattern_call", "sub"): 1,
+            ("pattern_call", "subn"): 1,
+        }
+    )
+    assert Counter(
+        (case_pattern(case), case.helper, case_text_argument(case), _case_count(case))
+        for case in nested_negative_count_cases
+    ) == Counter(
+        {
+            (r"a(b)?c(?(1)(?(1)d|e)|f)", "sub", "zzabcdzz", -1): 2,
+            (r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)", "subn", "zzacfzz", -1): 2,
+        }
+    )
 
 
 def test_conditional_group_exists_alternation_bytes_cases_mirror_str_cases() -> None:
