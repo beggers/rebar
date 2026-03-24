@@ -102,6 +102,7 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
 )
 from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
     _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
+    _is_collection_replacement_compiled_pattern_keyword_error_workload,
 )
 from tests.benchmarks.collection_replacement_keyword_contract_benchmark_support import (
     _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
@@ -8427,20 +8428,6 @@ _COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
 _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
     {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
 )
-
-
-def _is_collection_replacement_compiled_pattern_keyword_error_workload(
-    workload: Any,
-) -> bool:
-    return (
-        _is_collection_replacement_keyword_workload(workload)
-        and workload.use_compiled_pattern
-        and workload.operation in {"module.split", "module.sub", "module.subn"}
-        and workload.expected_exception is not None
-        and getattr(workload, "haystack_text_model", None) is None
-    )
-
-
 _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES = {
     "findall": _CollectionReplacementPatternCollectionRoute(
         workload_case_pairs=(
