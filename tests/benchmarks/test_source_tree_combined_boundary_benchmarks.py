@@ -3478,6 +3478,17 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS = (
 )
 
 
+def _conditional_group_exists_template_replacement_expectation(
+) -> SourceTreeCombinedSliceExpectation:
+    return next(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(
+            "conditional-group-exists-boundary"
+        )
+        if expectation.slice_id == "minimal-template-replacement-rows"
+    )
+
+
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
 
@@ -4585,6 +4596,37 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     workload_id,
                     public_representatives,
                 )
+
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            manifest_id,
+            expected_workload_ids,
+            expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
+        )
+
+    def test_conditional_group_exists_template_bytes_manifest_keeps_minimal_replacement_rows_str_only_and_measured(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        template_expectation = (
+            _conditional_group_exists_template_replacement_expectation()
+        )
+        case = source_tree_combined_case(manifest_id)
+        matched_rows = tuple(
+            select_source_tree_combined_slice_rows(
+                case.target_manifest,
+                template_expectation,
+            )
+        )
+        expected_workload_ids = template_expectation.expected_workload_ids
+        expected_workload_count = len(case.selected_workload_ids_for_manifest(manifest_id))
+
+        self.assertEqual(
+            tuple(workload.workload_id for workload in matched_rows),
+            expected_workload_ids,
+        )
+        self.assertEqual({workload.text_model for workload in matched_rows}, {"str"})
 
         self._assert_zero_gap_manifest_workloads_measured(
             case,
@@ -6122,6 +6164,39 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     workload_id,
                     case.representative_known_gap_workload_ids,
                 )
+
+    def test_conditional_group_exists_template_bytes_scorecard_keeps_minimal_replacement_rows_str_only_and_measured(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        template_expectation = (
+            _conditional_group_exists_template_replacement_expectation()
+        )
+        case = source_tree_scorecard_case(manifest_id)
+        matched_rows = tuple(
+            select_source_tree_combined_slice_rows(
+                case.manifest_for_id(manifest_id),
+                template_expectation,
+            )
+        )
+        expected_workload_ids = template_expectation.expected_workload_ids
+
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            ),
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+        self.assertEqual({workload.text_model for workload in matched_rows}, {"str"})
+        self.assertEqual(
+            tuple(
+                workload.workload_id
+                for workload in matched_rows
+                if workload.workload_id in case.representative_measured_workload_ids
+            ),
+            expected_workload_ids,
+        )
 
     def test_nested_group_callable_replacement_scorecard_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
