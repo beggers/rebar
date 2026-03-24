@@ -1,6 +1,6 @@
 # RBR-1153: Publish conditional group-exists template str negative-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,15 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_replacement_template_scorecards_keep_bytes_negative_count_follow_on_cases_in_sync or mixed_text_manifests_cover_both_representative_text_models'` returned `2 passed, 42 deselected, 26 subtests passed` in this run;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py --report .rebar/tmp/feature-planning-conditional-template-str-negative-count.py` returned `20` executed and passing cases in this run; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report .rebar/tmp/feature-planning-full-correctness.py` returned `1665` executed and passing cases in this run.
+
+## Completion
+- Added the four `str count=-1` publication rows on the existing `conditional-group-exists-replacement-template-workflows` owner path and widened the shared parity/scorecard expectations without changing runtime or benchmark code.
+- Verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional_replacement_template_publication_keeps_mixed_text_frontier_explicit or conditional_replacement_template_negative_count_str_cases_keep_exact_frontier_explicit'` -> `2 passed`;
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_replacement_template_scorecards_keep_bytes_negative_count_follow_on_cases_in_sync or mixed_text_manifests_cover_both_representative_text_models'` -> `2 passed, 26 subtests passed`;
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py --report .rebar/tmp/rbr-1153-conditional-template-str-negative-count.py` -> tracked narrow slice now reports `24` executed / `24` passed; and
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> tracked combined publication now reports `1669` executed / `1669` passed.
+- Published artifact check from `reports/correctness/latest.py`:
+  - `fixtures.case_count == 1669`;
+  - `fixtures.manifest_count == 114`; and
+  - `conditional-group-exists-replacement-template-workflows` now contributes `24` passing cases.

@@ -934,6 +934,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-template-conditional-group-exists-replacement-absent-str",
             "module-sub-template-named-conditional-group-exists-replacement-present-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
+            "module-sub-template-conditional-group-exists-replacement-negative-count-str",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-str",
+            "pattern-sub-template-conditional-group-exists-replacement-negative-count-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-str",
             "module-sub-template-conditional-group-exists-replacement-present-bytes",
             "pattern-subn-template-conditional-group-exists-replacement-absent-bytes",
             "module-sub-template-named-conditional-group-exists-replacement-present-bytes",
@@ -1421,6 +1425,10 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "module-subn-template-named-conditional-group-exists-replacement-absent-str",
             "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
+            "module-sub-template-conditional-group-exists-replacement-negative-count-str",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-str",
+            "pattern-sub-template-conditional-group-exists-replacement-negative-count-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-str",
             "module-sub-template-conditional-group-exists-replacement-present-bytes",
             "module-subn-template-conditional-group-exists-replacement-absent-bytes",
             "pattern-sub-template-conditional-group-exists-replacement-present-bytes",
@@ -5014,6 +5022,12 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-replacement-template-workflows"
+        expected_negative_count_str_case_ids = (
+            "module-sub-template-conditional-group-exists-replacement-negative-count-str",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-str",
+            "pattern-sub-template-conditional-group-exists-replacement-negative-count-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-str",
+        )
         expected_negative_count_bytes_case_ids = (
             "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
             "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
@@ -5055,8 +5069,8 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             replacement_case_ids,
             replacement_expectation.representative_case_ids,
         )
-        self.assertEqual(len(combined_case_ids), 12)
-        self.assertEqual(len(replacement_case_ids), 20)
+        self.assertEqual(len(combined_case_ids), 16)
+        self.assertEqual(len(replacement_case_ids), 24)
         self.assertTrue(
             set(combined_case_ids).issubset(replacement_case_ids),
             msg=(
@@ -5064,18 +5078,46 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 "should stay inside the richer conditional-replacement suite sample"
             ),
         )
-        self.assertEqual(len(representative_str_case_ids), 4)
+        self.assertEqual(len(representative_str_case_ids), 8)
         self.assertEqual(len(representative_bytes_case_ids), 8)
         self.assertEqual(
-            representative_bytes_case_ids[:-len(expected_negative_count_bytes_case_ids)],
+            representative_str_case_ids[-len(expected_negative_count_str_case_ids) :],
+            expected_negative_count_str_case_ids,
+        )
+        self.assertEqual(
+            representative_bytes_case_ids[: -len(expected_negative_count_bytes_case_ids)],
             tuple(
                 f"{case_id.removesuffix('-str')}-bytes"
-                for case_id in representative_str_case_ids
+                for case_id in representative_str_case_ids[
+                    :-len(expected_negative_count_str_case_ids)
+                ]
             ),
         )
         self.assertEqual(
             representative_bytes_case_ids[-len(expected_negative_count_bytes_case_ids) :],
             expected_negative_count_bytes_case_ids,
+        )
+        self.assertEqual(
+            expected_negative_count_bytes_case_ids,
+            tuple(
+                f"{case_id.removesuffix('-str')}-bytes"
+                for case_id in expected_negative_count_str_case_ids
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in expected_negative_count_str_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 1,
+                    ("module_call", "subn"): 1,
+                    ("pattern_call", "sub"): 1,
+                    ("pattern_call", "subn"): 1,
+                }
+            ),
         )
         self.assertEqual(
             Counter(

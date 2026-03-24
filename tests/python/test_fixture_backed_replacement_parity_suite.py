@@ -2736,6 +2736,10 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
         "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
         "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
         "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+        "module-sub-template-conditional-group-exists-replacement-negative-count-str",
+        "module-subn-template-named-conditional-group-exists-replacement-negative-count-str",
+        "pattern-sub-template-conditional-group-exists-replacement-negative-count-str",
+        "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-str",
         "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
         "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
         "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
@@ -2747,6 +2751,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                 {
                     "module-sub-template-conditional-group-exists-replacement-present-str",
                     "module-sub-template-named-conditional-group-exists-replacement-present-str",
+                    "module-sub-template-conditional-group-exists-replacement-negative-count-str",
                     "module-sub-template-conditional-group-exists-replacement-present-bytes",
                     "module-sub-template-named-conditional-group-exists-replacement-present-bytes",
                     "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
@@ -2756,6 +2761,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                 {
                     "module-subn-template-conditional-group-exists-replacement-absent-str",
                     "module-subn-template-named-conditional-group-exists-replacement-absent-str",
+                    "module-subn-template-named-conditional-group-exists-replacement-negative-count-str",
                     "module-subn-template-conditional-group-exists-replacement-absent-bytes",
                     "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
                     "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
@@ -2765,6 +2771,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                 {
                     "pattern-sub-template-conditional-group-exists-replacement-present-str",
                     "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
+                    "pattern-sub-template-conditional-group-exists-replacement-negative-count-str",
                     "pattern-sub-template-conditional-group-exists-replacement-present-bytes",
                     "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
                     "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
@@ -2774,6 +2781,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                 {
                     "pattern-subn-template-conditional-group-exists-replacement-absent-str",
                     "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
+                    "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-str",
                     "pattern-subn-template-conditional-group-exists-replacement-absent-bytes",
                     "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
                     "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
@@ -2783,9 +2791,35 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
         selected_case_ids=selected_case_ids,
         coverage_label="conditional replacement template publication case-id buckets",
     )
-    assert tuple(case.case_id for case in str_cases) == selected_case_ids[:8]
-    assert tuple(case.case_id for case in bytes_cases) == selected_case_ids[8:]
-    assert len(str_cases) == 8
+    assert tuple(case.case_id for case in str_cases) == (
+        "module-sub-template-conditional-group-exists-replacement-present-str",
+        "module-subn-template-conditional-group-exists-replacement-absent-str",
+        "pattern-sub-template-conditional-group-exists-replacement-present-str",
+        "pattern-subn-template-conditional-group-exists-replacement-absent-str",
+        "module-sub-template-named-conditional-group-exists-replacement-present-str",
+        "module-subn-template-named-conditional-group-exists-replacement-absent-str",
+        "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
+        "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
+        "module-sub-template-conditional-group-exists-replacement-negative-count-str",
+        "module-subn-template-named-conditional-group-exists-replacement-negative-count-str",
+        "pattern-sub-template-conditional-group-exists-replacement-negative-count-str",
+        "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-str",
+    )
+    assert tuple(case.case_id for case in bytes_cases) == (
+        "module-sub-template-conditional-group-exists-replacement-present-bytes",
+        "module-subn-template-conditional-group-exists-replacement-absent-bytes",
+        "pattern-sub-template-conditional-group-exists-replacement-present-bytes",
+        "pattern-subn-template-conditional-group-exists-replacement-absent-bytes",
+        "module-sub-template-named-conditional-group-exists-replacement-present-bytes",
+        "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+        "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
+        "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+        "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+        "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
+        "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+        "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
+    )
+    assert len(str_cases) == 12
     assert len(bytes_cases) == 12
     assert tuple(
         case.case_id
