@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1729 cases across 114 manifests, with all 1729 passing in the current slice; the benchmark publication covers 1087/1087 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The concrete next intended follow-on on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` correctness-publication slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"`.
+- The concrete next intended follow-on on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` benchmark catch-up slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` through the existing module and compiled-`Pattern` `sub()` and `subn()` Python-path workloads on `b"zzabcdzz"` and `b"zzacfzz"`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1729 cases across 114 manifests, with all 1729 pass
 The published correctness slice now covers 1729 cases across 114 manifests, all passing, and 1087 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- The concrete next intended follow-on on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` correctness-publication slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"`.
+- The concrete next intended follow-on on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` benchmark catch-up slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` through the existing module and compiled-`Pattern` `sub()` and `subn()` Python-path workloads on `b"zzabcdzz"` and `b"zzacfzz"`.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
