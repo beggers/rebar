@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 
 from rebar_harness import benchmarks
+from rebar_harness.benchmarks import BenchmarkManifest, Workload, workload_to_payload
 
 
 def _resolve_live_manifest_path(
@@ -43,6 +44,120 @@ def live_manifest_workloads(
 ) -> tuple[benchmarks.Workload, ...]:
     workloads_by_id = _live_manifest_workloads_by_id(manifest_path)
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
+
+
+def manifest_workload_ids_matching(
+    manifest: BenchmarkManifest,
+    include_workload: Any,
+    *,
+    operation_prefix: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for workload in manifest.workloads
+        if include_workload(workload)
+        and (
+            operation_prefix is None
+            or workload.operation.startswith(operation_prefix)
+        )
+    )
+
+
+def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[str, Any]:
+    for workload in scorecard["workloads"]:
+        if str(workload["id"]) == workload_id:
+            return workload
+    raise AssertionError(f"missing workload record for {workload_id!r}")
+
+
+def find_workload_document(
+    manifest: BenchmarkManifest,
+    workload_id: str,
+) -> Workload:
+    for workload in manifest.workloads:
+        if workload.workload_id == workload_id:
+            return workload
+    raise AssertionError(
+        f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
+    )
+
+
+def assert_benchmark_workload_contract(
+    testcase: Any,
+    workload_record: dict[str, Any],
+    *,
+    manifest_id: str,
+    workload_document: Workload,
+    expected_status: str,
+) -> None:
+    workload_payload = workload_to_payload(workload_document)
+    expected_syntax_features = workload_payload.get(
+        "syntax_features",
+        workload_payload.get("categories", []),
+    )
+    testcase.assertEqual(workload_record["manifest_id"], manifest_id)
+    testcase.assertEqual(
+        workload_record["family"],
+        workload_payload.get("family", "parser"),
+    )
+    testcase.assertEqual(workload_record["operation"], workload_payload["operation"])
+    testcase.assertEqual(workload_record["pattern"], workload_payload.get("pattern", ""))
+    testcase.assertEqual(workload_record["haystack"], workload_payload.get("haystack"))
+    testcase.assertEqual(
+        workload_record["replacement"],
+        workload_payload.get("replacement"),
+    )
+    testcase.assertEqual(workload_record["flags"], workload_payload.get("flags", 0))
+    testcase.assertEqual(workload_record["count"], workload_payload.get("count", 0))
+    testcase.assertEqual(
+        workload_record["maxsplit"],
+        workload_payload.get("maxsplit", 0),
+    )
+    testcase.assertEqual(
+        workload_record.get("pos"),
+        workload_payload.get("pos"),
+    )
+    testcase.assertEqual(
+        workload_record.get("endpos"),
+        workload_payload.get("endpos"),
+    )
+    testcase.assertEqual(
+        workload_record.get("kwargs"),
+        workload_payload.get("kwargs"),
+    )
+    testcase.assertEqual(
+        workload_record["text_model"],
+        workload_payload.get("text_model", "str"),
+    )
+    testcase.assertEqual(
+        workload_record.get("haystack_text_model"),
+        workload_payload.get("haystack_text_model"),
+    )
+    testcase.assertEqual(workload_record["cache_mode"], workload_payload["cache_mode"])
+    testcase.assertEqual(
+        workload_record["timing_scope"],
+        workload_payload.get("timing_scope", "compile-path-proxy"),
+    )
+    testcase.assertEqual(workload_record["syntax_features"], expected_syntax_features)
+    testcase.assertEqual(workload_record["status"], expected_status)
+    testcase.assertEqual(
+        workload_record["baseline_timing"]["status"],
+        "measured",
+    )
+    testcase.assertGreater(workload_record["baseline_ns"], 0)
+    testcase.assertGreater(workload_record["baseline_ops_per_second"], 0)
+    testcase.assertEqual(
+        workload_record["implementation_timing"]["status"],
+        expected_status,
+    )
+    if expected_status == "measured":
+        testcase.assertGreater(workload_record["implementation_ns"], 0)
+        testcase.assertGreater(workload_record["implementation_ops_per_second"], 0)
+        testcase.assertIsInstance(workload_record["speedup_vs_cpython"], float)
+    else:
+        testcase.assertIsNone(workload_record["implementation_ns"])
+        testcase.assertIsNone(workload_record["implementation_ops_per_second"])
+        testcase.assertIsNone(workload_record["speedup_vs_cpython"])
 
 
 def _write_test_manifest(

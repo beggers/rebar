@@ -126,7 +126,11 @@ from tests.benchmarks.wrong_text_model_benchmark_anchor_support import (
 )
 from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
+    assert_benchmark_workload_contract,
+    find_workload_document,
+    find_workload_record,
     live_manifest_workloads,
+    manifest_workload_ids_matching as _manifest_workload_ids_matching,
 )
 from tests.conftest import (
     REPO_ROOT,
@@ -402,108 +406,11 @@ def assert_benchmark_manifest_contract(
     testcase.assertEqual(manifest_record["smoke_workload_ids"], smoke_ids)
 
 
-def assert_benchmark_workload_contract(
-    testcase: Any,
-    workload_record: dict[str, Any],
-    *,
-    manifest_id: str,
-    workload_document: Workload,
-    expected_status: str,
-) -> None:
-    workload_payload = workload_to_payload(workload_document)
-    expected_syntax_features = workload_payload.get(
-        "syntax_features",
-        workload_payload.get("categories", []),
-    )
-    testcase.assertEqual(workload_record["manifest_id"], manifest_id)
-    testcase.assertEqual(
-        workload_record["family"],
-        workload_payload.get("family", "parser"),
-    )
-    testcase.assertEqual(workload_record["operation"], workload_payload["operation"])
-    testcase.assertEqual(workload_record["pattern"], workload_payload.get("pattern", ""))
-    testcase.assertEqual(workload_record["haystack"], workload_payload.get("haystack"))
-    testcase.assertEqual(
-        workload_record["replacement"],
-        workload_payload.get("replacement"),
-    )
-    testcase.assertEqual(workload_record["flags"], workload_payload.get("flags", 0))
-    testcase.assertEqual(workload_record["count"], workload_payload.get("count", 0))
-    testcase.assertEqual(
-        workload_record["maxsplit"],
-        workload_payload.get("maxsplit", 0),
-    )
-    testcase.assertEqual(
-        workload_record.get("pos"),
-        workload_payload.get("pos"),
-    )
-    testcase.assertEqual(
-        workload_record.get("endpos"),
-        workload_payload.get("endpos"),
-    )
-    testcase.assertEqual(
-        workload_record.get("kwargs"),
-        workload_payload.get("kwargs"),
-    )
-    testcase.assertEqual(
-        workload_record["text_model"],
-        workload_payload.get("text_model", "str"),
-    )
-    testcase.assertEqual(
-        workload_record.get("haystack_text_model"),
-        workload_payload.get("haystack_text_model"),
-    )
-    testcase.assertEqual(workload_record["cache_mode"], workload_payload["cache_mode"])
-    testcase.assertEqual(
-        workload_record["timing_scope"],
-        workload_payload.get("timing_scope", "compile-path-proxy"),
-    )
-    testcase.assertEqual(workload_record["syntax_features"], expected_syntax_features)
-    testcase.assertEqual(workload_record["status"], expected_status)
-    testcase.assertEqual(
-        workload_record["baseline_timing"]["status"],
-        "measured",
-    )
-    testcase.assertGreater(workload_record["baseline_ns"], 0)
-    testcase.assertGreater(workload_record["baseline_ops_per_second"], 0)
-    testcase.assertEqual(
-        workload_record["implementation_timing"]["status"],
-        expected_status,
-    )
-    if expected_status == "measured":
-        testcase.assertGreater(workload_record["implementation_ns"], 0)
-        testcase.assertGreater(workload_record["implementation_ops_per_second"], 0)
-        testcase.assertIsInstance(workload_record["speedup_vs_cpython"], float)
-    else:
-        testcase.assertIsNone(workload_record["implementation_ns"])
-        testcase.assertIsNone(workload_record["implementation_ops_per_second"])
-        testcase.assertIsNone(workload_record["speedup_vs_cpython"])
-
-
 def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[str, Any]:
     for manifest_record in scorecard["artifacts"]["manifests"]:
         if str(manifest_record["manifest_id"]) == manifest_id:
             return manifest_record
     raise AssertionError(f"missing manifest record for {manifest_id!r}")
-
-
-def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[str, Any]:
-    for workload in scorecard["workloads"]:
-        if str(workload["id"]) == workload_id:
-            return workload
-    raise AssertionError(f"missing workload record for {workload_id!r}")
-
-
-def find_workload_document(
-    manifest: BenchmarkManifest,
-    workload_id: str,
-) -> Workload:
-    for workload in manifest.workloads:
-        if workload.workload_id == workload_id:
-            return workload
-    raise AssertionError(
-        f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
-    )
 
 @dataclass(frozen=True, slots=True)
 class SourceTreeBenchmarkCommonCase:
@@ -3897,23 +3804,6 @@ def select_source_tree_combined_slice_rows(
         for workload in manifest.workloads
         if _workload_matches_source_tree_combined_slice(workload, expectation)
     ]
-
-
-def _manifest_workload_ids_matching(
-    manifest: BenchmarkManifest,
-    include_workload: Callable[[Workload], bool],
-    *,
-    operation_prefix: str | None = None,
-) -> tuple[str, ...]:
-    return tuple(
-        workload.workload_id
-        for workload in manifest.workloads
-        if include_workload(workload)
-        and (
-            operation_prefix is None
-            or workload.operation.startswith(operation_prefix)
-        )
-    )
 
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
