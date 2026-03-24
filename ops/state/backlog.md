@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Catch up bounded bytes callable-replacement benchmarks for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
+Land bounded bytes replacement-template parity for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
 
 ## Ordered Work
-1. Catch the exact bytes callable-replacement benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` up on the existing `conditional-group-exists-boundary` owner path, combined benchmark contract, and regenerated benchmark scorecard once the adjacent correctness publication slice lands.
+1. Convert the exact bytes replacement-template runtime for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` to Rust-backed parity on the existing shared replacement owner path before the adjacent correctness publication and Python-path benchmark catch-up reopen that conditional template slice.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

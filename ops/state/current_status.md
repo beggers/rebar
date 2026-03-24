@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1007/1007 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- `RBR-1128` is the surviving ready feature follow-on: catch the bounded bytes callable-replacement benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` up on the existing conditional callable Python-path benchmark owner path.
+- `RBR-1130` is the surviving ready feature follow-on: implement bounded bytes replacement-template parity for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` on the shared conditional replacement owner path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1653 cases across 114 manifests, with all 1653 pass
 The published correctness slice now covers 1653 cases across 114 manifests, all passing, and 1007 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- `RBR-1128` is the surviving ready feature follow-on, catching the bounded bytes callable-replacement benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` up on the existing conditional callable Python-path benchmark owner path.
+- `RBR-1130` is the surviving ready feature follow-on, implementing bounded bytes replacement-template parity for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` on the shared conditional replacement owner path.
 - No blocked or in-progress feature task currently survives in this checkout.
 
 ## What Exists
@@ -333,7 +333,7 @@ The published correctness slice now covers 1653 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-1128` is the surviving ready feature follow-on: catch the bounded bytes callable-replacement benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` up on the existing conditional callable Python-path benchmark owner path.
+- `RBR-1130` is the surviving ready feature follow-on: implement bounded bytes replacement-template parity for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` on the shared conditional replacement owner path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
