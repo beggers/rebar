@@ -1,6 +1,6 @@
 # RBR-1178: Extract compiled-pattern module.compile owner contract support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -60,5 +60,9 @@ Created: 2026-03-24
   - `rg -n "^class _CompiledPatternModuleCompileKeywordOwnerSpec|^class _CompiledPatternModuleCompileSuccessOwnerSpec|^_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS =|^_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS =|^def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation\\(|^def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases\\(|^def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_time\\(|^def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_success_and_keyword_contract_workloads\\(|^def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_precompile_first_argument_before_timing\\(" tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still shows the owner block at lines `8036`, `8111`, `8154`, `8210`, `16939`, `17006`, `17052`, `17097`, and `17130`; and
   - `test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions(...)` starts immediately after that block at line `17175`, so this cleanup should stop at the compile-owner surface instead of widening into adjacent helper-keyword support.
 - Verification status in this run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` returned `4 passed` in this run.
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile'` returned `82 passed, 628 deselected, 22 subtests passed` in this run.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` returned `78 passed` in this run after the dedicated compile-owner contract tests moved into that file.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile'` returned `15 passed, 619 deselected, 22 subtests passed` in this run.
+
+## Completion
+- Moved the compiled-pattern `module.compile` owner-spec inventory and the prebuilt compile contract constants into `tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py`, keeping the existing filenames, workload ids, anchor pairs, callback flag materialization, and bounded ignorecase rejection payloads unchanged.
+- Moved the five dedicated compiled-pattern `module.compile` owner-contract tests into `tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` and deleted the inline owner-contract/test block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.

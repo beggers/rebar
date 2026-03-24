@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from functools import partial
 import pathlib
 import re
 from typing import Any
@@ -9,16 +10,27 @@ from typing import Any
 import pytest
 
 from rebar_harness.benchmarks import (
+    BENCHMARK_WORKLOADS_ROOT,
     Workload,
+)
+from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
+    _compiled_pattern_contract_expected_build_calls,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
 )
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    published_case_ids_by_signature,
+)
 from tests.benchmarks.standard_benchmark_anchor_support import (
+    StandardBenchmarkAnchorContractDefinition,
+    _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
 )
 from tests.python.fixture_parity_support import case_pattern
+
+MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
 
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
     {
@@ -31,6 +43,24 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
         "smoke",
     }
 )
+
+_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE = (
+    ("flags", "int", 0),
+)
+_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE = (
+    ("flags", "bool", False),
+)
+_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE = (
+    ("flags", "int", int(re.IGNORECASE)),
+)
+_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS = ("abc",)
+_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS = (
+    "(?P<word>abc)",
+)
+_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
+    "type": "ValueError",
+    "message_substring": "cannot process flags argument with a compiled pattern",
+}
 
 
 def _compiled_pattern_module_compile_keyword_kwargs_signature(
@@ -569,6 +599,125 @@ class _CompiledPatternModuleContractAnchorLane:
     expected_anchor_pairs: tuple[tuple[str, str], ...]
 
 
+@dataclass(frozen=True, slots=True)
+class _CompiledPatternModuleCompileKeywordOwnerSpec:
+    case_id: str
+    anchor_definition_name: str
+    keyword_signature: tuple[tuple[str, str, object], ...]
+    allowed_patterns: tuple[str, ...]
+    anchor_expectations: tuple[tuple[str, tuple[str, ...]], ...]
+    contract_filename: str
+    anchor_contract_filename: str
+    expected_anchor_pairs: tuple[tuple[str, str], ...]
+    expected_exception: dict[str, str] | None = None
+
+    def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
+        return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+            case,
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+        )
+
+    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
+        return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+            workload,
+            keyword_label=self.case_id,
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+            expected_exception=self.expected_exception,
+        )
+
+    def includes_workload(self, workload: Any) -> bool:
+        return _is_module_workflow_compiled_pattern_compile_keyword_workload(
+            workload,
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+            expected_exception=self.expected_exception,
+        )
+
+    def expected_anchor_case_ids(self) -> dict[tuple[str, str], tuple[str, ...]]:
+        return _definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            dict(self.anchor_expectations),
+        )
+
+    def expected_anchor_workload_ids(self) -> tuple[str, ...]:
+        return tuple(workload_id for workload_id, _ in self.anchor_expectations)
+
+    def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
+        return StandardBenchmarkAnchorContractDefinition(
+            name=self.anchor_definition_name,
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=self.expected_anchor_case_ids(),
+            include_workload=self.includes_workload,
+            correctness_case_signature=self.correctness_case_signature,
+            workload_signature=self.workload_signature,
+            run_callback_result_parity=True,
+        )
+
+    def contract_case(self) -> CompiledPatternModuleCompileContractCase:
+        return CompiledPatternModuleCompileContractCase(
+            route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
+            case_id=self.case_id,
+            manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+            source_selectors=(self.includes_workload,),
+            keyword_signature=self.keyword_signature,
+            allowed_patterns=self.allowed_patterns,
+            contract_filename=self.contract_filename,
+            anchor_contract_filename=self.anchor_contract_filename,
+            expected_anchor_pairs=self.expected_anchor_pairs,
+            expected_build_calls_builder=partial(
+                _compiled_pattern_contract_expected_build_calls,
+                label="module.compile contract",
+            ),
+            expected_exception=self.expected_exception,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class _CompiledPatternModuleCompileSuccessOwnerSpec:
+    anchor_definition_name: str
+    allowed_patterns: tuple[str, ...]
+    anchor_expectations: tuple[tuple[str, tuple[str, ...]], ...]
+    expected_anchor_pairs: tuple[tuple[str, str], ...]
+
+    def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
+        return _module_workflow_compiled_pattern_compile_correctness_case_signature(
+            case
+        )
+
+    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
+        return _module_workflow_compiled_pattern_compile_workload_signature(
+            workload
+        )
+
+    def includes_workload(self, workload: Any) -> bool:
+        return _is_module_workflow_compiled_pattern_compile_success_workload(
+            workload,
+            allowed_patterns=self.allowed_patterns,
+        )
+
+    def expected_anchor_case_ids(self) -> dict[tuple[str, str], tuple[str, ...]]:
+        return _definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            dict(self.anchor_expectations),
+        )
+
+    def expected_anchor_workload_ids(self) -> tuple[str, ...]:
+        return tuple(workload_id for workload_id, _ in self.anchor_expectations)
+
+    def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
+        return StandardBenchmarkAnchorContractDefinition(
+            name=self.anchor_definition_name,
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=self.expected_anchor_case_ids(),
+            include_workload=self.includes_workload,
+            correctness_case_signature=self.correctness_case_signature,
+            workload_signature=self.workload_signature,
+            run_callback_result_parity=True,
+        )
+
+
 def build_compiled_pattern_module_compile_contract_cases(
     *,
     manifest_path: pathlib.Path,
@@ -666,3 +815,317 @@ def build_compiled_pattern_module_contract_anchor_lanes(
             for source_workloads in (contract_case.source_workloads(),)
         ),
     )
+
+
+_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS = (
+    _CompiledPatternModuleCompileSuccessOwnerSpec(
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-literal-success"
+        ),
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-literal-warm-str-compiled-pattern",
+                ("workflow-module-compile-str-compiled-pattern",),
+            ),
+            (
+                "module-compile-literal-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-bytes-compiled-pattern",),
+            ),
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-literal-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-str-compiled-pattern",
+            ),
+            (
+                "module-compile-literal-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-bytes-compiled-pattern",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileSuccessOwnerSpec(
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-named-group-success"
+        ),
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-named-group-warm-str-compiled-pattern",
+                ("workflow-module-compile-str-compiled-pattern-named-group",),
+            ),
+            (
+                "module-compile-named-group-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-bytes-compiled-pattern-named-group",),
+            ),
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-named-group-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-named-group-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-bytes-compiled-pattern-named-group",
+            ),
+        ),
+    ),
+)
+
+
+_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="int-zero",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword"
+        ),
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern",
+                ("workflow-module-compile-flags-int-zero-str-compiled-pattern",),
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-flags-int-zero-bytes-compiled-pattern",),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-flags-int-zero-str-compiled-pattern",
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-flags-int-zero-bytes-compiled-pattern",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="int-zero-named-group",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-int-zero-"
+            "keyword-named-group"
+        ),
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-int-zero-str-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-int-zero-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-int-zero-bytes-compiled-pattern-named-group",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="bool-false",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword"
+        ),
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern",
+                ("workflow-module-compile-flags-bool-false-str-compiled-pattern",),
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-flags-bool-false-bytes-compiled-pattern",),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-flags-bool-false-str-compiled-pattern",
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-flags-bool-false-bytes-compiled-pattern",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="bool-false-named-group",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-bool-false-"
+            "keyword-named-group"
+        ),
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-bool-false-str-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_bool_false_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-bool-false-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-bool-false-bytes-compiled-pattern-named-group",
+            ),
+        ),
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="ignorecase",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
+            "keyword-rejection"
+        ),
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern",
+                ("workflow-module-compile-flags-ignorecase-str-compiled-pattern",),
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern",
+                ("workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-contract",
+                "workflow-module-compile-flags-ignorecase-str-compiled-pattern",
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-contract",
+                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern",
+            ),
+        ),
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
+    _CompiledPatternModuleCompileKeywordOwnerSpec(
+        case_id="ignorecase-named-group",
+        anchor_definition_name=(
+            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-"
+            "keyword-rejection-named-group"
+        ),
+        keyword_signature=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+        allowed_patterns=_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS,
+        anchor_expectations=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-ignorecase-str-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
+                (
+                    "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-"
+                    "named-group",
+                ),
+            ),
+        ),
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_contract.py"
+        ),
+        anchor_contract_filename=(
+            "python_benchmark_compiled_pattern_module_compile_ignorecase_named_group_keyword_anchor_contract.py"
+        ),
+        expected_anchor_pairs=(
+            (
+                "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-ignorecase-str-compiled-pattern-named-group",
+            ),
+            (
+                "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group-contract",
+                "workflow-module-compile-flags-ignorecase-bytes-compiled-pattern-named-group",
+            ),
+        ),
+        expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
+    ),
+)
+
+_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
+    build_compiled_pattern_module_compile_contract_cases(
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+        expected_build_calls_builder=partial(
+            _compiled_pattern_contract_expected_build_calls,
+            label="module.compile contract",
+        ),
+        success_owner_specs=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+        keyword_owner_specs=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+    )
+)
+
+_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
+    build_compiled_pattern_module_compile_contract_source_workload_params(
+        _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    )
+)
+
+_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
+    build_compiled_pattern_module_contract_anchor_lanes(
+        success_anchor_specs=(),
+        contract_cases=_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+        published_case_ids_by_signature=published_case_ids_by_signature,
+    )
+)
