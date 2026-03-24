@@ -4552,7 +4552,17 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.target_manifest,
             _is_collection_replacement_positional_indexlike_workload,
         )
-        self.assertEqual(len(expected_measured_workload_ids), 6)
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "module-split-maxsplit-indexlike-positional-purged-bytes",
+                "module-sub-count-indexlike-positional-warm-str",
+                "module-subn-count-indexlike-positional-purged-bytes",
+                "pattern-split-maxsplit-indexlike-positional-warm-str",
+                "pattern-sub-count-indexlike-positional-purged-bytes",
+                "pattern-subn-count-indexlike-positional-warm-str",
+            ),
+        )
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -4571,7 +4581,32 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="pattern.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 21)
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "pattern-split-maxsplit-keyword-warm-str",
+                "pattern-split-maxsplit-bool-keyword-warm-str",
+                "pattern-split-maxsplit-indexlike-keyword-warm-str",
+                "pattern-split-duplicate-maxsplit-keyword-warm-str",
+                "pattern-split-unexpected-keyword-warm-bytes",
+                "pattern-sub-count-keyword-purged-bytes",
+                "pattern-sub-count-bool-keyword-purged-bytes",
+                "pattern-sub-count-bool-true-keyword-purged-bytes",
+                "pattern-sub-count-indexlike-keyword-purged-bytes",
+                "pattern-sub-duplicate-count-keyword-warm-str",
+                "pattern-sub-unexpected-keyword-warm-str",
+                "pattern-sub-unexpected-keyword-after-positional-count-warm-str",
+                "pattern-sub-count-alias-keyword-warm-str",
+                "pattern-subn-count-keyword-warm-str",
+                "pattern-subn-count-bool-keyword-warm-str",
+                "pattern-subn-count-bool-false-keyword-warm-str",
+                "pattern-subn-count-indexlike-keyword-warm-str",
+                "pattern-subn-duplicate-count-keyword-warm-bytes",
+                "pattern-subn-unexpected-keyword-warm-bytes",
+                "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes",
+                "pattern-subn-count-alias-keyword-warm-bytes",
+            ),
+        )
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
@@ -4590,7 +4625,54 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             _is_collection_replacement_keyword_workload,
             operation_prefix="module.",
         )
-        self.assertEqual(len(expected_measured_workload_ids), 43)
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "module-split-maxsplit-keyword-purged-bytes",
+                "module-split-maxsplit-bool-keyword-purged-bytes",
+                "module-split-maxsplit-indexlike-keyword-purged-bytes",
+                "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+                "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
+                "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
+                "module-split-duplicate-maxsplit-keyword-purged-str",
+                "module-split-unexpected-keyword-purged-str",
+                "module-split-unexpected-keyword-purged-bytes",
+                "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
+                "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
+                "module-sub-count-keyword-warm-str",
+                "module-sub-count-bool-keyword-warm-str",
+                "module-sub-count-bool-false-keyword-warm-str",
+                "module-sub-count-indexlike-keyword-warm-str",
+                "module-sub-count-keyword-warm-str-compiled-pattern",
+                "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
+                "module-sub-count-bool-keyword-warm-str-compiled-pattern",
+                "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+                "module-sub-duplicate-count-keyword-warm-str",
+                "module-sub-unexpected-keyword-purged-str",
+                "module-sub-unexpected-keyword-after-positional-count-purged-str",
+                "module-sub-count-alias-keyword-purged-str",
+                "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
+                "module-sub-unexpected-keyword-purged-str-compiled-pattern",
+                "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
+                "module-sub-count-alias-keyword-purged-str-compiled-pattern",
+                "module-subn-count-keyword-purged-bytes",
+                "module-subn-count-bool-keyword-purged-bytes",
+                "module-subn-count-bool-true-keyword-purged-bytes",
+                "module-subn-count-indexlike-keyword-purged-bytes",
+                "module-subn-duplicate-count-keyword-warm-bytes",
+                "module-subn-unexpected-keyword-purged-bytes",
+                "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
+                "module-subn-count-alias-keyword-purged-bytes",
+                "module-subn-count-keyword-purged-bytes-compiled-pattern",
+                "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
+                "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
+                "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+                "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
+                "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
+                "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
+                "module-subn-count-alias-keyword-purged-bytes-compiled-pattern",
+            ),
+        )
         self._assert_zero_gap_manifest_workloads_measured(
             case,
             "collection-replacement-boundary",
