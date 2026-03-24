@@ -16,7 +16,8 @@ Required behavior:
 7. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
 8. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.
 9. When the task names test or benchmark files in its deliverables, or the repo already has direct public-surface coverage for the claimed slice, run the narrowest relevant existing module(s) as completion gates. For parity or implementation tasks on a slice that already sits on a published Python-path benchmark anchor, include the narrowest existing benchmark expectation module for that anchor so summary drift is detected immediately. Use repo-local tooling such as `./.venv/bin/python -m pytest` when available instead of skipping those checks because a global tool is missing.
-10. Keep terminal output tightly bounded, especially on large workload or report files: inspect only the targeted sections you need, prefer `rg`, narrow `sed`, or focused pytest selectors, and do not emit full-file diffs, full generated scorecards, or other bulky command output when a narrow snippet or summary will do.
+10. When a task points at one of the giant owner-path parity modules or combined scorecard tests, start with `rg -n` on the exact manifest id, case id, helper name, or pattern from the task notes, then open only the tight local slice around those hits. Do not page broad contiguous regions of files such as `tests/python/test_*_parity_suite.py`, `tests/conformance/test_combined_correctness_scorecards.py`, or tracked report artifacts unless you are editing that exact region and a narrow `rg` hit cannot show enough context.
+11. Keep terminal output tightly bounded, especially on large workload, parity, or report files: inspect only the targeted sections you need, prefer `rg`, narrow `sed`, or focused pytest selectors, and do not emit full-file diffs, full generated scorecards, or other bulky command output when a narrow snippet or summary will do.
 
 Constraints:
 - Do not edit `AGENTS.md`, `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, or `scripts/loop_forever.sh` unless the task explicitly says to.
@@ -28,6 +29,7 @@ Constraints:
 - Do not treat prior runtime logs, stale queue state, or historical sandbox failures as proof that the current run cannot write.
 - If a direct write attempt in this run fails, say so explicitly in the final message and include the failing path or command.
 - When checking large generated artifacts or edited workload files, do not run commands that print the whole file or the full repo diff unless the task cannot be completed otherwise; verify the exact touched rows and summary counters instead.
+- On large parity or scorecard owner files, never start with a wide `sed` range or whole-file dump. Find the exact ids or patterns first, then inspect only the narrow local context needed to edit or verify that slice.
 
 Definition of done:
 - The requested artifact exists and meets the task's acceptance criteria.
