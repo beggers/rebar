@@ -110,3 +110,137 @@ def test_pattern_verbose_regression_correctness_case_signature_stays_pinned() ->
         72,
         "str",
     )
+
+
+def test_pattern_boundary_wrong_text_model_selector_accepts_exact_trio_and_signature_shape() -> None:
+    workload = synthetic_workload(
+        manifest_id="pattern-boundary",
+        workload_id="pattern.search-wrong-text-model",
+        operation="pattern.search",
+        text_model="str",
+        haystack_text_model="bytes",
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "wrong text model",
+        },
+    )
+
+    assert support._is_pattern_boundary_wrong_text_model_workload(workload)
+    assert support._pattern_boundary_wrong_text_model_workload_signature(
+        workload
+    ) == (
+        "pattern.search",
+        "abc",
+        (b"abc",),
+        (),
+        0,
+        "str",
+    )
+
+
+def test_pattern_boundary_wrong_text_model_selector_rejects_compiled_pattern_window_and_keyword_rows() -> None:
+    compiled_pattern_workload = SimpleNamespace(
+        workload_id="pattern-search-compiled-pattern",
+        operation="pattern.search",
+        flags=0,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "wrong text model",
+        },
+        kwargs={},
+        pos=None,
+        endpos=None,
+    )
+    keyword_workload = SimpleNamespace(
+        workload_id="pattern-search-keyword",
+        operation="pattern.search",
+        flags=0,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=False,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "wrong text model",
+        },
+        kwargs={"pos": 1},
+        pos=None,
+        endpos=None,
+    )
+    windowed_workload = SimpleNamespace(
+        workload_id="pattern-search-window",
+        operation="pattern.search",
+        flags=0,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=False,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "wrong text model",
+        },
+        kwargs={},
+        pos=0,
+        endpos=None,
+    )
+
+    assert not support._is_pattern_boundary_wrong_text_model_workload(
+        compiled_pattern_workload
+    )
+    assert not support._is_pattern_boundary_wrong_text_model_workload(keyword_workload)
+    assert not support._is_pattern_boundary_wrong_text_model_workload(windowed_workload)
+
+
+def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str_and_bytes_rows() -> None:
+    str_case = _pattern_case(
+        case_id="workflow-pattern-search-str-wrong-text-model",
+        helper="search",
+        args=(b"abc",),
+        pattern="abc",
+        flags=0,
+        text_model="str",
+    )
+    bytes_case = _pattern_case(
+        case_id="workflow-pattern-match-bytes-wrong-text-model",
+        helper="match",
+        args=("abc",),
+        pattern="abc",
+        flags=0,
+        text_model="bytes",
+    )
+    wrong_haystack_type = _pattern_case(
+        case_id="workflow-pattern-fullmatch-str-not-wrong-text-model",
+        helper="fullmatch",
+        args=("abc",),
+        pattern="abc",
+        flags=0,
+        text_model="str",
+    )
+
+    assert support._pattern_boundary_wrong_text_model_correctness_case_signature(
+        str_case
+    ) == (
+        "pattern.search",
+        "abc",
+        (b"abc",),
+        (),
+        0,
+        "str",
+    )
+    assert support._pattern_boundary_wrong_text_model_correctness_case_signature(
+        bytes_case
+    ) == (
+        "pattern.match",
+        b"abc",
+        ("abc",),
+        (),
+        0,
+        "bytes",
+    )
+    assert (
+        support._pattern_boundary_wrong_text_model_correctness_case_signature(
+            wrong_haystack_type
+        )
+        is None
+    )

@@ -1,6 +1,6 @@
 ## RBR-1231: Collapse wrong-text-model anchor support onto domain helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -67,3 +67,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py -k 'wrong_text_model or compiled_pattern_module_boundary_validation_matches_manifest_and_payload_entry_points'` passed with `73 passed, 42 deselected`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` also passed with `77 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently succeeds, while the full combined suite is red for unrelated alternation-heavy callable replacement expectation drift, so this task uses collection-only coverage there to validate import rewiring without inheriting that separate failure.
+
+## Completion Note
+- Landed by moving the direct-`Pattern` wrong-text-model selector/signature helpers into `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py` and the compiled-pattern module selector into `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`, then rewiring `tests/benchmarks/wrong_text_model_benchmark_owner_support.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import those owners directly.
+- Rehomed the focused selector/signature assertions into `tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` and `tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py`, keeping the payload round-trip coverage on the existing owner-support and manifest-validation tests.
+- Deleted `tests/benchmarks/wrong_text_model_benchmark_anchor_support.py` and `tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py`; final `git diff --name-status -- tests/benchmarks/wrong_text_model_benchmark_anchor_support.py tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py` reports `D` for both paths, and `rg -n "wrong_text_model_benchmark_anchor_support" tests/benchmarks` returns no matches.
+- Verification in this landing run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py -k 'wrong_text_model or compiled_pattern_module_boundary_validation_matches_manifest_and_payload_entry_points'` passed with `66 passed, 52 deselected`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `107 tests collected`.
+  - `bash -lc "! test -e tests/benchmarks/wrong_text_model_benchmark_anchor_support.py && ! test -e tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py"` passed.

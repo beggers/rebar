@@ -18,16 +18,16 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
 )
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _compiled_pattern_module_helper_route,
+    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
     _run_cpython_compiled_pattern_module_helper_workload,
+)
+from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
+    _is_pattern_boundary_wrong_text_model_workload,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
     COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
-)
-from tests.benchmarks.wrong_text_model_benchmark_anchor_support import (
-    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-    _is_pattern_boundary_wrong_text_model_workload,
 )
 
 MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"

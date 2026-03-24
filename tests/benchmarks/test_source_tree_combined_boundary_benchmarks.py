@@ -77,15 +77,21 @@ from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
     _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS,
     _is_pattern_bounded_wildcard_workload,
+    _is_pattern_boundary_wrong_text_model_workload,
     _is_pattern_verbose_regression_workload,
     _pattern_bounded_wildcard_correctness_case_signature,
     _pattern_bounded_wildcard_workload_signature,
+    _pattern_boundary_wrong_text_model_correctness_case_signature,
+    _pattern_boundary_wrong_text_model_workload_signature,
     _pattern_verbose_regression_correctness_case_signature,
     _pattern_verbose_regression_workload_signature,
 )
 from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
     _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
     _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+)
+from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
+    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
 )
 from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
     _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
@@ -120,12 +126,6 @@ from tests.benchmarks.standard_benchmark_anchor_support import (
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
     StandardBenchmarkAnchorContractDefinition,
-)
-from tests.benchmarks.wrong_text_model_benchmark_anchor_support import (
-    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-    _is_pattern_boundary_wrong_text_model_workload,
-    _pattern_boundary_wrong_text_model_correctness_case_signature,
-    _pattern_boundary_wrong_text_model_workload_signature,
 )
 from tests.conftest import (
     REPO_ROOT,
