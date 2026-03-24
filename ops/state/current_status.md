@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1709 cases across 114 manifests, with all 1709 passing in the current slice; the benchmark publication covers 1067/1067 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The next surviving frontier is quantified conditional callable correctness publication on the shared callable owner path.
+- The next surviving frontier is the bounded quantified conditional callable correctness-publication slice for `r"a(b)?c(?(1)d|e){2}"` and `r"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -332,7 +332,7 @@ The published correctness slice now covers 1709 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The next surviving frontier is bytes nested conditional callable benchmark catch-up on the shared callable owner path.
+- The next surviving frontier is the bounded quantified conditional callable correctness-publication slice for `r"a(b)?c(?(1)d|e){2}"` and `r"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
