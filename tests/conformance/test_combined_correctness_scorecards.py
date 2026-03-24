@@ -941,15 +941,19 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-conditional-group-exists-present-bytes",
             "module-sub-callable-conditional-group-exists-alternation-present-first-arm-bytes",
             "module-sub-callable-conditional-group-exists-nested-present-bytes",
+            "module-sub-callable-conditional-group-exists-quantified-present-bytes",
             "pattern-subn-callable-conditional-group-exists-absent-bytes",
             "pattern-subn-callable-conditional-group-exists-alternation-absent-second-arm-bytes",
             "pattern-subn-callable-conditional-group-exists-nested-absent-bytes",
+            "pattern-subn-callable-conditional-group-exists-quantified-absent-bytes",
             "module-sub-callable-named-conditional-group-exists-present-bytes",
             "module-sub-callable-named-conditional-group-exists-alternation-present-first-arm-bytes",
             "module-sub-callable-named-conditional-group-exists-nested-present-bytes",
+            "module-sub-callable-named-conditional-group-exists-quantified-present-bytes",
             "pattern-subn-callable-named-conditional-group-exists-absent-bytes",
             "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-bytes",
             "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
             "module-sub-callable-conditional-group-exists-negative-count-bytes",
             "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
@@ -5267,15 +5271,18 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
             ),
         )
-        self.assertFalse(
-            any("-quantified-" in case_id for case_id in representative_bytes_case_ids)
+        quantified_bytes_case_ids = tuple(
+            case_id for case_id in representative_bytes_case_ids if "-quantified-" in case_id
+        )
+        self.assertEqual(
+            quantified_bytes_case_ids,
+            tuple(f"{case_id.removesuffix('-str')}-bytes" for case_id in quantified_str_only_case_ids),
         )
         self.assertEqual(
             representative_bytes_case_ids,
             tuple(
                 f"{case_id.removesuffix('-str')}-bytes"
                 for case_id in representative_str_case_ids
-                if "-quantified-" not in case_id
             ),
         )
         self.assertEqual(

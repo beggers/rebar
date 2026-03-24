@@ -331,6 +331,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-nested-absent-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-nested-present-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
+                "module-sub-callable-conditional-group-exists-quantified-present-bytes",
+                "module-subn-callable-conditional-group-exists-quantified-absent-bytes",
+                "pattern-sub-callable-conditional-group-exists-quantified-present-bytes",
+                "pattern-subn-callable-conditional-group-exists-quantified-absent-bytes",
+                "module-sub-callable-named-conditional-group-exists-quantified-present-bytes",
+                "module-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-present-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
@@ -346,17 +354,19 @@ CALLABLE_MANIFEST_SPECS = (
                 rb"a(b)?c(?(1)d|e)",
                 rb"a(b)?c(?(1)(de|df)|(eg|eh))",
                 rb"a(b)?c(?(1)(?(1)d|e)|f)",
+                rb"a(b)?c(?(1)d|e){2}",
                 rb"a(?P<word>b)?c(?(word)d|e)",
                 rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
                 rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+                rb"a(?P<word>b)?c(?(word)d|e){2}",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 16,
-                ("module_call", "subn"): 16,
-                ("pattern_call", "sub"): 16,
-                ("pattern_call", "subn"): 16,
+                ("module_call", "sub"): 18,
+                ("module_call", "subn"): 18,
+                ("pattern_call", "sub"): 18,
+                ("pattern_call", "subn"): 18,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,

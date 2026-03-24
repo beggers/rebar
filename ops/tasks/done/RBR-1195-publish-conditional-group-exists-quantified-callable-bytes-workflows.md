@@ -1,6 +1,6 @@
 # RBR-1195: Publish conditional group-exists quantified callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,14 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` returned `45 passed, 2344 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-quantified-callable-bytes-current.py` returned `64 executed / 64 passed`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1717 executed / 1717 passed`.
+
+## Completion
+- Extended `/home/ubuntu/rebar/tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` with the exact eight quantified conditional callable `bytes` publication rows for numbered and named module/pattern `sub()` and `subn()` workflows, keeping them on the shared conditional callable owner path.
+- Updated `/home/ubuntu/rebar/tests/python/test_callable_replacement_parity_suite.py` so the callable manifest contract now expects those eight additional quantified `bytes` rows, the matching `bytes` compile-pattern anchors, and the widened per-helper counts.
+- Updated `/home/ubuntu/rebar/tests/conformance/test_combined_correctness_scorecards.py` so the shared representative scorecard expectations now include the quantified `bytes` publication rows and keep the bytes/str representative ordering assertions aligned.
+- Republished `/home/ubuntu/rebar/reports/correctness/latest.py`; the tracked artifact now shows `collection.replacement.conditional_group_exists.callable` at `72` executed / `72` passed, `collection.replacement.conditional_group_exists.callable.bytes` at `36` executed / `36` passed, and the combined summary at `1725` executed / `1725` passed across `114` manifests.
+- Verification in this run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and quantified'` -> `50 passed, 4951 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` -> `45 passed, 2348 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1195-conditional-quantified-callable-bytes.py` -> `72 executed / 72 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> `1725 executed / 1725 passed`
