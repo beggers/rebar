@@ -14,7 +14,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import _write_test_manifest
 from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
-    _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
     CompiledPatternModuleCompileContractCase,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
@@ -48,13 +48,6 @@ def _manifest_kwargs_source(kwargs_payload: dict[str, object] | None) -> tuple[s
         else ""
     )
     return manifest_imports, "{" + rendered_items + "}"
-
-
-COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = tuple(
-    owner_spec.contract_case()
-    for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
-)
-
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
     tmp_path: pathlib.Path,
@@ -477,7 +470,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
     ("case_group", "source_workload"),
     tuple(
         pytest.param(case_group, source_workload, id=source_workload.workload_id)
-        for case_group in COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS
+        for case_group in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         for source_workload in case_group.source_workloads()
         if source_workload.expected_exception
     ),
