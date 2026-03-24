@@ -10,27 +10,26 @@ from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 
 
+_ANCHOR_SUPPORT_CACHED_FUNCTIONS = (
+    benchmark_test_support.manifest_workloads,
+    benchmark_test_support._live_manifest_workloads_by_id,
+    anchor_support.published_case_ids_by_signature,
+    anchor_support.published_cases_by_id,
+)
+
+
+def _clear_anchor_support_caches() -> None:
+    for cached_function in _ANCHOR_SUPPORT_CACHED_FUNCTIONS:
+        cache_clear = getattr(cached_function, "cache_clear", None)
+        if cache_clear is not None:
+            cache_clear()
+
+
 @pytest.fixture
 def anchor_support_cache_guard() -> None:
-    for cached_function in (
-        benchmark_test_support.manifest_workloads,
-        benchmark_test_support._live_manifest_workloads_by_id,
-        anchor_support.published_case_ids_by_signature,
-        anchor_support.published_cases_by_id,
-    ):
-        cache_clear = getattr(cached_function, "cache_clear", None)
-        if cache_clear is not None:
-            cache_clear()
+    _clear_anchor_support_caches()
     yield
-    for cached_function in (
-        benchmark_test_support.manifest_workloads,
-        benchmark_test_support._live_manifest_workloads_by_id,
-        anchor_support.published_case_ids_by_signature,
-        anchor_support.published_cases_by_id,
-    ):
-        cache_clear = getattr(cached_function, "cache_clear", None)
-        if cache_clear is not None:
-            cache_clear()
+    _clear_anchor_support_caches()
 
 
 def _synthetic_manifest(
