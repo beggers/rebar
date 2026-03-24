@@ -38,7 +38,6 @@ from tests.python.fixture_parity_support import (
     fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
-    generated_compile_cases_for_specs,
     generated_spec_by_manifest_id,
     generated_specs_by_manifest_id,
     id_attribute_pytest_id,
@@ -1075,7 +1074,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedBranchLocalParitySpec,
 ) -> None:
-    compile_cases = generated_compile_cases_for_specs((spec,))
+    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
     candidate_texts = build_wrapped_body_candidate_texts(
         spec.candidate_body_atoms,
         spec.candidate_lengths,
@@ -1268,7 +1267,10 @@ def test_compile_metadata_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    generated_compile_cases_for_specs(GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS),
+    fixture_cases_for_operation(
+        tuple(spec.bundle for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS),
+        "compile",
+    ),
     ids=fixture_case_pytest_id,
 )
 def test_generated_quantified_branch_local_text_matrix_matches_cpython(

@@ -5245,7 +5245,7 @@ def test_generated_specs_by_manifest_id_preserves_order_and_owner_labelled_looku
         )
 
 
-def test_generated_compile_cases_for_specs_preserves_flattened_order_across_bundles(
+def test_generated_compile_anchor_case_selection_preserves_flattened_order_across_bundles(
     tmp_path: pathlib.Path,
 ) -> None:
     str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
@@ -5273,7 +5273,10 @@ def test_generated_compile_cases_for_specs_preserves_flattened_order_across_bund
 
     assert tuple(
         case.case_id
-        for case in fixture_parity_support.generated_compile_cases_for_specs(specs)
+        for case in fixture_cases_for_operation(
+            tuple(spec.bundle for spec in specs),
+            "compile",
+        )
     ) == (
         "bundle-loader-contract-mixed-compile-bytes",
         "bundle-loader-contract-mixed-compile-str",
@@ -5304,7 +5307,7 @@ def test_generated_compile_anchor_helpers_preserve_representative_spec_contract_
         expected_text_models=frozenset({"bytes", "str"}),
     )
     specs_by_manifest_id = fixture_parity_support.generated_specs_by_manifest_id((spec,))
-    compile_cases = fixture_parity_support.generated_compile_cases_for_specs((spec,))
+    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
 
     assert (
         fixture_parity_support.generated_spec_by_manifest_id(

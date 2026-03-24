@@ -999,15 +999,6 @@ def generated_spec_by_manifest_id(
         ) from exc
 
 
-def generated_compile_cases_for_specs(
-    specs: Iterable[object],
-) -> tuple[FixtureCase, ...]:
-    return fixture_cases_for_operation(
-        tuple(getattr(spec, "bundle") for spec in specs),
-        "compile",
-    )
-
-
 def assert_fixture_bundle_contract(
     bundle: FixtureBundle,
     *,
