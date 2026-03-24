@@ -8003,6 +8003,418 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered nested conditional callable replacement `count=None` follow-on on `zzabcdzz`, keeping CPython's invalid-count `TypeError` explicit before the callback can read `match.group(1)`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named nested conditional callable replacement `count=None` follow-on on `zzacfzz`, keeping the invalid-count `TypeError` explicit on the same owner-path haystack before `match.group(\"word\")` can run."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "present",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered nested conditional callable replacement `count=None` follow-on on the compiled entrypoint, keeping CPython's invalid-count `TypeError` explicit."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named nested conditional callable replacement `count=None` follow-on on the compiled entrypoint, keeping the invalid-count `TypeError` explicit before `match.group(\"word\")` can run."
+      ]
+    },
+    {
+      "id": "module-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "bytes",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.sub helper path for the bounded numbered nested conditional callable replacement `count=None` follow-on on `zzabcdzz`, keeping CPython's invalid-count `TypeError` explicit before the callback can read `match.group(1)`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "bytes",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.subn helper path for the bounded named nested conditional callable replacement `count=None` follow-on on `zzacfzz`, keeping the invalid-count `TypeError` explicit on the same owner-path haystack before `match.group(\"word\")` can run."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "present",
+        "bytes",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.sub helper path for the bounded numbered nested conditional callable replacement `count=None` follow-on on the compiled entrypoint, keeping CPython's invalid-count `TypeError` explicit."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "bytes",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.subn helper path for the bounded named nested conditional callable replacement `count=None` follow-on on the compiled entrypoint, keeping the invalid-count `TypeError` explicit before `match.group(\"word\")` can run."
+      ]
+    },
+    {
       "id": "module-sub-numbered-quantified-conditional-group-exists-replacement-warm-str",
       "bucket": "module-sub",
       "family": "module",
