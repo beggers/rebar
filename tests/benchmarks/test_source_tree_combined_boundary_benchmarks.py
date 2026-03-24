@@ -37,6 +37,11 @@ from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     ordered_published_subset_filenames,
 )
+from tests.benchmarks.compile_proxy_benchmark_anchor_support import (
+    compile_proxy_correctness_case_signature,
+    compile_proxy_workload_signature,
+    is_compile_proxy_workload,
+)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _manifest_workloads,
     _selected_manifest_workloads,
@@ -7318,45 +7323,6 @@ OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 )
 
 
-def _compile_proxy_signature(
-    pattern: str | bytes,
-    *,
-    flags: int,
-    text_model: str,
-) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str]:
-    return ("module.compile", pattern, (), (), flags, text_model)
-
-
-def _compile_proxy_correctness_case_signature(
-    case: Any,
-) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str] | None:
-    if case.operation != "compile":
-        return None
-    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
-    assert isinstance(pattern, (str, bytes))
-    return _compile_proxy_signature(
-        pattern,
-        flags=case.flags or 0,
-        text_model=case.text_model or "str",
-    )
-
-
-def _compile_proxy_workload_signature(
-    workload: Any,
-) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str]:
-    pattern = workload.pattern_payload()
-    assert isinstance(pattern, (str, bytes))
-    return _compile_proxy_signature(
-        pattern,
-        flags=workload.flags,
-        text_model=workload.text_model,
-    )
-
-
-def _is_compile_proxy_workload(workload: Any) -> bool:
-    return workload.operation in {"compile", "module.compile"}
-
-
 _COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
     {"module.split", "pattern.split"}
 )
@@ -9951,9 +9917,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                 },
             )
         ),
-        include_workload=_is_compile_proxy_workload,
-        correctness_case_signature=_compile_proxy_correctness_case_signature,
-        workload_signature=_compile_proxy_workload_signature,
+        include_workload=is_compile_proxy_workload,
+        correctness_case_signature=compile_proxy_correctness_case_signature,
+        workload_signature=compile_proxy_workload_signature,
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="collection-replacement-module-positional-indexlike",

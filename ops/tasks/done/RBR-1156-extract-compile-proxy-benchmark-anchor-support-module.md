@@ -1,6 +1,6 @@
 ## RBR-1156: Extract compile-proxy benchmark anchor support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -50,3 +50,8 @@ Created: 2026-03-24
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compile-proxy and standard_benchmark'` collected the five exact node ids used above in this run; and
   - the `Verification` command above returned `5 passed` in this run.
+
+## Completion
+- Extracted the inline compile-proxy helper block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` into `tests/benchmarks/compile_proxy_benchmark_anchor_support.py` and updated the owner definition to import that support directly.
+- Added focused support-contract coverage in `tests/benchmarks/test_compile_proxy_benchmark_anchor_support.py` for signature shape and the compile/module.compile workload inclusion rule.
+- Verified the new support tests plus the five required compile-proxy owner-file benchmark-anchor tests with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q`.
