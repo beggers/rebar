@@ -3887,6 +3887,21 @@ def _conditional_group_exists_callable_bytes_slice_workloads(
     )
 
 
+def _conditional_group_exists_quantified_callable_str_workloads(
+) -> tuple[Workload, ...]:
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in load_manifest(
+            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
+        ).workloads
+    }
+    expectation = _conditional_group_exists_quantified_callable_replacement_expectation()
+    expected_workload_ids = expectation.expected_workload_ids
+    return tuple(
+        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    )
+
+
 @cache
 def _conditional_group_exists_alternation_callable_bytes_workloads(
 ) -> tuple[Workload, ...]:
@@ -5378,6 +5393,75 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
+
+    def test_conditional_group_exists_quantified_callable_str_workloads_round_trip_preserves_outcomes(
+        self,
+    ) -> None:
+        source_workloads = _conditional_group_exists_quantified_callable_str_workloads()
+
+        self.assertEqual(
+            tuple(workload.workload_id for workload in source_workloads),
+            CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        )
+
+        for source_workload in source_workloads:
+            with self.subTest(workload_id=source_workload.workload_id):
+                payload = workload_to_payload(source_workload)
+                round_tripped = workload_from_payload(payload)
+                expected_signature = _callable_match_group_signature(
+                    source_workload.replacement_payload()
+                )
+                observed_signature = _callable_match_group_signature(
+                    round_tripped.replacement_payload()
+                )
+
+                self.assertEqual(payload["text_model"], "str")
+                self.assertEqual(round_tripped.text_model, "str")
+                self.assertEqual(payload["count"], source_workload.count)
+                self.assertEqual(round_tripped.count, source_workload.count)
+                self.assertEqual(
+                    payload["expected_exception"],
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.expected_exception,
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.pattern_payload(),
+                    source_workload.pattern_payload(),
+                )
+                self.assertEqual(
+                    round_tripped.haystack_payload(),
+                    source_workload.haystack_payload(),
+                )
+                self.assertEqual(observed_signature, expected_signature)
+                self.assertIsNotNone(observed_signature)
+                assert observed_signature is not None
+                self.assertIsInstance(observed_signature[2], str)
+                self.assertIsInstance(observed_signature[3], str)
+
+                if source_workload.expected_exception is None:
+                    assert_benchmark_workload_matches_expected_result(
+                        round_tripped,
+                        run_benchmark_workload_with_cpython(source_workload),
+                    )
+                    continue
+
+                expected_exception = source_workload.expected_exception
+                assert expected_exception is not None
+
+                with pytest.raises(
+                    TypeError,
+                    match=re.escape(expected_exception["message_substring"]),
+                ) as expected_error:
+                    run_benchmark_workload_with_cpython(source_workload)
+                with pytest.raises(TypeError) as observed_error:
+                    run_benchmark_workload_with_cpython(round_tripped)
+                self.assertEqual(
+                    str(observed_error.value),
+                    str(expected_error.value),
+                )
 
     def test_conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads(
         self,
