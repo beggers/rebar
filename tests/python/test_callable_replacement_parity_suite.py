@@ -1001,6 +1001,89 @@ CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES = (
     ),
 )
 
+CONDITIONAL_GROUP_EXISTS_NESTED_NEAR_MISS_CASES = (
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-nested-present-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(b)?c(?(1)(?(1)d|e)|f)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-nested-absent-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(b)?c(?(1)(?(1)d|e)|f)",
+        helper="subn",
+        text="zzacezz",
+        count=1,
+        expected_result=("zzacezz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-sub-no-match-nested-present-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(b)?c(?(1)(?(1)d|e)|f)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-subn-no-match-nested-absent-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(b)?c(?(1)(?(1)d|e)|f)",
+        helper="subn",
+        text="zzacezz",
+        count=1,
+        expected_result=("zzacezz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-named-sub-no-match-nested-present-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="module-named-subn-no-match-nested-absent-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        helper="subn",
+        text="zzacezz",
+        count=1,
+        expected_result=("zzacezz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-nested-present-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-nested-absent-branch-rejects-else-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        helper="subn",
+        text="zzacezz",
+        count=1,
+        expected_result=("zzacezz", 0),
+    ),
+)
+
 
 class CallbackExplosion(RuntimeError):
     pass
@@ -3016,6 +3099,22 @@ def test_callable_replacement_near_miss_paths_leave_input_unchanged(
     ids=lambda case: case.id,
 )
 def test_conditional_group_exists_bytes_callable_replacement_near_miss_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    near_miss_case: CallableNearMissCase,
+) -> None:
+    _, backend = regex_backend
+    assert_callable_replacement_near_miss_path_leaves_input_unchanged(
+        backend=backend,
+        near_miss_case=near_miss_case,
+    )
+
+
+@pytest.mark.parametrize(
+    "near_miss_case",
+    CONDITIONAL_GROUP_EXISTS_NESTED_NEAR_MISS_CASES,
+    ids=lambda case: case.id,
+)
+def test_conditional_group_exists_nested_callable_replacement_near_miss_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
     near_miss_case: CallableNearMissCase,
 ) -> None:
