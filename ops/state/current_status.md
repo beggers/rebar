@@ -23,7 +23,7 @@ The published correctness slice now covers 1653 cases across 114 manifests, all 
 
 ## Queue Frontier
 - Surviving ready feature follow-on: `RBR-1135`, catching up bounded bytes replacement-template benchmarks for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
-- No additional ready, blocked, or in-progress feature task currently survives in this checkout.
+- One blocked feature task also survives: `RBR-1133`, which stays blocked until the missing bytes replacement-template runtime paths land for the same conditional slice.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
