@@ -771,32 +771,14 @@ def build_compiled_pattern_module_compile_contract_source_workload_params(
 
 def build_compiled_pattern_module_contract_anchor_lanes(
     *,
-    success_anchor_specs: Iterable[Any],
     contract_cases: Iterable[CompiledPatternModuleCompileContractCase],
     published_case_ids_by_signature: Callable[
         [Callable[[Any], tuple[Any, ...] | None]],
         dict[tuple[Any, ...], tuple[str, ...]],
     ],
 ) -> tuple[_CompiledPatternModuleContractAnchorLane, ...]:
-    success_anchor_specs = tuple(success_anchor_specs)
     contract_cases = tuple(contract_cases)
     return (
-        *(
-            _CompiledPatternModuleContractAnchorLane(
-                case_id=anchor_spec.case_id,
-                contract_filename=anchor_spec.contract_filename,
-                source_workloads=anchor_spec.source_workloads,
-                contract_builder_spec=anchor_spec.owner_spec.contract_builder_spec,
-                expected_anchor_case_ids=anchor_spec.expected_anchor_case_ids,
-                anchor_case_ids=published_case_ids_by_signature(
-                    anchor_spec.correctness_case_signature
-                ),
-                workload_signature=anchor_spec.workload_signature,
-                include_workload=anchor_spec.include_workload,
-                expected_anchor_pairs=anchor_spec.expected_anchored_pairs,
-            )
-            for anchor_spec in success_anchor_specs
-        ),
         *(
             _CompiledPatternModuleContractAnchorLane(
                 case_id=contract_case.case_id,
@@ -1124,7 +1106,6 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
 
 _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
     build_compiled_pattern_module_contract_anchor_lanes(
-        success_anchor_specs=(),
         contract_cases=_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
         published_case_ids_by_signature=published_case_ids_by_signature,
     )
