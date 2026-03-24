@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from rebar_harness.benchmarks import workload_from_payload
+from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks import wrong_text_model_benchmark_anchor_support as support
 
 
@@ -14,50 +14,6 @@ def _manifest_id_for_operation(operation: str) -> str:
     if operation.startswith("pattern."):
         return "pattern-boundary"
     return "wrong-text-model-support"
-
-
-def _workload(
-    *,
-    workload_id: str,
-    operation: str,
-    pattern: str = "abc",
-    haystack: str = "abc",
-    text_model: str = "str",
-    haystack_text_model: str | None = None,
-    use_compiled_pattern: bool = False,
-    expected_exception: dict[str, str] | None = None,
-    kwargs: dict[str, object] | None = None,
-    pos: object = None,
-    endpos: object = None,
-) -> object:
-    return workload_from_payload(
-        {
-            "manifest_id": _manifest_id_for_operation(operation),
-            "workload_id": workload_id,
-            "bucket": operation.replace(".", "-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": pattern,
-            "haystack": haystack,
-            "expected_exception": expected_exception,
-            "flags": 0,
-            "use_compiled_pattern": use_compiled_pattern,
-            "kwargs": {} if kwargs is None else kwargs,
-            "text_model": text_model,
-            "haystack_text_model": haystack_text_model,
-            "pos": pos,
-            "endpos": endpos,
-            "cache_mode": "warm",
-            "timing_scope": "module-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
 
 
 def _fake_workload(
@@ -137,7 +93,8 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounde
     haystack_text_model: str,
     message_substring: str,
 ) -> None:
-    workload = _workload(
+    workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation(operation),
         workload_id=f"{operation}-wrong-text-model",
         operation=operation,
         text_model="str" if haystack_text_model == "bytes" else "bytes",
@@ -211,7 +168,8 @@ def test_pattern_boundary_wrong_text_model_selector_accepts_exact_trio_and_signa
     haystack_text_model: str,
     expected_haystack: object,
 ) -> None:
-    workload = _workload(
+    workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation(operation),
         workload_id=f"{operation}-wrong-text-model",
         operation=operation,
         text_model=text_model,

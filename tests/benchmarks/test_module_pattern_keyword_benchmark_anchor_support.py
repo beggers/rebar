@@ -2,59 +2,11 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from rebar_harness.benchmarks import workload_from_payload
+from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks import (
     module_pattern_keyword_benchmark_anchor_support as support,
 )
 from tests.python.fixture_parity_support import IndexLike
-
-
-def _module_pattern_workload(
-    *,
-    workload_id: str,
-    operation: str,
-    pattern: str = "abc",
-    haystack: str = "zabc",
-    kwargs: dict[str, object] | None = None,
-    expected_exception: dict[str, str] | None = None,
-    flags: int = 0,
-    use_compiled_pattern: bool = False,
-    text_model: str = "str",
-    categories: list[str] | None = None,
-    pos: object | None = None,
-    endpos: object | None = None,
-) -> object:
-    return workload_from_payload(
-        {
-            "manifest_id": "module-pattern-boundary",
-            "workload_id": workload_id,
-            "bucket": operation.replace(".", "-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": pattern,
-            "haystack": haystack,
-            "replacement": None,
-            "expected_exception": expected_exception,
-            "flags": flags,
-            "use_compiled_pattern": use_compiled_pattern,
-            "count": 0,
-            "maxsplit": 0,
-            "kwargs": {} if kwargs is None else kwargs,
-            "text_model": text_model,
-            "haystack_text_model": None,
-            "pos": pos,
-            "endpos": endpos,
-            "cache_mode": "warm",
-            "timing_scope": "module-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [] if categories is None else categories,
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
 
 
 def _module_pattern_case(
@@ -83,9 +35,11 @@ def _module_pattern_case(
 
 
 def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> None:
-    workload = _module_pattern_workload(
+    workload = synthetic_workload(
+        manifest_id="module-pattern-boundary",
         workload_id="module-search-flags-keyword",
         operation="module.search",
+        haystack="zabc",
         kwargs={"flags": {"type": "indexlike", "value": 2}},
         flags=2,
     )
@@ -118,9 +72,11 @@ def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> No
 
 
 def test_module_keyword_error_workload_stays_pinned() -> None:
-    workload = _module_pattern_workload(
+    workload = synthetic_workload(
+        manifest_id="module-pattern-boundary",
         workload_id="module-search-duplicate-flags-keyword",
         operation="module.search",
+        haystack="zabc",
         kwargs={"flags": {"type": "indexlike", "value": 4}},
         expected_exception={
             "type": "TypeError",
@@ -142,7 +98,8 @@ def test_module_keyword_error_workload_stays_pinned() -> None:
 
 
 def test_pattern_window_positional_indexlike_workload_and_case_signatures_stay_pinned() -> None:
-    workload = _module_pattern_workload(
+    workload = synthetic_workload(
+        manifest_id="module-pattern-boundary",
         workload_id="pattern-finditer-window-indexlike",
         operation="pattern.finditer",
         haystack="zabcabc",
@@ -181,7 +138,8 @@ def test_pattern_window_positional_indexlike_workload_and_case_signatures_stay_p
 
 
 def test_pattern_keyword_window_workload_and_case_signatures_stay_pinned() -> None:
-    workload = _module_pattern_workload(
+    workload = synthetic_workload(
+        manifest_id="module-pattern-boundary",
         workload_id="pattern-findall-bool-window-keyword",
         operation="pattern.findall",
         haystack="zabcabc",

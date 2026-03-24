@@ -1,6 +1,6 @@
 # RBR-1204: Collapse synthetic benchmark workload builders onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -61,3 +61,6 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_recording_benchmark_module_support.py tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py` returned `41 passed in 0.13s`; and
   - the negative `rg` check named above currently fails exactly because the duplicated local builders are still present in this checkout.
+- Completion note:
+  - Added `synthetic_workload(...)` to `tests/benchmarks/benchmark_test_support.py` and switched the seven listed benchmark support tests over to it, preserving their existing manifest ids, timing scopes, kwargs handling, replacement/count/maxsplit behavior, category handling, and compiled-pattern routing without leaving local wrapper aliases behind.
+  - Verification in this run: `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_recording_benchmark_module_support.py tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py` returned `39 passed in 0.13s`, and the negative `rg` check from this task now succeeds.

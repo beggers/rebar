@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from rebar_harness.benchmarks import load_manifest, workload_from_payload
+from rebar_harness.benchmarks import load_manifest
+from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks import grouped_alternation_benchmark_anchor_support as support
 from tests.benchmarks.source_tree_benchmark_anchor_support import published_cases_by_id
 from tests.conftest import REPO_ROOT
@@ -23,38 +24,6 @@ def _manifest_workloads_by_id(manifest_path: object) -> dict[str, object]:
         workload.workload_id: workload
         for workload in load_manifest(manifest_path).workloads
     }
-
-
-def _synthetic_workload(*, workload_id: str, operation: str) -> object:
-    return workload_from_payload(
-        {
-            "manifest_id": "grouped-alternation-boundary",
-            "workload_id": workload_id,
-            "bucket": operation.replace(".", "-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": "a(b|c)d",
-            "haystack": "abdacd",
-            "replacement": "\\1x",
-            "expected_exception": None,
-            "flags": 0,
-            "use_compiled_pattern": False,
-            "count": 0,
-            "maxsplit": 0,
-            "kwargs": {},
-            "text_model": "str",
-            "haystack_text_model": None,
-            "cache_mode": "warm",
-            "timing_scope": "module-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
 
 
 def test_grouped_alternation_live_signatures_cover_non_replacement_routes() -> None:
@@ -290,9 +259,13 @@ def test_grouped_alternation_replacement_live_signatures_cover_module_and_patter
 
 
 def test_grouped_alternation_workload_helpers_reject_unsupported_operations() -> None:
-    unsupported_workload = _synthetic_workload(
+    unsupported_workload = synthetic_workload(
+        manifest_id="grouped-alternation-boundary",
         workload_id="module-match-grouped-alternation-unsupported",
         operation="module.match",
+        pattern="a(b|c)d",
+        haystack="abdacd",
+        replacement="\\1x",
     )
 
     with pytest.raises(AssertionError, match="unexpected grouped-alternation"):
@@ -302,9 +275,13 @@ def test_grouped_alternation_workload_helpers_reject_unsupported_operations() ->
 
 
 def test_grouped_alternation_replacement_workload_helpers_reject_unsupported_operations() -> None:
-    unsupported_workload = _synthetic_workload(
+    unsupported_workload = synthetic_workload(
+        manifest_id="grouped-alternation-boundary",
         workload_id="module-search-grouped-alternation-replacement-unsupported",
         operation="module.search",
+        pattern="a(b|c)d",
+        haystack="abdacd",
+        replacement="\\1x",
     )
 
     with pytest.raises(

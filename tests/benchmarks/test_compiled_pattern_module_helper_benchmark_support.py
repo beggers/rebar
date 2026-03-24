@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from rebar_harness.benchmarks import workload_from_payload
+from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _compiled_pattern_module_helper_route,
     _run_cpython_compiled_pattern_module_helper_workload,
@@ -17,63 +17,18 @@ def _manifest_id_for_operation(operation: str) -> str:
     return "collection-replacement-boundary"
 
 
-def _workload(
-    *,
-    workload_id: str,
-    operation: str,
-    pattern: str = "abc",
-    haystack: str = "abc",
-    replacement: str | None = None,
-    flags: int = 0,
-    text_model: str = "str",
-    haystack_text_model: str | None = None,
-    expected_exception: dict[str, str] | None = None,
-    count: int = 0,
-    maxsplit: int = 0,
-) -> object:
-    payload: dict[str, object] = {
-        "manifest_id": _manifest_id_for_operation(operation),
-        "workload_id": workload_id,
-        "bucket": operation.replace(".", "-"),
-        "family": "module",
-        "operation": operation,
-        "pattern": pattern,
-        "haystack": haystack,
-        "flags": flags,
-        "use_compiled_pattern": True,
-        "expected_exception": expected_exception,
-        "text_model": text_model,
-        "cache_mode": "warm",
-        "timing_scope": "module-helper-call",
-        "warmup_iterations": 1,
-        "sample_iterations": 1,
-        "timed_samples": 1,
-        "notes": [],
-        "categories": [],
-        "syntax_features": [],
-        "smoke": False,
-    }
-    if replacement is not None:
-        payload["replacement"] = replacement
-    if haystack_text_model is not None:
-        payload["haystack_text_model"] = haystack_text_model
-    if count:
-        payload["count"] = count
-    if maxsplit:
-        payload["maxsplit"] = maxsplit
-    return workload_from_payload(payload)
-
-
 @pytest.mark.parametrize(
     ("workload", "callback_flags", "expected_result", "expected_call", "expected_cpython_args", "materialize"),
     (
         (
-            _workload(
+            synthetic_workload(
+                manifest_id=_manifest_id_for_operation("module.search"),
                 workload_id="module-search-success",
                 operation="module.search",
                 pattern="abc",
                 haystack="zzabczz",
                 flags=re.IGNORECASE,
+                use_compiled_pattern=True,
             ),
             re.IGNORECASE,
             "module-result",
@@ -82,7 +37,8 @@ def _workload(
             False,
         ),
         (
-            _workload(
+            synthetic_workload(
+                manifest_id=_manifest_id_for_operation("module.subn"),
                 workload_id="module-subn-success",
                 operation="module.subn",
                 pattern="abc",
@@ -90,6 +46,7 @@ def _workload(
                 replacement="x",
                 count=1,
                 flags=re.IGNORECASE,
+                use_compiled_pattern=True,
             ),
             re.IGNORECASE,
             ("module-result", 0),
@@ -98,13 +55,15 @@ def _workload(
             False,
         ),
         (
-            _workload(
+            synthetic_workload(
+                manifest_id=_manifest_id_for_operation("module.finditer"),
                 workload_id="module-finditer-wrong-text-model",
                 operation="module.finditer",
                 pattern="abc",
                 haystack="abcabc",
                 text_model="bytes",
                 haystack_text_model="str",
+                use_compiled_pattern=True,
                 expected_exception={
                     "type": "TypeError",
                     "message_substring": "cannot use a bytes pattern on a string-like object",
@@ -117,13 +76,15 @@ def _workload(
             True,
         ),
         (
-            _workload(
+            synthetic_workload(
+                manifest_id=_manifest_id_for_operation("module.split"),
                 workload_id="module-split-success",
                 operation="module.split",
                 pattern="abc",
                 haystack="abcabc",
                 maxsplit=2,
                 flags=re.MULTILINE,
+                use_compiled_pattern=True,
             ),
             re.MULTILINE,
             "module-result",
@@ -159,11 +120,13 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
 
 
 def test_run_cpython_compiled_pattern_module_helper_workload_materializes_finditer() -> None:
-    workload = _workload(
+    workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation("module.finditer"),
         workload_id="module-finditer-runtime",
         operation="module.finditer",
         pattern="abc",
         haystack="abcabc",
+        use_compiled_pattern=True,
     )
 
     result = _run_cpython_compiled_pattern_module_helper_workload(
@@ -176,13 +139,15 @@ def test_run_cpython_compiled_pattern_module_helper_workload_materializes_findit
 
 
 def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_result() -> None:
-    workload = _workload(
+    workload = synthetic_workload(
+        manifest_id=_manifest_id_for_operation("module.subn"),
         workload_id="module-subn-runtime",
         operation="module.subn",
         pattern="abc",
         haystack="abcabc",
         replacement="x",
         count=1,
+        use_compiled_pattern=True,
     )
 
     result = _run_cpython_compiled_pattern_module_helper_workload(

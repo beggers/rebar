@@ -4,56 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from rebar_harness.benchmarks import workload_from_payload
+from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
 from tests.python.fixture_parity_support import IndexLike
-
-
-def _collection_replacement_workload(
-    *,
-    manifest_id: str = "collection-replacement-boundary",
-    workload_id: str,
-    operation: str,
-    haystack: str,
-    pattern: str = "abc",
-    replacement: str | None = None,
-    count: object = 0,
-    maxsplit: object = 0,
-    kwargs: dict[str, object] | None = None,
-    expected_exception: dict[str, str] | None = None,
-    text_model: str = "str",
-    haystack_text_model: str | None = None,
-    use_compiled_pattern: bool = False,
-) -> object:
-    return workload_from_payload(
-        {
-            "manifest_id": manifest_id,
-            "workload_id": workload_id,
-            "bucket": operation.replace(".", "-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": pattern,
-            "haystack": haystack,
-            "replacement": replacement,
-            "expected_exception": expected_exception,
-            "flags": 0,
-            "use_compiled_pattern": use_compiled_pattern,
-            "count": count,
-            "maxsplit": maxsplit,
-            "kwargs": {} if kwargs is None else kwargs,
-            "text_model": text_model,
-            "haystack_text_model": haystack_text_model,
-            "cache_mode": "warm",
-            "timing_scope": "module-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
 
 
 def _collection_replacement_case(
@@ -84,13 +37,15 @@ def _collection_replacement_case(
 
 
 def test_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signature() -> None:
-    split_workload = _collection_replacement_workload(
+    split_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-split-indexlike",
         operation="module.split",
         haystack="zabcabc",
         maxsplit={"type": "indexlike", "value": 2},
     )
-    sub_workload = _collection_replacement_workload(
+    sub_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-indexlike-bytes",
         operation="pattern.sub",
         haystack="abcabc",
@@ -125,13 +80,15 @@ def test_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signatur
 
 
 def test_positional_indexlike_workload_filter_rejects_keyword_and_non_indexlike_rows() -> None:
-    keyword_workload = _collection_replacement_workload(
+    keyword_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-split-keyword",
         operation="module.split",
         haystack="zabcabc",
         kwargs={"maxsplit": {"type": "indexlike", "value": 1}},
     )
-    plain_int_workload = _collection_replacement_workload(
+    plain_int_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-sub-plain-int",
         operation="module.sub",
         haystack="abcabc",
@@ -188,13 +145,15 @@ def test_positional_indexlike_correctness_case_signature_requires_collection_cal
 
 
 def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keyword_rows() -> None:
-    expected_keyword_workload = _collection_replacement_workload(
+    expected_keyword_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-split-keyword-indexlike",
         operation="module.split",
         haystack="zabcabc",
         kwargs={"maxsplit": {"type": "indexlike", "value": 1}},
     )
-    duplicate_keyword_workload = _collection_replacement_workload(
+    duplicate_keyword_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-duplicate-count",
         operation="pattern.sub",
         haystack="abc",
@@ -206,7 +165,8 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
             "message_substring": "sub() takes at most 3 arguments (4 given)",
         },
     )
-    unexpected_keyword_workload = _collection_replacement_workload(
+    unexpected_keyword_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-subn-unexpected-keyword",
         operation="module.subn",
         haystack="abc",
@@ -272,7 +232,8 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
 
 
 def test_keyword_workload_filter_rejects_non_collection_keyword_shapes() -> None:
-    multiple_keyword_workload = _collection_replacement_workload(
+    multiple_keyword_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-sub-multiple-keywords",
         operation="module.sub",
         haystack="abcabc",
@@ -283,7 +244,8 @@ def test_keyword_workload_filter_rejects_non_collection_keyword_shapes() -> None
             "message_substring": "sub() got an unexpected keyword argument 'missing'",
         },
     )
-    search_keyword_workload = _collection_replacement_workload(
+    search_keyword_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-search-keyword",
         operation="module.search",
         haystack="abcabc",
@@ -339,7 +301,8 @@ def test_keyword_correctness_case_signature_preserves_call_shape_and_compiled_pa
 
 
 def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_signatures() -> None:
-    split_workload = _collection_replacement_workload(
+    split_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-split-wrong-text-model",
         operation="module.split",
         haystack="abcabc",
@@ -352,7 +315,8 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    subn_workload = _collection_replacement_workload(
+    subn_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-subn-wrong-text-model",
         operation="module.subn",
         haystack="abcabc",
@@ -366,7 +330,8 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    direct_pattern_workload = _collection_replacement_workload(
+    direct_pattern_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-wrong-text-model",
         operation="pattern.sub",
         haystack="abcabc",
@@ -493,7 +458,8 @@ def test_wrong_text_model_correctness_case_signatures_keep_haystack_positions_fo
 
 
 def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() -> None:
-    split_workload = _collection_replacement_workload(
+    split_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="pattern-split-wrong-text-model",
         operation="pattern.split",
         haystack="abcabc",
@@ -505,7 +471,8 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    sub_workload = _collection_replacement_workload(
+    sub_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-wrong-text-model",
         operation="pattern.sub",
         haystack="abcabc",
@@ -518,7 +485,8 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    compiled_pattern_workload = _collection_replacement_workload(
+    compiled_pattern_workload = synthetic_workload(
+        manifest_id="collection-replacement-boundary",
         workload_id="module-sub-wrong-text-model",
         operation="module.sub",
         haystack="abcabc",

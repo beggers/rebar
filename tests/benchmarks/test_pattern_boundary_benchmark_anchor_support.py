@@ -2,53 +2,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from rebar_harness.benchmarks import workload_from_payload
+from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks import pattern_boundary_benchmark_anchor_support as support
-
-
-def _pattern_workload(
-    *,
-    workload_id: str,
-    operation: str,
-    pattern: str = "a.c",
-    haystack: str = "zabc",
-    flags: int = 0,
-    text_model: str = "str",
-    kwargs: dict[str, object] | None = None,
-    pos: object | None = None,
-    endpos: object | None = None,
-) -> object:
-    return workload_from_payload(
-        {
-            "manifest_id": "pattern-boundary",
-            "workload_id": workload_id,
-            "bucket": operation.replace(".", "-"),
-            "family": "module",
-            "operation": operation,
-            "pattern": pattern,
-            "haystack": haystack,
-            "replacement": None,
-            "expected_exception": None,
-            "flags": flags,
-            "use_compiled_pattern": False,
-            "count": 0,
-            "maxsplit": 0,
-            "kwargs": {} if kwargs is None else kwargs,
-            "text_model": text_model,
-            "haystack_text_model": None,
-            "pos": pos,
-            "endpos": endpos,
-            "cache_mode": "warm",
-            "timing_scope": "pattern-helper-call",
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "notes": [],
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
 
 
 def _pattern_case(
@@ -76,10 +31,14 @@ def _pattern_case(
 
 
 def test_pattern_bounded_wildcard_selector_and_signature_stay_pinned() -> None:
-    workload = _pattern_workload(
+    workload = synthetic_workload(
+        manifest_id="pattern-boundary",
         workload_id=support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS[0],
         operation="pattern.search",
         flags=2,
+        pattern="a.c",
+        haystack="zabc",
+        timing_scope="pattern-helper-call",
         pos=1,
         endpos=4,
     )
@@ -96,10 +55,13 @@ def test_pattern_bounded_wildcard_selector_and_signature_stay_pinned() -> None:
 
 
 def test_pattern_bounded_wildcard_selector_rejects_nonmatching_pattern() -> None:
-    workload = _pattern_workload(
+    workload = synthetic_workload(
+        manifest_id="pattern-boundary",
         workload_id=support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS[1],
         operation="pattern.match",
         pattern="abc",
+        haystack="zabc",
+        timing_scope="pattern-helper-call",
         pos=0,
         endpos=3,
     )
@@ -108,7 +70,8 @@ def test_pattern_bounded_wildcard_selector_rejects_nonmatching_pattern() -> None
 
 
 def test_pattern_verbose_regression_selector_and_signature_stay_pinned() -> None:
-    workload = _pattern_workload(
+    workload = synthetic_workload(
+        manifest_id="pattern-boundary",
         workload_id=support._PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS[0],
         operation="pattern.search",
         pattern=(
@@ -116,6 +79,7 @@ def test_pattern_verbose_regression_selector_and_signature_stay_pinned() -> None
         ),
         haystack="KEY = 42",
         flags=72,
+        timing_scope="pattern-helper-call",
     )
 
     assert support._is_pattern_verbose_regression_workload(workload)
