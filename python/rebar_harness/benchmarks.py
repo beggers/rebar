@@ -424,13 +424,15 @@ def normalize_workload_value(value: Any) -> Any:
 
 def normalize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     normalized = normalize_workload_value(value)
+    if normalized is None:
+        return None
     if isinstance(normalized, bool):
         return normalized
     if isinstance(normalized, int):
         return normalized
     if not isinstance(normalized, dict):
         raise ValueError(
-            f"benchmark workload {field_name} must be an int, bool, or "
+            f"benchmark workload {field_name} must be an int, bool, None, or "
             "indexlike descriptor"
         )
 
@@ -919,6 +921,8 @@ def validate_haystack_text_model_override(
 
 def materialize_numeric_workload_argument(value: Any, *, field_name: str) -> Any:
     normalized = normalize_numeric_workload_argument(value, field_name=field_name)
+    if normalized is None:
+        return None
     return materialize_descriptor_value(normalized)
 
 

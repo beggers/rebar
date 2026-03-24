@@ -2864,6 +2864,1194 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered two-arm conditional callable replacement present-capture `count=None` contract, keeping CPython's `TypeError` explicit before the callback can read `match.group(1)`."
+      ]
+    },
+    {
+      "id": "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.sub helper path for the bounded numbered two-arm conditional callable replacement present-capture `count=None` contract, keeping CPython's `TypeError` explicit before the callback can read `match.group(1)`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered two-arm conditional callable replacement present-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.sub helper path for the bounded numbered two-arm conditional callable replacement present-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "module-sub-callable-named-conditional-group-exists-replacement-none-count-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named two-arm conditional callable replacement present-capture `count=None` contract, keeping the callback pinned to `match.group(\"word\")` while CPython raises `TypeError` first."
+      ]
+    },
+    {
+      "id": "module-sub-callable-named-conditional-group-exists-replacement-none-count-warm-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.sub helper path for the bounded named two-arm conditional callable replacement present-capture `count=None` contract, keeping the callback pinned to `match.group(\"word\")` while CPython raises `TypeError` first."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named two-arm conditional callable replacement present-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "present",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.sub helper path for the bounded named two-arm conditional callable replacement present-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered two-arm conditional callable replacement absent-capture `count=None` contract on `zzacezz`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.subn helper path for the bounded numbered two-arm conditional callable replacement absent-capture `count=None` contract on `zzacezz`."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "subn",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered two-arm conditional callable replacement absent-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "subn",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.subn helper path for the bounded numbered two-arm conditional callable replacement absent-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named two-arm conditional callable replacement absent-capture `count=None` contract on `zzacezz`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.subn helper path for the bounded named two-arm conditional callable replacement absent-capture `count=None` contract on `zzacezz`."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named two-arm conditional callable replacement absent-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.subn helper path for the bounded named two-arm conditional callable replacement absent-capture `count=None` contract on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered two-arm conditional callable replacement `count=None` follow-on on `abcdaceabcd`, keeping the invalid-count `TypeError` explicit on the same haystack as the adjacent `count=-1` row."
+      ]
+    },
+    {
+      "id": "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.sub helper path for the bounded numbered two-arm conditional callable replacement `count=None` follow-on on `abcdaceabcd`, keeping the invalid-count `TypeError` explicit on the same haystack as the adjacent `count=-1` row."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named two-arm conditional callable replacement `count=None` follow-on on `abcdaceabcd`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.subn helper path for the bounded named two-arm conditional callable replacement `count=None` follow-on on `abcdaceabcd`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered two-arm conditional callable replacement `count=None` follow-on on the same legacy negative-count haystack."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.sub helper path for the bounded numbered two-arm conditional callable replacement `count=None` follow-on on the same legacy negative-count haystack."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named two-arm conditional callable replacement `count=None` follow-on on the same legacy negative-count haystack."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": None,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "negative-count",
+        "count",
+        "none-count",
+        "exception",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.subn helper path for the bounded named two-arm conditional callable replacement `count=None` follow-on on the same legacy negative-count haystack."
+      ]
+    },
+    {
       "id": "module-sub-numbered-conditional-group-exists-alternation-heavy-replacement-warm-gap",
       "bucket": "module-sub",
       "family": "module",
