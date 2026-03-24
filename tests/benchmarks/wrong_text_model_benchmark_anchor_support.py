@@ -15,19 +15,13 @@ _PATTERN_BOUNDARY_OPERATIONS = frozenset(
 )
 
 
-def _is_module_workflow_compiled_pattern_workload(workload: Any) -> bool:
-    return (
-        not workload.kwargs
-        and workload.use_compiled_pattern
-        and workload.operation in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
-    )
-
-
 def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
     workload: Any,
 ) -> bool:
     return (
-        _is_module_workflow_compiled_pattern_workload(workload)
+        not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
         and getattr(workload, "haystack_text_model", None) is not None
         and workload.expected_exception is not None
         and workload.expected_exception.get("type") == "TypeError"
