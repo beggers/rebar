@@ -422,19 +422,6 @@ class GroupedQuantifiedBytesSurfaceSpec:
     follow_on_id: str | None = None
 
 
-def grouped_quantified_bytes_surface_manifest_id(
-    spec: GroupedQuantifiedBytesSurfaceSpec,
-) -> str:
-    return spec.bundle.manifest.manifest_id
-
-
-def grouped_quantified_bytes_surface_follow_on_id(
-    spec: GroupedQuantifiedBytesSurfaceSpec,
-) -> str:
-    assert spec.follow_on_id is not None
-    return spec.follow_on_id
-
-
 OPEN_ENDED_ALTERNATION_BYTES_CASES = (
     SupplementalCase(
         id="open-ended-grouped-alternation-numbered-bytes",

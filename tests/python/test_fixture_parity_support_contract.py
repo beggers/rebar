@@ -4158,21 +4158,16 @@ def test_grouped_quantified_bytes_surface_spec_preserves_bundle_order_and_option
     assert tuple(bundle.expected_manifest_id for bundle in bundles) == tuple(
         bundle.manifest.manifest_id for bundle in bundles
     )
-    assert tuple(
-        fixture_parity_support.grouped_quantified_bytes_surface_manifest_id(spec)
-        for spec in surfaces
-    ) == tuple(bundle.expected_manifest_id for bundle in bundles)
+    assert tuple(spec.bundle.expected_manifest_id for spec in surfaces) == tuple(
+        bundle.expected_manifest_id for bundle in bundles
+    )
     assert tuple(spec.bundle for spec in surfaces) == bundles
     assert tuple(spec.follow_on_id for spec in surfaces) == (
         None,
         "broader-range-conditional",
         "nested-broader-range-alternation",
     )
-    assert tuple(
-        fixture_parity_support.grouped_quantified_bytes_surface_follow_on_id(spec)
-        for spec in surfaces
-        if spec.follow_on_id is not None
-    ) == (
+    assert tuple(spec.follow_on_id for spec in surfaces if spec.follow_on_id is not None) == (
         "broader-range-conditional",
         "nested-broader-range-alternation",
     )
