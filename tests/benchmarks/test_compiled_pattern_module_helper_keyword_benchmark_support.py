@@ -9,8 +9,8 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks import (
     compiled_pattern_module_helper_keyword_benchmark_support as support,
 )
-from tests.benchmarks import (
-    test_source_tree_combined_boundary_benchmarks as combined,
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_workload,
@@ -162,4 +162,4 @@ def test_compiled_pattern_module_helper_keyword_cpython_outcomes_cover_success_a
         keyword_error_round_tripped,
     )
     with pytest.raises(TypeError):
-        combined.run_benchmark_workload_with_cpython(keyword_error_round_tripped)
+        run_benchmark_workload_with_cpython(keyword_error_round_tripped)

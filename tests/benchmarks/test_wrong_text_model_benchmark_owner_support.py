@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import textwrap
 
 import pytest
 
@@ -222,10 +223,12 @@ def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helpe
         source_workloads,
         spec=owner_spec.contract_builder_spec(),
     )
-    manifest_path = combined._write_test_manifest(
-        tmp_path,
-        f"python_benchmark_{owner_spec.contract_filename_stem}_contract.py",
-        f"MANIFEST = {manifest!r}\n",
+    manifest_path = (
+        tmp_path / f"python_benchmark_{owner_spec.contract_filename_stem}_contract.py"
+    )
+    manifest_path.write_text(
+        textwrap.dedent(f"MANIFEST = {manifest!r}\n"),
+        encoding="utf-8",
     )
     workloads = load_manifest(manifest_path).workloads
 
