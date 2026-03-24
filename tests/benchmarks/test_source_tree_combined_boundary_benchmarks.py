@@ -3061,6 +3061,49 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
     _combined_slice_expectation(
         manifest_id="conditional-group-exists-boundary",
+        slice_id="quantified-callable-replacement-str-rows",
+        required_syntax_features=(
+            "conditionals",
+            "quantifiers",
+            "callable-replacement",
+        ),
+        required_categories=("quantified",),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "bytes",
+            "nested-conditional",
+            "nested-group",
+            "unsupported",
+        ),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
+            "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+            "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-str",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+            "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e){2}",
+            r"a(?P<word>b)?c(?(word)d|e){2}",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcddzz", "zzaceezz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "quantified",
+            "replacement",
+            "callable",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
         slice_id="quantified-alternation-heavy-constant-replacement-rows",
         required_syntax_features=("conditionals", "alternation", "quantifiers"),
         required_categories=("alternation-heavy", "replacement", "quantified"),
@@ -3785,6 +3828,16 @@ CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS = (
     "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str",
     "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str",
 )
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-str",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-str",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+)
 CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
     "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
     "module-subn-template-numbered-conditional-group-exists-replacement-warm-bytes",
@@ -3918,6 +3971,17 @@ def _conditional_group_exists_nested_callable_replacement_expectation(
             "conditional-group-exists-boundary"
         )
         if expectation.slice_id == "nested-callable-replacement-str-rows"
+    )
+
+
+def _conditional_group_exists_quantified_callable_replacement_expectation(
+) -> SourceTreeCombinedSliceExpectation:
+    return next(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(
+            "conditional-group-exists-boundary"
+        )
+        if expectation.slice_id == "quantified-callable-replacement-str-rows"
     )
 
 
@@ -5227,6 +5291,55 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             select_source_tree_combined_slice_rows(case.target_manifest, expectation)
         )
         expected_workload_ids = CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+        expected_workload_count = len(case.selected_workload_ids_for_manifest(manifest_id))
+
+        self.assertEqual(
+            tuple(workload.workload_id for workload in matched_rows),
+            expected_workload_ids,
+        )
+        self.assertEqual({workload.text_model for workload in matched_rows}, {"str"})
+        self.assertEqual(
+            Counter((workload.operation, workload.count) for workload in matched_rows),
+            Counter(
+                {
+                    ("module.sub", 0): 2,
+                    ("module.subn", 1): 2,
+                    ("pattern.sub", 0): 2,
+                    ("pattern.subn", 1): 2,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter("exception" in workload.categories for workload in matched_rows),
+            Counter({False: 4, True: 4}),
+        )
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    source_tree_combined_manifest_representative_measured_workload_ids(
+                        manifest_id
+                    ),
+                )
+
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            manifest_id,
+            expected_workload_ids,
+            expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
+        )
+
+    def test_conditional_group_exists_quantified_callable_str_manifest_promotes_replacement_and_exception_rows_to_measured(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        expectation = _conditional_group_exists_quantified_callable_replacement_expectation()
+        case = source_tree_combined_case(manifest_id)
+        matched_rows = tuple(
+            select_source_tree_combined_slice_rows(case.target_manifest, expectation)
+        )
+        expected_workload_ids = CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
         expected_workload_count = len(case.selected_workload_ids_for_manifest(manifest_id))
 
         self.assertEqual(

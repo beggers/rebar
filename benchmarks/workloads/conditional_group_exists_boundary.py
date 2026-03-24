@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the numbered and named callable-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via the existing `callable_match_group` helper for both `str` and bytes pattern-text-model workloads including the bounded `str` `count=-1` no-substitution companions on `abcdaceabcd` and the absent-capture `TypeError` companions on `zzacezz` with `count=1`, the numbered and named replacement-template `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via `\\1x` and `\\g<word>x` for both `str` and bytes pattern-text-model workloads plus the bounded `str` and bytes `count=-1` no-substitution companions on `abcdaceabcd`, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, constant-replacement `sub()`/`subn()`, and `str` callable-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, while deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay follow-on benchmark expansion or later slices instead of being silently omitted here."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the numbered and named callable-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via the existing `callable_match_group` helper for both `str` and bytes pattern-text-model workloads including the bounded `str` `count=-1` no-substitution companions on `abcdaceabcd` and the absent-capture `TypeError` companions on `zzacezz` with `count=1`, the numbered and named replacement-template `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via `\\1x` and `\\g<word>x` for both `str` and bytes pattern-text-model workloads plus the bounded `str` and bytes `count=-1` no-substitution companions on `abcdaceabcd`, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, constant-replacement `sub()`/`subn()`, and `str` callable-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded quantified `str` callable-replacement `sub()`/`subn()` probes for that same numbered and named pair, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, while deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay follow-on benchmark expansion or later slices instead of being silently omitted here."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -4888,6 +4888,378 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache Pattern.subn helper path for the bounded named quantified two-arm conditional replacement count workflow when the optional named capture is absent and the matched span ends with repeated `ee`."
+      ]
+    },
+    {
+      "id": "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered quantified conditional callable replacement workflow where the present capture keeps both counted repetitions on the `d` arm before the callback reads `match.group(1)`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered quantified conditional callable replacement count workflow when the optional capture is absent and the repeated else arm leaves `match.group(1)` as `None`, preserving CPython's bounded `TypeError`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered quantified conditional callable replacement path for the same present-capture workflow."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "subn",
+        "absent",
+        "count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered quantified conditional callable replacement count workflow when the optional capture is absent so the compiled-entrypoint `TypeError` remains explicit too."
+      ]
+    },
+    {
+      "id": "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named quantified conditional callable replacement workflow where the repeated yes arm preserves `match.group(\"word\")` for the callback."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "exception",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named quantified conditional callable replacement count workflow when the named capture is absent, keeping the helper pinned to `match.group(\"word\")` so the bounded `TypeError` stays published."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named quantified conditional callable replacement path for the same present-capture workflow."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named quantified conditional callable replacement count path when the named capture is absent so the compiled named `TypeError` path stays explicit too."
       ]
     },
     {
