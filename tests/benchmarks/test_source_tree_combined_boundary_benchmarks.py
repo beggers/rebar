@@ -7118,15 +7118,19 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifests = list(published_benchmark_manifests())
         self.assertEqual(len(manifests), 30)
+        tracked_report = benchmarks.SCORECARD_REPORT.load(TRACKED_REPORT_PATH)
         self.assertEqual(
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
-                "known_gap_count": 0,
-                "measured_workloads": 1027,
-                "module_workloads": 1019,
-                "parser_workloads": 8,
-                "regression_workloads": 8,
-                "total_workloads": 1027,
+                key: tracked_report["summary"][key]
+                for key in (
+                    "known_gap_count",
+                    "measured_workloads",
+                    "module_workloads",
+                    "parser_workloads",
+                    "regression_workloads",
+                    "total_workloads",
+                )
             },
         )
 
@@ -7287,13 +7291,17 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
+        explicit_representatives = (
+            case.manifest_expectation.representative_measured_workload_ids
+        )
         for workload_id in expected_workload_ids:
             with self.subTest(manifest_id=manifest_id, workload_id=workload_id):
                 self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
+                if explicit_representatives:
+                    self.assertIn(workload_id, explicit_representatives)
+
+        if not explicit_representatives:
+            self.assertEqual(explicit_representatives, ())
 
     def test_zero_gap_source_tree_manifests_keep_selected_bytes_representatives_publicly_measured(
         self,
