@@ -3757,6 +3757,26 @@ CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS = (
 
 
 @cache
+def _conditional_group_exists_callable_bytes_slice_workloads(
+) -> tuple[Workload, ...]:
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in load_manifest(
+            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
+        ).workloads
+    }
+    expected_workload_ids = tuple(
+        workload_id
+        for expectation in _conditional_group_exists_callable_replacement_expectations()
+        for workload_id in expectation.expected_workload_ids
+        if workload_id.endswith("-bytes")
+    )
+    return tuple(
+        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    )
+
+
+@cache
 def _conditional_group_exists_alternation_callable_bytes_workloads(
 ) -> tuple[Workload, ...]:
     workloads_by_id = {
@@ -5185,6 +5205,79 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertEqual(
                     run_benchmark_workload_with_cpython(round_tripped),
                     expected_result,
+                )
+
+    def test_conditional_group_exists_callable_bytes_slice_workloads_round_trip_preserves_outcomes(
+        self,
+    ) -> None:
+        source_workloads = _conditional_group_exists_callable_bytes_slice_workloads()
+
+        self.assertEqual(
+            tuple(workload.workload_id for workload in source_workloads),
+            tuple(
+                workload_id
+                for expectation in _conditional_group_exists_callable_replacement_expectations()
+                for workload_id in expectation.expected_workload_ids
+                if workload_id.endswith("-bytes")
+            ),
+        )
+
+        for source_workload in source_workloads:
+            with self.subTest(workload_id=source_workload.workload_id):
+                payload = workload_to_payload(source_workload)
+                round_tripped = workload_from_payload(payload)
+                expected_signature = _callable_match_group_signature(
+                    source_workload.replacement_payload()
+                )
+                observed_signature = _callable_match_group_signature(
+                    round_tripped.replacement_payload()
+                )
+
+                self.assertEqual(payload["text_model"], "bytes")
+                self.assertEqual(round_tripped.text_model, "bytes")
+                self.assertEqual(payload["count"], source_workload.count)
+                self.assertEqual(
+                    payload["expected_exception"],
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.expected_exception,
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.pattern_payload(),
+                    source_workload.pattern_payload(),
+                )
+                self.assertEqual(
+                    round_tripped.haystack_payload(),
+                    source_workload.haystack_payload(),
+                )
+                self.assertEqual(observed_signature, expected_signature)
+                self.assertIsNotNone(observed_signature)
+                assert observed_signature is not None
+                self.assertIsInstance(observed_signature[2], bytes)
+                self.assertIsInstance(observed_signature[3], bytes)
+
+                if source_workload.expected_exception is None:
+                    assert_benchmark_workload_matches_expected_result(
+                        round_tripped,
+                        run_benchmark_workload_with_cpython(source_workload),
+                    )
+                    continue
+
+                expected_exception = source_workload.expected_exception
+                assert expected_exception is not None
+
+                with pytest.raises(
+                    TypeError,
+                    match=re.escape(expected_exception["message_substring"]),
+                ) as expected_error:
+                    run_benchmark_workload_with_cpython(source_workload)
+                with pytest.raises(TypeError) as observed_error:
+                    run_benchmark_workload_with_cpython(round_tripped)
+                self.assertEqual(
+                    str(observed_error.value),
+                    str(expected_error.value),
                 )
 
     def test_conditional_group_exists_alternation_callable_bytes_workloads_round_trip_preserves_outcomes(
