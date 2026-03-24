@@ -24,8 +24,8 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
 from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
     _is_module_workflow_keyword_error_workload,
 )
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _selected_manifest_workloads,
+from tests.benchmarks.source_tree_contract_benchmark_support import (
+    _contract_source_workloads,
 )
 
 COLLECTION_REPLACEMENT_MANIFEST_PATH = (
@@ -131,21 +131,19 @@ def _is_collection_replacement_pattern_helper_keyword_error_workload(
     )
 
 
-_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _selected_manifest_workloads(
-    COLLECTION_REPLACEMENT_MANIFEST_PATH,
-    include_workload=_is_collection_replacement_pattern_helper_keyword_error_workload,
-)
-if (
-    tuple(
-        workload.workload_id
-        for workload in _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-    )
-    != _PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
-):
-    raise AssertionError(
+_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload_selectors=(
+        _is_collection_replacement_pattern_helper_keyword_error_workload,
+    ),
+    expected_source_workload_ids=(
+        _PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+    ),
+    drift_message=(
         "pattern helper collection/replacement keyword-error surface drifted "
         "from the live source workload surface"
-    )
+    ),
+)
 
 
 def _assert_keyword_error_workload_probe_measured(
@@ -174,18 +172,21 @@ def _assert_keyword_error_workload_probe_measured(
     assert probe["median_ns"] > 0
 
 
-_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS = frozenset(
-    {
-        "module-split-duplicate-maxsplit-keyword-purged-str",
-        "module-split-unexpected-keyword-purged-str",
-        "module-split-unexpected-keyword-purged-bytes",
-        "module-sub-duplicate-count-keyword-warm-str",
-        "module-sub-unexpected-keyword-purged-str",
-        "module-sub-unexpected-keyword-after-positional-count-purged-str",
-        "module-sub-count-alias-keyword-purged-str",
-        "module-subn-count-alias-keyword-purged-bytes",
-        "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
-    }
+_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS = (
+    "module-search-duplicate-flags-keyword-warm-str",
+    "module-fullmatch-unexpected-keyword-purged-str",
+)
+
+_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS = (
+    "module-split-duplicate-maxsplit-keyword-purged-str",
+    "module-split-unexpected-keyword-purged-str",
+    "module-split-unexpected-keyword-purged-bytes",
+    "module-sub-duplicate-count-keyword-warm-str",
+    "module-sub-unexpected-keyword-purged-str",
+    "module-sub-unexpected-keyword-after-positional-count-purged-str",
+    "module-sub-count-alias-keyword-purged-str",
+    "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
+    "module-subn-count-alias-keyword-purged-bytes",
 )
 
 
@@ -203,10 +204,24 @@ def _is_collection_replacement_module_helper_keyword_error_workload(
     )
 
 
-_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _selected_manifest_workloads(
-    MODULE_BOUNDARY_MANIFEST_PATH,
-    include_workload=_is_module_workflow_keyword_error_workload,
-) + _selected_manifest_workloads(
-    COLLECTION_REPLACEMENT_MANIFEST_PATH,
-    include_workload=_is_collection_replacement_module_helper_keyword_error_workload,
+_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
+    manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+    include_workload_selectors=(_is_module_workflow_keyword_error_workload,),
+    expected_source_workload_ids=_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS,
+    drift_message=(
+        "module helper keyword-error surface drifted from the live source "
+        "workload surface"
+    ),
+) + _contract_source_workloads(
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload_selectors=(
+        _is_collection_replacement_module_helper_keyword_error_workload,
+    ),
+    expected_source_workload_ids=(
+        _MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+    ),
+    drift_message=(
+        "module helper collection/replacement keyword-error surface drifted "
+        "from the live source workload surface"
+    ),
 )
