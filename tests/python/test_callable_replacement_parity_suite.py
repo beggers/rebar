@@ -1462,6 +1462,28 @@ def _bytes_mirror_expected_result(expected_result: object) -> object:
     return (text.encode("latin-1"), count)
 
 
+def _normalize_source_text_fragment(fragment: object) -> str:
+    if isinstance(fragment, str):
+        return fragment
+
+    assert isinstance(fragment, dict)
+    assert fragment.get("type") == "bytes"
+    assert fragment.get("encoding", "latin-1") == "latin-1"
+    value = fragment.get("value")
+    assert isinstance(value, str)
+    return value
+
+
+def _normalized_source_callable_replacement(case: FixtureCase) -> dict[str, object]:
+    replacement = _source_callable_replacement(case)
+    return {
+        "type": replacement.get("type"),
+        "group": replacement.get("group"),
+        "prefix": _normalize_source_text_fragment(replacement.get("prefix", "")),
+        "suffix": _normalize_source_text_fragment(replacement.get("suffix", "")),
+    }
+
+
 def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
@@ -2385,6 +2407,49 @@ def test_conditional_group_exists_bytes_near_miss_cases_mirror_str_cases() -> No
         assert bytes_case.text == str_case.text.encode("latin-1")
         assert bytes_case.expected_result == _bytes_mirror_expected_result(
             str_case.expected_result
+        )
+
+
+def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+    str_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "str" and "negative-count" in case.categories
+    )
+    bytes_cases_by_id = {
+        case.case_id: case
+        for case in bundle.cases
+        if case.text_model == "bytes" and "negative-count" in case.categories
+    }
+
+    assert len(str_cases) == len(bytes_cases_by_id) == 4
+    assert set(bytes_cases_by_id) == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in str_cases
+    }
+
+    for str_case in str_cases:
+        bytes_case = bytes_cases_by_id[f"{str_case.case_id.removesuffix('-str')}-bytes"]
+        str_pattern = case_pattern(str_case)
+        str_text = case_text_argument(str_case)
+
+        assert isinstance(str_pattern, str)
+        assert isinstance(str_text, str)
+        assert bytes_case.manifest_id == manifest_id
+        assert bytes_case.operation == str_case.operation
+        assert bytes_case.helper == str_case.helper
+        assert bytes_case.family == str_case.family
+        assert bytes_case.use_compiled_pattern == str_case.use_compiled_pattern
+        assert _case_count(str_case) == _case_count(bytes_case) == -1
+        assert tuple(
+            "bytes" if category == "str" else category
+            for category in str_case.categories
+        ) == tuple(bytes_case.categories)
+        assert _bytes_case_pattern(bytes_case) == str_pattern.encode("latin-1")
+        assert case_text_argument(bytes_case) == str_text.encode("latin-1")
+        assert _normalized_source_callable_replacement(bytes_case) == (
+            _normalized_source_callable_replacement(str_case)
         )
 
 
