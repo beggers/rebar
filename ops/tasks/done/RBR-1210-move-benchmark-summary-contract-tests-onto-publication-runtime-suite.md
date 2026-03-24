@@ -1,6 +1,6 @@
 # RBR-1210: Move benchmark summary contract tests onto publication runtime suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py` returned `17 passed, 3 skipped in 0.13s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'build_family_summary_marks_partial_parser_family_and_keeps_parser_proxy_note or build_family_summary_marks_absent_module_family_and_keeps_deferred_note or build_family_summary_marks_scaffold_only_module_family_when_every_row_is_a_gap or build_manifest_summaries_marks_empty_module_boundary_selection_absent or build_manifest_summaries_marks_all_gap_regression_selection_scaffold_only'` returned `5 passed, 447 deselected in 0.15s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because the helper/test block still lives in the combined suite.
+
+## Completion
+- Moved `_summary_contract_workload_payload`, `_summary_contract_workload_record`, `_summary_contract_manifest`, and the five summary contract tests into `tests/benchmarks/test_benchmark_publication_runtime_contracts.py`, keeping the existing `BenchmarkManifest` / `workload_from_payload(...)` setup, test names, and assertion surfaces unchanged.
+- Deleted that helper/test block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the combined suite no longer owns the generic benchmark summary/publication contract coverage.
+- Verification passed:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py` returned `22 passed, 3 skipped in 0.17s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py -k 'build_family_summary_marks_partial_parser_family_and_keeps_parser_proxy_note or build_family_summary_marks_absent_module_family_and_keeps_deferred_note or build_family_summary_marks_scaffold_only_module_family_when_every_row_is_a_gap or build_manifest_summaries_marks_empty_module_boundary_selection_absent or build_manifest_summaries_marks_all_gap_regression_selection_scaffold_only'` returned `5 passed, 20 deselected in 0.06s`.
+  - `bash -lc "! rg -n 'def _summary_contract_workload_payload\\(|def _summary_contract_workload_record\\(|def _summary_contract_manifest\\(|test_build_family_summary_marks_partial_parser_family_and_keeps_parser_proxy_note|test_build_family_summary_marks_absent_module_family_and_keeps_deferred_note|test_build_family_summary_marks_scaffold_only_module_family_when_every_row_is_a_gap|test_build_manifest_summaries_marks_empty_module_boundary_selection_absent|test_build_manifest_summaries_marks_all_gap_regression_selection_scaffold_only' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` returned success with no matches.
+  - The original combined-suite selector from the task note now returns only `447 deselected in 0.39s` with pytest exit code `5` because those test names no longer exist in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` after the move.
