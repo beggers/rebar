@@ -1,6 +1,6 @@
 # RBR-1222: Move collection-replacement indexlike contracts onto dedicated suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -54,3 +54,11 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_until_helper_invocation or collection_replacement_indexlike_descriptors_materialize_on_each_helper_call or pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor'` currently fails exactly on this cleanup because the stranded combined-suite callback-time materialization test still references `_record_numeric_materialization_fields` after that helper ownership moved elsewhere (`6 failed, 2 passed, 212 deselected`);
   - the two passing selections in that same probe confirm the surrounding positional-indexlike contract surface is otherwise stable enough to extract; and
   - the negative `rg` check named above currently fails exactly on this cleanup because those three tests still live in the combined suite.
+
+## Completion
+- Moved the positional-indexlike manifest round-trip, callback-time materialization, and implicit-zero `pattern.split` signature tests onto `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`.
+- Added `_collection_replacement_pattern_split_workload_signature(...)` to `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` so the dedicated suite can assert the split anchor contract without importing the combined suite.
+- Deleted the moved tests from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_until_helper_invocation or collection_replacement_indexlike_descriptors_materialize_on_each_helper_call or pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor'`
+  - `bash -lc "! rg -n 'def test_(standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_until_helper_invocation|collection_replacement_indexlike_descriptors_materialize_on_each_helper_call|pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`

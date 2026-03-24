@@ -17,6 +17,7 @@ from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    _collection_replacement_pattern_split_workload_signature,
     _collection_replacement_positional_keyword_field,
 )
 from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
@@ -1204,6 +1205,208 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         )
 
 
+def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-indexlike-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "module-split-indexlike-contract-bytes",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "zabcabcabc",
+                "maxsplit": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.split positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "module-sub-indexlike-contract-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.sub positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "module-subn-indexlike-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.subn positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-split-indexlike-contract-str",
+                "bucket": "pattern-split",
+                "family": "module",
+                "operation": "pattern.split",
+                "pattern": "abc",
+                "haystack": "zabcabcabc",
+                "maxsplit": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.split positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-sub-indexlike-contract-bytes",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.sub positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+            {
+                "id": "pattern-subn-indexlike-contract-str",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {
+                    "type": "indexlike",
+                    "value": 2,
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep Pattern.subn positional indexlike descriptors JSON-safe until helper invocation."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_indexlike_contract.py",
+        manifest_source,
+    )
+    (
+        split_workload,
+        sub_workload,
+        subn_workload,
+        pattern_split_workload,
+        pattern_sub_workload,
+        pattern_subn_workload,
+    ) = load_manifest(manifest_path).workloads
+
+    assert split_workload.maxsplit == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
+    assert round_tripped_split.maxsplit_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_split) == [b"z", b"", b"abc"]
+
+    assert sub_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_sub = workload_from_payload(workload_to_payload(sub_workload))
+    assert round_tripped_sub.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_sub) == "xxabc"
+
+    assert subn_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
+    assert round_tripped_subn.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_subn) == (b"xxabc", 2)
+
+    assert pattern_split_workload.maxsplit == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_pattern_split = workload_from_payload(
+        workload_to_payload(pattern_split_workload)
+    )
+    assert round_tripped_pattern_split.maxsplit_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_split) == [
+        "z",
+        "",
+        "abc",
+    ]
+
+    assert pattern_sub_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_pattern_sub = workload_from_payload(
+        workload_to_payload(pattern_sub_workload)
+    )
+    assert round_tripped_pattern_sub.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_sub) == b"xxabc"
+
+    assert pattern_subn_workload.count == {
+        "type": "indexlike",
+        "value": 2,
+    }
+    round_tripped_pattern_subn = workload_from_payload(
+        workload_to_payload(pattern_subn_workload)
+    )
+    assert round_tripped_pattern_subn.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_subn) == (
+        "xxabc",
+        2,
+    )
+
+
 @pytest.mark.parametrize(
     (
         "operation",
@@ -1912,6 +2115,176 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
         assert str(observed_error.value) == str(expected_error.value)
     finally:
         re.purge()
+
+
+@pytest.mark.parametrize(
+    (
+        "workload_id",
+        "bucket",
+        "operation",
+        "haystack",
+        "replacement",
+        "count",
+        "maxsplit",
+        "text_model",
+        "expected_result",
+        "expected_field_name",
+    ),
+    (
+        pytest.param(
+            "module-split-indexlike-contract-bytes",
+            "module-split",
+            "module.split",
+            "zabcabcabc",
+            None,
+            0,
+            {"type": "indexlike", "value": 2},
+            "bytes",
+            [b"z", b"", b"abc"],
+            "maxsplit",
+            id="module-split",
+        ),
+        pytest.param(
+            "module-sub-indexlike-contract-str",
+            "module-sub",
+            "module.sub",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "str",
+            "xxabc",
+            "count",
+            id="module-sub",
+        ),
+        pytest.param(
+            "module-subn-indexlike-contract-bytes",
+            "module-subn",
+            "module.subn",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "bytes",
+            (b"xxabc", 2),
+            "count",
+            id="module-subn",
+        ),
+        pytest.param(
+            "pattern-split-indexlike-contract-str",
+            "pattern-split",
+            "pattern.split",
+            "zabcabcabc",
+            None,
+            0,
+            {"type": "indexlike", "value": 2},
+            "str",
+            ["z", "", "abc"],
+            "maxsplit",
+            id="pattern-split",
+        ),
+        pytest.param(
+            "pattern-sub-indexlike-contract-bytes",
+            "pattern-sub",
+            "pattern.sub",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "bytes",
+            b"xxabc",
+            "count",
+            id="pattern-sub",
+        ),
+        pytest.param(
+            "pattern-subn-indexlike-contract-str",
+            "pattern-subn",
+            "pattern.subn",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "str",
+            ("xxabc", 2),
+            "count",
+            id="pattern-subn",
+        ),
+    ),
+)
+def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper_call(
+    monkeypatch,
+    workload_id: str,
+    bucket: str,
+    operation: str,
+    haystack: str,
+    replacement: str | None,
+    count: object,
+    maxsplit: object,
+    text_model: str,
+    expected_result: object,
+    expected_field_name: str,
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-indexlike-contract",
+            "workload_id": workload_id,
+            "bucket": bucket,
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "flags": 0,
+            "count": count,
+            "maxsplit": maxsplit,
+            "text_model": text_model,
+            "cache_mode": "purged",
+            "timing_scope": (
+                "module-helper-call"
+                if operation.startswith("module.")
+                else "pattern-helper-call"
+            ),
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+        assert callback() == expected_result
+        assert callback() == expected_result
+    finally:
+        re.purge()
+
+    assert observed_field_names == [expected_field_name, expected_field_name]
+
+
+def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor(
+) -> None:
+    manifest = load_manifest(support.COLLECTION_REPLACEMENT_MANIFEST_PATH)
+    workload = next(
+        candidate
+        for candidate in manifest.workloads
+        if candidate.workload_id == "pattern-split-no-match-warm-str"
+    )
+
+    assert workload.maxsplit == 0
+    assert _collection_replacement_pattern_split_workload_signature(workload) == (
+        "pattern.split",
+        "abc",
+        ("zzz",),
+        (),
+        0,
+        "str",
+    )
 
 
 @pytest.mark.parametrize(
