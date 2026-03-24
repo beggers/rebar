@@ -5948,6 +5948,39 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     str(expected_error.value),
                 )
 
+    def test_conditional_group_exists_quantified_callable_workloads_anchor_to_unique_published_cases(
+        self,
+    ) -> None:
+        workloads = (
+            _conditional_group_exists_quantified_callable_str_workloads()
+            + _conditional_group_exists_quantified_callable_bytes_workloads()
+        )
+        case_ids_by_signature = published_case_ids_by_signature(
+            _conditional_group_exists_quantified_callable_correctness_case_signature
+        )
+        anchored_case_ids: list[str] = []
+
+        for workload in workloads:
+            signature = _conditional_group_exists_quantified_callable_workload_signature(
+                workload
+            )
+            with self.subTest(workload_id=workload.workload_id):
+                case_ids = case_ids_by_signature.get(signature)
+                self.assertIsNotNone(
+                    case_ids,
+                    f"missing published correctness case for {workload.workload_id!r}",
+                )
+                assert case_ids is not None
+                self.assertEqual(
+                    len(case_ids),
+                    1,
+                    f"expected a unique published case for {workload.workload_id!r}",
+                )
+                anchored_case_ids.append(case_ids[0])
+
+        self.assertEqual(len(anchored_case_ids), len(workloads))
+        self.assertEqual(len(set(anchored_case_ids)), len(anchored_case_ids))
+
     def test_conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads(
         self,
     ) -> None:
@@ -9072,6 +9105,84 @@ def _is_collection_replacement_grouped_callable_workload(workload: Any) -> bool:
         and workload.pos is None
         and workload.endpos is None
         and not workload.kwargs
+    )
+
+
+def _conditional_group_exists_quantified_callable_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.manifest_id != "conditional-group-exists-callable-replacement-workflows":
+        return None
+    if "quantified" not in case.categories:
+        return None
+    if any(
+        category in case.categories
+        for category in ("alternation", "nested", "negative-count")
+    ):
+        return None
+    if case.operation not in {"module_call", "pattern_call"}:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    if case.kwargs or case.use_compiled_pattern:
+        return None
+    replacement_signature = _callable_match_group_signature(
+        case_replacement_argument(case)
+    )
+    if replacement_signature is None:
+        return None
+    count_index = 3 if case.operation == "module_call" else 2
+    args = [case_text_argument(case)]
+    if len(case.args) > count_index:
+        count = case.args[count_index]
+        if type(count) is not int:
+            return None
+        args.append(count)
+    operation_prefix = "module" if case.operation == "module_call" else "pattern"
+    return (
+        f"{operation_prefix}.{case.helper}",
+        case_pattern(case),
+        replacement_signature,
+        freeze_signature_value(args),
+        "exception" in case.categories,
+        "no-match" in case.categories,
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _conditional_group_exists_quantified_callable_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    expected_workload_ids = (
+        CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        + CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    if workload.workload_id not in expected_workload_ids:
+        raise AssertionError(
+            "unexpected conditional quantified callable workload "
+            f"{workload.workload_id!r}"
+        )
+    replacement_signature = _callable_match_group_signature(
+        workload.replacement_payload()
+    )
+    if replacement_signature is None:
+        raise AssertionError(
+            "expected callable_match_group replacement for quantified "
+            f"conditional workload {workload.workload_id!r}"
+        )
+    args = [workload.haystack_payload()]
+    if workload.count:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        replacement_signature,
+        freeze_signature_value(args),
+        workload.expected_exception is not None,
+        "no-match" in workload.categories,
+        workload.flags,
+        workload.text_model,
     )
 
 
