@@ -1810,6 +1810,48 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": -1,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "negative-count",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.sub helper path for the bounded numbered two-arm conditional callable replacement negative-count workflow, keeping CPython's exact `count=-1` no-substitution and no-callback outcome explicit on `abcdaceabcd`."
+      ]
+    },
+    {
       "id": "module-sub-callable-named-conditional-group-exists-replacement-warm-str",
       "bucket": "module-sub",
       "family": "module",
@@ -2210,6 +2252,50 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-subn-callable-named-conditional-group-exists-replacement-negative-count-warm-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": -1,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "negative-count",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.subn helper path for the bounded named two-arm conditional callable replacement negative-count workflow, keeping the exact `count=-1` zero-replacement tuple outcome explicit on `abcdaceabcd` without invoking the callback."
+      ]
+    },
+    {
       "id": "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-str",
       "bucket": "pattern-sub",
       "family": "module",
@@ -2248,6 +2334,49 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache Pattern.sub helper path for the bounded numbered two-arm conditional callable replacement negative-count workflow, keeping the same `count=-1` no-substitution outcome explicit on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": -1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "negative-count",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.sub helper path for the bounded numbered two-arm conditional callable replacement negative-count workflow, keeping the same `count=-1` no-substitution outcome explicit on the compiled entrypoint."
       ]
     },
     {
@@ -2291,6 +2420,51 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache Pattern.subn helper path for the bounded named two-arm conditional callable replacement negative-count workflow, keeping the same `count=-1` zero-replacement tuple outcome explicit on the compiled entrypoint too."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "abcdaceabcd",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": -1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "negative-count",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.subn helper path for the bounded named two-arm conditional callable replacement negative-count workflow, keeping the same `count=-1` zero-replacement tuple outcome explicit on the compiled entrypoint too."
       ]
     },
     {
