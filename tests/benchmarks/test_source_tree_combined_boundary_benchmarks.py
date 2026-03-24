@@ -59,12 +59,6 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_collection_replacement_wrong_text_model_workload,
     _module_workflow_positional_indexlike_correctness_case_signature,
 )
-from tests.benchmarks.grouped_alternation_benchmark_anchor_support import (
-    _grouped_alternation_correctness_case_signature,
-    _grouped_alternation_replacement_correctness_case_signature,
-    _grouped_alternation_replacement_workload_signature,
-    _grouped_alternation_workload_signature,
-)
 from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
     _is_module_workflow_keyword_error_workload,
     _is_module_workflow_keyword_flags_workload,
@@ -108,6 +102,10 @@ from tests.benchmarks.compiled_pattern_module_success_benchmark_support import (
     _module_workflow_compiled_pattern_workload_signature,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _grouped_alternation_correctness_case_signature,
+    _grouped_alternation_replacement_correctness_case_signature,
+    _grouped_alternation_replacement_workload_signature,
+    _grouped_alternation_workload_signature,
     _manifest_workloads,
     _selected_manifest_workloads,
     assert_benchmark_workload_matches_expected_result,
