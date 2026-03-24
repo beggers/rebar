@@ -921,6 +921,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-callable-conditional-group-exists-absent-str",
             "module-sub-callable-named-conditional-group-exists-present-str",
             "pattern-subn-callable-named-conditional-group-exists-absent-str",
+            "module-sub-callable-conditional-group-exists-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-absent-bytes",
         ),
     ),
     "conditional-group-exists-replacement-template-workflows": CorrectnessScorecardManifestExpectation(

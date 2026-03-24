@@ -274,16 +274,26 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-absent-str",
                 "pattern-sub-callable-named-conditional-group-exists-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-absent-str",
+                "module-sub-callable-conditional-group-exists-present-bytes",
+                "module-subn-callable-conditional-group-exists-absent-bytes",
+                "pattern-sub-callable-conditional-group-exists-present-bytes",
+                "pattern-subn-callable-conditional-group-exists-absent-bytes",
+                "module-sub-callable-named-conditional-group-exists-present-bytes",
+                "module-subn-callable-named-conditional-group-exists-absent-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-present-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-absent-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
             {
                 r"a(b)?c(?(1)d|e)",
                 r"a(?P<word>b)?c(?(word)d|e)",
+                rb"a(b)?c(?(1)d|e)",
+                rb"a(?P<word>b)?c(?(word)d|e)",
             }
         ),
-        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
-        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(
             {
                 r"a(b)?c(?(1)d|e)",

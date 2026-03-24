@@ -1,6 +1,6 @@
 # RBR-1127: Publish conditional group-exists callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -52,3 +52,13 @@ Created: 2026-03-24
   - `tests/python/test_callable_replacement_parity_suite.py` still records `expected_text_models=STR_ONLY_TEXT_MODELS` and only the eight `str` ids for `conditional-group-exists-callable-replacement-workflows`;
   - `reports/correctness/latest.py` still surfaces `collection.replacement.conditional_group_exists.callable.str` for this manifest, confirming that bytes workflows are unpublished today; and
   - the live ready frontier already reserves the exact prerequisite implementation slice as `RBR-1125`, so the next bounded follow-on on this owner path is publication rather than a sibling parity task.
+
+## Completion Notes
+- Extended `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` with the adjacent eight bytes module/pattern `sub()` and `subn(count=1)` rows for `rb"a(b)?c(?(1)d|e)"` and `rb"a(?P<word>b)?c(?(word)d|e)"`, keeping the callback helper pinned to `match.group(1)` / `match.group("word")` and the absent-capture `TypeError` contract explicit.
+- Updated `tests/python/test_callable_replacement_parity_suite.py` so the existing `conditional-group-exists-callable-replacement-workflows` owner-path manifest now expects mixed `str`/`bytes` coverage, the mirrored bytes case ids, and the bytes compile patterns.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the combined-scorecard representative cases mirror the new bytes rows for this now-mixed-text manifest.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `collection.replacement.conditional_group_exists.callable` with 16 passing cases total, plus `collection.replacement.conditional_group_exists.callable.bytes` and `.str` with 8 passing cases each, and the overall published summary is 1653 total / 1653 passed / 0 failed / 0 unimplemented.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and callable and bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'mixed_text_feature_scorecards_mirror_representative_bytes_rows'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
