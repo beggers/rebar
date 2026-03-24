@@ -1,6 +1,6 @@
 # RBR-1200: Extract benchmark publication and built-native runner contracts
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -85,3 +85,11 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py` currently fails with `ERROR: file or directory not found: tests/benchmarks/test_benchmark_publication_runtime_contracts.py`, which belongs exactly to the cleanup queued here;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_loader_rejects_duplicate_ids or run_internal_workload_probe_reports_unsupported_operations_as_unavailable'` returned `3 passed, 551 deselected in 0.18s` in this run; and
   - the negative `rg` check named above currently fails exactly on this cleanup because the moved tests still live in the combined suite.
+
+## Completion Note
+- Extracted the benchmark publication/runtime contract helpers and the 20 listed tests into `tests/benchmarks/test_benchmark_publication_runtime_contracts.py`, including `_benchmark_manifest_selector_id` plus the built-native smoke/full contract helpers.
+- Deleted the moved helper/test block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` without adding wrappers or support indirection.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py` -> `17 passed, 3 skipped`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_loader_rejects_duplicate_ids or run_internal_workload_probe_reports_unsupported_operations_as_unavailable'` -> `3 passed, 531 deselected`
+  - `bash -lc "! rg -n 'test_default_benchmark_manifest_selector_rejects_unknown_selector|test_default_benchmark_published_full_suite_selector_covers_tracked_manifests|test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants|test_built_native_smoke_manifest_selector_keeps_membership_contract|test_benchmark_selector_subset_helper_keeps_benchmark_specific_missing_filename_error|test_declared_benchmark_manifest_selectors_match_registry_keys|test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order|test_published_benchmark_manifests_cache_clear_reloads_current_default_selector|test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_workload_ids|test_built_native_smoke_runner_uses_explicit_report_paths_only|test_built_native_smoke_cli_uses_explicit_report_paths_only|test_built_native_smoke_mode_requires_real_built_runtime|test_built_native_smoke_mode_writes_built_native_report|test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavailable|test_run_benchmarks_rejects_smoke_only_selection_without_smoke_workloads|test_run_benchmarks_reports_built_native_provenance_when_available|test_built_native_full_runner_uses_explicit_report_paths_only|test_built_native_full_cli_uses_explicit_report_paths_only|test_built_native_full_mode_requires_real_built_runtime|test_built_native_full_mode_writes_built_native_report_with_known_gaps' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> success
