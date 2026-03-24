@@ -1,6 +1,6 @@
 # RBR-1198: Extract grouped-alternation benchmark anchor support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -63,3 +63,10 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py` currently fails with `ERROR: file or directory not found: tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py`, which belongs exactly to the cleanup queued here;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'grouped_alternation'` returned `4 passed, 550 deselected in 0.18s` in this run; and
   - the negative `rg` check named above currently fails exactly on this cleanup because the grouped-alternation helpers still live in the combined suite.
+
+## Completion Note
+- Extracted the grouped-alternation benchmark anchor helpers into `tests/benchmarks/grouped_alternation_benchmark_anchor_support.py`, rewired the combined suite to import them directly, and added focused live-manifest support tests in `tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'grouped_alternation'`
+  - `bash -lc "! rg -n 'def _grouped_alternation_correctness_case_signature|def _grouped_alternation_workload_signature|def _grouped_alternation_replacement_correctness_case_signature|def _grouped_alternation_replacement_workload_signature' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
