@@ -2284,6 +2284,90 @@ def test_broader_range_open_ended_replacement_manifest_no_longer_filters_bytes_f
     )
 
 
+def test_conditional_replacement_supplemental_bytes_cases_keep_exact_frontier_explicit(
+) -> None:
+    expected_case_ids = (
+        "module-numbered-bytes-sub-template-present-capture",
+        "module-numbered-bytes-subn-template-absent-capture",
+        "pattern-named-bytes-sub-template-present-capture",
+        "pattern-named-bytes-subn-template-absent-capture",
+    )
+    bytes_cases = tuple(
+        case
+        for case in CONDITIONAL_SUPPLEMENTAL_REPEATED_CASES
+        if isinstance(case.pattern, bytes)
+    )
+
+    assert tuple(case.id for case in bytes_cases) == expected_case_ids
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        {
+            "module-sub": frozenset(
+                {"module-numbered-bytes-sub-template-present-capture"}
+            ),
+            "module-subn": frozenset(
+                {"module-numbered-bytes-subn-template-absent-capture"}
+            ),
+            "pattern-sub": frozenset(
+                {"pattern-named-bytes-sub-template-present-capture"}
+            ),
+            "pattern-subn": frozenset(
+                {"pattern-named-bytes-subn-template-absent-capture"}
+            ),
+        },
+        selected_case_ids=expected_case_ids,
+        coverage_label="conditional replacement supplemental bytes case-id buckets",
+    )
+    assert {
+        case.id: (
+            case.use_compiled_pattern,
+            case.helper,
+            case.count,
+            case.pattern,
+            case.replacement,
+            case.string,
+            case.expected_result,
+        )
+        for case in bytes_cases
+    } == {
+        "module-numbered-bytes-sub-template-present-capture": (
+            False,
+            "sub",
+            0,
+            rb"a(b)?c(?(1)d|e)",
+            rb"\1x",
+            b"zzabcdzz",
+            b"zzbxzz",
+        ),
+        "module-numbered-bytes-subn-template-absent-capture": (
+            False,
+            "subn",
+            1,
+            rb"a(b)?c(?(1)d|e)",
+            rb"\1x",
+            b"zzacezz",
+            (b"zzxzz", 1),
+        ),
+        "pattern-named-bytes-sub-template-present-capture": (
+            True,
+            "sub",
+            0,
+            rb"a(?P<word>b)?c(?(word)d|e)",
+            rb"\g<word>x",
+            b"zzabcdzz",
+            b"zzbxzz",
+        ),
+        "pattern-named-bytes-subn-template-absent-capture": (
+            True,
+            "subn",
+            1,
+            rb"a(?P<word>b)?c(?(word)d|e)",
+            rb"\g<word>x",
+            b"zzacezz",
+            (b"zzxzz", 1),
+        ),
+    }
+
+
 @pytest.mark.parametrize(("surface", "pattern"), _compile_pattern_params())
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
