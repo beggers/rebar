@@ -104,10 +104,6 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _module_workflow_compiled_pattern_workload_signature,
     _is_module_workflow_compiled_pattern_wrong_text_model_workload,
 )
-from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
-    _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
-    _is_collection_replacement_compiled_pattern_keyword_error_workload,
-)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _grouped_alternation_correctness_case_signature,
     _grouped_alternation_replacement_correctness_case_signature,
@@ -4794,31 +4790,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
-    def test_collection_replacement_manifest_keeps_compiled_pattern_module_helper_keyword_error_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_collection_replacement_compiled_pattern_keyword_error_workload,
-        )
-        expected_source_workload_ids = {
-            workload.workload_id
-            for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-        }
-        self.assertEqual(
-            set(expected_measured_workload_ids),
-            expected_source_workload_ids,
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
     def test_collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured(
         self,
     ) -> None:
@@ -5082,79 +5053,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             workload_count,
             expected_total_workload_count=workload_count,
         )
-
-    def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_literal_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        owner_spec = _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS[0]
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            owner_spec.includes_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            owner_spec.expected_anchor_workload_ids(),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_named_group_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        owner_spec = _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS[1]
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            owner_spec.includes_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            owner_spec.expected_anchor_workload_ids(),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        cases = tuple(
-            (
-                owner_spec.anchor_definition_name,
-                owner_spec.includes_workload,
-                owner_spec.expected_anchor_workload_ids(),
-            )
-            for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
-        )
-
-        for group_id, include_workload, expected_workload_ids in cases:
-            with self.subTest(group_id=group_id):
-                measured_workload_ids = _manifest_workload_ids_matching(
-                    case.target_manifest,
-                    include_workload,
-                )
-                self.assertEqual(measured_workload_ids, expected_workload_ids)
-                self._assert_zero_gap_manifest_workloads_measured(
-                    case,
-                    "module-boundary",
-                    measured_workload_ids,
-                    workload_count,
-                    expected_total_workload_count=workload_count,
-                )
 
     def test_module_boundary_manifest_keeps_bounded_wildcard_compiled_pattern_success_rows_measured(
         self,

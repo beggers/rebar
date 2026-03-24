@@ -1,6 +1,6 @@
 ## RBR-1249: Move compiled-pattern measured-row assertions onto dedicated owner suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -43,6 +43,11 @@ Created: 2026-03-24
 - Preserve workload-id ordering, live-selector usage, and the current measured-versus-zero-gap assertions exactly.
 
 ## Notes
+- Completed 2026-03-24:
+  - moved the collection/replacement compiled-pattern helper-keyword measured-row assertion into `tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py`;
+  - moved the module-boundary compiled-pattern `module.compile` literal, named-group, and keyword measured-row assertions into `tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py`;
+  - removed the four inline ownership assertions and the now-unused helper-keyword import from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`; and
+  - reran the task verification on the final tree with `167 passed`, `271 tests collected`, and the grep check returning no inline matches in the combined suite.
 - `RBR-1249` is the next available unreserved task id in this checkout:
   - `ops/tasks/ready/`, `ops/tasks/in_progress/`, and `ops/tasks/blocked/` are empty in this run; and
   - `rg -n "RBR-1249|RBR-1250|RBR-1251|RBR-1252|RBR-1253|RBR-1254|RBR-1255" ops/state/backlog.md ops/state/current_status.md` returned no reserved follow-on ids in this range.
