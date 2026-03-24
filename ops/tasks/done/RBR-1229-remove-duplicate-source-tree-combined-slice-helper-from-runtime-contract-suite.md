@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -30,3 +30,8 @@ Created: 2026-03-24
 
 ## Notes
 - Verified before queuing on 2026-03-24 that the targeted runtime-contract test currently passes in the live checkout and that the duplicate helper/class are still present in `tests/benchmarks/test_benchmark_publication_runtime_contracts.py`, so the acceptance commands isolate this cleanup rather than unrelated drift.
+
+## Completion
+- 2026-03-24: Removed the local `_SourceTreeCombinedSliceExpectation` dataclass and `source_tree_combined_slice_expectations()` helper from `tests/benchmarks/test_benchmark_publication_runtime_contracts.py`.
+- 2026-03-24: Rebuilt `_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads()` as a direct `live_manifest_workloads()` selection over the four required `nested_group_callable_replacement_boundary.py` bytes workload ids, preserving the existing runtime-contract assertions unchanged.
+- 2026-03-24: Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py -k 'nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads_round_trip_preserves_callback_results'` and `bash -lc "! rg -n '^class _SourceTreeCombinedSliceExpectation|^def source_tree_combined_slice_expectations\\(' tests/benchmarks/test_benchmark_publication_runtime_contracts.py"`.

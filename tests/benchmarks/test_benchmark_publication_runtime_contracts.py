@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
 from functools import cache
 import json
 import pathlib
@@ -56,38 +55,6 @@ _CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
 _NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
     BENCHMARK_WORKLOADS_ROOT / "nested_group_callable_replacement_boundary.py"
 )
-
-
-@dataclass(frozen=True, slots=True)
-class _SourceTreeCombinedSliceExpectation:
-    slice_id: str
-    expected_workload_ids: tuple[str, ...]
-
-
-def source_tree_combined_slice_expectations(
-    manifest_id: str,
-) -> tuple[_SourceTreeCombinedSliceExpectation, ...]:
-    if manifest_id != "nested-group-callable-replacement-boundary":
-        raise AssertionError(
-            f"unknown source-tree combined slice expectation manifest {manifest_id!r}"
-        )
-
-    return (
-        _SourceTreeCombinedSliceExpectation(
-            slice_id="quantified-branch-local-backreference",
-            expected_workload_ids=(
-                "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
-                "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
-                "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-str",
-                "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
-                "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
-                "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
-                "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-bytes",
-                "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-bytes",
-            ),
-        ),
-    )
-
 
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
     return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
@@ -885,18 +852,13 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
 @cache
 def _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
 ) -> tuple[Workload, ...]:
-    manifest_id = "nested-group-callable-replacement-boundary"
-    slice_expectation = next(
-        expectation
-        for expectation in source_tree_combined_slice_expectations(manifest_id)
-        if expectation.slice_id == "quantified-branch-local-backreference"
-    )
     return live_manifest_workloads(
         _NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
-        tuple(
-            workload_id
-            for workload_id in slice_expectation.expected_workload_ids
-            if workload_id.endswith("-bytes")
+        (
+            "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
+            "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-bytes",
+            "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-bytes",
         ),
     )
 
