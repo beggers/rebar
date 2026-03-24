@@ -2747,6 +2747,10 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-template-named-conditional-group-exists-replacement-warm-bytes",
             "pattern-sub-template-named-conditional-group-exists-replacement-purged-bytes",
             "pattern-subn-template-named-conditional-group-exists-replacement-purged-bytes",
+            "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-str",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-str",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-str",
             "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-bytes",
             "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-bytes",
             "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
@@ -3540,6 +3544,19 @@ CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
     "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-bytes",
     "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
     "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-bytes",
+)
+
+CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS = (
+    "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-str",
+    "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-str",
+    "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+    "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-str",
+)
+
+CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS = (
+    CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS[:8]
+    + CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+    + CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS[8:]
 )
 
 
@@ -4720,33 +4737,50 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 for workload in case.target_manifest.workloads
                 if workload.workload_id
                 in CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
+                or workload.workload_id
+                in CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
             ),
             id_attr="workload_id",
         )
 
         self.assertEqual(
             tuple(workloads_by_id),
-            CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
+            CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS,
         )
 
-        for workload_id in CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
+        for workload_id in CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS:
+            expected_serialized_replacement = "\\g<word>x" if "-named-" in workload_id else "\\1x"
+            expected_text_model = "bytes" if workload_id.endswith("-bytes") else "str"
             expected_template_payload = (
-                b"\\g<word>x" if "-named-" in workload_id else b"\\1x"
-            )
-            expected_serialized_replacement = (
-                "\\g<word>x" if "-named-" in workload_id else "\\1x"
+                b"\\g<word>x"
+                if "-named-" in workload_id and workload_id.endswith("-bytes")
+                else "\\g<word>x"
+                if "-named-" in workload_id
+                else b"\\1x"
+                if workload_id.endswith("-bytes")
+                else "\\1x"
             )
             if "negative-count" in workload_id:
                 expected_count = -1
                 expected_result = (
                     (b"abcdaceabcd", 0)
+                    if workload_id.endswith("-bytes") and "-subn-" in workload_id
+                    else ("abcdaceabcd", 0)
                     if "-subn-" in workload_id
                     else b"abcdaceabcd"
+                    if workload_id.endswith("-bytes")
+                    else "abcdaceabcd"
                 )
             else:
                 expected_count = 1 if "-subn-" in workload_id else 0
                 expected_result = (
-                    (b"zzxzz", 1) if "-subn-" in workload_id else b"zzbxzz"
+                    (b"zzxzz", 1)
+                    if workload_id.endswith("-bytes") and "-subn-" in workload_id
+                    else ("zzxzz", 1)
+                    if "-subn-" in workload_id
+                    else b"zzbxzz"
+                    if workload_id.endswith("-bytes")
+                    else "zzbxzz"
                 )
 
             with self.subTest(workload_id=workload_id):
@@ -4754,12 +4788,18 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 payload = workload_to_payload(workload)
                 round_tripped = workload_from_payload(payload)
 
-                self.assertEqual(workload.text_model, "bytes")
-                self.assertEqual(payload["text_model"], "bytes")
+                self.assertEqual(workload.text_model, expected_text_model)
+                self.assertEqual(payload["text_model"], expected_text_model)
                 self.assertEqual(payload["replacement"], expected_serialized_replacement)
                 self.assertEqual(payload["count"], expected_count)
-                self.assertIsInstance(workload.pattern_payload(), bytes)
-                self.assertIsInstance(workload.haystack_payload(), bytes)
+                self.assertIsInstance(
+                    workload.pattern_payload(),
+                    bytes if workload_id.endswith("-bytes") else str,
+                )
+                self.assertIsInstance(
+                    workload.haystack_payload(),
+                    bytes if workload_id.endswith("-bytes") else str,
+                )
                 self.assertEqual(
                     workload.replacement_payload(),
                     expected_template_payload,
@@ -4769,10 +4809,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_result,
                 )
 
-                self.assertEqual(round_tripped.text_model, "bytes")
+                self.assertEqual(round_tripped.text_model, expected_text_model)
                 self.assertEqual(round_tripped.count, expected_count)
-                self.assertIsInstance(round_tripped.pattern_payload(), bytes)
-                self.assertIsInstance(round_tripped.haystack_payload(), bytes)
+                self.assertIsInstance(
+                    round_tripped.pattern_payload(),
+                    bytes if workload_id.endswith("-bytes") else str,
+                )
+                self.assertIsInstance(
+                    round_tripped.haystack_payload(),
+                    bytes if workload_id.endswith("-bytes") else str,
+                )
                 self.assertEqual(
                     round_tripped.replacement_payload(),
                     expected_template_payload,
@@ -6359,6 +6405,12 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             _conditional_group_exists_template_replacement_expectation()
         )
         case = source_tree_scorecard_case(manifest_id)
+        expected_negative_count_str_workload_ids = (
+            "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-str",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-str",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-str",
+        )
         expected_negative_count_bytes_workload_ids = (
             "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-bytes",
             "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-bytes",
@@ -6401,17 +6453,29 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
         )
         self.assertEqual(
+            representative_str_workload_ids[-len(expected_negative_count_str_workload_ids) :],
+            expected_negative_count_str_workload_ids,
+        )
+        self.assertEqual(
             representative_bytes_workload_ids,
             CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(
             len(representative_template_workload_ids),
-            20,
+            24,
         )
-        self.assertEqual(len(representative_str_workload_ids), 8)
+        self.assertEqual(len(representative_str_workload_ids), 12)
         self.assertEqual(
             len(representative_bytes_workload_ids),
             len(CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS),
+        )
+        self.assertEqual(
+            tuple(
+                workload_id
+                for workload_id in representative_str_workload_ids
+                if "negative-count" in workload_id
+            ),
+            expected_negative_count_str_workload_ids,
         )
         self.assertEqual(
             representative_bytes_workload_ids[-len(expected_negative_count_bytes_workload_ids) :],

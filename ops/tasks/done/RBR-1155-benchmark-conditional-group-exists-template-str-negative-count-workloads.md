@@ -1,6 +1,6 @@
 # RBR-1155: Benchmark conditional group-exists template str negative-count workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,11 @@ Created: 2026-03-24
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_conditional_group_exists_template_bytes_manifest_promotes_minimal_replacement_rows_to_measured tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_conditional_group_exists_template_bytes_workloads_keep_bytes_template_payloads_through_round_trip tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_conditional_group_exists_replacement_template_scorecards_keep_bytes_negative_count_follow_on_workloads_in_sync` returned `4 passed, 56 subtests passed` in this run; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-template-str-negative-count-bench.py` completed successfully with `100` measured workloads and `0` known gaps in this run.
+
+## Completion
+- Added the four bounded `str count=-1` template workloads on the existing `conditional-group-exists-boundary` manifest and extended the shared combined-boundary benchmark assertions so the template slice, representative measured rows, and round-trip payload checks cover the new `str` negative-count rows alongside the already-landed bytes rows.
+- Regenerated the tracked benchmark publication at `reports/benchmarks/latest.py`; the tracked summary now reports `1035/1035` measured workloads with `known_gap_count == 0`, and the tracked `conditional-group-exists-boundary` manifest summary now reports `104` measured workloads with `0` known gaps.
+- Verification completed with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_conditional_group_exists_template_bytes_manifest_promotes_minimal_replacement_rows_to_measured tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_conditional_group_exists_template_bytes_workloads_keep_bytes_template_payloads_through_round_trip tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_conditional_group_exists_replacement_template_scorecards_keep_bytes_negative_count_follow_on_workloads_in_sync` -> `4 passed, 64 subtests passed`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1155-conditional-template-negative-count-str.py` -> `104/104` measured, `0` known gaps.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` -> `1035/1035` measured, `0` known gaps.
