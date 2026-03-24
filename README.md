@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1837 cases across 114 manifests, with all 1837 passing in the current slice; the benchmark publication covers 1195/1195 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | The surviving post-drain frontier is the alternation-heavy conditional callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface. |
-| Work queue | `0` ready, `0` in progress, `1234` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1837 cases across 114 manifests, with all 1837 passing in the current slice; the benchmark publication covers 1203/1203 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
+| Current milestone | No ready feature follow-on currently survives on the conditional callable replacement owner path; the bounded alternation-heavy callable `count=None` benchmark catch-up already landed on the existing `conditional_group_exists_boundary.py` Python-path surface. |
+| Work queue | `0` ready, `0` in progress, `1236` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1837 cases across 114 manifests, with all 1837 passing in the current slice; the benchmark publication covers 1195/1195 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1837 cases across 114 manifests, with all 1837 passing in the current slice; the benchmark publication covers 1203/1203 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `1195` |
-| Workloads with real `rebar` timings | `1195` |
+| Published workloads | `1203` |
+| Workloads with real `rebar` timings | `1203` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,12 +45,12 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- The surviving post-drain frontier is the alternation-heavy conditional callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface.
+- No ready feature follow-on currently survives on the conditional callable replacement owner path; the bounded alternation-heavy callable `count=None` benchmark catch-up already landed on the existing `conditional_group_exists_boundary.py` Python-path surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
-- The published benchmark surface is still bounded at 1195 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 1203 workloads, so zero known gaps does not yet imply broad performance coverage.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
