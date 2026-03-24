@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The likely post-drain frontier on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` benchmark catch-up slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` through the existing module and compiled-`Pattern` `sub()` and `subn()` Python-path workloads on `b"zzabcdzz"` and `b"zzacfzz"`.
+No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next bounded same-family slice has not been pinned yet.
 
 ## Ordered Work
-1. The likely post-drain frontier on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` benchmark catch-up slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` through the existing module and compiled-`Pattern` `sub()` and `subn()` Python-path workloads on `b"zzabcdzz"` and `b"zzacfzz"`.
+1. No ready feature follow-on currently survives on the shared conditional callable replacement owner path; the next bounded same-family slice has not been pinned yet.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
