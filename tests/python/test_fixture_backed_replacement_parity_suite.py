@@ -2838,6 +2838,10 @@ def test_conditional_replacement_template_match_surfaces_require_full_mixed_fron
     manifest_id = "conditional-group-exists-replacement-template-workflows"
     surface = _replacement_surface_by_id("conditional-group-exists-replacement")
     bundle = published_fixture_bundles_by_manifest_id(surface.bundles)[manifest_id]
+    expected_case_ids = _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=manifest_id,
+    )
 
     str_cases = tuple(case for case in bundle.cases if case.text_model == "str")
     bytes_cases = tuple(case for case in bundle.cases if case.text_model == "bytes")
@@ -2859,12 +2863,13 @@ def test_conditional_replacement_template_match_surfaces_require_full_mixed_fron
         if case.manifest_id == manifest_id
     )
 
-    assert match_snapshot_case_ids == (*str_case_ids, *bytes_case_ids)
+    assert tuple(case.case_id for case in bundle.cases) == expected_case_ids
+    assert match_snapshot_case_ids == expected_case_ids
     assert match_group_access_case_ids == match_snapshot_case_ids
     assert template_expand_case_ids == match_snapshot_case_ids
     assert frozenset(bytes_case_ids).issubset(match_snapshot_case_ids)
     assert frozenset(bytes_case_ids).issubset(match_group_access_case_ids)
-    assert len(str_case_ids) == 8
+    assert len(str_case_ids) == 12
     assert len(bytes_case_ids) == 12
 
 
