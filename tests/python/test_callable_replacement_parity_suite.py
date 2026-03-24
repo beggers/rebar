@@ -1516,6 +1516,46 @@ def _normalized_source_callable_replacement(case: FixtureCase) -> dict[str, obje
     }
 
 
+CONDITIONAL_GROUP_EXISTS_ALTERNATION_GROUP_ACCESS_CASES = (
+    (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzabcdezz", 0),
+    (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzabcdfzz", 1),
+    (
+        r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "sub",
+        "zzabcdezz",
+        0,
+    ),
+    (
+        r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "subn",
+        "zzabcdfzz",
+        1,
+    ),
+)
+
+
+CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES = (
+    (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzacegzz", 0),
+    (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzacehzz", 1),
+    (
+        r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "sub",
+        "zzacegzz",
+        0,
+    ),
+    (
+        r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "subn",
+        "zzacehzz",
+        1,
+    ),
+)
+
+
 def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
@@ -2483,6 +2523,55 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
         assert _normalized_source_callable_replacement(bytes_case) == (
             _normalized_source_callable_replacement(str_case)
         )
+
+
+def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_with_published_fixture(
+) -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+
+    def normalized_case_row(
+        case: FixtureCase,
+    ) -> tuple[str, int | str, str, str, int]:
+        pattern = case_pattern(case)
+        text = case_text_argument(case)
+        replacement = _source_callable_replacement(case)
+
+        assert case.helper is not None
+        assert isinstance(pattern, str)
+        assert isinstance(text, str)
+        assert isinstance(replacement, dict)
+
+        group_ref = replacement["group"]
+        assert isinstance(group_ref, (int, str))
+        return pattern, group_ref, case.helper, text, _case_count(case)
+
+    alternation_cases = tuple(
+        case
+        for case in bundle.cases
+        if "alternation" in case.categories
+    )
+    present_rows = {
+        normalized_case_row(case)
+        for case in alternation_cases
+        if case.text_model == "str" and "present" in case.categories
+    }
+    absent_rows = {
+        normalized_case_row(case)
+        for case in alternation_cases
+        if case.text_model == "str" and "absent" in case.categories
+    }
+
+    assert not {
+        case.case_id
+        for case in alternation_cases
+        if case.text_model == "bytes"
+    }
+    assert len(alternation_cases) == len(present_rows) + len(absent_rows)
+    assert present_rows == set(CONDITIONAL_GROUP_EXISTS_ALTERNATION_GROUP_ACCESS_CASES)
+    assert absent_rows == set(
+        CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES
+    )
 
 
 def test_callable_replacement_callback_exception_case_pools_exclude_negative_count_rows(
@@ -3678,24 +3767,7 @@ def _assert_conditional_group_exists_alternation_callable_absent_capture_typeerr
 )
 @pytest.mark.parametrize(
     ("pattern", "group_ref", "helper", "string", "count"),
-    (
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzabcdezz", 0),
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzabcdfzz", 1),
-        (
-            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-            "word",
-            "sub",
-            "zzabcdezz",
-            0,
-        ),
-        (
-            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-            "word",
-            "subn",
-            "zzabcdfzz",
-            1,
-        ),
-    ),
+    CONDITIONAL_GROUP_EXISTS_ALTERNATION_GROUP_ACCESS_CASES,
     ids=(
         "numbered-sub-present-first-arm",
         "numbered-subn-present-second-arm",
@@ -3732,24 +3804,7 @@ def test_conditional_group_exists_alternation_callable_replacement_group_access_
 )
 @pytest.mark.parametrize(
     ("pattern", "group_ref", "helper", "string", "count"),
-    (
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzacegzz", 0),
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzacehzz", 1),
-        (
-            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-            "word",
-            "sub",
-            "zzacegzz",
-            0,
-        ),
-        (
-            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-            "word",
-            "subn",
-            "zzacehzz",
-            1,
-        ),
-    ),
+    CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES,
     ids=(
         "numbered-sub-absent-first-arm",
         "numbered-subn-absent-second-arm",
