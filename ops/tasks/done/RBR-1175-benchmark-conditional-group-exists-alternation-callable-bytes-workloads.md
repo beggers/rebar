@@ -1,6 +1,6 @@
 # RBR-1175: Benchmark conditional group-exists alternation callable bytes workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_single_manifest_scorecards_keep_slice_backed_representatives` returned `1 passed, 4 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-rbr-1175-current.py` completed successfully with `120` measured workloads and `0` known gaps; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report .rebar/tmp/feature-planning-rbr-1175-full-current.py` completed successfully with `1051` measured workloads and `0` known gaps.
+
+## Completion
+- Added the exact eight bytes alternation-heavy conditional callable `sub()`/`subn()` benchmark rows to `benchmarks/workloads/conditional_group_exists_boundary.py` on the existing shared owner path, keeping the absent-capture `TypeError` pattern-entrypoint rows explicit.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared alternation-heavy callable slice expectations and scorecard representative assertions now cover both the existing `str` rows and the new bytes rows.
+- Republished `reports/benchmarks/latest.py`; the tracked combined benchmark report now shows `1059` measured workloads with `0` known gaps across `30` manifests, and `REPORT["manifests"]["conditional-group-exists-boundary"]` now shows `128` workloads, `128` measured workloads, and `0` known gaps.
+- Verification completed:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_source_tree_combined_slice_filters_match_expected_manifest_rows` -> `1 passed, 50 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_single_manifest_scorecards_keep_slice_backed_representatives` -> `1 passed, 4 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1175-conditional-alternation-callable-bytes.py` -> `128` measured workloads / `0` known gaps
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` -> `1059` measured workloads / `0` known gaps
