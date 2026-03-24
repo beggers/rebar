@@ -3460,6 +3460,213 @@ def _assert_conditional_group_exists_bytes_callable_absent_capture_typeerror_par
     assert len(observed_matches) == 1
 
 
+def _assert_conditional_group_exists_alternation_callable_group_access_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    pattern: str,
+    group_ref: int | str,
+    helper: str,
+    string: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[str]] = []
+
+    def observed_replacement(match: object) -> str:
+        observed_matches.append(match)
+        return match.group(group_ref) + "x"
+
+    def expected_replacement(match: re.Match[str]) -> str:
+        expected_matches.append(match)
+        return match.group(group_ref) + "x"
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=count,
+        replacement=observed_replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=count,
+        replacement=expected_replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed == expected
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+    assert len(observed_matches) == 1
+
+
+def _assert_conditional_group_exists_alternation_callable_absent_capture_typeerror_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    pattern: str,
+    group_ref: int | str,
+    helper: str,
+    string: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[str]] = []
+
+    def observed_replacement(match: object) -> str:
+        observed_matches.append(match)
+        return match.group(group_ref) + "x"
+
+    def expected_replacement(match: re.Match[str]) -> str:
+        expected_matches.append(match)
+        return match.group(group_ref) + "x"
+
+    with pytest.raises(TypeError) as observed_error:
+        _invoke_callable_replacement(
+            backend,
+            pattern=pattern,
+            helper=helper,
+            string=string,
+            count=count,
+            replacement=observed_replacement,
+            use_compiled_pattern=use_compiled_pattern,
+        )
+
+    with pytest.raises(TypeError) as expected_error:
+        _invoke_callable_replacement(
+            re,
+            pattern=pattern,
+            helper=helper,
+            string=string,
+            count=count,
+            replacement=expected_replacement,
+            use_compiled_pattern=use_compiled_pattern,
+        )
+
+    assert normalize_exception(observed_error.value) == normalize_exception(
+        expected_error.value
+    )
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+    assert len(observed_matches) == 1
+
+
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count", "use_compiled_pattern"),
+    (
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzabcdezz", 0, False),
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzabcdfzz", 1, False),
+        (
+            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+            "word",
+            "sub",
+            "zzabcdezz",
+            0,
+            False,
+        ),
+        (
+            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+            "word",
+            "subn",
+            "zzabcdfzz",
+            1,
+            False,
+        ),
+    ),
+    ids=(
+        "numbered-module-sub-present-first-arm",
+        "numbered-module-subn-present-second-arm",
+        "named-module-sub-present-first-arm",
+        "named-module-subn-present-second-arm",
+    ),
+)
+def test_conditional_group_exists_alternation_callable_replacement_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: str,
+    group_ref: int | str,
+    helper: str,
+    string: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_callable_group_access_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count", "use_compiled_pattern"),
+    (
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzacegzz", 0, True),
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzacehzz", 1, True),
+        (
+            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+            "word",
+            "sub",
+            "zzacegzz",
+            0,
+            True,
+        ),
+        (
+            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+            "word",
+            "subn",
+            "zzacehzz",
+            1,
+            True,
+        ),
+    ),
+    ids=(
+        "numbered-pattern-sub-absent-first-arm",
+        "numbered-pattern-subn-absent-second-arm",
+        "named-pattern-sub-absent-first-arm",
+        "named-pattern-subn-absent-second-arm",
+    ),
+)
+def test_conditional_group_exists_alternation_callable_replacement_absent_capture_typeerror_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: str,
+    group_ref: int | str,
+    helper: str,
+    string: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_callable_absent_capture_typeerror_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
 @pytest.mark.parametrize(
     "use_compiled_pattern",
     (False, True),

@@ -1,8 +1,9 @@
 # RBR-1165: Implement conditional group-exists alternation callable str parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
+Completed: 2026-03-24
 
 ## Goal
 - Reopen the next exact callable-replacement owner-path slice after `RBR-1163` by converting the bounded `str` alternation-heavy conditional group-exists callable workflows from scaffold `NotImplementedError` placeholders to Rust-backed parity before any same-family correctness publication or benchmark catch-up widens this family again.
@@ -56,3 +57,14 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_module_callable_replacement_callback_match_objects_match_cpython` returned `224 passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_cases_stay_aligned_with_published_fixture tests/python/test_callable_replacement_parity_suite.py::test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases` returned `11 passed`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-callable-current.py` returned `24 executed / 24 passed`, confirming the current published callable owner path is otherwise stable.
+
+## Completion
+- Extended `crates/rebar-cpython/src/lib.rs` so the generic str conditional callable `finditer` bridge falls through from the simple two-arm helper to the already-landed alternation-heavy conditional span discovery helper instead of reporting `unsupported`.
+- Added bounded direct parity coverage in `tests/python/test_callable_replacement_parity_suite.py` for the numbered and named alternation-heavy conditional callable `sub()`/`subn()` module and compiled-pattern workflows, including present-arm `match.group(...) + "x"` success paths and absent-arm `TypeError` parity paths.
+- Left `python/rebar/__init__.py` unchanged; the existing wrapper/FFI path handled the slice once the native bridge reported support.
+- Verification:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_alternation_callable_replacement'` -> `16 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_module_callable_replacement_callback_match_objects_match_cpython` -> `224 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_cases_stay_aligned_with_published_fixture tests/python/test_callable_replacement_parity_suite.py::test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases` -> `11 passed`
+- Published scorecards were not republished in this run, so `reports/correctness/latest.py` did not change.

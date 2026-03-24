@@ -1130,7 +1130,16 @@ fn boundary_conditional_group_exists_finditer(
     Vec<(usize, usize)>,
     Vec<Vec<Option<(usize, usize)>>>,
 ) {
-    let outcome = core_conditional_group_exists_find_spans_str(pattern, flags, string, pos, endpos);
+    let outcome = {
+        let outcome = core_conditional_group_exists_find_spans_str(pattern, flags, string, pos, endpos);
+        if outcome.status != MatchStatus::Unsupported {
+            outcome
+        } else {
+            core_conditional_group_exists_alternation_find_spans_str(
+                pattern, flags, string, pos, endpos,
+            )
+        }
+    };
     (
         workflow_status(outcome.status),
         outcome.pos,
