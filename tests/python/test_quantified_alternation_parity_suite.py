@@ -29,8 +29,10 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
@@ -182,12 +184,6 @@ GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES = tuple(
     for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
     for case in fixture_cases_for_operation((spec.bundle,), "compile")
 )
-
-
-def _case_id(
-    case: BoundedPatternCase | BacktrackingTraceCase | SupplementalNoMatchCase,
-) -> str:
-    return case.id
 
 
 def _generated_quantified_alternation_spec(
@@ -828,7 +824,7 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     )
 
 
-@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=fixture_case_pytest_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -840,7 +836,7 @@ def test_compile_metadata_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES,
-    ids=lambda case: case.case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_generated_quantified_alternation_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
@@ -880,7 +876,7 @@ def test_generated_quantified_alternation_text_matrix_matches_cpython(
     assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_pytest_id)
 def test_module_search_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -903,7 +899,7 @@ def test_module_search_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_pytest_id)
 def test_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -921,7 +917,7 @@ def test_module_search_match_convenience_api_matches_cpython(
     assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_pytest_id)
 def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -950,7 +946,7 @@ def test_pattern_fullmatch_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_pytest_id)
 def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -977,7 +973,7 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     MATCH_GROUP_ACCESS_CASES,
-    ids=lambda case: case.case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_match_group_access_apis_match_cpython(
     regex_backend: tuple[str, object],
@@ -1074,7 +1070,7 @@ def test_pattern_bounds_cases_stay_anchored_to_quantified_alternation_patterns()
     }
 
 
-@pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=id_attribute_pytest_id)
 def test_pattern_bounds_matches_cpython(
     regex_backend: tuple[str, object],
     case: BoundedPatternCase,
@@ -1098,7 +1094,7 @@ def test_pattern_bounds_matches_cpython(
     assert_invalid_match_group_access_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", PATTERN_BOUNDS_NO_MATCH_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_NO_MATCH_CASES, ids=id_attribute_pytest_id)
 def test_pattern_bounds_misses_match_cpython(
     regex_backend: tuple[str, object],
     case: BoundedPatternCase,
@@ -1118,7 +1114,7 @@ def test_pattern_bounds_misses_match_cpython(
     assert_match_result_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=id_attribute_pytest_id)
 def test_backtracking_heavy_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: BacktrackingTraceCase,
@@ -1133,7 +1129,7 @@ def test_backtracking_heavy_module_search_branch_traces_match_cpython(
     assert_match_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=id_attribute_pytest_id)
 def test_backtracking_heavy_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: BacktrackingTraceCase,
@@ -1153,7 +1149,7 @@ def test_backtracking_heavy_pattern_fullmatch_branch_traces_match_cpython(
     assert_match_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", SUPPLEMENTAL_NO_MATCH_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", SUPPLEMENTAL_NO_MATCH_CASES, ids=id_attribute_pytest_id)
 def test_supplemental_no_match_paths_match_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalNoMatchCase,
