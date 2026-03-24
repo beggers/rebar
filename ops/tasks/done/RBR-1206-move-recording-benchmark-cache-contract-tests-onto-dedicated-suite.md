@@ -1,6 +1,6 @@
 # RBR-1206: Move RecordingBenchmarkModule cache contract tests onto dedicated suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -56,3 +56,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_recording_benchmark_module_support.py` returned `3 passed in 0.04s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module_helper_cache_modes_preserve_expected_purge_and_warmup_order or module_helper_warm_expected_exception_prewarms_compile_cache_without_invoking_helper or pattern_helper_cache_modes_preserve_expected_compile_and_purge_order'` returned `7 passed, 452 deselected in 0.15s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because the moved helper/test block still lives in the combined suite.
+
+## Completion
+- Moved the `RecordingBenchmarkModule` cache-contract workload helpers and three cache-order tests into `tests/benchmarks/test_recording_benchmark_module_support.py`, reusing `synthetic_workload(...)` and keeping the existing `build_callable(...)` path, cache-mode parameterization, callback return values, and `RecordingBenchmarkModule.calls` assertions unchanged.
+- Deleted the extracted helper/test block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, including the now-unused `RecordingBenchmarkModule` import, so the combined boundary suite no longer owns this helper-module-specific contract surface.
+- Verification passed:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_recording_benchmark_module_support.py` returned `10 passed in 0.05s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_recording_benchmark_module_support.py -k 'module_helper_cache_modes_preserve_expected_purge_and_warmup_order or module_helper_warm_expected_exception_prewarms_compile_cache_without_invoking_helper or pattern_helper_cache_modes_preserve_expected_compile_and_purge_order'` returned `7 passed, 3 deselected in 0.04s`.
+  - `bash -lc "! rg -n 'def _module_search_cache_contract_workload\\(|def _pattern_search_cache_contract_workload\\(|test_module_helper_cache_modes_preserve_expected_purge_and_warmup_order|test_module_helper_warm_expected_exception_prewarms_compile_cache_without_invoking_helper|test_pattern_helper_cache_modes_preserve_expected_compile_and_purge_order' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` returned success with no matches.
+  - The original combined-suite selector from the task note now returns `452 deselected in 0.42s` because those tests no longer exist in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
