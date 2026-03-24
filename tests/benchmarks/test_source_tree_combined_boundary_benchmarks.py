@@ -6332,6 +6332,81 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_workload_ids,
         )
 
+    def test_conditional_group_exists_replacement_template_scorecards_keep_bytes_negative_count_follow_on_workloads_in_sync(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        template_expectation = (
+            _conditional_group_exists_template_replacement_expectation()
+        )
+        case = source_tree_scorecard_case(manifest_id)
+        expected_negative_count_bytes_workload_ids = (
+            "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-bytes",
+        )
+        representative_template_workload_ids = tuple(
+            workload_id
+            for workload_id in case.representative_measured_workload_ids
+            if workload_id in template_expectation.expected_workload_ids
+        )
+        representative_str_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_template_workload_ids
+            if not workload_id.endswith("-bytes")
+        )
+        representative_bytes_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_template_workload_ids
+            if workload_id.endswith("-bytes")
+        )
+
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            ),
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+        self.assertEqual(
+            representative_template_workload_ids,
+            template_expectation.expected_workload_ids,
+        )
+        self.assertEqual(
+            representative_str_workload_ids,
+            tuple(
+                workload_id
+                for workload_id in template_expectation.expected_workload_ids
+                if not workload_id.endswith("-bytes")
+            ),
+        )
+        self.assertEqual(
+            representative_bytes_workload_ids,
+            CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            len(representative_template_workload_ids),
+            20,
+        )
+        self.assertEqual(len(representative_str_workload_ids), 8)
+        self.assertEqual(
+            len(representative_bytes_workload_ids),
+            len(CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS),
+        )
+        self.assertEqual(
+            representative_bytes_workload_ids[-len(expected_negative_count_bytes_workload_ids) :],
+            expected_negative_count_bytes_workload_ids,
+        )
+        self.assertEqual(
+            tuple(
+                workload_id
+                for workload_id in representative_bytes_workload_ids
+                if "negative-count" in workload_id
+            ),
+            expected_negative_count_bytes_workload_ids,
+        )
+
     def test_nested_group_callable_replacement_scorecard_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
