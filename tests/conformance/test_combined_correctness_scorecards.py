@@ -958,6 +958,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
             "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
             "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
+            "module-sub-callable-conditional-group-exists-alternation-negative-count-str",
+            "module-subn-callable-named-conditional-group-exists-alternation-negative-count-str",
+            "pattern-sub-callable-conditional-group-exists-alternation-negative-count-str",
+            "pattern-subn-callable-named-conditional-group-exists-alternation-negative-count-str",
             "module-sub-callable-conditional-group-exists-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
@@ -1018,6 +1022,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
             "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
             "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
+            "module-sub-callable-conditional-group-exists-alternation-negative-count-bytes",
+            "module-subn-callable-named-conditional-group-exists-alternation-negative-count-bytes",
+            "pattern-sub-callable-conditional-group-exists-alternation-negative-count-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-alternation-negative-count-bytes",
             "module-sub-callable-conditional-group-exists-negative-count-bytes",
             "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
@@ -5370,7 +5378,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         )
         self.assertEqual(
             len(manifest_negative_count_str_case_ids),
-            24,
+            28,
         )
         self.assertEqual(
             len(manifest_legacy_negative_count_str_case_ids),
@@ -5378,7 +5386,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         )
         self.assertEqual(
             len(manifest_legacy_negative_count_str_case_ids),
-            8,
+            12,
         )
         self.assertEqual(
             len(manifest_quantified_negative_count_str_case_ids),
@@ -5459,10 +5467,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 6,
-                    ("module_call", "subn"): 6,
-                    ("pattern_call", "sub"): 6,
-                    ("pattern_call", "subn"): 6,
+                    ("module_call", "sub"): 7,
+                    ("module_call", "subn"): 7,
+                    ("pattern_call", "sub"): 7,
+                    ("pattern_call", "subn"): 7,
                 }
             ),
         )
@@ -5474,10 +5482,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 6,
-                    ("module_call", "subn"): 6,
-                    ("pattern_call", "sub"): 6,
-                    ("pattern_call", "subn"): 6,
+                    ("module_call", "sub"): 7,
+                    ("module_call", "subn"): 7,
+                    ("pattern_call", "sub"): 7,
+                    ("pattern_call", "subn"): 7,
                 }
             ),
         )

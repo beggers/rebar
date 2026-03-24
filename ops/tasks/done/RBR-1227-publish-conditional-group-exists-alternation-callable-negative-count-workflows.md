@@ -1,6 +1,6 @@
 # RBR-1227: Publish conditional group-exists alternation callable negative-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -54,3 +54,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'negative_count_short_circuits_without_callback and conditional-group-exists-alternation'` returned `48 passed, 5924 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `4 passed, 44 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1227-conditional-callable-alternation-negative-count.py` returned `168 executed / 168 passed`.
+
+## Completion Notes
+- Added the exact eight alternation-heavy conditional callable `count=-1` workflows on the shared `conditional-group-exists-callable-replacement-workflows` owner path for numbered/named module and compiled-`Pattern` `sub`/`subn` coverage across `str` and `bytes`.
+- Updated the combined scorecard expectation and negative-count sync assertions so the representative-case matrix and helper/operation counts stay aligned with the widened alternation-negative-count slice.
+- Republished `reports/correctness/latest.py`; the tracked combined report now shows `collection.replacement.conditional_group_exists.callable` at `176` executed / `176` passed / `0` unimplemented and the overall combined summary at `1829` executed / `1829` passed / `0` failed / `0` unimplemented across `114` manifests.
+- Verification run results on this branch:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'negative_count_short_circuits_without_callback and conditional-group-exists-alternation'` returned `72 passed, 5988 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `4 passed, 44 deselected` after the tracked report refresh.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1227-conditional-callable-alternation-negative-count.py` returned `176 executed / 176 passed`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1829 executed / 1829 passed`.
