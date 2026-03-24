@@ -47,3 +47,7 @@ Created: 2026-03-24
   - that adjacent owner-path slice is pinned to `a(((bc|b)c){1,4})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d`.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `18 passed, 6252 deselected`.
+
+## Completion
+- Added a second module-entrypoint wrong-return-type parity test in `tests/python/test_callable_replacement_parity_suite.py` scoped to the eight `MODULE_RETURN_TYPE_ERROR_CASES` rows from `quantified-nested-group-alternation-callable-replacement-workflows`, while keeping the existing selector helpers and the earlier quantified nested-group module coverage intact.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'`, which returned `34 passed, 6252 deselected`.

@@ -6416,6 +6416,35 @@ def test_module_callable_replacement_wrong_return_type_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
+    tuple(
+        case
+        for case in MODULE_RETURN_TYPE_ERROR_CASES
+        if case.manifest_id
+        == "quantified-nested-group-alternation-callable-replacement-workflows"
+    ),
+    ids=lambda case: case.case_id,
+)
+def test_module_callable_replacement_wrong_return_type_matches_cpython_for_quantified_nested_group_alternation(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_return_type_error_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=_case_string(case),
+        count=_case_count(case),
+        use_compiled_pattern=False,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
     PATTERN_RETURN_TYPE_ERROR_CASES,
     ids=lambda case: case.case_id,
 )
