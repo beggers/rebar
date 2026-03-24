@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the numbered and named callable-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via the existing `callable_match_group` helper for both `str` and bytes pattern-text-model workloads including the bounded `str` and bytes `count=-1` no-substitution companions on `abcdaceabcd` and the absent-capture `TypeError` companions on `zzacezz` with `count=1`, the numbered and named replacement-template `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via `\\1x` and `\\g<word>x` for both `str` and bytes pattern-text-model workloads plus the bounded `str` and bytes `count=-1` no-substitution companions on `abcdaceabcd`, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, constant-replacement `sub()`/`subn()`, and `str` plus bytes callable-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints including the absent-capture `TypeError` companions on `zzacfzz` with `count=1` and the bounded `str` and bytes `count=-1` callable no-substitution companions on `zzabcdzz` and `zzacfzz`, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded quantified `str` and bytes callable-replacement `sub()`/`subn()` probes for that same numbered and named pair, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, while deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay follow-on benchmark expansion or later slices instead of being silently omitted here."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the numbered and named callable-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via the existing `callable_match_group` helper for both `str` and bytes pattern-text-model workloads including the bounded `str` and bytes `count=-1` no-substitution companions on `abcdaceabcd` and the absent-capture `TypeError` companions on `zzacezz` with `count=1`, the numbered and named replacement-template `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via `\\1x` and `\\g<word>x` for both `str` and bytes pattern-text-model workloads plus the bounded `str` and bytes `count=-1` no-substitution companions on `abcdaceabcd`, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, constant-replacement `sub()`/`subn()`, and `str` plus bytes callable-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints including the absent-capture `TypeError` companions on `zzacfzz` with `count=1`, the bounded no-match companions on `zzabcezz` and `zzacezz`, and the bounded `str` and bytes `count=-1` callable no-substitution companions on `zzabcdzz` and `zzacfzz`, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded quantified `str` and bytes callable-replacement `sub()`/`subn()` probes for that same numbered and named pair, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, while deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay follow-on benchmark expansion or later slices instead of being silently omitted here."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -4591,6 +4591,358 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered nested conditional callable replacement near-miss workflow where the present capture still leaves the inner yes arm expecting `d`, so `zzabcezz` is returned unchanged without invoking `match.group(1)`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered nested conditional callable replacement near-miss count workflow where the absent capture falls through to `f`, so `subn(..., 1)` leaves `zzacezz` and the replacement count unchanged without invoking `match.group(1)`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "present",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered nested conditional callable replacement near-miss workflow on the same present-capture haystack, keeping the compiled entrypoint unchanged because the callback never runs."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "subn",
+        "absent",
+        "count",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered nested conditional callable replacement near-miss count workflow where the absent-capture no-match keeps both the haystack and replacement count unchanged."
+      ]
+    },
+    {
+      "id": "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named nested conditional callable replacement near-miss workflow where the present named capture still leaves the inner yes arm demanding `d`, so the callback never runs on `zzabcezz`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named nested conditional callable replacement near-miss count workflow where the absent named capture falls through to `f`, so `subn(..., 1)` returns `(\"zzacezz\", 0)` without touching `match.group(\"word\")`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "present",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named nested conditional callable replacement near-miss workflow on the same present-capture haystack, keeping the compiled entrypoint unchanged because `match.group(\"word\")` is never read."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "count",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named nested conditional callable replacement near-miss count workflow where the absent named-capture no-match keeps both the haystack and replacement count unchanged."
+      ]
+    },
+    {
       "id": "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-bytes",
       "bucket": "module-sub",
       "family": "module",
@@ -4968,6 +5320,374 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache bytes Pattern.subn helper path for the bounded named nested conditional callable replacement absent-capture workflow so the smallest compiled named `TypeError` remains explicit too."
+      ]
+    },
+    {
+      "id": "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "bytes",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.sub helper path for the bounded numbered nested conditional callable replacement near-miss workflow where the present capture still leaves the inner yes arm expecting `d`, so `b\"zzabcezz\"` is returned unchanged without invoking `match.group(1)`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "bytes",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.subn helper path for the bounded numbered nested conditional callable replacement near-miss count workflow where the absent capture falls through to `f`, so `subn(..., 1)` leaves `b\"zzacezz\"` and the replacement count unchanged without invoking `match.group(1)`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "sub",
+        "present",
+        "bytes",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.sub helper path for the bounded numbered nested conditional callable replacement near-miss workflow on the same present-capture haystack, keeping the compiled entrypoint unchanged because the callback never runs."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "subn",
+        "absent",
+        "count",
+        "bytes",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.subn helper path for the bounded numbered nested conditional callable replacement near-miss count workflow where the absent-capture no-match keeps both the haystack and replacement count unchanged."
+      ]
+    },
+    {
+      "id": "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "bytes",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.sub helper path for the bounded named nested conditional callable replacement near-miss workflow where the present named capture still leaves the inner yes arm demanding `d`, so the callback never runs on `b\"zzabcezz\"`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "count",
+        "bytes",
+        "no-match",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm bytes module.subn helper path for the bounded named nested conditional callable replacement near-miss count workflow where the absent named capture falls through to `f`, so `subn(..., 1)` returns `(b\"zzacezz\", 0)` without touching `match.group(\"word\")`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "present",
+        "bytes",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.sub helper path for the bounded named nested conditional callable replacement near-miss workflow on the same present-capture haystack, keeping the compiled entrypoint unchanged because `match.group(\"word\")` is never read."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "suffix": "x"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "count",
+        "bytes",
+        "no-match",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.subn helper path for the bounded named nested conditional callable replacement near-miss count workflow where the absent named-capture no-match keeps both the haystack and replacement count unchanged."
       ]
     },
     {

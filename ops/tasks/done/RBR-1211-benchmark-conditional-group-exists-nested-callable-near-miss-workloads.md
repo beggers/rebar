@@ -1,6 +1,6 @@
 # RBR-1211: Benchmark conditional group-exists nested callable near-miss workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable'` returned `5 passed, 442 deselected, 84 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-group-exists-boundary-current.py` returned `168 measured workloads / 0 known gaps`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report .rebar/tmp/feature-planning-benchmarks-current.py` returned `1099 measured workloads / 0 known gaps`.
+
+## Completion Note
+- Added the exact sixteen nested callable near-miss `sub()`/`subn()` workloads on the existing `conditional-group-exists-boundary` manifest for numbered and named `str`/`bytes` module and compiled-`Pattern` entrypoints, keeping the existing `callable_match_group` helper pinned to group `1` or `"word"`.
+- Updated the shared combined benchmark suite expectations and bytes round-trip assertions so the nested callable slice now covers present-match, absent-exception, no-match, and negative-count rows on the same owner path without widening scope.
+- Regenerated the tracked combined benchmark publication and verified the tracked artifact now reports `184` measured workloads for `conditional-group-exists-boundary` and `1115` measured workloads overall, both with `0` known gaps.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1211-conditional-group-exists-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

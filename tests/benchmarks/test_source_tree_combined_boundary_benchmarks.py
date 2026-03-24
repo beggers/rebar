@@ -1546,6 +1546,14 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-bytes",
                 "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-bytes",
                 "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+                "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+                "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+                "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+                "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+                "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+                "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+                "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+                "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
                 "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
                 "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
                 "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-bytes",
@@ -3041,6 +3049,14 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-str",
             "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str",
             "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+            "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+            "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+            "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+            "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+            "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+            "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+            "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
+            "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
             "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-str",
             "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-str",
             "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-str",
@@ -3051,7 +3067,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
         },
         expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzacfzz"},
+        expected_haystacks={"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"},
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -3087,6 +3103,14 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-bytes",
             "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-bytes",
             "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+            "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+            "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+            "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+            "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+            "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+            "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+            "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+            "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
             "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
             "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
             "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-bytes",
@@ -3097,7 +3121,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
         },
         expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzacfzz"},
+        expected_haystacks={"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"},
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -3921,6 +3945,14 @@ CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS = (
     "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-str",
     "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str",
     "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+    "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+    "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
     "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-str",
     "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-str",
     "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-str",
@@ -3935,6 +3967,14 @@ CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS = (
     "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-bytes",
     "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-bytes",
     "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+    "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+    "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
     "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
     "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
     "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-bytes",
@@ -5469,20 +5509,20 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             Counter((workload.operation, workload.count) for workload in matched_rows),
             Counter(
                 {
-                    ("module.sub", 0): 2,
+                    ("module.sub", 0): 4,
                     ("module.sub", -1): 1,
-                    ("module.subn", 1): 2,
+                    ("module.subn", 1): 4,
                     ("module.subn", -1): 1,
-                    ("pattern.sub", 0): 2,
+                    ("pattern.sub", 0): 4,
                     ("pattern.sub", -1): 1,
-                    ("pattern.subn", 1): 2,
+                    ("pattern.subn", 1): 4,
                     ("pattern.subn", -1): 1,
                 }
             ),
         )
         self.assertEqual(
             Counter("exception" in workload.categories for workload in matched_rows),
-            Counter({False: 8, True: 4}),
+            Counter({False: 16, True: 4}),
         )
         for workload_id in expected_workload_ids:
             with self.subTest(workload_id=workload_id):
@@ -5663,20 +5703,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "group": "word" if "-named-" in workload_id else 1,
                 "suffix": "x",
             }
-            expected_count = (
-                -1
-                if "negative-count" in workload_id
-                else 1
-                if "absent-exception" in workload_id
-                else 0
-            )
-            expected_result = (
-                (b"zzacfzz", 0)
-                if "negative-count" in workload_id and "-subn-" in workload_id
-                else b"zzabcdzz"
-                if "negative-count" in workload_id
-                else b"zzbxzz"
-            )
             expected_signature = (
                 "callable_match_group",
                 expected_replacement["group"],
@@ -5694,8 +5720,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertEqual(payload["text_model"], "bytes")
                 self.assertEqual(round_tripped.text_model, "bytes")
                 self.assertEqual(payload["replacement"], expected_replacement)
-                self.assertEqual(payload["count"], expected_count)
-                self.assertEqual(round_tripped.count, expected_count)
+                self.assertEqual(payload["count"], source_workload.count)
+                self.assertEqual(round_tripped.count, source_workload.count)
                 self.assertEqual(
                     payload["expected_exception"],
                     source_workload.expected_exception,
@@ -5732,9 +5758,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[2], bytes)
                 self.assertIsInstance(observed_signature[3], bytes)
                 if source_workload.expected_exception is None:
-                    self.assertEqual(
-                        run_benchmark_workload_with_cpython(source_workload),
-                        expected_result,
+                    expected_result = run_benchmark_workload_with_cpython(
+                        source_workload
                     )
                     assert_benchmark_workload_matches_expected_result(
                         round_tripped,
