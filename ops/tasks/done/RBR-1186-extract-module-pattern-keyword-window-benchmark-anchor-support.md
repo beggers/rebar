@@ -1,6 +1,6 @@
 # RBR-1186: Extract module and pattern keyword-window benchmark anchor support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -68,3 +68,9 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` currently fails with `ERROR: file or directory not found: tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py`, which belongs to the exact cleanup queued here.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows or pattern_helper_keyword_kwargs_materialize_at_callback_time or standard_benchmark_keyword_kwargs_validation_matches_manifest_and_payload_entry_points or standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation or standard_benchmark_manifest_preserves_pattern_window_indexlike_descriptors_until_helper_invocation'` returned `19 passed, 575 deselected` in this run.
+ - Completion status in this run:
+   - Landed `tests/benchmarks/module_pattern_keyword_benchmark_anchor_support.py` with the extracted module keyword and pattern window selector/signature helpers, preserving the existing `freeze_signature_value(...)`, `module_workflow_keyword_kwargs_signature(...)`, `module_workflow_positional_args_signature(...)`, and `_is_encoded_indexlike_payload(...)` normalization path.
+   - Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import the extracted support and deleted the inline module/pattern keyword-window helper block without changing the existing anchor definitions or focused materialization assertions.
+   - Added `tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` to pin one module keyword success workload, one module keyword error workload, one pattern positional-window indexlike workload, and one pattern keyword-window workload.
+   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` returned `4 passed` in this run.
+   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'keyword_kwargs_normalization_preserves_expected_exception_passthrough_rows or pattern_helper_keyword_kwargs_materialize_at_callback_time or standard_benchmark_keyword_kwargs_validation_matches_manifest_and_payload_entry_points or standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation or standard_benchmark_manifest_preserves_pattern_window_indexlike_descriptors_until_helper_invocation'` returned `19 passed, 575 deselected` in this run.
