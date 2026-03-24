@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | Land bounded bytes replacement-template parity for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`. |
-| Work queue | `1` ready, `0` in progress, `1133` done, `0` blocked |
+| Current milestone | Publish bounded bytes replacement-template workflows for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`. |
+| Work queue | `1` ready, `0` in progress, `1135` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- Ready queue head and only surviving ready feature task: `RBR-1130`, which lands bounded bytes replacement-template parity for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
+- Surviving ready feature follow-on: `RBR-1133`, which publishes bounded bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
 
 ### Current Risks
 

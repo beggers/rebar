@@ -333,7 +333,7 @@ The published correctness slice now covers 1653 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Ready queue head and only surviving ready feature task: `RBR-1130`, which lands bounded bytes replacement-template parity for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
+- Ready queue head and only surviving ready feature task: `RBR-1133`, which publishes bounded bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
