@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
+from dataclasses import dataclass
 import pathlib
 from typing import Any, Protocol
 
@@ -21,6 +22,66 @@ class StandardBenchmarkAnchorContract(Protocol):
     expected_legacy_workload_ids: frozenset[str]
 
     def includes_workload(self, workload: Any) -> bool: ...
+
+
+@dataclass(frozen=True, slots=True)
+class StandardBenchmarkAnchorContractDefinition:
+    name: str
+    manifest_paths: tuple[pathlib.Path, ...]
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
+    include_workload: Callable[[Any], bool]
+    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
+    workload_signature: Callable[[Any], tuple[Any, ...]]
+    run_callback_result_parity: bool = False
+    expected_excluded_workload_ids: frozenset[str] = frozenset()
+    expected_legacy_workload_ids: frozenset[str] = frozenset()
+    callback_anchor_workload_ids: frozenset[str] = frozenset()
+    expected_special_unanchored_workload_ids: tuple[str, ...] = ()
+    direct_parity_supplemental_cases: tuple[Any, ...] = ()
+    run_special_unanchored_result_parity: bool = False
+
+    def includes_workload(self, workload: Any) -> bool:
+        return (
+            workload.workload_id not in self.expected_excluded_workload_ids
+            and workload.workload_id
+            not in self.expected_special_unanchored_workload_ids
+            and self.include_workload(workload)
+        )
+
+
+def _definition_anchor_expectations(
+    manifest_path: pathlib.Path,
+    anchor_expectations: dict[str, tuple[str, ...]],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return {
+        (manifest_path.name, workload_id): case_ids
+        for workload_id, case_ids in anchor_expectations.items()
+    }
+
+
+def _workload_case_pairs_workload_ids(
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> tuple[str, ...]:
+    return tuple(workload_id for workload_id, _ in workload_case_pairs)
+
+
+def _workload_case_pairs_case_ids(
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> tuple[str, ...]:
+    return tuple(case_id for _, case_id in workload_case_pairs)
+
+
+def _workload_case_pair_anchor_expectations(
+    manifest_path: pathlib.Path,
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return _definition_anchor_expectations(
+        manifest_path,
+        {
+            workload_id: (case_id,)
+            for workload_id, case_id in workload_case_pairs
+        },
+    )
 
 
 def _anchor_case_subset(

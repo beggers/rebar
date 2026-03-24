@@ -25,6 +25,10 @@ def _synthetic_case_signature(case: Any) -> tuple[Any, ...] | None:
     return case.signature
 
 
+def _allow_all_workloads(_: Any) -> bool:
+    return True
+
+
 @dataclass(frozen=True, slots=True)
 class _SyntheticStandardBenchmarkDefinition:
     manifest_paths: tuple[pathlib.Path, ...]
@@ -41,6 +45,76 @@ class _SyntheticStandardBenchmarkDefinition:
             workload.workload_id not in self.expected_special_unanchored_workload_ids
             and self.include_workload(workload)
         )
+
+
+def test_standard_benchmark_anchor_contract_definition_filters_excluded_workloads() -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    definition = support.StandardBenchmarkAnchorContractDefinition(
+        name="synthetic",
+        manifest_paths=(manifest_path,),
+        expected_anchor_case_ids={},
+        include_workload=_allow_all_workloads,
+        correctness_case_signature=_synthetic_case_signature,
+        workload_signature=_synthetic_workload_signature,
+        expected_excluded_workload_ids=frozenset({"excluded"}),
+        expected_special_unanchored_workload_ids=("special-unanchored",),
+    )
+
+    assert definition.includes_workload(_synthetic_workload("ordinary", ("shared",)))
+    assert not definition.includes_workload(_synthetic_workload("excluded", ("shared",)))
+    assert not definition.includes_workload(
+        _synthetic_workload("special-unanchored", ("shared",))
+    )
+
+
+def test_definition_anchor_expectations_expand_manifest_name() -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+
+    assert support._definition_anchor_expectations(
+        manifest_path,
+        {
+            "workload-a": ("case-1", "case-2"),
+            "workload-b": ("case-3",),
+        },
+    ) == {
+        ("synthetic_boundary.py", "workload-a"): ("case-1", "case-2"),
+        ("synthetic_boundary.py", "workload-b"): ("case-3",),
+    }
+
+
+def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
+    workload_case_pairs = (
+        ("workload-a", "case-1"),
+        ("workload-b", "case-2"),
+        ("workload-c", "case-3"),
+    )
+
+    assert support._workload_case_pairs_workload_ids(workload_case_pairs) == (
+        "workload-a",
+        "workload-b",
+        "workload-c",
+    )
+    assert support._workload_case_pairs_case_ids(workload_case_pairs) == (
+        "case-1",
+        "case-2",
+        "case-3",
+    )
+
+
+def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    workload_case_pairs = (
+        ("workload-a", "case-1"),
+        ("workload-b", "case-2"),
+    )
+
+    assert support._workload_case_pair_anchor_expectations(
+        manifest_path,
+        workload_case_pairs,
+    ) == {
+        ("synthetic_boundary.py", "workload-a"): ("case-1",),
+        ("synthetic_boundary.py", "workload-b"): ("case-2",),
+    }
 
 
 def test_expected_workload_ids_filter_to_manifest_name() -> None:
