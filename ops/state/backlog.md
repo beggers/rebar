@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The surviving feature frontier is the quantified nested-group alternation module wrong-return-type parity slice on the callable replacement owner path, pinned to `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
+The surviving feature frontier is the nested broader-range wider-ranged-repeat grouped-alternation backtracking-heavy module wrong-return-type parity slice on the callable replacement owner path, pinned to `a(((bc|b)c){1,4})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d`.
 
 ## Ordered Work
-1. The surviving feature frontier is the quantified nested-group alternation module wrong-return-type parity slice on the callable replacement owner path, pinned to `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
+1. The surviving feature frontier is the nested broader-range wider-ranged-repeat grouped-alternation backtracking-heavy module wrong-return-type parity slice on the callable replacement owner path, pinned to `a(((bc|b)c){1,4})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
