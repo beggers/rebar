@@ -9,21 +9,20 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1661 cases across 114 manifests, with all 1661 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives; once reopened correctness publication task `RBR-1133` lands, the post-drain frontier is the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`.
+- No ready feature follow-on currently survives; the surviving post-drain frontier is the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
 - The published benchmark surface is still bounded at 1019 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1653 cases across 114 manifests, all passing, and 1019 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1661 cases across 114 manifests, all passing, and 1019 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- No ready feature follow-on currently survives.
-- Once `RBR-1133` lands, the post-drain frontier remains the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`.
+- No ready feature follow-on currently survives; the surviving post-drain frontier is the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -333,7 +332,7 @@ The published correctness slice now covers 1653 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No ready feature follow-on currently survives; once reopened correctness publication task `RBR-1133` lands, the post-drain frontier is the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`.
+- No ready feature follow-on currently survives; the surviving post-drain frontier is the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

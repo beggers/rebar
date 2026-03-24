@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | No ready feature follow-on currently survives; the remaining bounded conditional-group-exists template-bytes publication and benchmark pair is blocked in `RBR-1133` and `RBR-1135`. |
-| Work queue | `0` ready, `0` in progress, `1141` done, `2` blocked |
+| Delivery estimate | Published correctness covers 1661 cases across 114 manifests, with all 1661 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
+| Current milestone | No ready feature follow-on currently survives; the surviving post-drain frontier is the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`. |
+| Work queue | `0` ready, `0` in progress, `1143` done, `1` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1653` |
-| Passing in published slice | `1653` |
+| Published cases | `1661` |
+| Passing in published slice | `1661` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1661 cases across 114 manifests, with all 1661 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No ready feature follow-on currently survives; the remaining bounded conditional-group-exists template-bytes publication and benchmark pair is blocked in `RBR-1133` and `RBR-1135`.
+- No ready feature follow-on currently survives; the surviving post-drain frontier is the blocked conditional-group-exists template-bytes benchmark catch-up in `RBR-1135`.
 
 ### Current Risks
 
