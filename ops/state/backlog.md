@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact post-benchmark slice has not been pinned yet.
+Quantified conditional callable `count=None` benchmark catch-up on the shared conditional callable owner path is the next surviving frontier; no broader callable count-contract slice is pinned beyond it yet.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact adjacent slice still needs a separate narrow owner-path planning pass.
+1. Quantified conditional callable `count=None` benchmark catch-up on the shared conditional callable owner path is the next surviving frontier; no broader callable count-contract slice is pinned beyond it yet.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
