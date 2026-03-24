@@ -1,6 +1,6 @@
 # RBR-1161: Publish conditional group-exists callable bytes negative-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -45,6 +45,13 @@ Created: 2026-03-24
 - Keep the scope pinned to the exact four bytes `count=-1` rows above. Leave any same-family benchmark catch-up, first-match-only or absent-exception follow-ons, callable-helper expansion, and broader conditional callable work for later tasks.
 
 ## Notes
+- Completed 2026-03-24: published the four bytes `count=-1` callable conditional rows on the existing manifest, updated the shared callable parity/spec and combined mixed-text scorecard expectations, and republished `reports/correctness/latest.py` with `24/24` passing cases for `collection.replacement.conditional_group_exists.callable` and `1677/1677` passing cases across `114` manifests.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_module_bytes_callable_replacement_negative_count_short_circuits_without_callback tests/python/test_callable_replacement_parity_suite.py::test_pattern_bytes_callable_replacement_negative_count_short_circuits_without_callback tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_cases_stay_aligned_with_published_fixture` -> `210 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_mixed_text_feature_scorecards_mirror_representative_bytes_rows tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_conditional_group_exists_callable_scorecards_keep_negative_count_follow_on_cases_in_sync` -> `3 passed, 51 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1161-conditional-callable-negative-count-bytes.py` -> `24 executed / 24 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> `1677 executed / 1677 passed`
+
 - `RBR-1161` is the next available unreserved feature task id in this checkout:
   - `ops/tasks/ready/`, `ops/tasks/in_progress/`, and `ops/tasks/blocked/` contained no active feature task in this run; and
   - `rg -n 'RBR-1161' ops/tasks ops/state -g '*.md'` matched only historical mentions inside completed task files, not a live reservation.

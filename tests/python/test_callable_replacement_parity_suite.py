@@ -275,6 +275,10 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-absent-str",
                 "pattern-sub-callable-named-conditional-group-exists-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-absent-str",
+                "module-sub-callable-conditional-group-exists-negative-count-str",
+                "module-subn-callable-named-conditional-group-exists-negative-count-str",
+                "pattern-sub-callable-conditional-group-exists-negative-count-str",
+                "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
                 "module-sub-callable-conditional-group-exists-present-bytes",
                 "module-subn-callable-conditional-group-exists-absent-bytes",
                 "pattern-sub-callable-conditional-group-exists-present-bytes",
@@ -283,6 +287,10 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-absent-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-present-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-absent-bytes",
+                "module-sub-callable-conditional-group-exists-negative-count-bytes",
+                "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
+                "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-negative-count-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
@@ -293,7 +301,14 @@ CALLABLE_MANIFEST_SPECS = (
                 rb"a(?P<word>b)?c(?(word)d|e)",
             }
         ),
-        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_operation_helper_counts=Counter(
+            {
+                ("module_call", "sub"): 6,
+                ("module_call", "subn"): 6,
+                ("pattern_call", "sub"): 6,
+                ("pattern_call", "subn"): 6,
+            }
+        ),
         expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(
             {

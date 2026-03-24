@@ -823,5 +823,205 @@ MANIFEST = {
                 "Publishes the bounded Pattern.subn named two-arm conditional callable replacement count path when the named capture is absent on bytes inputs so the smallest compiled conditional callable `TypeError` gap stays explicit in the mixed-text scorecard."
             ],
         },
+        {
+            "id": "module-sub-callable-conditional-group-exists-negative-count-bytes",
+            "operation": "module_call",
+            "family": "conditional_group_exists_callable_replacement_negative_count_workflow",
+            "helper": "sub",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": r"a(b)?c(?(1)d|e)",
+                },
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "abcdaceabcd",
+                },
+                -1,
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "optional-group",
+                "conditional",
+                "group-exists",
+                "two-arm",
+                "numbered-group",
+                "module",
+                "bytes",
+                "negative-count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded numbered module-level two-arm conditional callable replacement bytes negative-count path, keeping CPython's exact `count=-1` no-substitution and no-callback outcome explicit on the shared conditional callable owner route."
+            ],
+        },
+        {
+            "id": "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
+            "operation": "module_call",
+            "family": "named_conditional_group_exists_callable_replacement_negative_count_workflow",
+            "helper": "subn",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": r"a(?P<word>b)?c(?(word)d|e)",
+                },
+                {
+                    "type": "callable_match_group",
+                    "group": "word",
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "abcdaceabcd",
+                },
+                -1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "optional-group",
+                "conditional",
+                "group-exists",
+                "two-arm",
+                "named-group",
+                "module",
+                "bytes",
+                "negative-count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded named module-level two-arm conditional callable replacement bytes negative-count path, keeping the exact `count=-1` zero-replacement tuple outcome visible without invoking the callback."
+            ],
+        },
+        {
+            "id": "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
+            "operation": "pattern_call",
+            "family": "conditional_group_exists_callable_replacement_negative_count_workflow",
+            "pattern": "a(b)?c(?(1)d|e)",
+            "helper": "sub",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "abcdaceabcd",
+                },
+                -1,
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "optional-group",
+                "conditional",
+                "group-exists",
+                "two-arm",
+                "numbered-group",
+                "pattern",
+                "bytes",
+                "negative-count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded Pattern.sub numbered two-arm conditional callable replacement bytes negative-count path for the same shared `count=-1` no-substitution workflow."
+            ],
+        },
+        {
+            "id": "pattern-subn-callable-named-conditional-group-exists-negative-count-bytes",
+            "operation": "pattern_call",
+            "family": "named_conditional_group_exists_callable_replacement_negative_count_workflow",
+            "pattern": "a(?P<word>b)?c(?(word)d|e)",
+            "helper": "subn",
+            "text_model": "bytes",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": "word",
+                    "prefix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "",
+                    },
+                    "suffix": {
+                        "type": "bytes",
+                        "encoding": "latin-1",
+                        "value": "x",
+                    },
+                },
+                {
+                    "type": "bytes",
+                    "encoding": "latin-1",
+                    "value": "abcdaceabcd",
+                },
+                -1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "optional-group",
+                "conditional",
+                "group-exists",
+                "two-arm",
+                "named-group",
+                "pattern",
+                "bytes",
+                "negative-count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded Pattern.subn named two-arm conditional callable replacement bytes negative-count path so the compiled entrypoint keeps the same `count=-1` zero-replacement tuple outcome explicit too."
+            ],
+        },
     ],
 }
