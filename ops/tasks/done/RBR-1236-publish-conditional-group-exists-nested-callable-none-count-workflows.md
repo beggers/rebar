@@ -1,6 +1,6 @@
 # RBR-1236: Publish conditional group-exists nested callable None-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'none_count_matches_cpython_typeerror'` returned `1136 passed, 4990 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `4 passed, 44 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-callable-current.py` returned `184 executed / 184 passed / 0 unimplemented`.
+
+## Completion
+- Added the exact eight nested callable `count=None` publication rows on the shared `conditional-group-exists-callable-replacement-workflows` owner path for the numbered and named module/pattern `str` and `bytes` matrix.
+- Updated the shared callable parity stems plus combined scorecard expectations so the widened none-count slice stays aligned in direct parity and representative-case ordering.
+- Republished `reports/correctness/latest.py`; the tracked artifact now shows `collection.replacement.conditional_group_exists.callable` at `192` executed / `192` passed / `0` unimplemented and the combined summary at `1845` total / `1845` passed / `0` failed / `0` unimplemented across `114` manifests.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'none_count_matches_cpython_typeerror'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1236-conditional-callable-nested-none-count.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
