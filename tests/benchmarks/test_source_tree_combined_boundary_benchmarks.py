@@ -41,17 +41,11 @@ from tests.benchmarks.compile_proxy_benchmark_anchor_support import (
     is_compile_proxy_workload,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    _collection_replacement_has_expected_unexpected_keyword_error,
     _collection_replacement_keyword_correctness_case_signature,
-    _collection_replacement_keyword_parameter_name,
     _collection_replacement_pattern_wrong_text_model_correctness_case_signature,
     _collection_replacement_pattern_wrong_text_model_workload_signature,
-    _collection_replacement_keyword_workload_args,
     _collection_replacement_keyword_workload_signature,
-    _collection_replacement_positional_indexlike_workload_args,
     _collection_replacement_positional_indexlike_workload_signature,
-    _collection_replacement_positional_keyword_field,
-    _collection_replacement_wrong_text_model_haystack_index,
     _collection_replacement_wrong_text_model_correctness_case_signature,
     _collection_replacement_wrong_text_model_workload_signature,
     _is_collection_replacement_keyword_workload,
@@ -72,7 +66,6 @@ from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
     _is_pattern_keyword_window_workload,
     _is_pattern_window_positional_indexlike_workload,
     _module_workflow_keyword_correctness_case_signature,
-    _module_workflow_keyword_workload_args,
     _module_workflow_keyword_workload_signature,
     _pattern_keyword_window_correctness_case_signature,
     _pattern_keyword_window_workload_signature,
@@ -92,12 +85,8 @@ from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _pattern_verbose_regression_workload_signature,
 )
 from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
-    _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
     _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
     _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-)
-from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
-    _run_cpython_compiled_pattern_module_helper_workload,
 )
 from tests.benchmarks.compiled_pattern_module_helper_keyword_benchmark_support import (
     _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
@@ -116,28 +105,14 @@ from tests.benchmarks.compiled_pattern_module_success_benchmark_support import (
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _manifest_workloads,
     _selected_manifest_workloads,
-    anchored_workload_case_ids,
-    assert_anchored_workload_case_result_parity,
     assert_benchmark_workload_matches_expected_result,
-    expected_anchored_workload_case_pairs,
     freeze_signature_value,
     published_case_ids_by_signature,
     published_cases_by_id,
     run_benchmark_workload_with_cpython,
-    unanchored_workload_ids,
-)
-from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _source_tree_contract_manifest,
-    _source_tree_contract_workload,
 )
 from tests.benchmarks.standard_benchmark_anchor_support import (
-    _anchored_case_ids,
     _definition_anchor_expectations,
-    _expected_anchored_pairs,
-    _expected_callback_anchor_case_ids,
-    _expected_legacy_anchor_case_ids,
-    _expected_workload_ids,
-    _unanchored_case_ids,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
@@ -148,12 +123,6 @@ from tests.benchmarks.wrong_text_model_benchmark_anchor_support import (
     _is_pattern_boundary_wrong_text_model_workload,
     _pattern_boundary_wrong_text_model_correctness_case_signature,
     _pattern_boundary_wrong_text_model_workload_signature,
-)
-from tests.benchmarks.wrong_text_model_benchmark_owner_support import (
-    _run_cpython_wrong_text_model_workload,
-    _wrong_text_model_expected_build_calls,
-    _wrong_text_model_expected_callback_call,
-    _wrong_text_model_expected_callback_result,
 )
 from tests.benchmarks.benchmark_test_support import (
     _record_numeric_materialization_fields,
