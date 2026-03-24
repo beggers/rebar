@@ -5844,6 +5844,98 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
         )
 
+    def test_conditional_group_exists_callable_scorecards_keep_nested_none_count_follow_on_cases_in_sync(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-callable-replacement-workflows"
+        manifest = manifest_records_by_id(
+            correctness.published_fixture_manifests()
+        )[manifest_id]
+        combined_case = correctness_scorecard_case("combined", manifest_id)
+        expected_nested_none_count_str_case_ids = (
+            "module-sub-callable-conditional-group-exists-nested-none-count-present-str",
+            "module-subn-callable-named-conditional-group-exists-nested-none-count-absent-str",
+            "pattern-sub-callable-conditional-group-exists-nested-none-count-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-none-count-absent-str",
+        )
+        expected_nested_none_count_bytes_case_ids = tuple(
+            f"{case_id.removesuffix('-str')}-bytes"
+            for case_id in expected_nested_none_count_str_case_ids
+        )
+        manifest_nested_none_count_str_case_ids = tuple(
+            case.case_id
+            for case in manifest.cases
+            if case.text_model == "str"
+            and "nested" in case.categories
+            and "none-count" in case.categories
+        )
+        manifest_nested_none_count_bytes_case_ids = tuple(
+            case.case_id
+            for case in manifest.cases
+            if case.text_model == "bytes"
+            and "nested" in case.categories
+            and "none-count" in case.categories
+        )
+        representative_nested_none_count_str_cases = tuple(
+            case
+            for case in combined_case.representative_cases
+            if case.text_model == "str"
+            and "nested" in case.categories
+            and "none-count" in case.categories
+        )
+        representative_nested_none_count_bytes_cases = tuple(
+            case
+            for case in combined_case.representative_cases
+            if case.text_model == "bytes"
+            and "nested" in case.categories
+            and "none-count" in case.categories
+        )
+
+        self.assertEqual(
+            manifest_nested_none_count_str_case_ids,
+            expected_nested_none_count_str_case_ids,
+        )
+        self.assertEqual(
+            manifest_nested_none_count_bytes_case_ids,
+            expected_nested_none_count_bytes_case_ids,
+        )
+        self.assertEqual(
+            tuple(case.case_id for case in representative_nested_none_count_str_cases),
+            expected_nested_none_count_str_case_ids,
+        )
+        self.assertEqual(
+            tuple(case.case_id for case in representative_nested_none_count_bytes_cases),
+            expected_nested_none_count_bytes_case_ids,
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in representative_nested_none_count_str_cases
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 1,
+                    ("module_call", "subn"): 1,
+                    ("pattern_call", "sub"): 1,
+                    ("pattern_call", "subn"): 1,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in representative_nested_none_count_bytes_cases
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 1,
+                    ("module_call", "subn"): 1,
+                    ("pattern_call", "sub"): 1,
+                    ("pattern_call", "subn"): 1,
+                }
+            ),
+        )
+
     def test_conditional_group_exists_callable_scorecards_keep_nested_no_match_follow_on_cases_in_sync(
         self,
     ) -> None:
