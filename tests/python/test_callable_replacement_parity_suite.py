@@ -1438,6 +1438,16 @@ def _near_miss_patterns_for_manifest(
     )
 
 
+def _bytes_mirror_expected_result(expected_result: object) -> object:
+    if isinstance(expected_result, str):
+        return expected_result.encode("latin-1")
+    assert isinstance(expected_result, tuple)
+    text, count = expected_result
+    assert isinstance(text, str)
+    assert isinstance(count, int)
+    return (text.encode("latin-1"), count)
+
+
 def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
@@ -2326,6 +2336,42 @@ def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
     assert near_miss_bytes_patterns <= shared_bytes_patterns
     assert near_miss_str_patterns.isdisjoint(PENDING_REBAR_STR_PATTERNS)
     assert near_miss_bytes_patterns.isdisjoint(PENDING_REBAR_BYTES_PATTERNS)
+
+
+def test_conditional_group_exists_bytes_near_miss_cases_mirror_str_cases() -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+    str_cases = tuple(
+        case
+        for case in CALLABLE_NEAR_MISS_CASE_SPECS
+        if case.manifest_id == manifest_id
+    )
+    bytes_cases_by_id = {
+        case.id: case for case in CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES
+    }
+
+    assert set(bytes_cases_by_id) == {f"{case.id}-bytes" for case in str_cases}
+    assert {case.pattern for case in CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES} == {
+        pattern for pattern in bundle.expected_patterns if isinstance(pattern, bytes)
+    }
+    assert {
+        case.pattern for case in CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES
+    }.isdisjoint(PENDING_REBAR_BYTES_PATTERNS)
+
+    for str_case in str_cases:
+        bytes_case = bytes_cases_by_id[f"{str_case.id}-bytes"]
+
+        assert isinstance(str_case.pattern, str)
+        assert isinstance(str_case.text, str)
+        assert bytes_case.manifest_id == manifest_id
+        assert bytes_case.use_compiled_pattern == str_case.use_compiled_pattern
+        assert bytes_case.helper == str_case.helper
+        assert bytes_case.count == str_case.count
+        assert bytes_case.pattern == str_case.pattern.encode("latin-1")
+        assert bytes_case.text == str_case.text.encode("latin-1")
+        assert bytes_case.expected_result == _bytes_mirror_expected_result(
+            str_case.expected_result
+        )
 
 
 def test_callable_replacement_direct_test_buckets_cover_selected_frontier() -> None:
