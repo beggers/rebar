@@ -21,6 +21,7 @@ from tests.python.fixture_parity_support import (
     build_selected_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
+    fixture_case_pytest_id,
     load_published_fixture_bundles,
     requested_published_fixture_bundles,
 )
@@ -46,10 +47,6 @@ _, OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
 
 def _ordered_case_ids(cases: tuple[FixtureCase, ...]) -> tuple[str, ...]:
     return tuple(case.case_id for case in cases)
-
-
-def _fixture_case_id(case: FixtureCase) -> str:
-    return case.case_id
 
 
 TARGET_CASES = tuple(
@@ -285,7 +282,7 @@ def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_c
 @pytest.mark.parametrize(
     "case",
     _compile_metadata_cases(),
-    ids=_fixture_case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -346,7 +343,7 @@ def test_nested_set_warning_matches_cpython_cache_and_purge_behavior(
 @pytest.mark.parametrize(
     "case",
     _placeholder_search_cases(),
-    ids=_fixture_case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_compile_only_rows_keep_rebar_search_placeholder(
     rebar_backend: object,
@@ -389,7 +386,7 @@ def test_character_class_cache_normalizes_ignorecase_and_unicode_flags(
 @pytest.mark.parametrize(
     "case",
     _repeated_compile_cache_cases(),
-    ids=_fixture_case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_compile_cache_identity_and_purge_for_supported_parser_rows(
     rebar_backend: object,
@@ -409,7 +406,7 @@ def test_compile_cache_identity_and_purge_for_supported_parser_rows(
 @pytest.mark.parametrize(
     "case",
     _diagnostic_cases(),
-    ids=_fixture_case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_compile_diagnostics_match_cpython(
     regex_backend: tuple[str, object],
@@ -428,7 +425,7 @@ def test_compile_diagnostics_match_cpython(
 @pytest.mark.parametrize(
     "case",
     CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES,
-    ids=_fixture_case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_conditional_assertion_compile_diagnostics_match_cpython(
     rebar_backend: object,
@@ -440,7 +437,7 @@ def test_conditional_assertion_compile_diagnostics_match_cpython(
 @pytest.mark.parametrize(
     "case",
     _no_stdlib_delegation_cases(),
-    ids=_fixture_case_id,
+    ids=fixture_case_pytest_id,
 )
 def test_rebar_compile_does_not_delegate_to_stdlib_for_selected_parser_rows(
     rebar_backend: object,
