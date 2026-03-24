@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import json
 import pathlib
+import re
 
 import pytest
 
+from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
+    Workload,
     build_callable,
     load_manifest,
     run_internal_workload_probe,
@@ -15,15 +18,22 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks import wrong_text_model_benchmark_owner_support as support
 from tests.benchmarks.benchmark_test_support import _write_test_manifest
 from tests.benchmarks.benchmark_test_support import live_manifest_workload
+from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    _is_collection_replacement_pattern_wrong_text_model_workload,
+)
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _selected_manifest_workloads,
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
+)
+from tests.benchmarks.test_source_tree_combined_boundary_benchmarks import (
+    COLLECTION_REPLACEMENT_MANIFEST_PATH,
 )
 @pytest.mark.parametrize(
     (
@@ -354,3 +364,46 @@ def test_wrong_text_model_callbacks_preserve_precompile_contract(
         assert last_call[2:] == expected_callback_call[1:]
     else:
         assert module.calls[-1] == expected_callback_call
+
+
+@pytest.mark.parametrize(
+    "workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _selected_manifest_workloads(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+        )
+    ),
+)
+def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time(
+    monkeypatch,
+    workload: Workload,
+) -> None:
+    observed_workload_ids: list[str] = []
+    original_haystack_payload = benchmarks.Workload.haystack_payload
+
+    def record_haystack_payload(self: Workload) -> object:
+        observed_workload_ids.append(self.workload_id)
+        return original_haystack_payload(self)
+
+    monkeypatch.setattr(
+        benchmarks.Workload,
+        "haystack_payload",
+        record_haystack_payload,
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_workload_ids == []
+
+        with pytest.raises(
+            TypeError,
+            match=re.escape(str(workload.expected_exception["message_substring"])),
+        ):
+            callback()
+
+        assert observed_workload_ids == [workload.workload_id]
+    finally:
+        re.purge()

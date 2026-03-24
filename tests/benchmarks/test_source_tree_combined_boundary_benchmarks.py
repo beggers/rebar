@@ -4642,42 +4642,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
-    def test_collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_collection_replacement_wrong_text_model_workload,
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 5)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_collection_replacement_pattern_wrong_text_model_workload,
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 3)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
     def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured(
         self,
     ) -> None:
@@ -4897,24 +4861,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             unbenchmarked_case_ids,
             (),
-        )
-
-    def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 3)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
         )
 
     def test_module_boundary_manifest_keeps_literal_compiled_pattern_success_rows_measured(
@@ -11621,49 +11567,6 @@ def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper
         re.purge()
 
     assert observed_field_names == [expected_field_name, expected_field_name]
-
-
-@pytest.mark.parametrize(
-    "workload",
-    tuple(
-        pytest.param(workload, id=workload.workload_id)
-        for workload in _selected_manifest_workloads(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
-        )
-    ),
-)
-def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time(
-    monkeypatch,
-    workload: Workload,
-) -> None:
-    observed_workload_ids: list[str] = []
-    original_haystack_payload = benchmarks.Workload.haystack_payload
-
-    def record_haystack_payload(self: Workload) -> object:
-        observed_workload_ids.append(self.workload_id)
-        return original_haystack_payload(self)
-
-    monkeypatch.setattr(
-        benchmarks.Workload,
-        "haystack_payload",
-        record_haystack_payload,
-    )
-
-    re.purge()
-    try:
-        callback = build_callable(re, "re", workload)
-        assert observed_workload_ids == []
-
-        with pytest.raises(
-            TypeError,
-            match=re.escape(str(workload.expected_exception["message_substring"])),
-        ):
-            callback()
-
-        assert observed_workload_ids == [workload.workload_id]
-    finally:
-        re.purge()
 
 
 def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(

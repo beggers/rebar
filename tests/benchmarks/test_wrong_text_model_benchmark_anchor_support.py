@@ -1,11 +1,25 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from types import SimpleNamespace
+import unittest
 
 import pytest
 
+from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    _is_collection_replacement_pattern_wrong_text_model_workload,
+    _is_collection_replacement_wrong_text_model_workload,
+)
+from tests.benchmarks.test_source_tree_combined_boundary_benchmarks import (
+    _manifest_workload_ids_matching,
+    assert_benchmark_workload_contract,
+    find_workload_document,
+    find_workload_record,
+    source_tree_combined_case,
+)
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks import wrong_text_model_benchmark_anchor_support as support
+from tests.conftest import run_harness_scorecard
 
 
 def _manifest_id_for_operation(operation: str) -> str:
@@ -66,6 +80,46 @@ def _pattern_case(
         text_model=text_model,
         pattern_payload=lambda: pattern_value,
     )
+
+
+def _assert_zero_gap_source_tree_manifest_rows_measured(
+    *,
+    manifest_id: str,
+    include_workload: Callable[[object], bool],
+    expected_selected_workload_count: int,
+) -> None:
+    case = source_tree_combined_case(manifest_id)
+    workload_count = len(case.target_manifest.workloads)
+    expected_measured_workload_ids = _manifest_workload_ids_matching(
+        case.target_manifest,
+        include_workload,
+    )
+
+    assert len(expected_measured_workload_ids) == expected_selected_workload_count
+
+    _, scorecard = run_harness_scorecard(
+        "rebar_harness.benchmarks",
+        ["--manifest", str(case.target_manifest.path)],
+        report_name="benchmarks.json",
+    )
+    manifest_summary = scorecard["manifests"][manifest_id]
+
+    assert manifest_summary["known_gap_count"] == 0
+    assert manifest_summary["measured_workloads"] == workload_count
+    assert manifest_summary["workload_count"] == workload_count
+
+    testcase = unittest.TestCase()
+    for workload_id in expected_measured_workload_ids:
+        assert_benchmark_workload_contract(
+            testcase,
+            find_workload_record(scorecard, workload_id),
+            manifest_id=manifest_id,
+            workload_document=find_workload_document(
+                case.target_manifest,
+                workload_id,
+            ),
+            expected_status="measured",
+        )
 
 
 @pytest.mark.parametrize(
@@ -269,4 +323,30 @@ def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str
             wrong_haystack_type
         )
         is None
+    )
+
+
+def test_collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured() -> None:
+    _assert_zero_gap_source_tree_manifest_rows_measured(
+        manifest_id="collection-replacement-boundary",
+        include_workload=_is_collection_replacement_wrong_text_model_workload,
+        expected_selected_workload_count=5,
+    )
+
+
+def test_collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured() -> None:
+    _assert_zero_gap_source_tree_manifest_rows_measured(
+        manifest_id="collection-replacement-boundary",
+        include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+        expected_selected_workload_count=3,
+    )
+
+
+def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured() -> None:
+    _assert_zero_gap_source_tree_manifest_rows_measured(
+        manifest_id="module-boundary",
+        include_workload=(
+            support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+        ),
+        expected_selected_workload_count=3,
     )

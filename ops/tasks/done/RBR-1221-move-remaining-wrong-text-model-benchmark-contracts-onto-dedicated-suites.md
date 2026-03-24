@@ -1,6 +1,6 @@
 # RBR-1221: Move remaining wrong-text-model benchmark contracts onto dedicated suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,8 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured or module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time'` returned `6 passed, 189 deselected, 11 subtests passed in 0.72s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because those four tests still live in the combined suite.
+
+## Completion Note
+- Moved the three wrong-text-model manifest-measured contract tests onto `tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py` and the callback-time haystack materialization test onto `tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py`, reusing the existing live manifest helpers and selector surfaces.
+- Removed the moved tests from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` without leaving wrappers or aliases behind.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured or module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured or pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time'` (`6 passed, 189 deselected`) and `bash -lc \"! rg -n 'def test_(collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured|collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_measured|module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_measured|pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py\"`.
