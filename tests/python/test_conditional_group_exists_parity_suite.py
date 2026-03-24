@@ -27,6 +27,7 @@ from tests.python.fixture_parity_support import (
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     record_generated_match_failure,
+    requested_published_fixture_bundles,
     SupplementalMissCase,
     str_case_pattern,
     workflow_result_with_cpython_parity,
@@ -72,15 +73,18 @@ FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles
     CONDITIONAL_GROUP_EXISTS_FIXTURE_SELECTOR,
     pattern_extractor=str_case_pattern,
 )
-QUANTIFIED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "conditional-group-exists-quantified-workflows"
-]
-QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "conditional-group-exists-quantified-alternation-workflows"
-]
-FULLY_EMPTY_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "conditional-group-exists-fully-empty-alternation-workflows"
-]
+(
+    QUANTIFIED_CONDITIONAL_BUNDLE,
+    QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE,
+    FULLY_EMPTY_ALTERNATION_BUNDLE,
+) = requested_published_fixture_bundles(
+    FIXTURE_BUNDLES_BY_MANIFEST_ID,
+    (
+        "conditional-group-exists-quantified-workflows",
+        "conditional-group-exists-quantified-alternation-workflows",
+        "conditional-group-exists-fully-empty-alternation-workflows",
+    ),
+)
 
 
 def _iter_fixture_cases() -> Iterator[FixtureCase]:

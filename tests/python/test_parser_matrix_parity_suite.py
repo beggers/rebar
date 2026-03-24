@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     load_published_fixture_bundles,
+    requested_published_fixture_bundles,
 )
 
 # Keep the parser-focused direct parity suite on parser-specific rows; the literal
@@ -34,10 +35,13 @@ KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS = (
 _, OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
     PARSER_PARITY_FIXTURE_SELECTOR
 )
-PARSER_MATRIX_OWNER_BUNDLE = OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID["parser-matrix"]
-CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE = OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "conditional-group-exists-assertion-diagnostics"
-]
+(
+    PARSER_MATRIX_OWNER_BUNDLE,
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE,
+) = requested_published_fixture_bundles(
+    OWNER_FIXTURE_BUNDLES_BY_MANIFEST_ID,
+    ("parser-matrix", "conditional-group-exists-assertion-diagnostics"),
+)
 
 
 def _ordered_case_ids(cases: tuple[FixtureCase, ...]) -> tuple[str, ...]:

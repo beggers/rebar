@@ -43,6 +43,7 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
+    requested_published_fixture_bundles,
 )
 BACKTRACKING_BRANCH_TEXT = {
     "short": "bc",
@@ -57,21 +58,22 @@ FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles
     ),
     pattern_extractor=case_pattern,
 )
-NESTED_BROADER_RANGE_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
-]
-NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-]
-BROADER_RANGE_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-]
-BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
-]
-NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
-]
+(
+    NESTED_BROADER_RANGE_ALTERNATION_BUNDLE,
+    NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE,
+    BROADER_RANGE_CONDITIONAL_BUNDLE,
+    BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
+    NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
+) = requested_published_fixture_bundles(
+    FIXTURE_BUNDLES_BY_MANIFEST_ID,
+    (
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+        "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+        "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+    ),
+)
 BACKTRACKING_TRACE_BUNDLES = (
     BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
     NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,

@@ -37,6 +37,7 @@ from tests.python.fixture_parity_support import (
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
     record_generated_match_failure,
+    requested_published_fixture_bundles,
 )
 BACKTRACKING_BRANCH_TEXT = {
     "short": "b",
@@ -81,24 +82,24 @@ FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles
     QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
     pattern_extractor=case_pattern,
 )
-QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "quantified-alternation-workflows"
-]
-QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "quantified-alternation-broader-range-workflows"
-]
-QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "quantified-alternation-conditional-workflows"
-]
-QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "quantified-alternation-open-ended-workflows"
-]
-QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "quantified-alternation-nested-branch-workflows"
-]
-BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "quantified-alternation-backtracking-heavy-workflows"
-]
+(
+    QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
+    QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
+    QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE,
+    QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE,
+    QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE,
+    BACKTRACKING_HEAVY_BUNDLE,
+) = requested_published_fixture_bundles(
+    FIXTURE_BUNDLES_BY_MANIFEST_ID,
+    (
+        "quantified-alternation-workflows",
+        "quantified-alternation-broader-range-workflows",
+        "quantified-alternation-conditional-workflows",
+        "quantified-alternation-open-ended-workflows",
+        "quantified-alternation-nested-branch-workflows",
+        "quantified-alternation-backtracking-heavy-workflows",
+    ),
+)
 GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
     GeneratedQuantifiedAlternationParitySpec(
         bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,

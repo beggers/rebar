@@ -27,6 +27,7 @@ from tests.python.fixture_parity_support import (
     fixture_bundle_manifest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
+    requested_published_fixture_bundles,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
@@ -62,24 +63,28 @@ FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles
     GROUPED_CAPTURE_FIXTURE_SELECTOR,
     pattern_extractor=str_case_pattern,
 )
-GROUPED_MATCH_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID["grouped-match-workflows"]
-NAMED_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID["named-group-workflows"]
-GROUPED_SEGMENT_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "grouped-segment-workflows"
-]
-NESTED_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID["nested-group-workflows"]
-NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-group-alternation-workflows"
-]
-GROUPED_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "grouped-alternation-workflows"
-]
-OPTIONAL_GROUP_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "optional-group-workflows"
-]
-OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "optional-group-alternation-workflows"
-]
+(
+    GROUPED_MATCH_FIXTURE_BUNDLE,
+    NAMED_GROUP_FIXTURE_BUNDLE,
+    GROUPED_SEGMENT_FIXTURE_BUNDLE,
+    NESTED_GROUP_FIXTURE_BUNDLE,
+    NESTED_GROUP_ALTERNATION_FIXTURE_BUNDLE,
+    GROUPED_ALTERNATION_FIXTURE_BUNDLE,
+    OPTIONAL_GROUP_FIXTURE_BUNDLE,
+    OPTIONAL_GROUP_ALTERNATION_FIXTURE_BUNDLE,
+) = requested_published_fixture_bundles(
+    FIXTURE_BUNDLES_BY_MANIFEST_ID,
+    (
+        "grouped-match-workflows",
+        "named-group-workflows",
+        "grouped-segment-workflows",
+        "nested-group-workflows",
+        "nested-group-alternation-workflows",
+        "grouped-alternation-workflows",
+        "optional-group-workflows",
+        "optional-group-alternation-workflows",
+    ),
+)
 
 
 def _iter_fixture_cases() -> Iterator[FixtureCase]:

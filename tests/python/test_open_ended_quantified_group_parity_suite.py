@@ -44,6 +44,7 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern,
+    requested_published_fixture_bundles,
 )
 
 
@@ -68,27 +69,26 @@ FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles
     OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     pattern_extractor=case_pattern,
 )
-OPEN_ENDED_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "open-ended-quantified-group-alternation-workflows"
-]
-OPEN_ENDED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "open-ended-quantified-group-alternation-conditional-workflows"
-]
-BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "broader-range-open-ended-quantified-group-alternation-workflows"
-]
-BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "broader-range-open-ended-quantified-group-alternation-conditional-workflows"
-]
-BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows"
-]
-OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "open-ended-quantified-group-alternation-backtracking-heavy-workflows"
-]
-NESTED_OPEN_ENDED_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-open-ended-quantified-group-alternation-workflows"
-]
+(
+    OPEN_ENDED_ALTERNATION_BUNDLE,
+    OPEN_ENDED_CONDITIONAL_BUNDLE,
+    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
+    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+    OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+    NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
+) = requested_published_fixture_bundles(
+    FIXTURE_BUNDLES_BY_MANIFEST_ID,
+    (
+        "open-ended-quantified-group-alternation-workflows",
+        "open-ended-quantified-group-alternation-conditional-workflows",
+        "broader-range-open-ended-quantified-group-alternation-workflows",
+        "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
+        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
+        "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
+        "nested-open-ended-quantified-group-alternation-workflows",
+    ),
+)
 OPEN_ENDED_TRACE_BUNDLES = (
     OPEN_ENDED_ALTERNATION_BUNDLE,
     NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,

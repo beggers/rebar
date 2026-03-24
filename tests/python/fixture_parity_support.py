@@ -712,6 +712,34 @@ def published_fixture_bundles_by_manifest_id(
     return indexed_bundles
 
 
+def requested_published_fixture_bundles(
+    bundles_by_manifest_id: Mapping[str, FixtureBundle],
+    requested_manifest_ids: Iterable[str],
+) -> tuple[FixtureBundle, ...]:
+    ordered_manifest_ids = tuple(requested_manifest_ids)
+    duplicate_manifest_ids = duplicate_string_ids(ordered_manifest_ids)
+    if duplicate_manifest_ids:
+        raise ValueError(
+            "requested fixture manifest ids contain duplicates: "
+            f"{duplicate_manifest_ids}"
+        )
+
+    missing_manifest_ids = tuple(
+        manifest_id
+        for manifest_id in ordered_manifest_ids
+        if manifest_id not in bundles_by_manifest_id
+    )
+    if missing_manifest_ids:
+        raise ValueError(
+            "published fixture bundle mapping is missing manifest ids: "
+            f"{missing_manifest_ids}"
+        )
+
+    return tuple(
+        bundles_by_manifest_id[manifest_id] for manifest_id in ordered_manifest_ids
+    )
+
+
 def assert_fixture_bundle_contract(
     bundle: FixtureBundle,
     *,
