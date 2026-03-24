@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1717 cases across 114 manifests, with all 1717 passing in the current slice; the benchmark publication covers 1075/1075 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | The next surviving frontier is the bounded quantified conditional callable `bytes` parity slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/python/test_callable_replacement_parity_suite.py` owner path. |
-| Work queue | `0` ready, `0` in progress, `1193` done, `0` blocked |
+| Current milestone | The next surviving frontier is the bounded quantified conditional callable `bytes` correctness-publication slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` owner path. |
+| Work queue | `0` ready, `0` in progress, `1195` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- The next surviving frontier is the bounded quantified conditional callable `bytes` parity slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/python/test_callable_replacement_parity_suite.py` owner path.
+- The next surviving frontier is the bounded quantified conditional callable `bytes` correctness-publication slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` owner path.
 
 ### Current Risks
 
