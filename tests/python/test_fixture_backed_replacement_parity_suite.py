@@ -1781,6 +1781,9 @@ REPLACEMENT_SURFACE_SPECS = (
             "conditional-group-exists-quantified-replacement-workflows",
             "conditional-group-exists-quantified-alternation-replacement-workflows",
         ),
+        match_group_access_manifest_ids=(
+            "conditional-group-exists-replacement-template-workflows",
+        ),
         template_expand_manifest_ids=(
             "conditional-group-exists-replacement-template-workflows",
         ),
@@ -2683,7 +2686,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
     ) == selected_case_ids
 
 
-def test_conditional_replacement_template_match_snapshots_require_full_mixed_frontier(
+def test_conditional_replacement_template_match_surfaces_require_full_mixed_frontier(
 ) -> None:
     manifest_id = "conditional-group-exists-replacement-template-workflows"
     surface = _replacement_surface_by_id("conditional-group-exists-replacement")
@@ -2697,15 +2700,22 @@ def test_conditional_replacement_template_match_snapshots_require_full_mixed_fro
         for case in surface.match_snapshot_cases
         if case.manifest_id == manifest_id
     )
+    match_group_access_case_ids = tuple(
+        case.case_id
+        for case in surface.match_group_access_cases
+        if case.manifest_id == manifest_id
+    )
     template_expand_case_ids = tuple(
         case.case_id
         for case in surface.template_expand_cases
         if case.manifest_id == manifest_id
     )
 
-    assert match_snapshot_case_ids == tuple(case.case_id for case in bundle.cases)
+    assert match_snapshot_case_ids == (*str_case_ids, *bytes_case_ids)
+    assert match_group_access_case_ids == match_snapshot_case_ids
     assert template_expand_case_ids == match_snapshot_case_ids
     assert frozenset(bytes_case_ids).issubset(match_snapshot_case_ids)
+    assert frozenset(bytes_case_ids).issubset(match_group_access_case_ids)
 
 
 @pytest.mark.parametrize(("surface", "pattern"), _compile_pattern_params())
