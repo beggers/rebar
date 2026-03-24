@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1653 cases across 114 manifests, with all 1653 passing in the current slice; the benchmark publication covers 1019/1019 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- Ready queue head and only surviving ready feature task: `RBR-1130`, which lands bounded bytes replacement-template parity for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
+- Surviving ready feature follow-on: `RBR-1133`, which publishes bounded bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1653 cases across 114 manifests, with all 1653 pass
 The published correctness slice now covers 1653 cases across 114 manifests, all passing, and 1019 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- Ready queue head and only surviving ready feature task: `RBR-1130`, landing bounded bytes replacement-template parity on `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
+- Surviving ready feature follow-on: `RBR-1133`, publishing bounded bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`.
 - No additional ready, blocked, or in-progress feature task currently survives in this checkout.
 
 ## What Exists

@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Land bounded bytes replacement-template parity for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
+Publish bounded bytes replacement-template workflows for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
 
 ## Ordered Work
-1. Convert the exact bytes replacement-template runtime for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` to Rust-backed parity on the existing shared replacement owner path before the adjacent correctness publication and Python-path benchmark catch-up reopen that conditional template slice.
+1. Publish the exact bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` on the existing shared correctness and replacement parity owner path once `RBR-1130` lands, before the adjacent Python-path benchmark catch-up widens that conditional template slice.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
