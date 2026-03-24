@@ -1,6 +1,6 @@
 # RBR-1212: Move pattern-window keyword contract tests onto dedicated suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -54,3 +54,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` returned `4 passed in 0.05s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_pattern_window_indexlike_descriptors_until_helper_invocation or standard_benchmark_keyword_kwargs_validation_matches_manifest_and_payload_entry_points or standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation'` returned `7 passed, 440 deselected in 0.16s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because those three tests still live in the combined suite.
+
+## Completion
+- Moved the three pattern-window keyword contract tests into `tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py`, keeping the same manifest payloads, workload ids, bool-vs-int checks, indexlike materialization checks, `keyword_arguments()` assertions, validation parity, and stdlib outcome comparisons.
+- Deleted the relocated tests from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the combined benchmark suite no longer owns that generic pattern-window keyword contract surface.
+- Verification passed:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` returned `11 passed in 0.11s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_pattern_window_indexlike_descriptors_until_helper_invocation or standard_benchmark_keyword_kwargs_validation_matches_manifest_and_payload_entry_points or standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation'` now returns `440 deselected in 0.35s` with pytest exit code `5` because those tests no longer exist in the combined suite after the move.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned `440 passed, 2632 subtests passed in 40.77s`.
+  - `bash -lc "! rg -n 'test_standard_benchmark_manifest_preserves_pattern_window_indexlike_descriptors_until_helper_invocation|test_standard_benchmark_keyword_kwargs_validation_matches_manifest_and_payload_entry_points|test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` succeeded.
