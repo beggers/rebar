@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
+The likely post-drain frontier on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` correctness-publication slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
+1. The likely post-drain frontier on the shared conditional callable replacement owner path is the bounded nested conditional callable negative-count `bytes` correctness-publication slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
