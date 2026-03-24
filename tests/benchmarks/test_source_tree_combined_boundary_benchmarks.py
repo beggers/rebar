@@ -4762,24 +4762,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=workload_count,
         )
 
-    def test_collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_collection_replacement_compiled_pattern_success_workload,
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 5)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
     def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured(
         self,
     ) -> None:
@@ -4999,80 +4981,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             unbenchmarked_case_ids,
             (),
-        )
-
-    def test_module_boundary_manifest_keeps_literal_compiled_pattern_success_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_module_workflow_compiled_pattern_literal_success_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            (
-                "module-search-literal-warm-hit-str-compiled-pattern",
-                "module-match-literal-warm-hit-str-compiled-pattern",
-                "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
-            ),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_module_boundary_manifest_keeps_bounded_wildcard_compiled_pattern_success_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            (
-                "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
-                "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
-                "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
-            ),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_module_boundary_manifest_keeps_verbose_bytes_compiled_pattern_success_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("module-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            (
-                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
-                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
-            ),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "module-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
         )
 
     def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(

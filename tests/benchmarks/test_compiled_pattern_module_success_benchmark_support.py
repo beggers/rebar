@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import json
 import pathlib
 from typing import Any
+import unittest
 
 import pytest
 
@@ -30,6 +31,12 @@ from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
 from tests.benchmarks.benchmark_test_support import _write_test_manifest
+from tests.benchmarks.benchmark_test_support import (
+    assert_benchmark_workload_contract,
+    find_workload_document,
+    find_workload_record,
+    manifest_workload_ids_matching,
+)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
@@ -42,6 +49,10 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_workload,
     compiled_pattern_contract_expected_build_calls,
 )
+from tests.benchmarks.test_source_tree_combined_boundary_benchmarks import (
+    source_tree_combined_case,
+)
+from tests.conftest import run_harness_scorecard
 
 MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
 COLLECTION_REPLACEMENT_MANIFEST_PATH = (
@@ -220,6 +231,50 @@ _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
 )
 
 
+def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+    *,
+    include_workload: Callable[[Any], bool],
+) -> None:
+    testcase = unittest.TestCase()
+    case = source_tree_combined_case(owner_spec.contract_manifest_id)
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in owner_spec.source_workloads()
+        if include_workload(workload)
+    )
+    selected_measured_workload_ids = manifest_workload_ids_matching(
+        case.target_manifest,
+        include_workload,
+    )
+
+    assert selected_measured_workload_ids == expected_measured_workload_ids
+
+    _, scorecard = run_harness_scorecard(
+        "rebar_harness.benchmarks",
+        ["--manifest", str(case.target_manifest.path)],
+        report_name="benchmarks.json",
+    )
+    manifest_summary = scorecard["manifests"][owner_spec.contract_manifest_id]
+    expected_workload_count = len(case.target_manifest.workloads)
+
+    assert manifest_summary["known_gap_count"] == 0
+    assert manifest_summary["measured_workloads"] == expected_workload_count
+    assert manifest_summary["workload_count"] == expected_workload_count
+
+    for workload_id in expected_measured_workload_ids:
+        assert_benchmark_workload_contract(
+            testcase,
+            find_workload_record(scorecard, workload_id),
+            manifest_id=owner_spec.contract_manifest_id,
+            workload_document=find_workload_document(
+                case.target_manifest,
+                workload_id,
+            ),
+            expected_status="measured",
+        )
+
+
 @pytest.mark.parametrize(
     "owner_spec",
     _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
@@ -269,6 +324,40 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_collectio
             round_tripped,
             run_benchmark_workload_with_cpython(round_tripped),
         )
+
+
+def test_collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured(
+) -> None:
+    _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
+        _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+        include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+    )
+
+
+def test_module_boundary_manifest_keeps_literal_compiled_pattern_success_rows_measured(
+) -> None:
+    _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+        include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
+    )
+
+
+def test_module_boundary_manifest_keeps_bounded_wildcard_compiled_pattern_success_rows_measured(
+) -> None:
+    _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+        include_workload=(
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
+        ),
+    )
+
+
+def test_module_boundary_manifest_keeps_verbose_bytes_compiled_pattern_success_rows_measured(
+) -> None:
+    _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+        include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+    )
 
 
 @pytest.mark.parametrize(

@@ -1,6 +1,6 @@
 ## RBR-1251: Move compiled-pattern success measured-row assertions onto dedicated owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -57,3 +57,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` passed with `145 tests collected`.
   - `rg -n "test_collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_literal_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_bounded_wildcard_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_verbose_bytes_compiled_pattern_success_rows_measured" tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` matched only `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
   - `bash -lc "! rg -n 'test_collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_literal_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_bounded_wildcard_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_verbose_bytes_compiled_pattern_success_rows_measured' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those inline assertions still exist, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the four compiled-pattern success measured-row assertions into `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py`.
+- The dedicated suite now derives expected workload ids from the existing compiled-pattern success owner specs and live include selectors, then verifies those rows stay measured in the live combined manifests.
+- Removed the corresponding inline assertions from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+
+## Verification
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` passed with `45 passed`.
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` passed with `145 tests collected`.
+- `bash -lc "! rg -n 'test_collection_replacement_manifest_keeps_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_literal_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_bounded_wildcard_compiled_pattern_success_rows_measured|test_module_boundary_manifest_keeps_verbose_bytes_compiled_pattern_success_rows_measured' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed.
