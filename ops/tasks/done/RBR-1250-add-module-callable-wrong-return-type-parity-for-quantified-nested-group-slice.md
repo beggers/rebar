@@ -48,3 +48,7 @@ Created: 2026-03-24
   - it contributes the next eight module wrong-return-type rows for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `154 passed, 6100 deselected`.
+
+## Completion
+- Added `test_module_callable_replacement_wrong_return_type_matches_cpython(...)` in `tests/python/test_callable_replacement_parity_suite.py`, filtered to `MODULE_RETURN_TYPE_ERROR_CASES` rows with manifest id `quantified-nested-group-callable-replacement-workflows` and still routed through `assert_callable_replacement_return_type_error_parity(..., use_compiled_pattern=False)`.
+- Verification on 2026-03-24: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `170 passed, 6100 deselected`.
