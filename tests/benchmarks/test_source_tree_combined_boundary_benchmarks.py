@@ -43,7 +43,6 @@ from tests.benchmarks.compile_proxy_benchmark_anchor_support import (
     is_compile_proxy_workload,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    _collection_replacement_expected_keyword_field,
     _collection_replacement_has_expected_unexpected_keyword_error,
     _collection_replacement_keyword_correctness_case_signature,
     _collection_replacement_keyword_parameter_name,

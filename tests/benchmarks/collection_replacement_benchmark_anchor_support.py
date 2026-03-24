@@ -139,23 +139,20 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
     )
 
 
-def _collection_replacement_expected_keyword_field(
-    workload: Any,
-) -> str | None:
-    if workload.operation.startswith("module."):
-        return (
-            benchmarks._expected_duplicate_module_helper_keyword_field(workload)
-            or benchmarks._expected_positional_module_helper_keyword_field(workload)
-        )
-    if workload.operation.startswith("pattern."):
-        return benchmarks._expected_pattern_helper_positional_keyword_field(workload)
-    return None
-
-
 def _collection_replacement_positional_keyword_field(
     workload: Any,
 ) -> str | None:
-    expected_keyword_field = _collection_replacement_expected_keyword_field(workload)
+    if workload.operation.startswith("module."):
+        expected_keyword_field = (
+            benchmarks._expected_duplicate_module_helper_keyword_field(workload)
+            or benchmarks._expected_positional_module_helper_keyword_field(workload)
+        )
+    elif workload.operation.startswith("pattern."):
+        expected_keyword_field = (
+            benchmarks._expected_pattern_helper_positional_keyword_field(workload)
+        )
+    else:
+        expected_keyword_field = None
     if expected_keyword_field is None:
         return None
     keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
@@ -242,7 +239,7 @@ def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
         return False
     if keyword_names[0] == keyword_parameter:
         return True
-    if _collection_replacement_expected_keyword_field(workload) is not None:
+    if _collection_replacement_positional_keyword_field(workload) is not None:
         return True
     return _collection_replacement_has_expected_unexpected_keyword_error(workload)
 
