@@ -5,6 +5,7 @@ import pathlib
 import re
 import textwrap
 from typing import Any
+import unittest
 
 import pytest
 
@@ -138,6 +139,46 @@ def find_workload_document(
     raise AssertionError(
         f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
     )
+
+
+def assert_zero_gap_manifest_workloads_measured(
+    *,
+    manifest_path: pathlib.Path | str,
+    manifest_id: str,
+    expected_measured_workload_ids: tuple[str, ...],
+    expected_measured_workload_count: int,
+    expected_total_workload_count: int | None = None,
+) -> None:
+    from tests.conftest import run_harness_scorecard
+
+    testcase = unittest.TestCase()
+    manifest = load_manifest(_resolve_live_manifest_path(manifest_path))
+    _, scorecard = run_harness_scorecard(
+        "rebar_harness.benchmarks",
+        ["--manifest", str(_resolve_live_manifest_path(manifest_path))],
+        report_name="benchmarks.json",
+    )
+    manifest_summary = scorecard["manifests"][manifest_id]
+
+    testcase.assertEqual(manifest_summary["known_gap_count"], 0)
+    testcase.assertEqual(
+        manifest_summary["measured_workloads"],
+        expected_measured_workload_count,
+    )
+    if expected_total_workload_count is not None:
+        testcase.assertEqual(
+            manifest_summary["workload_count"],
+            expected_total_workload_count,
+        )
+
+    for workload_id in expected_measured_workload_ids:
+        assert_benchmark_workload_contract(
+            testcase,
+            find_workload_record(scorecard, workload_id),
+            manifest_id=manifest_id,
+            workload_document=find_workload_document(manifest, workload_id),
+            expected_status="measured",
+        )
 
 
 def assert_benchmark_workload_contract(

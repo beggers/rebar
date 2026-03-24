@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import pathlib
 import re
-import unittest
 
 import pytest
 
@@ -23,8 +22,8 @@ from tests.benchmarks.recording_benchmark_module_support import (
 )
 from tests.benchmarks.benchmark_test_support import (
     assert_benchmark_workload_contract,
+    assert_zero_gap_manifest_workloads_measured,
     _expected_exception_instance,
-    find_workload_document,
     _record_numeric_materialization_fields,
     selected_manifest_workloads,
     _write_test_manifest,
@@ -40,46 +39,6 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
 )
-from tests.conftest import (
-    run_harness_scorecard,
-)
-
-
-def _assert_zero_gap_manifest_workloads_measured(
-    *,
-    manifest_path: pathlib.Path,
-    manifest_id: str,
-    expected_measured_workload_ids: tuple[str, ...],
-    expected_measured_workload_count: int,
-    expected_total_workload_count: int | None = None,
-) -> None:
-    testcase = unittest.TestCase()
-    manifest = load_manifest(manifest_path)
-    _, scorecard = run_harness_scorecard(
-        "rebar_harness.benchmarks",
-        ["--manifest", str(manifest_path)],
-        report_name="benchmarks.json",
-    )
-    manifest_summary = scorecard["manifests"][manifest_id]
-
-    assert manifest_summary["known_gap_count"] == 0
-    assert manifest_summary["measured_workloads"] == expected_measured_workload_count
-    if expected_total_workload_count is not None:
-        assert manifest_summary["workload_count"] == expected_total_workload_count
-
-    for workload_id in expected_measured_workload_ids:
-        assert_benchmark_workload_contract(
-            testcase,
-            next(
-                workload
-                for workload in scorecard["workloads"]
-                if str(workload["id"]) == workload_id
-            ),
-            manifest_id=manifest_id,
-            workload_document=find_workload_document(manifest, workload_id),
-            expected_status="measured",
-        )
-
 
 def test_compiled_pattern_module_compile_success_payload_round_trip_on_live_workload() -> None:
     contract_case = next(
@@ -237,7 +196,7 @@ def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_literal_
     )
 
     assert expected_measured_workload_ids == owner_spec.expected_anchor_workload_ids()
-    _assert_zero_gap_manifest_workloads_measured(
+    assert_zero_gap_manifest_workloads_measured(
         manifest_path=support.MODULE_BOUNDARY_MANIFEST_PATH,
         manifest_id="module-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -260,7 +219,7 @@ def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_named_gr
     )
 
     assert expected_measured_workload_ids == owner_spec.expected_anchor_workload_ids()
-    _assert_zero_gap_manifest_workloads_measured(
+    assert_zero_gap_manifest_workloads_measured(
         manifest_path=support.MODULE_BOUNDARY_MANIFEST_PATH,
         manifest_id="module-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -284,7 +243,7 @@ def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_
         )
 
         assert expected_measured_workload_ids == owner_spec.expected_anchor_workload_ids()
-        _assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=support.MODULE_BOUNDARY_MANIFEST_PATH,
             manifest_id="module-boundary",
             expected_measured_workload_ids=expected_measured_workload_ids,

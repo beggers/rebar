@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import re
-import unittest
 
 import pytest
 
@@ -19,8 +18,8 @@ from tests.benchmarks import (
 from tests.benchmarks.benchmark_test_support import (
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     assert_benchmark_workload_contract,
-    find_workload_document,
     _record_numeric_materialization_fields,
+    assert_zero_gap_manifest_workloads_measured,
     selected_manifest_workloads,
     _write_test_manifest,
 )
@@ -34,53 +33,12 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
 )
-from tests.conftest import (
-    run_harness_scorecard,
-)
-
-
 def _contract_surface(case_id: str):
     return next(
         surface
         for surface in support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         if surface.case_id == case_id
     )
-
-
-def _assert_zero_gap_manifest_workloads_measured(
-    *,
-    manifest_path,
-    manifest_id: str,
-    expected_measured_workload_ids: tuple[str, ...],
-    expected_measured_workload_count: int,
-    expected_total_workload_count: int | None = None,
-) -> None:
-    testcase = unittest.TestCase()
-    manifest = load_manifest(manifest_path)
-    _, scorecard = run_harness_scorecard(
-        "rebar_harness.benchmarks",
-        ["--manifest", str(manifest_path)],
-        report_name="benchmarks.json",
-    )
-    manifest_summary = scorecard["manifests"][manifest_id]
-
-    assert manifest_summary["known_gap_count"] == 0
-    assert manifest_summary["measured_workloads"] == expected_measured_workload_count
-    if expected_total_workload_count is not None:
-        assert manifest_summary["workload_count"] == expected_total_workload_count
-
-    for workload_id in expected_measured_workload_ids:
-        assert_benchmark_workload_contract(
-            testcase,
-            next(
-                workload
-                for workload in scorecard["workloads"]
-                if str(workload["id"]) == workload_id
-            ),
-            manifest_id=manifest_id,
-            workload_document=find_workload_document(manifest, workload_id),
-            expected_status="measured",
-        )
 
 
 def test_compiled_pattern_module_helper_keyword_source_workload_order_stays_pinned() -> None:
@@ -112,7 +70,7 @@ def test_collection_replacement_manifest_keeps_compiled_pattern_module_helper_ke
     )
 
     assert expected_measured_workload_ids == expected_source_workload_ids
-    _assert_zero_gap_manifest_workloads_measured(
+    assert_zero_gap_manifest_workloads_measured(
         manifest_path=support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
