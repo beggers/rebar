@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -52,3 +52,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_quantified_callable'` returned `6 passed, 145 deselected, 144 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-rbr-1219-conditional-group-exists-boundary.py` returned `200 measured workloads / 0 known gaps`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report .rebar/tmp/feature-planning-rbr-1219-benchmarks.py` returned `1131 measured workloads / 0 known gaps`.
+
+## Completion
+- Added the exact thirty-two quantified conditional callable `count=-1` benchmark rows on the existing `conditional-group-exists-boundary` manifest for `str` and `bytes`, covering numbered and named module/pattern `sub()` and `subn()` present, absent, and near-miss paths without widening beyond `callable_match_group`.
+- Updated the shared combined benchmark expectations so the quantified callable slices, byte-representative subsets, and correctness-anchor matcher all include the new negative-count rows.
+- Republished `reports/benchmarks/latest.py`; the tracked report now shows `232` measured workloads for `conditional-group-exists-boundary` and `1163` measured workloads across `30` manifests overall, with `0` known gaps.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_quantified_callable'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1219-conditional-group-exists-boundary.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
