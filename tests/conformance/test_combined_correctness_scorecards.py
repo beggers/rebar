@@ -5331,6 +5331,38 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             text_model="bytes",
             required_categories=("negative-count", "quantified"),
         )
+        manifest_alternation_negative_count_str_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="str",
+            required_categories=("negative-count", "alternation"),
+        )
+        manifest_alternation_negative_count_bytes_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="bytes",
+            required_categories=("negative-count", "alternation"),
+        )
+        manifest_two_arm_negative_count_str_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="str",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified", "alternation", "nested"),
+        )
+        manifest_two_arm_negative_count_bytes_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="bytes",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified", "alternation", "nested"),
+        )
+        manifest_nested_negative_count_str_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="str",
+            required_categories=("negative-count", "nested"),
+        )
+        manifest_nested_negative_count_bytes_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="bytes",
+            required_categories=("negative-count", "nested"),
+        )
         representative_negative_count_str_case_ids = selected_case_ids(
             combined_case.representative_cases,
             text_model="str",
@@ -5362,6 +5394,38 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             combined_case.representative_cases,
             text_model="bytes",
             required_categories=("negative-count", "quantified"),
+        )
+        representative_alternation_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count", "alternation"),
+        )
+        representative_alternation_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count", "alternation"),
+        )
+        representative_two_arm_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified", "alternation", "nested"),
+        )
+        representative_two_arm_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified", "alternation", "nested"),
+        )
+        representative_nested_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count", "nested"),
+        )
+        representative_nested_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count", "nested"),
         )
 
         self.assertEqual(
@@ -5397,8 +5461,35 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             16,
         )
         self.assertEqual(
+            len(manifest_alternation_negative_count_str_case_ids),
+            len(manifest_alternation_negative_count_bytes_case_ids),
+        )
+        self.assertEqual(len(manifest_alternation_negative_count_str_case_ids), 4)
+        self.assertEqual(
+            len(manifest_two_arm_negative_count_str_case_ids),
+            len(manifest_two_arm_negative_count_bytes_case_ids),
+        )
+        self.assertEqual(len(manifest_two_arm_negative_count_str_case_ids), 4)
+        self.assertEqual(
+            len(manifest_nested_negative_count_str_case_ids),
+            len(manifest_nested_negative_count_bytes_case_ids),
+        )
+        self.assertEqual(len(manifest_nested_negative_count_str_case_ids), 4)
+        self.assertEqual(
             manifest_quantified_negative_count_bytes_case_ids,
             mirrored_bytes_case_ids(manifest_quantified_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            manifest_alternation_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(manifest_alternation_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            manifest_two_arm_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(manifest_two_arm_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            manifest_nested_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(manifest_nested_negative_count_str_case_ids),
         )
         self.assertEqual(
             manifest_legacy_negative_count_bytes_case_ids,
@@ -5407,7 +5498,9 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         self.assertEqual(
             representative_negative_count_str_case_ids,
             representative_quantified_negative_count_str_case_ids
-            + representative_legacy_negative_count_str_case_ids,
+            + representative_alternation_negative_count_str_case_ids
+            + representative_two_arm_negative_count_str_case_ids
+            + representative_nested_negative_count_str_case_ids,
         )
         quantified_str_only_case_ids = tuple(
             case_id
@@ -5431,6 +5524,18 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             representative_quantified_negative_count_str_case_ids,
             manifest_quantified_negative_count_str_case_ids,
         )
+        self.assertEqual(
+            representative_alternation_negative_count_str_case_ids,
+            manifest_alternation_negative_count_str_case_ids,
+        )
+        self.assertEqual(
+            representative_two_arm_negative_count_str_case_ids,
+            manifest_two_arm_negative_count_str_case_ids,
+        )
+        self.assertEqual(
+            representative_nested_negative_count_str_case_ids,
+            manifest_nested_negative_count_str_case_ids,
+        )
         quantified_bytes_case_ids = tuple(
             case_id
             for case_id in representative_bytes_case_ids
@@ -5450,6 +5555,18 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         self.assertEqual(
             representative_quantified_negative_count_bytes_case_ids,
             mirrored_bytes_case_ids(representative_quantified_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_alternation_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(representative_alternation_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_two_arm_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(representative_two_arm_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_nested_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(representative_nested_negative_count_str_case_ids),
         )
         self.assertEqual(
             representative_legacy_negative_count_str_case_ids,
@@ -5486,6 +5603,66 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                     ("module_call", "subn"): 7,
                     ("pattern_call", "sub"): 7,
                     ("pattern_call", "subn"): 7,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in representative_quantified_negative_count_str_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 4,
+                    ("module_call", "subn"): 4,
+                    ("pattern_call", "sub"): 4,
+                    ("pattern_call", "subn"): 4,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in representative_alternation_negative_count_str_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 1,
+                    ("module_call", "subn"): 1,
+                    ("pattern_call", "sub"): 1,
+                    ("pattern_call", "subn"): 1,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in representative_two_arm_negative_count_str_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 1,
+                    ("module_call", "subn"): 1,
+                    ("pattern_call", "sub"): 1,
+                    ("pattern_call", "subn"): 1,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in representative_nested_negative_count_str_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 1,
+                    ("module_call", "subn"): 1,
+                    ("pattern_call", "sub"): 1,
+                    ("pattern_call", "subn"): 1,
                 }
             ),
         )
