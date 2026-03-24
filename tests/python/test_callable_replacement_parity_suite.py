@@ -3566,17 +3566,21 @@ def _assert_conditional_group_exists_alternation_callable_absent_capture_typeerr
 
 
 @pytest.mark.parametrize(
-    ("pattern", "group_ref", "helper", "string", "count", "use_compiled_pattern"),
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
     (
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzabcdezz", 0, False),
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzabcdfzz", 1, False),
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzabcdezz", 0),
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzabcdfzz", 1),
         (
             r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
             "word",
             "sub",
             "zzabcdezz",
             0,
-            False,
         ),
         (
             r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
@@ -3584,14 +3588,13 @@ def _assert_conditional_group_exists_alternation_callable_absent_capture_typeerr
             "subn",
             "zzabcdfzz",
             1,
-            False,
         ),
     ),
     ids=(
-        "numbered-module-sub-present-first-arm",
-        "numbered-module-subn-present-second-arm",
-        "named-module-sub-present-first-arm",
-        "named-module-subn-present-second-arm",
+        "numbered-sub-present-first-arm",
+        "numbered-subn-present-second-arm",
+        "named-sub-present-first-arm",
+        "named-subn-present-second-arm",
     ),
 )
 def test_conditional_group_exists_alternation_callable_replacement_group_access_matches_cpython(
@@ -3617,17 +3620,21 @@ def test_conditional_group_exists_alternation_callable_replacement_group_access_
 
 
 @pytest.mark.parametrize(
-    ("pattern", "group_ref", "helper", "string", "count", "use_compiled_pattern"),
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
     (
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzacegzz", 0, True),
-        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzacehzz", 1, True),
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzacegzz", 0),
+        (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzacehzz", 1),
         (
             r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
             "word",
             "sub",
             "zzacegzz",
             0,
-            True,
         ),
         (
             r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
@@ -3635,14 +3642,13 @@ def test_conditional_group_exists_alternation_callable_replacement_group_access_
             "subn",
             "zzacehzz",
             1,
-            True,
         ),
     ),
     ids=(
-        "numbered-pattern-sub-absent-first-arm",
-        "numbered-pattern-subn-absent-second-arm",
-        "named-pattern-sub-absent-first-arm",
-        "named-pattern-subn-absent-second-arm",
+        "numbered-sub-absent-first-arm",
+        "numbered-subn-absent-second-arm",
+        "named-sub-absent-first-arm",
+        "named-subn-absent-second-arm",
     ),
 )
 def test_conditional_group_exists_alternation_callable_replacement_absent_capture_typeerror_matches_cpython(
