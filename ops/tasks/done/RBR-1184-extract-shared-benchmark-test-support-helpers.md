@@ -1,6 +1,6 @@
 # RBR-1184: Extract shared benchmark test support helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -42,19 +42,13 @@ Created: 2026-03-24
 - Prefer one ordinary shared helper module over another private owner-to-owner import or another duplicate local copy.
 - Do not turn this into a larger source-tree combined-suite breakup; this task is only the bounded shared-helper extraction above.
 
+## Completion
+- 2026-03-24: Added `tests/benchmarks/benchmark_test_support.py` for the shared temp-manifest writer, expected-exception builder, and numeric-materialization recorder, updated the three benchmark owner suites to import those helpers directly, and added `tests/benchmarks/test_benchmark_test_support.py` to pin the shared helper behavior without reintroducing another owner-file dependency.
+- Verified that the duplicate helper definitions were removed from the owner files and now only live in `tests/benchmarks/benchmark_test_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py` -> `3 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py -k 'preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing'` -> `20 passed, 99 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions or module_helper_cache_modes_preserve_expected_purge_and_warmup_order or module_helper_warm_expected_exception_prewarms_compile_cache_without_invoking_helper or pattern_helper_cache_modes_preserve_expected_compile_and_purge_order'` -> `17 passed, 577 deselected`
+
 ## Notes
-- `RBR-1184` is the next available unreserved architecture task id in this checkout:
-  - `ops/state/backlog.md` and `ops/state/current_status.md` do not reserve `RBR-1184`; and
-  - `ops/tasks/ready/`, `ops/tasks/in_progress/`, and `ops/tasks/blocked/` were empty in this run.
-- No blocked architecture task exists to reopen or retire first in this checkout.
-- JSON burn-down is complete and current in this run:
-  - `.rebar/runtime/dashboard.md` reports `tracked_json_blob_count: 0` and `tracked_json_blob_delta: 0`;
-  - `git ls-files '*.json' | wc -l` returned `0`; and
-  - `rg --files -g '*.json' | wc -l` returned `0`.
-- The simplification is still live and cross-file in the current checkout:
-  - `tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py:47` still defines `_write_test_manifest(...)`, `:57` still defines `_expected_exception_instance(...)`, and `:67` still defines `_record_numeric_materialization_fields(...)`;
-  - `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py:32` still defines `_write_test_manifest(...)`; and
-  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:176`, `:7793`, and `:15971` still define the same numeric-materialization recorder, temp-manifest writer, and expected-exception builder helpers.
-- Verification status in this run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py -k 'preserves_compiled_pattern_module_compile_success_and_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing'` returned `20 passed, 99 deselected` in this run.
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions or module_helper_cache_modes_preserve_expected_purge_and_warmup_order or module_helper_warm_expected_exception_prewarms_compile_cache_without_invoking_helper or pattern_helper_cache_modes_preserve_expected_compile_and_purge_order'` returned `17 passed, 577 deselected` in this run.
+- Queue-state note: the tracked task file in this checkout lived at `ops/tasks/ready/RBR-1184-extract-shared-benchmark-test-support-helpers.md` even though the runtime assignment pointed to `ops/tasks/in_progress/`; the completed task record now lives under `ops/tasks/done/`.

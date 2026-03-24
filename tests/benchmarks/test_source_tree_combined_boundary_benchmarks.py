@@ -8,7 +8,6 @@ import json
 import pathlib
 import re
 import shutil
-import textwrap
 from typing import Any
 import unittest
 from unittest import mock
@@ -142,6 +141,11 @@ from tests.benchmarks.wrong_text_model_benchmark_owner_support import (
     _wrong_text_model_expected_callback_call,
     _wrong_text_model_expected_callback_result,
 )
+from tests.benchmarks.benchmark_test_support import (
+    _expected_exception_instance,
+    _record_numeric_materialization_fields,
+    _write_test_manifest,
+)
 from tests.conftest import (
     REPO_ROOT,
     assert_declared_string_selector_registry_contract,
@@ -171,24 +175,6 @@ from tests.python.fixture_parity_support import (
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
-
-
-def _record_numeric_materialization_fields(
-    monkeypatch: pytest.MonkeyPatch,
-) -> list[str]:
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
-    return observed_field_names
 
 
 def _assert_benchmark_summary_consistent(
@@ -7788,16 +7774,6 @@ _MISSING_MATURIN_PATTERN = "no `maturin` executable was found on PATH"
 
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
     return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
-
-
-def _write_test_manifest(
-    tmp_path: pathlib.Path,
-    filename: str,
-    source: str,
-) -> pathlib.Path:
-    path = tmp_path / filename
-    path.write_text(textwrap.dedent(source), encoding="utf-8")
-    return path
 
 
 def _build_minimal_built_native_scorecard() -> dict[str, object]:
@@ -15967,15 +15943,6 @@ COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CASE_GROUPS = tuple(
     owner_spec.contract_case()
     for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
 )
-
-def _expected_exception_instance(
-    expected_exception: dict[str, str],
-) -> Exception:
-    exception_type = {
-        "TypeError": TypeError,
-        "ValueError": ValueError,
-    }[expected_exception["type"]]
-    return exception_type(expected_exception["message_substring"])
 
 @pytest.mark.parametrize(
     "source_workload",

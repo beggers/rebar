@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import textwrap
 
 import pytest
 
@@ -19,6 +18,7 @@ from tests.benchmarks import (
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
+from tests.benchmarks.benchmark_test_support import _write_test_manifest
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
@@ -27,16 +27,6 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
 )
-
-
-def _write_test_manifest(
-    tmp_path: pathlib.Path,
-    filename: str,
-    source: str,
-) -> pathlib.Path:
-    path = tmp_path / filename
-    path.write_text(textwrap.dedent(source), encoding="utf-8")
-    return path
 
 
 @pytest.mark.parametrize(
