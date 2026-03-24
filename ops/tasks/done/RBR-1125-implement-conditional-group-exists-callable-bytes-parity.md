@@ -1,6 +1,6 @@
 # RBR-1125: Implement conditional group-exists callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-23
 
@@ -52,3 +52,13 @@ Created: 2026-03-23
   - `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` still defaults to `text_model: "str"` and publishes only the eight exact `str` callable workflows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`;
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and `reports/benchmarks/latest.py` still publish only the `str` callable rows for this exact conditional slice, including the retained `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` benchmark anchor; and
   - direct runtime probes in this run showed `rebar.sub(...)`, `rebar.subn(...)`, and the matching compiled-pattern bytes callable paths for those exact conditional patterns still raising scaffold `NotImplementedError`, confirming parity implementation is the next bounded prerequisite before correctness or benchmark catch-up can widen.
+
+## Completion Notes
+- Landed exact Rust-backed bytes callable replacement parity for `rb"a(b)?c(?(1)d|e)"` and `rb"a(?P<word>b)?c(?(word)d|e)"` by adding a bounded bytes conditional span collector in `crates/rebar-core/src/lib.rs`, exporting it through `crates/rebar-cpython/src/lib.rs`, and wiring the existing native callable-bytes path plus allowlist in `python/rebar/__init__.py`.
+- Added direct bounded bytes parity coverage on the existing owner path in `tests/python/test_callable_replacement_parity_suite.py` for numbered and named module/pattern present-capture `sub()` workflows plus absent-capture `subn(count=1)` `TypeError` parity.
+- Left correctness publication, benchmark manifests, README text, and tracked ops state untouched for this bounded implementation run. `reports/correctness/latest.py` did not change.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and callable and bytes and module'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and callable and bytes and pattern'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and callable and bytes'`

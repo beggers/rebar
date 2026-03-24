@@ -9,6 +9,7 @@ use rebar_core::{
     conditional_group_exists_alternation_find_spans_str as core_conditional_group_exists_alternation_find_spans_str,
     conditional_group_exists_empty_else_find_spans_str as core_conditional_group_exists_empty_else_find_spans_str,
     conditional_group_exists_empty_yes_else_find_spans_str as core_conditional_group_exists_empty_yes_else_find_spans_str,
+    conditional_group_exists_find_spans_bytes as core_conditional_group_exists_find_spans_bytes,
     conditional_group_exists_find_spans_str as core_conditional_group_exists_find_spans_str,
     conditional_group_exists_nested_find_spans_str as core_conditional_group_exists_nested_find_spans_str,
     conditional_group_exists_no_else_find_spans_str as core_conditional_group_exists_no_else_find_spans_str,
@@ -1132,6 +1133,40 @@ fn boundary_conditional_group_exists_finditer(
     )
 }
 
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_conditional_group_exists_finditer_bytes(
+    pattern: &Bound<'_, PyBytes>,
+    flags: i32,
+    string: &Bound<'_, PyBytes>,
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome = core_conditional_group_exists_find_spans_bytes(
+        pattern.as_bytes(),
+        flags,
+        string.as_bytes(),
+        pos,
+        endpos,
+    );
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
 #[pyfunction(signature = (pattern, flags, repl, string, count=0))]
 fn boundary_literal_subn(
     py: Python<'_>,
@@ -1888,6 +1923,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?)?;
     module.add_function(wrap_pyfunction!(
         boundary_conditional_group_exists_finditer,
+        module
+    )?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_conditional_group_exists_finditer_bytes,
         module
     )?)?;
     module.add_function(wrap_pyfunction!(

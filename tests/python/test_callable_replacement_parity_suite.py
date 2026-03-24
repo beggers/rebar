@@ -3115,6 +3115,84 @@ def test_module_bytes_callable_replacement_callback_exception_matches_cpython(
     )
 
 
+@pytest.mark.parametrize(
+    ("pattern", "group_ref"),
+    (
+        (rb"a(b)?c(?(1)d|e)", 1),
+        (rb"a(?P<word>b)?c(?(word)d|e)", "word"),
+    ),
+    ids=("numbered", "named"),
+)
+def test_conditional_group_exists_module_bytes_callable_replacement_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[bytes]] = []
+
+    def observed_replacement(match: object) -> bytes:
+        observed_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    def expected_replacement(match: re.Match[bytes]) -> bytes:
+        expected_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    observed = backend.sub(pattern, observed_replacement, b"zzabcdzz")
+    expected = re.sub(pattern, expected_replacement, b"zzabcdzz")
+
+    assert observed == expected
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+
+
+@pytest.mark.parametrize(
+    ("pattern", "group_ref"),
+    (
+        (rb"a(b)?c(?(1)d|e)", 1),
+        (rb"a(?P<word>b)?c(?(word)d|e)", "word"),
+    ),
+    ids=("numbered", "named"),
+)
+def test_conditional_group_exists_module_bytes_callable_replacement_absent_capture_typeerror_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[bytes]] = []
+
+    def observed_replacement(match: object) -> bytes:
+        observed_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    def expected_replacement(match: re.Match[bytes]) -> bytes:
+        expected_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    with pytest.raises(TypeError) as observed_error:
+        backend.subn(pattern, observed_replacement, b"zzacezz", 1)
+
+    with pytest.raises(TypeError) as expected_error:
+        re.subn(pattern, expected_replacement, b"zzacezz", 1)
+
+    assert normalize_exception(observed_error.value) == normalize_exception(
+        expected_error.value
+    )
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+    assert len(observed_matches) == 1
+
+
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
@@ -3176,6 +3254,88 @@ def test_pattern_callable_replacement_callback_exception_matches_cpython(
         group_names=_case_group_names(case),
         use_compiled_pattern=True,
     )
+
+
+@pytest.mark.parametrize(
+    ("pattern", "group_ref"),
+    (
+        (rb"a(b)?c(?(1)d|e)", 1),
+        (rb"a(?P<word>b)?c(?(word)d|e)", "word"),
+    ),
+    ids=("numbered", "named"),
+)
+def test_conditional_group_exists_pattern_bytes_callable_replacement_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[bytes]] = []
+    observed_target = backend.compile(pattern)
+    expected_target = re.compile(pattern)
+
+    def observed_replacement(match: object) -> bytes:
+        observed_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    def expected_replacement(match: re.Match[bytes]) -> bytes:
+        expected_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    observed = observed_target.sub(observed_replacement, b"zzabcdzz")
+    expected = expected_target.sub(expected_replacement, b"zzabcdzz")
+
+    assert observed == expected
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+
+
+@pytest.mark.parametrize(
+    ("pattern", "group_ref"),
+    (
+        (rb"a(b)?c(?(1)d|e)", 1),
+        (rb"a(?P<word>b)?c(?(word)d|e)", "word"),
+    ),
+    ids=("numbered", "named"),
+)
+def test_conditional_group_exists_pattern_bytes_callable_replacement_absent_capture_typeerror_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[bytes]] = []
+    observed_target = backend.compile(pattern)
+    expected_target = re.compile(pattern)
+
+    def observed_replacement(match: object) -> bytes:
+        observed_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    def expected_replacement(match: re.Match[bytes]) -> bytes:
+        expected_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    with pytest.raises(TypeError) as observed_error:
+        observed_target.subn(observed_replacement, b"zzacezz", 1)
+
+    with pytest.raises(TypeError) as expected_error:
+        expected_target.subn(expected_replacement, b"zzacezz", 1)
+
+    assert normalize_exception(observed_error.value) == normalize_exception(
+        expected_error.value
+    )
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+    assert len(observed_matches) == 1
 
 
 @pytest.mark.parametrize("case", BYTES_PATTERN_CASES, ids=lambda case: case.case_id)
