@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Publish the bounded bytes replacement-template workflows for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`, then catch the same owner path up on Python-path benchmarks.
+Catch the bounded bytes replacement-template conditional-group-exists owner path up on Python-path benchmarks once the reopened correctness publication slice lands.
 
 ## Ordered Work
-1. Reopen `RBR-1133` to publish the exact bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` once the missing mirrored numbered-pattern and named-module bytes runtime paths land, before `RBR-1135` catches the same owner path up on the existing `conditional-group-exists-boundary` Python-path benchmark surface.
+1. Keep `RBR-1135` as the post-drain frontier: once `RBR-1133` republishes the exact bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`, catch the same owner path up on the existing `conditional-group-exists-boundary` Python-path benchmark surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
