@@ -34,10 +34,16 @@ from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     ordered_published_subset_filenames,
 )
-from tests.benchmarks.compile_proxy_benchmark_anchor_support import (
+from tests.benchmarks.benchmark_test_support import (
+    _write_test_manifest,
+    assert_benchmark_workload_contract,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
+    find_workload_document,
+    find_workload_record,
     is_compile_proxy_workload,
+    live_manifest_workloads,
+    manifest_workload_ids_matching as _manifest_workload_ids_matching,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_keyword_correctness_case_signature,
@@ -122,14 +128,6 @@ from tests.benchmarks.wrong_text_model_benchmark_anchor_support import (
     _is_pattern_boundary_wrong_text_model_workload,
     _pattern_boundary_wrong_text_model_correctness_case_signature,
     _pattern_boundary_wrong_text_model_workload_signature,
-)
-from tests.benchmarks.benchmark_test_support import (
-    _write_test_manifest,
-    assert_benchmark_workload_contract,
-    find_workload_document,
-    find_workload_record,
-    live_manifest_workloads,
-    manifest_workload_ids_matching as _manifest_workload_ids_matching,
 )
 from tests.conftest import (
     REPO_ROOT,
