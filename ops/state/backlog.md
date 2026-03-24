@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-RBR-1182 should implement the bounded bytes nested conditional callable parity slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints.
+The next surviving frontier is the bounded bytes nested conditional callable correctness-publication slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
 
 ## Ordered Work
-1. RBR-1182 should implement the bounded bytes nested conditional callable parity slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints.
+1. The next surviving frontier is the bounded bytes nested conditional callable correctness-publication slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
