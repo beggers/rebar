@@ -112,11 +112,12 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
         workload,
         collection_replacement_callback_flags=callback_flags,
     )
+    callback_result, callback_call, cpython_call_args, materialize_cpython_result = route
 
-    assert route.callback_result == expected_result
-    assert route.callback_call == expected_call
-    assert route.cpython_call_args == expected_cpython_args
-    assert route.materialize_cpython_result is materialize
+    assert callback_result == expected_result
+    assert callback_call == expected_call
+    assert cpython_call_args == expected_cpython_args
+    assert materialize_cpython_result is materialize
 
 
 def test_run_cpython_compiled_pattern_module_helper_workload_materializes_finditer() -> None:

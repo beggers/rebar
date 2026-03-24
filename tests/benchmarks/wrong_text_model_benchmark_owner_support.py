@@ -201,10 +201,11 @@ def _wrong_text_model_expected_callback_result(
     direct_pattern_route: str | None,
 ) -> object:
     if use_compiled_pattern:
-        return _compiled_pattern_module_helper_route(
+        callback_result, _, _, _ = _compiled_pattern_module_helper_route(
             source_workload,
             collection_replacement_callback_flags=0,
-        ).callback_result
+        )
+        return callback_result
 
     route = _direct_pattern_route_label(direct_pattern_route)
     if route == "collection/replacement":
@@ -260,10 +261,11 @@ def _wrong_text_model_expected_callback_call(
     direct_pattern_route: str | None,
 ) -> tuple[object, ...]:
     if use_compiled_pattern:
-        return _compiled_pattern_module_helper_route(
+        _, callback_call, _, _ = _compiled_pattern_module_helper_route(
             source_workload,
             collection_replacement_callback_flags=0,
-        ).callback_call
+        )
+        return callback_call
 
     route = _direct_pattern_route_label(direct_pattern_route)
     if route == "collection/replacement":

@@ -278,19 +278,21 @@ class CompiledPatternModuleSuccessOwnerSpec:
         )
 
     def expected_callback_result(self, source_workload: Workload) -> object:
-        return _compiled_pattern_module_helper_route(
+        callback_result, _, _, _ = _compiled_pattern_module_helper_route(
             source_workload,
             collection_replacement_callback_flags=source_workload.flags,
-        ).callback_result
+        )
+        return callback_result
 
     def expected_callback_call(
         self,
         source_workload: Workload,
     ) -> tuple[object, ...]:
-        return _compiled_pattern_module_helper_route(
+        _, callback_call, _, _ = _compiled_pattern_module_helper_route(
             source_workload,
             collection_replacement_callback_flags=source_workload.flags,
-        ).callback_call
+        )
+        return callback_call
 
 
 _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
