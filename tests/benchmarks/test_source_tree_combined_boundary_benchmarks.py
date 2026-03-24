@@ -75,6 +75,17 @@ from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
     _pattern_window_positional_indexlike_workload_args,
     _pattern_window_positional_indexlike_workload_signature,
 )
+from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
+    _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS,
+    _PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
+    _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS,
+    _is_pattern_bounded_wildcard_workload,
+    _is_pattern_verbose_regression_workload,
+    _pattern_bounded_wildcard_correctness_case_signature,
+    _pattern_bounded_wildcard_workload_signature,
+    _pattern_verbose_regression_correctness_case_signature,
+    _pattern_verbose_regression_workload_signature,
+)
 from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
     _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
     _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
@@ -8021,24 +8032,6 @@ def _is_collection_replacement_compiled_pattern_keyword_error_workload(
     )
 
 
-_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS = (
-    "pattern-search-bounded-wildcard-ignorecase-warm-str",
-    "pattern-match-bounded-wildcard-warm-str",
-    "pattern-fullmatch-bounded-wildcard-purged-str",
-    "pattern-findall-bounded-wildcard-warm-str",
-    "pattern-finditer-bounded-wildcard-purged-str",
-    "pattern-search-bounded-wildcard-endpos-miss-purged-str",
-)
-
-_PATTERN_BOUNDED_WILDCARD_CASE_IDS = (
-    "workflow-pattern-search-str-bounded-wildcard-ignorecase",
-    "workflow-pattern-match-str-bounded-wildcard",
-    "workflow-pattern-fullmatch-str-bounded-wildcard",
-    "workflow-pattern-findall-str-bounded-wildcard",
-    "workflow-pattern-finditer-str-bounded-wildcard",
-    "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
-)
-
 _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES = {
     "findall": _CollectionReplacementPatternCollectionRoute(
         workload_case_pairs=(
@@ -8185,112 +8178,6 @@ _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS = (
         "pattern-subn-callable-named-grouped-bytes",
     ),
 )
-_PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
-    "pattern-search-verbose-regression-warm-str",
-    "pattern-search-verbose-regression-digits-warm-str",
-    "pattern-search-verbose-regression-too-many-digits-purged-str",
-    "pattern-search-verbose-regression-warm-bytes",
-    "pattern-search-verbose-regression-digits-warm-bytes",
-    "pattern-search-verbose-regression-too-many-digits-purged-bytes",
-)
-
-_PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS = (
-    "pattern-fullmatch-verbose-regression-warm-str",
-    "pattern-fullmatch-verbose-regression-alpha-warm-str",
-    "pattern-fullmatch-verbose-regression-lowercase-key-purged-str",
-    "pattern-fullmatch-verbose-regression-warm-bytes",
-    "pattern-fullmatch-verbose-regression-alpha-warm-bytes",
-    "pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes",
-)
-
-_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS = (
-    *_PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
-    *_PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
-)
-
-_PATTERN_SEARCH_VERBOSE_REGRESSION_CASE_IDS = (
-    "workflow-pattern-search-str-verbose-regression",
-    "workflow-pattern-search-str-verbose-regression-digits",
-    "workflow-pattern-search-str-verbose-regression-too-many-digits",
-    "workflow-pattern-search-bytes-verbose-regression",
-    "workflow-pattern-search-bytes-verbose-regression-digits",
-    "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
-)
-
-_PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS = (
-    "workflow-pattern-fullmatch-str-verbose-regression",
-    "workflow-pattern-fullmatch-str-verbose-regression-alpha",
-    "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
-    "workflow-pattern-fullmatch-bytes-verbose-regression",
-    "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
-    "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
-)
-
-_PATTERN_VERBOSE_REGRESSION_CASE_IDS = (
-    *_PATTERN_SEARCH_VERBOSE_REGRESSION_CASE_IDS,
-    *_PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS,
-)
-
-
-def _pattern_bounded_wildcard_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    if case.case_id not in _PATTERN_BOUNDED_WILDCARD_CASE_IDS:
-        return None
-    if case.operation != "pattern_call" or case.kwargs:
-        return None
-    if case.helper not in {"search", "match", "fullmatch", "findall", "finditer"}:
-        return None
-    return (
-        f"pattern.{case.helper}",
-        case_pattern(case),
-        freeze_signature_value(case.serialized_args()),
-        (),
-        case.flags or 0,
-        case.text_model or "str",
-    )
-
-
-def _pattern_bounded_wildcard_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    if not _is_pattern_bounded_wildcard_workload(workload):
-        raise AssertionError(
-            "unexpected pattern bounded-wildcard workload "
-            f"{workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(
-            list(_pattern_window_positional_indexlike_workload_args(workload))
-        ),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
-
-
-def _is_pattern_bounded_wildcard_workload(workload: Any) -> bool:
-    return (
-        workload.workload_id in _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS
-        and workload.operation in {
-            "pattern.search",
-            "pattern.match",
-            "pattern.fullmatch",
-            "pattern.findall",
-            "pattern.finditer",
-        }
-        and workload.pattern == "a.c"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in {"str", "bytes"}
-        and workload.pos is not None
-        and workload.endpos is not None
-        and not workload.kwargs
-    )
-
-
 def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
     *,
@@ -8485,61 +8372,6 @@ def _is_collection_replacement_grouped_callable_workload(workload: Any) -> bool:
         and workload.expected_exception is None
         and not workload.use_compiled_pattern
         and workload.text_model in {"str", "bytes"}
-        and workload.pos is None
-        and workload.endpos is None
-        and not workload.kwargs
-    )
-
-
-def _pattern_verbose_regression_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    if case.case_id not in _PATTERN_VERBOSE_REGRESSION_CASE_IDS:
-        return None
-    if (
-        case.operation != "pattern_call"
-        or case.kwargs
-        or case.helper not in {"search", "fullmatch"}
-    ):
-        return None
-    return (
-        f"pattern.{case.helper}",
-        case_pattern(case),
-        freeze_signature_value(list(case.args)),
-        (),
-        case.flags or 0,
-        case.text_model or "str",
-    )
-
-
-def _pattern_verbose_regression_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    if not _is_pattern_verbose_regression_workload(workload):
-        raise AssertionError(
-            "unexpected pattern verbose-regression workload "
-            f"{workload.workload_id!r}"
-        )
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value([workload.haystack_payload()]),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
-
-
-def _is_pattern_verbose_regression_workload(workload: Any) -> bool:
-    return (
-        workload.workload_id in _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS
-        and workload.operation in {"pattern.search", "pattern.fullmatch"}
-        and workload.pattern
-        == "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in {"str", "bytes"}
-        and workload.flags == 72
         and workload.pos is None
         and workload.endpos is None
         and not workload.kwargs

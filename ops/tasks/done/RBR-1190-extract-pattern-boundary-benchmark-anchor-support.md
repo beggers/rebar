@@ -1,6 +1,6 @@
 # RBR-1190: Extract pattern-boundary benchmark anchor support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -54,6 +54,10 @@ Created: 2026-03-24
 - Do not leave duplicate workload-id or case-id tuples behind in the combined suite.
 
 ## Notes
+- Completed 2026-03-24: extracted the bounded wildcard and verbose-regression pattern-boundary anchor tuples/selectors/signatures into `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`, added focused coverage in `tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`, and switched `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import the shared support instead of keeping that block inline.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured or test_standard_benchmark_manifest_keeps_expected_workloads_in_scope or test_standard_benchmark_workloads_stay_anchored_to_published_correctness_cases'`
 - `RBR-1190` is the next available unreserved task id in this checkout:
   - `ops/tasks/ready/`, `ops/tasks/in_progress/`, and `ops/tasks/blocked/` are empty in this run; and
   - `rg -n "RBR-119[0-9]|RBR-12[0-9]{2}" ops/state/backlog.md ops/state/current_status.md ops/tasks/ready ops/tasks/in_progress ops/tasks/blocked -g '*.md'` returned no matches in this run, so no planning-owned future id reservation blocks `RBR-1190`.
