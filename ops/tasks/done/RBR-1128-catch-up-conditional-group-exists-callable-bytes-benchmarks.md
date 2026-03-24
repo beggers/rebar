@@ -1,6 +1,6 @@
 # RBR-1128: Catch up conditional group-exists callable bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -51,3 +51,11 @@ Created: 2026-03-24
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still requires only the `str` workload ids for the `minimal-callable-replacement-rows` and `minimal-callable-replacement-exception-rows` slices under `conditional-group-exists-boundary`; and
   - `reports/benchmarks/latest.py` still reports `conditional-group-exists-boundary` at `workload_count == 76`, `measured_workloads == 76`, and `known_gap_count == 0`, confirming that the adjacent bytes callable benchmark rows remain unpublished today.
 - 2026-03-24T00:56:22+00:00: harness requeued after failed or incomplete run after run `20260324T005214Z-feature-implementation-RBR-1128-catch-up-conditional-group-exists-callable-bytes-benchmarks` (exit=1, timed_out=false).
+
+## Completion Notes
+- Verified that `benchmarks/workloads/conditional_group_exists_boundary.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already carried the adjacent bytes callable workload ids and owner-path assertions for this bounded slice when this rerun started.
+- Republished `reports/benchmarks/latest.py`; the tracked scorecard now reports `1019` total workloads, `1019` measured workloads, and `0` known gaps, and `conditional-group-exists-boundary` now reports `workload_count == 88`, `measured_workloads == 88`, and `known_gap_count == 0`.
+- Confirmed the published report now includes the representative bytes callable rows for both the normal replacement and absent-capture exception companions, including `module-sub-callable-numbered-conditional-group-exists-replacement-warm-bytes` and `pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-bytes`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
