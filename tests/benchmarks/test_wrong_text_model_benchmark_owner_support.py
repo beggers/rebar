@@ -16,8 +16,11 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import wrong_text_model_benchmark_owner_support as support
-from tests.benchmarks.benchmark_test_support import _write_test_manifest
-from tests.benchmarks.benchmark_test_support import live_manifest_workload
+from tests.benchmarks.benchmark_test_support import (
+    _write_test_manifest,
+    live_manifest_workload,
+    selected_manifest_workloads,
+)
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_collection_replacement_pattern_wrong_text_model_workload,
 )
@@ -25,7 +28,6 @@ from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _selected_manifest_workloads,
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
@@ -368,7 +370,7 @@ def test_wrong_text_model_callbacks_preserve_precompile_contract(
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _selected_manifest_workloads(
+        for workload in selected_manifest_workloads(
             support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
             include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
         )

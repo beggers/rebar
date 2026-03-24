@@ -9,8 +9,9 @@ from typing import Any
 
 import pytest
 
-from rebar_harness.benchmarks import build_callable, load_manifest
+from rebar_harness.benchmarks import build_callable
 from rebar_harness.correctness import published_fixture_manifests
+from tests.benchmarks.benchmark_test_support import selected_manifest_workloads
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import (
     assert_match_result_parity,
@@ -321,23 +322,6 @@ def published_cases_by_id() -> dict[str, Any]:
     )
 
 
-@cache
-def _manifest_workloads(manifest_path: pathlib.Path) -> tuple[Any, ...]:
-    return tuple(load_manifest(manifest_path).workloads)
-
-
-def _selected_manifest_workloads(
-    manifest_path: pathlib.Path,
-    *,
-    include_workload: Callable[[Any], bool] | None = None,
-) -> tuple[Any, ...]:
-    workloads = _manifest_workloads(manifest_path)
-    if include_workload is None:
-        return workloads
-
-    return tuple(workload for workload in workloads if include_workload(workload))
-
-
 def anchored_workload_case_ids(
     manifest_path: pathlib.Path,
     *,
@@ -345,7 +329,7 @@ def anchored_workload_case_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = _selected_manifest_workloads(
+    workloads = selected_manifest_workloads(
         manifest_path,
         include_workload=include_workload,
     )
@@ -366,7 +350,7 @@ def unanchored_workload_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> tuple[str, ...]:
-    workloads = _selected_manifest_workloads(
+    workloads = selected_manifest_workloads(
         manifest_path,
         include_workload=include_workload,
     )
@@ -386,7 +370,7 @@ def expected_anchored_workload_case_pairs(
 ) -> tuple[AnchoredWorkloadCasePair, ...]:
     manifest_name = manifest_path.name
     workloads_by_id = records_by_string_id(
-        _selected_manifest_workloads(
+        selected_manifest_workloads(
             manifest_path,
             include_workload=include_workload,
         ),

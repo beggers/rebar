@@ -1,6 +1,6 @@
 ## RBR-1235: Collapse benchmark live-manifest selectors onto benchmark test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -69,3 +69,9 @@ Created: 2026-03-24
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_contract_benchmark_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` passed with `70 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `328 tests collected`.
+
+## Completion Note
+- Moved the cache-backed manifest tuple loader and filtered selector onto `tests/benchmarks/benchmark_test_support.py` as `manifest_workloads(...)` and `selected_manifest_workloads(...)`, rewired the benchmark-support and contract modules to import those helpers directly, trimmed the source-tree anchor support module back to anchoring-only responsibilities, and rehomed the cache/selector coverage onto `tests/benchmarks/test_benchmark_test_support.py`.
+- Verification in this completion run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_contract_benchmark_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` passed with `72 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `327 tests collected`.

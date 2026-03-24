@@ -1,8 +1,16 @@
 from __future__ import annotations
 
+import pathlib
 from types import SimpleNamespace
 
 from rebar_harness import benchmarks
+from tests.benchmarks import benchmark_test_support as support
+from tests.benchmarks.benchmark_anchor_support_test_helpers import (
+    _synthetic_manifest_loader,
+    _synthetic_workload,
+    _synthetic_workload_is_included,
+    anchor_support_cache_guard,
+)
 from tests.benchmarks.benchmark_test_support import (
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
@@ -66,6 +74,56 @@ def test_record_numeric_materialization_fields_collects_names_and_preserves_retu
     assert type(observed_value) is type(expected_value)
     assert repr(observed_value) == repr(expected_value)
     assert observed_value.value == expected_value.value
+
+
+def test_manifest_workloads_resolve_and_cache_manifest_loads(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    workloads = (
+        _synthetic_workload("anchored", ("shared",)),
+        _synthetic_workload("unanchored", ("missing",), include=False),
+    )
+    load_calls: list[pathlib.Path] = []
+
+    def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        load_calls.append(path)
+        return _synthetic_manifest_loader(path, workloads=workloads)
+
+    monkeypatch.setattr(support, "load_manifest", _load_manifest)
+
+    assert support.manifest_workloads(manifest_path) == workloads
+    assert support.selected_manifest_workloads(
+        manifest_path,
+        include_workload=_synthetic_workload_is_included,
+    ) == (workloads[0],)
+    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
+    assert support.live_manifest_workloads(
+        manifest_path,
+        ("anchored", "unanchored"),
+    ) == workloads
+    assert load_calls == [manifest_path]
+
+
+def test_manifest_workloads_resolve_string_paths_from_workloads_root(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    manifest_name = "synthetic_boundary.py"
+    workloads = (_synthetic_workload("anchored", ("shared",)),)
+    resolved_paths: list[pathlib.Path] = []
+
+    def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        resolved_paths.append(path)
+        return _synthetic_manifest_loader(path, workloads=workloads)
+
+    monkeypatch.setattr(support, "load_manifest", _load_manifest)
+
+    assert support.selected_manifest_workloads(manifest_name) == workloads
+    assert resolved_paths == [
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_name,
+    ]
 
 
 def _synthetic_case(

@@ -17,6 +17,7 @@ from tests.benchmarks.benchmark_anchor_support_test_helpers import (
     _synthetic_workload_signature,
     anchor_support_cache_guard,
 )
+from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import standard_benchmark_anchor_support as support
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
@@ -193,7 +194,7 @@ def test_anchor_helpers_resolve_anchored_and_unanchored_workloads(
     )
 
     monkeypatch.setattr(
-        anchor_support,
+        benchmark_support,
         "load_manifest",
         partial(_synthetic_manifest_loader, workloads=workloads),
     )
@@ -237,7 +238,7 @@ def test_expected_anchored_pairs_materialize_matching_workload_and_case_objects(
     )
 
     monkeypatch.setattr(
-        anchor_support,
+        benchmark_support,
         "load_manifest",
         partial(_synthetic_manifest_loader, workloads=(workload,)),
     )

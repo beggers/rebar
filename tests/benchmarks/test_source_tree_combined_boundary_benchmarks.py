@@ -42,6 +42,7 @@ from tests.benchmarks.benchmark_test_support import (
     find_workload_document,
     find_workload_record,
     is_compile_proxy_workload,
+    manifest_workloads,
     live_manifest_workloads,
     manifest_workload_ids_matching as _manifest_workload_ids_matching,
 )
@@ -114,8 +115,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _grouped_alternation_replacement_correctness_case_signature,
     _grouped_alternation_replacement_workload_signature,
     _grouped_alternation_workload_signature,
-    _manifest_workloads,
-    _selected_manifest_workloads,
     assert_benchmark_workload_matches_expected_result,
     freeze_signature_value,
     published_case_ids_by_signature,
@@ -4955,7 +4954,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 include_workload=include_workload,
                 workload_kind="module",
             )
-            for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
+            for workload in manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
             if include_workload(workload)
         }
         unbenchmarked_case_ids = tuple(
@@ -4992,7 +4991,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 include_workload=include_workload,
                 workload_kind="direct Pattern",
             )
-            for workload in _manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
+            for workload in manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
             if include_workload(workload)
         }
         unbenchmarked_case_ids = tuple(
@@ -9806,7 +9805,7 @@ def _definition_workloads_by_id(
     for manifest_path in definition.manifest_paths:
         workloads_by_id.update(
             records_by_string_id(
-                _manifest_workloads(manifest_path),
+                manifest_workloads(manifest_path),
                 id_attr="workload_id",
             )
         )

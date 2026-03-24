@@ -10,8 +10,8 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _selected_manifest_workloads,
+from tests.benchmarks.benchmark_test_support import (
+    selected_manifest_workloads,
 )
 
 COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
@@ -111,7 +111,7 @@ def _contract_source_workloads(
     source_workloads = tuple(
         workload
         for include_workload in include_workload_selectors
-        for workload in _selected_manifest_workloads(
+        for workload in selected_manifest_workloads(
             manifest_path,
             include_workload=include_workload,
         )

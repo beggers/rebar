@@ -9,8 +9,8 @@ from typing import Any, Protocol
 
 import pytest
 
+from tests.benchmarks.benchmark_test_support import manifest_workloads
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _manifest_workloads,
     anchored_workload_case_ids,
     expected_anchored_workload_case_pairs,
     published_case_ids_by_signature,
@@ -217,8 +217,8 @@ def _definition_workloads_by_id(
     workloads_by_id: dict[str, Any] = {}
     for manifest_path in definition.manifest_paths:
         workloads_by_id.update(
-            records_by_string_id(
-                _manifest_workloads(manifest_path),
+                records_by_string_id(
+                manifest_workloads(manifest_path),
                 id_attr="workload_id",
             )
         )

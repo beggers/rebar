@@ -6,13 +6,15 @@ from typing import Any
 
 import pytest
 
+from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 
 
 @pytest.fixture
 def anchor_support_cache_guard() -> None:
     for cached_function in (
-        anchor_support._manifest_workloads,
+        benchmark_test_support.manifest_workloads,
+        benchmark_test_support._live_manifest_workloads_by_id,
         anchor_support.published_case_ids_by_signature,
         anchor_support.published_cases_by_id,
     ):
@@ -21,7 +23,8 @@ def anchor_support_cache_guard() -> None:
             cache_clear()
     yield
     for cached_function in (
-        anchor_support._manifest_workloads,
+        benchmark_test_support.manifest_workloads,
+        benchmark_test_support._live_manifest_workloads_by_id,
         anchor_support.published_case_ids_by_signature,
         anchor_support.published_cases_by_id,
     ):

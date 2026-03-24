@@ -15,6 +15,7 @@ from tests.benchmarks.benchmark_anchor_support_test_helpers import (
     _synthetic_workload_signature,
     anchor_support_cache_guard,
 )
+from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks.benchmark_test_support import (
     live_manifest_workload,
     synthetic_workload,
@@ -171,7 +172,7 @@ def test_anchored_and_unanchored_workload_helpers_follow_signatures_and_filters(
         _synthetic_workload("excluded", ("shared",), include=False),
     )
     monkeypatch.setattr(
-        support,
+        benchmark_support,
         "load_manifest",
         partial(_synthetic_manifest_loader, workloads=workloads),
     )
@@ -203,7 +204,7 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
     workload = _synthetic_workload("anchored", ("shared",))
     case = SimpleNamespace(case_id="case-1")
     monkeypatch.setattr(
-        support,
+        benchmark_support,
         "load_manifest",
         partial(_synthetic_manifest_loader, workloads=(workload,)),
     )
@@ -229,67 +230,12 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
     assert anchored_pair.case is case
 
 
-def test_manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    manifest_path = pathlib.Path("synthetic_boundary.py")
-    workloads = (
-        _synthetic_workload("anchored", ("shared",)),
-        _synthetic_workload("unanchored", ("missing",)),
-    )
-    case = SimpleNamespace(case_id="case-1")
-    load_calls: list[pathlib.Path] = []
-
-    def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
-        load_calls.append(path)
-        return _synthetic_manifest(workloads=workloads)
-
-    monkeypatch.setattr(support, "load_manifest", _load_manifest)
-    monkeypatch.setattr(
-        support,
-        "published_cases_by_id",
-        partial(records_by_string_id, (case,), id_attr="case_id"),
-    )
-
-    anchor_case_ids = {("shared",): ("case-1",)}
-
-    assert support.anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_synthetic_workload_signature,
-    ) == {
-        ("synthetic_boundary.py", "anchored"): ("case-1",),
-        ("synthetic_boundary.py", "unanchored"): (),
-    }
-    assert support.unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_synthetic_workload_signature,
-    ) == ("unanchored",)
-    assert support.expected_anchored_workload_case_pairs(
-        manifest_path,
-        expected_anchor_case_ids={
-            ("synthetic_boundary.py", "anchored"): ("case-1",),
-        },
-    ) == (
-        support.AnchoredWorkloadCasePair(
-            manifest_name="synthetic_boundary.py",
-            workload_id="anchored",
-            case_id="case-1",
-            workload=workloads[0],
-            case=case,
-        ),
-    )
-    assert load_calls == [manifest_path]
-
-
 def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
     monkeypatch: pytest.MonkeyPatch,
     anchor_support_cache_guard: None,
 ) -> None:
     monkeypatch.setattr(
-        support,
+        benchmark_support,
         "load_manifest",
         partial(
             _synthetic_manifest_loader,
@@ -320,7 +266,7 @@ def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
     anchor_support_cache_guard: None,
 ) -> None:
     monkeypatch.setattr(
-        support,
+        benchmark_support,
         "load_manifest",
         partial(
             _synthetic_manifest_loader,
@@ -357,7 +303,7 @@ def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
     anchor_support_cache_guard: None,
 ) -> None:
     monkeypatch.setattr(
-        support,
+        benchmark_support,
         "load_manifest",
         partial(
             _synthetic_manifest_loader,
@@ -391,7 +337,7 @@ def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
     anchor_support_cache_guard: None,
 ) -> None:
     monkeypatch.setattr(
-        support,
+        benchmark_support,
         "load_manifest",
         partial(
             _synthetic_manifest_loader,

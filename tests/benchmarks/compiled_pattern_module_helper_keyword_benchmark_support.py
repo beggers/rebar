@@ -10,13 +10,15 @@ from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     Workload,
 )
+from tests.benchmarks.benchmark_test_support import (
+    selected_manifest_workloads,
+)
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_keyword_parameter_name,
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _selected_manifest_workloads,
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
 )
@@ -323,7 +325,7 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
 )
 
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
-    _selected_manifest_workloads(
+    selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload=(
             _is_collection_replacement_compiled_pattern_module_helper_keyword_workload
@@ -361,7 +363,7 @@ if (
     )
 
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
-    _selected_manifest_workloads(
+    selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload=(
             _is_collection_replacement_compiled_pattern_keyword_error_workload

@@ -8,7 +8,12 @@ from typing import Any
 import pytest
 
 from rebar_harness import benchmarks
-from rebar_harness.benchmarks import BenchmarkManifest, Workload, workload_to_payload
+from rebar_harness.benchmarks import (
+    BenchmarkManifest,
+    Workload,
+    load_manifest,
+    workload_to_payload,
+)
 
 
 def _resolve_live_manifest_path(
@@ -20,14 +25,30 @@ def _resolve_live_manifest_path(
 
 
 @cache
+def manifest_workloads(
+    manifest_path: pathlib.Path | str,
+) -> tuple[benchmarks.Workload, ...]:
+    return tuple(load_manifest(_resolve_live_manifest_path(manifest_path)).workloads)
+
+
+def selected_manifest_workloads(
+    manifest_path: pathlib.Path | str,
+    *,
+    include_workload: Any | None = None,
+) -> tuple[benchmarks.Workload, ...]:
+    workloads = manifest_workloads(manifest_path)
+    if include_workload is None:
+        return workloads
+    return tuple(workload for workload in workloads if include_workload(workload))
+
+
+@cache
 def _live_manifest_workloads_by_id(
     manifest_path: pathlib.Path | str,
 ) -> dict[str, benchmarks.Workload]:
     return {
         workload.workload_id: workload
-        for workload in benchmarks.load_manifest(
-            _resolve_live_manifest_path(manifest_path)
-        ).workloads
+        for workload in manifest_workloads(manifest_path)
     }
 
 
