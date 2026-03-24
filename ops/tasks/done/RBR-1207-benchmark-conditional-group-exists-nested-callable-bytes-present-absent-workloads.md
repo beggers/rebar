@@ -1,6 +1,6 @@
 # RBR-1207: Benchmark conditional group-exists nested callable bytes present/absent workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable or nested_callable_replacement_negative_count_bytes_rows'` returned `5 passed, 447 deselected, 52 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-group-exists-boundary-current.py` returned `160 measured workloads / 0 known gaps`; and
   - `python3` inspection of the tracked scorecards confirmed `reports/correctness/latest.py` still publishes `1733/1733` passing cases across `114` manifests while `reports/benchmarks/latest.py` publishes `1091/1091` measured workloads across `30` manifests, with `conditional-group-exists-boundary` currently at `160` workloads.
+
+## Completion
+- Added the eight nested conditional callable `bytes` present/absent module and compiled-`Pattern` `sub()`/`subn()` workloads on the existing `conditional-group-exists-boundary` manifest, preserving the adjacent negative-count `bytes` companions and surrounding callable slices.
+- Updated the shared source-tree benchmark suite so the widened nested callable `bytes` slice stays aligned in representative measured-row checks, zero-gap bytes subsets, round-trip workload coverage, and scorecard sync against the matching `str` slice.
+- Regenerated the tracked combined benchmark publication: `reports/benchmarks/latest.py` now records `conditional-group-exists-boundary` at `168` workloads with `168` measured and `0` known gaps, and the combined summary at `1099/1099` measured workloads across `30` manifests.
+- Verification in this run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable or nested_callable_replacement_negative_count_bytes_rows'` returned `5 passed, 447 deselected, 84 subtests passed`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1207-conditional-group-exists-boundary.py` returned `168 measured workloads / 0 known gaps`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` regenerated the tracked scorecard to `1099 measured workloads / 0 known gaps`.
