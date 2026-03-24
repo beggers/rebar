@@ -2,19 +2,15 @@ from __future__ import annotations
 
 
 class RecordingBenchmarkCompiledPattern:
-    def __init__(self, calls: list[tuple[object, ...]] | None = None) -> None:
+    def __init__(self, calls: list[tuple[object, ...]]) -> None:
         self._calls = calls
 
-    def _record(self, call: tuple[object, ...]) -> None:
-        if self._calls is not None:
-            self._calls.append(call)
-
     def search(self, haystack: object, *args: object, **kwargs: object) -> object:
-        self._record(("pattern.search", haystack, args, kwargs))
+        self._calls.append(("pattern.search", haystack, args, kwargs))
         return "pattern-result"
 
     def match(self, haystack: object, *args: object, **kwargs: object) -> object:
-        self._record(("pattern.match", haystack, args, kwargs))
+        self._calls.append(("pattern.match", haystack, args, kwargs))
         return "pattern-result"
 
     def fullmatch(
@@ -23,11 +19,11 @@ class RecordingBenchmarkCompiledPattern:
         *args: object,
         **kwargs: object,
     ) -> object:
-        self._record(("pattern.fullmatch", haystack, args, kwargs))
+        self._calls.append(("pattern.fullmatch", haystack, args, kwargs))
         return "pattern-result"
 
     def split(self, haystack: object, *args: object, **kwargs: object) -> object:
-        self._record(("pattern.split", haystack, args, kwargs))
+        self._calls.append(("pattern.split", haystack, args, kwargs))
         return "pattern-result"
 
     def sub(
@@ -37,7 +33,7 @@ class RecordingBenchmarkCompiledPattern:
         *args: object,
         **kwargs: object,
     ) -> object:
-        self._record(("pattern.sub", repl, string, args, kwargs))
+        self._calls.append(("pattern.sub", repl, string, args, kwargs))
         return "pattern-result"
 
     def subn(
@@ -47,7 +43,7 @@ class RecordingBenchmarkCompiledPattern:
         *args: object,
         **kwargs: object,
     ) -> object:
-        self._record(("pattern.subn", repl, string, args, kwargs))
+        self._calls.append(("pattern.subn", repl, string, args, kwargs))
         return ("pattern-result", 0)
 
 
