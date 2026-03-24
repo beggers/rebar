@@ -6501,13 +6501,25 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-    def test_conditional_group_exists_callable_scorecards_keep_str_negative_count_follow_on_workloads_in_sync(
+    def test_conditional_group_exists_callable_scorecards_keep_negative_count_follow_on_workloads_in_sync(
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
         expectations = _conditional_group_exists_callable_replacement_expectations()
         case = source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
+        expected_negative_count_str_workload_ids = (
+            "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-str",
+            "module-subn-callable-named-conditional-group-exists-replacement-negative-count-warm-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-str",
+        )
+        expected_negative_count_bytes_workload_ids = (
+            "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "module-subn-callable-named-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-bytes",
+        )
         expected_callable_workload_ids = tuple(
             workload_id
             for expectation in expectations
@@ -6523,6 +6535,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             for workload_id in case.representative_measured_workload_ids
             if workload_id in expected_callable_workload_ids
         )
+        expected_str_workload_ids, expected_bytes_workload_ids = (
+            _split_workload_ids_by_text_model(expected_callable_workload_ids)
+        )
         representative_str_workload_ids, representative_bytes_workload_ids = (
             _split_workload_ids_by_text_model(representative_callable_workload_ids)
         )
@@ -6536,7 +6551,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             for workload in callable_slice_rows
             if workload.text_model == "bytes" and "negative-count" in workload.categories
         )
-        non_negative_str_workload_signatures = Counter(
+        str_workload_signatures = Counter(
             (
                 workload.operation,
                 workload.pattern,
@@ -6549,7 +6564,6 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             )
             for workload in callable_slice_rows
             if workload.text_model == "str"
-            and workload.workload_id not in manifest_negative_count_str_workload_ids
         )
         bytes_workload_signatures = Counter(
             (
@@ -6577,7 +6591,22 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             representative_callable_workload_ids,
             expected_callable_workload_ids,
         )
-        self.assertEqual(manifest_negative_count_bytes_workload_ids, ())
+        self.assertEqual(
+            representative_str_workload_ids,
+            expected_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_bytes_workload_ids,
+            expected_bytes_workload_ids,
+        )
+        self.assertEqual(
+            manifest_negative_count_str_workload_ids,
+            expected_negative_count_str_workload_ids,
+        )
+        self.assertEqual(
+            manifest_negative_count_bytes_workload_ids,
+            expected_negative_count_bytes_workload_ids,
+        )
         self.assertEqual(
             tuple(
                 workload_id
@@ -6587,20 +6616,37 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             manifest_negative_count_str_workload_ids,
         )
         self.assertEqual(
-            non_negative_str_workload_signatures,
-            bytes_workload_signatures,
-        )
-        self.assertTrue(
-            all(
-                "negative-count" not in workload_id
+            tuple(
+                workload_id
                 for workload_id in representative_bytes_workload_ids
-            )
+                if workload_id in manifest_negative_count_bytes_workload_ids
+            ),
+            manifest_negative_count_bytes_workload_ids,
+        )
+        self.assertEqual(
+            str_workload_signatures,
+            bytes_workload_signatures,
         )
         self.assertEqual(
             Counter(
                 (workload.operation, workload.count)
                 for workload in callable_slice_rows
                 if workload.workload_id in manifest_negative_count_str_workload_ids
+            ),
+            Counter(
+                {
+                    ("module.sub", -1): 1,
+                    ("module.subn", -1): 1,
+                    ("pattern.sub", -1): 1,
+                    ("pattern.subn", -1): 1,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (workload.operation, workload.count)
+                for workload in callable_slice_rows
+                if workload.workload_id in manifest_negative_count_bytes_workload_ids
             ),
             Counter(
                 {
