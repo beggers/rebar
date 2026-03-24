@@ -1,6 +1,6 @@
 # RBR-1230: Benchmark conditional group-exists alternation callable negative-count workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,12 @@ Created: 2026-03-24
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_callable and negative_count'` returned `1 passed, 106 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-boundary-current.py` returned `256 measured workloads / 0 known gaps`.
+
+## Completion Notes
+- Added the exact eight alternation-heavy conditional callable `count=-1` benchmark workloads on the shared `conditional-group-exists-boundary` owner path for numbered and named module/compiled-`Pattern` `sub()` and `subn()` coverage across `str` and `bytes`.
+- Updated the combined benchmark expectations so the alternation-heavy callable slice, public zero-gap bytes subsets, and negative-count follow-on sync assertions all stay aligned with the widened manifest.
+- Republished `reports/benchmarks/latest.py`; the tracked report now shows `conditional-group-exists-boundary` at `264` workloads with `264` measured and `0` known gaps, and the combined summary at `1195` measured of `1195` total workloads across `30` manifests.
+- Verification run results on this branch:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_callable and negative_count'` returned `1 passed, 106 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1230-conditional-group-exists-boundary.py` returned `264 measured workloads / 0 known gaps`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` returned `1195 measured workloads / 0 known gaps / 1195 total workloads`.
