@@ -999,6 +999,29 @@ def _conditional_group_exists_callable_none_count_workloads_for_text_model(
     )
 
 
+def _conditional_group_exists_callable_none_count_workload_ids(
+    text_model: str,
+) -> tuple[str, ...]:
+    return (
+        f"module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-{text_model}",
+        f"pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged-{text_model}",
+        f"module-sub-callable-named-conditional-group-exists-replacement-none-count-warm-{text_model}",
+        f"pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged-{text_model}",
+        f"module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm-{text_model}",
+        f"pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged-{text_model}",
+        f"module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm-{text_model}",
+        f"pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged-{text_model}",
+        f"module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm-{text_model}",
+        f"module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-{text_model}",
+        f"pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-{text_model}",
+        f"pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-{text_model}",
+        f"module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-{text_model}",
+        f"module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-{text_model}",
+        f"pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-{text_model}",
+        f"pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-{text_model}",
+    )
+
+
 _CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_PARAMS = tuple(
     pytest.param(workload, id=workload.workload_id)
     for workload in _conditional_group_exists_callable_none_count_workloads()
@@ -1054,25 +1077,24 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
         assert run_benchmark_workload_with_cpython(round_tripped) == expected_result
 
 
-def test_conditional_group_exists_callable_none_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads(
+@pytest.mark.parametrize(
+    ("text_model", "expected_prefix", "expected_suffix"),
+    (
+        pytest.param("str", "", "x", id="str"),
+        pytest.param("bytes", b"", b"x", id="bytes"),
+    ),
+)
+def test_conditional_group_exists_callable_none_count_workloads_round_trip_preserves_suffix_only_callback_payloads(
+    text_model: str,
+    expected_prefix: str | bytes,
+    expected_suffix: str | bytes,
 ) -> None:
     workloads = _conditional_group_exists_callable_none_count_workloads_for_text_model(
-        "str"
+        text_model
     )
 
     assert tuple(workload.workload_id for workload in workloads) == (
-        "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-str",
-        "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged-str",
-        "module-sub-callable-named-conditional-group-exists-replacement-none-count-warm-str",
-        "pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged-str",
-        "module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
-        "pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
-        "module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
-        "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
-        "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm-str",
-        "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-str",
-        "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-str",
-        "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+        _conditional_group_exists_callable_none_count_workload_ids(text_model)
     )
 
     for workload in workloads:
@@ -1086,89 +1108,25 @@ def test_conditional_group_exists_callable_none_count_str_workloads_round_trip_p
         round_tripped = workload_from_payload(payload)
         expected_exception = workload.expected_exception
 
-        assert workload.text_model == "str"
-        assert payload["text_model"] == "str"
+        assert workload.text_model == text_model
+        assert payload["text_model"] == text_model
         assert payload["replacement"] == expected_replacement
         assert payload["count"] is None
         assert workload.count is None
         assert _callable_match_group_signature(workload.replacement_payload()) == (
             "callable_match_group",
             expected_replacement["group"],
-            "",
-            "x",
+            expected_prefix,
+            expected_suffix,
         )
 
-        assert round_tripped.text_model == "str"
+        assert round_tripped.text_model == text_model
         assert round_tripped.count is None
         assert _callable_match_group_signature(round_tripped.replacement_payload()) == (
             "callable_match_group",
             expected_replacement["group"],
-            "",
-            "x",
-        )
-
-        assert expected_exception is not None
-        with pytest.raises(
-            TypeError,
-            match=re.escape(expected_exception["message_substring"]),
-        ) as expected_error:
-            run_benchmark_workload_with_cpython(workload)
-        with pytest.raises(TypeError) as observed_error:
-            run_benchmark_workload_with_cpython(round_tripped)
-        assert str(observed_error.value) == str(expected_error.value)
-
-
-def test_conditional_group_exists_callable_none_count_bytes_workloads_round_trip_preserves_suffix_only_callback_payloads(
-) -> None:
-    workloads = _conditional_group_exists_callable_none_count_workloads_for_text_model(
-        "bytes"
-    )
-
-    assert tuple(workload.workload_id for workload in workloads) == (
-        "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-bytes",
-        "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged-bytes",
-        "module-sub-callable-named-conditional-group-exists-replacement-none-count-warm-bytes",
-        "pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged-bytes",
-        "module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
-        "pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
-        "module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
-        "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
-        "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
-        "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
-        "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
-        "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
-    )
-
-    for workload in workloads:
-        expected_replacement = {
-            "type": "callable_match_group",
-            "group": "word" if "-named-" in workload.workload_id else 1,
-            "suffix": "x",
-        }
-
-        payload = workload_to_payload(workload)
-        round_tripped = workload_from_payload(payload)
-        expected_exception = workload.expected_exception
-
-        assert workload.text_model == "bytes"
-        assert payload["text_model"] == "bytes"
-        assert payload["replacement"] == expected_replacement
-        assert payload["count"] is None
-        assert workload.count is None
-        assert _callable_match_group_signature(workload.replacement_payload()) == (
-            "callable_match_group",
-            expected_replacement["group"],
-            b"",
-            b"x",
-        )
-
-        assert round_tripped.text_model == "bytes"
-        assert round_tripped.count is None
-        assert _callable_match_group_signature(round_tripped.replacement_payload()) == (
-            "callable_match_group",
-            expected_replacement["group"],
-            b"",
-            b"x",
+            expected_prefix,
+            expected_suffix,
         )
 
         assert expected_exception is not None
