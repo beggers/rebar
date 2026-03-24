@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Implement bounded bytes callable-replacement parity for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
+Publish bounded bytes callable-replacement workflows for the two-arm conditional group-exists slice on `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
 
 ## Ordered Work
-1. Implement the exact bytes callable-replacement parity slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` through bounded module/pattern `sub()` present-capture and `subn(count=1)` absent-capture-exception workflows on the existing callable owner path.
+1. Publish the exact bytes callable-replacement workflows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` through the existing `conditional-group-exists-callable-replacement-workflows` manifest, parity owner-path contract, and regenerated correctness scorecard once the adjacent Rust-backed bytes parity slice lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
