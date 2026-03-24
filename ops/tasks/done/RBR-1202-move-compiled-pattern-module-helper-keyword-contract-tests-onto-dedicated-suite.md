@@ -1,6 +1,6 @@
 # RBR-1202: Move compiled-pattern module-helper keyword contract tests onto dedicated suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` returned `6 passed in 0.06s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements or standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions'` returned `79 passed, 456 deselected in 0.22s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because the moved tests still live in the combined suite.
+
+## Completion Note
+- 2026-03-24: Moved the six compiled-pattern module-helper keyword contract tests into `tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` and deleted the inline block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` without changing the helper paths or assertions.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` returned `85 passed in 0.13s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements or standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_contract_rows_until_helper_invocation or compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions'` now returns `456 deselected` with exit code `5` because those tests no longer exist in the combined suite after the move.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'run_internal_workload_probe_measures_module_helper_keyword_error_workloads or test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions'` returned `33 passed, 423 deselected in 0.18s`, confirming the surrounding combined-suite coverage still imports and runs.
+  - `bash -lc "! rg -n 'test_compiled_pattern_module_helper_keyword_cases_cover_bool_count_complements|test_standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_keyword_contract_rows_until_helper_invocation|test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time|test_run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads|test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing|test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` succeeded.
+- Additional note: `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still has unrelated pre-existing scorecard expectation failures in `SourceTreeScorecardBenchmarkSuiteTest`; this cleanup did not update those expectations because they are outside the task scope.
