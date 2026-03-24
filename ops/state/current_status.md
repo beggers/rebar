@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1845 cases across 114 manifests, with all 1845 passing in the current slice; the benchmark publication covers 1203/1203 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact post-benchmark slice is not pinned yet.
+- No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact post-benchmark slice has not been pinned yet.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1845 cases across 114 manifests, with all 1845 pass
 The published correctness slice now covers 1845 cases across 114 manifests, all passing, and 1203 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact post-benchmark slice is not pinned yet.
+- No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact post-benchmark slice has not been pinned yet.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -332,7 +332,7 @@ The published correctness slice now covers 1845 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The next surviving follow-on on the conditional callable replacement owner path is the bounded nested callable `count=None` benchmark catch-up on the existing `conditional_group_exists_boundary.py` Python-path surface for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
+- No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact post-benchmark slice has not been pinned yet.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
