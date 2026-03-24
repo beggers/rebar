@@ -3954,12 +3954,8 @@ def _conditional_group_exists_quantified_callable_bytes_workloads(
             BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
         ).workloads
     }
-    expectation = next(
-        expectation
-        for expectation in source_tree_combined_slice_expectations(
-            "conditional-group-exists-boundary"
-        )
-        if expectation.slice_id == "quantified-callable-replacement-bytes-rows"
+    expectation = (
+        _conditional_group_exists_quantified_callable_bytes_replacement_expectation()
     )
     expected_workload_ids = expectation.expected_workload_ids
     return tuple(
@@ -4062,6 +4058,17 @@ def _conditional_group_exists_quantified_callable_replacement_expectation(
             "conditional-group-exists-boundary"
         )
         if expectation.slice_id == "quantified-callable-replacement-str-rows"
+    )
+
+
+def _conditional_group_exists_quantified_callable_bytes_replacement_expectation(
+) -> SourceTreeCombinedSliceExpectation:
+    return next(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(
+            "conditional-group-exists-boundary"
+        )
+        if expectation.slice_id == "quantified-callable-replacement-bytes-rows"
     )
 
 
@@ -7436,6 +7443,91 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     ("pattern.sub", -1): 1,
                     ("pattern.subn", -1): 1,
                 }
+            ),
+        )
+
+    def test_conditional_group_exists_quantified_callable_scorecards_keep_bytes_rows_in_sync_with_str_slice(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        case = source_tree_scorecard_case(manifest_id)
+        manifest = case.manifest_for_id(manifest_id)
+        str_expectation = _conditional_group_exists_quantified_callable_replacement_expectation()
+        bytes_expectation = (
+            _conditional_group_exists_quantified_callable_bytes_replacement_expectation()
+        )
+        str_rows = tuple(
+            select_source_tree_combined_slice_rows(manifest, str_expectation)
+        )
+        bytes_rows = tuple(
+            select_source_tree_combined_slice_rows(manifest, bytes_expectation)
+        )
+        representative_quantified_workload_ids = tuple(
+            workload_id
+            for workload_id in case.representative_measured_workload_ids
+            if workload_id
+            in (
+                CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+                + CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+            )
+        )
+        representative_str_workload_ids, representative_bytes_workload_ids = (
+            _split_workload_ids_by_text_model(representative_quantified_workload_ids)
+        )
+
+        def normalized_text_model_payload(value: str | bytes | None) -> str | None:
+            if isinstance(value, bytes):
+                return value.decode("latin-1")
+            return value
+
+        def expected_exception_signature(
+            expected_exception: dict[str, str] | None,
+        ) -> tuple[tuple[str, str], ...] | None:
+            if expected_exception is None:
+                return None
+            return tuple(sorted(expected_exception.items()))
+
+        def quantified_workload_signature(workload: Workload) -> tuple[object, ...]:
+            return (
+                workload.operation,
+                normalized_text_model_payload(workload.pattern_payload()),
+                normalized_text_model_payload(workload.haystack_payload()),
+                _text_model_agnostic_callable_match_group_signature(
+                    workload.replacement_payload()
+                ),
+                workload.count,
+                workload.cache_mode,
+                frozenset(
+                    category
+                    for category in workload.categories
+                    if category not in {"str", "bytes"}
+                ),
+                expected_exception_signature(workload.expected_exception),
+            )
+
+        self.assertEqual(
+            tuple(workload.workload_id for workload in str_rows),
+            CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            tuple(workload.workload_id for workload in bytes_rows),
+            CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+        self.assertEqual(
+            representative_str_workload_ids,
+            CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            representative_bytes_workload_ids,
+            CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            Counter(
+                quantified_workload_signature(workload) for workload in str_rows
+            ),
+            Counter(
+                quantified_workload_signature(workload) for workload in bytes_rows
             ),
         )
 
