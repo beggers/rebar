@@ -3560,6 +3560,23 @@ CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS = (
 )
 
 
+def _split_workload_ids_by_text_model(
+    workload_ids: tuple[str, ...],
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    return (
+        tuple(
+            workload_id
+            for workload_id in workload_ids
+            if not workload_id.endswith("-bytes")
+        ),
+        tuple(
+            workload_id
+            for workload_id in workload_ids
+            if workload_id.endswith("-bytes")
+        ),
+    )
+
+
 def _conditional_group_exists_template_replacement_expectation(
 ) -> SourceTreeCombinedSliceExpectation:
     return next(
@@ -6422,15 +6439,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             for workload_id in case.representative_measured_workload_ids
             if workload_id in template_expectation.expected_workload_ids
         )
-        representative_str_workload_ids = tuple(
-            workload_id
-            for workload_id in representative_template_workload_ids
-            if not workload_id.endswith("-bytes")
+        expected_str_workload_ids, expected_bytes_workload_ids = (
+            _split_workload_ids_by_text_model(template_expectation.expected_workload_ids)
         )
-        representative_bytes_workload_ids = tuple(
-            workload_id
-            for workload_id in representative_template_workload_ids
-            if workload_id.endswith("-bytes")
+        representative_str_workload_ids, representative_bytes_workload_ids = (
+            _split_workload_ids_by_text_model(representative_template_workload_ids)
         )
 
         self.assertEqual(
@@ -6446,28 +6459,19 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_str_workload_ids,
-            tuple(
-                workload_id
-                for workload_id in template_expectation.expected_workload_ids
-                if not workload_id.endswith("-bytes")
-            ),
+            expected_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_bytes_workload_ids,
+            expected_bytes_workload_ids,
+        )
+        self.assertEqual(
+            expected_bytes_workload_ids,
+            CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(
             representative_str_workload_ids[-len(expected_negative_count_str_workload_ids) :],
             expected_negative_count_str_workload_ids,
-        )
-        self.assertEqual(
-            representative_bytes_workload_ids,
-            CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
-        )
-        self.assertEqual(
-            len(representative_template_workload_ids),
-            24,
-        )
-        self.assertEqual(len(representative_str_workload_ids), 12)
-        self.assertEqual(
-            len(representative_bytes_workload_ids),
-            len(CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS),
         )
         self.assertEqual(
             tuple(
