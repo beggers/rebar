@@ -1,6 +1,6 @@
 ## RBR-1152: Extract standard benchmark anchor support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -50,3 +50,10 @@ Created: 2026-03-24
   - those helpers are only consumed by the standard-benchmark owner assertions near lines `20614` through `20723`, which makes them a bounded extraction target rather than an implementation-facing refactor.
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_workloads_stay_anchored_to_published_correctness_cases or standard_benchmark_workloads_stay_pinned_to_exact_case_ids or standard_benchmark_special_unanchored_workloads_stay_explicit or standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases or standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids or standard_benchmark_workload_callbacks_match_anchor_case_results or standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch'` returned `155 passed, 597 deselected` in this run.
+
+## Completion
+- Extracted the inline standard-benchmark anchor helpers into `tests/benchmarks/standard_benchmark_anchor_support.py` and updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import that shared support instead of defining the helper layer inline.
+- Added focused synthetic contract coverage in `tests/benchmarks/test_standard_benchmark_anchor_support.py` for manifest workload filtering, callback and legacy subset selection, anchored versus unanchored workload resolution, and anchored-pair materialization through the delegated source-tree support path.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_workloads_stay_anchored_to_published_correctness_cases or standard_benchmark_workloads_stay_pinned_to_exact_case_ids or standard_benchmark_special_unanchored_workloads_stay_explicit or standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases or standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids or standard_benchmark_workload_callbacks_match_anchor_case_results or standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch'`
