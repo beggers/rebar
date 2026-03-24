@@ -386,6 +386,38 @@ def test_build_wrapped_body_candidate_texts_preserves_generated_matrix_shape() -
     )
 
 
+def test_wrapped_candidate_text_helpers_deduplicate_colliding_outputs_in_first_seen_order(
+) -> None:
+    assert fixture_parity_support.wrap_candidate_core_texts(("", "zz", "")) == (
+        "",
+        "zz",
+        "zzzz",
+        "zzzzzz",
+    )
+    assert fixture_parity_support.build_wrapped_body_candidate_texts(
+        ("", "b"),
+        range(2),
+        ("", "d"),
+    ) == (
+        "a",
+        "zza",
+        "azz",
+        "zzazz",
+        "ad",
+        "zzad",
+        "adzz",
+        "zzadzz",
+        "ab",
+        "zzab",
+        "abzz",
+        "zzabzz",
+        "abd",
+        "zzabd",
+        "abdzz",
+        "zzabdzz",
+    )
+
+
 def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
     return tuple(
         sorted(CORRECTNESS_FIXTURES_ROOT.glob("*.py"), key=lambda path: path.name)
