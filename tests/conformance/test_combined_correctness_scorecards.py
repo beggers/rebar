@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, replace
 from functools import lru_cache, partial
@@ -5007,6 +5008,89 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         self._assert_mixed_text_manifests_cover_both_representative_text_models(
             suite_id="combined",
             expectation_table=COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+        )
+
+    def test_conditional_group_exists_replacement_template_scorecards_keep_bytes_negative_count_follow_on_cases_in_sync(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-replacement-template-workflows"
+        expected_negative_count_bytes_case_ids = (
+            "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
+            "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
+        )
+        combined_expectation = COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS[manifest_id]
+        replacement_expectation = (
+            CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS[manifest_id]
+        )
+        combined_case = correctness_scorecard_case("combined", manifest_id)
+        replacement_case = correctness_scorecard_case(
+            "conditional-replacement",
+            manifest_id,
+        )
+
+        combined_case_ids = tuple(
+            case.case_id for case in combined_case.representative_cases
+        )
+        replacement_case_ids = tuple(
+            case.case_id for case in replacement_case.representative_cases
+        )
+        representative_str_case_ids = tuple(
+            case.case_id
+            for case in combined_case.representative_cases
+            if case.text_model == "str"
+        )
+        representative_bytes_case_ids = tuple(
+            case.case_id
+            for case in combined_case.representative_cases
+            if case.text_model == "bytes"
+        )
+
+        self.assertEqual(
+            combined_case_ids,
+            combined_expectation.representative_case_ids,
+        )
+        self.assertEqual(
+            replacement_case_ids,
+            replacement_expectation.representative_case_ids,
+        )
+        self.assertEqual(len(combined_case_ids), 12)
+        self.assertEqual(len(replacement_case_ids), 20)
+        self.assertTrue(
+            set(combined_case_ids).issubset(replacement_case_ids),
+            msg=(
+                "combined scorecard sample for conditional replacement templates "
+                "should stay inside the richer conditional-replacement suite sample"
+            ),
+        )
+        self.assertEqual(len(representative_str_case_ids), 4)
+        self.assertEqual(len(representative_bytes_case_ids), 8)
+        self.assertEqual(
+            representative_bytes_case_ids[:-len(expected_negative_count_bytes_case_ids)],
+            tuple(
+                f"{case_id.removesuffix('-str')}-bytes"
+                for case_id in representative_str_case_ids
+            ),
+        )
+        self.assertEqual(
+            representative_bytes_case_ids[-len(expected_negative_count_bytes_case_ids) :],
+            expected_negative_count_bytes_case_ids,
+        )
+        self.assertEqual(
+            Counter(
+                (case.operation, case.helper)
+                for case in combined_case.representative_cases
+                if case.case_id in expected_negative_count_bytes_case_ids
+            ),
+            Counter(
+                {
+                    ("module_call", "sub"): 1,
+                    ("module_call", "subn"): 1,
+                    ("pattern_call", "sub"): 1,
+                    ("pattern_call", "subn"): 1,
+                }
+            ),
         )
 
 
