@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The next surviving frontier is the bounded bytes nested conditional callable benchmark-catch-up slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
+The next surviving frontier is the bounded quantified conditional callable correctness-publication slice for `r"a(b)?c(?(1)d|e){2}"` and `r"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
 
 ## Ordered Work
-1. The next surviving frontier is the bounded bytes nested conditional callable benchmark-catch-up slice for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
+1. The next surviving frontier is the bounded quantified conditional callable correctness-publication slice for `r"a(b)?c(?(1)d|e){2}"` and `r"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the shared callable owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
