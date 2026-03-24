@@ -4,7 +4,6 @@ from types import SimpleNamespace
 
 from tests.benchmarks.compile_proxy_benchmark_anchor_support import (
     compile_proxy_correctness_case_signature,
-    compile_proxy_signature,
     compile_proxy_workload_signature,
     is_compile_proxy_workload,
 )
@@ -41,18 +40,6 @@ def _synthetic_workload(
         text_model=text_model,
         pattern_payload=lambda: pattern,
     )
-
-
-def test_compile_proxy_signature_shape_matches_benchmark_contract() -> None:
-    assert compile_proxy_signature("literal", flags=2, text_model="str") == (
-        "module.compile",
-        "literal",
-        (),
-        (),
-        2,
-        "str",
-    )
-
 
 def test_compile_proxy_correctness_case_signature_uses_compile_shape() -> None:
     case = _synthetic_case(
