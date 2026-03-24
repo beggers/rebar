@@ -1556,6 +1556,46 @@ CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES = (
 )
 
 
+CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_GROUP_ACCESS_CASES = (
+    (rb"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", b"zzabcdezz", 0),
+    (rb"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", b"zzabcdfzz", 1),
+    (
+        rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "sub",
+        b"zzabcdezz",
+        0,
+    ),
+    (
+        rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "subn",
+        b"zzabcdfzz",
+        1,
+    ),
+)
+
+
+CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES = (
+    (rb"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", b"zzacegzz", 0),
+    (rb"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", b"zzacehzz", 1),
+    (
+        rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "sub",
+        b"zzacegzz",
+        0,
+    ),
+    (
+        rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "subn",
+        b"zzacehzz",
+        1,
+    ),
+)
+
+
 def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
@@ -3760,6 +3800,111 @@ def _assert_conditional_group_exists_alternation_callable_absent_capture_typeerr
     assert len(observed_matches) == 1
 
 
+def _assert_conditional_group_exists_alternation_bytes_callable_group_access_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    pattern: bytes,
+    group_ref: int | str,
+    helper: str,
+    string: bytes,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[bytes]] = []
+
+    def observed_replacement(match: object) -> bytes:
+        observed_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    def expected_replacement(match: re.Match[bytes]) -> bytes:
+        expected_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=count,
+        replacement=observed_replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=count,
+        replacement=expected_replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed == expected
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+    assert len(observed_matches) == 1
+
+
+def _assert_conditional_group_exists_alternation_bytes_callable_absent_capture_typeerror_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    pattern: bytes,
+    group_ref: int | str,
+    helper: str,
+    string: bytes,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[bytes]] = []
+
+    def observed_replacement(match: object) -> bytes:
+        observed_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    def expected_replacement(match: re.Match[bytes]) -> bytes:
+        expected_matches.append(match)
+        return match.group(group_ref) + b"x"
+
+    with pytest.raises(TypeError) as observed_error:
+        _invoke_callable_replacement(
+            backend,
+            pattern=pattern,
+            helper=helper,
+            string=string,
+            count=count,
+            replacement=observed_replacement,
+            use_compiled_pattern=use_compiled_pattern,
+        )
+
+    with pytest.raises(TypeError) as expected_error:
+        _invoke_callable_replacement(
+            re,
+            pattern=pattern,
+            helper=helper,
+            string=string,
+            count=count,
+            replacement=expected_replacement,
+            use_compiled_pattern=use_compiled_pattern,
+        )
+
+    assert normalize_exception(observed_error.value) == normalize_exception(
+        expected_error.value
+    )
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+    assert len(observed_matches) == 1
+
+
 @pytest.mark.parametrize(
     "use_compiled_pattern",
     (False, True),
@@ -3823,6 +3968,80 @@ def test_conditional_group_exists_alternation_callable_replacement_absent_captur
 ) -> None:
     backend_name, backend = regex_backend
     _assert_conditional_group_exists_alternation_callable_absent_capture_typeerror_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
+    CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_GROUP_ACCESS_CASES,
+    ids=(
+        "numbered-sub-present-first-arm",
+        "numbered-subn-present-second-arm",
+        "named-sub-present-first-arm",
+        "named-subn-present-second-arm",
+    ),
+)
+def test_conditional_group_exists_alternation_bytes_callable_replacement_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+    helper: str,
+    string: bytes,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_bytes_callable_group_access_parity(
+        backend_name=backend_name,
+        backend=backend,
+        pattern=pattern,
+        group_ref=group_ref,
+        helper=helper,
+        string=string,
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (False, True),
+    ids=("module", "pattern"),
+)
+@pytest.mark.parametrize(
+    ("pattern", "group_ref", "helper", "string", "count"),
+    CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES,
+    ids=(
+        "numbered-sub-absent-first-arm",
+        "numbered-subn-absent-second-arm",
+        "named-sub-absent-first-arm",
+        "named-subn-absent-second-arm",
+    ),
+)
+def test_conditional_group_exists_alternation_bytes_callable_replacement_absent_capture_typeerror_matches_cpython(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    group_ref: int | str,
+    helper: str,
+    string: bytes,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    _assert_conditional_group_exists_alternation_bytes_callable_absent_capture_typeerror_parity(
         backend_name=backend_name,
         backend=backend,
         pattern=pattern,

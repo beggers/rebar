@@ -1,6 +1,6 @@
 # RBR-1171: Implement conditional group-exists alternation callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and pattern'` returned `24 passed, 4032 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-callable-current.py` returned `32 executed / 32 passed`, confirming the current published callable owner path is otherwise stable before this bytes implementation prerequisite lands.
 - `ops/state/backlog.md` and the queue-frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on currently survives after the likely same-cycle drain, so this one-task refill does not need tracked state-prose changes.
+
+## Completion
+- Completed 2026-03-24.
+- Landed bounded Rust-backed bytes callable replacement parity for `rb"a(b)?c(?(1)(de|df)|(eg|eh))"` and `rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))"` across module and compiled-pattern `sub()`/`subn()` flows by extending the bytes conditional compile/finditer slice, the Python bytes callable passthrough allowlist, and the existing parity suite.
+- Published correctness and benchmark scorecards were intentionally unchanged for this task; `reports/correctness/latest.py` was not republished.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and module'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and pattern'`
