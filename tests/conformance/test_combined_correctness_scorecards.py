@@ -920,12 +920,16 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
         representative_case_ids=(
             "module-sub-callable-conditional-group-exists-present-str",
             "module-sub-callable-conditional-group-exists-alternation-present-first-arm-str",
+            "module-sub-callable-conditional-group-exists-nested-present-str",
             "pattern-subn-callable-conditional-group-exists-absent-str",
             "pattern-subn-callable-conditional-group-exists-alternation-absent-second-arm-str",
+            "pattern-subn-callable-conditional-group-exists-nested-absent-str",
             "module-sub-callable-named-conditional-group-exists-present-str",
             "module-sub-callable-named-conditional-group-exists-alternation-present-first-arm-str",
+            "module-sub-callable-named-conditional-group-exists-nested-present-str",
             "pattern-subn-callable-named-conditional-group-exists-absent-str",
             "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
             "module-sub-callable-conditional-group-exists-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
@@ -5213,7 +5217,20 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             len(combined_case_ids),
             len(representative_str_case_ids) + len(representative_bytes_case_ids),
         )
-        self.assertEqual(len(representative_str_case_ids), len(representative_bytes_case_ids))
+        expected_str_only_nested_case_ids = (
+            "module-sub-callable-conditional-group-exists-nested-present-str",
+            "pattern-subn-callable-conditional-group-exists-nested-absent-str",
+            "module-sub-callable-named-conditional-group-exists-nested-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
+        )
+        self.assertEqual(
+            tuple(
+                case_id
+                for case_id in representative_str_case_ids
+                if "-nested-" in case_id
+            ),
+            expected_str_only_nested_case_ids,
+        )
         self.assertEqual(
             representative_str_case_ids[-len(manifest_negative_count_str_case_ids) :],
             manifest_negative_count_str_case_ids,
@@ -5223,6 +5240,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             tuple(
                 f"{case_id.removesuffix('-str')}-bytes"
                 for case_id in representative_str_case_ids
+                if "-nested-" not in case_id
             ),
         )
         self.assertEqual(

@@ -287,6 +287,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-negative-count-str",
                 "pattern-sub-callable-conditional-group-exists-negative-count-str",
                 "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
+                "module-sub-callable-conditional-group-exists-nested-present-str",
+                "module-subn-callable-conditional-group-exists-nested-absent-str",
+                "pattern-sub-callable-conditional-group-exists-nested-present-str",
+                "pattern-subn-callable-conditional-group-exists-nested-absent-str",
+                "module-sub-callable-named-conditional-group-exists-nested-present-str",
+                "module-subn-callable-named-conditional-group-exists-nested-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-nested-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
                 "module-sub-callable-conditional-group-exists-present-bytes",
                 "module-subn-callable-conditional-group-exists-absent-bytes",
                 "pattern-sub-callable-conditional-group-exists-present-bytes",
@@ -313,8 +321,10 @@ CALLABLE_MANIFEST_SPECS = (
             {
                 r"a(b)?c(?(1)d|e)",
                 r"a(b)?c(?(1)(de|df)|(eg|eh))",
+                r"a(b)?c(?(1)(?(1)d|e)|f)",
                 r"a(?P<word>b)?c(?(word)d|e)",
                 r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+                r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
                 rb"a(b)?c(?(1)d|e)",
                 rb"a(b)?c(?(1)(de|df)|(eg|eh))",
                 rb"a(?P<word>b)?c(?(word)d|e)",
@@ -323,10 +333,10 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 10,
-                ("module_call", "subn"): 10,
-                ("pattern_call", "sub"): 10,
-                ("pattern_call", "subn"): 10,
+                ("module_call", "sub"): 12,
+                ("module_call", "subn"): 12,
+                ("pattern_call", "sub"): 12,
+                ("pattern_call", "subn"): 12,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
@@ -2750,6 +2760,44 @@ def test_conditional_group_exists_alternation_bytes_direct_case_tables_mirror_st
         str_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES,
         bytes_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES,
     )
+
+
+def test_conditional_group_exists_nested_direct_case_tables_stay_aligned_with_published_fixture(
+) -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+
+    def normalized_case_row(
+        case: FixtureCase,
+    ) -> tuple[str | bytes, int | str, str, str | bytes, int]:
+        pattern = case_pattern(case)
+        text = case_text_argument(case)
+        replacement = _source_callable_replacement(case)
+
+        assert case.helper is not None
+        assert isinstance(pattern, (str, bytes))
+        assert isinstance(text, (str, bytes))
+        assert isinstance(replacement, dict)
+
+        group_ref = replacement["group"]
+        assert isinstance(group_ref, (int, str))
+        return pattern, group_ref, case.helper, text, _case_count(case)
+
+    nested_cases = tuple(case for case in bundle.cases if "nested" in case.categories)
+    present_rows = {
+        normalized_case_row(case)
+        for case in nested_cases
+        if case.text_model == "str" and "present" in case.categories
+    }
+    absent_rows = {
+        normalized_case_row(case)
+        for case in nested_cases
+        if case.text_model == "str" and "absent" in case.categories
+    }
+
+    assert len(nested_cases) == len(present_rows) + len(absent_rows) == 8
+    assert present_rows == set(CONDITIONAL_GROUP_EXISTS_NESTED_GROUP_ACCESS_CASES)
+    assert absent_rows == set(CONDITIONAL_GROUP_EXISTS_NESTED_ABSENT_EXCEPTION_CASES)
 
 
 def test_callable_replacement_callback_exception_case_pools_exclude_negative_count_rows(

@@ -1,6 +1,6 @@
 # RBR-1179: Publish conditional group-exists nested callable workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,15 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` returned `45 passed, 2332 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1179-conditional-nested-callable.py` is expected to move from the currently validated `40 executed / 40 passed` to `48 executed / 48 passed` once this publication lands; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` is expected to move from the current `1693 executed / 1693 passed` surface to `1701 executed / 1701 passed` once this publication lands.
+
+## Completion
+- Added the exact eight nested conditional callable `str` publication rows to `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` on the existing conditional callable owner path, covering numbered and named module/pattern `sub()` and `subn()` present and absent workflows for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
+- Updated `tests/python/test_callable_replacement_parity_suite.py` so the shared callable manifest expectations include the widened str-only nested slice and added a focused direct-table alignment check for the newly published nested rows.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so the representative combined scorecard expectations include the nested callable `str` rows while preserving the existing bytes mirror expectations for the rest of the manifest.
+- Republished `reports/correctness/latest.py`; the tracked artifact now reports `1701` total cases, `1701` passes, `0` failures, and `0` unimplemented cases, and the `conditional-group-exists-callable-replacement-workflows` manifest now publishes `48` passing cases on the combined surface.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_nested_callable_replacement'` returned `32 passed, 4351 deselected`.
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` returned `45 passed, 2336 subtests passed`.
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1179-conditional-nested-callable.py` returned `48 executed / 48 passed`.
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1701 executed / 1701 passed`.
