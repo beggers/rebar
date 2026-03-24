@@ -1,8 +1,9 @@
 ## RBR-1164: Extract wrong-text-model benchmark anchor support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
+Completed: 2026-03-24
 
 ## Goal
 - Remove the remaining wrong-text-model selector/signature helper layer that still lives inline inside `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` by moving that shared support into one dedicated benchmark-support module, so the combined owner file stops carrying both the standard benchmark definition inventory and the route-specific wrong-text-model helper logic that also feeds the later owner-spec contract tests.
@@ -53,4 +54,7 @@ Created: 2026-03-24
   - `rg -n '^class WrongTextModelOwnerSpec|^def _assert_wrong_text_model_payload_round_trip\(|^_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC =|^_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC =|^_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_OWNER_SPEC =|^_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC =|^WRONG_TEXT_MODEL_OWNER_SPECS =' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` shows the later owner-spec contract block still starts at line `18095`, so these route helpers remain shared between two distant sections of the same owner file instead of already living on one support surface; and
   - `_is_module_workflow_compiled_pattern_wrong_text_model_workload(...)` still lives inline at line `8333`, feeding both the `compiled-pattern-module-boundary-wrong-text-model` standard benchmark definition and the later `_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC`.
 - Verification status in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_anchor_support.py` returned `9 passed` in this run.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(pattern_boundary_wrong_text_model or compiled_pattern_module_helper_wrong_text_model or pattern_helper_collection_replacement_wrong_text_model) and (standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract or standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio or pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time)'` returned `42 passed, 711 deselected` in this run.
+- Completion note:
+  - Moved the remaining compiled-pattern module-helper and pattern-boundary wrong-text-model selectors/signatures into `tests/benchmarks/wrong_text_model_benchmark_anchor_support.py`, added focused support tests, and rewired the combined owner benchmark test to import the shared helper surface instead of defining it inline.
