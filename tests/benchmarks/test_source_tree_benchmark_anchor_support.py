@@ -397,3 +397,56 @@ def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
     support.assert_anchored_workload_case_result_parity((pair,))
 
     assert calls == [(workload, "expected:case-1")]
+
+
+def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workload = _synthetic_workload("anchored", ("shared",))
+    pair = support.AnchoredWorkloadCasePair(
+        manifest_name="synthetic_boundary.py",
+        workload_id="anchored",
+        case_id="case-1",
+        workload=workload,
+        case=SimpleNamespace(case_id="case-1"),
+    )
+    benchmark_calls: list[object] = []
+
+    def _raise_expected(_: object) -> object:
+        raise ValueError("shared boom")
+
+    def _raise_observed(observed_workload: object) -> object:
+        benchmark_calls.append(observed_workload)
+        raise ValueError("shared boom")
+
+    monkeypatch.setattr(support, "run_correctness_case_with_cpython", _raise_expected)
+    monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
+
+    support.assert_anchored_workload_case_result_parity((pair,))
+
+    assert benchmark_calls == [workload]
+
+
+def test_assert_anchored_workload_case_result_parity_rejects_exception_message_drift(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workload = _synthetic_workload("anchored", ("shared",))
+    pair = support.AnchoredWorkloadCasePair(
+        manifest_name="synthetic_boundary.py",
+        workload_id="anchored",
+        case_id="case-1",
+        workload=workload,
+        case=SimpleNamespace(case_id="case-1"),
+    )
+
+    def _raise_expected(_: object) -> object:
+        raise ValueError("expected boom")
+
+    def _raise_observed(_: object) -> object:
+        raise ValueError("observed boom")
+
+    monkeypatch.setattr(support, "run_correctness_case_with_cpython", _raise_expected)
+    monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
+
+    with pytest.raises(AssertionError):
+        support.assert_anchored_workload_case_result_parity((pair,))
