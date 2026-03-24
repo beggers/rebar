@@ -283,6 +283,10 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-alternation-present-second-arm-str",
                 "pattern-sub-callable-named-conditional-group-exists-alternation-absent-first-arm-str",
                 "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-str",
+                "module-sub-callable-conditional-group-exists-alternation-negative-count-str",
+                "module-subn-callable-named-conditional-group-exists-alternation-negative-count-str",
+                "pattern-sub-callable-conditional-group-exists-alternation-negative-count-str",
+                "pattern-subn-callable-named-conditional-group-exists-alternation-negative-count-str",
                 "module-sub-callable-conditional-group-exists-negative-count-str",
                 "module-subn-callable-named-conditional-group-exists-negative-count-str",
                 "pattern-sub-callable-conditional-group-exists-negative-count-str",
@@ -367,6 +371,10 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-alternation-present-second-arm-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-alternation-absent-first-arm-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-bytes",
+                "module-sub-callable-conditional-group-exists-alternation-negative-count-bytes",
+                "module-subn-callable-named-conditional-group-exists-alternation-negative-count-bytes",
+                "pattern-sub-callable-conditional-group-exists-alternation-negative-count-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-alternation-negative-count-bytes",
                 "module-sub-callable-conditional-group-exists-negative-count-bytes",
                 "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
                 "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
@@ -459,10 +467,10 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 42,
-                ("module_call", "subn"): 42,
-                ("pattern_call", "sub"): 42,
-                ("pattern_call", "subn"): 42,
+                ("module_call", "sub"): 44,
+                ("module_call", "subn"): 44,
+                ("pattern_call", "sub"): 44,
+                ("pattern_call", "subn"): 44,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
@@ -2178,6 +2186,30 @@ CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES = (
 )
 
 
+CONDITIONAL_GROUP_EXISTS_ALTERNATION_NEGATIVE_COUNT_CASES = (
+    (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzabcdezz", -1),
+    (
+        r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "subn",
+        "zzacehzz",
+        -1,
+    ),
+)
+
+
+CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_NEGATIVE_COUNT_CASES = (
+    (rb"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", b"zzabcdezz", -1),
+    (
+        rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        "word",
+        "subn",
+        b"zzacehzz",
+        -1,
+    ),
+)
+
+
 CONDITIONAL_GROUP_EXISTS_NESTED_GROUP_ACCESS_CASES = (
     (r"a(b)?c(?(1)(?(1)d|e)|f)", 1, "sub", "zzabcdzz", 0),
     (r"a(b)?c(?(1)(?(1)d|e)|f)", 1, "subn", "zzabcdzz", 1),
@@ -3352,6 +3384,7 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
         for case in bundle.cases
         if case.text_model == "str"
         and "negative-count" in case.categories
+        and "alternation" not in case.categories
         and "nested" not in case.categories
         and "quantified" not in case.categories
     )
@@ -3360,6 +3393,7 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
         for case in bundle.cases
         if case.text_model == "bytes"
         and "negative-count" in case.categories
+        and "alternation" not in case.categories
         and "nested" not in case.categories
         and "quantified" not in case.categories
     }
@@ -3372,6 +3406,35 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
     )
     assert all(_case_count(case) == -1 for case in str_cases)
     assert all(_case_count(case) == -1 for case in bytes_cases_by_id.values())
+
+
+def test_conditional_group_exists_alternation_negative_count_bytes_cases_mirror_str_cases(
+) -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+    str_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "str"
+        and "alternation" in case.categories
+        and "negative-count" in case.categories
+    )
+    bytes_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "bytes"
+        and "alternation" in case.categories
+        and "negative-count" in case.categories
+    )
+
+    assert len(str_cases) == len(bytes_cases) == 4
+    _assert_published_callable_bytes_cases_mirror_str_cases(
+        manifest_id=manifest_id,
+        str_cases=str_cases,
+        bytes_cases=bytes_cases,
+    )
+    assert all(_case_count(case) == -1 for case in str_cases)
+    assert all(_case_count(case) == -1 for case in bytes_cases)
 
 
 def test_conditional_group_exists_quantified_negative_count_bytes_cases_mirror_str_cases(
@@ -3470,12 +3533,16 @@ def test_conditional_group_exists_alternation_bytes_cases_mirror_str_cases() -> 
     str_cases = tuple(
         case
         for case in bundle.cases
-        if case.text_model == "str" and "alternation" in case.categories
+        if case.text_model == "str"
+        and "alternation" in case.categories
+        and "negative-count" not in case.categories
     )
     bytes_cases = tuple(
         case
         for case in bundle.cases
-        if case.text_model == "bytes" and "alternation" in case.categories
+        if case.text_model == "bytes"
+        and "alternation" in case.categories
+        and "negative-count" not in case.categories
     )
 
     assert len(str_cases) == len(bytes_cases) == 8
@@ -3511,6 +3578,7 @@ def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_wi
         case
         for case in bundle.cases
         if "alternation" in case.categories
+        and "negative-count" not in case.categories
     )
     present_rows = {
         normalized_case_row(case)
@@ -3548,6 +3616,74 @@ def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_wi
     )
     assert bytes_absent_rows == set(
         CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES
+    )
+
+
+def test_conditional_group_exists_alternation_negative_count_rows_stay_aligned_with_published_fixture(
+) -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+
+    def normalized_case_row(
+        case: FixtureCase,
+    ) -> tuple[str | bytes, int | str, str, str | bytes, int]:
+        pattern = case_pattern(case)
+        text = case_text_argument(case)
+        replacement = _source_callable_replacement(case)
+
+        assert case.helper is not None
+        assert isinstance(pattern, (str, bytes))
+        assert isinstance(text, (str, bytes))
+        assert isinstance(replacement, dict)
+
+        group_ref = replacement["group"]
+        assert isinstance(group_ref, (int, str))
+        return pattern, group_ref, case.helper, text, _case_count(case)
+
+    alternation_negative_count_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "str"
+        and "alternation" in case.categories
+        and "negative-count" in case.categories
+    )
+    bytes_alternation_negative_count_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "bytes"
+        and "alternation" in case.categories
+        and "negative-count" in case.categories
+    )
+
+    assert len(alternation_negative_count_cases) == len(
+        bytes_alternation_negative_count_cases
+    ) == 4
+    _assert_published_callable_bytes_cases_mirror_str_cases(
+        manifest_id=manifest_id,
+        str_cases=alternation_negative_count_cases,
+        bytes_cases=bytes_alternation_negative_count_cases,
+    )
+    assert Counter(
+        (case.operation, case.helper) for case in alternation_negative_count_cases
+    ) == Counter(
+        {
+            ("module_call", "sub"): 1,
+            ("module_call", "subn"): 1,
+            ("pattern_call", "sub"): 1,
+            ("pattern_call", "subn"): 1,
+        }
+    )
+    assert Counter(
+        normalized_case_row(case) for case in alternation_negative_count_cases
+    ) == Counter(
+        {
+            CONDITIONAL_GROUP_EXISTS_ALTERNATION_NEGATIVE_COUNT_CASES[0]: 2,
+            CONDITIONAL_GROUP_EXISTS_ALTERNATION_NEGATIVE_COUNT_CASES[1]: 2,
+        }
+    )
+    _assert_bytes_direct_case_table_mirrors_str_table(
+        str_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_NEGATIVE_COUNT_CASES,
+        bytes_cases=CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_NEGATIVE_COUNT_CASES,
     )
 
 
