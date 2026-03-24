@@ -1,8 +1,9 @@
 # RBR-1167: Publish conditional group-exists alternation callable str workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
+Completed: 2026-03-24
 
 ## Goal
 - Reopen the shared `conditional-group-exists-callable-replacement-workflows` correctness frontier with the exact `str` alternation-heavy callable rows that `RBR-1165` already made Rust-backed on the shared parity owner path, publishing that bounded conditional callable slice before any same-family benchmark catch-up, bytes mirrors, nested follow-ons, or quantified follow-ons widen this family again.
@@ -59,3 +60,14 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_mixed_text_feature_scorecards_mirror_representative_bytes_rows tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models` returned `2 passed, 51 subtests passed` in this run;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-callable-current.py` returned `24` executed and `24` passing cases in this run; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1677` executed and `1677` passing cases in this run.
+
+## Completion
+- Added the eight bounded `str` alternation-heavy callable replacement publication rows to `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py`, covering numbered and named module/pattern `sub()` and `subn()` workflows across the present `de`/`df` and absent `eg`/`eh` arms without widening into bytes follow-ons.
+- Updated the shared callable manifest expectations in `tests/python/test_callable_replacement_parity_suite.py` so the published case-id set, compile-pattern set, and per-helper operation counts match the widened manifest; `tests/conformance/test_combined_correctness_scorecards.py` stayed unchanged because its existing representative mixed-text checks already remained green for this str-only publication expansion.
+- Republished `reports/correctness/latest.py`; the tracked artifact now shows `32` passing cases for `conditional-group-exists-callable-replacement-workflows`, `1685/1685` passing overall, and `114` published manifests.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_conditional_group_exists_alternation_callable_replacement_group_access_matches_cpython tests/python/test_callable_replacement_parity_suite.py::test_conditional_group_exists_alternation_callable_replacement_absent_capture_typeerror_matches_cpython` -> `32 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_cases_stay_aligned_with_published_fixture` -> `10 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_mixed_text_feature_scorecards_mirror_representative_bytes_rows tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_combined_scorecard_mixed_text_manifests_cover_both_representative_text_models` -> `2 passed, 51 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1167-conditional-callable-alternation-str.py` -> `32 executed / 32 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> `1685 executed / 1685 passed`

@@ -275,6 +275,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-absent-str",
                 "pattern-sub-callable-named-conditional-group-exists-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-absent-str",
+                "module-sub-callable-conditional-group-exists-alternation-present-first-arm-str",
+                "module-subn-callable-conditional-group-exists-alternation-present-second-arm-str",
+                "pattern-sub-callable-conditional-group-exists-alternation-absent-first-arm-str",
+                "pattern-subn-callable-conditional-group-exists-alternation-absent-second-arm-str",
+                "module-sub-callable-named-conditional-group-exists-alternation-present-first-arm-str",
+                "module-subn-callable-named-conditional-group-exists-alternation-present-second-arm-str",
+                "pattern-sub-callable-named-conditional-group-exists-alternation-absent-first-arm-str",
+                "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-str",
                 "module-sub-callable-conditional-group-exists-negative-count-str",
                 "module-subn-callable-named-conditional-group-exists-negative-count-str",
                 "pattern-sub-callable-conditional-group-exists-negative-count-str",
@@ -296,17 +304,19 @@ CALLABLE_MANIFEST_SPECS = (
         expected_compile_patterns=frozenset(
             {
                 r"a(b)?c(?(1)d|e)",
+                r"a(b)?c(?(1)(de|df)|(eg|eh))",
                 r"a(?P<word>b)?c(?(word)d|e)",
+                r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
                 rb"a(b)?c(?(1)d|e)",
                 rb"a(?P<word>b)?c(?(word)d|e)",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 6,
-                ("module_call", "subn"): 6,
-                ("pattern_call", "sub"): 6,
-                ("pattern_call", "subn"): 6,
+                ("module_call", "sub"): 8,
+                ("module_call", "subn"): 8,
+                ("pattern_call", "sub"): 8,
+                ("pattern_call", "subn"): 8,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
