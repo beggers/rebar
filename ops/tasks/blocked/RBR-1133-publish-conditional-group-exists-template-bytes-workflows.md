@@ -1,6 +1,6 @@
 # RBR-1133: Publish conditional group-exists template bytes workflows
 
-Status: ready
+Status: blocked
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -52,3 +52,15 @@ Created: 2026-03-24
   - `tests/python/test_fixture_backed_replacement_parity_suite.py` still routes `conditional-group-exists-replacement-template-workflows` through the shared conditional replacement surface without any bytes representative ids on that manifest;
   - `tests/conformance/test_combined_correctness_scorecards.py` still expects only the `str` representative ids for `conditional-group-exists-replacement-template-workflows`; and
   - `reports/correctness/latest.py` still surfaces `collection.replacement.conditional_group_exists.template.str` with no corresponding `.bytes` suite while `benchmarks/workloads/conditional_group_exists_boundary.py` remains `str`-only on the adjacent template rows, confirming that correctness publication is the next exact bounded follow-on and that benchmark catch-up should stay behind it.
+
+## Blocker Notes
+- Attempted the bounded publication update, then reverted it after the direct parity gate showed the prerequisite runtime slice is still incomplete in this checkout.
+- Verified passing unchanged coverage:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional and replacement and template and bytes'` passed before widening the manifest and still only covers the four already-landed direct bytes cases from `RBR-1130`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` passes unchanged with the current `str`-only publication.
+- Verified missing prerequisite support after trying to publish the full eight-case bytes slice:
+  - the mirrored numbered compiled-pattern bytes paths and named module-level bytes paths still raise the scaffold placeholder through the shared replacement parity surface;
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional and replacement and template and bytes'` failed with `NotImplementedError: rebar.search() is a scaffold placeholder` and matching template-expansion failures as soon as those unpublished bytes rows were routed onto the shared manifest; and
+  - a direct probe of `rebar.sub(rb\"a(b)?c(?(1)d|e)\", rb\"\\\\1x\", b\"zzabcdzz\")` from the repo-local Python path still raises the scaffold placeholder in this checkout.
+- Follow-up needed before reopening this task:
+  - extend the bytes template runtime behind `rebar._rebar` to cover the missing mirrored `pattern` numbered rows and `module` named rows for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` with `sub()` and `subn(count=1)`, then rerun this publication task.
