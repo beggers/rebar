@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
 from dataclasses import dataclass
 import re
 
@@ -23,8 +23,8 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
+    flatten_fixture_bundles,
     fixture_cases_by_id,
-    fixture_bundle_manifest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     requested_published_fixture_bundles,
@@ -87,11 +87,6 @@ FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles
 )
 
 
-def _iter_fixture_cases() -> Iterator[FixtureCase]:
-    for bundle in FIXTURE_BUNDLES:
-        yield from bundle.cases
-
-
 def _compile_cases(cases: Iterable[FixtureCase]) -> tuple[CompileCase, ...]:
     grouped_cases: dict[tuple[str, int], list[FixtureCase]] = {}
     for case in cases:
@@ -110,12 +105,13 @@ def _compile_cases(cases: Iterable[FixtureCase]) -> tuple[CompileCase, ...]:
     return tuple(compile_cases)
 
 
-COMPILE_CASES = _compile_cases(_iter_fixture_cases())
+PUBLISHED_CASES = flatten_fixture_bundles(FIXTURE_BUNDLES)
+COMPILE_CASES = _compile_cases(PUBLISHED_CASES)
 MODULE_CASES = tuple(
-    case for case in _iter_fixture_cases() if case.operation == "module_call"
+    case for case in PUBLISHED_CASES if case.operation == "module_call"
 )
 PATTERN_CASES = tuple(
-    case for case in _iter_fixture_cases() if case.operation == "pattern_call"
+    case for case in PUBLISHED_CASES if case.operation == "pattern_call"
 )
 CASES_BY_ID = fixture_cases_by_id(FIXTURE_BUNDLES)
 assert len(CASES_BY_ID) == sum(len(bundle.cases) for bundle in FIXTURE_BUNDLES)
@@ -578,7 +574,7 @@ def test_fixture_bundles_load_expected_published_owner_order() -> None:
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=fixture_bundle_manifest_id,
+    ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
     assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)

@@ -29,6 +29,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     case_replacement_argument,
     case_text_argument,
+    flatten_fixture_bundles,
     load_single_published_fixture_bundle,
     load_published_fixture_bundles,
     str_case_pattern,
@@ -1247,9 +1248,7 @@ COLLECTION_REPLACEMENT_OWNER_BUNDLE = load_single_published_fixture_bundle(
 FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
 )
-PUBLISHED_CALLABLE_CASES = tuple(
-    case for bundle in FIXTURE_BUNDLES for case in bundle.cases
-)
+PUBLISHED_CALLABLE_CASES = flatten_fixture_bundles(FIXTURE_BUNDLES)
 SHARED_CALLABLE_CASES = tuple(
     case for case in PUBLISHED_CALLABLE_CASES if not _is_pending_rebar_callable_case(case)
 )

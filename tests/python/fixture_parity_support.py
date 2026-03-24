@@ -367,13 +367,19 @@ def fixture_cases_for_operation(
     )
 
 
+def flatten_fixture_bundles(
+    bundles: Iterable[FixtureBundle],
+) -> tuple[FixtureCase, ...]:
+    return tuple(case for bundle in bundles for case in bundle.cases)
+
+
 def fixture_cases_by_id(
     fixtures: Iterable[FixtureBundle] | Iterable[FixtureCase],
 ) -> dict[str, FixtureCase]:
     case_entries: list[FixtureCase] = []
     for fixture in fixtures:
         if isinstance(fixture, FixtureBundle):
-            case_entries.extend(fixture.cases)
+            case_entries.extend(flatten_fixture_bundles((fixture,)))
             continue
         if isinstance(fixture, FixtureCase):
             case_entries.append(fixture)

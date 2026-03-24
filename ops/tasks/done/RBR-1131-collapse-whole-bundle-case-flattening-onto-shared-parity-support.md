@@ -1,6 +1,6 @@
 # RBR-1131: Collapse whole-bundle case flattening onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -68,3 +68,11 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_fixture_shape_contract tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_direct_test_buckets_cover_selected_frontier tests/python/test_fixture_parity_support_contract.py::test_fixture_cases_by_id_preserves_input_order_for_bundles_and_cases` returned `17 passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py -k 'fixture_bundles_load_expected_published_owner_order or grouped_capture_direct_test_buckets_cover_selected_frontier'` currently fails during collection because `tests/python/test_grouped_capture_parity_suite.py` still imports the deleted `fixture_bundle_manifest_id` symbol from `tests/python/fixture_parity_support.py`, which is part of the exact cleanup scoped here; and
   - `bash -lc "! rg -n 'def _iter_fixture_cases\\(|fixture_bundle_manifest_id,|ids=fixture_bundle_manifest_id|PUBLISHED_CALLABLE_CASES = tuple\\(|case for bundle in FIXTURE_BUNDLES for case in bundle\\.cases|case_entries\\.extend\\(fixture\\.cases\\)' tests/python/fixture_parity_support.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_callable_replacement_parity_suite.py"` currently fails exactly on the targeted duplicate and stale-helper lines above.
+
+## Completion Note
+- Added shared `flatten_fixture_bundles()` support on `tests/python/fixture_parity_support.py` and routed `fixture_cases_by_id()` bundle expansion through it while preserving the mixed bundle-and-case ordering contract.
+- Removed grouped-capture owner-local bundle flattening and the stale `fixture_bundle_manifest_id` import, switched bundle ids to `bundle.expected_manifest_id`, and moved callable-replacement published-case flattening onto the same shared helper.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py::test_fixture_bundles_load_expected_published_owner_order tests/python/test_grouped_capture_parity_suite.py::test_grouped_capture_direct_test_buckets_cover_selected_frontier`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_fixture_shape_contract tests/python/test_callable_replacement_parity_suite.py::test_callable_replacement_direct_test_buckets_cover_selected_frontier tests/python/test_fixture_parity_support_contract.py::test_fixture_cases_by_id_preserves_input_order_for_bundles_and_cases tests/python/test_fixture_parity_support_contract.py::test_flatten_fixture_bundles_preserves_bundle_and_case_order tests/python/test_fixture_parity_support_contract.py::test_fixture_cases_by_id_accepts_mixed_bundle_and_case_entries`
+  - `bash -lc "! rg -n 'def _iter_fixture_cases\\(|fixture_bundle_manifest_id,|ids=fixture_bundle_manifest_id|PUBLISHED_CALLABLE_CASES = tuple\\(|case for bundle in FIXTURE_BUNDLES for case in bundle\\.cases|case_entries\\.extend\\(fixture\\.cases\\)' tests/python/fixture_parity_support.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_callable_replacement_parity_suite.py"`
