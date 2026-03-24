@@ -9694,6 +9694,45 @@ fn literal_match_bytes(
     endpos: Option<isize>,
 ) -> MatchOutcome {
     let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    if pattern == CONDITIONAL_GROUP_EXISTS_NUMBERED_BYTES_PATTERN
+        || pattern == CONDITIONAL_GROUP_EXISTS_NAMED_BYTES_PATTERN
+    {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) = find_conditional_group_exists_match_span_bytes(
+            flags,
+            mode,
+            string,
+            normalized_pos,
+            normalized_endpos,
+        )
+        .map_or((None, Vec::new()), |(span, group_spans)| {
+            (Some(span), group_spans)
+        });
+        let lastindex = lastindex_from_group_spans(&group_spans);
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
     if let Some(grouped_pattern) = parse_quantified_alternation_nested_branch_pattern_bytes(pattern)
     {
         if flags != 0 {

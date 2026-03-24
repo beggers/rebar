@@ -1,6 +1,6 @@
 # RBR-1145: Implement conditional group-exists template bytes match parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -51,3 +51,12 @@ Created: 2026-03-24
   - `tests/python/test_fixture_backed_replacement_parity_suite.py` still carries `pending_bytes_match_object_manifest_ids=frozenset({"conditional-group-exists-replacement-template-workflows"})` and the direct guard `test_conditional_replacement_template_keeps_bytes_match_snapshots_pending`, so the shared parity surface is still deliberately staging this exact bytes slice;
   - direct public-path probes in this run showed both `rebar.search(rb"a(b)?c(?(1)d|e)", b"zzabcdzz")` and `rebar.compile(rb"a(?P<word>b)?c(?(word)d|e)").search(b"zzacezz")` still raising scaffold `NotImplementedError`; and
   - `reports/correctness/latest.py` and `reports/benchmarks/latest.py` already reflect the adjacent bytes publication and benchmark catch-up for this owner family, so queuing another publication-only or benchmark-only slice here would skip past a still-missing runtime prerequisite.
+
+## Completion Notes
+- Landed bounded bytes conditional-group-exists match-object support on the existing Rust path by teaching `crates/rebar-core/src/lib.rs` to route `rb"a(b)?c(?(1)d|e)"` and `rb"a(?P<word>b)?c(?(word)d|e)"` through the exact bytes conditional matcher inside `literal_match_bytes()`, which now returns CPython-shaped spans, capture payloads, and `lastindex` data for module and compiled-pattern `search()` calls.
+- Removed the replacement parity suite staging for `conditional-group-exists-replacement-template-workflows` in `tests/python/test_fixture_backed_replacement_parity_suite.py` and tightened the direct frontier assertions so both match snapshots and `Match.expand()` coverage now require the full mixed `str`/`bytes` numbered and named matrix on the shared owner path.
+- Verification:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'replacement_match_snapshot_matches_cpython or replacement_template_match_expand_matches_cpython or conditional_replacement_template'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional_replacement_template and bytes'`
+- Published scorecards were intentionally unchanged in this bounded runtime task; `reports/correctness/latest.py` and `reports/benchmarks/latest.py` were not edited.
