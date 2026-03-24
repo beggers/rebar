@@ -4223,6 +4223,28 @@ def _split_workload_ids_by_text_model(
     )
 
 
+def _selected_workload_ids(
+    workloads: Iterable[Workload],
+    *,
+    text_model: str,
+    required_categories: tuple[str, ...],
+    excluded_categories: tuple[str, ...] = (),
+) -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for workload in workloads
+        if workload.text_model == text_model
+        and all(category in workload.categories for category in required_categories)
+        and all(category not in workload.categories for category in excluded_categories)
+    )
+
+
+def _mirrored_bytes_workload_ids(str_workload_ids: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(
+        f"{workload_id.removesuffix('-str')}-bytes" for workload_id in str_workload_ids
+    )
+
+
 def _conditional_group_exists_template_replacement_expectation(
 ) -> SourceTreeCombinedSliceExpectation:
     return next(
@@ -7967,7 +7989,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             Counter(nested_workload_signature(workload) for workload in bytes_rows),
         )
 
-    def test_conditional_group_exists_quantified_callable_scorecards_keep_bytes_rows_in_sync_with_str_slice(
+    def test_conditional_group_exists_quantified_callable_scorecards_keep_negative_count_follow_on_workloads_in_sync(
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
@@ -7994,6 +8016,68 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
             _split_workload_ids_by_text_model(representative_quantified_workload_ids)
+        )
+        manifest_negative_count_str_workload_ids = _selected_workload_ids(
+            str_rows,
+            text_model="str",
+            required_categories=("negative-count",),
+        )
+        manifest_negative_count_bytes_workload_ids = _selected_workload_ids(
+            bytes_rows,
+            text_model="bytes",
+            required_categories=("negative-count",),
+        )
+        manifest_negative_count_no_match_str_workload_ids = _selected_workload_ids(
+            str_rows,
+            text_model="str",
+            required_categories=("negative-count", "no-match"),
+        )
+        manifest_negative_count_no_match_bytes_workload_ids = _selected_workload_ids(
+            bytes_rows,
+            text_model="bytes",
+            required_categories=("negative-count", "no-match"),
+        )
+        manifest_plain_no_match_str_workload_ids = _selected_workload_ids(
+            str_rows,
+            text_model="str",
+            required_categories=("no-match",),
+            excluded_categories=("negative-count",),
+        )
+        manifest_plain_no_match_bytes_workload_ids = _selected_workload_ids(
+            bytes_rows,
+            text_model="bytes",
+            required_categories=("no-match",),
+            excluded_categories=("negative-count",),
+        )
+        representative_negative_count_str_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_str_workload_ids
+            if workload_id in manifest_negative_count_str_workload_ids
+        )
+        representative_negative_count_bytes_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_bytes_workload_ids
+            if workload_id in manifest_negative_count_bytes_workload_ids
+        )
+        representative_negative_count_no_match_str_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_str_workload_ids
+            if workload_id in manifest_negative_count_no_match_str_workload_ids
+        )
+        representative_negative_count_no_match_bytes_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_bytes_workload_ids
+            if workload_id in manifest_negative_count_no_match_bytes_workload_ids
+        )
+        representative_plain_no_match_str_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_str_workload_ids
+            if workload_id in manifest_plain_no_match_str_workload_ids
+        )
+        representative_plain_no_match_bytes_workload_ids = tuple(
+            workload_id
+            for workload_id in representative_bytes_workload_ids
+            if workload_id in manifest_plain_no_match_bytes_workload_ids
         )
 
         def normalized_text_model_payload(value: str | bytes | None) -> str | None:
@@ -8049,6 +8133,115 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
             Counter(
                 quantified_workload_signature(workload) for workload in bytes_rows
+            ),
+        )
+        self.assertEqual(
+            len(manifest_negative_count_str_workload_ids),
+            len(manifest_negative_count_bytes_workload_ids),
+        )
+        self.assertEqual(len(manifest_negative_count_str_workload_ids), 16)
+        self.assertEqual(
+            len(manifest_negative_count_no_match_str_workload_ids),
+            len(manifest_negative_count_no_match_bytes_workload_ids),
+        )
+        self.assertEqual(len(manifest_negative_count_no_match_str_workload_ids), 8)
+        self.assertEqual(
+            len(manifest_plain_no_match_str_workload_ids),
+            len(manifest_plain_no_match_bytes_workload_ids),
+        )
+        self.assertEqual(len(manifest_plain_no_match_str_workload_ids), 8)
+        self.assertEqual(
+            manifest_negative_count_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(manifest_negative_count_str_workload_ids),
+        )
+        self.assertEqual(
+            manifest_negative_count_no_match_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(
+                manifest_negative_count_no_match_str_workload_ids
+            ),
+        )
+        self.assertEqual(
+            manifest_plain_no_match_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(manifest_plain_no_match_str_workload_ids),
+        )
+        self.assertEqual(
+            representative_negative_count_str_workload_ids,
+            manifest_negative_count_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_negative_count_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(representative_negative_count_str_workload_ids),
+        )
+        self.assertEqual(
+            representative_negative_count_no_match_str_workload_ids,
+            manifest_negative_count_no_match_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_negative_count_no_match_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(
+                representative_negative_count_no_match_str_workload_ids
+            ),
+        )
+        self.assertEqual(
+            representative_plain_no_match_str_workload_ids,
+            manifest_plain_no_match_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_plain_no_match_bytes_workload_ids,
+            _mirrored_bytes_workload_ids(representative_plain_no_match_str_workload_ids),
+        )
+        self.assertEqual(
+            representative_negative_count_str_workload_ids[
+                -len(representative_negative_count_no_match_str_workload_ids) :
+            ],
+            representative_negative_count_no_match_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_negative_count_bytes_workload_ids[
+                -len(representative_negative_count_no_match_bytes_workload_ids) :
+            ],
+            representative_negative_count_no_match_bytes_workload_ids,
+        )
+        self.assertEqual(
+            representative_str_workload_ids[
+                -len(representative_plain_no_match_str_workload_ids) :
+            ],
+            representative_plain_no_match_str_workload_ids,
+        )
+        self.assertEqual(
+            representative_bytes_workload_ids[
+                -len(representative_plain_no_match_bytes_workload_ids) :
+            ],
+            representative_plain_no_match_bytes_workload_ids,
+        )
+        self.assertEqual(
+            Counter(
+                (workload.operation, workload.count)
+                for workload in str_rows
+                if workload.workload_id in manifest_negative_count_str_workload_ids
+            ),
+            Counter(
+                {
+                    ("module.sub", -1): 4,
+                    ("module.subn", -1): 4,
+                    ("pattern.sub", -1): 4,
+                    ("pattern.subn", -1): 4,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                (workload.operation, workload.count)
+                for workload in bytes_rows
+                if workload.workload_id in manifest_negative_count_bytes_workload_ids
+            ),
+            Counter(
+                {
+                    ("module.sub", -1): 4,
+                    ("module.subn", -1): 4,
+                    ("pattern.sub", -1): 4,
+                    ("pattern.subn", -1): 4,
+                }
             ),
         )
 
