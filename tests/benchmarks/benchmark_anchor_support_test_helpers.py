@@ -62,16 +62,8 @@ def _synthetic_manifest_loader(
     return _synthetic_manifest(workloads=workloads)
 
 
-def _single_manifest_tuple(manifest: Any) -> tuple[Any, ...]:
-    return (manifest,)
-
-
 def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
     return workload.signature
-
-
-def _synthetic_case_signature(case: Any) -> tuple[Any, ...] | None:
-    return case.signature
 
 
 def _synthetic_workload_is_included(workload: Any) -> bool:

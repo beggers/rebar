@@ -10,7 +10,6 @@ import pytest
 
 from tests.benchmarks.benchmark_anchor_support_test_helpers import (
     _synthetic_case,
-    _synthetic_case_signature,
     _synthetic_manifest_loader,
     _synthetic_workload,
     _synthetic_workload_is_included,
@@ -20,6 +19,10 @@ from tests.benchmarks.benchmark_anchor_support_test_helpers import (
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import standard_benchmark_anchor_support as support
 from tests.conftest import records_by_string_id
+
+
+def _synthetic_case_signature(case: Any) -> tuple[Any, ...] | None:
+    return case.signature
 
 
 @dataclass(frozen=True, slots=True)

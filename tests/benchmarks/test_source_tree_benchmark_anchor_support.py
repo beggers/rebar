@@ -7,7 +7,6 @@ from types import SimpleNamespace
 import pytest
 
 from tests.benchmarks.benchmark_anchor_support_test_helpers import (
-    _single_manifest_tuple,
     _synthetic_case,
     _synthetic_manifest,
     _synthetic_manifest_loader,
@@ -47,7 +46,7 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
     monkeypatch.setattr(
         support,
         "published_fixture_manifests",
-        partial(_single_manifest_tuple, manifest),
+        lambda: (manifest,),
     )
 
     observed = support.published_case_ids_by_signature(lambda case: case.signature)
