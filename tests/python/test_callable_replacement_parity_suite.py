@@ -315,6 +315,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-quantified-absent-str",
                 "pattern-sub-callable-named-conditional-group-exists-quantified-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
+                "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+                "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
+                "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+                "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
+                "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
+                "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
                 "module-sub-callable-conditional-group-exists-present-bytes",
                 "module-subn-callable-conditional-group-exists-absent-bytes",
                 "pattern-sub-callable-conditional-group-exists-present-bytes",
@@ -363,6 +371,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-quantified-present-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
+                "module-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
+                "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-bytes",
+                "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
+                "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-bytes",
+                "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
+                "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
@@ -387,10 +403,10 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 24,
-                ("module_call", "subn"): 24,
-                ("pattern_call", "sub"): 24,
-                ("pattern_call", "subn"): 24,
+                ("module_call", "sub"): 28,
+                ("module_call", "subn"): 28,
+                ("pattern_call", "sub"): 28,
+                ("pattern_call", "subn"): 28,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
@@ -3688,36 +3704,76 @@ def test_conditional_group_exists_quantified_direct_case_tables_stay_aligned_wit
     }
     expected_present_rows = {
         row for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_GROUP_ACCESS_CASES if row[2] == "sub"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES
+        if case.helper == "sub"
     }
     expected_absent_rows = {
         row
         for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_ABSENT_EXCEPTION_CASES
         if row[2] == "subn"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES
+        if case.helper == "subn"
     }
     expected_bytes_present_rows = {
         row
         for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_GROUP_ACCESS_CASES
         if row[2] == "sub"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES
+        if case.helper == "sub"
     }
     expected_bytes_absent_rows = {
         row
         for row in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_ABSENT_EXCEPTION_CASES
         if row[2] == "subn"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES
+        if case.helper == "subn"
     }
 
-    assert len(quantified_cases) == 16
+    assert len(quantified_cases) == 32
     assert Counter(
         (case.text_model, case.operation, case.helper) for case in quantified_cases
     ) == Counter(
         {
-            ("str", "module_call", "sub"): 2,
-            ("str", "module_call", "subn"): 2,
-            ("str", "pattern_call", "sub"): 2,
-            ("str", "pattern_call", "subn"): 2,
-            ("bytes", "module_call", "sub"): 2,
-            ("bytes", "module_call", "subn"): 2,
-            ("bytes", "pattern_call", "sub"): 2,
-            ("bytes", "pattern_call", "subn"): 2,
+            ("str", "module_call", "sub"): 4,
+            ("str", "module_call", "subn"): 4,
+            ("str", "pattern_call", "sub"): 4,
+            ("str", "pattern_call", "subn"): 4,
+            ("bytes", "module_call", "sub"): 4,
+            ("bytes", "module_call", "subn"): 4,
+            ("bytes", "pattern_call", "sub"): 4,
+            ("bytes", "pattern_call", "subn"): 4,
         }
     )
     assert module_present_rows == expected_present_rows
