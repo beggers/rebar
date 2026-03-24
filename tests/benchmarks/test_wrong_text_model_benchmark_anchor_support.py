@@ -86,7 +86,7 @@ def _assert_zero_gap_source_tree_manifest_rows_measured(
     *,
     manifest_id: str,
     include_workload: Callable[[object], bool],
-    expected_selected_workload_count: int,
+    expected_selected_workload_ids: tuple[str, ...],
 ) -> None:
     case = source_tree_combined_case(manifest_id)
     workload_count = len(case.target_manifest.workloads)
@@ -95,7 +95,7 @@ def _assert_zero_gap_source_tree_manifest_rows_measured(
         include_workload,
     )
 
-    assert len(expected_measured_workload_ids) == expected_selected_workload_count
+    assert expected_measured_workload_ids == expected_selected_workload_ids
 
     _, scorecard = run_harness_scorecard(
         "rebar_harness.benchmarks",
@@ -330,7 +330,13 @@ def test_collection_replacement_manifest_keeps_compiled_pattern_wrong_text_model
     _assert_zero_gap_source_tree_manifest_rows_measured(
         manifest_id="collection-replacement-boundary",
         include_workload=_is_collection_replacement_wrong_text_model_workload,
-        expected_selected_workload_count=5,
+        expected_selected_workload_ids=(
+            "module-split-on-bytes-string-purged-str-compiled-pattern",
+            "module-findall-on-str-string-purged-bytes-compiled-pattern",
+            "module-finditer-on-bytes-string-warm-str-compiled-pattern",
+            "module-sub-on-bytes-string-warm-str-compiled-pattern",
+            "module-subn-on-str-string-purged-bytes-compiled-pattern",
+        ),
     )
 
 
@@ -338,7 +344,11 @@ def test_collection_replacement_manifest_keeps_pattern_wrong_text_model_rows_mea
     _assert_zero_gap_source_tree_manifest_rows_measured(
         manifest_id="collection-replacement-boundary",
         include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
-        expected_selected_workload_count=3,
+        expected_selected_workload_ids=(
+            "pattern-split-on-bytes-string-warm-str",
+            "pattern-sub-on-bytes-string-warm-str",
+            "pattern-subn-on-str-string-purged-bytes",
+        ),
     )
 
 
@@ -348,5 +358,9 @@ def test_module_boundary_manifest_keeps_compiled_pattern_wrong_text_model_rows_m
         include_workload=(
             support._is_module_workflow_compiled_pattern_wrong_text_model_workload
         ),
-        expected_selected_workload_count=3,
+        expected_selected_workload_ids=(
+            "module-search-on-bytes-string-warm-str-compiled-pattern",
+            "module-match-on-str-string-purged-bytes-compiled-pattern",
+            "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+        ),
     )
