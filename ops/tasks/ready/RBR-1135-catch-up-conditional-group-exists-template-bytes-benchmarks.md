@@ -1,6 +1,6 @@
 # RBR-1135: Catch up conditional group-exists template bytes benchmarks
 
-Status: blocked
+Status: ready
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -46,17 +46,15 @@ Created: 2026-03-24
 - No blocked feature task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in this checkout.
 - The narrow same-family owner-path check in this run confirms benchmark catch-up, not another runtime prerequisite, is the exact surviving post-`RBR-1133` slice:
   - `ops/tasks/done/RBR-1130-implement-conditional-group-exists-template-bytes-parity.md` closes the bounded bytes runtime prerequisite and explicitly leaves publication plus benchmark catch-up for later passes on the same owner family;
-  - `ops/tasks/ready/RBR-1133-publish-conditional-group-exists-template-bytes-workflows.md` already reserves the adjacent correctness-publication step on the shared replacement owner path;
+  - `ops/tasks/done/RBR-1133-publish-conditional-group-exists-template-bytes-workflows.md` closes the adjacent correctness-publication step on the shared replacement owner path;
   - `benchmarks/workloads/conditional_group_exists_boundary.py` still defines only the eight `str` replacement-template rows for this exact numbered and named two-arm conditional slice, with no adjacent bytes template entries present;
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still requires only the `str` workload ids for `minimal-template-replacement-rows` under `conditional-group-exists-boundary`; and
   - `reports/benchmarks/latest.py` still reports `conditional-group-exists-boundary` at `workload_count == 88`, `measured_workloads == 88`, and `known_gap_count == 0`, confirming that the adjacent bytes template benchmark rows remain unpublished today.
 
-## Blocker Notes
-- 2026-03-24: Stopped without touching benchmark artifacts because the task's prerequisite correctness publication is still blocked in this checkout.
+## Reopen Note
+- Reopened 2026-03-24 after the only documented blocker landed and a narrow same-family check confirmed that the benchmark catch-up work is still missing on the existing owner path.
 - Direct verification in this run:
-  - `ops/tasks/blocked/RBR-1133-publish-conditional-group-exists-template-bytes-workflows.md` remains blocked, so the adjacent correctness rows are not yet published.
-  - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.sub(rb"a(b)?c(?(1)d|e)", rb"\\1x", b"zzabcdzz") ... PY` still raises `NotImplementedError: rebar.sub() is a scaffold placeholder; the re-compatible API is not implemented yet`.
-  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional and replacement and template and bytes'` passes unchanged at `64 passed, 1252 deselected`, which confirms only the already-landed bounded bytes subset is covered today and not the unpublished full owner-path slice this benchmark task depends on.
-- Follow-up needed before reopening:
-  - finish and land `RBR-1133` so the exact numbered and named bytes replacement-template workflows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` are published in `reports/correctness/latest.py`;
-  - then rerun this task to add the eight adjacent bytes benchmark rows on `conditional-group-exists-boundary` and refresh `reports/benchmarks/latest.py`.
+  - `ops/tasks/done/RBR-1133-publish-conditional-group-exists-template-bytes-workflows.md` is complete and republishes the mixed `str`/`bytes` correctness slice for this exact bounded template family.
+  - `benchmarks/workloads/conditional_group_exists_boundary.py` still lacks the adjacent bytes replacement-template rows for the numbered and named module/pattern `sub()` and `subn(count=1)` cases on this slice.
+  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still carries `test_conditional_group_exists_template_bytes_manifest_keeps_minimal_replacement_rows_str_only_and_measured` and `test_conditional_group_exists_template_bytes_scorecard_keeps_minimal_replacement_rows_str_only_and_measured`, confirming that the benchmark expectations remain `str`-only today.
+  - `reports/benchmarks/latest.py` still reports `conditional-group-exists-boundary` at `workload_count == 88`, `measured_workloads == 88`, and `known_gap_count == 0`, so the eight adjacent bytes template rows remain unpublished rather than already satisfied.

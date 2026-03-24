@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Catch the bounded bytes replacement-template conditional-group-exists owner path up on Python-path benchmarks once the reopened correctness publication slice lands.
+No ready feature follow-on currently survives; the queue is down to the lone ready conditional-group-exists template-bytes benchmark catch-up slice in `RBR-1135`.
 
 ## Ordered Work
-1. Keep `RBR-1135` as the post-drain frontier: once `RBR-1133` republishes the exact bytes replacement-template workflows for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x`, catch the same owner path up on the existing `conditional-group-exists-boundary` Python-path benchmark surface.
+1. No ready feature follow-on currently survives; `RBR-1135` is the lone ready task, and no concrete same-family successor is written down beyond catching the exact bytes replacement-template conditional-group-exists owner path up on the existing `conditional-group-exists-boundary` Python-path benchmark surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
