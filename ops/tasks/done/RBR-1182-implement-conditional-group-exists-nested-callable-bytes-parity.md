@@ -1,6 +1,6 @@
 # RBR-1182: Implement conditional group-exists nested callable bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,12 @@ Created: 2026-03-24
   - `cargo build -p rebar-cpython` finished successfully;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and module'` returned `32 passed, 4383 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and pattern'` returned `40 passed, 4375 deselected`.
+
+## Completion
+- Landed bounded bytes nested conditional callable parity on the native owner path by adding compile acceptance and callable span discovery for `rb"a(b)?c(?(1)(?(1)d|e)|f)"` and `rb"a(?P<word>b)?c(?(word)(?(word)d|e)|f)"` in `crates/rebar-core/src/lib.rs` and wiring the bytes conditional bridge through `crates/rebar-cpython/src/lib.rs`.
+- Extended `python/rebar/__init__.py` to allow the exact nested bytes pair through the existing native callable passthrough set.
+- Added direct module and compiled-pattern bytes `sub()`/`subn()` parity coverage in `tests/python/test_callable_replacement_parity_suite.py` for present-path replacement results and absent-capture `TypeError` parity on the nested conditional slice.
+- Verification in this run:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and module'` -> `48 passed, 4399 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and pattern'` -> `56 passed, 4391 deselected`

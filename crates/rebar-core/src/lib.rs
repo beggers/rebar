@@ -51,12 +51,17 @@ const CONDITIONAL_GROUP_EXISTS_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] =
     br"a(b)?c(?(1)(de|df)|(eg|eh))";
 const CONDITIONAL_GROUP_EXISTS_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))";
+const CONDITIONAL_GROUP_EXISTS_NESTED_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a(b)?c(?(1)(?(1)d|e)|f)";
+const CONDITIONAL_GROUP_EXISTS_NESTED_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<word>b)?c(?(word)(?(word)d|e)|f)";
 const CONDITIONAL_GROUP_EXISTS_BYTES_CAPTURE_NAME: &str = "word";
 const CONDITIONAL_GROUP_EXISTS_BYTES_PREFIX: &[u8] = b"a";
 const CONDITIONAL_GROUP_EXISTS_BYTES_CAPTURE: &[u8] = b"b";
 const CONDITIONAL_GROUP_EXISTS_BYTES_MIDDLE: &[u8] = b"c";
 const CONDITIONAL_GROUP_EXISTS_BYTES_YES_BRANCH: &[u8] = b"d";
 const CONDITIONAL_GROUP_EXISTS_BYTES_NO_BRANCH: &[u8] = b"e";
+const CONDITIONAL_GROUP_EXISTS_BYTES_NESTED_NO_BRANCH: &[u8] = b"f";
 const CONDITIONAL_GROUP_EXISTS_BYTES_YES_ALTERNATION_BRANCHES: [&[u8]; 2] = [b"de", b"df"];
 const CONDITIONAL_GROUP_EXISTS_BYTES_NO_ALTERNATION_BRANCHES: [&[u8]; 2] = [b"eg", b"eh"];
 const BYTES_NESTED_GROUP_LITERAL_PATTERN: &[u8] = br"a((b))d";
@@ -4044,6 +4049,27 @@ fn compile_known_supported_case(
                 group_count: 3,
                 named_groups: if pattern == CONDITIONAL_GROUP_EXISTS_ALTERNATION_NAMED_BYTES_PATTERN
                 {
+                    vec![NamedGroup {
+                        name: CONDITIONAL_GROUP_EXISTS_BYTES_CAPTURE_NAME.to_string(),
+                        index: 1,
+                    }]
+                } else {
+                    Vec::new()
+                },
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if (pattern == CONDITIONAL_GROUP_EXISTS_NESTED_NUMBERED_BYTES_PATTERN
+                || pattern == CONDITIONAL_GROUP_EXISTS_NESTED_NAMED_BYTES_PATTERN)
+                && normalized_flags == 0 =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: if pattern == CONDITIONAL_GROUP_EXISTS_NESTED_NAMED_BYTES_PATTERN {
                     vec![NamedGroup {
                         name: CONDITIONAL_GROUP_EXISTS_BYTES_CAPTURE_NAME.to_string(),
                         index: 1,
@@ -12539,6 +12565,167 @@ pub fn conditional_group_exists_alternation_find_spans_bytes(
     let mut matches = Vec::new();
     let mut next_start = normalized_pos;
     while let Some((span, group_spans)) = find_conditional_group_exists_alternation_match_span_bytes(
+        flags,
+        MatchMode::Search,
+        string,
+        next_start,
+        normalized_endpos,
+    ) {
+        matches.push(CapturedMatchSpan { span, group_spans });
+        next_start = span.1;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
+fn conditional_group_exists_nested_matches_at_bytes(
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<(bool, usize)> {
+    if !literal_matches_at_bytes(
+        CONDITIONAL_GROUP_EXISTS_BYTES_PREFIX,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let capture_start = start + CONDITIONAL_GROUP_EXISTS_BYTES_PREFIX.len();
+    let (capture_present, middle_start) = if literal_matches_at_bytes(
+        CONDITIONAL_GROUP_EXISTS_BYTES_CAPTURE,
+        flags,
+        string,
+        capture_start,
+        endpos,
+    ) {
+        (
+            true,
+            capture_start + CONDITIONAL_GROUP_EXISTS_BYTES_CAPTURE.len(),
+        )
+    } else {
+        (false, capture_start)
+    };
+
+    if !literal_matches_at_bytes(
+        CONDITIONAL_GROUP_EXISTS_BYTES_MIDDLE,
+        flags,
+        string,
+        middle_start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let branch_start = middle_start + CONDITIONAL_GROUP_EXISTS_BYTES_MIDDLE.len();
+    let branch = if capture_present {
+        CONDITIONAL_GROUP_EXISTS_BYTES_YES_BRANCH
+    } else {
+        CONDITIONAL_GROUP_EXISTS_BYTES_NESTED_NO_BRANCH
+    };
+    literal_matches_at_bytes(branch, flags, string, branch_start, endpos)
+        .then_some((capture_present, branch_start + branch.len()))
+}
+
+fn find_conditional_group_exists_nested_match_span_bytes(
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    let group_spans_for_match = |start: usize, capture_present: bool| {
+        vec![if capture_present {
+            let capture_start = start + CONDITIONAL_GROUP_EXISTS_BYTES_PREFIX.len();
+            Some((
+                capture_start,
+                capture_start + CONDITIONAL_GROUP_EXISTS_BYTES_CAPTURE.len(),
+            ))
+        } else {
+            None
+        }]
+    };
+
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            conditional_group_exists_nested_matches_at_bytes(flags, string, start, endpos).map(
+                |(capture_present, match_end)| {
+                    (
+                        (start, match_end),
+                        group_spans_for_match(start, capture_present),
+                    )
+                },
+            )
+        }),
+        MatchMode::Match => {
+            conditional_group_exists_nested_matches_at_bytes(flags, string, pos, endpos).map(
+                |(capture_present, match_end)| {
+                    (
+                        (pos, match_end),
+                        group_spans_for_match(pos, capture_present),
+                    )
+                },
+            )
+        }
+        MatchMode::Fullmatch => {
+            conditional_group_exists_nested_matches_at_bytes(flags, string, pos, endpos).and_then(
+                |(capture_present, match_end)| {
+                    (match_end == endpos).then_some((
+                        (pos, match_end),
+                        group_spans_for_match(pos, capture_present),
+                    ))
+                },
+            )
+        }
+    }
+}
+
+/// Discover repeated spans for the bounded nested two-arm conditional
+/// replacement bytes slice while preserving capture spans for result
+/// marshalling.
+#[must_use]
+pub fn conditional_group_exists_nested_find_spans_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    if pattern != CONDITIONAL_GROUP_EXISTS_NESTED_NUMBERED_BYTES_PATTERN
+        && pattern != CONDITIONAL_GROUP_EXISTS_NESTED_NAMED_BYTES_PATTERN
+    {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+    if flags != 0 {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((span, group_spans)) = find_conditional_group_exists_nested_match_span_bytes(
         flags,
         MatchMode::Search,
         string,
