@@ -60,3 +60,4 @@ Task-writing rules:
 - Use the next available `RBR-` identifier.
 - Set `Owner: feature-implementation`.
 - Keep tasks bounded enough for one implementation run.
+- Every acceptance check you write must be validated on the current branch to hit at least one relevant repo-owned test or harness assertion. Do not leave a task with a `-k` selector, node id, or other narrow target that selects zero tests.
