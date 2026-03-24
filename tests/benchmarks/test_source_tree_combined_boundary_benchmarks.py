@@ -5201,53 +5201,27 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             )
             if manifest_definition.zero_gap_bytes_representative_subsets
         }
+        expected_subset_counts = {
+            "conditional-group-exists-boundary": 3,
+            "wider-ranged-repeat-quantified-group-boundary": 6,
+            "open-ended-quantified-group-boundary": 5,
+            "branch-local-backreference-boundary": 1,
+        }
         self.assertEqual(
-            set(zero_gap_bytes_subsets_by_manifest),
             {
-                "conditional-group-exists-boundary",
-                "wider-ranged-repeat-quantified-group-boundary",
-                "open-ended-quantified-group-boundary",
-                "branch-local-backreference-boundary",
+                manifest_id: len(representative_subsets)
+                for manifest_id, representative_subsets in (
+                    zero_gap_bytes_subsets_by_manifest.items()
+                )
             },
-        )
-        self.assertEqual(
-            len(
-                zero_gap_bytes_subsets_by_manifest[
-                    "conditional-group-exists-boundary"
-                ]
-            ),
-            2,
-        )
-        self.assertEqual(
-            len(
-                zero_gap_bytes_subsets_by_manifest[
-                    "wider-ranged-repeat-quantified-group-boundary"
-                ]
-            ),
-            6,
-        )
-        self.assertEqual(
-            len(
-                zero_gap_bytes_subsets_by_manifest[
-                    "open-ended-quantified-group-boundary"
-                ]
-            ),
-            5,
-        )
-        self.assertEqual(
-            len(
-                zero_gap_bytes_subsets_by_manifest[
-                    "branch-local-backreference-boundary"
-                ]
-            ),
-            1,
+            expected_subset_counts,
         )
         self.assertEqual(
             sum(
                 len(representative_subsets)
                 for representative_subsets in zero_gap_bytes_subsets_by_manifest.values()
             ),
-            14,
+            sum(expected_subset_counts.values()),
         )
         for manifest_id, representative_subsets in zero_gap_bytes_subsets_by_manifest.items():
             for expected_workload_ids in representative_subsets:
