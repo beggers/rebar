@@ -637,6 +637,18 @@ def _callable_match_group_signature(replacement: object) -> tuple[object, ...] |
     )
 
 
+def _text_model_agnostic_callable_match_group_signature(
+    replacement: object,
+) -> tuple[object, ...] | None:
+    signature = _callable_match_group_signature(replacement)
+    if signature is None:
+        return None
+    return tuple(
+        value.decode("utf-8") if isinstance(value, bytes) else value
+        for value in signature
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class _CollectionReplacementPatternCollectionRoute:
     workload_case_pairs: tuple[tuple[str, str], ...]
@@ -3618,6 +3630,28 @@ def _conditional_group_exists_template_replacement_expectation(
     )
 
 
+def _conditional_group_exists_callable_replacement_expectations(
+) -> tuple[SourceTreeCombinedSliceExpectation, ...]:
+    expected_slice_ids = (
+        "minimal-callable-replacement-rows",
+        "minimal-callable-replacement-exception-rows",
+    )
+    expectations = tuple(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(
+            "conditional-group-exists-boundary"
+        )
+        if expectation.slice_id in expected_slice_ids
+    )
+    actual_slice_ids = tuple(expectation.slice_id for expectation in expectations)
+    if actual_slice_ids != expected_slice_ids:
+        raise AssertionError(
+            "conditional callable replacement slice expectations drifted: "
+            f"expected {expected_slice_ids!r}, got {actual_slice_ids!r}"
+        )
+    return expectations
+
+
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
 
@@ -6442,11 +6476,70 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-    def test_conditional_group_exists_callable_bytes_scorecard_promotes_replacement_and_exception_rows_to_measured(
+    def test_conditional_group_exists_callable_scorecards_keep_str_negative_count_follow_on_workloads_in_sync(
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
+        expectations = _conditional_group_exists_callable_replacement_expectations()
         case = source_tree_scorecard_case(manifest_id)
+        manifest = case.manifest_for_id(manifest_id)
+        expected_callable_workload_ids = tuple(
+            workload_id
+            for expectation in expectations
+            for workload_id in expectation.expected_workload_ids
+        )
+        callable_slice_rows = tuple(
+            workload
+            for expectation in expectations
+            for workload in select_source_tree_combined_slice_rows(manifest, expectation)
+        )
+        representative_callable_workload_ids = tuple(
+            workload_id
+            for workload_id in case.representative_measured_workload_ids
+            if workload_id in expected_callable_workload_ids
+        )
+        representative_str_workload_ids, representative_bytes_workload_ids = (
+            _split_workload_ids_by_text_model(representative_callable_workload_ids)
+        )
+        manifest_negative_count_str_workload_ids = tuple(
+            workload.workload_id
+            for workload in callable_slice_rows
+            if workload.text_model == "str" and "negative-count" in workload.categories
+        )
+        manifest_negative_count_bytes_workload_ids = tuple(
+            workload.workload_id
+            for workload in callable_slice_rows
+            if workload.text_model == "bytes" and "negative-count" in workload.categories
+        )
+        non_negative_str_workload_signatures = Counter(
+            (
+                workload.operation,
+                workload.pattern,
+                workload.haystack,
+                _text_model_agnostic_callable_match_group_signature(
+                    workload.replacement_payload()
+                ),
+                workload.count,
+                workload.cache_mode,
+            )
+            for workload in callable_slice_rows
+            if workload.text_model == "str"
+            and workload.workload_id not in manifest_negative_count_str_workload_ids
+        )
+        bytes_workload_signatures = Counter(
+            (
+                workload.operation,
+                workload.pattern,
+                workload.haystack,
+                _text_model_agnostic_callable_match_group_signature(
+                    workload.replacement_payload()
+                ),
+                workload.count,
+                workload.cache_mode,
+            )
+            for workload in callable_slice_rows
+            if workload.text_model == "bytes"
+        )
 
         self.assertEqual(
             case.representative_measured_workload_ids,
@@ -6455,20 +6548,44 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
-        for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, case.representative_measured_workload_ids)
-                self.assertNotIn(
-                    workload_id,
-                    case.representative_known_gap_workload_ids,
-                )
-        for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, case.representative_measured_workload_ids)
-                self.assertNotIn(
-                    workload_id,
-                    case.representative_known_gap_workload_ids,
-                )
+        self.assertEqual(
+            representative_callable_workload_ids,
+            expected_callable_workload_ids,
+        )
+        self.assertEqual(manifest_negative_count_bytes_workload_ids, ())
+        self.assertEqual(
+            tuple(
+                workload_id
+                for workload_id in representative_str_workload_ids
+                if workload_id in manifest_negative_count_str_workload_ids
+            ),
+            manifest_negative_count_str_workload_ids,
+        )
+        self.assertEqual(
+            non_negative_str_workload_signatures,
+            bytes_workload_signatures,
+        )
+        self.assertTrue(
+            all(
+                "negative-count" not in workload_id
+                for workload_id in representative_bytes_workload_ids
+            )
+        )
+        self.assertEqual(
+            Counter(
+                (workload.operation, workload.count)
+                for workload in callable_slice_rows
+                if workload.workload_id in manifest_negative_count_str_workload_ids
+            ),
+            Counter(
+                {
+                    ("module.sub", -1): 1,
+                    ("module.subn", -1): 1,
+                    ("pattern.sub", -1): 1,
+                    ("pattern.subn", -1): 1,
+                }
+            ),
+        )
 
     def test_conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured(
         self,
