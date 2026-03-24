@@ -102,6 +102,15 @@ NO_MATCH_TEXT_CANDIDATES = (
     "ac",
     "ae",
     "ad",
+    b"zzz",
+    b"",
+    b"----",
+    b"no-match",
+    b"999",
+    b"ffff",
+    b"ac",
+    b"ae",
+    b"ad",
 )
 GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID = "grouped-replacement-template"
 OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE_ID = (
@@ -578,6 +587,7 @@ class ReplacementSurfaceSpec:
     supplemental_no_match_cases: tuple[SupplementalReplacementCase, ...] = ()
     supplemental_repeated_cases: tuple[SupplementalReplacementCase, ...] = ()
     pending_bytes_follow_on_manifest_ids: frozenset[str] = frozenset()
+    pending_bytes_match_object_manifest_ids: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -1521,6 +1531,12 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
         if case.text_model != "bytes"
         or case.manifest_id not in spec.pending_bytes_follow_on_manifest_ids
     )
+    match_object_cases = tuple(
+        case
+        for case in replacement_cases
+        if case.text_model != "bytes"
+        or case.manifest_id not in spec.pending_bytes_match_object_manifest_ids
+    )
     compile_patterns = _sorted_compile_patterns(
         replacement_cases,
         pattern_extractor=spec.pattern_extractor,
@@ -1541,7 +1557,7 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
             case for case in replacement_cases if case.operation == "pattern_call"
         ),
         match_snapshot_cases=_cases_for_manifest_ids(
-            replacement_cases,
+            match_object_cases,
             spec.match_snapshot_manifest_ids,
         ),
         match_group_access_cases=_cases_for_manifest_ids(
@@ -1551,7 +1567,7 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
         template_expand_cases=tuple(
             case
             for case in _cases_for_manifest_ids(
-                replacement_cases,
+                match_object_cases,
                 spec.template_expand_manifest_ids,
             )
             if "replacement-template" in case.categories
@@ -1752,7 +1768,7 @@ REPLACEMENT_SURFACE_SPECS = (
     ),
     ReplacementSurfaceSpec(
         id="conditional-group-exists-replacement",
-        pattern_extractor=str_case_pattern,
+        pattern_extractor=case_pattern,
         match_snapshot_manifest_ids=(
             "conditional-group-exists-replacement-workflows",
             "conditional-group-exists-replacement-template-workflows",
@@ -1772,6 +1788,9 @@ REPLACEMENT_SURFACE_SPECS = (
         discover_no_match_on_all_replacement_cases=True,
         no_match_text_candidates=NO_MATCH_TEXT_CANDIDATES,
         supplemental_repeated_cases=CONDITIONAL_SUPPLEMENTAL_REPEATED_CASES,
+        pending_bytes_match_object_manifest_ids=frozenset(
+            {"conditional-group-exists-replacement-template-workflows"}
+        ),
     ),
 )
 REPLACEMENT_SURFACES = tuple(
@@ -2584,7 +2603,7 @@ def test_conditional_replacement_template_negative_count_bytes_cases_keep_exact_
     }
 
 
-def test_conditional_replacement_template_publication_keeps_str_only_frontier_explicit(
+def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_explicit(
 ) -> None:
     manifest_id = "conditional-group-exists-replacement-template-workflows"
     surface = _replacement_surface_by_id("conditional-group-exists-replacement")
@@ -2593,6 +2612,8 @@ def test_conditional_replacement_template_publication_keeps_str_only_frontier_ex
         surface,
         manifest_id=manifest_id,
     )
+
+    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
 
     assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
     assert selected_case_ids == (
@@ -2604,6 +2625,14 @@ def test_conditional_replacement_template_publication_keeps_str_only_frontier_ex
         "module-subn-template-named-conditional-group-exists-replacement-absent-str",
         "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
         "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
+        "module-sub-template-conditional-group-exists-replacement-present-bytes",
+        "module-subn-template-conditional-group-exists-replacement-absent-bytes",
+        "pattern-sub-template-conditional-group-exists-replacement-present-bytes",
+        "pattern-subn-template-conditional-group-exists-replacement-absent-bytes",
+        "module-sub-template-named-conditional-group-exists-replacement-present-bytes",
+        "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+        "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
+        "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
     )
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         {
@@ -2611,31 +2640,40 @@ def test_conditional_replacement_template_publication_keeps_str_only_frontier_ex
                 {
                     "module-sub-template-conditional-group-exists-replacement-present-str",
                     "module-sub-template-named-conditional-group-exists-replacement-present-str",
+                    "module-sub-template-conditional-group-exists-replacement-present-bytes",
+                    "module-sub-template-named-conditional-group-exists-replacement-present-bytes",
                 }
             ),
             "module-subn": frozenset(
                 {
                     "module-subn-template-conditional-group-exists-replacement-absent-str",
                     "module-subn-template-named-conditional-group-exists-replacement-absent-str",
+                    "module-subn-template-conditional-group-exists-replacement-absent-bytes",
+                    "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
                 }
             ),
             "pattern-sub": frozenset(
                 {
                     "pattern-sub-template-conditional-group-exists-replacement-present-str",
                     "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
+                    "pattern-sub-template-conditional-group-exists-replacement-present-bytes",
+                    "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
                 }
             ),
             "pattern-subn": frozenset(
                 {
                     "pattern-subn-template-conditional-group-exists-replacement-absent-str",
                     "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
+                    "pattern-subn-template-conditional-group-exists-replacement-absent-bytes",
+                    "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
                 }
             ),
         },
         selected_case_ids=selected_case_ids,
         coverage_label="conditional replacement template publication case-id buckets",
     )
-    assert all(case.text_model == "str" for case in bundle.cases)
+    assert tuple(case.case_id for case in str_cases) == selected_case_ids[:8]
+    assert tuple(case.case_id for case in bytes_cases) == selected_case_ids[8:]
     assert tuple(
         case.case_id
         for case in surface.replacement_cases
@@ -2645,7 +2683,7 @@ def test_conditional_replacement_template_publication_keeps_str_only_frontier_ex
         case.case_id
         for case in surface.template_expand_cases
         if case.manifest_id == manifest_id
-    ) == selected_case_ids
+    ) == selected_case_ids[:8]
 
 
 @pytest.mark.parametrize(("surface", "pattern"), _compile_pattern_params())

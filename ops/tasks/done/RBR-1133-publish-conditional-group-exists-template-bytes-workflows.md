@@ -1,6 +1,6 @@
 # RBR-1133: Publish conditional group-exists template bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,13 @@ Created: 2026-03-24
 - The publication work is still genuinely pending in this checkout:
   - `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py` is still `str`-only on this manifest; and
   - `reports/correctness/latest.py` still publishes only the existing `str` rows for `conditional-group-exists-replacement-template-workflows`.
+
+## Completion Note
+- Landed the eight adjacent bytes rows on `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py`, keeping the manifest on the existing shared owner path and publishing a 16-case mixed `str`/`bytes` bundle for the exact numbered and named module/pattern `sub()` and `subn(count=1)` slice.
+- Updated `tests/python/test_fixture_backed_replacement_parity_suite.py` so the shared conditional replacement surface now expects the mixed-text publication frontier for this manifest while still leaving match-object-derived bytes checks gated behind the existing bytes `search()` placeholder boundary; also added bytes no-match candidates so the unchanged-input `sub()` / `subn()` checks run on the new rows.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` so both representative-case expectation tables mirror the new bytes ids for `conditional-group-exists-replacement-template-workflows`.
+- Republished `reports/correctness/latest.py`; the tracked report now includes `collection.replacement.conditional_group_exists.template.bytes`, keeps the manifest fully passing, and moves the combined published totals to `1661` total / `1661` passed / `0` failed / `0` unimplemented.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional and replacement and template and bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
