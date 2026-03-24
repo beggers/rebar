@@ -27,6 +27,9 @@ from tests.python.fixture_parity_support import (
     fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    generated_compile_cases_for_specs,
+    generated_spec_by_manifest_id,
+    generated_specs_by_manifest_id,
     id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
@@ -279,11 +282,9 @@ GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC = GeneratedFullyEmptyAlternationPa
     ),
     failure_prefix="fully-empty conditional alternation generated parity drifted",
 )
-
-GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPEC_BY_MANIFEST_ID = {
-    spec.bundle.expected_manifest_id: spec
-    for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
-}
+GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID = generated_specs_by_manifest_id(
+    GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+)
 GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
     spec.bundle.expected_manifest_id: wrap_candidate_core_texts(
         tuple(
@@ -294,11 +295,6 @@ GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
     )
     for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
 }
-GENERATED_QUANTIFIED_CONDITIONAL_COMPILE_CASES = tuple(
-    case
-    for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
-    for case in fixture_cases_for_operation((spec.bundle,), "compile")
-)
 
 
 PATTERN_BOUNDS_MATCH_CASES = (
@@ -690,14 +686,18 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_generated_quantified_conditional_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedConditionalParitySpec,
 ) -> None:
-    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+    compile_cases = generated_compile_cases_for_specs((spec,))
     candidate_texts = GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
         spec.bundle.expected_manifest_id
     ]
 
+    assert tuple(GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID) == (
+        "conditional-group-exists-quantified-workflows",
+        "conditional-group-exists-quantified-alternation-workflows",
+    )
     assert tuple(
         generated_spec.bundle.manifest.path
-        for generated_spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+        for generated_spec in GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID.values()
     ) == (
         QUANTIFIED_CONDITIONAL_BUNDLE.manifest.path,
         QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE.manifest.path,
@@ -715,9 +715,8 @@ def test_generated_quantified_conditional_compile_cases_stay_anchored_to_publish
 
 
 def test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_published_manifest() -> None:
-    compile_cases = fixture_cases_for_operation(
-        (GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.bundle,),
-        "compile",
+    compile_cases = generated_compile_cases_for_specs(
+        (GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC,)
     )
 
     assert GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.bundle.manifest.path == (
@@ -827,14 +826,18 @@ def test_nested_and_alternation_compile_metadata_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    GENERATED_QUANTIFIED_CONDITIONAL_COMPILE_CASES,
+    generated_compile_cases_for_specs(GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS),
     ids=fixture_case_pytest_id,
 )
 def test_generated_quantified_conditional_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    spec = GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPEC_BY_MANIFEST_ID[case.manifest_id]
+    spec = generated_spec_by_manifest_id(
+        GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID,
+        case.manifest_id,
+        owner_label="generated quantified conditional",
+    )
     backend_name, backend = regex_backend
     pattern = str_case_pattern(case)
     observed_pattern, expected_pattern = compile_with_cpython_parity(
@@ -872,10 +875,7 @@ def test_generated_quantified_conditional_text_matrix_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    fixture_cases_for_operation(
-        (GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.bundle,),
-        "compile",
-    ),
+    generated_compile_cases_for_specs((GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC,)),
     ids=fixture_case_pytest_id,
 )
 def test_generated_fully_empty_alternation_text_matrix_matches_cpython(

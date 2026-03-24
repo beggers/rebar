@@ -37,6 +37,9 @@ from tests.python.fixture_parity_support import (
     fixture_bundle_manifest_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    generated_compile_cases_for_specs,
+    generated_spec_by_manifest_id,
+    generated_specs_by_manifest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
@@ -161,23 +164,9 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
         ),
     ),
 )
-
-GENERATED_QUANTIFIED_BRANCH_LOCAL_COMPILE_CASES = tuple(
-    case
-    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
-    for case in fixture_cases_for_operation((spec.bundle,), "compile")
+GENERATED_QUANTIFIED_BRANCH_LOCAL_SPECS_BY_MANIFEST_ID = generated_specs_by_manifest_id(
+    GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
 )
-
-
-def _generated_quantified_branch_local_spec(
-    manifest_id: str,
-) -> GeneratedQuantifiedBranchLocalParitySpec:
-    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS:
-        if spec.bundle.expected_manifest_id == manifest_id:
-            return spec
-    raise AssertionError(
-        f"unexpected generated branch-local manifest id {manifest_id!r}"
-    )
 
 
 def _generated_branch_local_candidate_texts(
@@ -1084,7 +1073,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedBranchLocalParitySpec,
 ) -> None:
-    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+    compile_cases = generated_compile_cases_for_specs((spec,))
     candidate_texts = build_wrapped_body_candidate_texts(
         spec.candidate_body_atoms,
         spec.candidate_lengths,
@@ -1099,9 +1088,13 @@ def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_publis
         )
     )
 
+    assert tuple(GENERATED_QUANTIFIED_BRANCH_LOCAL_SPECS_BY_MANIFEST_ID) == (
+        "quantified-nested-group-alternation-branch-local-backreference-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
+    )
     assert tuple(
         generated_spec.bundle.manifest.path
-        for generated_spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
+        for generated_spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_SPECS_BY_MANIFEST_ID.values()
     ) == (
         (
             QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE.manifest.path
@@ -1273,14 +1266,18 @@ def test_compile_metadata_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    GENERATED_QUANTIFIED_BRANCH_LOCAL_COMPILE_CASES,
+    generated_compile_cases_for_specs(GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS),
     ids=lambda case: case.case_id,
 )
 def test_generated_quantified_branch_local_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    spec = _generated_quantified_branch_local_spec(case.manifest_id)
+    spec = generated_spec_by_manifest_id(
+        GENERATED_QUANTIFIED_BRANCH_LOCAL_SPECS_BY_MANIFEST_ID,
+        case.manifest_id,
+        owner_label="generated branch-local",
+    )
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
     observed_pattern, expected_pattern = compile_with_cpython_parity(

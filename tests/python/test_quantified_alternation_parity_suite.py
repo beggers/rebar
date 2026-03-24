@@ -35,6 +35,9 @@ from tests.python.fixture_parity_support import (
     fixture_bundle_manifest_pytest_id,
     fixture_case_pytest_id,
     fixture_cases_by_id,
+    generated_compile_cases_for_specs,
+    generated_spec_by_manifest_id,
+    generated_specs_by_manifest_id,
     fixture_cases_for_operation,
     follow_on_pytest_id,
     id_attribute_pytest_id,
@@ -164,23 +167,9 @@ GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
         ),
     ),
 )
-
-GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES = tuple(
-    case
-    for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
-    for case in fixture_cases_for_operation((spec.bundle,), "compile")
+GENERATED_QUANTIFIED_ALTERNATION_SPECS_BY_MANIFEST_ID = generated_specs_by_manifest_id(
+    GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
 )
-
-
-def _generated_quantified_alternation_spec(
-    manifest_id: str,
-) -> GeneratedQuantifiedAlternationParitySpec:
-    for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS:
-        if spec.bundle.expected_manifest_id == manifest_id:
-            return spec
-    raise AssertionError(
-        f"unexpected generated quantified alternation manifest id {manifest_id!r}"
-    )
 
 
 def _generated_candidate_texts(
@@ -744,7 +733,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_generated_quantified_alternation_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedAlternationParitySpec,
 ) -> None:
-    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+    compile_cases = generated_compile_cases_for_specs((spec,))
     candidate_texts = build_wrapped_body_candidate_texts(
         BODY_ATOMS,
         spec.candidate_lengths,
@@ -754,9 +743,14 @@ def test_generated_quantified_alternation_compile_cases_stay_anchored_to_publish
         len(BODY_ATOMS) ** length for length in spec.candidate_lengths
     )
 
+    assert tuple(GENERATED_QUANTIFIED_ALTERNATION_SPECS_BY_MANIFEST_ID) == (
+        "quantified-alternation-workflows",
+        "quantified-alternation-broader-range-workflows",
+        "quantified-alternation-backtracking-heavy-workflows",
+    )
     assert tuple(
         generated_spec.bundle.manifest.path
-        for generated_spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
+        for generated_spec in GENERATED_QUANTIFIED_ALTERNATION_SPECS_BY_MANIFEST_ID.values()
     ) == (
         QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE.manifest.path,
         QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE.manifest.path,
@@ -921,14 +915,18 @@ def test_compile_metadata_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES,
+    generated_compile_cases_for_specs(GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS),
     ids=fixture_case_pytest_id,
 )
 def test_generated_quantified_alternation_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    spec = _generated_quantified_alternation_spec(case.manifest_id)
+    spec = generated_spec_by_manifest_id(
+        GENERATED_QUANTIFIED_ALTERNATION_SPECS_BY_MANIFEST_ID,
+        case.manifest_id,
+        owner_label="generated quantified alternation",
+    )
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
     observed_pattern, expected_pattern = compile_with_cpython_parity(

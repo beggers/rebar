@@ -906,6 +906,47 @@ def requested_published_fixture_bundles(
     )
 
 
+def generated_specs_by_manifest_id(
+    specs: Iterable[object],
+) -> dict[str, object]:
+    ordered_specs = tuple(specs)
+    manifest_ids = tuple(
+        getattr(getattr(spec, "bundle"), "expected_manifest_id") for spec in ordered_specs
+    )
+    duplicate_manifest_ids = duplicate_string_ids(manifest_ids)
+    if duplicate_manifest_ids:
+        raise ValueError(
+            "generated parity specs contain duplicate manifest ids: "
+            f"{duplicate_manifest_ids}"
+        )
+    return {
+        manifest_id: spec for manifest_id, spec in zip(manifest_ids, ordered_specs)
+    }
+
+
+def generated_spec_by_manifest_id(
+    specs_by_manifest_id: Mapping[str, object],
+    manifest_id: str,
+    *,
+    owner_label: str,
+) -> object:
+    try:
+        return specs_by_manifest_id[manifest_id]
+    except KeyError as exc:
+        raise AssertionError(
+            f"unexpected {owner_label} manifest id {manifest_id!r}"
+        ) from exc
+
+
+def generated_compile_cases_for_specs(
+    specs: Iterable[object],
+) -> tuple[FixtureCase, ...]:
+    return fixture_cases_for_operation(
+        tuple(getattr(spec, "bundle") for spec in specs),
+        "compile",
+    )
+
+
 def assert_fixture_bundle_contract(
     bundle: FixtureBundle,
     *,
