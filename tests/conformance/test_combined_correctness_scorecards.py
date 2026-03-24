@@ -5227,88 +5227,27 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-callable-replacement-workflows"
-        expected_manifest_negative_count_str_case_ids = (
-            "module-sub-callable-conditional-group-exists-negative-count-str",
-            "module-subn-callable-named-conditional-group-exists-negative-count-str",
-            "pattern-sub-callable-conditional-group-exists-negative-count-str",
-            "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
-            "module-sub-callable-conditional-group-exists-nested-negative-count-str",
-            "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
-            "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
-            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
-            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
-            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
-            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
-            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
-            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
-            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
-            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-        )
-        expected_representative_negative_count_str_case_ids = (
-            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
-            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
-            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
-            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-str",
-            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
-            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-str",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-str",
-            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-str",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-str",
-            "module-sub-callable-conditional-group-exists-negative-count-str",
-            "module-subn-callable-named-conditional-group-exists-negative-count-str",
-            "pattern-sub-callable-conditional-group-exists-negative-count-str",
-            "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
-            "module-sub-callable-conditional-group-exists-nested-negative-count-str",
-            "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
-            "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
-            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
-        )
-        expected_manifest_negative_count_bytes_case_ids = (
-            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
-            "module-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
-            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-present-bytes",
-            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-absent-bytes",
-            "module-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
-            "module-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
-            "pattern-sub-callable-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
-            "pattern-subn-callable-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
-            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
-            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-present-bytes",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-absent-bytes",
-            "module-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
-            "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present-bytes",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent-bytes",
-            "module-sub-callable-conditional-group-exists-negative-count-bytes",
-            "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
-            "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
-            "pattern-subn-callable-named-conditional-group-exists-negative-count-bytes",
-            "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
-            "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
-            "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
-            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
-        )
-        expected_representative_negative_count_bytes_case_ids = tuple(
-            f"{case_id.removesuffix('-str')}-bytes"
-            for case_id in expected_representative_negative_count_str_case_ids
-        )
+
+        def selected_case_ids(
+            cases: Iterable[FixtureCase],
+            *,
+            text_model: str,
+            required_categories: tuple[str, ...],
+            excluded_categories: tuple[str, ...] = (),
+        ) -> tuple[str, ...]:
+            return tuple(
+                case.case_id
+                for case in cases
+                if case.text_model == text_model
+                and all(category in case.categories for category in required_categories)
+                and all(category not in case.categories for category in excluded_categories)
+            )
+
+        def mirrored_bytes_case_ids(str_case_ids: tuple[str, ...]) -> tuple[str, ...]:
+            return tuple(
+                f"{case_id.removesuffix('-str')}-bytes" for case_id in str_case_ids
+            )
+
         manifest = manifest_records_by_id(
             correctness.published_fixture_manifests()
         )[manifest_id]
@@ -5328,15 +5267,69 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             for case in combined_case.representative_cases
             if case.text_model == "bytes"
         )
-        manifest_negative_count_str_case_ids = tuple(
-            case.case_id
-            for case in manifest.cases
-            if case.text_model == "str" and "negative-count" in case.categories
+        manifest_negative_count_str_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="str",
+            required_categories=("negative-count",),
         )
-        manifest_negative_count_bytes_case_ids = tuple(
-            case.case_id
-            for case in manifest.cases
-            if case.text_model == "bytes" and "negative-count" in case.categories
+        manifest_negative_count_bytes_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="bytes",
+            required_categories=("negative-count",),
+        )
+        manifest_legacy_negative_count_str_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="str",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified",),
+        )
+        manifest_legacy_negative_count_bytes_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="bytes",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified",),
+        )
+        manifest_quantified_negative_count_str_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="str",
+            required_categories=("negative-count", "quantified"),
+        )
+        manifest_quantified_negative_count_bytes_case_ids = selected_case_ids(
+            manifest.cases,
+            text_model="bytes",
+            required_categories=("negative-count", "quantified"),
+        )
+        representative_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count",),
+        )
+        representative_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count",),
+        )
+        representative_legacy_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified",),
+        )
+        representative_legacy_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count",),
+            excluded_categories=("quantified",),
+        )
+        representative_quantified_negative_count_str_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="str",
+            required_categories=("negative-count", "quantified"),
+        )
+        representative_quantified_negative_count_bytes_case_ids = selected_case_ids(
+            combined_case.representative_cases,
+            text_model="bytes",
+            required_categories=("negative-count", "quantified"),
         )
 
         self.assertEqual(
@@ -5344,20 +5337,51 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             combined_expectation.representative_case_ids,
         )
         self.assertEqual(
-            manifest_negative_count_str_case_ids,
-            expected_manifest_negative_count_str_case_ids,
-        )
-        self.assertEqual(
-            manifest_negative_count_bytes_case_ids,
-            expected_manifest_negative_count_bytes_case_ids,
-        )
-        self.assertEqual(
             len(combined_case_ids),
             len(representative_str_case_ids) + len(representative_bytes_case_ids),
         )
         self.assertEqual(
-            representative_str_case_ids[-len(expected_representative_negative_count_str_case_ids) :],
-            expected_representative_negative_count_str_case_ids,
+            len(manifest_negative_count_str_case_ids),
+            len(manifest_negative_count_bytes_case_ids),
+        )
+        self.assertEqual(
+            len(manifest_negative_count_str_case_ids),
+            24,
+        )
+        self.assertEqual(
+            len(manifest_legacy_negative_count_str_case_ids),
+            len(manifest_legacy_negative_count_bytes_case_ids),
+        )
+        self.assertEqual(
+            len(manifest_legacy_negative_count_str_case_ids),
+            8,
+        )
+        self.assertEqual(
+            len(manifest_quantified_negative_count_str_case_ids),
+            len(manifest_quantified_negative_count_bytes_case_ids),
+        )
+        self.assertEqual(
+            len(manifest_quantified_negative_count_str_case_ids),
+            16,
+        )
+        self.assertEqual(
+            manifest_quantified_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(manifest_quantified_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            manifest_legacy_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(manifest_legacy_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_str_case_ids[
+                -len(representative_negative_count_str_case_ids) :
+            ],
+            representative_negative_count_str_case_ids,
+        )
+        self.assertEqual(
+            representative_negative_count_str_case_ids,
+            representative_quantified_negative_count_str_case_ids
+            + representative_legacy_negative_count_str_case_ids,
         )
         quantified_str_only_case_ids = tuple(
             case_id
@@ -5377,14 +5401,9 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
             ),
         )
-        quantified_negative_count_str_case_ids = tuple(
-            case_id
-            for case_id in representative_str_case_ids
-            if "-quantified-" in case_id and "negative-count" in case_id
-        )
         self.assertEqual(
-            quantified_negative_count_str_case_ids,
-            expected_representative_negative_count_str_case_ids[:16],
+            representative_quantified_negative_count_str_case_ids,
+            manifest_quantified_negative_count_str_case_ids,
         )
         quantified_bytes_case_ids = tuple(
             case_id
@@ -5393,17 +5412,32 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         )
         self.assertEqual(
             quantified_bytes_case_ids,
-            tuple(f"{case_id.removesuffix('-str')}-bytes" for case_id in quantified_str_only_case_ids),
+            tuple(
+                f"{case_id.removesuffix('-str')}-bytes"
+                for case_id in quantified_str_only_case_ids
+            ),
         )
         self.assertEqual(
-            representative_bytes_case_ids[-len(expected_representative_negative_count_bytes_case_ids) :],
-            expected_representative_negative_count_bytes_case_ids,
+            representative_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(representative_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_quantified_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(representative_quantified_negative_count_str_case_ids),
+        )
+        self.assertEqual(
+            representative_legacy_negative_count_str_case_ids,
+            manifest_legacy_negative_count_str_case_ids,
+        )
+        self.assertEqual(
+            representative_legacy_negative_count_bytes_case_ids,
+            mirrored_bytes_case_ids(representative_legacy_negative_count_str_case_ids),
         )
         self.assertEqual(
             Counter(
                 (case.operation, case.helper)
                 for case in combined_case.representative_cases
-                if case.case_id in expected_representative_negative_count_str_case_ids
+                if case.case_id in representative_negative_count_str_case_ids
             ),
             Counter(
                 {
@@ -5418,7 +5452,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             Counter(
                 (case.operation, case.helper)
                 for case in combined_case.representative_cases
-                if case.case_id in expected_representative_negative_count_bytes_case_ids
+                if case.case_id in representative_negative_count_bytes_case_ids
             ),
             Counter(
                 {
