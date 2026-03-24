@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import textwrap
 
 import pytest
 
@@ -18,6 +17,7 @@ from tests.benchmarks import wrong_text_model_benchmark_owner_support as support
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
+from tests.benchmarks.benchmark_test_support import _write_test_manifest
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
@@ -223,12 +223,10 @@ def test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helpe
         source_workloads,
         spec=owner_spec.contract_builder_spec(),
     )
-    manifest_path = (
-        tmp_path / f"python_benchmark_{owner_spec.contract_filename_stem}_contract.py"
-    )
-    manifest_path.write_text(
-        textwrap.dedent(f"MANIFEST = {manifest!r}\n"),
-        encoding="utf-8",
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        f"python_benchmark_{owner_spec.contract_filename_stem}_contract.py",
+        f"MANIFEST = {manifest!r}\n",
     )
     workloads = load_manifest(manifest_path).workloads
 
