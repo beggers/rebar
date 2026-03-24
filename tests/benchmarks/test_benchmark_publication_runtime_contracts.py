@@ -983,57 +983,19 @@ def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload,
     )
 
 
-@cache
-def _conditional_group_exists_callable_none_count_str_workloads() -> tuple[Workload, ...]:
-    manifest = load_manifest(_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
-    workload_ids = tuple(
-        workload.workload_id
-        for workload in manifest.workloads
-        if workload.count is None
-        and workload.text_model == "str"
-        and workload.operation
-        in {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
-        and workload.expected_exception
+def _conditional_group_exists_callable_none_count_workloads_for_text_model(
+    text_model: str,
+) -> tuple[Workload, ...]:
+    return tuple(
+        workload
+        for workload in _conditional_group_exists_callable_none_count_workloads()
+        if workload.text_model == text_model
+        and workload.replacement
         == {
-            "type": "TypeError",
-            "message_substring": "NoneType",
-        }
-        and workload.replacement == {
             "type": "callable_match_group",
             "group": ("word" if "-named-" in workload.workload_id else 1),
             "suffix": "x",
         }
-    )
-    return live_manifest_workloads(
-        _CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
-        workload_ids,
-    )
-
-
-@cache
-def _conditional_group_exists_callable_none_count_bytes_workloads() -> tuple[Workload, ...]:
-    manifest = load_manifest(_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
-    workload_ids = tuple(
-        workload.workload_id
-        for workload in manifest.workloads
-        if workload.count is None
-        and workload.text_model == "bytes"
-        and workload.operation
-        in {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
-        and workload.expected_exception
-        == {
-            "type": "TypeError",
-            "message_substring": "NoneType",
-        }
-        and workload.replacement == {
-            "type": "callable_match_group",
-            "group": ("word" if "-named-" in workload.workload_id else 1),
-            "suffix": "x",
-        }
-    )
-    return live_manifest_workloads(
-        _CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
-        workload_ids,
     )
 
 
@@ -1094,7 +1056,9 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
 
 def test_conditional_group_exists_callable_none_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads(
 ) -> None:
-    workloads = _conditional_group_exists_callable_none_count_str_workloads()
+    workloads = _conditional_group_exists_callable_none_count_workloads_for_text_model(
+        "str"
+    )
 
     assert tuple(workload.workload_id for workload in workloads) == (
         "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-str",
@@ -1156,7 +1120,9 @@ def test_conditional_group_exists_callable_none_count_str_workloads_round_trip_p
 
 def test_conditional_group_exists_callable_none_count_bytes_workloads_round_trip_preserves_suffix_only_callback_payloads(
 ) -> None:
-    workloads = _conditional_group_exists_callable_none_count_bytes_workloads()
+    workloads = _conditional_group_exists_callable_none_count_workloads_for_text_model(
+        "bytes"
+    )
 
     assert tuple(workload.workload_id for workload in workloads) == (
         "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-bytes",
