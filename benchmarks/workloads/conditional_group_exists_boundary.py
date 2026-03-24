@@ -3164,6 +3164,384 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-gap",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzabcdezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered alternation-heavy two-arm conditional callable replacement workflow when the optional capture is present, the yes-arm alternation takes its first `de` branch, and the callback reads `match.group(1)`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzabcdfzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "subn",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered alternation-heavy two-arm conditional callable replacement count workflow when the optional capture is present, the yes-arm alternation takes its second `df` branch, and the callback reads `match.group(1)`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzacegzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "sub",
+        "absent",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered alternation-heavy two-arm conditional callable replacement workflow when the optional capture is absent, the else-arm alternation takes its first `eg` branch, and `match.group(1)` raises the bounded callback `TypeError`."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzacehzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "subn",
+        "absent",
+        "count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered alternation-heavy two-arm conditional callable replacement count workflow when the optional capture is absent, the else-arm alternation takes its second `eh` branch, and the callback `TypeError` stays explicit on the compiled entrypoint."
+      ]
+    },
+    {
+      "id": "module-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzabcdezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named alternation-heavy two-arm conditional callable replacement workflow when the optional named capture is present, the yes-arm alternation takes its first `de` branch, and the callback reads `match.group(\"word\")`."
+      ]
+    },
+    {
+      "id": "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzabcdfzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named alternation-heavy two-arm conditional callable replacement count workflow when the optional named capture is present, the yes-arm alternation takes its second `df` branch, and the callback reads `match.group(\"word\")`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzacegzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "absent",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named alternation-heavy two-arm conditional callable replacement workflow when the optional named capture is absent, the else-arm alternation takes its first `eg` branch, and `match.group(\"word\")` raises the bounded callback `TypeError`."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzacehzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "expected_exception": {
+        "type": "TypeError",
+        "message_substring": "NoneType"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "callable",
+        "named-group",
+        "subn",
+        "absent",
+        "count",
+        "exception",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named alternation-heavy two-arm conditional callable replacement count workflow when the optional named capture is absent, the else-arm alternation takes its second `eh` branch, and the callback `TypeError` stays explicit on the compiled named entrypoint."
+      ]
+    },
+    {
       "id": "module-sub-numbered-nested-conditional-group-exists-replacement-warm-gap",
       "bucket": "module-sub",
       "family": "module",

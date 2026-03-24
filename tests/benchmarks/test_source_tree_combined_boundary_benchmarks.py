@@ -2842,6 +2842,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         excluded_syntax_features=("quantifiers",),
         excluded_categories=(
             "alternation",
+            "alternation-heavy",
             "exception",
             "nested-group",
             "quantified",
@@ -2894,7 +2895,13 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         required_syntax_features=("conditionals", "callable-replacement"),
         excluded_syntax_features=("quantifiers",),
         required_categories=("exception",),
-        excluded_categories=("alternation", "nested-group", "quantified", "unsupported"),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "nested-group",
+            "quantified",
+            "unsupported",
+        ),
         expected_workload_ids=(
             "module-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-warm-str",
             "module-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-warm-bytes",
@@ -2921,6 +2928,43 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "absent",
             "count",
             "exception",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="alternation-heavy-callable-replacement-rows",
+        required_syntax_features=("conditionals", "alternation", "callable-replacement"),
+        excluded_syntax_features=("quantifiers",),
+        required_categories=("alternation-heavy", "replacement", "callable"),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-gap",
+            "module-subn-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+            "pattern-subn-callable-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+            "module-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+            "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+            "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)(de|df)|(eg|eh))",
+            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={
+            "zzabcdezz",
+            "zzabcdfzz",
+            "zzacegzz",
+            "zzacehzz",
+        },
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "alternation-heavy",
+            "replacement",
+            "callable",
         ),
     ),
     _combined_slice_expectation(
@@ -3615,6 +3659,16 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS = (
     "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
     "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-bytes",
 )
+CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-gap",
+    "module-subn-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-str",
+    "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+    "pattern-subn-callable-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+    "module-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+    "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+    "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+    "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+)
 CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
     "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
     "module-subn-template-numbered-conditional-group-exists-replacement-warm-bytes",
@@ -3692,6 +3746,17 @@ def _conditional_group_exists_callable_replacement_expectations(
             f"expected {expected_slice_ids!r}, got {actual_slice_ids!r}"
         )
     return expectations
+
+
+def _conditional_group_exists_alternation_callable_replacement_expectation(
+) -> SourceTreeCombinedSliceExpectation:
+    return next(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(
+            "conditional-group-exists-boundary"
+        )
+        if expectation.slice_id == "alternation-heavy-callable-replacement-rows"
+    )
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
@@ -6673,6 +6738,59 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     ("pattern.subn", -1): 1,
                 }
             ),
+        )
+
+    def test_conditional_group_exists_callable_scorecards_include_alternation_heavy_str_rows(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        expectation = (
+            _conditional_group_exists_alternation_callable_replacement_expectation()
+        )
+        case = source_tree_scorecard_case(manifest_id)
+        manifest = case.manifest_for_id(manifest_id)
+        matched_rows = tuple(
+            select_source_tree_combined_slice_rows(manifest, expectation)
+        )
+
+        self.assertEqual(
+            tuple(workload.workload_id for workload in matched_rows),
+            CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            {workload.text_model for workload in matched_rows},
+            {"str"},
+        )
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            ),
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+        for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
+                self.assertNotIn(
+                    workload_id,
+                    case.representative_known_gap_workload_ids,
+                )
+        self.assertEqual(
+            Counter((workload.operation, workload.count) for workload in matched_rows),
+            Counter(
+                {
+                    ("module.sub", 0): 2,
+                    ("module.subn", 1): 2,
+                    ("pattern.sub", 0): 2,
+                    ("pattern.subn", 1): 2,
+                }
+            ),
+        )
+        self.assertEqual(
+            Counter(
+                "exception" in workload.categories for workload in matched_rows
+            ),
+            Counter({False: 4, True: 4}),
         )
 
     def test_conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured(

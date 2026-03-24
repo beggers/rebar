@@ -1,6 +1,6 @@
 # RBR-1169: Benchmark conditional group-exists alternation callable str workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -57,3 +57,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_source_tree_combined_slice_filters_match_expected_manifest_rows` returned `1 passed, 49 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_single_manifest_scorecards_keep_slice_backed_representatives` returned `1 passed, 4 subtests passed`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-alternation-callable-bench-current.py` completed successfully with `112` measured workloads and `0` known gaps, confirming the existing benchmark owner path is stable before this follow-on lands.
+
+## Completion Note
+- Added the exact eight `str` alternation-heavy callable `sub()`/`subn()` workloads to `benchmarks/workloads/conditional_group_exists_boundary.py` on the existing conditional benchmark manifest, including the present-arm module rows on `zzabcdezz` / `zzabcdfzz` and the absent-capture compiled-pattern `TypeError` rows on `zzacegzz` / `zzacehzz`.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with a dedicated `alternation-heavy-callable-replacement-rows` slice contract and a scorecard assertion that keeps these new `str` rows in the representative measured set without incorrectly implying the bytes follow-on already landed.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `conditional-group-exists-boundary` at `workload_count == 120`, `measured_workloads == 120`, `known_gap_count == 0`, and the combined summary at `measured_workloads == 1051`, `total_workloads == 1051`, `known_gap_count == 0`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_source_tree_combined_slice_filters_match_expected_manifest_rows`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_single_manifest_scorecards_keep_slice_backed_representatives`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1169-conditional-alternation-callable-str.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
