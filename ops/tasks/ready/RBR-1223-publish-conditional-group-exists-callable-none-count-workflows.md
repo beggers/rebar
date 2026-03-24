@@ -53,3 +53,4 @@ Created: 2026-03-24
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `3 passed, 44 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report .rebar/tmp/feature-planning-correctness-current.py` returned `1797 total / 1797 passed / 0 failed / 0 unimplemented`.
+- 2026-03-24T19:04:43+00:00: harness requeued after failed or incomplete run after run `20260324T190328Z-feature-implementation-RBR-1223-publish-conditional-group-exists-callable-none-count-workflows` (exit=1, timed_out=false).
