@@ -3106,7 +3106,6 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "replacement",
             "callable",
             "bytes",
-            "negative-count",
         ),
     ),
     _combined_slice_expectation(
@@ -5692,20 +5691,45 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             return value
 
         for source_workload in source_workloads:
-            with self.subTest(workload_id=source_workload.workload_id):
+            workload_id = source_workload.workload_id
+            expected_replacement = {
+                "type": "callable_match_group",
+                "group": "word" if "-named-" in workload_id else 1,
+                "suffix": "x",
+            }
+            expected_count = (
+                -1
+                if "negative-count" in workload_id
+                else 1
+                if "absent-exception" in workload_id
+                else 0
+            )
+            expected_result = (
+                (b"zzacfzz", 0)
+                if "negative-count" in workload_id and "-subn-" in workload_id
+                else b"zzabcdzz"
+                if "negative-count" in workload_id
+                else b"zzbxzz"
+            )
+            expected_signature = (
+                "callable_match_group",
+                expected_replacement["group"],
+                b"",
+                b"x",
+            )
+
+            with self.subTest(workload_id=workload_id):
                 payload = workload_to_payload(source_workload)
                 round_tripped = workload_from_payload(payload)
-                expected_signature = _callable_match_group_signature(
-                    source_workload.replacement_payload()
-                )
                 observed_signature = _callable_match_group_signature(
                     round_tripped.replacement_payload()
                 )
 
                 self.assertEqual(payload["text_model"], "bytes")
                 self.assertEqual(round_tripped.text_model, "bytes")
-                self.assertEqual(payload["count"], source_workload.count)
-                self.assertEqual(round_tripped.count, source_workload.count)
+                self.assertEqual(payload["replacement"], expected_replacement)
+                self.assertEqual(payload["count"], expected_count)
+                self.assertEqual(round_tripped.count, expected_count)
                 self.assertEqual(
                     payload["expected_exception"],
                     source_workload.expected_exception,
@@ -5730,15 +5754,25 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     normalized_text_model_payload(round_tripped.haystack),
                     source_workload.haystack,
                 )
+                self.assertEqual(
+                    _callable_match_group_signature(
+                        source_workload.replacement_payload()
+                    ),
+                    expected_signature,
+                )
                 self.assertEqual(observed_signature, expected_signature)
                 self.assertIsNotNone(observed_signature)
                 assert observed_signature is not None
                 self.assertIsInstance(observed_signature[2], bytes)
                 self.assertIsInstance(observed_signature[3], bytes)
                 if source_workload.expected_exception is None:
+                    self.assertEqual(
+                        run_benchmark_workload_with_cpython(source_workload),
+                        expected_result,
+                    )
                     assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        run_benchmark_workload_with_cpython(source_workload),
+                        expected_result,
                     )
                     continue
 
