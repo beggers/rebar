@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1701 cases across 114 manifests, with all 1701 passing in the current slice; the benchmark publication covers 1067/1067 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | The next surviving frontier is bytes nested conditional callable correctness publication on the shared callable owner path. |
-| Work queue | `0` ready, `0` in progress, `1185` done, `0` blocked |
+| Delivery estimate | Published correctness covers 1709 cases across 114 manifests, with all 1709 passing in the current slice; the benchmark publication covers 1067/1067 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
+| Current milestone | The next surviving frontier is bytes nested conditional callable benchmark catch-up on the shared callable owner path. |
+| Work queue | `0` ready, `0` in progress, `1187` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1701` |
-| Passing in published slice | `1701` |
+| Published cases | `1709` |
+| Passing in published slice | `1709` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1701 cases across 114 manifests, with all 1701 passing in the current slice; the benchmark publication covers 1067/1067 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1709 cases across 114 manifests, with all 1709 passing in the current slice; the benchmark publication covers 1067/1067 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- The next surviving frontier is bytes nested conditional callable correctness publication on the shared callable owner path.
+- The next surviving frontier is bytes nested conditional callable benchmark catch-up on the shared callable owner path.
 
 ### Current Risks
 
