@@ -1413,6 +1413,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
                 "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+                "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
+                "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
+                "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
             ),
             (
                 "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-bytes",
@@ -1480,9 +1484,13 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-bytes",
                 "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-bytes",
+                "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
                 "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-bytes",
+                "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
                 "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-bytes",
+                "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
             ),
         ),
     ),
@@ -2972,9 +2980,13 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
             "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
             "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-str",
+            "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-str",
             "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-str",
+            "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-str",
             "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-str",
             "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-str",
             "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-bytes",
             "module-subn-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-bytes",
             "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-purged-bytes",
@@ -2984,9 +2996,13 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-bytes",
             "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-bytes",
             "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-bytes",
+            "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
             "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-bytes",
+            "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
             "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-bytes",
+            "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
             "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
         ),
         expected_patterns={
             r"a(b)?c(?(1)(de|df)|(eg|eh))",
@@ -3938,6 +3954,10 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS = (
     "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-str",
     "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-str",
     "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+    "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-str",
+    "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-str",
+    "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-str",
+    "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-str",
 )
 CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS = (
     "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-bytes",
@@ -3952,6 +3972,10 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS = (
     "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
     "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
     "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+    "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
+    "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
+    "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
+    "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
 )
 CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS = (
     CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
@@ -3967,9 +3991,13 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS = (
     "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
     "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
     "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-str",
+    "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-str",
     "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-str",
+    "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-str",
     "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-str",
+    "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-str",
     "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-str",
+    "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-str",
 )
 CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS = (
     "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-warm-bytes",
@@ -3981,9 +4009,13 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS = (
     "pattern-sub-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-bytes",
     "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-purged-bytes",
     "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-bytes",
+    "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
     "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-warm-bytes",
+    "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-bytes",
     "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-bytes",
+    "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
     "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-negative-count-purged-bytes",
+    "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-bytes",
 )
 CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS = (
     CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS
@@ -4266,6 +4298,7 @@ def _conditional_group_exists_callable_replacement_expectations(
         "minimal-callable-replacement-rows",
         "minimal-callable-replacement-exception-rows",
         "minimal-callable-replacement-none-count-exception-rows",
+        "alternation-heavy-callable-replacement-rows",
     )
     expectations = tuple(
         expectation
@@ -8073,10 +8106,10 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module.sub", None): 3,
-                    ("module.subn", None): 3,
-                    ("pattern.sub", None): 3,
-                    ("pattern.subn", None): 3,
+                    ("module.sub", None): 4,
+                    ("module.subn", None): 4,
+                    ("pattern.sub", None): 4,
+                    ("pattern.subn", None): 4,
                 }
             ),
         )
@@ -8088,10 +8121,10 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module.sub", None): 3,
-                    ("module.subn", None): 3,
-                    ("pattern.sub", None): 3,
-                    ("pattern.subn", None): 3,
+                    ("module.sub", None): 4,
+                    ("module.subn", None): 4,
+                    ("pattern.sub", None): 4,
+                    ("pattern.subn", None): 4,
                 }
             ),
         )
@@ -8450,7 +8483,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             Counter(workload.text_model for workload in matched_rows),
-            Counter({"str": 12, "bytes": 12}),
+            Counter({"str": 16, "bytes": 16}),
         )
         self.assertEqual(
             case.representative_measured_workload_ids,
@@ -8471,12 +8504,16 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             Counter(
                 {
                     ("module.sub", 0): 4,
+                    ("module.sub", None): 2,
                     ("module.sub", -1): 2,
                     ("module.subn", 1): 4,
+                    ("module.subn", None): 2,
                     ("module.subn", -1): 2,
                     ("pattern.sub", 0): 4,
+                    ("pattern.sub", None): 2,
                     ("pattern.sub", -1): 2,
                     ("pattern.subn", 1): 4,
+                    ("pattern.subn", None): 2,
                     ("pattern.subn", -1): 2,
                 }
             ),
@@ -8485,7 +8522,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             Counter(
                 "exception" in workload.categories for workload in matched_rows
             ),
-            Counter({False: 16, True: 8}),
+            Counter({False: 16, True: 16}),
         )
 
     def test_conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured(
