@@ -3,9 +3,12 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+import textwrap
+from typing import Any
 
 import pytest
 
+from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     Workload,
     build_callable,
@@ -16,9 +19,6 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks import (
     compiled_pattern_module_compile_benchmark_support as support,
-)
-from tests.benchmarks import (
-    test_source_tree_combined_boundary_benchmarks as combined,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     anchored_workload_case_ids,
@@ -39,6 +39,72 @@ def _contract_cases():
 
 def _contract_case(case_id: str):
     return next(case for case in _contract_cases() if case.case_id == case_id)
+
+
+def _write_test_manifest(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+) -> pathlib.Path:
+    path = tmp_path / filename
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    return path
+
+
+def _expected_exception_instance(
+    expected_exception: dict[str, str],
+) -> Exception:
+    exception_type = {
+        "TypeError": TypeError,
+        "ValueError": ValueError,
+    }[expected_exception["type"]]
+    return exception_type(expected_exception["message_substring"])
+
+
+def _record_numeric_materialization_fields(
+    monkeypatch: pytest.MonkeyPatch,
+) -> list[str]:
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+    return observed_field_names
+
+
+class _RecordingBenchmarkCompiledPattern:
+    pass
+
+
+class _RecordingBenchmarkModule:
+    def __init__(
+        self,
+        *,
+        compile_exception: Exception | None = None,
+    ) -> None:
+        self.calls: list[tuple[object, ...]] = []
+        self._compile_exception = compile_exception
+        self.compiled_patterns: list[_RecordingBenchmarkCompiledPattern] = []
+
+    def purge(self) -> None:
+        self.calls.append(("purge",))
+
+    def compile(self, pattern: object, flags: int = 0) -> _RecordingBenchmarkCompiledPattern:
+        self.calls.append(("compile", pattern, flags))
+        if isinstance(pattern, _RecordingBenchmarkCompiledPattern):
+            if self._compile_exception is not None:
+                raise self._compile_exception
+            return pattern
+        compiled_pattern = _RecordingBenchmarkCompiledPattern()
+        self.compiled_patterns.append(compiled_pattern)
+        return compiled_pattern
 
 
 def test_compiled_pattern_module_compile_success_payload_round_trip_on_live_workload() -> None:
@@ -181,7 +247,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
         source_workloads,
         spec=contract_case.contract_builder_spec(),
     )
-    manifest_path = combined._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         contract_case.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -221,7 +287,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_module_compile_s
             )
             continue
 
-        expected_exception = combined._expected_exception_instance(
+        expected_exception = _expected_exception_instance(
             source_workload.expected_exception
         )
         with pytest.raises(
@@ -247,7 +313,7 @@ def test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correc
         anchor_lane.source_workloads,
         spec=anchor_lane.contract_builder_spec(),
     )
-    manifest_path = combined._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         anchor_lane.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -297,7 +363,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
         source_workload,
         spec=case_group.contract_builder_spec(),
     )
-    observed_field_names = combined._record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -308,7 +374,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
             observed_result = callback()
             assert observed_result.pattern == workload.pattern_payload()
         else:
-            expected_exception = combined._expected_exception_instance(
+            expected_exception = _expected_exception_instance(
                 source_workload.expected_exception
             )
             with pytest.raises(
@@ -374,9 +440,9 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_
     compile_exception = (
         None
         if source_workload.expected_exception is None
-        else combined._expected_exception_instance(source_workload.expected_exception)
+        else _expected_exception_instance(source_workload.expected_exception)
     )
-    module = combined._RecordingBenchmarkModule(compile_exception=compile_exception)
+    module = _RecordingBenchmarkModule(compile_exception=compile_exception)
     callback = build_callable(
         module,
         "re",
