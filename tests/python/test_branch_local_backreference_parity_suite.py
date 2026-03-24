@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Iterator
 from dataclasses import dataclass
-from itertools import product
 import re
 
 import pytest
@@ -28,6 +27,7 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
+    build_wrapped_body_candidate_texts,
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
@@ -180,21 +180,6 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
     ),
 )
 
-
-def _build_generated_quantified_branch_local_candidate_texts(
-    candidate_body_atoms: tuple[str, ...],
-    candidate_suffixes: tuple[str, ...],
-    candidate_lengths: range,
-) -> tuple[str, ...]:
-    return tuple(
-        f"{prefix}a{''.join(body)}{terminal}{suffix}"
-        for length in candidate_lengths
-        for body in product(candidate_body_atoms, repeat=length)
-        for terminal in candidate_suffixes
-        for prefix, suffix in WRAPPER_PAIRS
-    )
-
-
 GENERATED_QUANTIFIED_BRANCH_LOCAL_COMPILE_CASES = tuple(
     case
     for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
@@ -217,10 +202,10 @@ def _generated_branch_local_candidate_texts(
     spec: GeneratedQuantifiedBranchLocalParitySpec,
     case: FixtureCase,
 ) -> tuple[str | bytes, ...]:
-    texts = _build_generated_quantified_branch_local_candidate_texts(
+    texts = build_wrapped_body_candidate_texts(
         spec.candidate_body_atoms,
-        spec.candidate_suffixes,
         spec.candidate_lengths,
+        spec.candidate_suffixes,
     )
     if case.text_model == "bytes":
         return tuple(text.encode("ascii") for text in texts)
@@ -1118,10 +1103,10 @@ def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_publis
     spec: GeneratedQuantifiedBranchLocalParitySpec,
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
-    candidate_texts = _build_generated_quantified_branch_local_candidate_texts(
+    candidate_texts = build_wrapped_body_candidate_texts(
         spec.candidate_body_atoms,
-        spec.candidate_suffixes,
         spec.candidate_lengths,
+        spec.candidate_suffixes,
     )
     expected_candidate_count = (
         len(WRAPPER_PAIRS)

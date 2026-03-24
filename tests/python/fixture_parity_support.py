@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
+from itertools import product
 import pathlib
 import re
 
@@ -23,6 +24,40 @@ WRAPPER_PAIRS = (
     ("", "zz"),
     ("zz", "zz"),
 )
+
+
+def _ordered_unique_texts(texts: Iterable[str]) -> tuple[str, ...]:
+    seen: set[str] = set()
+    ordered_texts: list[str] = []
+    for text in texts:
+        if text in seen:
+            continue
+        seen.add(text)
+        ordered_texts.append(text)
+    return tuple(ordered_texts)
+
+
+def wrap_candidate_core_texts(core_texts: Iterable[str]) -> tuple[str, ...]:
+    return _ordered_unique_texts(
+        f"{prefix}{core}{suffix}"
+        for core in core_texts
+        for prefix, suffix in WRAPPER_PAIRS
+    )
+
+
+def build_wrapped_body_candidate_texts(
+    body_atoms: Iterable[str],
+    candidate_lengths: Iterable[int],
+    candidate_terminals: Iterable[str] = ("",),
+) -> tuple[str, ...]:
+    ordered_body_atoms = tuple(body_atoms)
+    ordered_terminals = tuple(candidate_terminals)
+    return wrap_candidate_core_texts(
+        f"a{''.join(body)}{terminal}"
+        for length in candidate_lengths
+        for body in product(ordered_body_atoms, repeat=length)
+        for terminal in ordered_terminals
+    )
 
 
 class IndexLike:

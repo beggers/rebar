@@ -330,6 +330,62 @@ def test_recording_native_boundary_scaffold_helpers_follow_selected_message_sour
     assert native_boundary.calls == [("purge",)]
 
 
+def test_wrap_candidate_core_texts_preserves_wrapper_pair_order() -> None:
+    assert fixture_parity_support.wrap_candidate_core_texts(("ac", "abc")) == (
+        "ac",
+        "zzac",
+        "aczz",
+        "zzaczz",
+        "abc",
+        "zzabc",
+        "abczz",
+        "zzabczz",
+    )
+
+
+def test_build_wrapped_body_candidate_texts_preserves_generated_matrix_shape() -> None:
+    assert fixture_parity_support.build_wrapped_body_candidate_texts(
+        ("b", "c"),
+        range(2),
+        ("d",),
+    ) == (
+        "ad",
+        "zzad",
+        "adzz",
+        "zzadzz",
+        "abd",
+        "zzabd",
+        "abdzz",
+        "zzabdzz",
+        "acd",
+        "zzacd",
+        "acdzz",
+        "zzacdzz",
+    )
+    assert fixture_parity_support.build_wrapped_body_candidate_texts(
+        ("b",),
+        range(2),
+        ("", "d"),
+    ) == (
+        "a",
+        "zza",
+        "azz",
+        "zzazz",
+        "ad",
+        "zzad",
+        "adzz",
+        "zzadzz",
+        "ab",
+        "zzab",
+        "abzz",
+        "zzabzz",
+        "abd",
+        "zzabd",
+        "abdzz",
+        "zzabdzz",
+    )
+
+
 def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
     return tuple(
         sorted(CORRECTNESS_FIXTURES_ROOT.glob("*.py"), key=lambda path: path.name)

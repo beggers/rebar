@@ -27,6 +27,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     case_pattern,
+    build_wrapped_body_candidate_texts,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
     fixture_case_pytest_id,
@@ -167,18 +168,6 @@ GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
     ),
 )
 
-
-def _build_generated_quantified_alternation_candidate_texts(
-    candidate_lengths: range,
-) -> tuple[str, ...]:
-    return tuple(
-        f"{prefix}a{''.join(body)}d{suffix}"
-        for length in candidate_lengths
-        for body in product(BODY_ATOMS, repeat=length)
-        for prefix, suffix in WRAPPER_PAIRS
-    )
-
-
 GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES = tuple(
     case
     for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
@@ -201,7 +190,11 @@ def _generated_candidate_texts(
     spec: GeneratedQuantifiedAlternationParitySpec,
     case: FixtureCase,
 ) -> tuple[str | bytes, ...]:
-    texts = _build_generated_quantified_alternation_candidate_texts(spec.candidate_lengths)
+    texts = build_wrapped_body_candidate_texts(
+        BODY_ATOMS,
+        spec.candidate_lengths,
+        ("d",),
+    )
     if case.text_model == "bytes":
         return tuple(text.encode("ascii") for text in texts)
     return texts
@@ -654,8 +647,10 @@ def test_generated_quantified_alternation_compile_cases_stay_anchored_to_publish
     spec: GeneratedQuantifiedAlternationParitySpec,
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
-    candidate_texts = _build_generated_quantified_alternation_candidate_texts(
-        spec.candidate_lengths
+    candidate_texts = build_wrapped_body_candidate_texts(
+        BODY_ATOMS,
+        spec.candidate_lengths,
+        ("d",),
     )
     expected_candidate_count = len(WRAPPER_PAIRS) * sum(
         len(BODY_ATOMS) ** length for length in spec.candidate_lengths

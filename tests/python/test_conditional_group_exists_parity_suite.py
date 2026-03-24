@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
+    wrap_candidate_core_texts,
     fixture_cases_by_id,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
@@ -257,16 +258,6 @@ GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
     ),
 )
 
-
-def _build_generated_fully_empty_alternation_candidate_texts() -> tuple[str, ...]:
-    cores = ("ac", "abc", "ad", "ab", "ace", "abce", "acf", "abcf")
-    return tuple(
-        f"{wrapper_prefix}{core}{wrapper_suffix}"
-        for core in cores
-        for wrapper_prefix, wrapper_suffix in WRAPPER_PAIRS
-    )
-
-
 GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC = GeneratedFullyEmptyAlternationParitySpec(
     bundle=FULLY_EMPTY_ALTERNATION_BUNDLE,
     expected_compile_case_ids=(
@@ -279,33 +270,23 @@ GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC = GeneratedFullyEmptyAlternationPa
             FULLY_EMPTY_ALTERNATION_NAMED_PATTERN,
         }
     ),
-    candidate_texts=_build_generated_fully_empty_alternation_candidate_texts(),
+    candidate_texts=wrap_candidate_core_texts(
+        ("ac", "abc", "ad", "ab", "ace", "abce", "acf", "abcf")
+    ),
     failure_prefix="fully-empty conditional alternation generated parity drifted",
 )
-
-
-def _build_generated_quantified_conditional_candidate_texts(
-    branch_choices: tuple[str, ...],
-) -> tuple[str, ...]:
-    cores = tuple(
-        ("abc" if present else "ac") + "".join(branches)
-        for present in (False, True)
-        for branches in product(branch_choices, repeat=2)
-    )
-    return tuple(
-        f"{wrapper_prefix}{core}{wrapper_suffix}"
-        for core in cores
-        for wrapper_prefix, wrapper_suffix in WRAPPER_PAIRS
-    )
-
 
 GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPEC_BY_MANIFEST_ID = {
     spec.bundle.expected_manifest_id: spec
     for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
 }
 GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
-    spec.bundle.expected_manifest_id: _build_generated_quantified_conditional_candidate_texts(
-        spec.branch_choices
+    spec.bundle.expected_manifest_id: wrap_candidate_core_texts(
+        tuple(
+            ("abc" if present else "ac") + "".join(branches)
+            for present in (False, True)
+            for branches in product(spec.branch_choices, repeat=2)
+        )
     )
     for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
 }
@@ -724,8 +705,8 @@ def test_generated_quantified_conditional_compile_cases_stay_anchored_to_publish
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {str_case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == {"str"}
-    assert len(candidate_texts) == len(
-        _build_generated_quantified_conditional_candidate_texts(spec.branch_choices)
+    assert len(candidate_texts) == (
+        len(WRAPPER_PAIRS) * 2 * (len(spec.branch_choices) ** 2)
     )
 
 
@@ -746,7 +727,7 @@ def test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_publis
     )
     assert {case.text_model for case in compile_cases} == {"str"}
     assert len(GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.candidate_texts) == (
-        len(_build_generated_fully_empty_alternation_candidate_texts())
+        len(WRAPPER_PAIRS) * 8
     )
 
 
