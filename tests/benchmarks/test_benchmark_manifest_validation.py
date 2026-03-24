@@ -7,23 +7,27 @@ import pytest
 
 from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
+    BENCHMARK_WORKLOADS_ROOT,
     Workload,
     load_manifest,
     load_manifests,
     workload_from_payload,
     workload_to_payload,
 )
-from tests.benchmarks.benchmark_test_support import _write_test_manifest
+from tests.benchmarks.benchmark_test_support import (
+    _write_test_manifest,
+    selected_manifest_workloads,
+)
 from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
     _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
     CompiledPatternModuleCompileContractCase,
 )
-from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _source_tree_contract_manifest,
+from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
+    _is_pattern_boundary_wrong_text_model_workload,
 )
-from tests.benchmarks.wrong_text_model_benchmark_owner_support import (
-    _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC,
-    _assert_wrong_text_model_payload_round_trip,
+from tests.benchmarks.source_tree_contract_benchmark_support import (
+    _SourceTreeContractBuilderSpec,
+    _source_tree_contract_manifest,
 )
 
 
@@ -55,6 +59,44 @@ def _assert_manifest_and_payload_entry_points_raise(
 
     with pytest.raises(ValueError, match=error_pattern):
         workload_from_payload(payload)
+
+
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
+    manifest_id="pattern-boundary",
+    excluded_fields=frozenset(
+        {
+            "manifest_id",
+            "workload_id",
+            "warmup_iterations",
+            "sample_iterations",
+            "timed_samples",
+            "smoke",
+        }
+    ),
+    timing_scope="pattern-helper-call",
+)
+
+
+def _assert_wrong_text_model_payload_round_trip(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+    expected_haystack_type = (
+        str if source_workload.haystack_text_model == "str" else bytes
+    )
+
+    assert payload.get("use_compiled_pattern") is None
+    assert round_tripped.use_compiled_pattern is False
+    assert payload["timing_scope"] == "pattern-helper-call"
+    assert round_tripped.timing_scope == "pattern-helper-call"
+    assert payload["haystack_text_model"] == source_workload.haystack_text_model
+    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
 
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
@@ -1061,17 +1103,19 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC.source_workloads()
+        for workload in selected_manifest_workloads(
+            BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py",
+            include_workload=_is_pattern_boundary_wrong_text_model_workload,
+        )
     ),
 )
 def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio(
     tmp_path: pathlib.Path,
     source_workload: Workload,
 ) -> None:
-    owner_spec = _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_OWNER_SPEC
     manifest = _source_tree_contract_manifest(
         (source_workload,),
-        spec=owner_spec.contract_builder_spec(),
+        spec=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -1086,8 +1130,6 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
         source_workload,
         payload,
         round_tripped,
-        use_compiled_pattern=owner_spec.use_compiled_pattern,
-        timing_scope=owner_spec.timing_scope,
     )
     assert loaded_workload.workload_id == f"{source_workload.workload_id}-contract"
 

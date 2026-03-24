@@ -1,6 +1,6 @@
 ## RBR-1239: Collapse wrong-text-model benchmark owner support onto owned suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -64,3 +64,6 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_benchmark_manifest_validation.py` passed with `74 passed`.
   - `bash -lc "! test -e tests/benchmarks/wrong_text_model_benchmark_owner_support.py && ! test -e tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py"` currently fails because both files still exist, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- 2026-03-24: Moved the wrong-text-model benchmark owner coverage onto the existing collection-replacement, pattern-boundary, compiled-pattern-module-helper, and manifest-validation suites; deleted `tests/benchmarks/wrong_text_model_benchmark_owner_support.py` and `tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py`; verified `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_benchmark_manifest_validation.py` (`141 passed`), `bash -lc "! test -e tests/benchmarks/wrong_text_model_benchmark_owner_support.py && ! test -e tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py"`, and `git diff --name-status -- tests/benchmarks/wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` (both `D`).
