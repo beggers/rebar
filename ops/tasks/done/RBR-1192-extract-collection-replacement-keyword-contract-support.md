@@ -1,6 +1,6 @@
 # RBR-1192: Extract collection-replacement keyword contract support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -70,3 +70,9 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` currently fails with `ERROR: file or directory not found: tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`, which belongs to the exact cleanup queued here.
   - `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'keyword_error_workload_probe_measured or materialize_at_callback_time or keyword_error_callbacks_match_cpython_exceptions'` returned `78 passed, 518 deselected` in this run.
+
+## Completion Note
+- Extracted the collection-replacement keyword contract helpers into `tests/benchmarks/collection_replacement_keyword_contract_benchmark_support.py`, added focused coverage in `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`, and removed the duplicated inline block from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` while preserving the bounded workload ids, selectors, and probe assertions.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'keyword_error_workload_probe_measured or materialize_at_callback_time or keyword_error_callbacks_match_cpython_exceptions'`
