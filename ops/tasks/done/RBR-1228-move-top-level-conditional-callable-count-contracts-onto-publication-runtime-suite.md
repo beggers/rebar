@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -32,21 +32,5 @@ Created: 2026-03-24
 - `bash -lc "! rg -n 'def test_(conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads|conditional_group_exists_callable_none_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads|conditional_group_exists_callable_none_count_bytes_workloads_round_trip_preserves_suffix_only_callback_payloads)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
 
 ## Notes
-- `RBR-1228` is the next available unreserved task id in this checkout:
-  - `ops/tasks/ready/` currently contains only `RBR-1227`, and `ops/tasks/in_progress/` plus `ops/tasks/blocked/` contain no active task files in this run; and
-  - `rg -n "RBR-1228|RBR-1229|RBR-1230" ops/state/current_status.md ops/state/backlog.md ops/tasks -g '*.md'` matched only historical mentions inside existing task notes and did not reveal a live reservation or sibling task at `RBR-1228`.
-- No blocked architecture task exists to reopen or normalize first because `ops/tasks/blocked/` is empty in this checkout and `.rebar/runtime/dashboard.md` reports `Recent Blocked Tasks: none`.
-- JSON burn-down is complete and current in this run:
-  - `.rebar/runtime/dashboard.md` reports `tracked_json_blob_count: 0` and `tracked_json_blob_delta: 0`;
-  - `git ls-files '*.json' | wc -l` returned `0`; and
-  - `rg --files -g '*.json' | wc -l` returned `0`.
-- Rule 10 does not block another architecture cleanup in this run:
-  - `.rebar/runtime/dashboard.md` reports `Dirty worktree: false`, `ready: 1`, `in_progress: 0`, `blocked: 0`, and `Last Cycle Anomalies: none`; and
-  - the latest cycle completed both `RBR-1225` and `RBR-1226` through the normal done path with no inherited-dirty checkpoint churn or stalled refresh/commit anomaly.
-- This simplification is concrete and still unfinished in the current checkout:
-  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` is still `11394` lines in this run, while `tests/benchmarks/test_benchmark_publication_runtime_contracts.py` is `1465` lines;
-  - `rg -n 'def test_(conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads|conditional_group_exists_callable_none_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads|conditional_group_exists_callable_none_count_bytes_workloads_round_trip_preserves_suffix_only_callback_payloads)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently matches only the combined-suite copies at lines `6171`, `6230`, and `6293`; and
-  - `tests/benchmarks/test_benchmark_publication_runtime_contracts.py` already owns adjacent conditional callable payload/probe contracts for the same manifest's `count is None` slice, so this cleanup removes another runtime-only block from the giant combined suite instead of introducing another owner.
-- Verification status in this planning run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads or conditional_group_exists_callable_none_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads or conditional_group_exists_callable_none_count_bytes_workloads_round_trip_preserves_suffix_only_callback_payloads'` returned `3 passed, 224 deselected, 28 subtests passed in 0.19s`; and
-  - the negative `rg` check named above currently fails exactly on this cleanup because those three tests still live in the combined suite.
+- Completed 2026-03-24: moved the three top-level conditional callable count-contract round-trip tests into `tests/benchmarks/test_benchmark_publication_runtime_contracts.py`, rebuilt their workload selection directly from the live `conditional-group-exists-boundary` manifest, deleted the duplicate combined-suite copies, and kept the existing callback payload signatures, `count` values, CPython negative-count results, and none-count `TypeError` message matching unchanged.
+- Verified 2026-03-24 with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads or conditional_group_exists_callable_none_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads or conditional_group_exists_callable_none_count_bytes_workloads_round_trip_preserves_suffix_only_callback_payloads'` (`3 passed, 224 deselected`) and `bash -lc "! rg -n 'def test_(conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads|conditional_group_exists_callable_none_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads|conditional_group_exists_callable_none_count_bytes_workloads_round_trip_preserves_suffix_only_callback_payloads)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` (no matches).
