@@ -37,7 +37,9 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    fixture_case_pytest_id,
     fixture_cases_for_operation,
+    id_attribute_pytest_id,
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
@@ -229,15 +231,6 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
     case for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES for case in spec.cases
 )
-def fixture_case_id(case: FixtureCase) -> str:
-    return case.case_id
-
-
-def named_case_id(
-    case: BoundedPatternCase | SupplementalCase | BacktrackingTraceCase,
-) -> str:
-    return case.id
-
 def _build_backtracking_trace_cases(
     *,
     prefix: str,
@@ -713,7 +706,7 @@ def test_backtracking_trace_cases_cover_all_declared_branch_orders() -> None:
 @pytest.mark.parametrize(
     "case",
     PATTERN_BOUNDS_MATCH_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_pattern_bounds_matches_cpython(
     regex_backend: tuple[str, object],
@@ -731,7 +724,7 @@ def test_pattern_bounds_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     PATTERN_BOUNDS_NO_MATCH_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_pattern_bounds_misses_match_cpython(
     regex_backend: tuple[str, object],
@@ -745,7 +738,7 @@ def test_pattern_bounds_misses_match_cpython(
     )
 
 
-@pytest.mark.parametrize("case", COMPILE_CASES, ids=fixture_case_id)
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=fixture_case_pytest_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -754,7 +747,7 @@ def test_compile_metadata_matches_cpython(
     compile_with_cpython_parity(backend_name, backend, case_pattern(case), case.flags or 0)
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_pytest_id)
 def test_module_search_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -768,7 +761,7 @@ def test_module_search_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_pytest_id)
 def test_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -782,7 +775,7 @@ def test_module_search_match_convenience_api_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=fixture_case_pytest_id)
 def test_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -796,7 +789,7 @@ def test_module_search_match_group_access_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_pytest_id)
 def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -810,7 +803,7 @@ def test_pattern_fullmatch_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_pytest_id)
 def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -824,7 +817,7 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=fixture_case_pytest_id)
 def test_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -841,7 +834,7 @@ def test_pattern_fullmatch_match_group_access_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     DIRECT_BYTES_FOLLOW_ON_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -854,7 +847,7 @@ def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     DIRECT_BYTES_FOLLOW_ON_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_direct_bytes_follow_on_module_search_matches_cpython(
     regex_backend: tuple[str, object],
@@ -878,7 +871,7 @@ def test_direct_bytes_follow_on_module_search_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     DIRECT_BYTES_FOLLOW_ON_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_direct_bytes_follow_on_module_search_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -898,7 +891,7 @@ def test_direct_bytes_follow_on_module_search_convenience_api_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     DIRECT_BYTES_FOLLOW_ON_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
@@ -919,7 +912,7 @@ def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython
 @pytest.mark.parametrize(
     "case",
     DIRECT_BYTES_FOLLOW_ON_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
@@ -948,7 +941,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     DIRECT_BYTES_FOLLOW_ON_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
@@ -973,7 +966,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_convenience_api_matches_cpytho
 @pytest.mark.parametrize(
     "case",
     DIRECT_BYTES_FOLLOW_ON_CASES,
-    ids=named_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
@@ -996,7 +989,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpy
         assert_invalid_match_group_access_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=named_case_id)
+@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=id_attribute_pytest_id)
 def test_backtracking_module_search_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: BacktrackingTraceCase,
@@ -1011,7 +1004,7 @@ def test_backtracking_module_search_branch_traces_match_cpython(
     assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
-@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=named_case_id)
+@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=id_attribute_pytest_id)
 def test_backtracking_pattern_fullmatch_branch_traces_match_cpython(
     regex_backend: tuple[str, object],
     case: BacktrackingTraceCase,

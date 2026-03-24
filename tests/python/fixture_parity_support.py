@@ -379,6 +379,22 @@ def ordered_fixture_bundle_case_ids(
     return tuple(case.case_id for case in flatten_fixture_bundles(bundles))
 
 
+def fixture_case_pytest_id(case: FixtureCase) -> str:
+    return case.case_id
+
+
+def id_attribute_pytest_id(
+    case: (
+        SupplementalCase
+        | SupplementalMissCase
+        | BoundedPatternCase
+        | CaseIdBoundedPatternCase
+        | PatternTraceCase
+    ),
+) -> str:
+    return case.id
+
+
 def fixture_cases_by_id(
     fixtures: Iterable[FixtureBundle] | Iterable[FixtureCase],
 ) -> dict[str, FixtureCase]:

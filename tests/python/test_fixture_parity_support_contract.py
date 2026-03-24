@@ -40,7 +40,10 @@ from tests.conftest import (
 )
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
+    BoundedPatternCase,
     FixtureBundle,
+    PatternTraceCase,
+    SupplementalCase,
     assert_bounded_pattern_case_match_parity,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_case_optional_match_parity,
@@ -61,8 +64,10 @@ from tests.python.fixture_parity_support import (
     case_text_argument,
     compile_with_cpython_parity,
     flatten_fixture_bundles,
+    fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_single_published_fixture_bundle,
     ordered_fixture_bundle_case_ids,
@@ -5501,6 +5506,51 @@ def test_selected_fixture_bundle_rejects_duplicate_fixture_case_ids(
             selected_case_ids=selected_case_ids,
             pattern_extractor=str_case_pattern,
         )
+
+
+def test_fixture_case_pytest_id_returns_case_case_id() -> None:
+    manifest = load_fixture_manifest(DEFAULT_FIXTURE_PATHS[0])
+    case = manifest.cases[0]
+
+    assert fixture_case_pytest_id(case) == case.case_id
+
+
+@pytest.mark.parametrize(
+    ("case", "expected_id"),
+    (
+        pytest.param(
+            SupplementalCase(id="supplemental-id", pattern=b"abc"),
+            "supplemental-id",
+            id="supplemental-case",
+        ),
+        pytest.param(
+            BoundedPatternCase(
+                id="bounded-pattern-id",
+                pattern="abc",
+                helper="search",
+                string="zabc",
+                bounds=(0, 4),
+            ),
+            "bounded-pattern-id",
+            id="bounded-pattern-case",
+        ),
+        pytest.param(
+            PatternTraceCase(
+                id="trace-id",
+                pattern="abc",
+                search_text="zabc",
+                fullmatch_text="abc",
+            ),
+            "trace-id",
+            id="pattern-trace-case",
+        ),
+    ),
+)
+def test_id_attribute_pytest_id_returns_case_id_attribute(
+    case: SupplementalCase | BoundedPatternCase | PatternTraceCase,
+    expected_id: str,
+) -> None:
+    assert id_attribute_pytest_id(case) == expected_id
 
 
 def test_load_fixture_manifest_preserves_distinct_zero_flag_keyword_carriers(
