@@ -1,6 +1,6 @@
 # RBR-1150: Extract source-tree benchmark anchor support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -49,3 +49,8 @@ Created: 2026-03-24
   - `rg -n '^class AnchoredWorkloadCasePair$|^def (freeze_signature_value|published_case_ids_by_signature|published_cases_by_id|anchored_workload_case_ids|unanchored_workload_ids|expected_anchored_workload_case_pairs|assert_anchored_workload_case_result_parity)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns the inline support definitions at lines `7167`, `7179`, `7196`, `7227`, `7248`, `7267`, and `7320`, while the synthetic helper-contract tests for that support still live near lines `21085` through `21403`.
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'freeze_signature_value or published_case_ids_by_signature_groups_duplicate_case_ids or anchored_and_unanchored_workload_helpers_follow_signatures_and_filters or expected_anchored_workload_case_pairs_return_matching_objects or manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries or expected_anchored_workload_case_pairs_rejects_manifest_name_drift or expected_anchored_workload_case_pairs_rejects_multiple_case_ids or expected_anchored_workload_case_pairs_rejects_missing_workload or expected_anchored_workload_case_pairs_rejects_unpublished_case or assert_anchored_workload_case_result_parity_delegates_expected_values or standard_benchmark_workloads_stay_anchored_to_published_correctness_cases or standard_benchmark_workload_callbacks_match_anchor_case_results'` returned `83 passed, 679 deselected` in this run.
+
+## Completion Note
+- Extracted the shared source-tree benchmark anchor helpers into `tests/benchmarks/source_tree_benchmark_anchor_support.py`, including the cached manifest/case lookups and anchored-result parity dispatch.
+- Moved the synthetic anchor-support contract tests into `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and left the benchmark-owner integration checks in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'freeze_signature_value or published_case_ids_by_signature_groups_duplicate_case_ids or anchored_and_unanchored_workload_helpers_follow_signatures_and_filters or expected_anchored_workload_case_pairs_return_matching_objects or manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries or expected_anchored_workload_case_pairs_rejects_manifest_name_drift or expected_anchored_workload_case_pairs_rejects_multiple_case_ids or expected_anchored_workload_case_pairs_rejects_missing_workload or expected_anchored_workload_case_pairs_rejects_unpublished_case or assert_anchored_workload_case_result_parity_delegates_expected_values or standard_benchmark_workloads_stay_anchored_to_published_correctness_cases or standard_benchmark_workload_callbacks_match_anchor_case_results'` -> `83 passed, 679 deselected`.
