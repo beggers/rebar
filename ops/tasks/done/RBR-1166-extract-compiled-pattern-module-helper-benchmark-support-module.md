@@ -1,8 +1,9 @@
 ## RBR-1166: Extract compiled-pattern module-helper benchmark support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
+Completed: 2026-03-24
 
 ## Goal
 - Remove the remaining compiled-pattern module-helper route layer that still lives inline inside `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` by moving that shared callback/dispatch support into one dedicated benchmark-support module, so the combined owner file stops carrying both the large contract inventory and the canonical compiled-pattern-first-argument helper route reused by multiple owner families.
@@ -60,3 +61,8 @@ Created: 2026-03-24
   - the compiled-pattern branch of `WrongTextModelOwnerSpec.expected_callback_result(...)`, `.expected_callback_call(...)`, and `.run_cpython_workload(...)` still delegate through the same route at lines `18073`, `18126`, and `18171`.
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or test_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing or test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or test_wrong_text_model_callbacks_preserve_precompile_contract or test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases)'` returned `42 passed, 711 deselected` in this run.
+- Verification status after completion:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py` returned `6 passed` in this run.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(standard_benchmark_manifest_preserves_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_rows_until_helper_invocation or test_compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success_callbacks_precompile_first_argument_before_timing or test_standard_benchmark_manifest_preserves_wrong_text_model_rows_until_helper_invocation or test_wrong_text_model_callbacks_preserve_precompile_contract or test_compiled_pattern_module_contract_rows_stay_anchored_to_published_correctness_cases)'` returned `42 passed, 711 deselected` in this run.
+- Completion note:
+  - Extracted the compiled-pattern module-helper route and CPython dispatch/materialization path into `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`, added focused support tests, and rewired the combined benchmark owner file to import the shared helper instead of defining the route block inline.
