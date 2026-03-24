@@ -295,6 +295,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-nested-absent-str",
                 "pattern-sub-callable-named-conditional-group-exists-nested-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
+                "module-sub-callable-conditional-group-exists-nested-near-miss-present-str",
+                "module-subn-callable-conditional-group-exists-nested-near-miss-absent-str",
+                "pattern-sub-callable-conditional-group-exists-nested-near-miss-present-str",
+                "pattern-subn-callable-conditional-group-exists-nested-near-miss-absent-str",
+                "module-sub-callable-named-conditional-group-exists-nested-near-miss-present-str",
+                "module-subn-callable-named-conditional-group-exists-nested-near-miss-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-nested-near-miss-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-nested-near-miss-absent-str",
                 "module-sub-callable-conditional-group-exists-nested-negative-count-str",
                 "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
                 "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
@@ -335,6 +343,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-nested-absent-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-nested-present-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
+                "module-sub-callable-conditional-group-exists-nested-near-miss-present-bytes",
+                "module-subn-callable-conditional-group-exists-nested-near-miss-absent-bytes",
+                "pattern-sub-callable-conditional-group-exists-nested-near-miss-present-bytes",
+                "pattern-subn-callable-conditional-group-exists-nested-near-miss-absent-bytes",
+                "module-sub-callable-named-conditional-group-exists-nested-near-miss-present-bytes",
+                "module-subn-callable-named-conditional-group-exists-nested-near-miss-absent-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-nested-near-miss-present-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-nested-near-miss-absent-bytes",
                 "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
                 "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
                 "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
@@ -371,17 +387,19 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 20,
-                ("module_call", "subn"): 20,
-                ("pattern_call", "sub"): 20,
-                ("pattern_call", "subn"): 20,
+                ("module_call", "sub"): 24,
+                ("module_call", "subn"): 24,
+                ("pattern_call", "sub"): 24,
+                ("pattern_call", "subn"): 24,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(
             {
                 r"a(b)?c(?(1)d|e)",
+                r"a(b)?c(?(1)(?(1)d|e)|f)",
                 r"a(?P<word>b)?c(?(word)d|e)",
+                r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
             }
         ),
     ),
@@ -3477,34 +3495,74 @@ def test_conditional_group_exists_nested_direct_case_tables_stay_aligned_with_pu
     }
     expected_present_rows = {
         row for row in CONDITIONAL_GROUP_EXISTS_NESTED_GROUP_ACCESS_CASES if row[2] == "sub"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_NESTED_NEAR_MISS_CASES
+        if case.helper == "sub"
     }
     expected_absent_rows = {
         row for row in CONDITIONAL_GROUP_EXISTS_NESTED_ABSENT_EXCEPTION_CASES if row[2] == "subn"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_NESTED_NEAR_MISS_CASES
+        if case.helper == "subn"
     }
     expected_bytes_present_rows = {
         row
         for row in CONDITIONAL_GROUP_EXISTS_NESTED_BYTES_GROUP_ACCESS_CASES
         if row[2] == "sub"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_NESTED_BYTES_NEAR_MISS_CASES
+        if case.helper == "sub"
     }
     expected_bytes_absent_rows = {
         row
         for row in CONDITIONAL_GROUP_EXISTS_NESTED_BYTES_ABSENT_EXCEPTION_CASES
         if row[2] == "subn"
+    } | {
+        (
+            case.pattern,
+            1 if "numbered" in case.id else "word",
+            case.helper,
+            case.text,
+            case.count,
+        )
+        for case in CONDITIONAL_GROUP_EXISTS_NESTED_BYTES_NEAR_MISS_CASES
+        if case.helper == "subn"
     }
 
-    assert len(nested_cases) == 16
+    assert len(nested_cases) == 40
     assert Counter(
         (case.text_model, case.operation, case.helper) for case in nested_cases
     ) == Counter(
         {
-            ("str", "module_call", "sub"): 2,
-            ("str", "module_call", "subn"): 2,
-            ("str", "pattern_call", "sub"): 2,
-            ("str", "pattern_call", "subn"): 2,
-            ("bytes", "module_call", "sub"): 2,
-            ("bytes", "module_call", "subn"): 2,
-            ("bytes", "pattern_call", "sub"): 2,
-            ("bytes", "pattern_call", "subn"): 2,
+            ("str", "module_call", "sub"): 5,
+            ("str", "module_call", "subn"): 5,
+            ("str", "pattern_call", "sub"): 5,
+            ("str", "pattern_call", "subn"): 5,
+            ("bytes", "module_call", "sub"): 5,
+            ("bytes", "module_call", "subn"): 5,
+            ("bytes", "pattern_call", "sub"): 5,
+            ("bytes", "pattern_call", "subn"): 5,
         }
     )
     assert module_present_rows == expected_present_rows

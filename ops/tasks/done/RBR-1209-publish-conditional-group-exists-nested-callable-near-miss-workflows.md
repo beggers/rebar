@@ -1,6 +1,6 @@
 # RBR-1209: Publish conditional group-exists nested callable near-miss workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -34,6 +34,11 @@ Created: 2026-03-24
 - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_nested and near_miss'`
 - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'`
 - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+
+## Completion
+- Added the exact sixteen nested conditional callable near-miss `sub()` and `subn()` no-match workflows to `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` on the existing shared owner path for both `str` and `bytes`, covering the numbered and named module/pattern matrix on `zzabcezz` and `zzacezz`.
+- Updated the combined correctness scorecard expectations in `tests/conformance/test_combined_correctness_scorecards.py` and the adjacent owner-path parity manifest sync in `tests/python/test_callable_replacement_parity_suite.py` so the widened nested slice stays aligned with the published fixture and representative-case ordering.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now records `1749` total cases, `1749` passes, `0` failures, and `0` unimplemented across `114` manifests, with the shared `conditional-group-exists-callable-replacement-workflows` manifest widened by the sixteen new near-miss rows.
 
 ## Constraints
 - Keep the scope pinned to the exact sixteen nested callable near-miss workflows above. Leave the adjacent benchmark catch-up for this same near-miss slice for a separate planning pass.
