@@ -1,6 +1,6 @@
 # RBR-1130: Implement conditional group-exists template bytes parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -50,3 +50,13 @@ Created: 2026-03-24
   - `tests/python/test_fixture_backed_replacement_parity_suite.py` still routes the `conditional-group-exists-replacement` surface through `str_case_pattern` and keeps `conditional-group-exists-replacement-template-workflows` on a `str`-only shared replacement path;
   - `reports/correctness/latest.py` still surfaces `collection.replacement.conditional_group_exists.template.str` with no corresponding `.bytes` suite, while `benchmarks/workloads/conditional_group_exists_boundary.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still keep the adjacent minimal template slice `str`-only; and
   - `python/rebar/__init__.py` still omits `rb"a(b)?c(?(1)d|e)"` and `rb"a(?P<word>b)?c(?(word)d|e)"` from `_NATIVE_TEMPLATE_BYTES_PATTERNS`, confirming the exact bytes template runtime prerequisite is still missing and that a publication-only follow-on would be premature.
+
+## Completion Notes
+- Added the exact numbered and named conditional bytes patterns to `python/rebar/__init__.py`'s native-template whitelist so module and compiled-pattern `sub()` / `subn()` calls route into the Rust template path instead of the scaffold placeholder.
+- Extended `crates/rebar-cpython/src/lib.rs` so `boundary_literal_template_subn_bytes()` recognizes `rb"a(b)?c(?(1)d|e)"` and `rb"a(?P<word>b)?c(?(word)d|e)"`, then reuses the existing bounded bytes conditional span collector for capture-sensitive template expansion.
+- Added focused bytes template expansion assertions in `crates/rebar-core/src/lib.rs` covering both present numbered-capture expansion and absent named-capture expansion to keep the empty-group bytes behavior explicit in Rust.
+- Added the four exact shared-parity cases in `tests/python/test_fixture_backed_replacement_parity_suite.py` for module/pattern `sub()` present-capture and `subn(count=1)` absent-capture bytes workflows on the numbered and named two-arm conditional slice.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional and replacement and bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'module-numbered-bytes-sub-template-present-capture or module-numbered-bytes-subn-template-absent-capture or pattern-named-bytes-sub-template-present-capture or pattern-named-bytes-subn-template-absent-capture'`

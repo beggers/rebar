@@ -22953,6 +22953,25 @@ mod tests {
     }
 
     #[test]
+    fn replacement_template_expands_bytes_conditional_group_reference_when_present() {
+        let expanded = expand_literal_replacement_template_bytes(br"\1x", b"abcd", &[Some(b"b")], &[])
+            .unwrap();
+        assert_eq!(expanded, b"bx");
+    }
+
+    #[test]
+    fn replacement_template_expands_bytes_named_conditional_group_reference_when_absent() {
+        let expanded = expand_literal_replacement_template_bytes(
+            br"\g<word>x",
+            b"ace",
+            &[None],
+            &[("word", b"")],
+        )
+        .unwrap();
+        assert_eq!(expanded, b"x");
+    }
+
+    #[test]
     fn replacement_template_rejects_unsupported_backslash_forms() {
         assert_eq!(
             expand_literal_replacement_template_str(r"\1x", "abc", &[], &[]),

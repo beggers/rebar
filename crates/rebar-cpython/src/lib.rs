@@ -48,6 +48,9 @@ use rebar_core::{
 };
 
 const SCAFFOLD_STATUS: &str = "scaffold-only";
+const EXACT_NUMBERED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN: &[u8] = br"a(b)?c(?(1)d|e)";
+const EXACT_NAMED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN: &[u8] =
+    br"a(?P<word>b)?c(?(word)d|e)";
 const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN: &[u8] =
     br"a((b|c){1,4})\2d";
 const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN: &[u8] =
@@ -141,7 +144,9 @@ fn replacement_limit(count: isize, total_matches: usize) -> usize {
 }
 
 fn supports_capture_sensitive_template_bytes_pattern(pattern: &[u8]) -> bool {
-    pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN
+    pattern == EXACT_NUMBERED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN
+        || pattern == EXACT_NAMED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_TEMPLATE_PATTERN
@@ -154,6 +159,12 @@ fn collect_capture_sensitive_template_matches_bytes(
     flags: i32,
     string: &[u8],
 ) -> PyResult<(MatchStatus, Vec<CapturedMatchSpan>)> {
+    if pattern == EXACT_NUMBERED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN
+        || pattern == EXACT_NAMED_CONDITIONAL_GROUP_EXISTS_BYTES_TEMPLATE_PATTERN
+    {
+        let outcome = core_conditional_group_exists_find_spans_bytes(pattern, flags, string, 0, None);
+        return Ok((outcome.status, outcome.matches));
+    }
     if pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN
     {
