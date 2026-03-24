@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives; the queue is down to the lone ready conditional-group-exists template-bytes benchmark catch-up slice in `RBR-1135`.
+No ready feature follow-on currently survives.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives; `RBR-1135` is the lone ready task, and no concrete same-family successor is written down beyond catching the exact bytes replacement-template conditional-group-exists owner path up on the existing `conditional-group-exists-boundary` Python-path benchmark surface.
+1. No ready feature follow-on currently survives.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
