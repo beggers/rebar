@@ -1,6 +1,6 @@
 ## RBR-1170: Extract source-tree contract benchmark support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -57,3 +57,10 @@ Created: 2026-03-24
   - the wrong-text-model owner-contract surface still depends on that same helper family across lines `18062` through `18330`.
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(compiled_pattern_module_helper_keyword_contract or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success or compiled_pattern_module_compile_success_and_keyword_contract or wrong_text_model_rows_until_helper_invocation or wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract)'` returned `197 passed, 557 deselected` in this run.
+
+## Completion
+- Extracted the shared source-tree contract-builder helpers into `tests/benchmarks/source_tree_contract_benchmark_support.py` and updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import that support instead of defining the contract-builder block inline.
+- Added focused coverage in `tests/benchmarks/test_source_tree_contract_benchmark_support.py` for manifest payload field dropping plus `timing_scope`/`notes` injection, contract workload reconstruction with default benchmark metadata, manifest defaults, and selector-order drift detection against representative live manifest rows.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_contract_benchmark_support.py` returned `5 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(compiled_pattern_module_helper_keyword_contract or compiled_pattern_module_collection_replacement_success_and_compiled_pattern_module_boundary_success or compiled_pattern_module_compile_success_and_keyword_contract or wrong_text_model_rows_until_helper_invocation or wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract)'` returned `197 passed, 557 deselected`.

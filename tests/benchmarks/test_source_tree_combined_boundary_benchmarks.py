@@ -80,6 +80,12 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
     unanchored_workload_ids,
 )
+from tests.benchmarks.source_tree_contract_benchmark_support import (
+    _SourceTreeContractBuilderSpec,
+    _contract_source_workloads,
+    _source_tree_contract_manifest,
+    _source_tree_contract_workload,
+)
 from tests.benchmarks.standard_benchmark_anchor_support import (
     _anchored_case_ids,
     _definition_anchor_expectations,
@@ -16422,80 +16428,6 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
                 assert type(round_tripped.kwargs[name]) is bool
 
 
-@dataclass(frozen=True, slots=True)
-class _SourceTreeContractBuilderSpec:
-    manifest_id: str
-    excluded_fields: frozenset[str]
-    manifest_timed_samples: int = 2
-    timing_scope: str | None = None
-    notes: tuple[str, ...] = ()
-
-
-def _source_tree_contract_manifest_payload(
-    source_workload: Workload,
-    *,
-    spec: _SourceTreeContractBuilderSpec,
-) -> dict[str, object]:
-    payload = workload_to_payload(source_workload)
-    manifest_payload: dict[str, object] = {
-        "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key not in spec.excluded_fields
-        },
-    }
-    if spec.timing_scope is not None:
-        manifest_payload["timing_scope"] = spec.timing_scope
-    if spec.notes:
-        manifest_payload["notes"] = list(spec.notes)
-    return manifest_payload
-
-
-def _source_tree_contract_workload(
-    source_workload: Workload,
-    *,
-    spec: _SourceTreeContractBuilderSpec,
-) -> Workload:
-    manifest_payload = _source_tree_contract_manifest_payload(
-        source_workload,
-        spec=spec,
-    )
-    return workload_from_payload(
-        {
-            "manifest_id": spec.manifest_id,
-            "workload_id": str(manifest_payload["id"]),
-            **{key: value for key, value in manifest_payload.items() if key != "id"},
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
-
-
-def _source_tree_contract_manifest(
-    source_workloads: tuple[Workload, ...],
-    *,
-    spec: _SourceTreeContractBuilderSpec,
-) -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": spec.manifest_id,
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": spec.manifest_timed_samples,
-        },
-        "workloads": [
-            _source_tree_contract_manifest_payload(workload, spec=spec)
-            for workload in source_workloads
-        ],
-    }
-
-
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
     {
         "manifest_id",
@@ -17052,29 +16984,6 @@ _COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
         "haystack_text_model",
     }
 )
-
-
-def _contract_source_workloads(
-    *,
-    manifest_path: pathlib.Path,
-    include_workload_selectors: tuple[Callable[[Any], bool], ...],
-    expected_source_workload_ids: tuple[str, ...],
-    drift_message: str,
-) -> tuple[Workload, ...]:
-    source_workloads = tuple(
-        workload
-        for include_workload in include_workload_selectors
-        for workload in _selected_manifest_workloads(
-            manifest_path,
-            include_workload=include_workload,
-        )
-    )
-    if (
-        tuple(workload.workload_id for workload in source_workloads)
-        != expected_source_workload_ids
-    ):
-        raise AssertionError(drift_message)
-    return source_workloads
 
 
 _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_SOURCE_WORKLOADS = (
