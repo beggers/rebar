@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The next surviving frontier is the bounded quantified conditional callable `bytes` benchmark catch-up slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` owner path.
+No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
 
 ## Ordered Work
-1. The next surviving frontier is the bounded quantified conditional callable `bytes` benchmark catch-up slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` owner path.
+1. No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1725 cases across 114 manifests, with all 1725 passing in the current slice; the benchmark publication covers 1075/1075 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The next surviving frontier is the bounded quantified conditional callable `bytes` benchmark catch-up slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` owner path.
+- No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1725 cases across 114 manifests, with all 1725 pass
 The published correctness slice now covers 1725 cases across 114 manifests, all passing, and 1075 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- The next surviving frontier is the bounded quantified conditional callable `bytes` benchmark catch-up slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` owner path.
+- No ready feature follow-on currently survives on the shared conditional callable replacement owner path. Broader callable-helper expansion remains family-level rather than pinned to one exact next slice.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
