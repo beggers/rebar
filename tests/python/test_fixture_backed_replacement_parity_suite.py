@@ -2613,7 +2613,8 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
         manifest_id=manifest_id,
     )
 
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    str_cases = tuple(case for case in bundle.cases if case.text_model == "str")
+    bytes_cases = tuple(case for case in bundle.cases if case.text_model == "bytes")
 
     assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
     assert selected_case_ids == (
@@ -2633,6 +2634,10 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
         "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
         "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
         "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+        "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+        "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
+        "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+        "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
     )
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         {
@@ -2642,6 +2647,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                     "module-sub-template-named-conditional-group-exists-replacement-present-str",
                     "module-sub-template-conditional-group-exists-replacement-present-bytes",
                     "module-sub-template-named-conditional-group-exists-replacement-present-bytes",
+                    "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
                 }
             ),
             "module-subn": frozenset(
@@ -2650,6 +2656,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                     "module-subn-template-named-conditional-group-exists-replacement-absent-str",
                     "module-subn-template-conditional-group-exists-replacement-absent-bytes",
                     "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+                    "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
                 }
             ),
             "pattern-sub": frozenset(
@@ -2658,6 +2665,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                     "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
                     "pattern-sub-template-conditional-group-exists-replacement-present-bytes",
                     "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
+                    "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
                 }
             ),
             "pattern-subn": frozenset(
@@ -2666,6 +2674,7 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
                     "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
                     "pattern-subn-template-conditional-group-exists-replacement-absent-bytes",
                     "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+                    "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
                 }
             ),
         },
@@ -2674,6 +2683,8 @@ def test_conditional_replacement_template_publication_keeps_mixed_text_frontier_
     )
     assert tuple(case.case_id for case in str_cases) == selected_case_ids[:8]
     assert tuple(case.case_id for case in bytes_cases) == selected_case_ids[8:]
+    assert len(str_cases) == 8
+    assert len(bytes_cases) == 12
     assert tuple(
         case.case_id
         for case in surface.replacement_cases
@@ -2692,7 +2703,8 @@ def test_conditional_replacement_template_match_surfaces_require_full_mixed_fron
     surface = _replacement_surface_by_id("conditional-group-exists-replacement")
     bundle = published_fixture_bundles_by_manifest_id(surface.bundles)[manifest_id]
 
-    str_cases, bytes_cases = assert_mixed_text_model_case_pairs(bundle)
+    str_cases = tuple(case for case in bundle.cases if case.text_model == "str")
+    bytes_cases = tuple(case for case in bundle.cases if case.text_model == "bytes")
     str_case_ids = tuple(case.case_id for case in str_cases)
     bytes_case_ids = tuple(case.case_id for case in bytes_cases)
     match_snapshot_case_ids = tuple(
@@ -2716,6 +2728,8 @@ def test_conditional_replacement_template_match_surfaces_require_full_mixed_fron
     assert template_expand_case_ids == match_snapshot_case_ids
     assert frozenset(bytes_case_ids).issubset(match_snapshot_case_ids)
     assert frozenset(bytes_case_ids).issubset(match_group_access_case_ids)
+    assert len(str_case_ids) == 8
+    assert len(bytes_case_ids) == 12
 
 
 @pytest.mark.parametrize(("surface", "pattern"), _compile_pattern_params())

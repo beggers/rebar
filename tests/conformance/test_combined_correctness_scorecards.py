@@ -937,6 +937,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-template-conditional-group-exists-replacement-absent-bytes",
             "module-sub-template-named-conditional-group-exists-replacement-present-bytes",
             "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+            "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
+            "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
         ),
     ),
 }
@@ -1424,6 +1428,10 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "module-subn-template-named-conditional-group-exists-replacement-absent-bytes",
             "pattern-sub-template-named-conditional-group-exists-replacement-present-bytes",
             "pattern-subn-template-named-conditional-group-exists-replacement-absent-bytes",
+            "module-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
+            "pattern-sub-template-conditional-group-exists-replacement-negative-count-bytes",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-bytes",
         ),
     ),
     "conditional-group-exists-no-else-replacement-workflows": CorrectnessScorecardManifestExpectation(

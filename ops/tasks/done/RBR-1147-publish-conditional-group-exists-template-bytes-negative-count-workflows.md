@@ -1,6 +1,6 @@
 # RBR-1147: Publish conditional group-exists template bytes negative-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,8 @@ Created: 2026-03-24
   - a direct runtime probe in this run confirmed `rebar.sub(...)`, `rebar.subn(...)`, `rebar.compile(...).sub(...)`, and `rebar.compile(...).subn(...)` match CPython for the exact two bounded bytes `count=-1` conditional-template workflows above;
   - `rg -n 'module-numbered-conditional-bytes-template-negative-count|module-named-conditional-bytes-template-negative-count|pattern-numbered-conditional-bytes-template-negative-count|pattern-named-conditional-bytes-template-negative-count' tests/conformance/fixtures tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` currently finds those ids only on the shared parity file, confirming the tracked correctness publication still omits this exact bytes slice; and
   - the adjacent benchmark owner-path scan shows no published `conditional-group-exists-boundary` negative-count workload for this slice yet, so benchmark catch-up should stay behind correctness publication.
+
+## Completion
+- Added the four bytes `count=-1` conditional replacement-template publication rows on the existing `conditional-group-exists-replacement-template-workflows` manifest and widened the shared parity/scorecard assertions to cover the now-asymmetric `str`/`bytes` frontier without changing any broader replacement family routing.
+- Regenerated `reports/correctness/latest.py`; the tracked publication now reports 1665 total cases with 1665 passing overall, `collection.replacement.conditional_group_exists.template` at 20/20 passing, and the bytes sub-suite at 12/12 passing with the four new negative-count rows present in the tracked artifact.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py -k 'conditional_replacement_template_negative_count_bytes_cases_keep_exact_frontier_explicit or conditional_replacement_template_publication_keeps_mixed_text_frontier_explicit'`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py --report .rebar/tmp/rbr-1147-conditional-template-bytes-negative-count.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
