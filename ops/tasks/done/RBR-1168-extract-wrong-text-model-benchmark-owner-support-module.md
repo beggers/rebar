@@ -1,6 +1,6 @@
 ## RBR-1168: Extract wrong-text-model benchmark owner support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -57,3 +57,9 @@ Created: 2026-03-24
   - the selector/signature layer and compiled-pattern module-helper route already live on `tests/benchmarks/wrong_text_model_benchmark_anchor_support.py` and `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`, so moving the remaining owner-support logic is a bounded continuation rather than a new abstraction.
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(wrong_text_model and (preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract or stays_anchored_to_published_correctness_cases or pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time))'` returned `49 passed, 704 deselected` in this run.
+
+## Completion Note
+- Extracted the remaining wrong-text-model owner helpers into `tests/benchmarks/wrong_text_model_benchmark_owner_support.py`, reduced `WrongTextModelOwnerSpec` back to owner metadata in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and added focused coverage in `tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k '(wrong_text_model and (preserves_wrong_text_model_rows_until_helper_invocation or run_internal_workload_probe_measures_wrong_text_model_contract_workloads or wrong_text_model_callbacks_preserve_precompile_contract or stays_anchored_to_published_correctness_cases or pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time))'`
