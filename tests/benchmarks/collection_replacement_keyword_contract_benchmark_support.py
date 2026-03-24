@@ -21,7 +21,7 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
 )
-from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _is_module_workflow_keyword_error_workload,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (

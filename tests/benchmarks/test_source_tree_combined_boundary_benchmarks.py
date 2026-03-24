@@ -59,18 +59,20 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_collection_replacement_wrong_text_model_workload,
     _module_workflow_positional_indexlike_correctness_case_signature,
 )
-from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
-    _is_module_workflow_keyword_error_workload,
-    _is_module_workflow_keyword_flags_workload,
+from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _is_pattern_keyword_window_workload,
     _is_pattern_window_positional_indexlike_workload,
-    _module_workflow_keyword_correctness_case_signature,
-    _module_workflow_keyword_workload_signature,
     _pattern_keyword_window_correctness_case_signature,
     _pattern_keyword_window_workload_signature,
     _pattern_window_positional_indexlike_correctness_case_signature,
     _pattern_window_positional_indexlike_workload_args,
     _pattern_window_positional_indexlike_workload_signature,
+)
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _is_module_workflow_keyword_error_workload,
+    _is_module_workflow_keyword_flags_workload,
+    _module_workflow_keyword_correctness_case_signature,
+    _module_workflow_keyword_workload_signature,
 )
 from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS,

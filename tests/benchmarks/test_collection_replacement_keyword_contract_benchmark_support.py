@@ -20,7 +20,7 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_pattern_split_workload_signature,
     _collection_replacement_positional_keyword_field,
 )
-from tests.benchmarks.module_pattern_keyword_benchmark_anchor_support import (
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _is_module_workflow_keyword_error_workload,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (

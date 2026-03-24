@@ -21,6 +21,7 @@ from tests.benchmarks.benchmark_test_support import (
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT, records_by_string_id
+from tests.python.fixture_parity_support import IndexLike
 
 GROUPED_ALTERNATION_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
@@ -33,6 +34,31 @@ GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
 )
 
 
+def _module_pattern_case(
+    *,
+    helper: str,
+    operation: str,
+    args: tuple[object, ...],
+    kwargs: dict[str, object] | None = None,
+    pattern: str = "abc",
+    flags: int = 0,
+    text_model: str | None = "str",
+    use_compiled_pattern: bool = False,
+) -> object:
+    pattern_value = pattern.encode() if text_model == "bytes" else pattern
+    return SimpleNamespace(
+        helper=helper,
+        operation=operation,
+        args=args,
+        kwargs={} if kwargs is None else kwargs,
+        pattern=pattern,
+        flags=flags,
+        text_model=text_model,
+        use_compiled_pattern=use_compiled_pattern,
+        pattern_payload=lambda: pattern_value,
+    )
+
+
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
     value = {
         "b": [2, {"d": 4, "c": [5, 6]}],
@@ -42,6 +68,69 @@ def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> Non
     assert support.freeze_signature_value(value) == (
         ("a", (("x", 0), ("y", 1))),
         ("b", (2, (("c", (5, 6)), ("d", 4)))),
+    )
+
+
+def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> None:
+    workload = synthetic_workload(
+        manifest_id="module-pattern-boundary",
+        workload_id="module-search-flags-keyword",
+        operation="module.search",
+        haystack="zabc",
+        kwargs={"flags": {"type": "indexlike", "value": 2}},
+        flags=2,
+    )
+    case = _module_pattern_case(
+        helper="search",
+        operation="module_call",
+        args=("zabc",),
+        kwargs={"flags": IndexLike(2)},
+        flags=2,
+    )
+
+    assert support._is_module_workflow_keyword_flags_workload(workload)
+    assert support._module_workflow_keyword_workload_args(workload) == ("zabc",)
+    assert support._module_workflow_keyword_workload_signature(workload) == (
+        "module.search",
+        "abc",
+        ("zabc",),
+        (("flags", "indexlike", 2),),
+        2,
+        "str",
+    )
+    assert support._module_workflow_keyword_correctness_case_signature(case) == (
+        "module.search",
+        "abc",
+        ("zabc",),
+        (("flags", "indexlike", 2),),
+        2,
+        "str",
+    )
+
+
+def test_module_keyword_error_workload_stays_pinned() -> None:
+    workload = synthetic_workload(
+        manifest_id="module-pattern-boundary",
+        workload_id="module-search-duplicate-flags-keyword",
+        operation="module.search",
+        haystack="zabc",
+        kwargs={"flags": {"type": "indexlike", "value": 4}},
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "multiple values for argument 'flags'",
+        },
+        flags=4,
+    )
+
+    assert support._is_module_workflow_keyword_error_workload(workload)
+    assert support._module_workflow_keyword_workload_args(workload) == ("zabc", 4)
+    assert support._module_workflow_keyword_workload_signature(workload) == (
+        "module.search",
+        "abc",
+        ("zabc", 4),
+        (("flags", "indexlike", 4),),
+        4,
+        "str",
     )
 
 

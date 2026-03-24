@@ -1,8 +1,13 @@
 ## RBR-1233: Collapse module-pattern keyword anchor support onto owned surfaces
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
+
+## Completion
+- Moved the module helper keyword selector/signature helpers onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Moved the pattern window and keyword selector/signature helpers onto `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`.
+- Updated downstream support/test imports to use the owner modules directly and deleted the standalone mixed bridge support/test files.
 
 ## Goal
 - Remove the standalone `tests/benchmarks/module_pattern_keyword_benchmark_anchor_support.py` layer now that it only brokers two helper families between existing benchmark-support owners, so module-keyword anchor wiring lives on the shared source-tree anchor surface and pattern-window/keyword wiring lives on the existing pattern-boundary support surface instead of on a mixed extra module plus a dedicated extra test file.
@@ -69,10 +74,11 @@ Created: 2026-03-24
   - `git ls-files '*.json' | wc -l` returned `0`; and
   - `rg --files -g '*.json' | wc -l` returned `0`.
 - The simplification is concrete in the live checkout:
-  - `tests/benchmarks/module_pattern_keyword_benchmark_anchor_support.py` still exists and is imported only by `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`, `tests/benchmarks/collection_replacement_keyword_contract_benchmark_support.py`, `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py`;
-  - the pattern-window helper already leaks through `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`, so the mixed bridge is not the real owner today; and
-  - the destination owner modules already exist at `tests/benchmarks/source_tree_benchmark_anchor_support.py` and `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`.
+  - `tests/benchmarks/module_pattern_keyword_benchmark_anchor_support.py` and `tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` are deleted;
+  - the module helper keyword selectors/signatures now live on `tests/benchmarks/source_tree_benchmark_anchor_support.py`; and
+  - the pattern window/keyword selectors/signatures now live on `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`.
 - Verification status in this run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` passed with `123 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` passed with `127 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `107 tests collected`.
-  - `bash -lc "! test -e tests/benchmarks/module_pattern_keyword_benchmark_anchor_support.py && ! test -e tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py"` currently fails because both files still exist, and that failure belongs to the exact cleanup this task queues.
+  - `bash -lc "! test -e tests/benchmarks/module_pattern_keyword_benchmark_anchor_support.py && ! test -e tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py"` now passes after the bridge support/test deletion.
+  - `git diff --name-status -- tests/benchmarks/module_pattern_keyword_benchmark_anchor_support.py tests/benchmarks/test_module_pattern_keyword_benchmark_anchor_support.py` reports both tracked paths as `D`.
