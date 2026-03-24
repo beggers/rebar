@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -51,3 +51,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `3 passed, 43 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report .rebar/tmp/feature-planning-correctness-current.py` returned `1749 total / 1749 passed / 0 failed / 0 unimplemented`; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_quantified_callable'` returned `5 passed, 435 deselected, 56 subtests passed`, confirming the adjacent benchmark owner path already recognizes the quantified callable family even though the near-miss slice itself remains unpublished.
+
+## Completion
+- Added the exact sixteen quantified conditional callable near-miss publication rows on the shared `conditional-group-exists-callable-replacement-workflows` manifest path for numbered/named, module/pattern, and `str`/`bytes` workflows.
+- Updated the combined scorecard expectations and follow-on sync coverage so the widened quantified no-match slice stays aligned with the manifest ordering and mixed-text representative cases.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now shows `1765` total cases, `1765` passes, `0` failures, and `0` unimplemented across `114` manifests.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_quantified and near_miss'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
