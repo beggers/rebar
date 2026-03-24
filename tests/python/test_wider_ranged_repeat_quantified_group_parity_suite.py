@@ -22,8 +22,8 @@ from tests.python.fixture_parity_support import (
     NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES,
     PatternTraceCase as BacktrackingTraceCase,
     SupplementalCase,
+    assert_grouped_quantified_direct_bytes_surface_spec,
     assert_mixed_text_model_case_pairs,
-    assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_bounded_pattern_case_match_parity,
     assert_fixture_case_optional_match_parity,
@@ -47,7 +47,6 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
-    published_bytes_texts_by_pattern,
     requested_published_fixture_bundles,
 )
 BACKTRACKING_BRANCH_TEXT = {
@@ -589,19 +588,14 @@ def test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_resolve_to_exp
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
-    _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        spec.bundle,
+    _, bundle_bytes_cases = assert_grouped_quantified_direct_bytes_surface_spec(
+        spec,
         compile_cases=COMPILE_CASES,
         module_cases=MODULE_CASES,
         pattern_cases=PATTERN_CASES,
     )
 
     assert bundle_bytes_cases
-    assert {case.pattern for case in spec.cases} == frozenset(
-        case_pattern(case)
-        for case in fixture_cases_for_operation((spec.bundle,), "compile")
-        if case.text_model == "bytes"
-    )
 
 
 @pytest.mark.parametrize(
@@ -612,56 +606,11 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
-    bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        spec.bundle,
+    assert_grouped_quantified_direct_bytes_surface_spec(
+        spec,
         compile_cases=COMPILE_CASES,
         module_cases=MODULE_CASES,
         pattern_cases=PATTERN_CASES,
-    )
-    expected_compile_patterns = frozenset(
-        case_pattern(case)
-        for case in fixture_cases_for_operation((spec.bundle,), "compile")
-        if case.text_model == "bytes"
-    )
-
-    assert len(spec.cases) == 2
-    assert {case.pattern for case in spec.cases} == expected_compile_patterns
-    assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(
-        spec.expected_operation_helper_counts.values()
-    )
-    assert {case.case_id for case in bundle_bytes_cases} == {
-        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
-    }
-    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == (
-        spec.expected_operation_helper_counts
-    )
-
-    for case in spec.cases:
-        assert case.unsupported_backends == ()
-        assert case.unsupported_backend_reason is None
-        assert set(case.search_matches).isdisjoint(case.search_misses)
-        assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
-        assert all(
-            isinstance(text, bytes)
-            for text in (
-                *case.search_matches,
-                *case.search_misses,
-                *case.fullmatch_matches,
-                *case.fullmatch_misses,
-            )
-        )
-
-    (
-        published_module_texts_by_pattern,
-        published_fullmatch_texts_by_pattern,
-    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
-    assert (
-        published_module_texts_by_pattern
-        == spec.expected_module_search_texts_by_pattern
-    )
-    assert (
-        published_fullmatch_texts_by_pattern
-        == spec.expected_pattern_fullmatch_texts_by_pattern
     )
 
 

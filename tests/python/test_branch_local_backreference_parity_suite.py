@@ -20,7 +20,7 @@ from tests.python.fixture_parity_support import (
     GroupedQuantifiedBytesSurfaceSpec,
     SupplementalCase,
     WRAPPER_PAIRS,
-    assert_direct_bytes_follow_on_bundle_routing,
+    assert_grouped_quantified_direct_bytes_surface_spec,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -45,7 +45,6 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
     partition_direct_bytes_follow_on_case_buckets,
-    published_bytes_texts_by_pattern,
     record_generated_match_failure,
     requested_published_fixture_bundles,
     SupplementalMissCase,
@@ -1184,70 +1183,15 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     bucket_label = (
         f"{spec.bundle.expected_manifest_id.removesuffix('-workflows')}-bytes-follow-on"
     )
-    bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        spec.bundle,
+    _, bundle_bytes_cases = assert_grouped_quantified_direct_bytes_surface_spec(
+        spec,
         compile_cases=COMPILE_CASES,
         module_cases=MODULE_CASES,
         pattern_cases=PATTERN_CASES,
     )
-    expected_compile_patterns = frozenset(
-        case_pattern(case)
-        for case in fixture_cases_for_operation(
-            (spec.bundle,),
-            "compile",
-        )
-        if case.text_model == "bytes"
-    )
 
     assert direct_test_case_id_buckets[bucket_label] == frozenset(
         case.case_id for case in bundle_bytes_cases
-    )
-    assert len(spec.cases) == 2
-    assert {case.pattern for case in spec.cases} == expected_compile_patterns
-    assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(
-        spec.expected_operation_helper_counts.values()
-    )
-    assert {case.case_id for case in bundle_bytes_cases} == {
-        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
-    }
-    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == (
-        spec.expected_operation_helper_counts
-    )
-
-    for case in spec.cases:
-        assert case.unsupported_backends == spec.expected_unsupported_backends
-        assert (
-            case.unsupported_backend_reason
-            == spec.expected_unsupported_backend_reason
-        )
-        assert frozenset(case.search_matches) == spec.expected_module_search_texts_by_pattern[
-            case.pattern
-        ]
-        assert frozenset((*case.fullmatch_matches, *case.fullmatch_misses)) == (
-            spec.expected_pattern_fullmatch_texts_by_pattern[case.pattern]
-        )
-        assert set(case.search_matches).isdisjoint(case.fullmatch_misses)
-        assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
-        assert all(
-            isinstance(text, bytes)
-            for text in (
-                *case.search_matches,
-                *case.fullmatch_matches,
-                *case.fullmatch_misses,
-            )
-        )
-
-    (
-        published_module_texts_by_pattern,
-        published_fullmatch_texts_by_pattern,
-    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
-    assert (
-        published_module_texts_by_pattern
-        == spec.expected_module_search_texts_by_pattern
-    )
-    assert (
-        published_fullmatch_texts_by_pattern
-        == spec.expected_pattern_fullmatch_texts_by_pattern
     )
 
 

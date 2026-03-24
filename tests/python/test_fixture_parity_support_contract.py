@@ -4389,6 +4389,194 @@ def test_grouped_quantified_bytes_surface_spec_preserves_supplemental_case_unsup
     assert case.unsupported_backend_reason == "known gap"
 
 
+def test_grouped_quantified_bytes_surface_spec_preserves_supported_direct_follow_on_surface_contract(
+) -> None:
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT / "open_ended_quantified_group_alternation_workflows.py",
+        pattern_extractor=case_pattern,
+    )
+    compile_cases, module_cases, pattern_cases = (
+        fixture_parity_support.partition_direct_bytes_follow_on_case_buckets(
+            (bundle,),
+            (bundle,),
+        )
+    )
+    surface = fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
+        bundle=bundle,
+        cases=fixture_parity_support.OPEN_ENDED_ALTERNATION_BYTES_CASES,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 10,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            rb"a(bc|de){1,}d": frozenset({b"zzabcdzz", b"zzadedzz"}),
+            rb"a(?P<word>bc|de){1,}d": frozenset({b"zzabcdzz", b"zzadedzz"}),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            rb"a(bc|de){1,}d": frozenset(
+                {b"abcbcd", b"abcded", b"abcbcded", b"ad", b"abed"}
+            ),
+            rb"a(?P<word>bc|de){1,}d": frozenset(
+                {b"abcded", b"abcbcded", b"adededed", b"ad", b"abed"}
+            ),
+        },
+        follow_on_id="open-ended-alternation",
+    )
+
+    bundle_str_cases, bundle_bytes_cases = (
+        fixture_parity_support.assert_grouped_quantified_direct_bytes_surface_spec(
+            surface,
+            compile_cases=compile_cases,
+            module_cases=module_cases,
+            pattern_cases=pattern_cases,
+        )
+    )
+
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 16
+    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 4,
+            ("pattern_call", "fullmatch"): 10,
+        }
+    )
+
+
+def test_grouped_quantified_bytes_surface_spec_preserves_branch_local_unsupported_backend_expectations(
+) -> None:
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT
+        / "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+        pattern_extractor=case_pattern,
+    )
+    compile_cases, module_cases, pattern_cases = (
+        fixture_parity_support.partition_direct_bytes_follow_on_case_buckets(
+            (bundle,),
+            (bundle,),
+        )
+    )
+    cases = (
+        SupplementalCase(
+            id="quantified-nested-group-alternation-branch-local-numbered-bytes",
+            pattern=rb"a((b|c)+)\2d",
+            search_matches=(b"zzabbdzz",),
+            fullmatch_matches=(b"accd", b"abbbd"),
+            fullmatch_misses=(b"abcd",),
+            unsupported_backends=("rebar",),
+            unsupported_backend_reason="known gap",
+        ),
+        SupplementalCase(
+            id="quantified-nested-group-alternation-branch-local-named-bytes",
+            pattern=rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+            search_matches=(b"zzaccdzz",),
+            fullmatch_matches=(b"abbd", b"abccd"),
+            fullmatch_misses=(b"acbd",),
+            unsupported_backends=("rebar",),
+            unsupported_backend_reason="known gap",
+        ),
+    )
+    surface = fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
+        bundle=bundle,
+        cases=cases,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 6,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            rb"a((b|c)+)\2d": frozenset({b"zzabbdzz"}),
+            rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d": frozenset({b"zzaccdzz"}),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            rb"a((b|c)+)\2d": frozenset({b"accd", b"abbbd", b"abcd"}),
+            rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d": frozenset(
+                {b"abbd", b"abccd", b"acbd"}
+            ),
+        },
+        expected_unsupported_backends=("rebar",),
+        expected_unsupported_backend_reason="known gap",
+    )
+
+    _, bundle_bytes_cases = (
+        fixture_parity_support.assert_grouped_quantified_direct_bytes_surface_spec(
+            surface,
+            compile_cases=compile_cases,
+            module_cases=module_cases,
+            pattern_cases=pattern_cases,
+        )
+    )
+
+    assert len(bundle_bytes_cases) == 10
+    assert {case.text_model for case in bundle_bytes_cases} == {"bytes"}
+    assert {case.manifest_id for case in bundle_bytes_cases} == {
+        "quantified-nested-group-alternation-branch-local-backreference-workflows"
+    }
+
+
+def test_grouped_quantified_bytes_surface_spec_rejects_direct_follow_on_surface_drift(
+) -> None:
+    bundle = build_selected_fixture_bundle(
+        CORRECTNESS_FIXTURES_ROOT / "open_ended_quantified_group_alternation_workflows.py",
+        pattern_extractor=case_pattern,
+    )
+    compile_cases, module_cases, pattern_cases = (
+        fixture_parity_support.partition_direct_bytes_follow_on_case_buckets(
+            (bundle,),
+            (bundle,),
+        )
+    )
+    drifted_cases = (
+        replace(
+            fixture_parity_support.OPEN_ENDED_ALTERNATION_BYTES_CASES[0],
+            search_matches=(b"zzdriftedzz",),
+        ),
+        fixture_parity_support.OPEN_ENDED_ALTERNATION_BYTES_CASES[1],
+    )
+    surface = fixture_parity_support.GroupedQuantifiedBytesSurfaceSpec(
+        bundle=bundle,
+        cases=drifted_cases,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 10,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            rb"a(bc|de){1,}d": frozenset({b"zzabcdzz", b"zzadedzz"}),
+            rb"a(?P<word>bc|de){1,}d": frozenset({b"zzabcdzz", b"zzadedzz"}),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            rb"a(bc|de){1,}d": frozenset(
+                {b"abcbcd", b"abcded", b"abcbcded", b"ad", b"abed"}
+            ),
+            rb"a(?P<word>bc|de){1,}d": frozenset(
+                {b"abcded", b"abcbcded", b"adededed", b"ad", b"abed"}
+            ),
+        },
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "open-ended-quantified-group-alternation-workflows grouped quantified "
+            "direct-bytes surface drifted; "
+            "b'a(bc|de){1,}d' search matches drifted"
+        ),
+    ):
+        fixture_parity_support.assert_grouped_quantified_direct_bytes_surface_spec(
+            surface,
+            compile_cases=compile_cases,
+            module_cases=module_cases,
+            pattern_cases=pattern_cases,
+        )
+
+
 def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
 ) -> None:
     fixture_path = (

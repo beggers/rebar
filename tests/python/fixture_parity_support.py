@@ -1230,6 +1230,171 @@ def assert_direct_bytes_follow_on_bundle_routing(
     return bundle_str_cases, bundle_bytes_cases
 
 
+def assert_grouped_quantified_direct_bytes_surface_spec(
+    spec: GroupedQuantifiedBytesSurfaceSpec,
+    *,
+    compile_cases: Iterable[FixtureCase],
+    module_cases: Iterable[FixtureCase],
+    pattern_cases: Iterable[FixtureCase],
+) -> tuple[tuple[FixtureCase, ...], tuple[FixtureCase, ...]]:
+    bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
+        spec.bundle,
+        compile_cases=compile_cases,
+        module_cases=module_cases,
+        pattern_cases=pattern_cases,
+    )
+    manifest_id = spec.bundle.manifest.manifest_id
+    expected_compile_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation((spec.bundle,), "compile")
+        if case.text_model == "bytes"
+    )
+    drift_messages: list[str] = []
+
+    actual_compile_patterns = frozenset(case.pattern for case in spec.cases)
+    if actual_compile_patterns != expected_compile_patterns:
+        drift_messages.append(
+            "bytes compile patterns drifted; expected "
+            f"{tuple(sorted(expected_compile_patterns, key=repr))}, got "
+            f"{tuple(sorted(actual_compile_patterns, key=repr))}"
+        )
+
+    if len(bundle_str_cases) != len(bundle_bytes_cases):
+        drift_messages.append(
+            "mixed-text row counts drifted after direct-bytes routing; "
+            f"str rows {len(bundle_str_cases)} != bytes rows {len(bundle_bytes_cases)}"
+        )
+
+    expected_row_count = sum(spec.expected_operation_helper_counts.values())
+    if len(bundle_bytes_cases) != expected_row_count:
+        drift_messages.append(
+            "bytes follow-on row count drifted; "
+            f"expected {expected_row_count}, got {len(bundle_bytes_cases)}"
+        )
+
+    expected_bytes_case_ids = {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
+    actual_bytes_case_ids = {case.case_id for case in bundle_bytes_cases}
+    if actual_bytes_case_ids != expected_bytes_case_ids:
+        drift_messages.append(
+            "mixed-text case id pairing drifted; expected bytes case ids "
+            f"{tuple(sorted(expected_bytes_case_ids))}, got "
+            f"{tuple(sorted(actual_bytes_case_ids))}"
+        )
+
+    actual_operation_helper_counts = Counter(
+        (case.operation, case.helper) for case in bundle_bytes_cases
+    )
+    if actual_operation_helper_counts != spec.expected_operation_helper_counts:
+        drift_messages.append(
+            "bytes operation/helper counts drifted; expected "
+            f"{spec.expected_operation_helper_counts}, got "
+            f"{actual_operation_helper_counts}"
+        )
+
+    supplemental_cases_by_pattern = {case.pattern: case for case in spec.cases}
+    expected_patterns = frozenset(supplemental_cases_by_pattern)
+    if expected_patterns != expected_compile_patterns:
+        missing_patterns = tuple(
+            sorted(expected_compile_patterns - expected_patterns, key=repr)
+        )
+        unexpected_patterns = tuple(
+            sorted(expected_patterns - expected_compile_patterns, key=repr)
+        )
+        drift_messages.append(
+            "supplemental pattern coverage drifted; missing patterns "
+            f"{missing_patterns}; unexpected patterns {unexpected_patterns}"
+        )
+
+    for pattern in sorted(expected_compile_patterns, key=repr):
+        supplemental_case = supplemental_cases_by_pattern.get(pattern)
+        if supplemental_case is None:
+            continue
+        if supplemental_case.unsupported_backends != spec.expected_unsupported_backends:
+            drift_messages.append(
+                f"{pattern!r} unsupported backends drifted; expected "
+                f"{spec.expected_unsupported_backends}, got "
+                f"{supplemental_case.unsupported_backends}"
+            )
+        if (
+            supplemental_case.unsupported_backend_reason
+            != spec.expected_unsupported_backend_reason
+        ):
+            drift_messages.append(
+                f"{pattern!r} unsupported backend reason drifted; expected "
+                f"{spec.expected_unsupported_backend_reason!r}, got "
+                f"{supplemental_case.unsupported_backend_reason!r}"
+            )
+        if frozenset(supplemental_case.search_matches) != (
+            spec.expected_module_search_texts_by_pattern[pattern]
+        ):
+            drift_messages.append(
+                f"{pattern!r} search matches drifted; expected "
+                f"{spec.expected_module_search_texts_by_pattern[pattern]}, got "
+                f"{frozenset(supplemental_case.search_matches)}"
+            )
+        if frozenset(
+            (*supplemental_case.fullmatch_matches, *supplemental_case.fullmatch_misses)
+        ) != spec.expected_pattern_fullmatch_texts_by_pattern[pattern]:
+            drift_messages.append(
+                f"{pattern!r} fullmatch texts drifted; expected "
+                f"{spec.expected_pattern_fullmatch_texts_by_pattern[pattern]}, got "
+                f"{frozenset((*supplemental_case.fullmatch_matches, *supplemental_case.fullmatch_misses))}"
+            )
+        if not set(supplemental_case.search_matches).isdisjoint(
+            supplemental_case.search_misses
+        ):
+            drift_messages.append(
+                f"{pattern!r} search match/miss payloads overlap unexpectedly"
+            )
+        if not set(supplemental_case.fullmatch_matches).isdisjoint(
+            supplemental_case.fullmatch_misses
+        ):
+            drift_messages.append(
+                f"{pattern!r} fullmatch match/miss payloads overlap unexpectedly"
+            )
+
+        payloads = (
+            *supplemental_case.search_matches,
+            *supplemental_case.search_misses,
+            *supplemental_case.fullmatch_matches,
+            *supplemental_case.fullmatch_misses,
+        )
+        if any(not isinstance(text, bytes) for text in payloads):
+            drift_messages.append(
+                f"{pattern!r} bytes payload sanity drifted; non-bytes payload present"
+            )
+
+    (
+        published_module_texts_by_pattern,
+        published_fullmatch_texts_by_pattern,
+    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
+    if published_module_texts_by_pattern != spec.expected_module_search_texts_by_pattern:
+        drift_messages.append(
+            "published module-search texts drifted; expected "
+            f"{spec.expected_module_search_texts_by_pattern}, got "
+            f"{published_module_texts_by_pattern}"
+        )
+    if (
+        published_fullmatch_texts_by_pattern
+        != spec.expected_pattern_fullmatch_texts_by_pattern
+    ):
+        drift_messages.append(
+            "published pattern-fullmatch texts drifted; expected "
+            f"{spec.expected_pattern_fullmatch_texts_by_pattern}, got "
+            f"{published_fullmatch_texts_by_pattern}"
+        )
+
+    if drift_messages:
+        raise AssertionError(
+            f"{manifest_id} grouped quantified direct-bytes surface drifted; "
+            + "; ".join(drift_messages)
+        )
+
+    return bundle_str_cases, bundle_bytes_cases
+
+
 def published_bytes_texts_by_pattern(
     bundle_bytes_cases: Iterable[FixtureCase],
 ) -> tuple[dict[bytes, frozenset[bytes]], dict[bytes, frozenset[bytes]]]:

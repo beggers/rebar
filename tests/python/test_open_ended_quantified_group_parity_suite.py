@@ -23,8 +23,8 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     PatternTraceCase as OpenEndedTraceCase,
     SupplementalCase,
+    assert_grouped_quantified_direct_bytes_surface_spec,
     assert_mixed_text_model_case_pairs,
-    assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_bounded_pattern_case_match_parity,
     assert_fixture_case_optional_match_parity,
@@ -561,14 +561,6 @@ def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_
 def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
-    bundle_str_cases, bundle_bytes_cases = assert_mixed_text_model_case_pairs(
-        spec.bundle
-    )
-    expected_compile_patterns = frozenset(
-        case_pattern(case)
-        for case in fixture_cases_for_operation((spec.bundle,), "compile")
-        if case.text_model == "bytes"
-    )
     direct_manifest_ids = frozenset(
         follow_on_spec.bundle.manifest.manifest_id
         for follow_on_spec in OPEN_ENDED_BYTES_CASE_SURFACES
@@ -578,6 +570,25 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     assert (spec.follow_on_id is None) == (
         spec.bundle.manifest.manifest_id not in direct_manifest_ids
     )
+
+    if spec.follow_on_id is not None:
+        assert_grouped_quantified_direct_bytes_surface_spec(
+            spec,
+            compile_cases=COMPILE_CASES,
+            module_cases=MODULE_CASES,
+            pattern_cases=PATTERN_CASES,
+        )
+        return
+
+    bundle_str_cases, bundle_bytes_cases = assert_mixed_text_model_case_pairs(
+        spec.bundle
+    )
+    expected_compile_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation((spec.bundle,), "compile")
+        if case.text_model == "bytes"
+    )
+
     assert len(spec.cases) == 2
     assert {case.pattern for case in spec.cases} == expected_compile_patterns
     assert len(bundle_str_cases) == len(bundle_bytes_cases)
@@ -662,8 +673,8 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: GroupedQuantifiedBytesSurfaceSpec,
 ) -> None:
-    _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        spec.bundle,
+    _, bundle_bytes_cases = assert_grouped_quantified_direct_bytes_surface_spec(
+        spec,
         compile_cases=COMPILE_CASES,
         module_cases=MODULE_CASES,
         pattern_cases=PATTERN_CASES,
