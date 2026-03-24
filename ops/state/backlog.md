@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives on the broader conditional callable count-contract owner path.
+The surviving feature frontier is the quantified nested-group alternation module wrong-return-type parity slice on the callable replacement owner path, pinned to `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives on the broader conditional callable count-contract owner path.
+1. The surviving feature frontier is the quantified nested-group alternation module wrong-return-type parity slice on the callable replacement owner path, pinned to `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
