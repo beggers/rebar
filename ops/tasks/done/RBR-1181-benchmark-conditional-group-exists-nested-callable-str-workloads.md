@@ -1,6 +1,6 @@
 # RBR-1181: Benchmark conditional group-exists nested callable str workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -57,3 +57,11 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_source_tree_combined_slice_filters_match_expected_manifest_rows tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_single_manifest_scorecards_keep_slice_backed_representatives` returned `2 passed, 54 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-nested-callable-bench-current.py` completed successfully with `128` measured workloads and `0` known gaps, confirming the existing benchmark owner path is stable before this follow-on lands; and
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` direct probes confirmed the exact `str` nested conditional callable workflows already match CPython on `rebar`, while the bytes mirrors still raise scaffold `NotImplementedError`, which keeps the immediate follow-on pinned to bytes parity rather than a bytes benchmark catch-up.
+
+## Completion
+- Added the eight `str` nested conditional callable `sub()`/`subn()` benchmark rows on `benchmarks/workloads/conditional_group_exists_boundary.py` and extended the shared source-tree expectation/test owner path in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so those rows participate in the existing slice-filter and representative-scorecard contracts.
+- Regenerated `reports/benchmarks/latest.py`; the tracked report now shows `1067/1067` measured workloads with `known_gap_count == 0`, and `REPORT["manifests"]["conditional-group-exists-boundary"]` now shows `workload_count == 136`, `measured_workloads == 136`, and `known_gap_count == 0`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_source_tree_combined_slice_filters_match_expected_manifest_rows tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_conditional_group_exists_nested_callable_str_manifest_promotes_replacement_and_exception_rows_to_measured tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_single_manifest_scorecards_keep_slice_backed_representatives`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1181-conditional-nested-callable-str.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
