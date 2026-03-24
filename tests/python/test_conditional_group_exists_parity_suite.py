@@ -21,8 +21,9 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
+    bundle_manifest_pytest_id,
     compile_with_cpython_parity,
-    wrap_candidate_core_texts,
+    fixture_bundle_manifest_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
@@ -31,6 +32,7 @@ from tests.python.fixture_parity_support import (
     requested_published_fixture_bundles,
     SupplementalMissCase,
     str_case_pattern,
+    wrap_candidate_core_texts,
     workflow_result_with_cpython_parity,
 )
 
@@ -667,7 +669,7 @@ SUPPLEMENTAL_MISS_CASES = (
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=lambda bundle: bundle.expected_manifest_id,
+    ids=fixture_bundle_manifest_pytest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
@@ -681,7 +683,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 @pytest.mark.parametrize(
     "spec",
     GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS,
-    ids=lambda spec: spec.bundle.expected_manifest_id,
+    ids=bundle_manifest_pytest_id,
 )
 def test_generated_quantified_conditional_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedConditionalParitySpec,

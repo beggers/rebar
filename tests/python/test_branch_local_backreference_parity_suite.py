@@ -28,9 +28,11 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     build_wrapped_body_candidate_texts,
+    bundle_manifest_pytest_id,
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    fixture_bundle_manifest_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
@@ -1087,7 +1089,7 @@ def test_fixture_case_operation_selection_preserves_published_row_order() -> Non
     )
 
 
-@pytest.mark.parametrize("bundle", FIXTURE_BUNDLES, ids=lambda bundle: bundle.expected_manifest_id)
+@pytest.mark.parametrize("bundle", FIXTURE_BUNDLES, ids=fixture_bundle_manifest_pytest_id)
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
 ) -> None:
@@ -1097,7 +1099,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 @pytest.mark.parametrize(
     "spec",
     GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS,
-    ids=lambda spec: spec.bundle.expected_manifest_id,
+    ids=bundle_manifest_pytest_id,
 )
 def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedBranchLocalParitySpec,

@@ -30,9 +30,12 @@ from tests.python.fixture_parity_support import (
     build_wrapped_body_candidate_texts,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    bundle_manifest_pytest_id,
+    fixture_bundle_manifest_pytest_id,
     fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    follow_on_pytest_id,
     id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
@@ -630,7 +633,7 @@ SUPPLEMENTAL_NO_MATCH_CASES = _build_supplemental_no_match_cases()
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=lambda bundle: bundle.expected_manifest_id,
+    ids=fixture_bundle_manifest_pytest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
@@ -641,7 +644,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 @pytest.mark.parametrize(
     "spec",
     GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS,
-    ids=lambda spec: spec.bundle.expected_manifest_id,
+    ids=bundle_manifest_pytest_id,
 )
 def test_generated_quantified_alternation_compile_cases_stay_anchored_to_published_manifests(
     spec: GeneratedQuantifiedAlternationParitySpec,
@@ -719,7 +722,7 @@ def test_direct_bytes_follow_on_case_surfaces_keep_expected_ids() -> None:
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=lambda spec: spec.follow_on_id,
+    ids=follow_on_pytest_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: QuantifiedAlternationDirectBytesFollowOnSpec,
@@ -742,7 +745,7 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=lambda spec: spec.follow_on_id,
+    ids=follow_on_pytest_id,
 )
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: QuantifiedAlternationDirectBytesFollowOnSpec,

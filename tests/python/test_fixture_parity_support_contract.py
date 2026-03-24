@@ -58,15 +58,18 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     assert_value_parity,
     assert_valid_match_group_access_parity,
+    bundle_manifest_pytest_id,
     build_selected_fixture_bundle,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
     compile_with_cpython_parity,
     flatten_fixture_bundles,
+    fixture_bundle_manifest_pytest_id,
     fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    follow_on_pytest_id,
     id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_single_published_fixture_bundle,
@@ -5601,6 +5604,31 @@ def test_fixture_case_pytest_id_returns_case_case_id() -> None:
     case = manifest.cases[0]
 
     assert fixture_case_pytest_id(case) == case.case_id
+
+
+def test_fixture_bundle_manifest_pytest_id_returns_bundle_expected_manifest_id() -> None:
+    bundle = build_selected_fixture_bundle(
+        DEFAULT_FIXTURE_PATHS[0],
+        pattern_extractor=case_pattern,
+    )
+
+    assert fixture_bundle_manifest_pytest_id(bundle) == bundle.expected_manifest_id
+
+
+def test_bundle_manifest_pytest_id_returns_spec_bundle_expected_manifest_id() -> None:
+    bundle = build_selected_fixture_bundle(
+        DEFAULT_FIXTURE_PATHS[0],
+        pattern_extractor=case_pattern,
+    )
+    spec = SimpleNamespace(bundle=bundle)
+
+    assert bundle_manifest_pytest_id(spec) == bundle.expected_manifest_id
+
+
+def test_follow_on_pytest_id_returns_spec_follow_on_id() -> None:
+    spec = SimpleNamespace(follow_on_id="direct-follow-on")
+
+    assert follow_on_pytest_id(spec) == "direct-follow-on"
 
 
 @pytest.mark.parametrize(

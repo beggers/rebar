@@ -418,6 +418,20 @@ def fixture_case_pytest_id(case: FixtureCase) -> str:
     return case.case_id
 
 
+def fixture_bundle_manifest_pytest_id(bundle: FixtureBundle) -> str:
+    return bundle.expected_manifest_id
+
+
+def bundle_manifest_pytest_id(spec: object) -> str:
+    return getattr(spec, "bundle").expected_manifest_id
+
+
+def follow_on_pytest_id(spec: object) -> str:
+    follow_on_id = getattr(spec, "follow_on_id")
+    assert isinstance(follow_on_id, str)
+    return follow_on_id
+
+
 def id_attribute_pytest_id(
     case: (
         SupplementalCase

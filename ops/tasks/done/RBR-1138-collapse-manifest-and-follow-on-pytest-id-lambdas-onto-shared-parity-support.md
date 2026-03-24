@@ -1,6 +1,6 @@
 # RBR-1138: Collapse manifest and follow-on pytest id lambdas onto shared parity support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -52,3 +52,8 @@ Created: 2026-03-24
   - `tests/python/fixture_parity_support.py` currently has shared helpers for `FixtureCase.case_id` and `.id` carriers, but not for `FixtureBundle.expected_manifest_id`, `spec.bundle.expected_manifest_id`, or `spec.follow_on_id`;
   - the five target suites still contain sixteen inline lambdas for those same three id shapes; and
   - the second verification command above currently fails only because those inline lambdas are still present.
+- Completion note:
+  - Added `fixture_bundle_manifest_pytest_id()`, `bundle_manifest_pytest_id()`, and `follow_on_pytest_id()` to `tests/python/fixture_parity_support.py`, routed the five parity suites through those shared accessors, and extended `tests/python/test_fixture_parity_support_contract.py` with focused coverage for each new accessor.
+- Verification status in this run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py::test_generated_quantified_alternation_compile_cases_stay_anchored_to_published_manifests tests/python/test_quantified_alternation_parity_suite.py::test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor tests/python/test_branch_local_backreference_parity_suite.py::test_generated_quantified_branch_local_compile_cases_stay_anchored_to_published_manifests tests/python/test_open_ended_quantified_group_parity_suite.py::test_bytes_cases_stay_explicit_with_expected_bundle_coverage tests/python/test_open_ended_quantified_group_parity_suite.py::test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py::test_wider_ranged_repeat_direct_bytes_follow_on_case_surfaces_resolve_to_expected_published_mixed_fixtures tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py::test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor tests/python/test_conditional_group_exists_parity_suite.py::test_generated_quantified_conditional_compile_cases_stay_anchored_to_published_manifests` returned `30 passed` in this run.
+  - `bash -lc "! rg -n 'ids=lambda bundle: bundle\\.expected_manifest_id|ids=lambda spec: spec\\.bundle\\.expected_manifest_id|ids=lambda spec: spec\\.follow_on_id' tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"` succeeded in this run.

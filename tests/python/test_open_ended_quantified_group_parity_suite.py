@@ -34,11 +34,14 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
+    bundle_manifest_pytest_id,
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
+    fixture_bundle_manifest_pytest_id,
     fixture_case_pytest_id,
     fixture_cases_for_operation,
+    follow_on_pytest_id,
     id_attribute_pytest_id,
     load_published_fixture_bundles,
     ordered_fixture_bundle_case_ids,
@@ -663,7 +666,7 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
-    ids=lambda bundle: bundle.expected_manifest_id,
+    ids=fixture_bundle_manifest_pytest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
@@ -697,7 +700,7 @@ def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_
 @pytest.mark.parametrize(
     "spec",
     OPEN_ENDED_BYTES_CASE_SURFACES,
-    ids=lambda spec: spec.bundle.expected_manifest_id,
+    ids=bundle_manifest_pytest_id,
 )
 def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     spec: GroupedQuantifiedBytesSurfaceSpec,
@@ -759,7 +762,7 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
 @pytest.mark.parametrize(
     "spec",
     tuple(spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is None),
-    ids=lambda spec: spec.bundle.expected_manifest_id,
+    ids=bundle_manifest_pytest_id,
 )
 def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
     spec: GroupedQuantifiedBytesSurfaceSpec,
@@ -798,7 +801,7 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
     tuple(
         spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
     ),
-    ids=lambda spec: spec.follow_on_id,
+    ids=follow_on_pytest_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     spec: GroupedQuantifiedBytesSurfaceSpec,
