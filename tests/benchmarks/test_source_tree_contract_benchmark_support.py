@@ -1,34 +1,21 @@
 from __future__ import annotations
 
-import pathlib
-
 import pytest
 
 from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
-    load_manifest,
     workload_to_payload,
 )
 from tests.benchmarks import source_tree_contract_benchmark_support as support
+from tests.benchmarks.benchmark_test_support import live_manifest_workload
 
 _COLLECTION_REPLACEMENT_MANIFEST_PATH = (
     BENCHMARK_WORKLOADS_ROOT / "collection_replacement_boundary.py"
 )
 
 
-def _manifest_workload_by_id(
-    manifest_path: pathlib.Path,
-    workload_id: str,
-):
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(manifest_path).workloads
-    }
-    return workloads_by_id[workload_id]
-
-
 def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata() -> None:
-    source_workload = _manifest_workload_by_id(
+    source_workload = live_manifest_workload(
         _COLLECTION_REPLACEMENT_MANIFEST_PATH,
         "module-sub-count-keyword-warm-str-compiled-pattern",
     )
@@ -66,7 +53,7 @@ def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata
 
 
 def test_source_tree_contract_workload_reconstructs_contract_workload_with_defaults() -> None:
-    source_workload = _manifest_workload_by_id(
+    source_workload = live_manifest_workload(
         _COLLECTION_REPLACEMENT_MANIFEST_PATH,
         "module-subn-count-keyword-purged-bytes-compiled-pattern",
     )
@@ -105,11 +92,11 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
 
 def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids() -> None:
     source_workloads = (
-        _manifest_workload_by_id(
+        live_manifest_workload(
             _COLLECTION_REPLACEMENT_MANIFEST_PATH,
             "module-findall-literal-purged-bytes-compiled-pattern",
         ),
-        _manifest_workload_by_id(
+        live_manifest_workload(
             _COLLECTION_REPLACEMENT_MANIFEST_PATH,
             "module-sub-literal-warm-str-compiled-pattern",
         ),

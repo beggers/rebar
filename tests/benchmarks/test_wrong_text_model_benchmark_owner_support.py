@@ -6,7 +6,6 @@ import pathlib
 import pytest
 
 from rebar_harness.benchmarks import (
-    BENCHMARK_WORKLOADS_ROOT,
     build_callable,
     load_manifest,
     run_internal_workload_probe,
@@ -14,10 +13,11 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import wrong_text_model_benchmark_owner_support as support
+from tests.benchmarks.benchmark_test_support import _write_test_manifest
+from tests.benchmarks.benchmark_test_support import live_manifest_workload
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
-from tests.benchmarks.benchmark_test_support import _write_test_manifest
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
@@ -25,13 +25,6 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
 )
-
-
-def _manifest_workload(manifest_name: str, workload_id: str):
-    workloads = load_manifest(BENCHMARK_WORKLOADS_ROOT / manifest_name).workloads
-    return next(workload for workload in workloads if workload.workload_id == workload_id)
-
-
 @pytest.mark.parametrize(
     (
         "workload",
@@ -42,7 +35,7 @@ def _manifest_workload(manifest_name: str, workload_id: str):
     ),
     (
         pytest.param(
-            _manifest_workload(
+            live_manifest_workload(
                 "collection_replacement_boundary.py",
                 "module-finditer-on-bytes-string-warm-str-compiled-pattern",
             ),
@@ -53,7 +46,7 @@ def _manifest_workload(manifest_name: str, workload_id: str):
             id="compiled-pattern-finditer-materialized-iterator",
         ),
         pytest.param(
-            _manifest_workload(
+            live_manifest_workload(
                 "module_boundary.py",
                 "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
             ),
@@ -107,7 +100,7 @@ def test_compiled_pattern_wrong_text_model_helpers_cover_materialized_iterator_a
     ),
     (
         pytest.param(
-            _manifest_workload(
+            live_manifest_workload(
                 "collection_replacement_boundary.py",
                 "pattern-subn-on-str-string-purged-bytes",
             ),
@@ -119,7 +112,7 @@ def test_compiled_pattern_wrong_text_model_helpers_cover_materialized_iterator_a
             id="direct-pattern-collection-replacement",
         ),
         pytest.param(
-            _manifest_workload(
+            live_manifest_workload(
                 "pattern_boundary.py",
                 "pattern-search-on-bytes-string-warm-str",
             ),
@@ -168,7 +161,7 @@ def test_direct_pattern_wrong_text_model_helpers_cover_collection_replacement_an
     ("workload", "use_compiled_pattern", "timing_scope"),
     (
         pytest.param(
-            _manifest_workload(
+            live_manifest_workload(
                 "pattern_boundary.py",
                 "pattern-search-on-bytes-string-warm-str",
             ),
@@ -177,7 +170,7 @@ def test_direct_pattern_wrong_text_model_helpers_cover_collection_replacement_an
             id="str-pattern-bytes-haystack",
         ),
         pytest.param(
-            _manifest_workload(
+            live_manifest_workload(
                 "collection_replacement_boundary.py",
                 "module-subn-on-str-string-purged-bytes-compiled-pattern",
             ),

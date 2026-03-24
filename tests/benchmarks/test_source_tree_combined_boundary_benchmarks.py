@@ -167,6 +167,7 @@ from tests.benchmarks.benchmark_test_support import (
     _expected_exception_instance,
     _record_numeric_materialization_fields,
     _write_test_manifest,
+    live_manifest_workloads,
 )
 from tests.conftest import (
     REPO_ROOT,
@@ -3994,98 +3995,63 @@ CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS = (
 @cache
 def _conditional_group_exists_callable_bytes_slice_workloads(
 ) -> tuple[Workload, ...]:
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(
-            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
-        ).workloads
-    }
     expected_workload_ids = tuple(
         workload_id
         for expectation in _conditional_group_exists_callable_replacement_expectations()
         for workload_id in expectation.expected_workload_ids
         if workload_id.endswith("-bytes")
     )
-    return tuple(
-        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    return live_manifest_workloads(
+        BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expected_workload_ids,
     )
 
 
 def _conditional_group_exists_quantified_callable_str_workloads(
 ) -> tuple[Workload, ...]:
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(
-            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
-        ).workloads
-    }
     expectation = _conditional_group_exists_quantified_callable_replacement_expectation()
-    expected_workload_ids = expectation.expected_workload_ids
-    return tuple(
-        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    return live_manifest_workloads(
+        BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
     )
 
 
 def _conditional_group_exists_nested_callable_str_workloads(
 ) -> tuple[Workload, ...]:
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(
-            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
-        ).workloads
-    }
     expectation = _conditional_group_exists_nested_callable_replacement_expectation()
-    expected_workload_ids = expectation.expected_workload_ids
-    return tuple(
-        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    return live_manifest_workloads(
+        BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
     )
 
 
 @cache
 def _conditional_group_exists_nested_callable_bytes_workloads() -> tuple[Workload, ...]:
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(
-            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
-        ).workloads
-    }
     expectation = _conditional_group_exists_nested_callable_bytes_replacement_expectation()
-    expected_workload_ids = expectation.expected_workload_ids
-    return tuple(
-        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    return live_manifest_workloads(
+        BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
     )
 
 
 @cache
 def _conditional_group_exists_quantified_callable_bytes_workloads(
 ) -> tuple[Workload, ...]:
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(
-            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
-        ).workloads
-    }
     expectation = (
         _conditional_group_exists_quantified_callable_bytes_replacement_expectation()
     )
-    expected_workload_ids = expectation.expected_workload_ids
-    return tuple(
-        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    return live_manifest_workloads(
+        BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
     )
 
 
 @cache
 def _conditional_group_exists_alternation_callable_bytes_workloads(
 ) -> tuple[Workload, ...]:
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(
-            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
-        ).workloads
-    }
-    return tuple(
-        workloads_by_id[workload_id]
-        for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+    return live_manifest_workloads(
+        BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
     )
 
 
@@ -8627,16 +8593,13 @@ def _nested_group_callable_replacement_quantified_branch_local_backreference_byt
         for expectation in source_tree_combined_slice_expectations(manifest_id)
         if expectation.slice_id == "quantified-branch-local-backreference"
     )
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in load_manifest(
-            BENCHMARK_WORKLOADS_ROOT / "nested_group_callable_replacement_boundary.py"
-        ).workloads
-    }
-    return tuple(
-        workloads_by_id[workload_id]
-        for workload_id in slice_expectation.expected_workload_ids
-        if workload_id.endswith("-bytes")
+    return live_manifest_workloads(
+        BENCHMARK_WORKLOADS_ROOT / "nested_group_callable_replacement_boundary.py",
+        tuple(
+            workload_id
+            for workload_id in slice_expectation.expected_workload_ids
+            if workload_id.endswith("-bytes")
+        ),
     )
 
 

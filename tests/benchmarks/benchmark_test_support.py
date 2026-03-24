@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import cache
 import pathlib
 import textwrap
 from typing import Any
@@ -7,6 +8,41 @@ from typing import Any
 import pytest
 
 from rebar_harness import benchmarks
+
+
+def _resolve_live_manifest_path(
+    manifest_path: pathlib.Path | str,
+) -> pathlib.Path:
+    if isinstance(manifest_path, pathlib.Path):
+        return manifest_path
+    return benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_path
+
+
+@cache
+def _live_manifest_workloads_by_id(
+    manifest_path: pathlib.Path | str,
+) -> dict[str, benchmarks.Workload]:
+    return {
+        workload.workload_id: workload
+        for workload in benchmarks.load_manifest(
+            _resolve_live_manifest_path(manifest_path)
+        ).workloads
+    }
+
+
+def live_manifest_workload(
+    manifest_path: pathlib.Path | str,
+    workload_id: str,
+) -> benchmarks.Workload:
+    return _live_manifest_workloads_by_id(manifest_path)[workload_id]
+
+
+def live_manifest_workloads(
+    manifest_path: pathlib.Path | str,
+    workload_ids: tuple[str, ...],
+) -> tuple[benchmarks.Workload, ...]:
+    workloads_by_id = _live_manifest_workloads_by_id(manifest_path)
+    return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
 
 
 def _write_test_manifest(

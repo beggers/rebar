@@ -1,6 +1,6 @@
 # RBR-1208: Collapse live benchmark manifest lookups onto shared test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -44,6 +44,11 @@ Created: 2026-03-24
 - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_contract_benchmark_support.py tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_compiled_pattern_contract_benchmark_support.py`
 - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable_str_workloads_round_trip_preserves_outcomes or conditional_group_exists_nested_callable_bytes_workloads_round_trip_preserves_outcomes or conditional_group_exists_quantified_callable_str_workloads_round_trip_preserves_outcomes or conditional_group_exists_quantified_callable_bytes_workloads_round_trip_preserves_outcomes or conditional_group_exists_callable_bytes_slice_workloads_round_trip_preserves_outcomes or conditional_group_exists_alternation_callable_bytes_workloads_round_trip_preserves_outcomes or nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads_round_trip_preserves_callback_results or run_internal_workload_probe_measures_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads'`
 - `bash -lc "! rg -n 'def _manifest_workload_by_id\\(|def _manifest_workloads_by_id\\(|^def _manifest_workload\\(|workloads_by_id = \\{' tests/benchmarks/test_source_tree_contract_benchmark_support.py tests/benchmarks/test_grouped_alternation_benchmark_anchor_support.py tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py tests/benchmarks/test_compiled_pattern_contract_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+
+## Completion
+- Added shared live-manifest lookup helpers in `tests/benchmarks/benchmark_test_support.py` for direct single-workload lookup and ordered multi-workload lookup through the existing `load_manifest(...)` path.
+- Removed the duplicated local manifest lookup wrappers from the four benchmark support tests and routed the seven named combined-suite helper blocks through the shared ordered lookup helper without changing workload ids, ordering, or bytes-only filtering.
+- Verified the targeted pytest coverage and the negative `rg` contract that confirms the duplicated helper definitions and inline `workloads_by_id = {...}` blocks named in this task are gone.
 
 ## Notes
 - `RBR-1208` is the next available unreserved task id in this checkout:
