@@ -1,6 +1,6 @@
 ## RBR-1174: Extract compiled-pattern module-helper keyword benchmark support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,12 @@ Created: 2026-03-24
   - the extracted route support already lives separately in `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`, so this keyword-contract block is now the remaining compiled-pattern module-helper support layer still embedded in the combined suite.
 - Verification status in this run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword'` returned `67 passed, 687 deselected, 10 subtests passed` in this run.
+
+## Completion
+- Extracted the compiled-pattern module-helper keyword contract block into `tests/benchmarks/compiled_pattern_module_helper_keyword_benchmark_support.py`, including the shared build-call helper now reused by the remaining compiled-pattern success owner surface through imports.
+- Added `tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` to cover live source-workload ordering, payload round trips, materialized field names, precompile-anchor ordering, and representative success/error CPython outcome paths without copying the combined owner suite.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import the moved support and removed the inline keyword-contract definitions.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword'`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py`
