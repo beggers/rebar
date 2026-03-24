@@ -218,6 +218,10 @@ _CONDITIONAL_GROUP_EXISTS_CALLABLE_QUANTIFIED_CASE_STEMS = (
     "module-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent",
     "pattern-sub-callable-named-conditional-group-exists-quantified-negative-count-near-miss-present",
     "pattern-subn-callable-named-conditional-group-exists-quantified-negative-count-near-miss-absent",
+    "module-sub-callable-conditional-group-exists-quantified-none-count-present",
+    "module-subn-callable-named-conditional-group-exists-quantified-none-count-absent",
+    "pattern-sub-callable-conditional-group-exists-quantified-none-count-present",
+    "pattern-subn-callable-named-conditional-group-exists-quantified-none-count-absent",
 )
 _CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS = _case_ids_from_stems(
     _CONDITIONAL_GROUP_EXISTS_CALLABLE_TWO_ARM_CASE_STEMS,
@@ -3980,19 +3984,19 @@ def test_conditional_group_exists_quantified_direct_case_tables_stay_aligned_wit
         if case.helper == "subn"
     }
 
-    assert len(quantified_cases) == 32
+    assert len(quantified_cases) == 40
     assert Counter(
         (case.text_model, case.operation, case.helper) for case in quantified_cases
     ) == Counter(
         {
-            ("str", "module_call", "sub"): 4,
-            ("str", "module_call", "subn"): 4,
-            ("str", "pattern_call", "sub"): 4,
-            ("str", "pattern_call", "subn"): 4,
-            ("bytes", "module_call", "sub"): 4,
-            ("bytes", "module_call", "subn"): 4,
-            ("bytes", "pattern_call", "sub"): 4,
-            ("bytes", "pattern_call", "subn"): 4,
+            ("str", "module_call", "sub"): 5,
+            ("str", "module_call", "subn"): 5,
+            ("str", "pattern_call", "sub"): 5,
+            ("str", "pattern_call", "subn"): 5,
+            ("bytes", "module_call", "sub"): 5,
+            ("bytes", "module_call", "subn"): 5,
+            ("bytes", "pattern_call", "sub"): 5,
+            ("bytes", "pattern_call", "subn"): 5,
         }
     )
     assert module_present_rows == expected_present_rows

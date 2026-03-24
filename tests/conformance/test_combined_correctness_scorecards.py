@@ -986,6 +986,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-nested-none-count-absent-str",
             "pattern-sub-callable-conditional-group-exists-nested-none-count-present-str",
             "pattern-subn-callable-named-conditional-group-exists-nested-none-count-absent-str",
+            "module-sub-callable-conditional-group-exists-quantified-none-count-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-none-count-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
             "module-sub-callable-conditional-group-exists-nested-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
@@ -1058,6 +1062,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-nested-none-count-absent-bytes",
             "pattern-sub-callable-conditional-group-exists-nested-none-count-present-bytes",
             "pattern-subn-callable-named-conditional-group-exists-nested-none-count-absent-bytes",
+            "module-sub-callable-conditional-group-exists-quantified-none-count-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-none-count-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-none-count-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-none-count-absent-bytes",
             "module-sub-callable-conditional-group-exists-nested-negative-count-bytes",
             "module-subn-callable-named-conditional-group-exists-nested-negative-count-bytes",
             "pattern-sub-callable-conditional-group-exists-nested-negative-count-bytes",
@@ -5534,6 +5542,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+                "module-sub-callable-conditional-group-exists-quantified-none-count-present-str",
+                "module-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
+                "pattern-sub-callable-conditional-group-exists-quantified-none-count-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
             ),
         )
         self.assertEqual(
@@ -5778,7 +5790,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             len(manifest_none_count_str_case_ids),
             len(manifest_none_count_bytes_case_ids),
         )
-        self.assertEqual(len(manifest_none_count_str_case_ids), 20)
+        self.assertEqual(len(manifest_none_count_str_case_ids), 24)
         self.assertEqual(
             manifest_none_count_bytes_case_ids,
             mirrored_bytes_case_ids(manifest_none_count_str_case_ids),
@@ -5821,10 +5833,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 5,
-                    ("module_call", "subn"): 5,
-                    ("pattern_call", "sub"): 5,
-                    ("pattern_call", "subn"): 5,
+                    ("module_call", "sub"): 6,
+                    ("module_call", "subn"): 6,
+                    ("pattern_call", "sub"): 6,
+                    ("pattern_call", "subn"): 6,
                 }
             ),
         )
@@ -5836,10 +5848,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 5,
-                    ("module_call", "subn"): 5,
-                    ("pattern_call", "sub"): 5,
-                    ("pattern_call", "subn"): 5,
+                    ("module_call", "sub"): 6,
+                    ("module_call", "subn"): 6,
+                    ("pattern_call", "sub"): 6,
+                    ("pattern_call", "subn"): 6,
                 }
             ),
         )

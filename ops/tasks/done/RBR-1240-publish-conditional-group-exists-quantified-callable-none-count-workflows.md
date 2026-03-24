@@ -53,3 +53,14 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'none_count_matches_cpython_typeerror'` returned `1160 passed, 5030 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `5 passed, 44 deselected`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-callable-current.py` returned `192 executed / 192 passed / 0 unimplemented`.
+
+## Completion
+- Landed the exact eight quantified conditional callable `count=None` publication rows on the shared owner path: four `str` rows and four mirrored `bytes` rows, using the mixed numbered/named module/pattern quartet the task scoped.
+- Kept the owner-path parity and combined-scorecard expectations aligned with the widened slice, including quantified direct-case table counts, quantified representative ordering, and the mixed-text none-count sync checks.
+- Republished the tracked combined correctness scorecard in `reports/correctness/latest.py`; the tracked artifact now shows `collection.replacement.conditional_group_exists.callable` at `200` total / executed / passed with `0` unimplemented, and the combined summary at `1853` total / executed / passed with `0` failures and `0` unimplemented across `114` manifests.
+- Verification in this run:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'none_count_matches_cpython_typeerror'` returned `1184 passed, 5070 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_callable_scorecards'` returned `5 passed, 44 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists_quantified_direct_case_tables_stay_aligned_with_published_fixture'` returned `1 passed, 6253 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1240-conditional-callable-quantified-none-count.py` returned `200 executed / 200 passed / 0 unimplemented`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1853 executed / 1853 passed / 0 unimplemented`.
