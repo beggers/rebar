@@ -1,6 +1,6 @@
 # RBR-1216: Move benchmark manifest selection and probe contract tests onto publication runtime suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,8 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_selected_workloads_preserves_filters_and_order or standard_benchmark_manifest_measures_expected_exception_workloads or run_internal_workload_probe_reports_expected_exception_mismatches_as_unavailable or run_internal_workload_probe_reports_unsupported_operations_as_unavailable'` returned `7 passed, 374 deselected in 0.18s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because those four tests still live in the combined suite.
+
+## Completion
+- Moved the four benchmark manifest-selection and internal workload-probe contract tests into `tests/benchmarks/test_benchmark_publication_runtime_contracts.py` without changing their names, parametrization ids, helper usage, or assertion surfaces, and deleted the originals from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_selected_workloads_preserves_filters_and_order or standard_benchmark_manifest_measures_expected_exception_workloads or run_internal_workload_probe_reports_expected_exception_mismatches_as_unavailable or run_internal_workload_probe_reports_unsupported_operations_as_unavailable'` (`7 passed, 371 deselected in 0.33s`).
+- Verified the old combined suite no longer owns those tests with `bash -lc "! rg -n 'test_standard_benchmark_manifest_selected_workloads_preserves_filters_and_order|test_standard_benchmark_manifest_measures_expected_exception_workloads|test_run_internal_workload_probe_reports_expected_exception_mismatches_as_unavailable|test_run_internal_workload_probe_reports_unsupported_operations_as_unavailable' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.
