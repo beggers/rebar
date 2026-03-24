@@ -20,6 +20,9 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks import (
     compiled_pattern_module_compile_benchmark_support as support,
 )
+from tests.benchmarks.recording_benchmark_module_support import (
+    RecordingBenchmarkModule,
+)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     anchored_workload_case_ids,
     assert_benchmark_workload_matches_expected_result,
@@ -77,34 +80,6 @@ def _record_numeric_materialization_fields(
         record_numeric_materialization,
     )
     return observed_field_names
-
-
-class _RecordingBenchmarkCompiledPattern:
-    pass
-
-
-class _RecordingBenchmarkModule:
-    def __init__(
-        self,
-        *,
-        compile_exception: Exception | None = None,
-    ) -> None:
-        self.calls: list[tuple[object, ...]] = []
-        self._compile_exception = compile_exception
-        self.compiled_patterns: list[_RecordingBenchmarkCompiledPattern] = []
-
-    def purge(self) -> None:
-        self.calls.append(("purge",))
-
-    def compile(self, pattern: object, flags: int = 0) -> _RecordingBenchmarkCompiledPattern:
-        self.calls.append(("compile", pattern, flags))
-        if isinstance(pattern, _RecordingBenchmarkCompiledPattern):
-            if self._compile_exception is not None:
-                raise self._compile_exception
-            return pattern
-        compiled_pattern = _RecordingBenchmarkCompiledPattern()
-        self.compiled_patterns.append(compiled_pattern)
-        return compiled_pattern
 
 
 def test_compiled_pattern_module_compile_success_payload_round_trip_on_live_workload() -> None:
@@ -442,7 +417,7 @@ def test_compiled_pattern_module_compile_success_and_keyword_contract_callbacks_
         if source_workload.expected_exception is None
         else _expected_exception_instance(source_workload.expected_exception)
     )
-    module = _RecordingBenchmarkModule(compile_exception=compile_exception)
+    module = RecordingBenchmarkModule(compile_exception=compile_exception)
     callback = build_callable(
         module,
         "re",

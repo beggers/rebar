@@ -1,6 +1,6 @@
 # RBR-1183: Extract benchmark recording double support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -65,7 +65,10 @@ Created: 2026-03-24
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still defines local recording doubles at lines `16019` and `16065`; and
   - `tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` still imports `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` as `combined` at line `19` only to reuse `combined._RecordingBenchmarkModule`.
 - Verification status in this run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_recording_benchmark_module_support.py` currently fails with `ERROR: file or directory not found: tests/benchmarks/test_recording_benchmark_module_support.py`, which belongs to the exact cleanup queued here.
+  - Landed `tests/benchmarks/recording_benchmark_module_support.py` with shared `RecordingBenchmarkModule` and `RecordingBenchmarkCompiledPattern` doubles, including the existing compile-first semantics, recorded call tuple shapes, `compiled_patterns` tracking, and optional `compile_exception` / `helper_exception` injection paths.
+  - Updated `tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py`, `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` to import the shared support module instead of re-declaring or cross-importing private doubles.
+  - Added `tests/benchmarks/test_recording_benchmark_module_support.py` to pin one compile-only case, one helper-exception case, and one direct compiled-pattern helper call case.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_recording_benchmark_module_support.py` returned `3 passed` in this run.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` returned `78 passed` in this run.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` returned `41 passed` in this run.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_wrong_text_model_benchmark_owner_support.py` returned `52 passed` in this run.

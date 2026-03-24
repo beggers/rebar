@@ -16,6 +16,9 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks import (
     compiled_pattern_module_success_benchmark_support as support,
 )
+from tests.benchmarks.recording_benchmark_module_support import (
+    RecordingBenchmarkModule,
+)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
@@ -34,113 +37,6 @@ def _write_test_manifest(
     path = tmp_path / filename
     path.write_text(textwrap.dedent(source), encoding="utf-8")
     return path
-
-
-class _RecordingBenchmarkCompiledPattern:
-    pass
-
-
-class _RecordingBenchmarkModule:
-    def __init__(self) -> None:
-        self.calls: list[tuple[object, ...]] = []
-        self.compiled_patterns: list[_RecordingBenchmarkCompiledPattern] = []
-
-    def purge(self) -> None:
-        self.calls.append(("purge",))
-
-    def compile(self, pattern: object, flags: int = 0) -> _RecordingBenchmarkCompiledPattern:
-        self.calls.append(("compile", pattern, flags))
-        if isinstance(pattern, _RecordingBenchmarkCompiledPattern):
-            return pattern
-        compiled_pattern = _RecordingBenchmarkCompiledPattern()
-        self.compiled_patterns.append(compiled_pattern)
-        return compiled_pattern
-
-    def search(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-        **kwargs: object,
-    ) -> object:
-        self.calls.append(("module.search", pattern, haystack, flags, kwargs))
-        return "module-result"
-
-    def match(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-        **kwargs: object,
-    ) -> object:
-        self.calls.append(("module.match", pattern, haystack, flags, kwargs))
-        return "module-result"
-
-    def fullmatch(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-        **kwargs: object,
-    ) -> object:
-        self.calls.append(("module.fullmatch", pattern, haystack, flags, kwargs))
-        return "module-result"
-
-    def split(
-        self,
-        pattern: object,
-        haystack: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        maxsplit = args[0] if args else 0
-        flags = args[1] if len(args) > 1 else 0
-        self.calls.append(("module.split", pattern, haystack, maxsplit, flags, kwargs))
-        return "module-result"
-
-    def findall(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-    ) -> object:
-        self.calls.append(("module.findall", pattern, haystack, flags))
-        return "module-result"
-
-    def finditer(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-    ) -> object:
-        self.calls.append(("module.finditer", pattern, haystack, flags))
-        return ["module-finditer-result"]
-
-    def sub(
-        self,
-        pattern: object,
-        repl: object,
-        string: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        count = args[0] if args else 0
-        flags = args[1] if len(args) > 1 else 0
-        self.calls.append(("module.sub", pattern, repl, string, count, flags, kwargs))
-        return "module-result"
-
-    def subn(
-        self,
-        pattern: object,
-        repl: object,
-        string: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        count = args[0] if args else 0
-        flags = args[1] if len(args) > 1 else 0
-        self.calls.append(("module.subn", pattern, repl, string, count, flags, kwargs))
-        return ("module-result", 0)
 
 
 @pytest.mark.parametrize(
@@ -245,7 +141,7 @@ def test_compiled_pattern_module_collection_replacement_success_and_compiled_pat
 ) -> None:
     expected_build_calls = owner_spec.expected_build_calls(source_workload)
     expected_callback_call = owner_spec.expected_callback_call(source_workload)
-    module = _RecordingBenchmarkModule()
+    module = RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",

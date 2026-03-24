@@ -15,8 +15,8 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import wrong_text_model_benchmark_owner_support as support
-from tests.benchmarks import (
-    test_source_tree_combined_boundary_benchmarks as combined,
+from tests.benchmarks.recording_benchmark_module_support import (
+    RecordingBenchmarkModule,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
@@ -337,7 +337,7 @@ def test_wrong_text_model_callbacks_preserve_precompile_contract(
         use_compiled_pattern=owner_spec.use_compiled_pattern,
         direct_pattern_route=owner_spec.direct_pattern_route,
     )
-    module = combined._RecordingBenchmarkModule()
+    module = RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
