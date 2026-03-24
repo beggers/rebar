@@ -862,6 +862,89 @@ CALLABLE_NEAR_MISS_CASE_SPECS = (
     ),
 )
 
+CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES = (
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-present-branch-rejects-no-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=rb"a(b)?c(?(1)d|e)",
+        helper="sub",
+        text=b"zzabcezz",
+        count=0,
+        expected_result=b"zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=rb"a(b)?c(?(1)d|e)",
+        helper="subn",
+        text=b"zzacdzz",
+        count=1,
+        expected_result=(b"zzacdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-sub-no-match-present-branch-rejects-no-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=rb"a(b)?c(?(1)d|e)",
+        helper="sub",
+        text=b"zzabcezz",
+        count=0,
+        expected_result=b"zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-subn-no-match-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=rb"a(b)?c(?(1)d|e)",
+        helper="subn",
+        text=b"zzacdzz",
+        count=1,
+        expected_result=(b"zzacdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-named-sub-no-match-present-branch-rejects-no-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        helper="sub",
+        text=b"zzabcezz",
+        count=0,
+        expected_result=b"zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="module-named-subn-no-match-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        helper="subn",
+        text=b"zzacdzz",
+        count=1,
+        expected_result=(b"zzacdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-present-branch-rejects-no-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        helper="sub",
+        text=b"zzabcezz",
+        count=0,
+        expected_result=b"zzabcezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e)",
+        helper="subn",
+        text=b"zzacdzz",
+        count=1,
+        expected_result=(b"zzacdzz", 0),
+    ),
+)
+
 
 class CallbackExplosion(RuntimeError):
     pass
@@ -1391,6 +1474,41 @@ def assert_callable_replacement_no_match_path_leaves_input_unchanged(
     expected_result: object = string if helper == "sub" else (string, 0)
 
     assert observed == expected == expected_result
+    assert callback_calls == []
+
+
+def assert_callable_replacement_near_miss_path_leaves_input_unchanged(
+    *,
+    backend: object,
+    near_miss_case: CallableNearMissCase,
+) -> None:
+    callback_calls: list[object] = []
+    replacement_value = _callable_replacement_marker(near_miss_case.text)
+
+    def replacement(match: object) -> TextValue:
+        callback_calls.append(match)
+        return replacement_value
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=near_miss_case.pattern,
+        helper=near_miss_case.helper,
+        string=near_miss_case.text,
+        count=near_miss_case.count,
+        replacement=replacement,
+        use_compiled_pattern=near_miss_case.use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=near_miss_case.pattern,
+        helper=near_miss_case.helper,
+        string=near_miss_case.text,
+        count=near_miss_case.count,
+        replacement=replacement,
+        use_compiled_pattern=near_miss_case.use_compiled_pattern,
+    )
+
+    assert observed == expected == near_miss_case.expected_result
     assert callback_calls == []
 
 
@@ -2337,34 +2455,26 @@ def test_callable_replacement_near_miss_paths_leave_input_unchanged(
     near_miss_case: CallableNearMissCase,
 ) -> None:
     _, backend = regex_backend
-
-    callback_calls: list[object] = []
-
-    def replacement(match: object) -> str:
-        callback_calls.append(match)
-        return "X"
-
-    observed = _invoke_callable_replacement(
-        backend,
-        pattern=near_miss_case.pattern,
-        helper=near_miss_case.helper,
-        string=near_miss_case.text,
-        count=near_miss_case.count,
-        replacement=replacement,
-        use_compiled_pattern=near_miss_case.use_compiled_pattern,
-    )
-    expected = _invoke_callable_replacement(
-        re,
-        pattern=near_miss_case.pattern,
-        helper=near_miss_case.helper,
-        string=near_miss_case.text,
-        count=near_miss_case.count,
-        replacement=replacement,
-        use_compiled_pattern=near_miss_case.use_compiled_pattern,
+    assert_callable_replacement_near_miss_path_leaves_input_unchanged(
+        backend=backend,
+        near_miss_case=near_miss_case,
     )
 
-    assert observed == expected == near_miss_case.expected_result
-    assert callback_calls == []
+
+@pytest.mark.parametrize(
+    "near_miss_case",
+    CONDITIONAL_GROUP_EXISTS_BYTES_NEAR_MISS_CASES,
+    ids=lambda case: case.id,
+)
+def test_conditional_group_exists_bytes_callable_replacement_near_miss_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    near_miss_case: CallableNearMissCase,
+) -> None:
+    _, backend = regex_backend
+    assert_callable_replacement_near_miss_path_leaves_input_unchanged(
+        backend=backend,
+        near_miss_case=near_miss_case,
+    )
 
 
 @pytest.mark.parametrize(
