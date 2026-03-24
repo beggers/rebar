@@ -1546,6 +1546,43 @@ def _normalized_source_callable_replacement(case: FixtureCase) -> dict[str, obje
     }
 
 
+def _assert_published_callable_bytes_cases_mirror_str_cases(
+    *,
+    manifest_id: str,
+    str_cases: tuple[FixtureCase, ...],
+    bytes_cases: tuple[FixtureCase, ...],
+) -> None:
+    bytes_cases_by_id = {case.case_id: case for case in bytes_cases}
+
+    assert set(bytes_cases_by_id) == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in str_cases
+    }
+
+    for str_case in str_cases:
+        bytes_case = bytes_cases_by_id[f"{str_case.case_id.removesuffix('-str')}-bytes"]
+        str_pattern = case_pattern(str_case)
+        str_text = case_text_argument(str_case)
+
+        assert isinstance(str_pattern, str)
+        assert isinstance(str_text, str)
+        assert str_case.manifest_id == manifest_id
+        assert bytes_case.manifest_id == manifest_id
+        assert bytes_case.operation == str_case.operation
+        assert bytes_case.helper == str_case.helper
+        assert bytes_case.family == str_case.family
+        assert bytes_case.use_compiled_pattern == str_case.use_compiled_pattern
+        assert _case_count(bytes_case) == _case_count(str_case)
+        assert tuple(
+            "bytes" if category == "str" else category
+            for category in str_case.categories
+        ) == tuple(bytes_case.categories)
+        assert _bytes_case_pattern(bytes_case) == str_pattern.encode("latin-1")
+        assert case_text_argument(bytes_case) == str_text.encode("latin-1")
+        assert _normalized_source_callable_replacement(bytes_case) == (
+            _normalized_source_callable_replacement(str_case)
+        )
+
+
 CONDITIONAL_GROUP_EXISTS_ALTERNATION_GROUP_ACCESS_CASES = (
     (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "sub", "zzabcdezz", 0),
     (r"a(b)?c(?(1)(de|df)|(eg|eh))", 1, "subn", "zzabcdfzz", 1),
@@ -2567,32 +2604,35 @@ def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() 
     }
 
     assert len(str_cases) == len(bytes_cases_by_id) == 4
-    assert set(bytes_cases_by_id) == {
-        f"{case.case_id.removesuffix('-str')}-bytes" for case in str_cases
-    }
+    _assert_published_callable_bytes_cases_mirror_str_cases(
+        manifest_id=manifest_id,
+        str_cases=str_cases,
+        bytes_cases=tuple(bytes_cases_by_id.values()),
+    )
+    assert all(_case_count(case) == -1 for case in str_cases)
+    assert all(_case_count(case) == -1 for case in bytes_cases_by_id.values())
 
-    for str_case in str_cases:
-        bytes_case = bytes_cases_by_id[f"{str_case.case_id.removesuffix('-str')}-bytes"]
-        str_pattern = case_pattern(str_case)
-        str_text = case_text_argument(str_case)
 
-        assert isinstance(str_pattern, str)
-        assert isinstance(str_text, str)
-        assert bytes_case.manifest_id == manifest_id
-        assert bytes_case.operation == str_case.operation
-        assert bytes_case.helper == str_case.helper
-        assert bytes_case.family == str_case.family
-        assert bytes_case.use_compiled_pattern == str_case.use_compiled_pattern
-        assert _case_count(str_case) == _case_count(bytes_case) == -1
-        assert tuple(
-            "bytes" if category == "str" else category
-            for category in str_case.categories
-        ) == tuple(bytes_case.categories)
-        assert _bytes_case_pattern(bytes_case) == str_pattern.encode("latin-1")
-        assert case_text_argument(bytes_case) == str_text.encode("latin-1")
-        assert _normalized_source_callable_replacement(bytes_case) == (
-            _normalized_source_callable_replacement(str_case)
-        )
+def test_conditional_group_exists_alternation_bytes_cases_mirror_str_cases() -> None:
+    manifest_id = "conditional-group-exists-callable-replacement-workflows"
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
+    str_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "str" and "alternation" in case.categories
+    )
+    bytes_cases = tuple(
+        case
+        for case in bundle.cases
+        if case.text_model == "bytes" and "alternation" in case.categories
+    )
+
+    assert len(str_cases) == len(bytes_cases) == 8
+    _assert_published_callable_bytes_cases_mirror_str_cases(
+        manifest_id=manifest_id,
+        str_cases=str_cases,
+        bytes_cases=bytes_cases,
+    )
 
 
 def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_with_published_fixture(
