@@ -921,15 +921,19 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-conditional-group-exists-present-str",
             "module-sub-callable-conditional-group-exists-alternation-present-first-arm-str",
             "module-sub-callable-conditional-group-exists-nested-present-str",
+            "module-sub-callable-conditional-group-exists-quantified-present-str",
             "pattern-subn-callable-conditional-group-exists-absent-str",
             "pattern-subn-callable-conditional-group-exists-alternation-absent-second-arm-str",
             "pattern-subn-callable-conditional-group-exists-nested-absent-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-absent-str",
             "module-sub-callable-named-conditional-group-exists-present-str",
             "module-sub-callable-named-conditional-group-exists-alternation-present-first-arm-str",
             "module-sub-callable-named-conditional-group-exists-nested-present-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-present-str",
             "pattern-subn-callable-named-conditional-group-exists-absent-str",
             "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-str",
             "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
             "module-sub-callable-conditional-group-exists-negative-count-str",
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
@@ -5251,9 +5255,28 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             representative_str_case_ids[-len(manifest_negative_count_str_case_ids) :],
             manifest_negative_count_str_case_ids,
         )
+        quantified_str_only_case_ids = tuple(
+            case_id for case_id in representative_str_case_ids if "-quantified-" in case_id
+        )
+        self.assertEqual(
+            quantified_str_only_case_ids,
+            (
+                "module-sub-callable-conditional-group-exists-quantified-present-str",
+                "pattern-subn-callable-conditional-group-exists-quantified-absent-str",
+                "module-sub-callable-named-conditional-group-exists-quantified-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
+            ),
+        )
+        self.assertFalse(
+            any("-quantified-" in case_id for case_id in representative_bytes_case_ids)
+        )
         self.assertEqual(
             representative_bytes_case_ids,
-            tuple(f"{case_id.removesuffix('-str')}-bytes" for case_id in representative_str_case_ids),
+            tuple(
+                f"{case_id.removesuffix('-str')}-bytes"
+                for case_id in representative_str_case_ids
+                if "-quantified-" not in case_id
+            ),
         )
         self.assertEqual(
             representative_bytes_case_ids[-len(manifest_negative_count_bytes_case_ids) :],
