@@ -1,6 +1,6 @@
 # RBR-1205: Benchmark conditional group-exists nested callable negative-count bytes workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable or negative_count_follow_on_workloads_in_sync'` returned `4 passed, 452 deselected, 36 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-group-exists-boundary-current.py` returned `156 measured workloads / 0 known gaps`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` returned `1087 measured workloads / 0 known gaps`.
+
+## Completion
+- Added the exact four nested conditional callable negative-count `bytes` workloads on the existing `conditional-group-exists-boundary` manifest path, and updated the shared source-tree combined benchmark expectations to anchor the widened nested `bytes` slice without widening the surrounding callable family.
+- Verification passed:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable or negative_count_follow_on_workloads_in_sync'` returned `7 passed, 452 deselected, 52 subtests passed`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1205-conditional-group-exists-boundary.py` returned `160 measured workloads / 0 known gaps`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` returned `1091 measured workloads / 0 known gaps`.
+- Verified from the tracked `reports/benchmarks/latest.py` artifact after regeneration:
+  - `conditional-group-exists-boundary` now publishes `160` workloads with `160` measured and `0` known gaps; and
+  - the combined benchmark summary now publishes `1091` measured workloads out of `1091` total across `30` manifests.
