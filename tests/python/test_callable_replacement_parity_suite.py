@@ -295,6 +295,14 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-absent-bytes",
                 "pattern-sub-callable-named-conditional-group-exists-present-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-absent-bytes",
+                "module-sub-callable-conditional-group-exists-alternation-present-first-arm-bytes",
+                "module-subn-callable-conditional-group-exists-alternation-present-second-arm-bytes",
+                "pattern-sub-callable-conditional-group-exists-alternation-absent-first-arm-bytes",
+                "pattern-subn-callable-conditional-group-exists-alternation-absent-second-arm-bytes",
+                "module-sub-callable-named-conditional-group-exists-alternation-present-first-arm-bytes",
+                "module-subn-callable-named-conditional-group-exists-alternation-present-second-arm-bytes",
+                "pattern-sub-callable-named-conditional-group-exists-alternation-absent-first-arm-bytes",
+                "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-bytes",
                 "module-sub-callable-conditional-group-exists-negative-count-bytes",
                 "module-subn-callable-named-conditional-group-exists-negative-count-bytes",
                 "pattern-sub-callable-conditional-group-exists-negative-count-bytes",
@@ -308,15 +316,17 @@ CALLABLE_MANIFEST_SPECS = (
                 r"a(?P<word>b)?c(?(word)d|e)",
                 r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
                 rb"a(b)?c(?(1)d|e)",
+                rb"a(b)?c(?(1)(de|df)|(eg|eh))",
                 rb"a(?P<word>b)?c(?(word)d|e)",
+                rb"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 8,
-                ("module_call", "subn"): 8,
-                ("pattern_call", "sub"): 8,
-                ("pattern_call", "subn"): 8,
+                ("module_call", "sub"): 10,
+                ("module_call", "subn"): 10,
+                ("pattern_call", "sub"): 10,
+                ("pattern_call", "subn"): 10,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,
@@ -2592,14 +2602,14 @@ def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_wi
 
     def normalized_case_row(
         case: FixtureCase,
-    ) -> tuple[str, int | str, str, str, int]:
+    ) -> tuple[str | bytes, int | str, str, str | bytes, int]:
         pattern = case_pattern(case)
         text = case_text_argument(case)
         replacement = _source_callable_replacement(case)
 
         assert case.helper is not None
-        assert isinstance(pattern, str)
-        assert isinstance(text, str)
+        assert isinstance(pattern, (str, bytes))
+        assert isinstance(text, (str, bytes))
         assert isinstance(replacement, dict)
 
         group_ref = replacement["group"]
@@ -2621,16 +2631,32 @@ def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_wi
         for case in alternation_cases
         if case.text_model == "str" and "absent" in case.categories
     }
-
-    assert not {
-        case.case_id
+    bytes_present_rows = {
+        normalized_case_row(case)
         for case in alternation_cases
-        if case.text_model == "bytes"
+        if case.text_model == "bytes" and "present" in case.categories
     }
-    assert len(alternation_cases) == len(present_rows) + len(absent_rows)
+    bytes_absent_rows = {
+        normalized_case_row(case)
+        for case in alternation_cases
+        if case.text_model == "bytes" and "absent" in case.categories
+    }
+
+    assert len(alternation_cases) == (
+        len(present_rows)
+        + len(absent_rows)
+        + len(bytes_present_rows)
+        + len(bytes_absent_rows)
+    )
     assert present_rows == set(CONDITIONAL_GROUP_EXISTS_ALTERNATION_GROUP_ACCESS_CASES)
     assert absent_rows == set(
         CONDITIONAL_GROUP_EXISTS_ALTERNATION_ABSENT_EXCEPTION_CASES
+    )
+    assert bytes_present_rows == set(
+        CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_GROUP_ACCESS_CASES
+    )
+    assert bytes_absent_rows == set(
+        CONDITIONAL_GROUP_EXISTS_ALTERNATION_BYTES_ABSENT_EXCEPTION_CASES
     )
 
 

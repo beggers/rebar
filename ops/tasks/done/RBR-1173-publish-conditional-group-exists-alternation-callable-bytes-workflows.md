@@ -1,6 +1,6 @@
 # RBR-1173: Publish conditional group-exists alternation callable bytes workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` returned `45 passed, 2324 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1173-conditional-callable-alternation-bytes.py` is expected to move from the currently validated `32 executed / 32 passed` to `40 executed / 40 passed` once this publication lands; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` is expected to move from the currently validated `1685 executed / 1685 passed` to `1693 executed / 1693 passed` once this publication lands.
+
+## Completion
+- Added the exact eight bytes alternation-heavy callable `sub()`/`subn()` publication rows to `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` and updated the shared callable parity/scorecard expectations on the existing owner path.
+- Republished `reports/correctness/latest.py`; the tracked callable manifest now shows `40` executed / `40` passed for `collection.replacement.conditional_group_exists.callable`, and the tracked combined summary now shows `1693` executed / `1693` passed across `114` manifests.
+- Verification completed:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and bytes and callable_replacement and alternation'` -> `33 passed, 4216 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` -> `45 passed, 2332 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1173-conditional-callable-alternation-bytes.py` -> `40 executed / 40 passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> `1693 executed / 1693 passed`
