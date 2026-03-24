@@ -2,15 +2,21 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from functools import cache
 import pathlib
+import re
 from typing import Any, Protocol
 
+import pytest
+
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _manifest_workloads,
     anchored_workload_case_ids,
     expected_anchored_workload_case_pairs,
     published_case_ids_by_signature,
     unanchored_workload_ids,
 )
+from tests.conftest import records_by_string_id
 
 
 class StandardBenchmarkAnchorContract(Protocol):
@@ -203,3 +209,244 @@ def _expected_anchored_pairs(
             )
         )
     return tuple(anchored_pairs)
+
+
+def _definition_workloads_by_id(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> dict[str, Any]:
+    workloads_by_id: dict[str, Any] = {}
+    for manifest_path in definition.manifest_paths:
+        workloads_by_id.update(
+            records_by_string_id(
+                _manifest_workloads(manifest_path),
+                id_attr="workload_id",
+            )
+        )
+    return workloads_by_id
+
+
+@cache
+def _direct_parity_case_ids_by_signature(
+    supplemental_cases: tuple[Any, ...],
+) -> dict[tuple[str, bytes, bytes], tuple[str, ...]]:
+    case_ids_by_signature: dict[tuple[str, bytes, bytes], list[str]] = {}
+
+    for case in supplemental_cases:
+        for haystack in case.search_matches + case.search_misses:
+            case_ids_by_signature.setdefault(
+                ("module.search", case.pattern, haystack),
+                [],
+            ).append(case.id)
+        for haystack in case.fullmatch_matches + case.fullmatch_misses:
+            case_ids_by_signature.setdefault(
+                ("pattern.fullmatch", case.pattern, haystack),
+                [],
+            ).append(case.id)
+
+    return {
+        signature: tuple(case_ids)
+        for signature, case_ids in case_ids_by_signature.items()
+    }
+
+
+def _manual_expected_result(workload: Any) -> object:
+    pattern = workload.pattern_payload()
+    re.purge()
+    try:
+        if workload.operation == "module.compile":
+            pattern_argument = (
+                re.compile(pattern, workload.flags)
+                if workload.use_compiled_pattern
+                else pattern
+            )
+            return re.compile(pattern_argument, workload.flags)
+        if workload.operation == "module.search":
+            return re.search(pattern, workload.haystack_payload(), workload.flags)
+        if workload.operation == "pattern.search":
+            compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return compiled.search(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                    workload.endpos_argument(),
+                )
+            if workload.pos is not None:
+                return compiled.search(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                )
+            return compiled.search(workload.haystack_payload())
+        if workload.operation == "pattern.fullmatch":
+            compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return compiled.fullmatch(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                    workload.endpos_argument(),
+                )
+            if workload.pos is not None:
+                return compiled.fullmatch(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                )
+            return compiled.fullmatch(workload.haystack_payload())
+        if workload.operation == "pattern.findall":
+            compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return compiled.findall(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                    workload.endpos_argument(),
+                )
+            if workload.pos is not None:
+                return compiled.findall(
+                    workload.haystack_payload(),
+                    workload.pos_argument(),
+                )
+            return compiled.findall(workload.haystack_payload())
+        if workload.operation == "pattern.finditer":
+            compiled = re.compile(pattern, workload.flags)
+            if workload.endpos is not None:
+                return list(
+                    compiled.finditer(
+                        workload.haystack_payload(),
+                        workload.pos_argument(),
+                        workload.endpos_argument(),
+                    )
+                )
+            if workload.pos is not None:
+                return list(
+                    compiled.finditer(
+                        workload.haystack_payload(),
+                        workload.pos_argument(),
+                    )
+                )
+            return list(compiled.finditer(workload.haystack_payload()))
+        if workload.operation == "module.sub":
+            return re.sub(
+                pattern,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+                workload.flags,
+            )
+        if workload.operation == "module.subn":
+            return re.subn(
+                pattern,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+                workload.flags,
+            )
+        if workload.operation == "pattern.sub":
+            compiled = re.compile(pattern, workload.flags)
+            return compiled.sub(
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+            )
+        if workload.operation == "pattern.subn":
+            compiled = re.compile(pattern, workload.flags)
+            return compiled.subn(
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+            )
+    finally:
+        re.purge()
+
+    raise AssertionError(
+        f"unexpected special-unanchored benchmark workload operation {workload.operation!r}"
+    )
+
+
+@cache
+def _standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
+    from tests.benchmarks import (
+        test_source_tree_combined_boundary_benchmarks as combined_suite,
+    )
+
+    return combined_suite._STANDARD_BENCHMARK_DEFINITIONS
+
+
+class _StandardBenchmarkDefinitionsProxy:
+    def __iter__(self):
+        return iter(_standard_benchmark_definitions())
+
+    def __len__(self) -> int:
+        return len(_standard_benchmark_definitions())
+
+    def __getitem__(self, index: int) -> StandardBenchmarkAnchorContractDefinition:
+        return _standard_benchmark_definitions()[index]
+
+
+STANDARD_BENCHMARK_DEFINITIONS = _StandardBenchmarkDefinitionsProxy()
+
+
+def _has_standard_benchmark_legacy_workloads(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(definition.expected_legacy_workload_ids)
+
+
+def _runs_standard_benchmark_callback_result_parity(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return definition.run_callback_result_parity
+
+
+def _has_standard_benchmark_special_unanchored_workloads(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(definition.expected_special_unanchored_workload_ids)
+
+
+def _has_standard_benchmark_special_unanchored_direct_parity_cases(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(
+        definition.expected_special_unanchored_workload_ids
+        and definition.direct_parity_supplemental_cases
+    )
+
+
+def _standard_benchmark_manifest_params() -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(
+            definition,
+            manifest_path,
+            id=f"{definition.name}:{manifest_path.name}",
+        )
+        for definition in _standard_benchmark_definitions()
+        for manifest_path in definition.manifest_paths
+    )
+
+
+def _standard_benchmark_definition_params(
+    *,
+    include_definition: Callable[[StandardBenchmarkAnchorContractDefinition], bool],
+) -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(definition, id=definition.name)
+        for definition in _standard_benchmark_definitions()
+        if include_definition(definition)
+    )
+
+
+def _standard_benchmark_definition_id(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> str:
+    return definition.name
+
+
+def _standard_benchmark_special_unanchored_result_parity_params() -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(
+            definition,
+            workload_id,
+            id=f"{definition.name}:{workload_id}",
+        )
+        for definition in _standard_benchmark_definitions()
+        if definition.run_special_unanchored_result_parity
+        for workload_id in definition.expected_special_unanchored_workload_ids
+    )

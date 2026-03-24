@@ -8,6 +8,7 @@ from typing import Any
 
 import pytest
 
+from rebar_harness.benchmarks import load_manifest
 from tests.benchmarks.benchmark_anchor_support_test_helpers import (
     _synthetic_case,
     _synthetic_manifest_loader,
@@ -18,6 +19,10 @@ from tests.benchmarks.benchmark_anchor_support_test_helpers import (
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import standard_benchmark_anchor_support as support
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    assert_anchored_workload_case_result_parity,
+    assert_benchmark_workload_matches_expected_result,
+)
 from tests.conftest import records_by_string_id
 
 
@@ -251,3 +256,163 @@ def test_expected_anchored_pairs_materialize_matching_workload_and_case_objects(
     assert anchored_pair.case_id == "case-1"
     assert anchored_pair.workload is workload
     assert anchored_pair.case is case
+
+
+@pytest.mark.parametrize(
+    ("definition", "manifest_path"),
+    support._standard_benchmark_manifest_params(),
+)
+def test_standard_benchmark_manifest_keeps_expected_workloads_in_scope(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+    manifest_path: pathlib.Path,
+) -> None:
+    workloads = load_manifest(manifest_path).workloads
+    assert {
+        workload.workload_id
+        for workload in workloads
+        if workload.workload_id in definition.expected_excluded_workload_ids
+    } == definition.expected_excluded_workload_ids
+    assert {
+        workload.workload_id
+        for workload in workloads
+        if workload.workload_id in definition.expected_legacy_workload_ids
+    } == definition.expected_legacy_workload_ids
+    assert tuple(
+        workload.workload_id
+        for workload in workloads
+        if definition.includes_workload(workload)
+    ) == support._expected_workload_ids(definition, manifest_path)
+
+
+@pytest.mark.parametrize(
+    ("definition", "manifest_path"),
+    support._standard_benchmark_manifest_params(),
+)
+def test_standard_benchmark_workloads_stay_anchored_to_published_correctness_cases(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+    manifest_path: pathlib.Path,
+) -> None:
+    assert support._unanchored_case_ids(definition, manifest_path) == ()
+
+
+@pytest.mark.parametrize(
+    "definition",
+    support.STANDARD_BENCHMARK_DEFINITIONS,
+    ids=support._standard_benchmark_definition_id,
+)
+def test_standard_benchmark_workloads_stay_pinned_to_exact_case_ids(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    assert support._anchored_case_ids(definition) == definition.expected_anchor_case_ids
+
+
+@pytest.mark.parametrize(
+    "definition",
+    support._standard_benchmark_definition_params(
+        include_definition=support._has_standard_benchmark_special_unanchored_workloads
+    ),
+)
+def test_standard_benchmark_special_unanchored_workloads_stay_explicit(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    assert tuple(
+        workload_id
+        for manifest_path in definition.manifest_paths
+        for workload_id in support._unanchored_case_ids(
+            definition,
+            manifest_path,
+            include_special_unanchored=True,
+        )
+    ) == definition.expected_special_unanchored_workload_ids
+
+
+@pytest.mark.parametrize(
+    "definition",
+    support._standard_benchmark_definition_params(
+        include_definition=(
+            support._has_standard_benchmark_special_unanchored_direct_parity_cases
+        )
+    ),
+)
+def test_standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    workloads_by_id = support._definition_workloads_by_id(definition)
+    direct_parity_case_ids = support._direct_parity_case_ids_by_signature(
+        definition.direct_parity_supplemental_cases
+    )
+    uncovered_workload_ids: list[str] = []
+
+    for workload_id in definition.expected_special_unanchored_workload_ids:
+        workload = workloads_by_id[workload_id]
+        if workload.text_model != "bytes":
+            continue
+        if workload.operation not in {"module.search", "pattern.fullmatch"}:
+            raise AssertionError(
+                "expected bytes special-unanchored workload to stay on a direct-parity "
+                f"search/fullmatch path, got {workload.operation!r}"
+            )
+
+        signature = (
+            workload.operation,
+            workload.pattern_payload(),
+            workload.haystack_payload(),
+        )
+        case_ids = direct_parity_case_ids.get(signature)
+        if case_ids is None:
+            uncovered_workload_ids.append(workload_id)
+            continue
+
+        assert len(case_ids) == 1
+
+    assert uncovered_workload_ids == []
+
+
+@pytest.mark.parametrize(
+    "definition",
+    support._standard_benchmark_definition_params(
+        include_definition=support._has_standard_benchmark_legacy_workloads
+    ),
+)
+def test_standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    assert {
+        key: case_ids
+        for key, case_ids in support._anchored_case_ids(definition).items()
+        if key[1] in definition.expected_legacy_workload_ids
+    } == support._expected_legacy_anchor_case_ids(definition)
+
+
+@pytest.mark.parametrize(
+    "definition",
+    support._standard_benchmark_definition_params(
+        include_definition=support._runs_standard_benchmark_callback_result_parity
+    ),
+)
+def test_standard_benchmark_workload_callbacks_match_anchor_case_results(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    assert_anchored_workload_case_result_parity(
+        support._expected_anchored_pairs(
+            definition,
+            expected_anchor_case_ids=support._expected_callback_anchor_case_ids(
+                definition
+            ),
+        )
+    )
+
+
+@pytest.mark.parametrize(
+    ("definition", "workload_id"),
+    support._standard_benchmark_special_unanchored_result_parity_params(),
+)
+def test_standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+    workload_id: str,
+) -> None:
+    workload = support._definition_workloads_by_id(definition)[workload_id]
+    assert_benchmark_workload_matches_expected_result(
+        workload,
+        support._manual_expected_result(workload),
+    )

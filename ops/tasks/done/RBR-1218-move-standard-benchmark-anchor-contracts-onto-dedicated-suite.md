@@ -1,6 +1,6 @@
 # RBR-1218: Move standard benchmark anchor contracts onto dedicated suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,9 @@ Created: 2026-03-24
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_keeps_expected_workloads_in_scope or standard_benchmark_workloads_stay_anchored_to_published_correctness_cases or standard_benchmark_workloads_stay_pinned_to_exact_case_ids or standard_benchmark_special_unanchored_workloads_stay_explicit or standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases or standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids or standard_benchmark_workload_callbacks_match_anchor_case_results or standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch'` returned `195 passed, 159 deselected in 0.35s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because those eight tests still live in the combined suite.
+
+## Completion
+- Moved the eight standard benchmark anchor-contract tests into `tests/benchmarks/test_standard_benchmark_anchor_support.py`, added lazy owner-side parametrization/helpers in `tests/benchmarks/standard_benchmark_anchor_support.py`, and removed the relocated tests plus the public parametrization surface from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verification on 2026-03-24:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_keeps_expected_workloads_in_scope or standard_benchmark_workloads_stay_anchored_to_published_correctness_cases or standard_benchmark_workloads_stay_pinned_to_exact_case_ids or standard_benchmark_special_unanchored_workloads_stay_explicit or standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases or standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids or standard_benchmark_workload_callbacks_match_anchor_case_results or standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch'` returned `195 passed, 159 deselected in 0.36s`.
+  - `bash -lc \"! rg -n 'def test_(standard_benchmark_manifest_keeps_expected_workloads_in_scope|standard_benchmark_workloads_stay_anchored_to_published_correctness_cases|standard_benchmark_workloads_stay_pinned_to_exact_case_ids|standard_benchmark_special_unanchored_workloads_stay_explicit|standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases|standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids|standard_benchmark_workload_callbacks_match_anchor_case_results|standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py\"` succeeded.
