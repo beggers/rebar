@@ -1270,6 +1270,89 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES = (
     ),
 )
 
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES = (
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-quantified-present-branch-rejects-else-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=rb"a(b)?c(?(1)d|e){2}",
+        helper="sub",
+        text=b"zzabcdezz",
+        count=0,
+        expected_result=b"zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-quantified-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=rb"a(b)?c(?(1)d|e){2}",
+        helper="subn",
+        text=b"zzacedzz",
+        count=1,
+        expected_result=(b"zzacedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-sub-no-match-quantified-present-branch-rejects-else-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=rb"a(b)?c(?(1)d|e){2}",
+        helper="sub",
+        text=b"zzabcdezz",
+        count=0,
+        expected_result=b"zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-subn-no-match-quantified-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=rb"a(b)?c(?(1)d|e){2}",
+        helper="subn",
+        text=b"zzacedzz",
+        count=1,
+        expected_result=(b"zzacedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-named-sub-no-match-quantified-present-branch-rejects-else-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="sub",
+        text=b"zzabcdezz",
+        count=0,
+        expected_result=b"zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="module-named-subn-no-match-quantified-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="subn",
+        text=b"zzacedzz",
+        count=1,
+        expected_result=(b"zzacedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-quantified-present-branch-rejects-else-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="sub",
+        text=b"zzabcdezz",
+        count=0,
+        expected_result=b"zzabcdezz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-quantified-absent-branch-rejects-yes-arm-bytes",
+        manifest_id="conditional-group-exists-quantified-direct-parity",
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<word>b)?c(?(word)d|e){2}",
+        helper="subn",
+        text=b"zzacedzz",
+        count=1,
+        expected_result=(b"zzacedzz", 0),
+    ),
+)
+
 
 class CallbackExplosion(RuntimeError):
     pass
@@ -3075,6 +3158,39 @@ def test_conditional_group_exists_nested_bytes_near_miss_cases_mirror_str_cases(
         )
 
 
+def test_conditional_group_exists_quantified_bytes_near_miss_cases_mirror_str_cases(
+) -> None:
+    manifest_id = "conditional-group-exists-quantified-direct-parity"
+    str_cases = CONDITIONAL_GROUP_EXISTS_QUANTIFIED_NEAR_MISS_CASES
+    bytes_cases_by_id = {
+        case.id: case
+        for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES
+    }
+
+    assert set(bytes_cases_by_id) == {f"{case.id}-bytes" for case in str_cases}
+    assert {
+        case.pattern for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES
+    } == {case.pattern.encode("latin-1") for case in str_cases}
+    assert {
+        case.pattern for case in CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES
+    }.isdisjoint(PENDING_REBAR_BYTES_PATTERNS)
+
+    for str_case in str_cases:
+        bytes_case = bytes_cases_by_id[f"{str_case.id}-bytes"]
+
+        assert isinstance(str_case.pattern, str)
+        assert isinstance(str_case.text, str)
+        assert bytes_case.manifest_id == manifest_id
+        assert bytes_case.use_compiled_pattern == str_case.use_compiled_pattern
+        assert bytes_case.helper == str_case.helper
+        assert bytes_case.count == str_case.count
+        assert bytes_case.pattern == str_case.pattern.encode("latin-1")
+        assert bytes_case.text == str_case.text.encode("latin-1")
+        assert bytes_case.expected_result == _bytes_mirror_expected_result(
+            str_case.expected_result
+        )
+
+
 def test_conditional_group_exists_negative_count_bytes_cases_mirror_str_cases() -> None:
     manifest_id = "conditional-group-exists-callable-replacement-workflows"
     bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_id]
@@ -3407,6 +3523,18 @@ def test_conditional_group_exists_quantified_direct_case_tables_stay_aligned_wit
     assert pattern_absent_rows == expected_absent_rows
 
 
+def test_conditional_group_exists_quantified_bytes_direct_case_tables_mirror_str_tables(
+) -> None:
+    _assert_bytes_direct_case_table_mirrors_str_table(
+        str_cases=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_GROUP_ACCESS_CASES,
+        bytes_cases=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_GROUP_ACCESS_CASES,
+    )
+    _assert_bytes_direct_case_table_mirrors_str_table(
+        str_cases=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_ABSENT_EXCEPTION_CASES,
+        bytes_cases=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_ABSENT_EXCEPTION_CASES,
+    )
+
+
 def test_conditional_group_exists_quantified_near_miss_cases_stay_on_published_str_frontier(
 ) -> None:
     manifest_id = "conditional-group-exists-callable-replacement-workflows"
@@ -3709,6 +3837,22 @@ def test_conditional_group_exists_nested_bytes_callable_replacement_near_miss_pa
     ids=lambda case: case.id,
 )
 def test_conditional_group_exists_quantified_callable_replacement_near_miss_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    near_miss_case: CallableNearMissCase,
+) -> None:
+    _, backend = regex_backend
+    assert_callable_replacement_near_miss_path_leaves_input_unchanged(
+        backend=backend,
+        near_miss_case=near_miss_case,
+    )
+
+
+@pytest.mark.parametrize(
+    "near_miss_case",
+    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_BYTES_NEAR_MISS_CASES,
+    ids=lambda case: case.id,
+)
+def test_conditional_group_exists_quantified_bytes_callable_replacement_near_miss_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
     near_miss_case: CallableNearMissCase,
 ) -> None:
