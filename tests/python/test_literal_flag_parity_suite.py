@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_by_id,
+    id_attribute_pytest_id,
     load_single_published_fixture_bundle,
 )
 
@@ -79,11 +80,6 @@ class CompiledModuleCallCase:
     string: str | bytes
     flags: int = 0
     check_cache_identity: bool = True
-
-
-def _case_id(case: object) -> str:
-    return getattr(case, "id")
-
 
 def _module_case_from_fixture(case: FixtureCase) -> ModuleCallCase:
     assert case.operation == "module_call"
@@ -505,7 +501,7 @@ def test_literal_flag_direct_test_buckets_cover_selected_frontier() -> None:
     )
 
 
-@pytest.mark.parametrize("case", MODULE_IGNORECASE_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", MODULE_IGNORECASE_CASES, ids=id_attribute_pytest_id)
 def test_literal_ignorecase_module_helpers_match_cpython(
     case: ModuleCallCase,
 ) -> None:
@@ -517,7 +513,7 @@ def test_literal_ignorecase_module_helpers_match_cpython(
         assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", PATTERN_IGNORECASE_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", PATTERN_IGNORECASE_CASES, ids=id_attribute_pytest_id)
 def test_literal_ignorecase_compiled_helpers_match_cpython(
     case: PatternCallCase,
 ) -> None:
@@ -587,7 +583,7 @@ def test_literal_flag_ascii_non_search_paths_stay_placeholder() -> None:
         compiled.fullmatch("ABC")
 
 
-@pytest.mark.parametrize("case", NATIVE_MODULE_PARITY_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", NATIVE_MODULE_PARITY_CASES, ids=id_attribute_pytest_id)
 def test_native_literal_flag_module_workflows_match_cpython(
     case: ModuleCallCase,
 ) -> None:
@@ -601,7 +597,7 @@ def test_native_literal_flag_module_workflows_match_cpython(
     assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", NATIVE_PATTERN_PARITY_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", NATIVE_PATTERN_PARITY_CASES, ids=id_attribute_pytest_id)
 def test_native_literal_flag_compiled_workflows_match_cpython(
     case: PatternCallCase,
 ) -> None:
@@ -619,7 +615,7 @@ def test_native_literal_flag_compiled_workflows_match_cpython(
     assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", NATIVE_COMPILE_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", NATIVE_COMPILE_CASES, ids=id_attribute_pytest_id)
 def test_native_literal_flag_compile_metadata_matches_cpython(
     case: NativeCompileCase,
 ) -> None:
@@ -641,7 +637,7 @@ def test_native_literal_flag_compile_metadata_matches_cpython(
 @pytest.mark.parametrize(
     "case",
     NATIVE_COMPILED_MODULE_HELPER_CASES,
-    ids=_case_id,
+    ids=id_attribute_pytest_id,
 )
 def test_native_literal_flag_module_helpers_accept_compiled_patterns_with_cpython_parity(
     case: CompiledModuleCallCase,
@@ -674,7 +670,7 @@ def test_native_literal_flag_module_helpers_accept_compiled_patterns_with_cpytho
         assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", FAKE_BOUNDARY_CASES, ids=_case_id)
+@pytest.mark.parametrize("case", FAKE_BOUNDARY_CASES, ids=id_attribute_pytest_id)
 def test_fake_native_boundary_preserves_literal_flag_search_sequences(
     monkeypatch: pytest.MonkeyPatch,
     case: FakeBoundaryCase,
