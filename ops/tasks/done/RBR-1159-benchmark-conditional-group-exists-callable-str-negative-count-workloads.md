@@ -1,6 +1,6 @@
 # RBR-1159: Benchmark conditional group-exists callable str negative-count workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -57,3 +57,8 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_source_tree_combined_slice_filters_match_expected_manifest_rows` returned `1 passed, 49 subtests passed` in this run;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeScorecardBenchmarkSuiteTest::test_single_manifest_scorecards_keep_slice_backed_representatives` returned `1 passed, 4 subtests passed` in this run; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-callable-bench-current.py` completed successfully with `104` measured workloads and `0` known gaps in this run.
+
+## Completion
+- Added the four `str count=-1` callable conditional benchmark rows on `benchmarks/workloads/conditional_group_exists_boundary.py` using the exact `callable_match_group(..., suffix="x")` descriptors and `abcdaceabcd` haystack already published by the paired correctness fixture.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared conditional callable slice expectations and scorecard representative checks include the new rows, and added a narrow round-trip assertion that preserves the suffix-only callback payload plus the exact CPython `count=-1` no-substitution outcomes.
+- Regenerated `reports/benchmarks/latest.py`; the tracked combined report now shows `1039` measured workloads out of `1039` total with `known_gap_count == 0`, and `REPORT["manifests"]["conditional-group-exists-boundary"]` now shows `workload_count == 108`, `measured_workloads == 108`, and `known_gap_count == 0`.

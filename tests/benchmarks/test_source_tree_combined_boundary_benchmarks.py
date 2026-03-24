@@ -2812,6 +2812,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-numbered-conditional-group-exists-replacement-purged-bytes",
             "pattern-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-purged-str",
             "pattern-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-purged-bytes",
+            "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-str",
             "module-sub-callable-named-conditional-group-exists-replacement-warm-str",
             "module-sub-callable-named-conditional-group-exists-replacement-warm-bytes",
             "module-subn-callable-named-conditional-group-exists-replacement-first-match-only-warm-str",
@@ -2820,13 +2821,16 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-conditional-group-exists-replacement-purged-bytes",
             "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
             "pattern-subn-callable-named-conditional-group-exists-replacement-purged-bytes",
+            "module-subn-callable-named-conditional-group-exists-replacement-negative-count-warm-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-str",
         ),
         expected_patterns={
             r"a(b)?c(?(1)d|e)",
             r"a(?P<word>b)?c(?(word)d|e)",
         },
         expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzabcdacezz"},
+        expected_haystacks={"zzabcdzz", "zzabcdacezz", "abcdaceabcd"},
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -3550,6 +3554,12 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS = (
     "pattern-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-purged-bytes",
     "module-subn-callable-named-conditional-group-exists-replacement-absent-exception-warm-bytes",
     "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-bytes",
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-str",
+    "module-subn-callable-named-conditional-group-exists-replacement-negative-count-warm-str",
+    "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+    "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-str",
 )
 CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
     "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
@@ -4903,6 +4913,65 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
+
+    def test_conditional_group_exists_callable_negative_count_str_workloads_round_trip_preserves_suffix_only_callback_payloads(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        case = source_tree_combined_case(manifest_id)
+        workloads_by_id = records_by_string_id(
+            (
+                workload
+                for workload in case.target_manifest.workloads
+                if workload.workload_id
+                in CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+            ),
+            id_attr="workload_id",
+        )
+
+        self.assertEqual(
+            tuple(workloads_by_id),
+            CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS,
+        )
+
+        for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS:
+            expected_replacement = {
+                "type": "callable_match_group",
+                "group": "word" if "-named-" in workload_id else 1,
+                "suffix": "x",
+            }
+            expected_result = (
+                ("abcdaceabcd", 0) if "-subn-" in workload_id else "abcdaceabcd"
+            )
+
+            with self.subTest(workload_id=workload_id):
+                workload = workloads_by_id[workload_id]
+                payload = workload_to_payload(workload)
+                round_tripped = workload_from_payload(payload)
+
+                self.assertEqual(workload.text_model, "str")
+                self.assertEqual(payload["text_model"], "str")
+                self.assertEqual(payload["replacement"], expected_replacement)
+                self.assertEqual(payload["count"], -1)
+                self.assertEqual(
+                    _callable_match_group_signature(workload.replacement_payload()),
+                    ("callable_match_group", expected_replacement["group"], "", "x"),
+                )
+                self.assertEqual(
+                    run_benchmark_workload_with_cpython(workload),
+                    expected_result,
+                )
+
+                self.assertEqual(round_tripped.text_model, "str")
+                self.assertEqual(round_tripped.count, -1)
+                self.assertEqual(
+                    _callable_match_group_signature(round_tripped.replacement_payload()),
+                    ("callable_match_group", expected_replacement["group"], "", "x"),
+                )
+                self.assertEqual(
+                    run_benchmark_workload_with_cpython(round_tripped),
+                    expected_result,
+                )
 
     def test_nested_group_alternation_manifest_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
@@ -6387,6 +6456,13 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
         for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
+                self.assertNotIn(
+                    workload_id,
+                    case.representative_known_gap_workload_ids,
+                )
+        for workload_id in CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS:
             with self.subTest(workload_id=workload_id):
                 self.assertIn(workload_id, case.representative_measured_workload_ids)
                 self.assertNotIn(
