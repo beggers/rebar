@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Quantified conditional callable negative-count publication for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` is the next surviving follow-on on the shared conditional callable replacement owner path.
+Benchmark catch-up for quantified conditional callable negative-count `sub()` and `subn()` workflows for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` is the next surviving follow-on on the shared conditional callable replacement owner path.
 
 ## Ordered Work
-1. Publish the quantified conditional callable `count=-1` `sub()` and `subn()` workflows for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` across numbered and named module/compiled-`Pattern` `str` and `bytes` entrypoints on the shared conditional callable replacement correctness path.
+1. Catch the quantified conditional callable `count=-1` `sub()` and `subn()` workflows for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` up on the existing Python-path benchmark surface across numbered and named module/compiled-`Pattern` `str` and `bytes` entrypoints.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
