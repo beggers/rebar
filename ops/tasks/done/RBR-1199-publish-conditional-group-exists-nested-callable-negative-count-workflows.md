@@ -1,6 +1,6 @@
 # RBR-1199: Publish conditional group-exists nested callable negative-count workflows
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'negative_count_follow_on_cases'` returned `2 passed, 43 deselected`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/feature-planning-conditional-nested-negative-count-current.py` returned `72 executed / 72 passed`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1725 executed / 1725 passed`.
+
+## Completion
+- Added the four nested conditional callable `count=-1` `str` publication rows on the existing `conditional-group-exists-callable-replacement-workflows` manifest path and synced the shared callable parity/scorecard expectations without widening into bytes mirrors or benchmark work.
+- Verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'conditional_group_exists and nested and negative_count'` returned `16 passed, 5001 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k 'negative_count_follow_on_cases'` returned `2 passed, 43 deselected`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-1199-conditional-nested-negative-count.py` returned `76 executed / 76 passed`.
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` returned `1729 executed / 1729 passed`.
+- Tracked publication check: `reports/correctness/latest.py` now records `collection.replacement.conditional_group_exists.callable` at `76` passed / `76` total cases, and the combined tracked summary at `1729` executed / `1729` passed / `1729` total cases across the unchanged `114` published manifests.

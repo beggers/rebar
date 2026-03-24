@@ -295,6 +295,10 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-named-conditional-group-exists-nested-absent-str",
                 "pattern-sub-callable-named-conditional-group-exists-nested-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
+                "module-sub-callable-conditional-group-exists-nested-negative-count-str",
+                "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
+                "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
+                "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
                 "module-sub-callable-conditional-group-exists-quantified-present-str",
                 "module-subn-callable-conditional-group-exists-quantified-absent-str",
                 "pattern-sub-callable-conditional-group-exists-quantified-present-str",
@@ -363,10 +367,10 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "sub"): 18,
-                ("module_call", "subn"): 18,
-                ("pattern_call", "sub"): 18,
-                ("pattern_call", "subn"): 18,
+                ("module_call", "sub"): 19,
+                ("module_call", "subn"): 19,
+                ("pattern_call", "sub"): 19,
+                ("pattern_call", "subn"): 19,
             }
         ),
         expected_text_models=MIXED_TEXT_MODELS,

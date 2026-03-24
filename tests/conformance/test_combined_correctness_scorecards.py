@@ -938,6 +938,10 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
             "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
+            "module-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
+            "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
             "module-sub-callable-conditional-group-exists-present-bytes",
             "module-sub-callable-conditional-group-exists-alternation-present-first-arm-bytes",
             "module-sub-callable-conditional-group-exists-nested-present-bytes",
@@ -5176,6 +5180,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             "module-subn-callable-named-conditional-group-exists-negative-count-str",
             "pattern-sub-callable-conditional-group-exists-negative-count-str",
             "pattern-subn-callable-named-conditional-group-exists-negative-count-str",
+            "module-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
+            "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
         )
         expected_negative_count_bytes_case_ids = (
             "module-sub-callable-conditional-group-exists-negative-count-bytes",
@@ -5234,10 +5242,16 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             "pattern-subn-callable-conditional-group-exists-nested-absent-str",
             "module-sub-callable-named-conditional-group-exists-nested-present-str",
             "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
+            "module-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "module-subn-callable-named-conditional-group-exists-nested-negative-count-str",
+            "pattern-sub-callable-conditional-group-exists-nested-negative-count-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-negative-count-str",
         )
-        expected_nested_bytes_case_ids = tuple(
-            f"{case_id.removesuffix('-str')}-bytes"
-            for case_id in expected_nested_str_case_ids
+        expected_nested_bytes_case_ids = (
+            "module-sub-callable-conditional-group-exists-nested-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-nested-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-nested-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
         )
         self.assertEqual(
             tuple(
@@ -5283,6 +5297,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             tuple(
                 f"{case_id.removesuffix('-str')}-bytes"
                 for case_id in representative_str_case_ids
+                if "nested-negative-count" not in case_id
             ),
         )
         self.assertEqual(
@@ -5294,7 +5309,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 f"{case_id.removesuffix('-bytes')}-str"
                 for case_id in manifest_negative_count_bytes_case_ids
             ),
-            expected_negative_count_str_case_ids,
+            expected_negative_count_str_case_ids[: len(expected_negative_count_bytes_case_ids)],
         )
         self.assertEqual(
             Counter(
@@ -5304,10 +5319,10 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
             Counter(
                 {
-                    ("module_call", "sub"): 1,
-                    ("module_call", "subn"): 1,
-                    ("pattern_call", "sub"): 1,
-                    ("pattern_call", "subn"): 1,
+                    ("module_call", "sub"): 2,
+                    ("module_call", "subn"): 2,
+                    ("pattern_call", "sub"): 2,
+                    ("pattern_call", "subn"): 2,
                 }
             ),
         )
