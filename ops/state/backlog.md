@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The next surviving frontier is the bounded quantified conditional callable `bytes` correctness-publication slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` owner path.
+The next surviving frontier is the bounded quantified conditional callable `bytes` benchmark catch-up slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` owner path.
 
 ## Ordered Work
-1. The next surviving frontier is the bounded quantified conditional callable `bytes` correctness-publication slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` owner path.
+1. The next surviving frontier is the bounded quantified conditional callable `bytes` benchmark catch-up slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
