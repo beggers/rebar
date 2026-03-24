@@ -7,7 +7,6 @@ from functools import cache, partial
 import json
 import pathlib
 import re
-import shutil
 from typing import Any
 import unittest
 from unittest import mock
@@ -157,7 +156,6 @@ from tests.benchmarks.wrong_text_model_benchmark_owner_support import (
     _wrong_text_model_expected_callback_result,
 )
 from tests.benchmarks.benchmark_test_support import (
-    _expected_exception_instance,
     _record_numeric_materialization_fields,
     _write_test_manifest,
     live_manifest_workloads,
