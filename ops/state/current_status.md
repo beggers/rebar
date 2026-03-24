@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness covers 1717 cases across 114 manifests, with all 1717 passing in the current slice; the benchmark publication covers 1067/1067 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
+Published correctness covers 1717 cases across 114 manifests, with all 1717 passing in the current slice; the benchmark publication covers 1075/1075 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
 - The next surviving frontier is the bounded quantified conditional callable `bytes` parity slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/python/test_callable_replacement_parity_suite.py` owner path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
-- The published benchmark surface is still bounded at 1067 workloads, so zero known gaps does not yet imply broad performance coverage.
+- The published benchmark surface is still bounded at 1075 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1717 cases across 114 manifests, all passing, and 1067 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1717 cases across 114 manifests, all passing, and 1075 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
 - The next surviving frontier is the bounded quantified conditional callable `bytes` parity slice for `b"a(b)?c(?(1)d|e){2}"` and `b"a(?P<word>b)?c(?(word)d|e){2}"` across module and compiled-pattern `sub()`/`subn()` entrypoints on the existing `tests/python/test_callable_replacement_parity_suite.py` owner path.
@@ -316,7 +316,7 @@ The published correctness slice now covers 1717 cases across 114 manifests, all 
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 114 manifests and 1717 cases, with all 1717 passing within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree-shim path while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 1067 workloads across 30 manifests with 1067 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
+- Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 1075 workloads across 30 manifests with 1075 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -336,4 +336,4 @@ The published correctness slice now covers 1717 cases across 114 manifests, all 
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface is still bounded at 1067 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
+- The published benchmark surface is still bounded at 1075 workloads, so even with 0 known gaps in the current report the tracked timing frontier remains materially narrow.
