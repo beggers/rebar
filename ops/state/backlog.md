@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The next surviving follow-on on the conditional callable replacement owner path is the bounded nested callable `count=None` benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py` for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
+No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact post-benchmark slice has not been pinned yet.
 
 ## Ordered Work
-1. Keep the surviving frontier pinned to the bounded nested conditional callable `count=None` benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py`, mirroring the numbered and named module/pattern `str` and `bytes` quartet for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` on the existing Python-path benchmark owner route.
+1. No ready feature follow-on currently survives on the conditional callable count-contract owner path; the next exact adjacent slice still needs a separate narrow owner-path planning pass.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
