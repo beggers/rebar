@@ -1,6 +1,6 @@
 # RBR-1197: Benchmark conditional group-exists quantified callable bytes workloads
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -55,3 +55,12 @@ Created: 2026-03-24
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists and callable'` returned `9 passed, 542 deselected, 108 subtests passed`;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/feature-planning-conditional-group-exists-boundary-current.py` returned `144 measured workloads / 0 known gaps`; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` returned `1075 measured workloads / 0 known gaps`.
+
+## Completion
+- Added the eight quantified conditional callable `bytes` `module.sub()`/`subn()` and `Pattern.sub()`/`subn()` workloads on `benchmarks/workloads/conditional_group_exists_boundary.py`, keeping the slice on the existing conditional owner path.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the combined manifest expectations, zero-gap bytes representative subsets, and callable round-trip coverage include the new quantified `bytes` rows without widening adjacent slices.
+- Regenerated the tracked publication at `reports/benchmarks/latest.py`; the tracked report now shows `conditional-group-exists-boundary` at `152` workloads with `152` measured and `0` known gaps, and the combined summary at `1083/1083` measured workloads across `30` manifests.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists and callable'` -> `11 passed, 542 deselected, 140 subtests passed`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-1197-conditional-group-exists-boundary.py` -> `152 measured workloads / 0 known gaps`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` -> `1083 measured workloads / 0 known gaps`

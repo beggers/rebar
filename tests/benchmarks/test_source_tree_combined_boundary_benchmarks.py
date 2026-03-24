@@ -1541,6 +1541,16 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
                 "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-bytes",
             ),
+            (
+                "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-bytes",
+                "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+                "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-bytes",
+                "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+                "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-bytes",
+                "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+                "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
+                "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+            ),
         ),
     ),
     "regression-matrix": _combined_manifest_definition(
@@ -3083,6 +3093,50 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
     _combined_slice_expectation(
         manifest_id="conditional-group-exists-boundary",
+        slice_id="quantified-callable-replacement-bytes-rows",
+        required_syntax_features=(
+            "pattern-text-model",
+            "conditionals",
+            "quantifiers",
+            "callable-replacement",
+        ),
+        required_categories=("quantified", "bytes"),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "nested-conditional",
+            "nested-group",
+            "unsupported",
+        ),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+            "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+            "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e){2}",
+            r"a(?P<word>b)?c(?(word)d|e){2}",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcddzz", "zzaceezz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "quantified",
+            "replacement",
+            "callable",
+            "bytes",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
         slice_id="quantified-alternation-heavy-constant-replacement-rows",
         required_syntax_features=("conditionals", "alternation", "quantifiers"),
         required_categories=("alternation-heavy", "replacement", "quantified"),
@@ -3817,6 +3871,16 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS = (
     "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
     "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
 )
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-bytes",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-bytes",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-bytes",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+)
 CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
     "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
     "module-subn-template-numbered-conditional-group-exists-replacement-warm-bytes",
@@ -3875,6 +3939,28 @@ def _conditional_group_exists_quantified_callable_str_workloads(
         ).workloads
     }
     expectation = _conditional_group_exists_quantified_callable_replacement_expectation()
+    expected_workload_ids = expectation.expected_workload_ids
+    return tuple(
+        workloads_by_id[workload_id] for workload_id in expected_workload_ids
+    )
+
+
+@cache
+def _conditional_group_exists_quantified_callable_bytes_workloads(
+) -> tuple[Workload, ...]:
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in load_manifest(
+            BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
+        ).workloads
+    }
+    expectation = next(
+        expectation
+        for expectation in source_tree_combined_slice_expectations(
+            "conditional-group-exists-boundary"
+        )
+        if expectation.slice_id == "quantified-callable-replacement-bytes-rows"
+    )
     expected_workload_ids = expectation.expected_workload_ids
     return tuple(
         workloads_by_id[workload_id] for workload_id in expected_workload_ids
@@ -4064,6 +4150,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         expected_workload_ids: tuple[str, ...],
     ) -> None:
         manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        public_representatives = (
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            )
+        )
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
         self.assertIsNone(
             manifest_definition.representative_known_gap_workload_ids
@@ -4074,10 +4165,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         for workload_id in expected_workload_ids:
             with self.subTest(workload_id=workload_id):
-                self.assertIn(
-                    workload_id,
-                    manifest_definition.representative_measured_workload_ids,
-                )
+                self.assertIn(workload_id, public_representatives)
+                if manifest_definition.representative_measured_workload_ids is not None:
+                    self.assertIn(
+                        workload_id,
+                        manifest_definition.representative_measured_workload_ids,
+                    )
 
         case = source_tree_combined_case(manifest_id)
         manifest_expectation = case.manifest_expectation
@@ -4096,10 +4189,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         for workload_id in expected_workload_ids:
             with self.subTest(public_workload_id=workload_id):
-                self.assertIn(
-                    workload_id,
-                    manifest_expectation.representative_measured_workload_ids,
-                )
+                self.assertIn(workload_id, public_representatives)
+                if manifest_expectation.representative_measured_workload_ids:
+                    self.assertIn(
+                        workload_id,
+                        manifest_expectation.representative_measured_workload_ids,
+                    )
 
         self._assert_zero_gap_manifest_workloads_measured(
             case,
@@ -4999,10 +5094,19 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             set(zero_gap_bytes_subsets_by_manifest),
             {
+                "conditional-group-exists-boundary",
                 "wider-ranged-repeat-quantified-group-boundary",
                 "open-ended-quantified-group-boundary",
                 "branch-local-backreference-boundary",
             },
+        )
+        self.assertEqual(
+            len(
+                zero_gap_bytes_subsets_by_manifest[
+                    "conditional-group-exists-boundary"
+                ]
+            ),
+            2,
         )
         self.assertEqual(
             len(
@@ -5033,7 +5137,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 len(representative_subsets)
                 for representative_subsets in zero_gap_bytes_subsets_by_manifest.values()
             ),
-            12,
+            14,
         )
         for manifest_id, representative_subsets in zero_gap_bytes_subsets_by_manifest.items():
             for expected_workload_ids in representative_subsets:
@@ -5373,6 +5477,18 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=expected_workload_count,
         )
 
+    def test_conditional_group_exists_quantified_callable_bytes_manifest_promotes_replacement_and_exception_rows_to_measured(
+        self,
+    ) -> None:
+        manifest_id = "conditional-group-exists-boundary"
+        expected_workload_ids = (
+            CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+        )
+        self._assert_zero_gap_bytes_representative_subset(
+            manifest_id,
+            expected_workload_ids,
+        )
+
     def test_conditional_group_exists_quantified_callable_str_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
@@ -5419,6 +5535,70 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 assert observed_signature is not None
                 self.assertIsInstance(observed_signature[2], str)
                 self.assertIsInstance(observed_signature[3], str)
+
+                if source_workload.expected_exception is None:
+                    assert_benchmark_workload_matches_expected_result(
+                        round_tripped,
+                        run_benchmark_workload_with_cpython(source_workload),
+                    )
+                    continue
+
+                expected_exception = source_workload.expected_exception
+                assert expected_exception is not None
+
+                with pytest.raises(
+                    TypeError,
+                    match=re.escape(expected_exception["message_substring"]),
+                ) as expected_error:
+                    run_benchmark_workload_with_cpython(source_workload)
+                with pytest.raises(TypeError) as observed_error:
+                    run_benchmark_workload_with_cpython(round_tripped)
+                self.assertEqual(
+                    str(observed_error.value),
+                    str(expected_error.value),
+                )
+
+    def test_conditional_group_exists_quantified_callable_bytes_workloads_round_trip_preserves_outcomes(
+        self,
+    ) -> None:
+        source_workloads = _conditional_group_exists_quantified_callable_bytes_workloads()
+
+        self.assertEqual(
+            tuple(workload.workload_id for workload in source_workloads),
+            CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+        )
+
+        for source_workload in source_workloads:
+            with self.subTest(workload_id=source_workload.workload_id):
+                payload = workload_to_payload(source_workload)
+                round_tripped = workload_from_payload(payload)
+                expected_signature = _callable_match_group_signature(
+                    source_workload.replacement_payload()
+                )
+                observed_signature = _callable_match_group_signature(
+                    round_tripped.replacement_payload()
+                )
+
+                self.assertEqual(payload["text_model"], "bytes")
+                self.assertEqual(round_tripped.text_model, "bytes")
+                self.assertEqual(payload["count"], source_workload.count)
+                self.assertEqual(
+                    payload["expected_exception"],
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.expected_exception,
+                    source_workload.expected_exception,
+                )
+                self.assertEqual(
+                    round_tripped.pattern_payload(),
+                    source_workload.pattern_payload(),
+                )
+                self.assertEqual(
+                    round_tripped.haystack_payload(),
+                    source_workload.haystack_payload(),
+                )
+                self.assertEqual(observed_signature, expected_signature)
 
                 if source_workload.expected_exception is None:
                     assert_benchmark_workload_matches_expected_result(
