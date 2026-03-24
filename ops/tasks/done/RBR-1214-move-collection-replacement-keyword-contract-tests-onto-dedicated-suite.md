@@ -1,6 +1,6 @@
 # RBR-1214: Move collection-replacement keyword contract tests onto dedicated suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -59,3 +59,11 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` returned `4 passed in 0.05s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_collection_replacement_keyword_descriptors_until_helper_invocation or standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation or pattern_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or pattern_helper_collection_replacement_keyword_error_callbacks_match_cpython_exceptions or run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads or module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions or run_internal_workload_probe_measures_module_helper_keyword_error_workloads'` returned `88 passed, 352 deselected in 0.24s`; and
   - the negative `rg` check named above currently fails exactly on this cleanup because those eight tests still live in the combined suite.
+
+## Completion Note
+- Moved the eight collection-replacement keyword contract tests into `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` and deleted the inline copies from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Kept the dedicated owner on the same live helper surface: manifest payloads, parametrization ids, callback-time materialization checks, keyword-error parity, and internal workload probe coverage all still run through the existing benchmark helpers.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` returned `92 passed in 0.18s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark_manifest_preserves_collection_replacement_keyword_descriptors_until_helper_invocation or standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation or pattern_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or pattern_helper_collection_replacement_keyword_error_callbacks_match_cpython_exceptions or run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads or module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions or run_internal_workload_probe_measures_module_helper_keyword_error_workloads'` returned `352 deselected in 0.27s`, which is the expected post-move result because those tests no longer live in the combined suite.
+  - `bash -lc "! rg -n 'test_standard_benchmark_manifest_preserves_collection_replacement_keyword_descriptors_until_helper_invocation|test_standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation|test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time|test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpython_exceptions|test_run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads|test_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time|test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions|test_run_internal_workload_probe_measures_module_helper_keyword_error_workloads' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` returned success.
