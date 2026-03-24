@@ -63,6 +63,8 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     case_replacement_argument,
     case_text_argument,
+    module_workflow_keyword_kwargs_signature as _module_workflow_keyword_kwargs_signature,
+    module_workflow_positional_args_signature as _module_workflow_positional_args_signature,
 )
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
@@ -7598,61 +7600,6 @@ def _collection_replacement_has_expected_unexpected_keyword_error(
             == f"'{keyword_name}' is an invalid keyword argument for {helper_name}()"
         )
     return False
-
-
-def _module_workflow_positional_args_signature(
-    args: tuple[object, ...] | list[object],
-) -> tuple[tuple[str, object], ...]:
-    signature: list[tuple[str, object]] = []
-    for value in args:
-        if isinstance(value, bool):
-            signature.append(("bool", value))
-            continue
-        if isinstance(value, int):
-            signature.append(("int", int(value)))
-            continue
-        if isinstance(value, (str, bytes)):
-            signature.append((type(value).__name__, value))
-            continue
-        if (
-            isinstance(value, dict)
-            and value.get("type") == "indexlike"
-            and isinstance(value.get("value"), int)
-            and not isinstance(value.get("value"), bool)
-        ):
-            signature.append(("indexlike", int(value["value"])))
-            continue
-        if hasattr(value, "__index__"):
-            signature.append(("indexlike", int(value.__index__())))
-            continue
-        signature.append((type(value).__name__, repr(value)))
-    return tuple(signature)
-
-
-def _module_workflow_keyword_kwargs_signature(
-    kwargs: dict[str, object],
-) -> tuple[tuple[str, str, object], ...]:
-    signature: list[tuple[str, str, object]] = []
-    for name, value in sorted(kwargs.items()):
-        if isinstance(value, bool):
-            signature.append((name, "bool", value))
-            continue
-        if isinstance(value, int):
-            signature.append((name, "int", int(value)))
-            continue
-        if (
-            isinstance(value, dict)
-            and value.get("type") == "indexlike"
-            and isinstance(value.get("value"), int)
-            and not isinstance(value.get("value"), bool)
-        ):
-            signature.append((name, "indexlike", int(value["value"])))
-            continue
-        if hasattr(value, "__index__"):
-            signature.append((name, "indexlike", int(value.__index__())))
-            continue
-        signature.append((name, type(value).__name__, repr(value)))
-    return tuple(signature)
 
 
 def _module_workflow_positional_indexlike_correctness_case_signature(

@@ -53,6 +53,8 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     load_single_published_fixture_bundle,
     load_published_fixture_bundles,
+    module_workflow_keyword_kwargs_signature as _workflow_keyword_kwargs_signature,
+    module_workflow_positional_args_signature as _workflow_positional_args_signature,
 )
 
 MATURIN = shutil.which("maturin")
@@ -247,27 +249,6 @@ def _fixture_cases_for_text_model(
     )
 
 
-def _workflow_keyword_kwargs_signature(
-    kwargs: dict[str, object],
-) -> tuple[tuple[str, str, object], ...]:
-    signature: list[tuple[str, str, object]] = []
-    for name, value in sorted(kwargs.items()):
-        if isinstance(value, bool):
-            signature.append((name, "bool", value))
-            continue
-        if isinstance(value, re.RegexFlag) and int(value) == 0:
-            signature.append((name, "regexflag", 0))
-            continue
-        if isinstance(value, int):
-            signature.append((name, "int", int(value)))
-            continue
-        if hasattr(value, "__index__"):
-            signature.append((name, "indexlike", int(value.__index__())))
-            continue
-        signature.append((name, type(value).__name__, repr(value)))
-    return tuple(signature)
-
-
 _BOOL_COUNT_COMPLEMENT_KWARGS_SIGNATURES = frozenset(
     {
         (("count", "bool", False),),
@@ -289,27 +270,6 @@ def _workflow_bool_count_complement_projection(
         and _workflow_keyword_kwargs_signature(case.kwargs)
         in _BOOL_COUNT_COMPLEMENT_KWARGS_SIGNATURES
     )
-
-
-def _workflow_positional_args_signature(
-    args: tuple[object, ...] | list[object],
-) -> tuple[tuple[str, object], ...]:
-    signature: list[tuple[str, object]] = []
-    for value in args:
-        if isinstance(value, bool):
-            signature.append(("bool", value))
-            continue
-        if isinstance(value, int):
-            signature.append(("int", int(value)))
-            continue
-        if isinstance(value, (str, bytes)):
-            signature.append((type(value).__name__, value))
-            continue
-        if hasattr(value, "__index__"):
-            signature.append(("indexlike", int(value.__index__())))
-            continue
-        signature.append((type(value).__name__, repr(value)))
-    return tuple(signature)
 
 
 ESCAPE_CASES = tuple(
