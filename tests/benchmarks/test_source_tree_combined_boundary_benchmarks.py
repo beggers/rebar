@@ -1418,6 +1418,20 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
             expected_total_workload_count=84,
         ),
     ),
+    "conditional-group-exists-boundary": _combined_manifest_definition(
+        zero_gap_bytes_representative_subsets=(
+            (
+                "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
+                "module-subn-template-numbered-conditional-group-exists-replacement-warm-bytes",
+                "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-bytes",
+                "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-bytes",
+                "module-sub-template-named-conditional-group-exists-replacement-warm-bytes",
+                "module-subn-template-named-conditional-group-exists-replacement-warm-bytes",
+                "pattern-sub-template-named-conditional-group-exists-replacement-purged-bytes",
+                "pattern-subn-template-named-conditional-group-exists-replacement-purged-bytes",
+            ),
+        ),
+    ),
     "regression-matrix": _combined_manifest_definition(
         exclude_from_combined_targets=True,
         representative_measured_workload_ids=(
@@ -2696,10 +2710,18 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
             "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
             "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
+            "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-template-numbered-conditional-group-exists-replacement-warm-bytes",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-bytes",
             "module-sub-template-named-conditional-group-exists-replacement-warm-str",
             "module-subn-template-named-conditional-group-exists-replacement-warm-str",
             "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
+            "module-sub-template-named-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-template-named-conditional-group-exists-replacement-warm-bytes",
+            "pattern-sub-template-named-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-template-named-conditional-group-exists-replacement-purged-bytes",
         ),
         expected_patterns={
             r"a(b)?c(?(1)d|e)",
@@ -3475,6 +3497,16 @@ CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS = (
     "pattern-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-purged-bytes",
     "module-subn-callable-named-conditional-group-exists-replacement-absent-exception-warm-bytes",
     "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-bytes",
+)
+CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
+    "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
+    "module-subn-template-numbered-conditional-group-exists-replacement-warm-bytes",
+    "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-bytes",
+    "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-bytes",
+    "module-sub-template-named-conditional-group-exists-replacement-warm-bytes",
+    "module-subn-template-named-conditional-group-exists-replacement-warm-bytes",
+    "pattern-sub-template-named-conditional-group-exists-replacement-purged-bytes",
+    "pattern-subn-template-named-conditional-group-exists-replacement-purged-bytes",
 )
 
 
@@ -4605,7 +4637,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=expected_workload_count,
         )
 
-    def test_conditional_group_exists_template_bytes_manifest_keeps_minimal_replacement_rows_str_only_and_measured(
+    def test_conditional_group_exists_template_bytes_manifest_promotes_minimal_replacement_rows_to_measured(
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
@@ -4626,7 +4658,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             tuple(workload.workload_id for workload in matched_rows),
             expected_workload_ids,
         )
-        self.assertEqual({workload.text_model for workload in matched_rows}, {"str"})
+        self.assertEqual({workload.text_model for workload in matched_rows}, {"str", "bytes"})
+        for workload_id in CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    source_tree_combined_manifest_representative_measured_workload_ids(
+                        manifest_id
+                    ),
+                )
 
         self._assert_zero_gap_manifest_workloads_measured(
             case,
@@ -5884,11 +5924,11 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             expected_summary_for_manifests(manifests, selection_mode="full"),
             {
                 "known_gap_count": 0,
-                "measured_workloads": 1019,
-                "module_workloads": 1011,
+                "measured_workloads": 1027,
+                "module_workloads": 1019,
                 "parser_workloads": 8,
                 "regression_workloads": 8,
-                "total_workloads": 1019,
+                "total_workloads": 1027,
             },
         )
 
@@ -6165,7 +6205,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     case.representative_known_gap_workload_ids,
                 )
 
-    def test_conditional_group_exists_template_bytes_scorecard_keeps_minimal_replacement_rows_str_only_and_measured(
+    def test_conditional_group_exists_template_bytes_scorecard_promotes_minimal_replacement_rows_to_measured(
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
@@ -6188,7 +6228,14 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
-        self.assertEqual({workload.text_model for workload in matched_rows}, {"str"})
+        self.assertEqual({workload.text_model for workload in matched_rows}, {"str", "bytes"})
+        for workload_id in CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
+                self.assertNotIn(
+                    workload_id,
+                    case.representative_known_gap_workload_ids,
+                )
         self.assertEqual(
             tuple(
                 workload.workload_id

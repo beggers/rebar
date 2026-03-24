@@ -1,6 +1,6 @@
 # RBR-1135: Catch up conditional group-exists template bytes benchmarks
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-24
 
@@ -58,3 +58,12 @@ Created: 2026-03-24
   - `benchmarks/workloads/conditional_group_exists_boundary.py` still lacks the adjacent bytes replacement-template rows for the numbered and named module/pattern `sub()` and `subn(count=1)` cases on this slice.
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still carries `test_conditional_group_exists_template_bytes_manifest_keeps_minimal_replacement_rows_str_only_and_measured` and `test_conditional_group_exists_template_bytes_scorecard_keeps_minimal_replacement_rows_str_only_and_measured`, confirming that the benchmark expectations remain `str`-only today.
   - `reports/benchmarks/latest.py` still reports `conditional-group-exists-boundary` at `workload_count == 88`, `measured_workloads == 88`, and `known_gap_count == 0`, so the eight adjacent bytes template rows remain unpublished rather than already satisfied.
+
+## Completion Note
+- Added the eight adjacent bytes replacement-template benchmark rows on the existing `conditional-group-exists-boundary` owner path for the numbered and named module/pattern `sub()` and `subn(count=1)` workflows, keeping the slice bounded to `a(b)?c(?(1)d|e)` plus `a(?P<word>b)?c(?(word)d|e)` with `\\1x` and `\\g<word>x`.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the `minimal-template-replacement-rows` slice now expects the mixed `str`/`bytes` workload set, the conditional-group-exists manifest advertises the new bytes zero-gap representative subset, and the full published benchmark summary contract now expects `1027` total / `1027` measured / `0` known gaps with `1019` module workloads.
+- Regenerated the tracked publication in `reports/benchmarks/latest.py`; direct verification from the tracked artifact in this run shows `REPORT["summary"] == {"total_workloads": 1027, "measured_workloads": 1027, "known_gap_count": 0, "module_workloads": 1019, "parser_workloads": 8, "regression_workloads": 8}` and `REPORT["manifests"]["conditional-group-exists-boundary"] == {"workload_count": 96, "measured_workloads": 96, "known_gap_count": 0}` with all eight new bytes template rows marked `measured`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists and template and bytes'`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'published_full_suite_summary_reflects_collection_replacement_compiled_pattern_benchmarks'`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
