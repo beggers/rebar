@@ -1821,6 +1821,17 @@ MODULE_RETURN_TYPE_ERROR_CASES = tuple(
     for case in MODULE_CASES
     if _manifest_matches_return_type_error_frontier(case.manifest_id)
 )
+MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = frozenset(
+    {
+        "quantified-nested-group-callable-replacement-workflows",
+        "quantified-nested-group-alternation-callable-replacement-workflows",
+    }
+)
+MODULE_RETURN_TYPE_ERROR_PARITY_CASES = tuple(
+    case
+    for case in MODULE_RETURN_TYPE_ERROR_CASES
+    if case.manifest_id in MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
+)
 PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     case
     for case in PATTERN_CASES
@@ -3199,6 +3210,23 @@ def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_c
     assert {
         case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_CASES
     } == _callable_return_type_error_expected_manifest_ids()
+
+
+def test_module_callable_replacement_wrong_return_type_parity_cases_cover_active_slice(
+) -> None:
+    assert MODULE_RETURN_TYPE_ERROR_PARITY_CASES
+    assert {case.text_model for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES} == {
+        "bytes",
+        "str",
+    }
+    assert {
+        case.manifest_id for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
+    } == MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
+    assert not {
+        case.case_id
+        for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
+        if _is_pending_rebar_callable_case(case)
+    }
 
 
 def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
@@ -6388,43 +6416,10 @@ def test_pattern_bytes_callable_replacement_callback_exception_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    tuple(
-        case
-        for case in MODULE_RETURN_TYPE_ERROR_CASES
-        if case.manifest_id == "quantified-nested-group-callable-replacement-workflows"
-    ),
+    MODULE_RETURN_TYPE_ERROR_PARITY_CASES,
     ids=lambda case: case.case_id,
 )
 def test_module_callable_replacement_wrong_return_type_matches_cpython(
-    regex_backend: tuple[str, object],
-    case: FixtureCase,
-) -> None:
-    backend_name, backend = regex_backend
-    assert case.helper is not None
-
-    _skip_pending_rebar_callable_parity(backend_name, case)
-    assert_callable_replacement_return_type_error_parity(
-        backend_name=backend_name,
-        backend=backend,
-        helper=case.helper,
-        pattern=case_pattern(case),
-        string=_case_string(case),
-        count=_case_count(case),
-        use_compiled_pattern=False,
-    )
-
-
-@pytest.mark.parametrize(
-    "case",
-    tuple(
-        case
-        for case in MODULE_RETURN_TYPE_ERROR_CASES
-        if case.manifest_id
-        == "quantified-nested-group-alternation-callable-replacement-workflows"
-    ),
-    ids=lambda case: case.case_id,
-)
-def test_module_callable_replacement_wrong_return_type_matches_cpython_for_quantified_nested_group_alternation(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
