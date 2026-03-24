@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1749 cases across 114 manifests, with all 1749 passing in the current slice; the benchmark publication covers 1099/1099 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The surviving frontier on the shared conditional callable replacement owner path is the adjacent nested callable near-miss benchmark catch-up for the bounded `str` and `bytes` `sub()`/`subn()` no-match workflows of `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
+- No ready feature follow-on currently survives on the shared conditional callable replacement owner path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1749 cases across 114 manifests, with all 1749 pass
 The published correctness slice now covers 1749 cases across 114 manifests, all passing, and 1099 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- The surviving frontier on the shared conditional callable replacement owner path is the adjacent nested callable near-miss benchmark catch-up for the bounded `str` and `bytes` `sub()`/`subn()` no-match workflows of `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
+- No ready feature follow-on currently survives on the shared conditional callable replacement owner path.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -332,7 +332,7 @@ The published correctness slice now covers 1749 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving frontier on the shared conditional callable replacement owner path is the adjacent nested callable near-miss benchmark catch-up for the bounded `str` and `bytes` `sub()`/`subn()` no-match workflows of `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
+- No ready feature follow-on currently survives on the shared conditional callable replacement owner path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
