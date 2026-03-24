@@ -1215,6 +1215,201 @@ def test_module_helper_workflow_keyword_flags_materialize_at_callback_time(
         re.purge()
 
 
+def test_standard_benchmark_manifest_preserves_module_keyword_flags_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+    monkeypatch,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-module-workflow-keyword-flags-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "module-search-flags-keyword-contract-str",
+                "bucket": "module-search",
+                "family": "module",
+                "operation": "module.search",
+                "pattern": "abc",
+                "haystack": "zAbc",
+                "kwargs": {
+                    "flags": 2,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.search flags= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-match-flags-keyword-contract-bytes",
+                "bucket": "module-match",
+                "family": "module",
+                "operation": "module.match",
+                "pattern": "abc",
+                "haystack": "Abc",
+                "text_model": "bytes",
+                "kwargs": {
+                    "flags": 2,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.match flags= keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-fullmatch-flags-bool-keyword-contract-str",
+                "bucket": "module-fullmatch",
+                "family": "module",
+                "operation": "module.fullmatch",
+                "pattern": "abc",
+                "haystack": "abc",
+                "text_model": "str",
+                "kwargs": {
+                    "flags": False,
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests keep module.fullmatch flags=False keyword carriers unresolved until helper invocation."
+                ],
+            },
+            {
+                "id": "module-search-duplicate-flags-keyword-contract-str",
+                "bucket": "module-search",
+                "family": "module",
+                "operation": "module.search",
+                "pattern": "abc",
+                "haystack": "zabc",
+                "flags": 2,
+                "kwargs": {
+                    "flags": {
+                        "type": "indexlike",
+                        "value": 2,
+                    },
+                },
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "multiple values for argument 'flags'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [
+                    "Ensures benchmark manifests preserve duplicate module.search flags= keyword carriers through the expected TypeError path."
+                ],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_module_workflow_keyword_flags_contract.py",
+        manifest_source,
+    )
+    workloads_by_id = {
+        workload.workload_id: workload for workload in load_manifest(manifest_path).workloads
+    }
+    expected_cases: dict[str, dict[str, object]] = {
+        "module-search-flags-keyword-contract-str": {
+            "kwargs": {"flags": 2},
+            "expected_index_calls": [],
+            "expected_result": re.search("abc", "zAbc", flags=re.IGNORECASE),
+        },
+        "module-match-flags-keyword-contract-bytes": {
+            "kwargs": {"flags": 2},
+            "expected_index_calls": [],
+            "expected_result": re.match(b"abc", b"Abc", flags=re.IGNORECASE),
+        },
+        "module-fullmatch-flags-bool-keyword-contract-str": {
+            "kwargs": {"flags": False},
+            "expected_index_calls": [],
+            "expected_result": re.fullmatch("abc", "abc", flags=False),
+        },
+        "module-search-duplicate-flags-keyword-contract-str": {
+            "kwargs": {"flags": {"type": "indexlike", "value": 2}},
+            "expected_index_calls": [],
+            "expected_exception_message": "multiple values for argument 'flags'",
+        },
+    }
+    observed_field_names: list[str] = []
+    index_calls: list[tuple[str, int]] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    class _RecordingIndexLike:
+        def __init__(self, field_name: str, value: int) -> None:
+            self.field_name = field_name
+            self.value = value
+
+        def __index__(self) -> int:
+            index_calls.append((self.field_name, self.value))
+            return self.value
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        normalized = benchmarks.normalize_numeric_workload_argument(
+            value,
+            field_name=field_name,
+        )
+        if isinstance(normalized, dict) and normalized.get("type") == "indexlike":
+            return _RecordingIndexLike(field_name, int(normalized["value"]))
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+
+    for workload_id, expected in expected_cases.items():
+        workload = workloads_by_id[workload_id]
+        expected_kwargs = expected["kwargs"]
+        round_tripped = workload_from_payload(workload_to_payload(workload))
+
+        assert workload.kwargs == expected_kwargs
+        assert round_tripped.kwargs == expected_kwargs
+        assert type(workload.kwargs["flags"]) is type(expected_kwargs["flags"])
+        assert type(round_tripped.kwargs["flags"]) is type(expected_kwargs["flags"])
+
+        payload = workload_to_payload(workload)
+        assert payload["kwargs"] == expected_kwargs
+        assert round_tripped.expected_exception == workload.expected_exception
+
+        observed_field_names.clear()
+        index_calls.clear()
+
+        re.purge()
+        try:
+            callback = build_callable(re, "re", round_tripped)
+            assert observed_field_names == []
+
+            expected_exception_message = expected.get("expected_exception_message")
+            if expected_exception_message is None:
+                observed_result = callback()
+                assert_match_result_parity(
+                    "stdlib",
+                    observed_result,
+                    expected["expected_result"],
+                    check_regs=True,
+                )
+            else:
+                with pytest.raises(
+                    TypeError,
+                    match=re.escape(str(expected_exception_message)),
+                ):
+                    callback()
+
+            assert observed_field_names == ["kwargs.flags"]
+            assert index_calls == expected["expected_index_calls"]
+        finally:
+            re.purge()
+
+
 def test_standard_benchmark_manifest_preserves_pattern_keyword_window_descriptors_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
