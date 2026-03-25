@@ -4,6 +4,8 @@ from functools import cache
 import pathlib
 from types import SimpleNamespace
 
+import pytest
+
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
@@ -243,6 +245,214 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         _synthetic_workload_signature,
     ]
     assert published_cases_calls == ["called", "called"]
+
+
+def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata(
+) -> None:
+    source_workload = synthetic_workload(
+        manifest_id="source-manifest",
+        workload_id="module-sub-count-keyword-warm-str",
+        operation="module.sub",
+        pattern="abc",
+        haystack="abcabcabc",
+        replacement="x",
+        kwargs={"count": {"type": "indexlike", "value": 2}},
+        timing_scope="pattern-helper-call",
+        warmup_iterations=7,
+        sample_iterations=8,
+        timed_samples=9,
+        notes=["source note"],
+        categories=["synthetic-category"],
+        syntax_features=["synthetic-syntax"],
+        smoke=True,
+    )
+    source_payload = benchmarks.workload_to_payload(source_workload)
+    spec = support._SourceTreeContractBuilderSpec(
+        manifest_id="contract-manifest",
+        excluded_fields=frozenset(
+            {
+                "manifest_id",
+                "workload_id",
+                "warmup_iterations",
+                "sample_iterations",
+                "timed_samples",
+                "notes",
+            }
+        ),
+        timing_scope="module-helper-call",
+        notes=("keeps helper invocation unresolved",),
+    )
+
+    payload = support._source_tree_contract_manifest_payload(
+        source_workload,
+        spec=spec,
+    )
+
+    assert payload["id"] == "module-sub-count-keyword-warm-str-contract"
+    assert payload["pattern"] == source_payload["pattern"]
+    assert payload["haystack"] == source_payload["haystack"]
+    assert payload["replacement"] == source_payload["replacement"]
+    assert payload["kwargs"] == source_payload["kwargs"]
+    assert payload["categories"] == ["synthetic-category"]
+    assert payload["syntax_features"] == ["synthetic-syntax"]
+    assert payload["smoke"] is True
+    assert payload["timing_scope"] == "module-helper-call"
+    assert payload["notes"] == ["keeps helper invocation unresolved"]
+    for field_name in spec.excluded_fields - {"notes"}:
+        assert field_name not in payload
+
+
+def test_source_tree_contract_workload_reconstructs_contract_workload_with_defaults(
+) -> None:
+    source_workload = synthetic_workload(
+        manifest_id="source-manifest",
+        workload_id="module-subn-count-keyword-purged-str",
+        operation="module.subn",
+        pattern="abc",
+        haystack="abcabcabc",
+        replacement="x",
+        kwargs={"count": {"type": "indexlike", "value": 2}},
+        timing_scope="pattern-helper-call",
+        warmup_iterations=4,
+        sample_iterations=5,
+        timed_samples=6,
+        categories=["source-category"],
+        syntax_features=["source-syntax"],
+        smoke=True,
+    )
+    source_payload = benchmarks.workload_to_payload(source_workload)
+    spec = support._SourceTreeContractBuilderSpec(
+        manifest_id="contract-manifest",
+        excluded_fields=frozenset(
+            {
+                "manifest_id",
+                "workload_id",
+                "warmup_iterations",
+                "sample_iterations",
+                "timed_samples",
+                "notes",
+            }
+        ),
+        timing_scope="module-helper-call",
+        notes=("contract workload",),
+    )
+
+    workload = support._source_tree_contract_workload(source_workload, spec=spec)
+    payload = benchmarks.workload_to_payload(workload)
+
+    assert payload["manifest_id"] == "contract-manifest"
+    assert payload["workload_id"] == "module-subn-count-keyword-purged-str-contract"
+    assert payload["pattern"] == source_payload["pattern"]
+    assert payload["haystack"] == source_payload["haystack"]
+    assert payload["replacement"] == source_payload["replacement"]
+    assert payload["kwargs"] == source_payload["kwargs"]
+    assert payload["warmup_iterations"] == 1
+    assert payload["sample_iterations"] == 1
+    assert payload["timed_samples"] == 1
+    assert payload["categories"] == []
+    assert payload["syntax_features"] == []
+    assert payload["smoke"] is False
+    assert payload["timing_scope"] == "module-helper-call"
+    assert payload["notes"] == ["contract workload"]
+
+
+def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids() -> None:
+    source_workloads = (
+        synthetic_workload(
+            manifest_id="source-manifest",
+            workload_id="first-workload",
+            operation="module.findall",
+            pattern="abc",
+            haystack="abcabc",
+        ),
+        synthetic_workload(
+            manifest_id="source-manifest",
+            workload_id="second-workload",
+            operation="module.sub",
+            pattern="abc",
+            haystack="abcabc",
+            replacement="x",
+        ),
+    )
+    spec = support._SourceTreeContractBuilderSpec(
+        manifest_id="contract-manifest",
+        excluded_fields=frozenset({"manifest_id", "workload_id"}),
+        manifest_timed_samples=7,
+    )
+
+    manifest = support._source_tree_contract_manifest(source_workloads, spec=spec)
+
+    assert manifest["schema_version"] == 1
+    assert manifest["manifest_id"] == "contract-manifest"
+    assert manifest["defaults"] == {
+        "warmup_iterations": 1,
+        "sample_iterations": 1,
+        "timed_samples": 7,
+    }
+    assert [workload["id"] for workload in manifest["workloads"]] == [
+        "first-workload-contract",
+        "second-workload-contract",
+    ]
+
+
+def test_contract_source_workloads_follow_selector_order_on_synthetic_manifest_rows(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    workloads = (
+        _synthetic_workload("first", ("shared", "first")),
+        _synthetic_workload("second", ("shared", "second")),
+        _synthetic_workload("third", ("shared", "third")),
+    )
+
+    monkeypatch.setattr(
+        support,
+        "load_manifest",
+        lambda path: _synthetic_manifest_loader(path, workloads=workloads),
+    )
+
+    source_workloads = support._contract_source_workloads(
+        manifest_path=manifest_path,
+        include_workload_selectors=(
+            lambda workload: workload.workload_id in {"second", "third"},
+            lambda workload: workload.workload_id == "first",
+        ),
+        expected_source_workload_ids=("second", "third", "first"),
+        drift_message="synthetic workloads drifted",
+    )
+
+    assert tuple(workload.workload_id for workload in source_workloads) == (
+        "second",
+        "third",
+        "first",
+    )
+
+
+def test_contract_source_workloads_detect_drift_on_synthetic_manifest_rows(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    workloads = (
+        _synthetic_workload("first", ("shared", "first")),
+        _synthetic_workload("second", ("shared", "second")),
+    )
+
+    monkeypatch.setattr(
+        support,
+        "load_manifest",
+        lambda path: _synthetic_manifest_loader(path, workloads=workloads),
+    )
+
+    with pytest.raises(AssertionError, match="synthetic workloads drifted"):
+        support._contract_source_workloads(
+            manifest_path=pathlib.Path("synthetic_boundary.py"),
+            include_workload_selectors=(
+                lambda workload: workload.workload_id == "first",
+            ),
+            expected_source_workload_ids=("second",),
+            drift_message="synthetic workloads drifted",
+        )
 
 
 def _synthetic_case(
