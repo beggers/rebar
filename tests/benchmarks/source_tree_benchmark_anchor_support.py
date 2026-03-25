@@ -138,6 +138,78 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 )
 
 
+def _compile_search_fullmatch_case_signature(
+    case: Any,
+    *,
+    pattern: Callable[[], Any],
+) -> tuple[Any, ...] | None:
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
+    flags = case.flags or 0
+    text_model = case.text_model or "str"
+
+    if case.operation == "compile":
+        return ("module.compile", pattern(), (), kwargs_signature, flags, text_model)
+    if case.operation == "module_call" and case.helper == "search":
+        return (
+            "module.search",
+            None,
+            freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    if case.operation == "pattern_call" and case.helper == "fullmatch":
+        return (
+            "pattern.fullmatch",
+            pattern(),
+            freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    return None
+
+
+def _compile_search_fullmatch_workload_signature(
+    workload: Any,
+    *,
+    pattern: Callable[[], Any],
+    module_search_args: Callable[[], tuple[Any, ...]],
+    pattern_fullmatch_args: Callable[[], tuple[Any, ...]],
+    error_label: str,
+) -> tuple[Any, ...]:
+    if workload.operation == "module.compile":
+        return (
+            "module.compile",
+            pattern(),
+            (),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    if workload.operation == "module.search":
+        return (
+            "module.search",
+            None,
+            module_search_args(),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    if workload.operation == "pattern.fullmatch":
+        return (
+            "pattern.fullmatch",
+            pattern(),
+            pattern_fullmatch_args(),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    raise AssertionError(
+        f"unexpected {error_label} workload operation {workload.operation!r}"
+    )
+
+
 def _optional_group_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -179,138 +251,45 @@ def _is_optional_group_conditional_workload(workload: Any) -> bool:
 
 
 def _nested_group_correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
-    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
-    flags = case.flags or 0
-    text_model = case.text_model or "str"
-
-    if case.operation == "compile":
-        return ("module.compile", case.pattern, (), kwargs_signature, flags, text_model)
-    if case.operation == "module_call" and case.helper == "search":
-        return (
-            "module.search",
-            None,
-            freeze_signature_value(case.serialized_args()),
-            kwargs_signature,
-            flags,
-            text_model,
-        )
-    if case.operation == "pattern_call" and case.helper == "fullmatch":
-        return (
-            "pattern.fullmatch",
-            case.pattern,
-            freeze_signature_value(case.serialized_args()),
-            kwargs_signature,
-            flags,
-            text_model,
-        )
-    return None
+    return _compile_search_fullmatch_case_signature(
+        case,
+        pattern=lambda: case.pattern,
+    )
 
 
 def _nested_group_workload_signature(workload: Any) -> tuple[Any, ...]:
-    if workload.operation == "module.compile":
-        return (
-            "module.compile",
-            workload.pattern,
-            (),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    if workload.operation == "module.search":
-        return (
-            "module.search",
-            None,
-            (workload.pattern, workload.haystack),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    if workload.operation == "pattern.fullmatch":
-        return (
-            "pattern.fullmatch",
-            workload.pattern,
-            (workload.haystack,),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    raise AssertionError(
-        f"unexpected nested-group workload operation {workload.operation!r}"
+    return _compile_search_fullmatch_workload_signature(
+        workload,
+        pattern=lambda: workload.pattern,
+        module_search_args=lambda: (workload.pattern, workload.haystack),
+        pattern_fullmatch_args=lambda: (workload.haystack,),
+        error_label="nested-group benchmark",
     )
 
 
 def _counted_repeat_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
-    flags = case.flags or 0
-    text_model = case.text_model or "str"
-
-    if case.operation == "compile":
-        return (
-            "module.compile",
-            case.pattern_payload(),
-            (),
-            kwargs_signature,
-            flags,
-            text_model,
-        )
-    if case.operation == "module_call" and case.helper == "search":
-        return (
-            "module.search",
-            None,
-            freeze_signature_value(case.serialized_args()),
-            kwargs_signature,
-            flags,
-            text_model,
-        )
-    if case.operation == "pattern_call" and case.helper == "fullmatch":
-        return (
-            "pattern.fullmatch",
-            case.pattern_payload(),
-            freeze_signature_value(case.serialized_args()),
-            kwargs_signature,
-            flags,
-            text_model,
-        )
-    return None
+    return _compile_search_fullmatch_case_signature(
+        case,
+        pattern=lambda: case.pattern_payload(),
+    )
 
 
 def _counted_repeat_workload_signature(workload: Any) -> tuple[Any, ...]:
-    if workload.operation == "module.compile":
-        return (
-            "module.compile",
-            workload.pattern_payload(),
-            (),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    if workload.operation == "module.search":
-        return (
-            "module.search",
-            None,
-            freeze_signature_value(
-                [
-                    workload.pattern_payload(),
-                    workload.haystack_payload(),
-                ]
-            ),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    if workload.operation == "pattern.fullmatch":
-        return (
-            "pattern.fullmatch",
-            workload.pattern_payload(),
-            freeze_signature_value([workload.haystack_payload()]),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    raise AssertionError(
-        f"unexpected counted-repeat benchmark workload operation {workload.operation!r}"
+    return _compile_search_fullmatch_workload_signature(
+        workload,
+        pattern=lambda: workload.pattern_payload(),
+        module_search_args=lambda: freeze_signature_value(
+            [
+                workload.pattern_payload(),
+                workload.haystack_payload(),
+            ]
+        ),
+        pattern_fullmatch_args=lambda: freeze_signature_value(
+            [workload.haystack_payload()]
+        ),
+        error_label="counted-repeat benchmark",
     )
 
 
