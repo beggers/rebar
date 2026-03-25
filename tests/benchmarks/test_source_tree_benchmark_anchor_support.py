@@ -77,6 +77,17 @@ _MOVED_SOURCE_TREE_CONSTANT_NAMES = (
     "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
 )
 
+_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
+    "OPTIONAL_GROUP_MANIFEST_PATH",
+    "NESTED_GROUP_MANIFEST_PATH",
+    "EXACT_REPEAT_MANIFEST_PATH",
+    "RANGED_REPEAT_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+    "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+    "OPEN_ENDED_MANIFEST_PATH",
+)
+
 _MOVED_REPORT_CONTRACT_HELPER_NAMES = (
     "_assert_benchmark_summary_consistent",
     "_artifact_manifest_record",
@@ -999,6 +1010,72 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
     }
 
     for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
+        assert constant_name not in direct_import_names
+        assert constant_name not in local_assignment_names
+        assert constant_name not in local_name_loads
+    assert local_constant_alias_names == set()
+
+
+def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_locally(
+) -> None:
+    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    direct_import_names = {
+        alias.name
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    local_assignment_names = {
+        target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    } | {
+        node.target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.target, ast.Name)
+    }
+    local_constant_alias_names: set[str] = set()
+    for node in combined_suite_ast.body:
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if isinstance(value, ast.Name):
+            if value.id in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES:
+                local_constant_alias_names.update(targets)
+            continue
+
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id
+            in {
+                "compiled_pattern_module_helper_support",
+                "source_tree_support",
+            }
+            and value.attr in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
+        ):
+            local_constant_alias_names.update(targets)
+
+    local_name_loads = {
+        node.id
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Name)
+        and isinstance(node.ctx, ast.Load)
+        and node.id in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
+    }
+
+    for constant_name in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES:
         assert constant_name not in direct_import_names
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
