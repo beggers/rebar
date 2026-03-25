@@ -103,6 +103,12 @@ _MOVED_REPORT_CONTRACT_HELPER_NAMES = (
     "find_manifest_record",
 )
 
+_ROUTED_REPORT_CONTRACT_HELPER_NAMES = (
+    "assert_source_tree_benchmark_contract",
+    "assert_benchmark_manifest_contract",
+    "find_manifest_record",
+)
+
 _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
     "_conditional_group_exists_callable_str_slice_workloads",
     "_conditional_group_exists_callable_bytes_slice_workloads",
@@ -1144,28 +1150,52 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
     )
 
 
-def _assert_combined_suite_routes_moved_contract_surfaces_through_source_tree_support(
+def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
     routed_names: tuple[str, ...],
 ) -> None:
     combined_suite_ast = _parsed_source_tree_combined_suite_ast()
     direct_import_names = {
         alias.name
-        for node in combined_suite_ast.body
+        for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.ImportFrom)
         for alias in node.names
     }
     local_assignment_names = {
         target.id
-        for node in combined_suite_ast.body
+        for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Assign)
         for target in node.targets
         if isinstance(target, ast.Name)
     } | {
         node.target.id
-        for node in combined_suite_ast.body
+        for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.AnnAssign)
         and isinstance(node.target, ast.Name)
     }
+    local_alias_names: set[str] = set()
+    for node in ast.walk(combined_suite_ast):
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if isinstance(value, ast.Name) and value.id in routed_names:
+            local_alias_names.update(targets)
+            continue
+
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id in {"source_tree_support", "benchmark_test_support"}
+            and value.attr in routed_names
+        ):
+            local_alias_names.update(targets)
     local_name_loads = {
         node.id
         for node in ast.walk(combined_suite_ast)
@@ -1194,6 +1224,7 @@ def _assert_combined_suite_routes_moved_contract_surfaces_through_source_tree_su
         assert constant_name not in direct_import_names
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
+    assert local_alias_names == set()
     assert direct_benchmark_test_support_refs == set()
     assert source_tree_support_refs == set(routed_names)
 
@@ -1209,12 +1240,20 @@ def _assert_combined_suite_routes_moved_contract_surfaces_through_source_tree_su
             _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES,
             id="compiled-pattern-wrong-text-model",
         ),
+        pytest.param(
+            _ROUTED_REPORT_CONTRACT_HELPER_NAMES,
+            id="report-contract-helpers",
+        ),
+        pytest.param(
+            _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES,
+            id="conditional-callable-helpers",
+        ),
     ],
 )
-def test_combined_suite_routes_moved_compiled_pattern_contract_surfaces_through_source_tree_support(
+def test_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
     routed_names: tuple[str, ...],
 ) -> None:
-    _assert_combined_suite_routes_moved_contract_surfaces_through_source_tree_support(
+    _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
         routed_names
     )
 

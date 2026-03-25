@@ -1959,18 +1959,25 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 
 def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to_live_rows(
 ) -> None:
-    contract_cases = source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
-    anchor_lanes = source_tree_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
-
-    success_case = next(case for case in contract_cases if case.case_id == "success")
+    success_case = next(
+        case
+        for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == "success"
+    )
     bool_false_case = next(
-        case for case in contract_cases if case.case_id == "bool-false"
+        case
+        for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == "bool-false"
     )
     success_anchor_lane = next(
-        lane for lane in anchor_lanes if lane.case_id == success_case.case_id
+        lane
+        for lane in source_tree_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
+        if lane.case_id == success_case.case_id
     )
     bool_false_anchor_lane = next(
-        lane for lane in anchor_lanes if lane.case_id == bool_false_case.case_id
+        lane
+        for lane in source_tree_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
+        if lane.case_id == bool_false_case.case_id
     )
 
     assert success_case.expected_source_workload_ids() == (
