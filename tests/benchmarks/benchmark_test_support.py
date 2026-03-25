@@ -521,6 +521,31 @@ def _synthetic_manifest_loader(
     return _synthetic_manifest(workloads=workloads)
 
 
+def _module_pattern_case(
+    *,
+    helper: str,
+    operation: str,
+    args: tuple[object, ...],
+    kwargs: dict[str, object] | None = None,
+    pattern: str = "abc",
+    flags: int = 0,
+    text_model: str | None = "str",
+    use_compiled_pattern: bool = False,
+) -> SimpleNamespace:
+    pattern_value = pattern.encode() if text_model == "bytes" else pattern
+    return SimpleNamespace(
+        helper=helper,
+        operation=operation,
+        args=args,
+        kwargs={} if kwargs is None else kwargs,
+        pattern=pattern,
+        flags=flags,
+        text_model=text_model,
+        use_compiled_pattern=use_compiled_pattern,
+        pattern_payload=lambda: pattern_value,
+    )
+
+
 def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
     return workload.signature
 

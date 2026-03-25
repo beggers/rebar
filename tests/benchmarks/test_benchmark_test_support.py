@@ -23,6 +23,7 @@ from tests.benchmarks.benchmark_test_support import (
     REGRESSION_MATRIX_MANIFEST_PATH,
     RecordingBenchmarkCompiledPattern,
     RecordingBenchmarkModule,
+    _module_pattern_case,
     _owner_definition_manifest_path_names,
     _parsed_module_ast,
     _synthetic_manifest_loader,
@@ -133,31 +134,6 @@ def _assert_deleted_benchmark_module_stays_absent(
         if deleted_module_name in import_targets
     )
     assert offending_paths == ()
-
-
-def _module_pattern_case(
-    *,
-    helper: str,
-    operation: str,
-    args: tuple[object, ...],
-    kwargs: dict[str, object] | None = None,
-    pattern: str = "abc",
-    flags: int = 0,
-    text_model: str | None = "str",
-    use_compiled_pattern: bool = False,
-) -> object:
-    pattern_value = pattern.encode() if text_model == "bytes" else pattern
-    return SimpleNamespace(
-        helper=helper,
-        operation=operation,
-        args=args,
-        kwargs={} if kwargs is None else kwargs,
-        pattern=pattern,
-        flags=flags,
-        text_model=text_model,
-        use_compiled_pattern=use_compiled_pattern,
-        pattern_payload=lambda: pattern_value,
-    )
 
 
 def _compiled_pattern_module_helper_manifest_id(operation: str) -> str:

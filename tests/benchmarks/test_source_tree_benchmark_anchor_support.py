@@ -11,6 +11,7 @@ import pytest
 from tests.benchmarks.benchmark_test_support import (
     MODULE_BOUNDARY_MANIFEST_PATH as SHARED_MODULE_BOUNDARY_MANIFEST_PATH,
     STANDARD_BENCHMARK_DEFINITIONS,
+    _module_pattern_case,
     _owner_definition_manifest_path_names,
     _parsed_module_ast,
     _synthetic_case,
@@ -105,31 +106,6 @@ _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
     "_conditional_group_exists_quantified_callable_replacement_expectation",
     "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
 )
-
-
-def _module_pattern_case(
-    *,
-    helper: str,
-    operation: str,
-    args: tuple[object, ...],
-    kwargs: dict[str, object] | None = None,
-    pattern: str = "abc",
-    flags: int = 0,
-    text_model: str | None = "str",
-    use_compiled_pattern: bool = False,
-) -> object:
-    pattern_value = pattern.encode() if text_model == "bytes" else pattern
-    return SimpleNamespace(
-        helper=helper,
-        operation=operation,
-        args=args,
-        kwargs={} if kwargs is None else kwargs,
-        pattern=pattern,
-        flags=flags,
-        text_model=text_model,
-        use_compiled_pattern=use_compiled_pattern,
-        pattern_payload=lambda: pattern_value,
-    )
 
 
 def _compile_search_fullmatch_case(
