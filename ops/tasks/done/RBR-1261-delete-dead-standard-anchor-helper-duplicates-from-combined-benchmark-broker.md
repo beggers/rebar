@@ -1,6 +1,6 @@
 ## RBR-1261: Delete dead standard-anchor helper duplicates from combined benchmark broker
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -56,3 +56,7 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `203 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `291 tests collected`.
   - `bash -lc "! rg -n 'def (_definition_workloads_by_id|_direct_parity_case_ids_by_signature|_manual_expected_result)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because the three dead duplicate helper definitions still live in the combined suite, and that failure belongs to the exact cleanup queued here.
+
+## Completion Note
+- Deleted the dead local `_definition_workloads_by_id(...)`, `_direct_parity_case_ids_by_signature(...)`, and `_manual_expected_result(...)` helper copies from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so `tests/benchmarks/standard_benchmark_anchor_support.py` remains the single owner of those helpers.
+- Verified `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` (`203 passed`), `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_standard_benchmark_anchor_support.py` (`291 tests collected`), and `bash -lc "! rg -n 'def (_definition_workloads_by_id|_direct_parity_case_ids_by_signature|_manual_expected_result)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` (passed with no matches).
