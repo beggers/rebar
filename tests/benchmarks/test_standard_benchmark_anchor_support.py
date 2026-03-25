@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
@@ -348,6 +349,23 @@ def test_standard_support_source_no_longer_inlines_pattern_boundary_definitions(
         "pattern-boundary-wrong-text-model",
     ):
         assert f'name="{definition_name}"' not in support_source
+
+
+def test_standard_support_imports_only_pattern_boundary_owner_tuple() -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    parsed_support_source = ast.parse(support_source)
+
+    imported_names = {
+        alias.name
+        for node in ast.walk(parsed_support_source)
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.pattern_boundary_benchmark_anchor_support"
+        for alias in node.names
+    }
+
+    assert imported_names == {"PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS"}
 
 
 def test_standard_support_source_no_longer_inlines_compiled_pattern_module_helper_definitions(
