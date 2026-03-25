@@ -1021,10 +1021,6 @@ def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpe
         is support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
     )
     assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
-    )
-    assert (
         combined_suite.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
         is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
     )
@@ -1094,10 +1090,6 @@ def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpe
     )
     assert (
         "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS ="
         not in combined_source
     )
     assert (
