@@ -2245,6 +2245,53 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = (
     )
 )
 
+SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES = (
+    "_conditional_group_exists_callable_str_slice_workloads",
+    "_conditional_group_exists_callable_bytes_slice_workloads",
+    "_conditional_group_exists_quantified_callable_str_workloads",
+    "_conditional_group_exists_nested_callable_str_workloads",
+    "_conditional_group_exists_nested_callable_bytes_workloads",
+    "_conditional_group_exists_quantified_callable_bytes_workloads",
+    "_conditional_group_exists_alternation_callable_bytes_workloads",
+    "_split_workload_ids_by_text_model",
+    "_selected_workload_ids",
+    "_mirrored_bytes_workload_ids",
+    "_conditional_group_exists_template_replacement_expectation",
+    "_conditional_group_exists_callable_replacement_expectations",
+    "_conditional_group_exists_alternation_callable_replacement_expectation",
+    "_conditional_group_exists_nested_callable_replacement_expectation",
+    "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
+    "_conditional_group_exists_quantified_callable_replacement_expectation",
+    "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
+)
+
+SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES = (
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
+    "_is_collection_replacement_compiled_pattern_success_workload",
+)
+
+SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES = (
+    "_conditional_group_exists_nested_callable_correctness_case_signature",
+    "_conditional_group_exists_nested_callable_workload_signature",
+    "_conditional_group_exists_quantified_callable_correctness_case_signature",
+    "_conditional_group_exists_quantified_callable_workload_signature",
+)
+
+SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES = (
+    "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+)
+
 
 SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     _combined_slice_expectation(

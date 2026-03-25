@@ -150,50 +150,6 @@ _ROUTED_SOURCE_TREE_SUITE_ASSERTION_HELPER_NAMES = (
     "assert_zero_gap_representative_workload_subset",
 )
 
-_MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
-    "_conditional_group_exists_callable_str_slice_workloads",
-    "_conditional_group_exists_callable_bytes_slice_workloads",
-    "_conditional_group_exists_quantified_callable_str_workloads",
-    "_conditional_group_exists_nested_callable_str_workloads",
-    "_conditional_group_exists_nested_callable_bytes_workloads",
-    "_conditional_group_exists_quantified_callable_bytes_workloads",
-    "_conditional_group_exists_alternation_callable_bytes_workloads",
-    "_split_workload_ids_by_text_model",
-    "_selected_workload_ids",
-    "_mirrored_bytes_workload_ids",
-    "_conditional_group_exists_template_replacement_expectation",
-    "_conditional_group_exists_callable_replacement_expectations",
-    "_conditional_group_exists_alternation_callable_replacement_expectation",
-    "_conditional_group_exists_nested_callable_replacement_expectation",
-    "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
-    "_conditional_group_exists_quantified_callable_replacement_expectation",
-    "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
-)
-
-_ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_CONSTANT_NAMES = (
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
-    "_is_collection_replacement_compiled_pattern_success_workload",
-)
-
-_ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_FUNCTION_NAMES = (
-    "_conditional_group_exists_nested_callable_correctness_case_signature",
-    "_conditional_group_exists_nested_callable_workload_signature",
-    "_conditional_group_exists_quantified_callable_correctness_case_signature",
-    "_conditional_group_exists_quantified_callable_workload_signature",
-)
-
-
 def _top_level_name_sets(module: object) -> tuple[set[str], set[str], set[str]]:
     module_ast = benchmark_test_support._parsed_module_ast(module)
     class_names = {
@@ -1481,7 +1437,9 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
 def test_source_tree_support_module_exposes_moved_conditional_callable_helpers() -> None:
     _, local_function_names, _ = _top_level_name_sets(support)
 
-    for function_name in _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES:
+    for function_name in (
+        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES
+    ):
         assert hasattr(support, function_name)
         assert function_name in local_function_names
 
@@ -1491,10 +1449,14 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         support
     )
 
-    for constant_name in _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_CONSTANT_NAMES:
+    for constant_name in (
+        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES
+    ):
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
-    for function_name in _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_FUNCTION_NAMES:
+    for function_name in (
+        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES
+    ):
         assert hasattr(support, function_name)
         assert function_name in local_function_names
 
@@ -1677,7 +1639,9 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
         benchmark_test_support._source_tree_combined_suite_module()
     )
 
-    for function_name in _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES:
+    for function_name in (
+        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES
+    ):
         assert function_name not in local_function_names
 
 
@@ -1819,15 +1783,15 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
             id="source-tree-suite-assertion-helpers",
         ),
         pytest.param(
-            _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES,
+            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES,
             id="conditional-callable-helpers",
         ),
         pytest.param(
-            _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_CONSTANT_NAMES,
+            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES,
             id="collection-owner-routed-constants",
         ),
         pytest.param(
-            _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_FUNCTION_NAMES,
+            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES,
             id="collection-owner-routed-functions",
         ),
     ],

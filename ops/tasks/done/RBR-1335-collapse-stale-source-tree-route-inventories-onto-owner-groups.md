@@ -1,6 +1,6 @@
 ## RBR-1335: Collapse stale source-tree route inventories onto owner groups
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -51,3 +51,13 @@ Created: 2026-03-25
   - `bash -lc "! rg -n 'owner_names=\\(' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently fails because that file still contains three inline owner-name lists
   - `bash -lc "! rg -n '^(_MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES|_ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_(CONSTANT|FUNCTION)_NAMES) =' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because those duplicated routed-name tuples still exist locally
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
+
+## Completion
+- Added owner-owned routed-name groups to `tests/benchmarks/source_tree_benchmark_anchor_support.py` for the post-`RBR-1334` collection-replacement surface that the combined source-tree suite reaches through `source_tree_support`.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to consume those owner-owned groups and removed the stale local routed-name tuple inventories.
+- Updated `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` to assert the combined-suite alias routing through `source_tree_support`, removed the stale `collection_replacement_support` alias assertions for the combined suite, and eliminated inline `owner_names=(...)` lists.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`
+  - `bash -lc "! rg -n 'owner_names=\\(' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n '^(_MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES|_ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_(CONSTANT|FUNCTION)_NAMES) =' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`

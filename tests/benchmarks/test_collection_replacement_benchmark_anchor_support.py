@@ -18,6 +18,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
+from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
@@ -1073,43 +1074,19 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
 
 def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
     benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="collection_replacement_support",
-        owner_module=support,
-        owner_names=(
-            "_conditional_group_exists_nested_callable_correctness_case_signature",
-            "_conditional_group_exists_nested_callable_workload_signature",
-            "_conditional_group_exists_quantified_callable_correctness_case_signature",
-            "_conditional_group_exists_quantified_callable_workload_signature",
-            "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS",
-            "_workload_ids_for_text_model",
-            "_CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_STEMS",
-            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
-        ),
+        alias_name="source_tree_support",
+        owner_module=source_tree_support,
+        owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES
+        + source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES,
     )
 
 
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
 ) -> None:
-    from tests.benchmarks import (
-        source_tree_benchmark_anchor_support as source_tree_support,
-    )
-
     combined_suite = benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="source_tree_support",
         owner_module=source_tree_support,
-        owner_names=("SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",),
+        owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
     )
     expectations_by_slice_id = {
         expectation.slice_id: expectation
@@ -1132,13 +1109,11 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
 
 def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
     benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="collection_replacement_support",
-        owner_module=support,
-        owner_names=(
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
-        ),
+        alias_name="source_tree_support",
+        owner_module=source_tree_support,
+        owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES[
+            :3
+        ],
     )
 
 
