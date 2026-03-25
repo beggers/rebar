@@ -21,9 +21,6 @@ from tests.benchmarks.benchmark_test_support import (
 )
 from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import (
-    compiled_pattern_module_compile_benchmark_support as compiled_pattern_compile_support,
-)
-from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
 )
 from tests.benchmarks.benchmark_test_support import (
@@ -833,14 +830,6 @@ def test_compile_search_fullmatch_workload_signature_rejects_unsupported_operati
                 "_workload_case_pairs_workload_ids",
             ),
             id="collection-replacement",
-        ),
-        pytest.param(
-            compiled_pattern_compile_support,
-            (
-                "_definition_anchor_expectations",
-                "_workload_case_pair_anchor_expectations",
-            ),
-            id="compiled-pattern-module-compile",
         ),
     ),
 )

@@ -1,6 +1,6 @@
 ## RBR-1310: Delete compiled-pattern `module.compile` support layer
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -60,3 +60,10 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile or former_owner_modules_share_source_tree_helpers_without_local_duplicates or non_owner_benchmark_support_modules_import_shared_source_tree_contract_helpers_from_support'` passed with `105 passed, 372 deselected in 1.81s`;
   - `bash -lc "test ! -e tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py && ! rg -n 'compiled_pattern_module_compile_benchmark_support' tests/benchmarks -g '*.py'"` currently fails because the support module and its surviving references still exist, and that failure belongs exactly to this cleanup.
+
+## Completion
+- Moved the compiled-pattern `module.compile` standard-definition export, owner specs, contract cases, anchor lanes, and helper functions into `tests/benchmarks/benchmark_test_support.py`, updated the surviving benchmark suites to import that shared support surface directly, trimmed the deleted-former-owner helper-sharing assertion in `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`, and deleted `tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile or former_owner_modules_share_source_tree_helpers_without_local_duplicates or non_owner_benchmark_support_modules_import_shared_source_tree_contract_helpers_from_support'` -> `103 passed, 372 deselected in 1.90s`
+  - `bash -lc "test ! -e tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py && ! rg -n 'compiled_pattern_module_compile_benchmark_support' tests/benchmarks -g '*.py'"` -> passed
+  - `git diff --name-status -- tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py` -> `D	tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py`

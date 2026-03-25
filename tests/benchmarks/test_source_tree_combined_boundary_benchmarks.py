@@ -20,7 +20,13 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
+    MODULE_BOUNDARY_MANIFEST_PATH as COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH,
     RecordingBenchmarkModule,
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+    _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+    _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
@@ -51,9 +57,6 @@ from tests.benchmarks.benchmark_test_support import (
     selected_manifest_workloads,
     StandardBenchmarkAnchorContractDefinition,
     unanchored_workload_ids,
-)
-from tests.benchmarks import (
-    compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
 )
 from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
@@ -128,10 +131,6 @@ from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _pattern_boundary_wrong_text_model_workload_signature,
     _pattern_verbose_regression_correctness_case_signature,
     _pattern_verbose_regression_workload_signature,
-)
-from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
-    _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
-    _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS, SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS, SOURCE_TREE_SCORECARD_EXPECTATIONS, SourceTreeBenchmarkCommonCase, SourceTreeCombinedCase, SourceTreeCombinedFullyMeasuredManifestExpectation, SourceTreeCombinedManifestExpectationDefinition, SourceTreeCombinedManifestShapeExpectation, SourceTreeCombinedPatternGroupExpectation, SourceTreeCombinedSliceExpectation
 from tests.benchmarks.source_tree_benchmark_anchor_support import SourceTreeDeferredExpectation, SourceTreeManifestExpectation, SourceTreeScorecardCase, _combined_fully_measured_manifest_expectation, _combined_manifest_definition, _is_non_alternation_counted_repeat_workload, _counted_repeat_correctness_case_signature, _counted_repeat_workload_signature, _grouped_alternation_correctness_case_signature, _grouped_alternation_replacement_correctness_case_signature
@@ -2039,7 +2038,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 ) -> None:
     success_case = next(
         case
-        for case in compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "success"
     )
     success_source_workload = success_case.source_workloads()[0]
@@ -2050,7 +2049,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 
     keyword_case = next(
         case
-        for case in compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "bool-false"
     )
     keyword_source_workload = keyword_case.source_workloads()[0]
@@ -2070,12 +2069,8 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 
 def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to_live_rows(
 ) -> None:
-    contract_cases = (
-        compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
-    )
-    anchor_lanes = (
-        compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
-    )
+    contract_cases = _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    anchor_lanes = _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
 
     success_case = next(case for case in contract_cases if case.case_id == "success")
     bool_false_case = next(
@@ -2133,8 +2128,8 @@ def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to
 @pytest.mark.parametrize(
     "owner_spec",
     (
-        *compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-        *compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        *_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+        *_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
     ),
     ids=lambda owner_spec: owner_spec.anchor_definition_name,
 )
@@ -2142,21 +2137,19 @@ def test_compiled_pattern_module_compile_owner_specs_keep_module_boundary_rows_m
     owner_spec: object,
 ) -> None:
     manifest_workload_count = len(
-        selected_manifest_workloads(
-            compiled_pattern_module_compile_support.MODULE_BOUNDARY_MANIFEST_PATH
-        )
+        selected_manifest_workloads(COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH)
     )
     expected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in selected_manifest_workloads(
-            compiled_pattern_module_compile_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH,
             include_workload=owner_spec.includes_workload,
         )
     )
 
     assert expected_measured_workload_ids == owner_spec.expected_anchor_workload_ids()
     assert_zero_gap_manifest_workloads_measured(
-        manifest_path=compiled_pattern_module_compile_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        manifest_path=COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH,
         manifest_id="module-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
         expected_measured_workload_count=manifest_workload_count,
@@ -2166,7 +2159,7 @@ def test_compiled_pattern_module_compile_owner_specs_keep_module_boundary_rows_m
 
 @pytest.mark.parametrize(
     "anchor_lane",
-    compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
+    _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
     ids=lambda anchor_lane: anchor_lane.case_id,
 )
 def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_published_correctness_cases(
@@ -2213,7 +2206,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
         pytest.param(case_group, source_workload, id=source_workload.workload_id)
         for case_group in (
             owner_spec.contract_case()
-            for owner_spec in compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
+            for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
         )
         for source_workload in case_group.source_workloads()
     ),
@@ -2254,7 +2247,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -2294,7 +2287,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_argument_before_timing(
     contract_case: object,

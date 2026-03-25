@@ -17,9 +17,6 @@ from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
 from tests.benchmarks import (
-    compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
-)
-from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
 )
 from tests.benchmarks import (
@@ -949,7 +946,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
             id="module-workflow-keyword-after-collection-replacement",
         ),
         pytest.param(
-            compiled_pattern_module_compile_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-keyword-errors",
             "module-workflow-compiled-pattern-literal-success",
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
@@ -1015,23 +1012,23 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_supp
     expected_definitions = tuple(
         owner_spec.anchor_definition()
         for owner_spec in (
-            *compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-            *compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+            *support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
         )
     )
 
     first_export = getattr(
-        compiled_pattern_module_compile_support,
+        support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
     second_export = getattr(
-        compiled_pattern_module_compile_support,
+        support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
 
     assert first_export is second_export
     assert (
-        compiled_pattern_module_compile_support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
+        support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
         == first_export
     )
     assert first_export == expected_definitions
@@ -1047,19 +1044,19 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_supp
         "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
     )
     assert (
-        vars(compiled_pattern_module_compile_support)[
+        vars(support)[
             "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
         ]
         is first_export
     )
 
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        compiled_pattern_module_compile_support
+        support
     )
     assert "_standard_benchmark_anchor_contract_definition" not in definition_names
 
     builder_definition = _module_function_definition(
-        compiled_pattern_module_compile_support,
+        support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
     assert any(
@@ -1083,7 +1080,7 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_supp
     ):
         anchor_definition = _class_method_definition(
             _module_class_definition(
-                compiled_pattern_module_compile_support,
+                support,
                 class_name,
             ),
             "anchor_definition",
@@ -1434,16 +1431,6 @@ def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_
             collection_replacement_support,
             frozenset(
                 {
-                    "_SourceTreeContractBuilderSpec",
-                    "_contract_source_workloads",
-                }
-            ),
-        ),
-        (
-            compiled_pattern_module_compile_support,
-            frozenset(
-                {
-                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
                     "_SourceTreeContractBuilderSpec",
                     "_contract_source_workloads",
                 }

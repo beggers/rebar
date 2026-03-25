@@ -15,19 +15,17 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks.benchmark_test_support import (
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
     _SourceTreeContractBuilderSpec,
     _expected_exception_instance,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
     _write_test_manifest,
+    CompiledPatternModuleCompileContractCase,
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     selected_manifest_workloads,
-)
-from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-    CompiledPatternModuleCompileContractCase,
 )
 from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
