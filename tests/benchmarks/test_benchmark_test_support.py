@@ -1943,6 +1943,295 @@ def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper
     assert "assert_manifest_workload_contracts" in definition_names
 
 
+class _RecordingSubTestContext:
+    def __enter__(self) -> None:
+        return None
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb,
+    ) -> bool:
+        return False
+
+
+class _RecordingSubTestCase:
+    __test__ = False
+
+    def __init__(self) -> None:
+        self.subtests: list[dict[str, object]] = []
+
+    def subTest(self, **params):
+        self.subtests.append(params)
+        return _RecordingSubTestContext()
+
+
+class _NoSubTestCase:
+    __test__ = False
+
+    def subTest(self, **params):
+        del params
+        raise AssertionError("subTest should not be used when subtest_label is omitted")
+
+
+def test_assert_manifest_workload_contracts_delegates_without_subtests(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = SimpleNamespace(manifest_id="synthetic-manifest")
+    scorecard = {"synthetic": "scorecard"}
+    testcase = _NoSubTestCase()
+    record_by_id = {
+        "first-workload": {"workload_id": "first-workload"},
+        "second-workload": {"workload_id": "second-workload"},
+    }
+    document_by_id = {
+        "first-workload": object(),
+        "second-workload": object(),
+    }
+    workload_lookup_calls: list[str] = []
+    document_lookup_calls: list[str] = []
+    delegated_calls: list[tuple[object, dict[str, object], str, object, str]] = []
+
+    def _find_workload_record(
+        observed_scorecard: dict[str, object],
+        workload_id: str,
+    ) -> dict[str, object]:
+        assert observed_scorecard is scorecard
+        workload_lookup_calls.append(workload_id)
+        return record_by_id[workload_id]
+
+    def _find_workload_document(
+        observed_manifest: object,
+        workload_id: str,
+    ) -> object:
+        assert observed_manifest is manifest
+        document_lookup_calls.append(workload_id)
+        return document_by_id[workload_id]
+
+    def _assert_benchmark_workload_contract(
+        observed_testcase: object,
+        workload_record: dict[str, object],
+        *,
+        manifest_id: str,
+        workload_document: object,
+        expected_status: str,
+    ) -> None:
+        delegated_calls.append(
+            (
+                observed_testcase,
+                workload_record,
+                manifest_id,
+                workload_document,
+                expected_status,
+            )
+        )
+
+    monkeypatch.setattr(support, "find_workload_record", _find_workload_record)
+    monkeypatch.setattr(support, "find_workload_document", _find_workload_document)
+    monkeypatch.setattr(
+        support,
+        "assert_benchmark_workload_contract",
+        _assert_benchmark_workload_contract,
+    )
+
+    support.assert_manifest_workload_contracts(
+        testcase,
+        manifest,
+        scorecard,
+        (
+            ("first-workload", "measured"),
+            ("second-workload", "known-gap"),
+        ),
+    )
+
+    assert workload_lookup_calls == ["first-workload", "second-workload"]
+    assert document_lookup_calls == ["first-workload", "second-workload"]
+    assert delegated_calls == [
+        (
+            testcase,
+            record_by_id["first-workload"],
+            "synthetic-manifest",
+            document_by_id["first-workload"],
+            "measured",
+        ),
+        (
+            testcase,
+            record_by_id["second-workload"],
+            "synthetic-manifest",
+            document_by_id["second-workload"],
+            "known-gap",
+        ),
+    ]
+
+
+def test_assert_manifest_workload_contracts_wraps_each_expectation_in_named_subtests(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = SimpleNamespace(manifest_id="synthetic-manifest")
+    testcase = _RecordingSubTestCase()
+    delegated_workload_ids: list[str] = []
+
+    monkeypatch.setattr(
+        support,
+        "find_workload_record",
+        lambda scorecard, workload_id: {"workload_id": workload_id},
+    )
+    monkeypatch.setattr(
+        support,
+        "find_workload_document",
+        lambda benchmark_manifest, workload_id: workload_id,
+    )
+    monkeypatch.setattr(
+        support,
+        "assert_benchmark_workload_contract",
+        lambda observed_testcase, workload_record, **kwargs: delegated_workload_ids.append(
+            workload_record["workload_id"]
+        ),
+    )
+
+    support.assert_manifest_workload_contracts(
+        testcase,
+        manifest,
+        {"synthetic": "scorecard"},
+        (
+            ("first-workload", "measured"),
+            ("second-workload", "known-gap"),
+        ),
+        subtest_label="workload_id",
+    )
+
+    assert testcase.subtests == [
+        {"workload_id": "first-workload"},
+        {"workload_id": "second-workload"},
+    ]
+    assert delegated_workload_ids == ["first-workload", "second-workload"]
+
+
+@pytest.mark.parametrize(
+    (
+        "expected_measured_workload_ids",
+        "expected_total_workload_count",
+        "expected_subtest_label",
+    ),
+    (
+        pytest.param(
+            ("only-workload",),
+            None,
+            None,
+            id="single-measured-workload-without-total-count",
+        ),
+        pytest.param(
+            ("first-workload", "second-workload"),
+            None,
+            "workload_id",
+            id="multiple-measured-workloads-without-total-count",
+        ),
+        pytest.param(
+            ("first-workload", "second-workload"),
+            2,
+            "measured_workload_id",
+            id="explicit-total-count",
+        ),
+    ),
+)
+def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contract_helper(
+    monkeypatch: pytest.MonkeyPatch,
+    expected_measured_workload_ids: tuple[str, ...],
+    expected_total_workload_count: int | None,
+    expected_subtest_label: str | None,
+) -> None:
+    import tests.conftest as shared_conftest
+
+    manifest_path = pathlib.Path("synthetic-boundary.py")
+    resolved_manifest_path = pathlib.Path("/tmp/synthetic-boundary.py")
+    manifest = SimpleNamespace(manifest_id="synthetic-boundary")
+    captured_call: dict[str, object] = {}
+    measured_workload_count = len(expected_measured_workload_ids)
+    scorecard = {
+        "manifests": {
+            "synthetic-boundary": {
+                "known_gap_count": 0,
+                "measured_workloads": measured_workload_count,
+                "workload_count": (
+                    measured_workload_count
+                    if expected_total_workload_count is None
+                    else expected_total_workload_count
+                ),
+            }
+        }
+    }
+
+    monkeypatch.setattr(
+        support,
+        "_resolve_live_manifest_path",
+        lambda path: resolved_manifest_path,
+    )
+    monkeypatch.setattr(support, "load_manifest", lambda path: manifest)
+
+    def _run_harness_scorecard(
+        module_name: str,
+        args: list[str],
+        report_name: str,
+    ) -> tuple[None, dict[str, object]]:
+        captured_call.update(
+            {
+                "module_name": module_name,
+                "args": args,
+                "report_name": report_name,
+            }
+        )
+        return (None, scorecard)
+
+    def _assert_manifest_workload_contracts(
+        testcase: object,
+        observed_manifest: object,
+        observed_scorecard: dict[str, object],
+        workload_expectations,
+        *,
+        subtest_label: str | None = None,
+    ) -> None:
+        del testcase
+        captured_call.update(
+            {
+                "observed_manifest": observed_manifest,
+                "observed_scorecard": observed_scorecard,
+                "workload_expectations": tuple(workload_expectations),
+                "subtest_label": subtest_label,
+            }
+        )
+
+    monkeypatch.setattr(
+        shared_conftest,
+        "run_harness_scorecard",
+        _run_harness_scorecard,
+    )
+    monkeypatch.setattr(
+        support,
+        "assert_manifest_workload_contracts",
+        _assert_manifest_workload_contracts,
+    )
+
+    support.assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="synthetic-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=measured_workload_count,
+        expected_total_workload_count=expected_total_workload_count,
+    )
+
+    assert captured_call["module_name"] == "rebar_harness.benchmarks"
+    assert captured_call["args"] == ["--manifest", str(resolved_manifest_path)]
+    assert captured_call["report_name"] == "benchmarks.json"
+    assert captured_call["observed_manifest"] is manifest
+    assert captured_call["observed_scorecard"] is scorecard
+    assert captured_call["workload_expectations"] == tuple(
+        (workload_id, "measured")
+        for workload_id in expected_measured_workload_ids
+    )
+    assert captured_call["subtest_label"] == expected_subtest_label
+
+
 def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_surface(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
