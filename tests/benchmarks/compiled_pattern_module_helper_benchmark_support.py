@@ -10,8 +10,10 @@ import pytest
 from rebar_harness.benchmarks import BENCHMARK_WORKLOADS_ROOT
 from rebar_harness.benchmarks import Workload
 from tests.benchmarks.benchmark_test_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     StandardBenchmarkAnchorContractDefinition,
     _SourceTreeContractBuilderSpec,
+    compiled_pattern_contract_expected_build_calls,
     freeze_signature_value,
     selected_manifest_workloads,
 )
@@ -24,10 +26,6 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
-)
-from tests.benchmarks.source_tree_contract_benchmark_support import (
-    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
-    compiled_pattern_contract_expected_build_calls,
 )
 from tests.python.fixture_parity_support import case_pattern
 

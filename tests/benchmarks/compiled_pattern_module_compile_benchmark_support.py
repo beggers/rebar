@@ -14,16 +14,14 @@ from rebar_harness.benchmarks import (
     Workload,
 )
 from tests.benchmarks.benchmark_test_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     StandardBenchmarkAnchorContractDefinition,
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
-    published_case_ids_by_signature,
-)
-from tests.benchmarks.source_tree_contract_benchmark_support import (
-    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     compiled_pattern_contract_expected_build_calls,
+    published_case_ids_by_signature,
 )
 from tests.python.fixture_parity_support import case_pattern
 

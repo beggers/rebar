@@ -1,8 +1,9 @@
 # RBR-1296: Delete source-tree contract wrapper module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
+Completed: 2026-03-25
 
 ## Goal
 - Delete the redundant `tests/benchmarks/source_tree_contract_benchmark_support.py` wrapper by folding its tiny remaining surface onto the existing `tests/benchmarks/benchmark_test_support.py` owner, so the benchmark-support layer stops carrying a dedicated broker module whose main job is re-exporting helpers that already live elsewhere.
@@ -71,3 +72,6 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `222 passed in 2.49s`;
   - `bash -lc "test ! -e tests/benchmarks/source_tree_contract_benchmark_support.py && test ! -e tests/benchmarks/test_source_tree_contract_benchmark_support.py && ! rg -n 'source_tree_contract_benchmark_support' tests/benchmarks"` currently fails because the wrapper module, its dedicated test, and live imports are still present; that failure belongs to the exact cleanup this task is queuing; and
   - a broader suite probe that included `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` is not suitable as acceptance in this checkout because it currently has an unrelated failing assertion about quantified conditional callable slice identity.
+- Completion note:
+  - Folded the source-tree contract builder surface plus compiled-pattern contract helpers into `tests/benchmarks/benchmark_test_support.py`, rewired the remaining benchmark-support imports to that owner module, deleted the wrapper module and its wrapper-only identity test, and moved the pinned excluded-field/build-call assertions onto `tests/benchmarks/test_benchmark_test_support.py`.
+  - Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` (`226 passed in 2.56s`) and `bash -lc "test ! -e tests/benchmarks/source_tree_contract_benchmark_support.py && test ! -e tests/benchmarks/test_source_tree_contract_benchmark_support.py && ! rg -n 'source_tree_contract_benchmark_support' tests/benchmarks"`.
