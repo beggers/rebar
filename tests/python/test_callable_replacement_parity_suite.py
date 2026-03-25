@@ -1785,41 +1785,28 @@ PENDING_REBAR_MODULE_CASES = tuple(
 PENDING_REBAR_PATTERN_CASES = tuple(
     case for case in BYTES_PATTERN_CASES if _is_pending_rebar_callable_case(case)
 )
-CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS = (
-    "quantified",
-    "broader-range",
-    "open-ended",
+# Keep this frontier explicit so newly published callable manifests do not widen
+# wrong-return-type coverage just because their ids happen to share a keyword.
+CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS = frozenset(
+    {
+        "quantified-nested-group-callable-replacement-workflows",
+        "quantified-nested-group-alternation-callable-replacement-workflows",
+        "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
+        "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
+    }
 )
-
-
-def _manifest_matches_return_type_error_frontier(manifest_id: str) -> bool:
-    return any(
-        keyword in manifest_id
-        for keyword in CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS
-    )
-
-
-def _callable_return_type_error_expected_manifest_ids() -> frozenset[str]:
-    spec_manifest_ids = frozenset(
-        spec.manifest_id
-        for spec in CALLABLE_MANIFEST_SPECS
-        if _manifest_matches_return_type_error_frontier(spec.manifest_id)
-    )
-    default_manifest_ids = frozenset(
-        bundle.manifest.manifest_id
-        for bundle in FIXTURE_BUNDLES
-        if bundle.manifest.manifest_id not in CALLABLE_MANIFEST_SPECS_BY_ID
-        and _manifest_matches_return_type_error_frontier(
-            bundle.manifest.manifest_id
-        )
-    )
-    return spec_manifest_ids | default_manifest_ids
 
 
 MODULE_RETURN_TYPE_ERROR_CASES = tuple(
     case
     for case in MODULE_CASES
-    if _manifest_matches_return_type_error_frontier(case.manifest_id)
+    if case.manifest_id in CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
 )
 MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = frozenset(
     {
@@ -1836,7 +1823,7 @@ MODULE_RETURN_TYPE_ERROR_PARITY_CASES = tuple(
 PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     case
     for case in PATTERN_CASES
-    if _manifest_matches_return_type_error_frontier(case.manifest_id)
+    if case.manifest_id in CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
 )
 
 
@@ -3198,7 +3185,7 @@ def test_module_callable_replacement_return_type_error_cases_cover_quantified_ca
     }
     assert {
         case.manifest_id for case in MODULE_RETURN_TYPE_ERROR_CASES
-    } == _callable_return_type_error_expected_manifest_ids()
+    } == CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
 
 
 def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
@@ -3210,7 +3197,7 @@ def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_c
     }
     assert {
         case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_CASES
-    } == _callable_return_type_error_expected_manifest_ids()
+    } == CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
 
 
 def test_module_callable_replacement_wrong_return_type_parity_cases_cover_active_slice(
@@ -3220,6 +3207,9 @@ def test_module_callable_replacement_wrong_return_type_parity_cases_cover_active
         "bytes",
         "str",
     }
+    assert MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS <= (
+        CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
+    )
     assert {
         case.manifest_id for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
     } == MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
