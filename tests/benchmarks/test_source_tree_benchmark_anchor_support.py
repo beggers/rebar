@@ -170,6 +170,29 @@ _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
     "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
 )
 
+_ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_CONSTANT_NAMES = (
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
+    "_is_collection_replacement_compiled_pattern_success_workload",
+)
+
+_ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_FUNCTION_NAMES = (
+    "_conditional_group_exists_nested_callable_correctness_case_signature",
+    "_conditional_group_exists_nested_callable_workload_signature",
+    "_conditional_group_exists_quantified_callable_correctness_case_signature",
+    "_conditional_group_exists_quantified_callable_workload_signature",
+)
+
 
 def _compile_search_fullmatch_case(
     *,
@@ -1449,6 +1472,29 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
         assert function_name in local_function_names
 
 
+def test_source_tree_support_module_exposes_routed_collection_owner_surface() -> None:
+    module_ast = benchmark_test_support._parsed_module_ast(support)
+    local_function_names = {
+        node.name
+        for node in module_ast.body
+        if isinstance(node, ast.FunctionDef)
+    }
+    local_assignment_names = {
+        target.id
+        for node in module_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+
+    for constant_name in _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_CONSTANT_NAMES:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+    for function_name in _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_FUNCTION_NAMES:
+        assert hasattr(support, function_name)
+        assert function_name in local_function_names
+
+
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
     local_class_names = {
         node.name
@@ -1680,6 +1726,28 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
     )
 
 
+def test_combined_suite_no_longer_imports_or_reads_collection_owner_surface_directly(
+) -> None:
+    combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
+    direct_collection_imports = [
+        alias
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
+        for alias in node.names
+        if alias.name == "collection_replacement_benchmark_anchor_support"
+    ]
+    direct_collection_attribute_reads = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "collection_replacement_support"
+    }
+
+    assert direct_collection_imports == []
+    assert direct_collection_attribute_reads == set()
+
+
 @pytest.mark.parametrize(
     (
         "module_source",
@@ -1776,6 +1844,14 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
         pytest.param(
             _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES,
             id="conditional-callable-helpers",
+        ),
+        pytest.param(
+            _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_CONSTANT_NAMES,
+            id="collection-owner-routed-constants",
+        ),
+        pytest.param(
+            _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_FUNCTION_NAMES,
+            id="collection-owner-routed-functions",
         ),
     ],
 )

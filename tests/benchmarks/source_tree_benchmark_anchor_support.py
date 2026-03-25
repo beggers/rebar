@@ -31,6 +31,9 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     callable_match_group_signature,
+    case_pattern,
+    case_replacement_argument,
+    case_text_argument,
 )
 
 _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
@@ -4722,6 +4725,188 @@ def _conditional_group_exists_quantified_callable_bytes_replacement_expectation(
     )
 
 
+CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+)
+CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS = (
+    collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+)
+
+
+def _conditional_group_exists_nested_callable_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.manifest_id != "conditional-group-exists-callable-replacement-workflows":
+        return None
+    if "nested" not in case.categories:
+        return None
+    if any(category in case.categories for category in ("quantified", "alternation")):
+        return None
+    if case.operation not in {"module_call", "pattern_call"}:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    if case.kwargs or case.use_compiled_pattern:
+        return None
+    replacement_signature = callable_match_group_signature(
+        case_replacement_argument(case)
+    )
+    if replacement_signature is None:
+        return None
+    count_index = 3 if case.operation == "module_call" else 2
+    args = [case_text_argument(case)]
+    if len(case.args) > count_index:
+        args.append(case.args[count_index])
+    operation_prefix = "module" if case.operation == "module_call" else "pattern"
+    return (
+        f"{operation_prefix}.{case.helper}",
+        case_pattern(case),
+        replacement_signature,
+        benchmark_test_support.freeze_signature_value(args),
+        "exception" in case.categories,
+        "no-match" in case.categories,
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _conditional_group_exists_nested_callable_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    expected_workload_ids = (
+        CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+        + CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    if workload.workload_id not in expected_workload_ids:
+        raise AssertionError(
+            "unexpected conditional nested callable workload "
+            f"{workload.workload_id!r}"
+        )
+    replacement_signature = callable_match_group_signature(
+        workload.replacement_payload()
+    )
+    if replacement_signature is None:
+        raise AssertionError(
+            "expected callable_match_group replacement for nested "
+            f"conditional workload {workload.workload_id!r}"
+        )
+    args: list[object] = [workload.haystack_payload()]
+    if workload.count != 0:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        replacement_signature,
+        benchmark_test_support.freeze_signature_value(args),
+        workload.expected_exception is not None,
+        "no-match" in workload.categories,
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _conditional_group_exists_quantified_callable_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.manifest_id != "conditional-group-exists-callable-replacement-workflows":
+        return None
+    if "quantified" not in case.categories:
+        return None
+    if any(category in case.categories for category in ("alternation", "nested")):
+        return None
+    if case.operation not in {"module_call", "pattern_call"}:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    if case.kwargs or case.use_compiled_pattern:
+        return None
+    replacement_signature = callable_match_group_signature(
+        case_replacement_argument(case)
+    )
+    if replacement_signature is None:
+        return None
+    count_index = 3 if case.operation == "module_call" else 2
+    args = [case_text_argument(case)]
+    if len(case.args) > count_index:
+        count = case.args[count_index]
+        if count is None:
+            pass
+        elif type(count) is int:
+            args.append(count)
+        else:
+            return None
+    operation_prefix = "module" if case.operation == "module_call" else "pattern"
+    return (
+        f"{operation_prefix}.{case.helper}",
+        case_pattern(case),
+        replacement_signature,
+        benchmark_test_support.freeze_signature_value(args),
+        "exception" in case.categories,
+        "no-match" in case.categories,
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _conditional_group_exists_quantified_callable_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    expected_workload_ids = (
+        CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        + CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    if workload.workload_id not in expected_workload_ids:
+        raise AssertionError(
+            "unexpected conditional quantified callable workload "
+            f"{workload.workload_id!r}"
+        )
+    replacement_signature = callable_match_group_signature(
+        workload.replacement_payload()
+    )
+    if replacement_signature is None:
+        raise AssertionError(
+            "expected callable_match_group replacement for quantified "
+            f"conditional workload {workload.workload_id!r}"
+        )
+    args = [workload.haystack_payload()]
+    if workload.count:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        replacement_signature,
+        benchmark_test_support.freeze_signature_value(args),
+        workload.expected_exception is not None,
+        "no-match" in workload.categories,
+        workload.flags,
+        workload.text_model,
+    )
+
+
 def _workload_matches_source_tree_combined_slice(
     workload: Workload,
     expectation: SourceTreeCombinedSliceExpectation,
@@ -5060,6 +5245,9 @@ _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload = (
 )
 _is_module_workflow_compiled_pattern_verbose_bytes_success_workload = (
     benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload
+)
+_is_collection_replacement_compiled_pattern_success_workload = (
+    benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
 )
 _assert_compiled_pattern_module_success_payload_round_trip = (
     benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip

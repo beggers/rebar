@@ -1,6 +1,6 @@
 ## RBR-1334: Route remaining collection-owner surface through source-tree owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -48,4 +48,12 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `349 passed, 1821 subtests passed in 13.11s`
   - `bash -lc "! rg -n 'collection_replacement_support\\.' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because the suite still reads `collection_replacement_support.` directly, and that failure belongs exactly to this cleanup
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+
+## Completion
+- Routed the remaining collection-owner workload-id tuples, nested/quantified callable signature helpers, and compiled-pattern success workload filter through `tests/benchmarks/source_tree_benchmark_anchor_support.py`, then updated the combined suite to consume only `source_tree_support`.
+- Added owner-surface coverage plus an AST guard that fails if `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` reintroduces a direct `collection_replacement_support` import or `collection_replacement_support.` attribute access.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `353 passed, 1821 subtests passed in 13.23s`
+  - `bash -lc "! rg -n 'collection_replacement_support\\.' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
