@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import ast
-from collections.abc import Callable
-from dataclasses import dataclass
 from functools import partial
 import pathlib
 from typing import Any
@@ -47,24 +45,6 @@ def _allow_all_workloads(_: Any) -> bool:
 
 def _definition_names(definitions: tuple[Any, ...]) -> tuple[str, ...]:
     return tuple(definition.name for definition in definitions)
-
-
-@dataclass(frozen=True, slots=True)
-class _SyntheticStandardBenchmarkDefinition:
-    manifest_paths: tuple[pathlib.Path, ...]
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
-    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
-    workload_signature: Callable[[Any], tuple[Any, ...]]
-    include_workload: Callable[[Any], bool]
-    callback_anchor_workload_ids: frozenset[str] = frozenset()
-    expected_legacy_workload_ids: frozenset[str] = frozenset()
-    expected_special_unanchored_workload_ids: tuple[str, ...] = ()
-
-    def includes_workload(self, workload: Any) -> bool:
-        return (
-            workload.workload_id not in self.expected_special_unanchored_workload_ids
-            and self.include_workload(workload)
-        )
 
 
 @pytest.mark.parametrize(
@@ -182,7 +162,8 @@ def test_standard_benchmark_anchor_contract_definition_filters_excluded_workload
 def test_expected_workload_ids_filter_to_manifest_name() -> None:
     first_manifest = pathlib.Path("first_boundary.py")
     second_manifest = pathlib.Path("second_boundary.py")
-    definition = _SyntheticStandardBenchmarkDefinition(
+    definition = support.StandardBenchmarkAnchorContractDefinition(
+        name="synthetic",
         manifest_paths=(first_manifest, second_manifest),
         expected_anchor_case_ids={
             ("first_boundary.py", "first-a"): ("case-1",),
@@ -205,7 +186,8 @@ def test_expected_workload_ids_filter_to_manifest_name() -> None:
 
 def test_callback_and_legacy_anchor_subsets_select_expected_workloads() -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
-    definition = _SyntheticStandardBenchmarkDefinition(
+    definition = support.StandardBenchmarkAnchorContractDefinition(
+        name="synthetic",
         manifest_paths=(manifest_path,),
         expected_anchor_case_ids={
             ("synthetic_boundary.py", "callback"): ("case-callback",),
@@ -238,7 +220,8 @@ def test_anchor_helpers_resolve_anchored_and_unanchored_workloads(
         _synthetic_workload("excluded", ("shared",), include=False),
         _synthetic_workload("special-unanchored", ("missing",)),
     )
-    definition = _SyntheticStandardBenchmarkDefinition(
+    definition = support.StandardBenchmarkAnchorContractDefinition(
+        name="synthetic",
         manifest_paths=(manifest_path,),
         expected_anchor_case_ids={
             ("synthetic_boundary.py", "anchored"): ("case-1",),
@@ -282,7 +265,8 @@ def test_expected_anchored_pairs_materialize_matching_workload_and_case_objects(
     manifest_path = pathlib.Path("synthetic_boundary.py")
     workload = _synthetic_workload("anchored", ("shared",))
     case = _synthetic_case("case-1", ("shared",))
-    definition = _SyntheticStandardBenchmarkDefinition(
+    definition = support.StandardBenchmarkAnchorContractDefinition(
+        name="synthetic",
         manifest_paths=(manifest_path,),
         expected_anchor_case_ids={
             ("synthetic_boundary.py", "anchored"): ("case-1",),
