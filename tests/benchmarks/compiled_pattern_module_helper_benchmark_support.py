@@ -13,17 +13,15 @@ from tests.benchmarks.benchmark_test_support import (
     COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     StandardBenchmarkAnchorContractDefinition,
     _SourceTreeContractBuilderSpec,
+    _collection_replacement_keyword_parameter_name,
+    _collection_replacement_positional_keyword_field,
     assert_benchmark_workload_matches_expected_result,
     compiled_pattern_contract_expected_build_calls,
     freeze_signature_value,
-    run_benchmark_workload_with_cpython,
-    selected_manifest_workloads,
-)
-from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    _collection_replacement_keyword_parameter_name,
-    _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
+    run_benchmark_workload_with_cpython,
+    selected_manifest_workloads,
 )
 from tests.python.fixture_parity_support import case_pattern
 

@@ -1036,6 +1036,79 @@ def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_co
     )
 
 
+def test_benchmark_test_support_owns_shared_collection_replacement_classifier_helpers(
+) -> None:
+    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert {
+        "_is_encoded_indexlike_payload",
+        "_collection_replacement_keyword_parameter_name",
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
+    }.issubset(definition_names)
+
+
+@pytest.mark.parametrize(
+    ("module", "expected_imported_names"),
+    (
+        (
+            compiled_pattern_module_helper_support,
+            frozenset(
+                {
+                    "_collection_replacement_keyword_parameter_name",
+                    "_collection_replacement_positional_keyword_field",
+                    "_is_collection_replacement_keyword_workload",
+                    "_is_collection_replacement_wrong_text_model_workload",
+                }
+            ),
+        ),
+        (
+            pattern_boundary_support,
+            frozenset({"_is_encoded_indexlike_payload"}),
+        ),
+    ),
+)
+def test_non_owner_benchmark_support_modules_import_shared_collection_replacement_classifiers_from_support(
+    module: object,
+    expected_imported_names: frozenset[str],
+) -> None:
+    assert expected_imported_names.issubset(
+        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    )
+
+
+def test_shared_collection_replacement_classifier_contract_tests_import_from_support(
+) -> None:
+    keyword_contract_suite = importlib.import_module(
+        "tests.benchmarks.test_collection_replacement_keyword_contract_benchmark_support"
+    )
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+
+    assert {
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+    }.issubset(
+        _module_imported_names(
+            keyword_contract_suite,
+            "tests.benchmarks.benchmark_test_support",
+        )
+    )
+    assert {
+        "_is_collection_replacement_keyword_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
+    }.issubset(
+        _module_imported_names(
+            combined_suite,
+            "tests.benchmarks.benchmark_test_support",
+        )
+    )
+
+
 def test_anchored_workload_case_helpers_classify_anchored_and_unanchored_workloads(
     monkeypatch: pytest.MonkeyPatch,
     anchor_support_cache_guard: None,

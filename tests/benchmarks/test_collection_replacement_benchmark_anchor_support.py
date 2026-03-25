@@ -19,6 +19,9 @@ from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
     STANDARD_BENCHMARK_DEFINITIONS,
+    _collection_replacement_positional_keyword_field,
+    _is_collection_replacement_keyword_workload,
+    _is_collection_replacement_wrong_text_model_workload,
     run_benchmark_workload_with_cpython,
     compiled_pattern_contract_expected_build_calls,
     _source_tree_contract_manifest,
@@ -274,9 +277,7 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         },
     )
 
-    assert support._is_collection_replacement_keyword_workload(
-        expected_keyword_workload
-    )
+    assert _is_collection_replacement_keyword_workload(expected_keyword_workload)
     assert support._collection_replacement_keyword_workload_signature(
         expected_keyword_workload
     ) == (
@@ -289,12 +290,8 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         "str",
     )
 
-    assert support._is_collection_replacement_keyword_workload(
-        duplicate_keyword_workload
-    )
-    assert support._collection_replacement_positional_keyword_field(
-        duplicate_keyword_workload
-    ) == "count"
+    assert _is_collection_replacement_keyword_workload(duplicate_keyword_workload)
+    assert _collection_replacement_positional_keyword_field(duplicate_keyword_workload) == "count"
     assert support._collection_replacement_keyword_workload_signature(
         duplicate_keyword_workload
     ) == (
@@ -307,9 +304,7 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         "str",
     )
 
-    assert support._is_collection_replacement_keyword_workload(
-        unexpected_keyword_workload
-    )
+    assert _is_collection_replacement_keyword_workload(unexpected_keyword_workload)
     assert support._collection_replacement_has_expected_unexpected_keyword_error(
         unexpected_keyword_workload
     )
@@ -347,12 +342,8 @@ def test_keyword_workload_filter_rejects_non_collection_keyword_shapes() -> None
         kwargs={"flags": 1},
     )
 
-    assert not support._is_collection_replacement_keyword_workload(
-        multiple_keyword_workload
-    )
-    assert not support._is_collection_replacement_keyword_workload(
-        search_keyword_workload
-    )
+    assert not _is_collection_replacement_keyword_workload(multiple_keyword_workload)
+    assert not _is_collection_replacement_keyword_workload(search_keyword_workload)
 
 
 def test_keyword_correctness_case_signature_preserves_call_shape_and_compiled_pattern_flag() -> None:
@@ -403,7 +394,7 @@ def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_s
         for workload in selected_manifest_workloads(
             manifest_path,
             include_workload=lambda workload: (
-                support._is_collection_replacement_keyword_workload(workload)
+                _is_collection_replacement_keyword_workload(workload)
                 and workload.operation.startswith("pattern.")
             ),
         )
@@ -449,7 +440,7 @@ def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_sp
         for workload in selected_manifest_workloads(
             manifest_path,
             include_workload=lambda workload: (
-                support._is_collection_replacement_keyword_workload(workload)
+                _is_collection_replacement_keyword_workload(workload)
                 and workload.operation.startswith("module.")
             ),
         )
@@ -2276,7 +2267,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         },
     )
 
-    assert support._is_collection_replacement_wrong_text_model_workload(split_workload)
+    assert _is_collection_replacement_wrong_text_model_workload(split_workload)
     assert support._collection_replacement_wrong_text_model_workload_signature(
         split_workload
     ) == (
@@ -2288,7 +2279,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         "str",
     )
 
-    assert support._is_collection_replacement_wrong_text_model_workload(subn_workload)
+    assert _is_collection_replacement_wrong_text_model_workload(subn_workload)
     assert support._collection_replacement_wrong_text_model_workload_signature(
         subn_workload
     ) == (
@@ -2300,7 +2291,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         "str",
     )
 
-    assert not support._is_collection_replacement_wrong_text_model_workload(
+    assert not _is_collection_replacement_wrong_text_model_workload(
         direct_pattern_workload
     )
 

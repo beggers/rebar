@@ -1,6 +1,6 @@
 ## RBR-1301: Move shared collection-replacement classifiers onto benchmark_test_support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -67,3 +67,8 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `383 passed, 3471 subtests passed in 39.67s`;
   - `bash -lc "! rg -n -U -P \"from tests\\.benchmarks\\.collection_replacement_benchmark_anchor_support import \\([\\s\\S]*?(_is_encoded_indexlike_payload|_collection_replacement_keyword_parameter_name|_collection_replacement_positional_keyword_field|_is_collection_replacement_keyword_workload|_is_collection_replacement_wrong_text_model_workload)\" tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those shared helpers still import from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, and that failure belongs exactly to this cleanup.
+
+## Completion Note
+- Moved `_is_encoded_indexlike_payload`, `_collection_replacement_keyword_parameter_name`, `_collection_replacement_positional_keyword_field`, `_is_collection_replacement_keyword_workload`, and `_is_collection_replacement_wrong_text_model_workload` onto `tests/benchmarks/benchmark_test_support.py`, updated the non-owner support/test import sites, and removed the moved definitions from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`.
+- Shifted the shared-helper ownership assertions onto `tests/benchmarks/test_benchmark_test_support.py`, kept the collection/replacement owner tests focused on owner-specific surfaces, and preserved the benchmark classification/signature behavior through the existing support tests.
+- Verified with `./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`387 passed, 3471 subtests passed in 39.68s`) and with the task grep check, which now exits successfully.

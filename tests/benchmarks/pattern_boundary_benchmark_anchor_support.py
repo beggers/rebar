@@ -5,14 +5,12 @@ import re
 from typing import Any
 
 from rebar_harness import benchmarks
-from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    _is_encoded_indexlike_payload,
-)
 from tests.benchmarks.benchmark_test_support import (
     StandardBenchmarkAnchorContractDefinition,
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
     _definition_anchor_expectations,
+    _is_encoded_indexlike_payload,
     freeze_signature_value,
 )
 from tests.python.fixture_parity_support import (

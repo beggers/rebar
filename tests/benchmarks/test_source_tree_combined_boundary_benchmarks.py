@@ -20,6 +20,8 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
+    _is_collection_replacement_keyword_workload,
+    _is_collection_replacement_wrong_text_model_workload,
     _is_module_workflow_keyword_error_workload,
     _is_module_workflow_keyword_flags_workload,
     _module_workflow_keyword_correctness_case_signature,
@@ -38,54 +40,51 @@ from tests.benchmarks.benchmark_test_support import (
     run_benchmark_workload_with_cpython,
     StandardBenchmarkAnchorContractDefinition,
 )
-from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
-    _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES,
-    _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
-    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
-    _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS,
-    _collection_replacement_compiled_pattern_success_correctness_case_signature,
-    _collection_replacement_compiled_pattern_success_workload_signature,
-    _collection_replacement_grouped_callable_correctness_case_signature,
-    _collection_replacement_grouped_callable_workload_signature,
-    _collection_replacement_literal_replacement_correctness_case_signature,
-    _collection_replacement_literal_replacement_workload_signature,
-    _collection_replacement_keyword_correctness_case_signature,
-    _conditional_group_exists_nested_callable_correctness_case_signature,
-    _conditional_group_exists_nested_callable_workload_signature,
-    _conditional_group_exists_quantified_callable_correctness_case_signature,
-    _conditional_group_exists_quantified_callable_workload_signature,
-    _collection_replacement_pattern_wrong_text_model_correctness_case_signature,
-    _collection_replacement_pattern_wrong_text_model_workload_signature,
-    _is_collection_replacement_compiled_pattern_success_workload,
-    _collection_replacement_keyword_workload_signature,
-    _collection_replacement_positional_indexlike_workload_signature,
-    _collection_replacement_wrong_text_model_correctness_case_signature,
-    _collection_replacement_wrong_text_model_workload_signature,
-    _is_collection_replacement_keyword_workload,
-    _is_collection_replacement_grouped_callable_workload,
-    _is_collection_replacement_pattern_wrong_text_model_workload,
-    _is_collection_replacement_positional_indexlike_workload,
-    _is_collection_replacement_wrong_text_model_workload,
-    _module_workflow_positional_indexlike_correctness_case_signature,
-    _workload_ids_for_text_model,
-)
+from tests.benchmarks.collection_replacement_benchmark_anchor_support import \
+    _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS, \
+    _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES, \
+    _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR, \
+    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES, \
+    _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS, \
+    CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS, \
+    _collection_replacement_compiled_pattern_success_correctness_case_signature, \
+    _collection_replacement_compiled_pattern_success_workload_signature, \
+    _collection_replacement_grouped_callable_correctness_case_signature, \
+    _collection_replacement_grouped_callable_workload_signature, \
+    _collection_replacement_literal_replacement_correctness_case_signature, \
+    _collection_replacement_literal_replacement_workload_signature, \
+    _collection_replacement_keyword_correctness_case_signature, \
+    _conditional_group_exists_nested_callable_correctness_case_signature, \
+    _conditional_group_exists_nested_callable_workload_signature, \
+    _conditional_group_exists_quantified_callable_correctness_case_signature, \
+    _conditional_group_exists_quantified_callable_workload_signature, \
+    _collection_replacement_pattern_wrong_text_model_correctness_case_signature, \
+    _collection_replacement_pattern_wrong_text_model_workload_signature, \
+    _is_collection_replacement_compiled_pattern_success_workload, \
+    _collection_replacement_keyword_workload_signature, \
+    _collection_replacement_positional_indexlike_workload_signature, \
+    _collection_replacement_wrong_text_model_correctness_case_signature, \
+    _collection_replacement_wrong_text_model_workload_signature, \
+    _is_collection_replacement_grouped_callable_workload, \
+    _is_collection_replacement_pattern_wrong_text_model_workload, \
+    _is_collection_replacement_positional_indexlike_workload, \
+    _module_workflow_positional_indexlike_correctness_case_signature, \
+    _workload_ids_for_text_model
 from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _is_pattern_keyword_window_workload,
     _is_pattern_window_positional_indexlike_workload,

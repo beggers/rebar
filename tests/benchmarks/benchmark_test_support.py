@@ -779,6 +779,94 @@ def _is_module_workflow_keyword_error_workload(workload: Any) -> bool:
     return False
 
 
+def _is_encoded_indexlike_payload(value: object) -> bool:
+    return (
+        isinstance(value, dict)
+        and value.get("type") == "indexlike"
+        and isinstance(value.get("value"), int)
+        and not isinstance(value.get("value"), bool)
+    )
+
+
+def _collection_replacement_keyword_parameter_name(
+    workload: Any,
+) -> str | None:
+    if workload.operation in {"module.split", "pattern.split"}:
+        return "maxsplit"
+    if workload.operation in {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}:
+        return "count"
+    return None
+
+
+def _collection_replacement_positional_keyword_field(
+    workload: Any,
+) -> str | None:
+    if workload.operation.startswith("module."):
+        expected_keyword_field = (
+            benchmarks._expected_duplicate_module_helper_keyword_field(workload)
+            or benchmarks._expected_positional_module_helper_keyword_field(workload)
+        )
+    elif workload.operation.startswith("pattern."):
+        expected_keyword_field = (
+            benchmarks._expected_pattern_helper_positional_keyword_field(workload)
+        )
+    else:
+        expected_keyword_field = None
+    if expected_keyword_field is None:
+        return None
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if expected_keyword_field != keyword_parameter:
+        return None
+    return expected_keyword_field
+
+
+def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if keyword_parameter is None or not workload.kwargs:
+        return False
+    keyword_names = tuple(workload.kwargs)
+    if len(keyword_names) != 1:
+        return False
+    if keyword_names[0] == keyword_parameter:
+        return True
+    if _collection_replacement_positional_keyword_field(workload) is not None:
+        return True
+    expected_exception = workload.expected_exception
+    if expected_exception is None or expected_exception.get("type") != "TypeError":
+        return False
+    keyword_name = keyword_names[0]
+    message_substring = expected_exception.get("message_substring")
+    if not isinstance(message_substring, str):
+        return False
+    if f"unexpected keyword argument '{keyword_name}'" in message_substring:
+        return True
+    if workload.operation.startswith("pattern."):
+        helper_name = workload.operation.removeprefix("pattern.")
+        return (
+            message_substring
+            == f"'{keyword_name}' is an invalid keyword argument for {helper_name}()"
+        )
+    return False
+
+
+def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
+    return (
+        getattr(workload, "haystack_text_model", None) is not None
+        and not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation
+        in {
+            "module.split",
+            "module.findall",
+            "module.finditer",
+            "module.sub",
+            "module.subn",
+        }
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
+
+
 def _module_workflow_keyword_workload_args(
     workload: Any,
 ) -> tuple[Any, ...]:

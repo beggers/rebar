@@ -13,24 +13,23 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
+    _collection_replacement_positional_keyword_field,
     _is_module_workflow_keyword_error_workload,
+    _is_collection_replacement_keyword_workload,
     _record_numeric_materialization_fields,
     run_benchmark_workload_with_cpython,
     _write_test_manifest,
 )
-from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    COLLECTION_REPLACEMENT_MANIFEST_PATH,
-    MODULE_BOUNDARY_MANIFEST_PATH,
-    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
-    _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
-    _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
-    _assert_keyword_error_workload_probe_measured,
-    _collection_replacement_positional_keyword_field,
-    _is_collection_replacement_keyword_workload,
-    _is_collection_replacement_module_helper_keyword_error_workload,
-    _is_collection_replacement_pattern_helper_keyword_error_workload,
-    _pattern_helper_collection_replacement_keyword_error_workload,
-)
+from tests.benchmarks.collection_replacement_benchmark_anchor_support import \
+    COLLECTION_REPLACEMENT_MANIFEST_PATH, \
+    MODULE_BOUNDARY_MANIFEST_PATH, \
+    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES, \
+    _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS, \
+    _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS, \
+    _assert_keyword_error_workload_probe_measured, \
+    _is_collection_replacement_module_helper_keyword_error_workload, \
+    _is_collection_replacement_pattern_helper_keyword_error_workload, \
+    _pattern_helper_collection_replacement_keyword_error_workload
 from tests.conftest import records_by_string_id
 
 
@@ -68,14 +67,6 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
         is support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     )
     assert (
-        _collection_replacement_positional_keyword_field
-        is support._collection_replacement_positional_keyword_field
-    )
-    assert (
-        _is_collection_replacement_keyword_workload
-        is support._is_collection_replacement_keyword_workload
-    )
-    assert (
         _is_collection_replacement_module_helper_keyword_error_workload
         is support._is_collection_replacement_module_helper_keyword_error_workload
     )
@@ -90,7 +81,6 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
     assert {
         "_assert_keyword_error_workload_probe_measured",
         "_pattern_helper_collection_replacement_keyword_error_workload",
-        "_is_collection_replacement_keyword_workload",
         "_is_collection_replacement_pattern_helper_keyword_error_workload",
         "_is_collection_replacement_module_helper_keyword_error_workload",
     }.isdisjoint(local_definition_names)
@@ -103,7 +93,6 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
         "_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS",
         "_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS",
         "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_collection_replacement_positional_keyword_field",
     }.isdisjoint(local_assignment_names)
 
 
