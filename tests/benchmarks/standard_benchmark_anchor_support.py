@@ -9,12 +9,14 @@ from typing import Any, Protocol
 
 import pytest
 
-from tests.benchmarks.benchmark_test_support import manifest_workloads
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
+from tests.benchmarks.benchmark_test_support import (
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
+    manifest_workloads,
+)
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
     anchored_workload_case_ids,
     expected_anchored_workload_case_pairs,
     published_case_ids_by_signature,

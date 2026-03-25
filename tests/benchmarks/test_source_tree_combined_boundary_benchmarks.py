@@ -25,6 +25,8 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.benchmarks.benchmark_test_support import (
+    _definition_anchor_expectations,
+    _workload_case_pair_anchor_expectations,
     assert_benchmark_workload_contract,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
@@ -137,8 +139,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
 )
 from tests.benchmarks.standard_benchmark_anchor_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
-    _definition_anchor_expectations,
-    _workload_case_pair_anchor_expectations,
     StandardBenchmarkAnchorContractDefinition,
 )
 from tests.conftest import (

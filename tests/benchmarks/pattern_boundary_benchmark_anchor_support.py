@@ -8,7 +8,7 @@ from rebar_harness import benchmarks
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_encoded_indexlike_payload,
 )
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
+from tests.benchmarks.benchmark_test_support import (
     _definition_anchor_expectations,
     freeze_signature_value,
 )

@@ -19,9 +19,11 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _contract_source_workloads,
     compiled_pattern_contract_expected_build_calls,
 )
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
+from tests.benchmarks.benchmark_test_support import (
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
+)
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
     published_case_ids_by_signature,
 )
 from tests.python.fixture_parity_support import case_pattern

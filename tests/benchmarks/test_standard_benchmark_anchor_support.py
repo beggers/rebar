@@ -109,6 +109,18 @@ def _build_standard_benchmark_definition_imported_names(
     }
 
 
+def _module_imported_names(module_name: str) -> set[str]:
+    import inspect
+
+    parsed_support_source = ast.parse(inspect.getsource(support))
+    return {
+        alias.name
+        for node in parsed_support_source.body
+        if isinstance(node, ast.ImportFrom) and node.module == module_name
+        for alias in node.names
+    }
+
+
 @pytest.mark.parametrize(
     ("module", "export_name", "builder_name"),
     (
@@ -234,6 +246,28 @@ def test_standard_support_does_not_reexport_module_boundary_manifest_path() -> N
         "module 'tests.benchmarks.standard_benchmark_anchor_support' has no "
         "attribute 'MODULE_BOUNDARY_MANIFEST_PATH'"
     )
+
+
+def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_support(
+) -> None:
+    imported_names = _module_imported_names(
+        "tests.benchmarks.benchmark_test_support"
+    )
+
+    assert {
+        "_definition_anchor_expectations",
+        "_workload_case_pair_anchor_expectations",
+        "_workload_case_pairs_case_ids",
+        "_workload_case_pairs_workload_ids",
+    }.issubset(imported_names)
+    assert _module_imported_names(
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+    ) == {
+        "anchored_workload_case_ids",
+        "expected_anchored_workload_case_pairs",
+        "published_case_ids_by_signature",
+        "unanchored_workload_ids",
+    }
 
 
 def test_standard_benchmark_anchor_contract_definition_filters_excluded_workloads() -> None:

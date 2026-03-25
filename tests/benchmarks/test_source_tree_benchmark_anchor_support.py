@@ -168,16 +168,17 @@ def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> Non
         "a": {"y": 1, "x": 0},
     }
 
-    assert support.freeze_signature_value(value) == (
+    assert benchmark_support.freeze_signature_value(value) == (
         ("a", (("x", 0), ("y", 1))),
         ("b", (2, (("c", (5, 6)), ("d", 4)))),
     )
+    assert support.freeze_signature_value is benchmark_support.freeze_signature_value
 
 
 def test_definition_anchor_expectations_expand_manifest_name() -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
 
-    assert support._definition_anchor_expectations(
+    assert benchmark_support._definition_anchor_expectations(
         manifest_path,
         {
             "workload-a": ("case-1", "case-2"),
@@ -187,6 +188,10 @@ def test_definition_anchor_expectations_expand_manifest_name() -> None:
         ("synthetic_boundary.py", "workload-a"): ("case-1", "case-2"),
         ("synthetic_boundary.py", "workload-b"): ("case-3",),
     }
+    assert (
+        support._definition_anchor_expectations
+        is benchmark_support._definition_anchor_expectations
+    )
 
 
 def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
@@ -196,15 +201,23 @@ def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
         ("workload-c", "case-3"),
     )
 
-    assert support._workload_case_pairs_workload_ids(workload_case_pairs) == (
+    assert benchmark_support._workload_case_pairs_workload_ids(workload_case_pairs) == (
         "workload-a",
         "workload-b",
         "workload-c",
     )
-    assert support._workload_case_pairs_case_ids(workload_case_pairs) == (
+    assert benchmark_support._workload_case_pairs_case_ids(workload_case_pairs) == (
         "case-1",
         "case-2",
         "case-3",
+    )
+    assert (
+        support._workload_case_pairs_workload_ids
+        is benchmark_support._workload_case_pairs_workload_ids
+    )
+    assert (
+        support._workload_case_pairs_case_ids
+        is benchmark_support._workload_case_pairs_case_ids
     )
 
 
@@ -215,13 +228,17 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
         ("workload-b", "case-2"),
     )
 
-    assert support._workload_case_pair_anchor_expectations(
+    assert benchmark_support._workload_case_pair_anchor_expectations(
         manifest_path,
         workload_case_pairs,
     ) == {
         ("synthetic_boundary.py", "workload-a"): ("case-1",),
         ("synthetic_boundary.py", "workload-b"): ("case-2",),
     }
+    assert (
+        support._workload_case_pair_anchor_expectations
+        is benchmark_support._workload_case_pair_anchor_expectations
+    )
 
 
 @pytest.mark.parametrize(
@@ -414,7 +431,7 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
     }
 
     for helper_name in helper_names:
-        assert getattr(owner_module, helper_name) is getattr(support, helper_name)
+        assert getattr(owner_module, helper_name) is getattr(benchmark_support, helper_name)
         assert helper_name not in local_function_names
 
 

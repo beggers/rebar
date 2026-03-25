@@ -3,7 +3,7 @@ from __future__ import annotations
 from tests.conftest import REPO_ROOT
 from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import compile_proxy_benchmark_support as support
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
+from tests.benchmarks.benchmark_test_support import (
     _definition_anchor_expectations,
 )
 

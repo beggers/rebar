@@ -4,12 +4,10 @@ from functools import cache
 from typing import TYPE_CHECKING, Any
 
 from tests.benchmarks.benchmark_test_support import (
+    _definition_anchor_expectations,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
     is_compile_proxy_workload,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _definition_anchor_expectations,
 )
 from tests.conftest import REPO_ROOT
 
