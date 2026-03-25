@@ -1488,6 +1488,81 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     )
 
 
+@pytest.mark.parametrize(
+    ("module_name", "expected_direct_names", "expected_alias_names"),
+    (
+        pytest.param(
+            "tests.benchmarks.test_benchmark_manifest_validation",
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                    "CompiledPatternModuleCompileContractCase",
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+                }
+            ),
+            id="benchmark-manifest-validation",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+                    "_module_workflow_compiled_pattern_correctness_case_signature",
+                    "_module_workflow_compiled_pattern_workload_signature",
+                }
+            ),
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+                }
+            ),
+            id="source-tree-combined",
+        ),
+    ),
+)
+def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates(
+    module_name: str,
+    expected_direct_names: frozenset[str],
+    expected_alias_names: frozenset[str],
+) -> None:
+    module = importlib.import_module(module_name)
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    local_names = definition_names | assignment_names
+
+    assert "tests.benchmarks.benchmark_test_support" in _module_import_targets(module)
+    assert expected_direct_names.issubset(
+        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    )
+
+    for shared_name in expected_direct_names:
+        assert getattr(module, shared_name) is getattr(support, shared_name)
+        assert shared_name not in local_names
+
+    assert getattr(module, "compiled_pattern_module_helper_support") is support
+    for shared_name in expected_alias_names:
+        assert (
+            getattr(module.compiled_pattern_module_helper_support, shared_name)
+            is getattr(support, shared_name)
+        )
+        assert shared_name not in local_names
+
+
 def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
 ) -> None:
     definition_names, assignment_names = (
