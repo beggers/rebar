@@ -1197,6 +1197,138 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
 
 
 @pytest.mark.parametrize(
+    ("module", "expected_imported_names"),
+    (
+        (
+            collection_replacement_support,
+            frozenset(
+                {
+                    "_SourceTreeContractBuilderSpec",
+                    "_contract_source_workloads",
+                }
+            ),
+        ),
+        (
+            compiled_pattern_module_compile_support,
+            frozenset(
+                {
+                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
+                    "_SourceTreeContractBuilderSpec",
+                    "_contract_source_workloads",
+                }
+            ),
+        ),
+        (
+            compiled_pattern_module_helper_support,
+            frozenset(
+                {
+                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
+                    "_SourceTreeContractBuilderSpec",
+                }
+            ),
+        ),
+        (
+            pattern_boundary_support,
+            frozenset(
+                {
+                    "_SourceTreeContractBuilderSpec",
+                    "_contract_source_workloads",
+                }
+            ),
+        ),
+    ),
+)
+def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_helpers_from_support(
+    module: object,
+    expected_imported_names: frozenset[str],
+) -> None:
+    assert expected_imported_names.issubset(
+        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    )
+
+
+@pytest.mark.parametrize(
+    ("module_name", "expected_imported_names"),
+    (
+        (
+            "tests.benchmarks.test_benchmark_manifest_validation",
+            frozenset(
+                {
+                    "_SourceTreeContractBuilderSpec",
+                    "_source_tree_contract_manifest",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_compiled_pattern_module_compile_benchmark_support",
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_compiled_pattern_module_helper_benchmark_support",
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_compiled_pattern_module_helper_keyword_benchmark_support",
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_compiled_pattern_module_success_benchmark_support",
+            frozenset(
+                {
+                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
+                    "_SourceTreeContractBuilderSpec",
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+        ),
+    ),
+)
+def test_source_tree_contract_helper_suites_import_from_support(
+    module_name: str,
+    expected_imported_names: frozenset[str],
+) -> None:
+    module = importlib.import_module(module_name)
+
+    assert expected_imported_names.issubset(
+        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    )
+
+
+@pytest.mark.parametrize(
     ("workload", "callback_flags", "expected_result", "expected_call", "expected_cpython_args", "materialize"),
     (
         (

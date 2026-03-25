@@ -26,6 +26,7 @@ from tests.benchmarks.benchmark_test_support import (
     compiled_pattern_contract_expected_build_calls,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
+    run_benchmark_workload_with_cpython,
     selected_manifest_workloads,
 )
 COLLECTION_REPLACEMENT_MANIFEST_PATH = (
