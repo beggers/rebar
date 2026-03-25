@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import ast
 from functools import cache
-import inspect
 import pathlib
 from types import SimpleNamespace
 import unittest
@@ -12,6 +11,8 @@ import pytest
 from tests.benchmarks.benchmark_test_support import (
     MODULE_BOUNDARY_MANIFEST_PATH as SHARED_MODULE_BOUNDARY_MANIFEST_PATH,
     STANDARD_BENCHMARK_DEFINITIONS,
+    _owner_definition_manifest_path_names,
+    _parsed_module_ast,
     _synthetic_case,
     _synthetic_manifest,
     _synthetic_manifest_loader,
@@ -165,11 +166,6 @@ def _compile_search_fullmatch_workload(
 
 
 @cache
-def _parsed_module_ast(module: object) -> ast.Module:
-    return ast.parse(inspect.getsource(module))
-
-
-@cache
 def _parsed_source_tree_combined_suite_ast() -> ast.Module:
     return ast.parse(
         (
@@ -179,43 +175,6 @@ def _parsed_source_tree_combined_suite_ast() -> ast.Module:
             / "test_source_tree_combined_boundary_benchmarks.py"
         ).read_text()
     )
-
-
-def _owner_definition_manifest_path_names(
-    function_name: str,
-) -> tuple[tuple[str, ...], ...]:
-    builder = next(
-        node
-        for node in _parsed_module_ast(support).body
-        if isinstance(node, ast.FunctionDef) and node.name == function_name
-    )
-    builder_return = next(
-        node for node in builder.body if isinstance(node, ast.Return)
-    )
-
-    assert isinstance(builder_return.value, ast.Tuple)
-
-    manifest_path_names: list[tuple[str, ...]] = []
-    for element in builder_return.value.elts:
-        assert isinstance(element, ast.Call)
-        manifest_paths_keyword = next(
-            keyword
-            for keyword in element.keywords
-            if keyword.arg == "manifest_paths"
-        )
-        assert isinstance(manifest_paths_keyword.value, ast.Tuple)
-        assert all(
-            isinstance(manifest_path, ast.Name)
-            for manifest_path in manifest_paths_keyword.value.elts
-        )
-        manifest_path_names.append(
-            tuple(
-                manifest_path.id
-                for manifest_path in manifest_paths_keyword.value.elts
-            )
-        )
-
-    return tuple(manifest_path_names)
 
 
 def _report_workload(
@@ -1596,7 +1555,16 @@ def test_source_tree_owner_builders_reference_owner_manifest_path_constants(
     builder_name: str,
     expected_manifest_path_names: tuple[tuple[str, ...], ...],
 ) -> None:
-    assert _owner_definition_manifest_path_names(builder_name) == (
+    builder = next(
+        node
+        for node in _parsed_module_ast(support).body
+        if isinstance(node, ast.FunctionDef) and node.name == builder_name
+    )
+    builder_return = next(
+        node for node in builder.body if isinstance(node, ast.Return)
+    )
+
+    assert _owner_definition_manifest_path_names(builder_return) == (
         expected_manifest_path_names
     )
 

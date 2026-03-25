@@ -1,6 +1,6 @@
 # RBR-1314: Centralize shared benchmark AST introspection helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -53,3 +53,10 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_contract_helper_suites_import_from_support or deleted_pattern_boundary_support_stays_unimportable_and_unreferenced or benchmark_test_support_owns_compiled_pattern_module_success_surface'` passed with `5 passed, 88 deselected in 0.23s`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'owner_manifest_path_constants_point_to_current_workload_files or owner_builders_reference_owner_manifest_path_constants or owner_definition_exports_reuse_owner_manifest_path_constants'` passed with `3 passed, 45 deselected in 0.11s`
   - `bash -lc "! rg -n '^def (_parsed_module_ast|_owner_definition_manifest_path_names)\\(' tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because both files still carry those duplicated helper definitions, and that failure belongs exactly to this cleanup.
+
+## Completion
+- Centralized the duplicated `_parsed_module_ast(...)` and `_owner_definition_manifest_path_names(...)` helpers in `tests/benchmarks/benchmark_test_support.py`, and updated both benchmark contract suites to import and reuse them while keeping the source-tree combined-suite AST helper local.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_contract_helper_suites_import_from_support or deleted_pattern_boundary_support_stays_unimportable_and_unreferenced or benchmark_test_support_owns_compiled_pattern_module_success_surface'` -> `5 passed, 88 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'owner_manifest_path_constants_point_to_current_workload_files or owner_builders_reference_owner_manifest_path_constants or owner_definition_exports_reuse_owner_manifest_path_constants'` -> `3 passed, 45 deselected`
+  - `bash -lc "! rg -n '^def (_parsed_module_ast|_owner_definition_manifest_path_names)\\(' tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` -> passed

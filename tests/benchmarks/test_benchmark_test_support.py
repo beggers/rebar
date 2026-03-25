@@ -3,7 +3,6 @@ from __future__ import annotations
 import ast
 from dataclasses import replace
 from functools import cache
-import inspect
 import importlib
 import pathlib
 import re
@@ -24,6 +23,8 @@ from tests.benchmarks.benchmark_test_support import (
     REGRESSION_MATRIX_MANIFEST_PATH,
     RecordingBenchmarkCompiledPattern,
     RecordingBenchmarkModule,
+    _owner_definition_manifest_path_names,
+    _parsed_module_ast,
     _synthetic_manifest_loader,
     _synthetic_workload,
     _synthetic_workload_is_included,
@@ -44,10 +45,6 @@ from tests.benchmarks.benchmark_test_support import (
 )
 from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
-
-
-def _parsed_module_ast(module: object) -> ast.Module:
-    return ast.parse(inspect.getsource(module))
 
 
 def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
@@ -179,37 +176,6 @@ def _module_assignment(module: object, name: str) -> ast.Assign:
             for target in node.targets
         )
     )
-
-
-def _owner_definition_manifest_path_names(
-    module: object,
-    name: str,
-) -> tuple[tuple[str, ...], ...]:
-    assignment = _module_assignment(module, name)
-
-    assert isinstance(assignment.value, ast.Tuple)
-
-    manifest_path_names: list[tuple[str, ...]] = []
-    for element in assignment.value.elts:
-        assert isinstance(element, ast.Call)
-        manifest_paths_keyword = next(
-            keyword
-            for keyword in element.keywords
-            if keyword.arg == "manifest_paths"
-        )
-        assert isinstance(manifest_paths_keyword.value, ast.Tuple)
-        assert all(
-            isinstance(manifest_path, ast.Name)
-            for manifest_path in manifest_paths_keyword.value.elts
-        )
-        manifest_path_names.append(
-            tuple(
-                manifest_path.id
-                for manifest_path in manifest_paths_keyword.value.elts
-            )
-        )
-
-    return tuple(manifest_path_names)
 
 
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
@@ -1227,8 +1193,10 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
 def test_benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant(
 ) -> None:
     assert _owner_definition_manifest_path_names(
-        support,
-        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+        _module_assignment(
+            support,
+            "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+        )
     ) == (
         ("MODULE_BOUNDARY_MANIFEST_PATH",),
         ("MODULE_BOUNDARY_MANIFEST_PATH",),

@@ -575,6 +575,40 @@ def freeze_signature_value(value: Any) -> Any:
     return value
 
 
+@cache
+def _parsed_module_ast(module: object) -> ast.Module:
+    return ast.parse(inspect.getsource(module))
+
+
+def _owner_definition_manifest_path_names(
+    owner_definition: ast.Assign | ast.Return,
+) -> tuple[tuple[str, ...], ...]:
+    value = owner_definition.value
+    assert isinstance(value, ast.Tuple)
+
+    manifest_path_names: list[tuple[str, ...]] = []
+    for element in value.elts:
+        assert isinstance(element, ast.Call)
+        manifest_paths_keyword = next(
+            keyword
+            for keyword in element.keywords
+            if keyword.arg == "manifest_paths"
+        )
+        assert isinstance(manifest_paths_keyword.value, ast.Tuple)
+        assert all(
+            isinstance(manifest_path, ast.Name)
+            for manifest_path in manifest_paths_keyword.value.elts
+        )
+        manifest_path_names.append(
+            tuple(
+                manifest_path.id
+                for manifest_path in manifest_paths_keyword.value.elts
+            )
+        )
+
+    return tuple(manifest_path_names)
+
+
 def assert_pattern_helper_wrong_text_model_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],
@@ -604,7 +638,7 @@ def assert_pattern_helper_wrong_text_model_payload_round_trip(
 def top_level_module_definition_and_assignment_names(
     module: object,
 ) -> tuple[set[str], set[str]]:
-    module_tree = ast.parse(inspect.getsource(module))
+    module_tree = _parsed_module_ast(module)
     definition_names = {
         node.name
         for node in module_tree.body
