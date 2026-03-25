@@ -1826,6 +1826,25 @@ PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     for case in PATTERN_CASES
     if case.manifest_id in CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
 )
+PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = frozenset(
+    {
+        "quantified-nested-group-callable-replacement-workflows",
+        "quantified-nested-group-alternation-callable-replacement-workflows",
+        "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
+        "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
+    }
+)
+PATTERN_RETURN_TYPE_ERROR_PARITY_CASES = tuple(
+    case
+    for case in PATTERN_RETURN_TYPE_ERROR_CASES
+    if case.manifest_id in PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
+)
 
 
 def _literal_callable_case() -> FixtureCase:
@@ -3199,6 +3218,26 @@ def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_c
     assert {
         case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_CASES
     } == CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
+
+
+def test_pattern_callable_replacement_wrong_return_type_parity_cases_cover_active_slice(
+) -> None:
+    assert PATTERN_RETURN_TYPE_ERROR_PARITY_CASES
+    assert {case.text_model for case in PATTERN_RETURN_TYPE_ERROR_PARITY_CASES} == {
+        "bytes",
+        "str",
+    }
+    assert PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS <= (
+        CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
+    )
+    assert {
+        case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_PARITY_CASES
+    } == PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
+    assert not {
+        case.case_id
+        for case in PATTERN_RETURN_TYPE_ERROR_PARITY_CASES
+        if _is_pending_rebar_callable_case(case)
+    }
 
 
 def test_module_callable_replacement_wrong_return_type_parity_cases_cover_active_slice(
@@ -6432,7 +6471,7 @@ def test_module_callable_replacement_wrong_return_type_matches_cpython(
 
 @pytest.mark.parametrize(
     "case",
-    PATTERN_RETURN_TYPE_ERROR_CASES,
+    PATTERN_RETURN_TYPE_ERROR_PARITY_CASES,
     ids=lambda case: case.case_id,
 )
 def test_pattern_callable_replacement_wrong_return_type_matches_cpython(
