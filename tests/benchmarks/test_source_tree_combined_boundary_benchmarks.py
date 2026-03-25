@@ -18,68 +18,6 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from tests.benchmarks.benchmark_test_support import (
-    STANDARD_BENCHMARK_DEFINITIONS,
-    MODULE_BOUNDARY_MANIFEST_PATH as COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH,
-    PATTERN_BOUNDARY_MANIFEST_PATH,
-    RecordingBenchmarkModule,
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
-    _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
-    _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-    _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
-    _is_collection_replacement_keyword_workload,
-    _is_collection_replacement_wrong_text_model_workload,
-    _is_module_workflow_keyword_error_workload,
-    _is_module_workflow_keyword_flags_workload,
-    _module_workflow_keyword_correctness_case_signature,
-    _module_workflow_keyword_workload_signature,
-    compiled_pattern_contract_expected_build_calls,
-    _expected_exception_instance,
-    _record_numeric_materialization_fields,
-    _source_tree_contract_manifest,
-    _source_tree_contract_workload,
-    _write_test_manifest,
-    _definition_anchor_expectations,
-    _workload_case_pair_anchor_expectations,
-    anchored_workload_case_ids,
-    assert_benchmark_workload_matches_expected_result,
-    assert_benchmark_workload_contract,
-    assert_zero_gap_manifest_workloads_measured,
-    compile_proxy_correctness_case_signature,
-    expected_anchored_workload_case_pairs,
-    compile_proxy_workload_signature,
-    find_workload_document,
-    find_workload_record,
-    is_compile_proxy_workload,
-    published_case_ids_by_signature,
-    run_benchmark_workload_with_cpython,
-    selected_manifest_workloads,
-    StandardBenchmarkAnchorContractDefinition,
-    unanchored_workload_ids,
-    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-    _is_module_workflow_compiled_pattern_literal_success_workload,
-    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
-    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-    _is_pattern_bounded_wildcard_workload,
-    _is_pattern_boundary_wrong_text_model_workload,
-    _is_pattern_keyword_window_workload,
-    _is_pattern_verbose_regression_workload,
-    _is_pattern_window_positional_indexlike_workload,
-    _module_workflow_compiled_pattern_correctness_case_signature,
-    _module_workflow_compiled_pattern_workload_signature,
-    _pattern_bounded_wildcard_correctness_case_signature,
-    _pattern_bounded_wildcard_workload_signature,
-    _pattern_boundary_wrong_text_model_correctness_case_signature,
-    _pattern_boundary_wrong_text_model_workload_signature,
-    _pattern_keyword_window_correctness_case_signature,
-    _pattern_keyword_window_workload_signature,
-    _pattern_verbose_regression_correctness_case_signature,
-    _pattern_verbose_regression_workload_signature,
-    _pattern_window_positional_indexlike_correctness_case_signature,
-    _pattern_window_positional_indexlike_workload_signature,
-)
 from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
@@ -118,11 +56,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         manifest_id = manifest.manifest_id
         for workload_id, expected_status in workload_expectations:
             if subtest_label is None:
-                assert_benchmark_workload_contract(
+                benchmark_test_support.assert_benchmark_workload_contract(
                     self,
-                    find_workload_record(scorecard, workload_id),
+                    benchmark_test_support.find_workload_record(scorecard, workload_id),
                     manifest_id=manifest_id,
-                    workload_document=find_workload_document(
+                    workload_document=benchmark_test_support.find_workload_document(
                         manifest,
                         workload_id,
                     ),
@@ -131,11 +69,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 continue
 
             with self.subTest(**{subtest_label: workload_id}):
-                assert_benchmark_workload_contract(
+                benchmark_test_support.assert_benchmark_workload_contract(
                     self,
-                    find_workload_record(scorecard, workload_id),
+                    benchmark_test_support.find_workload_record(scorecard, workload_id),
                     manifest_id=manifest_id,
-                    workload_document=find_workload_document(
+                    workload_document=benchmark_test_support.find_workload_document(
                         manifest,
                         workload_id,
                     ),
@@ -713,7 +651,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_template_payload,
                 )
                 self.assertEqual(
-                    run_benchmark_workload_with_cpython(workload),
+                    benchmark_test_support.run_benchmark_workload_with_cpython(
+                        workload
+                    ),
                     expected_result,
                 )
 
@@ -732,7 +672,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_template_payload,
                 )
                 self.assertEqual(
-                    run_benchmark_workload_with_cpython(round_tripped),
+                    benchmark_test_support.run_benchmark_workload_with_cpython(
+                        round_tripped
+                    ),
                     expected_result,
                 )
 
@@ -967,9 +909,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], str)
 
                 if source_workload.expected_exception is None:
-                    assert_benchmark_workload_matches_expected_result(
+                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        run_benchmark_workload_with_cpython(source_workload),
+                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -980,9 +922,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    run_benchmark_workload_with_cpython(source_workload)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    run_benchmark_workload_with_cpython(round_tripped)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -1065,10 +1007,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[2], bytes)
                 self.assertIsInstance(observed_signature[3], bytes)
                 if source_workload.expected_exception is None:
-                    expected_result = run_benchmark_workload_with_cpython(
+                    expected_result = benchmark_test_support.run_benchmark_workload_with_cpython(
                         source_workload
                     )
-                    assert_benchmark_workload_matches_expected_result(
+                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                         round_tripped,
                         expected_result,
                     )
@@ -1081,9 +1023,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    run_benchmark_workload_with_cpython(source_workload)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    run_benchmark_workload_with_cpython(round_tripped)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -1096,7 +1038,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             source_tree_support._conditional_group_exists_nested_callable_str_workloads()
             + source_tree_support._conditional_group_exists_nested_callable_bytes_workloads()
         )
-        case_ids_by_signature = published_case_ids_by_signature(
+        case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
             collection_replacement_support._conditional_group_exists_nested_callable_correctness_case_signature
         )
         anchored_case_ids: list[str] = []
@@ -1170,9 +1112,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], str)
 
                 if source_workload.expected_exception is None:
-                    assert_benchmark_workload_matches_expected_result(
+                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        run_benchmark_workload_with_cpython(source_workload),
+                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -1183,9 +1125,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    run_benchmark_workload_with_cpython(source_workload)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    run_benchmark_workload_with_cpython(round_tripped)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -1234,9 +1176,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertEqual(observed_signature, expected_signature)
 
                 if source_workload.expected_exception is None:
-                    assert_benchmark_workload_matches_expected_result(
+                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        run_benchmark_workload_with_cpython(source_workload),
+                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -1247,9 +1189,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    run_benchmark_workload_with_cpython(source_workload)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    run_benchmark_workload_with_cpython(round_tripped)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -1262,7 +1204,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             source_tree_support._conditional_group_exists_quantified_callable_str_workloads()
             + source_tree_support._conditional_group_exists_quantified_callable_bytes_workloads()
         )
-        case_ids_by_signature = published_case_ids_by_signature(
+        case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
             collection_replacement_support._conditional_group_exists_quantified_callable_correctness_case_signature
         )
         anchored_case_ids: list[str] = []
@@ -1341,9 +1283,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], str)
 
                 if source_workload.expected_exception is None:
-                    assert_benchmark_workload_matches_expected_result(
+                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        run_benchmark_workload_with_cpython(source_workload),
+                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -1354,9 +1296,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    run_benchmark_workload_with_cpython(source_workload)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    run_benchmark_workload_with_cpython(round_tripped)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -1414,9 +1356,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], bytes)
 
                 if source_workload.expected_exception is None:
-                    assert_benchmark_workload_matches_expected_result(
+                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        run_benchmark_workload_with_cpython(source_workload),
+                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -1427,9 +1369,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    run_benchmark_workload_with_cpython(source_workload)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    run_benchmark_workload_with_cpython(round_tripped)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -1473,9 +1415,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
                 if source_workload.expected_exception is None:
-                    assert_benchmark_workload_matches_expected_result(
+                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        run_benchmark_workload_with_cpython(source_workload),
+                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -1486,9 +1428,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    run_benchmark_workload_with_cpython(source_workload)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    run_benchmark_workload_with_cpython(round_tripped)
+                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -1986,22 +1928,22 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 ) -> None:
     success_case = next(
         case
-        for case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "success"
     )
     success_source_workload = success_case.source_workloads()[0]
-    success_workload = _source_tree_contract_workload(
+    success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
         spec=success_case.contract_builder_spec(),
     )
 
     keyword_case = next(
         case
-        for case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "bool-false"
     )
     keyword_source_workload = keyword_case.source_workloads()[0]
-    keyword_workload = _source_tree_contract_workload(
+    keyword_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_source_workload,
         spec=keyword_case.contract_builder_spec(),
     )
@@ -2017,8 +1959,8 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 
 def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to_live_rows(
 ) -> None:
-    contract_cases = _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
-    anchor_lanes = _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
+    contract_cases = benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    anchor_lanes = benchmark_test_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
 
     success_case = next(case for case in contract_cases if case.case_id == "success")
     bool_false_case = next(
@@ -2076,8 +2018,8 @@ def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to
 @pytest.mark.parametrize(
     "owner_spec",
     (
-        *_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-        *_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+        *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
     ),
     ids=lambda owner_spec: owner_spec.anchor_definition_name,
 )
@@ -2085,19 +2027,19 @@ def test_compiled_pattern_module_compile_owner_specs_keep_module_boundary_rows_m
     owner_spec: object,
 ) -> None:
     manifest_workload_count = len(
-        selected_manifest_workloads(COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH)
+        benchmark_test_support.selected_manifest_workloads(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH)
     )
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
-            COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH,
+        for workload in benchmark_test_support.selected_manifest_workloads(
+            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
             include_workload=owner_spec.includes_workload,
         )
     )
 
     assert expected_measured_workload_ids == owner_spec.expected_anchor_workload_ids()
-    assert_zero_gap_manifest_workloads_measured(
-        manifest_path=COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH,
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
         manifest_id="module-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
         expected_measured_workload_count=manifest_workload_count,
@@ -2107,18 +2049,18 @@ def test_compiled_pattern_module_compile_owner_specs_keep_module_boundary_rows_m
 
 @pytest.mark.parametrize(
     "anchor_lane",
-    _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
     ids=lambda anchor_lane: anchor_lane.case_id,
 )
 def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_published_correctness_cases(
     tmp_path,
     anchor_lane: object,
 ) -> None:
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         anchor_lane.source_workloads,
         spec=anchor_lane.contract_builder_spec(),
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         anchor_lane.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -2126,13 +2068,13 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
     expected_anchor_case_ids = anchor_lane.expected_anchor_case_ids(manifest_path)
     anchor_case_ids = anchor_lane.anchor_case_ids
 
-    assert anchored_workload_case_ids(
+    assert benchmark_test_support.anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
         workload_signature=anchor_lane.workload_signature,
         include_workload=anchor_lane.include_workload,
     ) == expected_anchor_case_ids
-    assert unanchored_workload_ids(
+    assert benchmark_test_support.unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
         workload_signature=anchor_lane.workload_signature,
@@ -2140,7 +2082,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
     ) == ()
     assert tuple(
         (pair.workload_id, pair.case_id)
-        for pair in expected_anchored_workload_case_pairs(
+        for pair in benchmark_test_support.expected_anchored_workload_case_pairs(
             manifest_path,
             expected_anchor_case_ids=expected_anchor_case_ids,
             include_workload=anchor_lane.include_workload,
@@ -2154,7 +2096,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
         pytest.param(case_group, source_workload, id=source_workload.workload_id)
         for case_group in (
             owner_spec.contract_case()
-            for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
+            for owner_spec in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
         )
         for source_workload in case_group.source_workloads()
     ),
@@ -2164,11 +2106,11 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
     case_group: object,
     source_workload: Workload,
 ) -> None:
-    workload = _source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=case_group.contract_builder_spec(),
     )
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -2179,7 +2121,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
             observed_result = callback()
             assert observed_result.pattern == workload.pattern_payload()
         else:
-            expected_exception = _expected_exception_instance(
+            expected_exception = benchmark_test_support._expected_exception_instance(
                 source_workload.expected_exception
             )
             with pytest.raises(
@@ -2195,7 +2137,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -2210,7 +2152,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=contract_case.contract_builder_spec(),
     )
@@ -2235,7 +2177,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_argument_before_timing(
     contract_case: object,
@@ -2245,13 +2187,13 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
     compile_exception = (
         None
         if source_workload.expected_exception is None
-        else _expected_exception_instance(source_workload.expected_exception)
+        else benchmark_test_support._expected_exception_instance(source_workload.expected_exception)
     )
-    module = RecordingBenchmarkModule(compile_exception=compile_exception)
+    module = benchmark_test_support.RecordingBenchmarkModule(compile_exception=compile_exception)
     callback = benchmarks.build_callable(
         module,
         "re",
-        _source_tree_contract_workload(
+        benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=contract_case.contract_builder_spec(),
         ),
@@ -4583,14 +4525,14 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         for workload_id in workload_ids:
             with self.subTest(workload_id=workload_id):
-                workload_record = find_workload_record(scorecard, workload_id)
+                workload_record = benchmark_test_support.find_workload_record(scorecard, workload_id)
                 manifest_id = workload_record["manifest_id"]
                 manifest = case.manifest_for_id(manifest_id)
-                assert_benchmark_workload_contract(
+                benchmark_test_support.assert_benchmark_workload_contract(
                     self,
                     workload_record,
                     manifest_id=manifest_id,
-                    workload_document=find_workload_document(manifest, workload_id),
+                    workload_document=benchmark_test_support.find_workload_document(manifest, workload_id),
                     expected_status=expected_status,
                 )
 
@@ -4610,17 +4552,17 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         ),
         pytest.param(
             benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            _is_module_workflow_compiled_pattern_literal_success_workload,
+            benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
             id="module-boundary-literal-success",
         ),
         pytest.param(
             benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
             id="module-boundary-bounded-wildcard-success",
         ),
         pytest.param(
             benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+            benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
             id="module-boundary-verbose-bytes-success",
         ),
     ),
@@ -4629,17 +4571,17 @@ def test_compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured(
     owner_spec: object,
     include_workload: object,
 ) -> None:
-    manifest_workload_count = len(selected_manifest_workloads(owner_spec.manifest_path))
+    manifest_workload_count = len(benchmark_test_support.selected_manifest_workloads(owner_spec.manifest_path))
     manifest_id = owner_spec.source_workloads()[0].manifest_id
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             owner_spec.manifest_path,
             include_workload=include_workload,
         )
     )
 
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=owner_spec.manifest_path,
         manifest_id=manifest_id,
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -4670,7 +4612,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     for source_workload in (
         benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
-        workload = _source_tree_contract_workload(
+        workload = benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec(spec),
         )
@@ -4706,7 +4648,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
     for source_workload in (
         benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
-        expected_build_calls = compiled_pattern_contract_expected_build_calls(
+        expected_build_calls = benchmark_test_support.compiled_pattern_contract_expected_build_calls(
             source_workload,
             label="wrong-text-model",
         )
@@ -4716,11 +4658,11 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
                 collection_replacement_callback_flags=0,
             )
         )
-        module = RecordingBenchmarkModule()
+        module = benchmark_test_support.RecordingBenchmarkModule()
         callback = benchmarks.build_callable(
             module,
             "re",
-            _source_tree_contract_workload(
+            benchmark_test_support._source_tree_contract_workload(
                 source_workload,
                 spec=benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec(spec),
             ),
@@ -4754,7 +4696,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=owner_spec.contract_builder_spec(),
     )
@@ -4788,11 +4730,11 @@ def test_compiled_pattern_module_success_callbacks_precompile_first_argument_bef
 ) -> None:
     expected_build_calls = owner_spec.expected_build_calls(source_workload)
     expected_callback_call = owner_spec.expected_callback_call(source_workload)
-    module = RecordingBenchmarkModule()
+    module = benchmark_test_support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
-        _source_tree_contract_workload(
+        benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=owner_spec.contract_builder_spec(),
         ),
@@ -4813,7 +4755,7 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
 ) -> None:
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
             include_workload=(
                 benchmark_test_support._is_collection_replacement_compiled_pattern_keyword_error_workload
@@ -4827,13 +4769,13 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
         )
     )
     manifest_workload_count = len(
-        selected_manifest_workloads(
+        benchmark_test_support.selected_manifest_workloads(
             benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH
         )
     )
 
     assert expected_measured_workload_ids == expected_source_workload_ids
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -4855,16 +4797,16 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
     monkeypatch: pytest.MonkeyPatch,
     source_workload: Workload,
 ) -> None:
-    workload = _source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=(
             benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec()
         ),
     )
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
-        expected_result=run_benchmark_workload_with_cpython(source_workload),
+        expected_result=benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
         expected_field_names=(
             benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
                 source_workload
@@ -4890,7 +4832,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=contract_surface.spec.contract_builder_spec(),
     )
@@ -4923,11 +4865,11 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
 ) -> None:
     expected_build_calls = contract_surface.expected_build_calls(source_workload)
     expected_callback_call = contract_surface.expected_callback_call(source_workload)
-    module = RecordingBenchmarkModule()
+    module = benchmark_test_support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
-        _source_tree_contract_workload(
+        benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=contract_surface.spec.contract_builder_spec(),
         ),
@@ -4964,13 +4906,13 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
         )
         if surface.case_id == "keyword-error"
     )
-    workload = _source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=(
             benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec()
         ),
     )
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:

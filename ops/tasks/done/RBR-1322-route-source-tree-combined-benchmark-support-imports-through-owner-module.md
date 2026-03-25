@@ -1,6 +1,12 @@
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
+
+## Completion
+- Completed on 2026-03-25.
+- Removed the direct `from tests.benchmarks.benchmark_test_support import ...` wall from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and routed the combined suite through the existing `from tests.benchmarks import benchmark_test_support` owner-module import.
+- Updated `tests/benchmarks/test_benchmark_test_support.py` to assert the combined suite now imports `benchmark_test_support` only through `tests.benchmarks`, carries no direct owner `ImportFrom` edge, does not alias the retired owner surface locally, and no longer exposes the retired owner names in its top-level definition/assignment namespace.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'runner_regenerates_source_tree_scorecards or compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing'`, `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates or compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces'`, `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'shared_module_boundary_manifest_path_consumers_reuse_support_constant_by_identity or shared_collection_replacement_classifier_contract_tests_import_from_support or shared_compiled_pattern_helper_contract_tests_import_from_support or compiled_pattern_module_compile_surviving_suites_import_shared_support_exports or source_tree_combined_suite_imports_standard_benchmark_definitions_from_support'`, and the task AST probe command.
 
 ## Goal
 - Delete the remaining 60-name direct `benchmark_test_support` owner import wall from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the combined benchmark suite reaches that shared support surface only through its existing `from tests.benchmarks import benchmark_test_support` owner-module import.

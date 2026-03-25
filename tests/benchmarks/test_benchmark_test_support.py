@@ -1356,14 +1356,14 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
         ),
         pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            "COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH",
+            None,
             id="source-tree-combined-suite",
         ),
     ),
 )
 def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_by_identity(
     module_name: str,
-    module_constant_name: str,
+    module_constant_name: str | None,
 ) -> None:
     module = importlib.import_module(module_name)
     _, assignment_names = support.top_level_module_definition_and_assignment_names(
@@ -1371,6 +1371,18 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
     )
 
     if module_name == "tests.benchmarks.test_source_tree_benchmark_anchor_support":
+        _assert_owner_module_routes_through_package_import(
+            module,
+            owner_module="tests.benchmarks.benchmark_test_support",
+            package_module="tests.benchmarks",
+            expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
+        )
+        assert getattr(module, "benchmark_test_support") is support
+        assert (
+            module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
+            is MODULE_BOUNDARY_MANIFEST_PATH
+        )
+    elif module_name == "tests.benchmarks.test_source_tree_combined_boundary_benchmarks":
         _assert_owner_module_routes_through_package_import(
             module,
             owner_module="tests.benchmarks.benchmark_test_support",
@@ -1395,8 +1407,10 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
             )
             if imported_name.startswith("SHARED_")
         }
+        assert module_constant_name is not None
         assert getattr(module, module_constant_name) is MODULE_BOUNDARY_MANIFEST_PATH
-    assert module_constant_name not in assignment_names
+    if module_constant_name is not None:
+        assert module_constant_name not in assignment_names
 
 
 @pytest.mark.parametrize(
@@ -1684,14 +1698,11 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
             "tests.benchmarks.benchmark_test_support",
         )
     )
-    assert {
-        "_is_collection_replacement_keyword_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
-    }.issubset(
-        _module_imported_names(
-            combined_suite,
-            "tests.benchmarks.benchmark_test_support",
-        )
+    _assert_owner_module_routes_through_package_import(
+        combined_suite,
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
 
 
@@ -1810,81 +1821,98 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
 
-    assert {
-        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-        "_is_module_workflow_compiled_pattern_literal_success_workload",
-        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-        "_module_workflow_compiled_pattern_correctness_case_signature",
-        "_module_workflow_compiled_pattern_workload_signature",
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
-    }.issubset(
-        _module_imported_names(
-            combined_suite,
-            "tests.benchmarks.benchmark_test_support",
-        )
+    assert _top_level_package_import_alias_pairs(
+        combined_suite,
+        package_module="tests.benchmarks",
+        imported_names=frozenset({"benchmark_test_support"}),
+    ) == frozenset({("benchmark_test_support", None)})
+    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
+        combined_suite
     )
 
 
-@pytest.mark.parametrize(
-    ("module_name", "expected_direct_names", "expected_owner_module_names"),
-    (
-        pytest.param(
-            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
-                    "_module_workflow_compiled_pattern_correctness_case_signature",
-                    "_module_workflow_compiled_pattern_workload_signature",
-                }
-            ),
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-                }
-            ),
-            id="source-tree-combined",
-        ),
-    ),
+_SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
+    {
+        "STANDARD_BENCHMARK_DEFINITIONS",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "PATTERN_BOUNDARY_MANIFEST_PATH",
+        "RecordingBenchmarkModule",
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_keyword_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
+        "_is_module_workflow_keyword_error_workload",
+        "_is_module_workflow_keyword_flags_workload",
+        "_module_workflow_keyword_correctness_case_signature",
+        "_module_workflow_keyword_workload_signature",
+        "compiled_pattern_contract_expected_build_calls",
+        "_expected_exception_instance",
+        "_record_numeric_materialization_fields",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "_write_test_manifest",
+        "_definition_anchor_expectations",
+        "_workload_case_pair_anchor_expectations",
+        "anchored_workload_case_ids",
+        "assert_benchmark_workload_matches_expected_result",
+        "assert_benchmark_workload_contract",
+        "assert_zero_gap_manifest_workloads_measured",
+        "compile_proxy_correctness_case_signature",
+        "expected_anchored_workload_case_pairs",
+        "compile_proxy_workload_signature",
+        "find_workload_document",
+        "find_workload_record",
+        "is_compile_proxy_workload",
+        "published_case_ids_by_signature",
+        "run_benchmark_workload_with_cpython",
+        "selected_manifest_workloads",
+        "StandardBenchmarkAnchorContractDefinition",
+        "unanchored_workload_ids",
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+        "_is_pattern_bounded_wildcard_workload",
+        "_is_pattern_boundary_wrong_text_model_workload",
+        "_is_pattern_keyword_window_workload",
+        "_is_pattern_verbose_regression_workload",
+        "_is_pattern_window_positional_indexlike_workload",
+        "_module_workflow_compiled_pattern_correctness_case_signature",
+        "_module_workflow_compiled_pattern_workload_signature",
+        "_pattern_bounded_wildcard_correctness_case_signature",
+        "_pattern_bounded_wildcard_workload_signature",
+        "_pattern_boundary_wrong_text_model_correctness_case_signature",
+        "_pattern_boundary_wrong_text_model_workload_signature",
+        "_pattern_keyword_window_correctness_case_signature",
+        "_pattern_keyword_window_workload_signature",
+        "_pattern_verbose_regression_correctness_case_signature",
+        "_pattern_verbose_regression_workload_signature",
+        "_pattern_window_positional_indexlike_correctness_case_signature",
+        "_pattern_window_positional_indexlike_workload_signature",
+    }
 )
 def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates(
-    module_name: str,
-    expected_direct_names: frozenset[str],
-    expected_owner_module_names: frozenset[str],
 ) -> None:
-    module = importlib.import_module(module_name)
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
     local_names = definition_names | assignment_names
 
-    assert "tests.benchmarks.benchmark_test_support" in _module_import_targets(module)
-    assert "tests.benchmarks" in _module_import_targets(module)
-    assert expected_direct_names.issubset(
-        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
-    )
-    assert "benchmark_test_support" in _module_imported_names(
+    _assert_owner_module_routes_through_package_import(
         module,
-        "tests.benchmarks",
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-
-    for shared_name in expected_direct_names:
-        assert getattr(module, shared_name) is getattr(support, shared_name)
-        assert shared_name not in local_names
-
-    assert not hasattr(module, "compiled_pattern_module_helper_support")
     assert getattr(module, "benchmark_test_support") is support
-    for shared_name in expected_owner_module_names:
-        assert getattr(module.benchmark_test_support, shared_name) is getattr(
-            support,
-            shared_name,
-        )
-        assert shared_name not in local_names
+    assert _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES.isdisjoint(local_names)
 
 
 def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_test_support(
@@ -1944,45 +1972,16 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         not in consumer_local_names
     )
 
-
-@pytest.mark.parametrize(
-    ("module_name", "expected_owner_module_names"),
-    (
-        pytest.param(
-            "tests.benchmarks.test_benchmark_manifest_validation",
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-                }
-            ),
-            id="benchmark-manifest-validation",
-        ),
-        pytest.param(
-            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-                }
-            ),
-            id="source-tree-combined",
-        ),
-    ),
-)
 def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces(
-    module_name: str,
-    expected_owner_module_names: frozenset[str],
 ) -> None:
-    module = importlib.import_module(module_name)
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
 
     assert (
         _top_level_benchmark_support_alias_pairs(
             module,
-            expected_owner_module_names,
+            _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
         )
         == frozenset()
     )
@@ -2183,38 +2182,26 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
     )
 
 
-@pytest.mark.parametrize(
-    ("module_name", "expected_imported_names"),
-    (
-        (
-            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-                }
-            ),
-        ),
-    ),
-)
 def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_exports(
-    module_name: str,
-    expected_imported_names: frozenset[str],
 ) -> None:
-    module = importlib.import_module(module_name)
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
-    imported_names = _module_imported_names(
+    _assert_owner_module_routes_through_package_import(
         module,
-        "tests.benchmarks.benchmark_test_support",
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-
-    assert expected_imported_names.issubset(imported_names)
-    assert expected_imported_names.isdisjoint(definition_names)
-    assert expected_imported_names.isdisjoint(assignment_names)
+    assert {
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+    }.isdisjoint(definition_names | assignment_names)
 
 
 @pytest.mark.parametrize(
@@ -3074,14 +3061,18 @@ def test_source_tree_combined_suite_imports_standard_benchmark_definitions_from_
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
-
-    assert (
-        combined_suite.STANDARD_BENCHMARK_DEFINITIONS
-        is support.STANDARD_BENCHMARK_DEFINITIONS
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(combined_suite)
     )
-    assert "STANDARD_BENCHMARK_DEFINITIONS" in _module_imported_names(
-        combined_suite,
-        "tests.benchmarks.benchmark_test_support",
+
+    assert "STANDARD_BENCHMARK_DEFINITIONS" not in (
+        definition_names | assignment_names
+    )
+    assert not hasattr(combined_suite, "STANDARD_BENCHMARK_DEFINITIONS")
+    assert combined_suite.benchmark_test_support is support
+    assert (
+        combined_suite.benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS
+        is support.STANDARD_BENCHMARK_DEFINITIONS
     )
 
 
