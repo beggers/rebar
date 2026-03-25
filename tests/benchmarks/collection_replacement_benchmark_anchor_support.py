@@ -10,6 +10,8 @@ from typing import Any
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support as shared_benchmark_support
 from tests.benchmarks.benchmark_test_support import (
+    COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    MODULE_BOUNDARY_MANIFEST_PATH,
     StandardBenchmarkAnchorContractDefinition,
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
@@ -35,10 +37,6 @@ _COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
 _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
     {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
 )
-COLLECTION_REPLACEMENT_MANIFEST_PATH = (
-    benchmarks.BENCHMARK_WORKLOADS_ROOT / "collection_replacement_boundary.py"
-)
-MODULE_BOUNDARY_MANIFEST_PATH = benchmarks.BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
 
 def _collection_replacement_pattern_collection_workload_args(
     workload: Any,

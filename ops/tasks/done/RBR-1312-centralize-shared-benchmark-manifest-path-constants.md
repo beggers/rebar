@@ -1,6 +1,6 @@
 ## RBR-1312: Centralize shared benchmark manifest-path constants
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -55,3 +55,10 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py::test_collection_replacement_keyword_contract_surface_is_support_owned_without_local_duplicates tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_source_tree_owner_manifest_path_constants_point_to_current_workload_files` passed with `2 passed in 0.11s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `279 tests collected in 0.10s`; and
   - `bash -lc "! rg -n '^(MODULE_BOUNDARY_MANIFEST_PATH|COLLECTION_REPLACEMENT_MANIFEST_PATH) =' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those files still define duplicate copies of the shared paths, and that failure belongs exactly to this cleanup.
+
+## Completion
+- Reused `MODULE_BOUNDARY_MANIFEST_PATH` and `COLLECTION_REPLACEMENT_MANIFEST_PATH` directly from `tests.benchmarks.benchmark_test_support` in the surviving benchmark support owners, deleted the duplicate local assignments from the support/test files in scope, and kept the source-tree-only manifest owners local to `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py::test_collection_replacement_keyword_contract_surface_is_support_owned_without_local_duplicates tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_source_tree_owner_manifest_path_constants_point_to_current_workload_files`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n '^(MODULE_BOUNDARY_MANIFEST_PATH|COLLECTION_REPLACEMENT_MANIFEST_PATH) =' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`

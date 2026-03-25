@@ -19,6 +19,7 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.benchmarks.benchmark_test_support import (
+    MODULE_BOUNDARY_MANIFEST_PATH,
     StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
@@ -43,8 +44,6 @@ from tests.python.fixture_parity_support import (
     callable_match_group_signature,
 )
 
-
-MODULE_BOUNDARY_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
 OPTIONAL_GROUP_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
 )

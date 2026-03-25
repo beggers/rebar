@@ -10,6 +10,7 @@ import unittest
 import pytest
 
 from tests.benchmarks.benchmark_test_support import (
+    MODULE_BOUNDARY_MANIFEST_PATH as SHARED_MODULE_BOUNDARY_MANIFEST_PATH,
     STANDARD_BENCHMARK_DEFINITIONS,
     _synthetic_case,
     _synthetic_manifest,
@@ -38,9 +39,6 @@ GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
     / "benchmarks"
     / "workloads"
     / "grouped_alternation_replacement_boundary.py"
-)
-MODULE_BOUNDARY_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
 )
 OPTIONAL_GROUP_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
@@ -1573,7 +1571,7 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
-    assert support.MODULE_BOUNDARY_MANIFEST_PATH == MODULE_BOUNDARY_MANIFEST_PATH
+    assert support.MODULE_BOUNDARY_MANIFEST_PATH == SHARED_MODULE_BOUNDARY_MANIFEST_PATH
     assert support.OPTIONAL_GROUP_MANIFEST_PATH == OPTIONAL_GROUP_MANIFEST_PATH
     assert support.NESTED_GROUP_MANIFEST_PATH == NESTED_GROUP_MANIFEST_PATH
     assert support.EXACT_REPEAT_MANIFEST_PATH == EXACT_REPEAT_MANIFEST_PATH
