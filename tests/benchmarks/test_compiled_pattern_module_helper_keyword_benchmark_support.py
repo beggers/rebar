@@ -13,6 +13,7 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks.benchmark_test_support import (
+    RecordingBenchmarkModule,
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _record_numeric_materialization_fields,
     assert_zero_gap_manifest_workloads_measured,
@@ -31,9 +32,6 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS,
     _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS,
     _is_collection_replacement_compiled_pattern_keyword_error_workload,
-)
-from tests.benchmarks.recording_benchmark_module_support import (
-    RecordingBenchmarkModule,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,

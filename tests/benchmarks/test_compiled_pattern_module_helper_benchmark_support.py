@@ -17,6 +17,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
+    RecordingBenchmarkModule,
     STANDARD_BENCHMARK_DEFINITIONS,
     _write_test_manifest,
 )
@@ -38,9 +39,6 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _module_workflow_compiled_pattern_workload_signature,
     _is_module_workflow_compiled_pattern_wrong_text_model_workload,
     _run_cpython_compiled_pattern_module_helper_workload,
-)
-from tests.benchmarks.recording_benchmark_module_support import (
-    RecordingBenchmarkModule,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,

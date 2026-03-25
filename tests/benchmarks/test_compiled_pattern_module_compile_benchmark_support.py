@@ -17,10 +17,8 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks import (
     compiled_pattern_module_compile_benchmark_support as support,
 )
-from tests.benchmarks.recording_benchmark_module_support import (
-    RecordingBenchmarkModule,
-)
 from tests.benchmarks.benchmark_test_support import (
+    RecordingBenchmarkModule,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
     assert_benchmark_workload_contract,
@@ -37,6 +35,8 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
     unanchored_workload_ids,
 )
+
+
 def test_compiled_pattern_module_compile_success_payload_round_trip_on_live_workload() -> None:
     contract_case = next(
         case
