@@ -17,13 +17,18 @@ from tests.benchmarks import (
 )
 from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
+from tests.benchmarks import (
+    test_benchmark_publication_runtime_contracts as publication_runtime_contracts,
+)
 from tests.benchmarks.benchmark_test_support import (
     MODULE_BOUNDARY_MANIFEST_PATH,
     COMPILE_MATRIX_MANIFEST_PATH,
+    CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
     EXACT_REPEAT_MANIFEST_PATH,
     GROUPED_ALTERNATION_MANIFEST_PATH,
     GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
     NESTED_GROUP_MANIFEST_PATH,
+    NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
     NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
     OPEN_ENDED_MANIFEST_PATH,
     OPTIONAL_GROUP_MANIFEST_PATH,
@@ -1356,6 +1361,45 @@ def test_shared_source_tree_manifest_path_constants_point_to_current_workload_fi
         / "benchmarks"
         / "workloads"
         / "open_ended_quantified_group_boundary.py",
+    )
+
+
+@pytest.mark.parametrize(
+    "manifest_path_name",
+    (
+        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
+        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
+    ),
+)
+def test_publication_runtime_manifest_path_consumers_reuse_support_constants_by_identity(
+    manifest_path_name: str,
+) -> None:
+    _, assignment_names = support.top_level_module_definition_and_assignment_names(
+        publication_runtime_contracts
+    )
+
+    assert manifest_path_name in _module_imported_names(
+        publication_runtime_contracts,
+        "tests.benchmarks.benchmark_test_support",
+    )
+    assert manifest_path_name not in assignment_names
+    assert getattr(publication_runtime_contracts, manifest_path_name) is getattr(
+        support,
+        manifest_path_name,
+    )
+
+
+def test_shared_publication_runtime_manifest_path_constants_point_to_current_workload_files(
+) -> None:
+    assert (
+        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
+    ) == (
+        REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py",
+        REPO_ROOT
+        / "benchmarks"
+        / "workloads"
+        / "nested_group_callable_replacement_boundary.py",
     )
 
 

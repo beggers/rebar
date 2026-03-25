@@ -27,6 +27,8 @@ from rebar_harness.benchmarks import (
 from rebar_harness.scorecard_io import ordered_published_subset_filenames
 from tests.benchmarks.benchmark_test_support import (
     COMPILE_MATRIX_MANIFEST_PATH,
+    CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+    NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
     _write_test_manifest,
     assert_benchmark_workload_matches_expected_result,
     live_manifest_workloads,
@@ -48,12 +50,6 @@ _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
 )
 _MISSING_MATURIN_PATTERN = "no `maturin` executable was found on PATH"
-_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
-    BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
-)
-_NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
-    BENCHMARK_WORKLOADS_ROOT / "nested_group_callable_replacement_boundary.py"
-)
 
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
     return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
@@ -852,7 +848,7 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
 def _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
 ) -> tuple[Workload, ...]:
     return live_manifest_workloads(
-        _NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
+        NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
         (
             "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
             "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
@@ -923,7 +919,7 @@ def test_run_internal_workload_probe_measures_nested_group_callable_replacement_
 
 @cache
 def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[Workload, ...]:
-    manifest = load_manifest(_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
+    manifest = load_manifest(CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
     workload_ids = tuple(
         workload.workload_id
         for workload in manifest.workloads
@@ -943,14 +939,14 @@ def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[W
         }
     )
     return live_manifest_workloads(
-        _CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
 
 
 @cache
 def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload, ...]:
-    manifest = load_manifest(_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
+    manifest = load_manifest(CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
     workload_ids = tuple(
         workload.workload_id
         for workload in manifest.workloads
@@ -963,7 +959,7 @@ def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload,
         }
     )
     return live_manifest_workloads(
-        _CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
 

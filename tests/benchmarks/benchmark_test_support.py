@@ -790,6 +790,9 @@ COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS = (
 MODULE_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
 )
+CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py"
+)
 OPTIONAL_GROUP_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
 )
@@ -810,6 +813,9 @@ GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
 )
 NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
+)
+NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
 )
 OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
