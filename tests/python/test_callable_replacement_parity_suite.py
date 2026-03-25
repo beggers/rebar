@@ -2054,6 +2054,11 @@ PATTERN_RETURN_TYPE_ERROR_PARITY_CASES = tuple(
     for case in PATTERN_RETURN_TYPE_ERROR_CASES
     if case.manifest_id in PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
 )
+CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_SPECS = tuple(
+    spec
+    for spec in CALLABLE_MANIFEST_SPECS
+    if spec.manifest_id in CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
+)
 
 
 def _literal_callable_case() -> FixtureCase:
@@ -3485,6 +3490,68 @@ def test_module_callable_replacement_wrong_return_type_parity_cases_cover_active
         for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
         if _is_pending_rebar_callable_case(case)
     }
+
+
+def test_callable_replacement_wrong_return_type_support_table_covers_frontier_manifests(
+) -> None:
+    assert frozenset(CALLABLE_RETURN_TYPE_ERROR_PARITY_OPERATIONS_BY_MANIFEST_ID) == (
+        CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
+    )
+    assert {
+        operation
+        for supported_operations in (
+            CALLABLE_RETURN_TYPE_ERROR_PARITY_OPERATIONS_BY_MANIFEST_ID.values()
+        )
+        for operation in supported_operations
+    } <= {"module_call", "pattern_call"}
+
+
+@pytest.mark.parametrize(
+    "manifest_spec",
+    tuple(
+        pytest.param(spec, id=spec.manifest_id)
+        for spec in CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_SPECS
+    ),
+)
+def test_callable_replacement_wrong_return_type_support_table_matches_loaded_cases(
+    manifest_spec: CallableManifestSpec,
+) -> None:
+    bundle = FIXTURE_BUNDLES_BY_MANIFEST_ID[manifest_spec.manifest_id]
+    supported_operations = (
+        CALLABLE_RETURN_TYPE_ERROR_PARITY_OPERATIONS_BY_MANIFEST_ID[
+            manifest_spec.manifest_id
+        ]
+    )
+
+    expected_case_ids_by_operation = {
+        operation: frozenset(
+            case.case_id
+            for case in bundle.cases
+            if case.operation == operation
+            and case.case_id not in manifest_spec.pending_rebar_case_ids
+        )
+        for operation in ("module_call", "pattern_call")
+    }
+    observed_case_ids_by_operation = {
+        "module_call": frozenset(
+            case.case_id
+            for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
+            if case.manifest_id == manifest_spec.manifest_id
+        ),
+        "pattern_call": frozenset(
+            case.case_id
+            for case in PATTERN_RETURN_TYPE_ERROR_PARITY_CASES
+            if case.manifest_id == manifest_spec.manifest_id
+        ),
+    }
+
+    for operation in ("module_call", "pattern_call"):
+        if operation in supported_operations:
+            assert observed_case_ids_by_operation[operation] == (
+                expected_case_ids_by_operation[operation]
+            )
+            continue
+        assert not observed_case_ids_by_operation[operation]
 
 
 def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
