@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import ast
 from functools import partial
+import inspect
 import pathlib
 from types import SimpleNamespace
 
 import pytest
 
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_support,
+)
 from tests.benchmarks.benchmark_anchor_support_test_helpers import (
     _synthetic_case,
     _synthetic_manifest,
@@ -16,11 +21,15 @@ from tests.benchmarks.benchmark_anchor_support_test_helpers import (
     anchor_support_cache_guard,
 )
 from tests.benchmarks import benchmark_test_support as benchmark_support
+from tests.benchmarks import (
+    compiled_pattern_module_compile_benchmark_support as compiled_pattern_compile_support,
+)
 from tests.benchmarks.benchmark_test_support import (
     live_manifest_workload,
     synthetic_workload,
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
+from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
@@ -135,6 +144,55 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
         ("synthetic_boundary.py", "workload-a"): ("case-1",),
         ("synthetic_boundary.py", "workload-b"): ("case-2",),
     }
+
+
+@pytest.mark.parametrize(
+    ("owner_module", "helper_names"),
+    (
+        pytest.param(
+            standard_support,
+            (
+                "_definition_anchor_expectations",
+                "_workload_case_pair_anchor_expectations",
+                "_workload_case_pairs_case_ids",
+                "_workload_case_pairs_workload_ids",
+            ),
+            id="standard-benchmark",
+        ),
+        pytest.param(
+            collection_support,
+            (
+                "freeze_signature_value",
+                "_workload_case_pair_anchor_expectations",
+                "_workload_case_pairs_case_ids",
+                "_workload_case_pairs_workload_ids",
+            ),
+            id="collection-replacement",
+        ),
+        pytest.param(
+            compiled_pattern_compile_support,
+            (
+                "_definition_anchor_expectations",
+                "_workload_case_pair_anchor_expectations",
+            ),
+            id="compiled-pattern-module-compile",
+        ),
+    ),
+)
+def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates(
+    owner_module: object,
+    helper_names: tuple[str, ...],
+) -> None:
+    owner_source = inspect.getsource(owner_module)
+    local_function_names = {
+        node.name
+        for node in ast.parse(owner_source).body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    for helper_name in helper_names:
+        assert getattr(owner_module, helper_name) is getattr(support, helper_name)
+        assert helper_name not in local_function_names
 
 
 def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> None:
