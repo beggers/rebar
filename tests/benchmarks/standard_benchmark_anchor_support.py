@@ -16,6 +16,10 @@ from tests.benchmarks.benchmark_test_support import (
     manifest_workloads,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _definition_anchor_expectations,
+    _workload_case_pair_anchor_expectations,
+    _workload_case_pairs_case_ids,
+    _workload_case_pairs_workload_ids,
     anchored_workload_case_ids,
     expected_anchored_workload_case_pairs,
     published_case_ids_by_signature,
@@ -58,42 +62,6 @@ class StandardBenchmarkAnchorContractDefinition:
             not in self.expected_special_unanchored_workload_ids
             and self.include_workload(workload)
         )
-
-
-def _definition_anchor_expectations(
-    manifest_path: pathlib.Path,
-    anchor_expectations: dict[str, tuple[str, ...]],
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return {
-        (manifest_path.name, workload_id): case_ids
-        for workload_id, case_ids in anchor_expectations.items()
-    }
-
-
-def _workload_case_pairs_workload_ids(
-    workload_case_pairs: tuple[tuple[str, str], ...],
-) -> tuple[str, ...]:
-    return tuple(workload_id for workload_id, _ in workload_case_pairs)
-
-
-def _workload_case_pairs_case_ids(
-    workload_case_pairs: tuple[tuple[str, str], ...],
-) -> tuple[str, ...]:
-    return tuple(case_id for _, case_id in workload_case_pairs)
-
-
-def _workload_case_pair_anchor_expectations(
-    manifest_path: pathlib.Path,
-    workload_case_pairs: tuple[tuple[str, str], ...],
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return _definition_anchor_expectations(
-        manifest_path,
-        {
-            workload_id: (case_id,)
-            for workload_id, case_id in workload_case_pairs
-        },
-    )
-
 
 def _anchor_case_subset(
     anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],

@@ -87,6 +87,56 @@ def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> Non
     )
 
 
+def test_definition_anchor_expectations_expand_manifest_name() -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+
+    assert support._definition_anchor_expectations(
+        manifest_path,
+        {
+            "workload-a": ("case-1", "case-2"),
+            "workload-b": ("case-3",),
+        },
+    ) == {
+        ("synthetic_boundary.py", "workload-a"): ("case-1", "case-2"),
+        ("synthetic_boundary.py", "workload-b"): ("case-3",),
+    }
+
+
+def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
+    workload_case_pairs = (
+        ("workload-a", "case-1"),
+        ("workload-b", "case-2"),
+        ("workload-c", "case-3"),
+    )
+
+    assert support._workload_case_pairs_workload_ids(workload_case_pairs) == (
+        "workload-a",
+        "workload-b",
+        "workload-c",
+    )
+    assert support._workload_case_pairs_case_ids(workload_case_pairs) == (
+        "case-1",
+        "case-2",
+        "case-3",
+    )
+
+
+def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    workload_case_pairs = (
+        ("workload-a", "case-1"),
+        ("workload-b", "case-2"),
+    )
+
+    assert support._workload_case_pair_anchor_expectations(
+        manifest_path,
+        workload_case_pairs,
+    ) == {
+        ("synthetic_boundary.py", "workload-a"): ("case-1",),
+        ("synthetic_boundary.py", "workload-b"): ("case-2",),
+    }
+
+
 def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> None:
     workload = synthetic_workload(
         manifest_id="module-pattern-boundary",

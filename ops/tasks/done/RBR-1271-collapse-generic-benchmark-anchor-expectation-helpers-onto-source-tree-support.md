@@ -1,6 +1,6 @@
 ## RBR-1271: Collapse generic benchmark anchor expectation helpers onto source-tree support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -74,3 +74,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `57 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` passed with `81 passed`; and
   - the negative `rg` check in `Verification` currently fails because those helper definitions still live in the three former owner modules, and that failure belongs to the exact cleanup queued here.
+
+## Completion Notes
+- Moved `_definition_anchor_expectations(...)`, `_workload_case_pairs_workload_ids(...)`, `_workload_case_pairs_case_ids(...)`, and `_workload_case_pair_anchor_expectations(...)` into `tests/benchmarks/source_tree_benchmark_anchor_support.py` and switched the standard, collection/replacement, and compiled-pattern support modules to import that shared owner surface directly.
+- Moved the focused generic-helper assertions into `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and removed the old local-helper ownership assumptions from `tests/benchmarks/test_standard_benchmark_anchor_support.py`.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `23 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `203 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `57 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` passed with `81 passed`.
+  - `bash -lc "! rg -n 'def _definition_anchor_expectations\\(|def _workload_case_pair_anchor_expectations\\(|def _workload_case_pairs_case_ids\\(|def _workload_case_pairs_workload_ids\\(' tests/benchmarks/standard_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py"` passed.
