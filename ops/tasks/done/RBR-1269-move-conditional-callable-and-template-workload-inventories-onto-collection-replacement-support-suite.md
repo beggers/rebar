@@ -1,6 +1,6 @@
 ## RBR-1269: Move conditional callable and template workload inventories onto collection-replacement support suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -73,3 +73,15 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `140 tests collected`.
   - The two negative `rg` checks in `Verification` currently fail because the duplicate helper and inline workload-id inventories still live in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and those failures belong to the exact cleanup queued here.
   - The full `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` file is intentionally not part of this task's acceptance because it currently has one unrelated red test, `test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers`, that expects `CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS` to be re-exported from the combined broker even though that attribute is absent in the live checkout before this task lands.
+
+## Completion
+- Moved `_workload_ids_for_text_model(...)` plus the conditional callable/template workload-id inventories named in this task into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, and updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import those support-owned symbols instead of redefining them locally.
+- Added owner-suite coverage in `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` for the callable none-count expansion order, callable alternation interleaving order, template round-trip ordering, and combined-suite import ownership contracts for the moved helper/constants.
+- Also re-exported the already support-owned `CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS` from the combined broker so the existing owner contract test stops failing on that missing attribute.
+
+## Verification Results
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'not test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers'` -> `55 passed, 1 deselected`
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers or test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers'` -> `2 passed, 54 deselected`
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `144 tests collected`
+- `bash -lc "! rg -n 'def _workload_ids_for_text_model\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed
+- `bash -lc "! rg -n '^(CONDITIONAL_GROUP_EXISTS_CALLABLE_(BYTES|NEGATIVE_COUNT_(STR|BYTES)|NONE_COUNT_(STR|BYTES|WORKLOAD_IDS)|ALTERNATION_(STR|BYTES|WORKLOAD_IDS))|_CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_STEMS|CONDITIONAL_GROUP_EXISTS_TEMPLATE_(BYTES|NEGATIVE_COUNT_STR|ROUND_TRIP)_WORKLOAD_IDS)\\s*=' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed

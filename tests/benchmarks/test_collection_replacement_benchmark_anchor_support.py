@@ -1032,6 +1032,46 @@ def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpe
         is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
     )
     assert (
+        combined_suite._workload_ids_for_text_model
+        is support._workload_ids_for_text_model
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS
+    )
+    assert (
         "def _conditional_group_exists_nested_callable_correctness_case_signature("
         not in combined_source
     )
@@ -1070,6 +1110,123 @@ def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpe
     assert (
         "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS ="
         not in combined_source
+    )
+    assert "def _workload_ids_for_text_model(" not in combined_source
+    assert "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS =" not in combined_source
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_STEMS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS ="
+        not in combined_source
+    )
+
+
+def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
+    import importlib
+    import inspect
+
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    combined_source = inspect.getsource(combined_suite)
+
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS =" not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS ="
+        not in combined_source
+    )
+
+
+def test_conditional_callable_none_count_workload_id_expansion_preserves_stem_order() -> None:
+    stems = (
+        "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm",
+        "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged",
+        "module-sub-callable-named-conditional-group-exists-replacement-none-count-warm",
+        "pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged",
+        "module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm",
+        "pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged",
+        "module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm",
+        "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged",
+        "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm",
+        "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm",
+        "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged",
+        "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged",
+        "module-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm",
+        "module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm",
+        "pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged",
+        "pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged",
+    )
+
+    assert support._workload_ids_for_text_model(stems, text_model="str") == (
+        support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
+    )
+    assert support._workload_ids_for_text_model(stems, text_model="bytes") == (
+        support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
+    )
+
+
+def test_conditional_callable_alternation_round_trip_workload_ids_keep_interleaved_order() -> None:
+    assert support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS == (
+        support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS[:8]
+        + support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS[:8]
+        + support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS[8:]
+        + support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS[8:]
+    )
+
+
+def test_conditional_template_round_trip_workload_ids_keep_bytes_leading_shape() -> None:
+    assert support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS == (
+        support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS[:8]
+        + support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+        + support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS[8:]
     )
 
 
