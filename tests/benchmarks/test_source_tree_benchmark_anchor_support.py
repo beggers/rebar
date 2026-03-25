@@ -1461,6 +1461,18 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         assert function_name in local_function_names
 
 
+def test_source_tree_support_module_exports_combined_slice_owner_group() -> None:
+    _, _, local_assignment_names = _top_level_name_sets(support)
+
+    owner_names = support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES
+
+    assert "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS" in owner_names
+    assert len(owner_names) == len(set(owner_names))
+    for constant_name in owner_names:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+
+
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
     local_class_names, local_function_names, _ = _top_level_name_sets(
         benchmark_test_support._source_tree_combined_suite_module()
@@ -1793,6 +1805,10 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
         pytest.param(
             support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES,
             id="collection-owner-routed-functions",
+        ),
+        pytest.param(
+            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
+            id="collection-owner-combined-slice-owner-names",
         ),
     ],
 )
