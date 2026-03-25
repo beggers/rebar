@@ -57,54 +57,6 @@ def _combined_suite_class_method_names(class_name: str) -> set[str]:
     }
 
 
-def _report_workload(
-    *,
-    workload_id: str,
-    operation: str,
-    family: str,
-) -> object:
-    return SimpleNamespace(
-        workload_id=workload_id,
-        operation=operation,
-        family=family,
-    )
-
-
-def _report_manifest(
-    *,
-    manifest_id: str,
-    workloads: tuple[object, ...],
-    smoke_workload_ids: tuple[str, ...] = (),
-    spec_refs: tuple[str, ...] = (),
-    schema_version: int = 1,
-    notes: str | None = None,
-) -> object:
-    workload_by_id = {
-        workload.workload_id: workload
-        for workload in workloads
-    }
-
-    def _selected_workloads(
-        selected_workload_ids: tuple[str, ...] | None = None,
-    ) -> tuple[object, ...]:
-        if selected_workload_ids is None:
-            return workloads
-        return tuple(
-            workload_by_id[workload_id]
-            for workload_id in selected_workload_ids
-        )
-
-    return SimpleNamespace(
-        manifest_id=manifest_id,
-        schema_version=schema_version,
-        workloads=workloads,
-        smoke_workload_ids=lambda: smoke_workload_ids,
-        spec_refs=spec_refs,
-        notes=notes,
-        selected_workloads=_selected_workloads,
-    )
-
-
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -2076,23 +2028,31 @@ def test_source_tree_report_contract_accepts_single_manifest_native_loaded_score
         },
     )
     manifest_path = "benchmarks/workloads/synthetic_boundary.py"
-    manifest = _report_manifest(
+    workloads = (
+        SimpleNamespace(
+            workload_id="module-search-synthetic-warm-str",
+            operation="module.search",
+            family="module",
+        ),
+        SimpleNamespace(
+            workload_id="module-compile-synthetic-cold-gap",
+            operation="module.compile",
+            family="parser",
+        ),
+    )
+    workload_by_id = {workload.workload_id: workload for workload in workloads}
+    manifest = SimpleNamespace(
         manifest_id="synthetic-boundary",
         schema_version=7,
-        workloads=(
-            _report_workload(
-                workload_id="module-search-synthetic-warm-str",
-                operation="module.search",
-                family="module",
-            ),
-            _report_workload(
-                workload_id="module-compile-synthetic-cold-gap",
-                operation="module.compile",
-                family="parser",
-            ),
-        ),
-        smoke_workload_ids=("module-search-synthetic-warm-str",),
+        workloads=workloads,
+        smoke_workload_ids=lambda: ("module-search-synthetic-warm-str",),
         spec_refs=("docs/spec/synthetic-boundary.md",),
+        notes=None,
+        selected_workloads=lambda selected_workload_ids=None: (
+            workloads
+            if selected_workload_ids is None
+            else tuple(workload_by_id[workload_id] for workload_id in selected_workload_ids)
+        ),
     )
     manifest_record = support._artifact_manifest_record(manifest_path, manifest)
     scorecard = _synthetic_report_scorecard(
@@ -2162,37 +2122,63 @@ def test_source_tree_report_contract_accepts_combined_manifest_scorecard_without
         "benchmarks/workloads/first_boundary.py",
         "benchmarks/workloads/second_boundary.py",
     ]
+    first_workloads = (
+        SimpleNamespace(
+            workload_id="module-search-first-warm-str",
+            operation="module.search",
+            family="module",
+        ),
+    )
+    first_workload_by_id = {
+        workload.workload_id: workload for workload in first_workloads
+    }
+    second_workloads = (
+        SimpleNamespace(
+            workload_id="module-compile-second-cold-gap",
+            operation="module.compile",
+            family="parser",
+        ),
+        SimpleNamespace(
+            workload_id="pattern-fullmatch-second-purged-str",
+            operation="pattern.fullmatch",
+            family="module",
+        ),
+    )
+    second_workload_by_id = {
+        workload.workload_id: workload for workload in second_workloads
+    }
     manifests = [
-        _report_manifest(
+        SimpleNamespace(
             manifest_id="first-boundary",
             schema_version=3,
-            workloads=(
-                _report_workload(
-                    workload_id="module-search-first-warm-str",
-                    operation="module.search",
-                    family="module",
-                ),
-            ),
-            smoke_workload_ids=("module-search-first-warm-str",),
+            workloads=first_workloads,
+            smoke_workload_ids=lambda: ("module-search-first-warm-str",),
             spec_refs=("docs/spec/first-boundary.md",),
+            notes=None,
+            selected_workloads=lambda selected_workload_ids=None: (
+                first_workloads
+                if selected_workload_ids is None
+                else tuple(
+                    first_workload_by_id[workload_id]
+                    for workload_id in selected_workload_ids
+                )
+            ),
         ),
-        _report_manifest(
+        SimpleNamespace(
             manifest_id="second-boundary",
             schema_version=5,
-            workloads=(
-                _report_workload(
-                    workload_id="module-compile-second-cold-gap",
-                    operation="module.compile",
-                    family="parser",
-                ),
-                _report_workload(
-                    workload_id="pattern-fullmatch-second-purged-str",
-                    operation="pattern.fullmatch",
-                    family="module",
-                ),
-            ),
-            smoke_workload_ids=("module-compile-second-cold-gap",),
+            workloads=second_workloads,
+            smoke_workload_ids=lambda: ("module-compile-second-cold-gap",),
             spec_refs=("docs/spec/second-boundary.md",),
+            notes=None,
+            selected_workloads=lambda selected_workload_ids=None: (
+                second_workloads
+                if selected_workload_ids is None
+                else tuple(
+                    second_workload_by_id[workload_id]
+                    for workload_id in selected_workload_ids
+                )
+            ),
         ),
     ]
     manifest_records = [
@@ -2254,28 +2240,36 @@ def test_source_tree_report_contract_accepts_combined_manifest_scorecard_without
 
 def test_manifest_contract_helpers_validate_selected_workloads_and_lookup() -> None:
     manifest_path = "benchmarks/workloads/synthetic_boundary.py"
-    manifest = _report_manifest(
-        manifest_id="synthetic-boundary",
-        workloads=(
-            _report_workload(
-                workload_id="module-compile-synthetic-cold",
-                operation="module.compile",
-                family="parser",
-            ),
-            _report_workload(
-                workload_id="module-search-synthetic-warm",
-                operation="module.search",
-                family="module",
-            ),
-            _report_workload(
-                workload_id="pattern-fullmatch-synthetic-purged",
-                operation="pattern.fullmatch",
-                family="module",
-            ),
+    workloads = (
+        SimpleNamespace(
+            workload_id="module-compile-synthetic-cold",
+            operation="module.compile",
+            family="parser",
         ),
-        smoke_workload_ids=("module-compile-synthetic-cold",),
+        SimpleNamespace(
+            workload_id="module-search-synthetic-warm",
+            operation="module.search",
+            family="module",
+        ),
+        SimpleNamespace(
+            workload_id="pattern-fullmatch-synthetic-purged",
+            operation="pattern.fullmatch",
+            family="module",
+        ),
+    )
+    workload_by_id = {workload.workload_id: workload for workload in workloads}
+    manifest = SimpleNamespace(
+        manifest_id="synthetic-boundary",
+        schema_version=1,
+        workloads=workloads,
+        smoke_workload_ids=lambda: ("module-compile-synthetic-cold",),
         spec_refs=("docs/spec/synthetic-boundary.md",),
         notes="synthetic manifest notes",
+        selected_workloads=lambda selected_workload_ids=None: (
+            workloads
+            if selected_workload_ids is None
+            else tuple(workload_by_id[workload_id] for workload_id in selected_workload_ids)
+        ),
     )
     manifest_record = support._artifact_manifest_record(manifest_path, manifest)
     manifest_summary = {
