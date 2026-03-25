@@ -1288,7 +1288,7 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
         ),
         pytest.param(
             "tests.benchmarks.test_source_tree_benchmark_anchor_support",
-            "SHARED_MODULE_BOUNDARY_MANIFEST_PATH",
+            "MODULE_BOUNDARY_MANIFEST_PATH",
             id="source-tree-contract-suite",
         ),
         pytest.param(
@@ -1311,6 +1311,14 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
         module,
         "tests.benchmarks.benchmark_test_support",
     )
+    assert not {
+        imported_name
+        for imported_name in _module_imported_names(
+            module,
+            "tests.benchmarks.benchmark_test_support",
+        )
+        if imported_name.startswith("SHARED_")
+    }
     assert module_constant_name not in assignment_names
     assert getattr(module, module_constant_name) is MODULE_BOUNDARY_MANIFEST_PATH
 
