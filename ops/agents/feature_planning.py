@@ -6,7 +6,8 @@ SPEC = {
     "cycle_order": 25,
     "prompt_path": "ops/agents/feature_planning.md",
     "dispatch": {
-        "mode": "every_cycle",
+        "mode": "interval",
+        "interval_seconds": 3600,
         "timeout_seconds": 1800,
     },
     "codex": {
