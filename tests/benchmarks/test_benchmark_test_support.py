@@ -129,6 +129,37 @@ def _top_level_benchmark_support_alias_pairs(
     return frozenset(alias_pairs)
 
 
+def _top_level_package_import_alias_pairs(
+    module: object,
+    *,
+    package_module: str,
+    imported_names: frozenset[str],
+) -> frozenset[tuple[str, str | None]]:
+    return frozenset(
+        (alias.name, alias.asname)
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ImportFrom) and node.module == package_module
+        for alias in node.names
+        if alias.name in imported_names
+    )
+
+
+def _assert_owner_module_routes_through_package_import(
+    module: object,
+    *,
+    owner_module: str,
+    package_module: str,
+    expected_alias_pairs: frozenset[tuple[str, str | None]],
+) -> None:
+    assert package_module in _module_import_targets(module)
+    assert owner_module not in _module_import_targets(module)
+    assert _top_level_package_import_alias_pairs(
+        module,
+        package_module=package_module,
+        imported_names=frozenset(name for name, _ in expected_alias_pairs),
+    ) == expected_alias_pairs
+
+
 @cache
 def _benchmark_support_import_targets_by_path(
 ) -> tuple[tuple[pathlib.Path, frozenset[str]], ...]:
@@ -1482,12 +1513,11 @@ def test_non_owner_collection_replacement_benchmark_support_routes_shared_classi
         )
     )
 
-    assert any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks"
-        and any(alias.name == "benchmark_test_support" for alias in node.names)
-        for node in _parsed_module_ast(collection_replacement_support).body
-    )
+    assert _top_level_package_import_alias_pairs(
+        collection_replacement_support,
+        package_module="tests.benchmarks",
+        imported_names=frozenset({"benchmark_test_support"}),
+    ) == frozenset({("benchmark_test_support", None)})
     assert {
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
@@ -1511,16 +1541,11 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         support.top_level_module_definition_and_assignment_names(module)
     )
 
-    assert any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks"
-        and any(alias.name == "benchmark_test_support" for alias in node.names)
-        for node in _parsed_module_ast(module).body
-    )
-    assert not any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.benchmark_test_support"
-        for node in _parsed_module_ast(module).body
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", "support")}),
     )
     assert getattr(module, "support") is support
     assert {
@@ -1848,16 +1873,11 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         }
     )
 
-    assert any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks"
-        and any(alias.name == "benchmark_test_support" for alias in node.names)
-        for node in _parsed_module_ast(module).body
-    )
-    assert not any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.benchmark_test_support"
-        for node in _parsed_module_ast(module).body
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert owner_owned_names.isdisjoint(definition_names | assignment_names)
 
@@ -1935,21 +1955,19 @@ def test_collection_replacement_support_through_owner_module_only() -> None:
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
-    module_ast = _parsed_module_ast(combined_suite)
-    direct_owner_imports = [
-        node
-        for node in module_ast.body
-        if isinstance(node, ast.ImportFrom)
-        and node.module
-        == "tests.benchmarks.collection_replacement_benchmark_anchor_support"
-    ]
-    owner_alias_pairs = {
-        (alias.name, alias.asname)
-        for node in module_ast.body
-        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
-        for alias in node.names
-        if alias.name == "collection_replacement_benchmark_anchor_support"
-    }
+    _assert_owner_module_routes_through_package_import(
+        combined_suite,
+        owner_module="tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {
+                (
+                    "collection_replacement_benchmark_anchor_support",
+                    "collection_replacement_support",
+                )
+            }
+        ),
+    )
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(combined_suite)
     )
@@ -2002,13 +2020,6 @@ def test_collection_replacement_support_through_owner_module_only() -> None:
         }
     )
 
-    assert direct_owner_imports == []
-    assert owner_alias_pairs == {
-        (
-            "collection_replacement_benchmark_anchor_support",
-            "collection_replacement_support",
-        )
-    }
     assert owner_names.isdisjoint(local_names)
 
 
