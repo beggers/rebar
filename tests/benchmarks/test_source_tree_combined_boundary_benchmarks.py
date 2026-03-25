@@ -8202,6 +8202,3 @@ NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
 OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
 )
-def _include_all_workloads(_: Any) -> bool:
-    return True
-
