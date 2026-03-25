@@ -4723,6 +4723,21 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
     benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS
 )
+_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+)
+_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
+)
+_is_module_workflow_compiled_pattern_literal_success_workload = (
+    benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload
+)
+_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload = (
+    benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
+)
+_is_module_workflow_compiled_pattern_verbose_bytes_success_workload = (
+    benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload
+)
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
     benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
 )

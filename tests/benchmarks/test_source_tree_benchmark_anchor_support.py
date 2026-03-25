@@ -81,6 +81,14 @@ _ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
     "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
 )
 
+_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
+    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+    "_is_module_workflow_compiled_pattern_literal_success_workload",
+    "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+    "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+)
+
 _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
     "OPTIONAL_GROUP_MANIFEST_PATH",
     "NESTED_GROUP_MANIFEST_PATH",
@@ -1006,6 +1014,13 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             benchmark_test_support,
             constant_name,
         )
+    for constant_name in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+        assert getattr(support, constant_name) is getattr(
+            benchmark_test_support,
+            constant_name,
+        )
 
 
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
@@ -1387,6 +1402,10 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
         pytest.param(
             _ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES,
             id="compiled-pattern-module-helper-keyword",
+        ),
+        pytest.param(
+            _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES,
+            id="compiled-pattern-module-success",
         ),
         pytest.param(
             _ROUTED_REPORT_CONTRACT_HELPER_NAMES,
