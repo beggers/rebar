@@ -4641,16 +4641,6 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 # file is the single benchmark-owner suite.
 
 
-def _compiled_pattern_module_helper_keyword_contract_surface(case_id: str) -> object:
-    return next(
-        surface
-        for surface in (
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
-        )
-        if surface.case_id == case_id
-    )
-
-
 @pytest.mark.parametrize(
     ("owner_spec", "include_workload"),
     (
@@ -5016,8 +5006,12 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     monkeypatch: pytest.MonkeyPatch,
     source_workload: Workload,
 ) -> None:
-    contract_surface = _compiled_pattern_module_helper_keyword_contract_surface(
-        "keyword-error"
+    contract_surface = next(
+        surface
+        for surface in (
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        )
+        if surface.case_id == "keyword-error"
     )
     workload = _source_tree_contract_workload(
         source_workload,
