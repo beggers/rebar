@@ -277,6 +277,141 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
     )
 
 
+def test_source_tree_combined_representative_workload_ids_prefer_explicit_manifest_contract(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest_id = "synthetic-boundary"
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            manifest_id: support.SourceTreeCombinedManifestExpectationDefinition(
+                representative_measured_workload_ids=("explicit-a", "explicit-b"),
+                shape_expectation=support.SourceTreeCombinedManifestShapeExpectation(
+                    representative_measured_workload_ids=("shape-a",),
+                ),
+            ),
+        },
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+        (
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id=manifest_id,
+                slice_id="slice-a",
+                expected_workload_ids=("slice-a", "slice-b"),
+            ),
+        ),
+    )
+
+    assert support.source_tree_combined_manifest_representative_measured_workload_ids(
+        manifest_id
+    ) == ("explicit-a", "explicit-b")
+
+
+def test_source_tree_combined_representative_workload_ids_derive_unique_shape_and_slice_rows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest_id = "synthetic-boundary"
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            manifest_id: support.SourceTreeCombinedManifestExpectationDefinition(
+                shape_expectation=support.SourceTreeCombinedManifestShapeExpectation(
+                    representative_measured_workload_ids=("shape-a", "shared"),
+                ),
+            ),
+        },
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+        (
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id=manifest_id,
+                slice_id="slice-a",
+                expected_workload_ids=("shared", "slice-a"),
+            ),
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id="other-boundary",
+                slice_id="ignored",
+                expected_workload_ids=("other",),
+            ),
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id=manifest_id,
+                slice_id="slice-b",
+                expected_workload_ids=("slice-a", "slice-b", "shape-a"),
+            ),
+        ),
+    )
+
+    assert support.source_tree_combined_manifest_representative_measured_workload_ids(
+        manifest_id
+    ) == ("shape-a", "shared", "slice-a", "slice-b")
+
+
+def test_select_source_tree_combined_slice_rows_filters_suffix_features_and_categories(
+) -> None:
+    manifest = SimpleNamespace(
+        workloads=(
+            SimpleNamespace(
+                workload_id="first-keep",
+                syntax_features=("feature-a", "feature-b"),
+                categories=("cat-a", "cat-b"),
+            ),
+            SimpleNamespace(
+                workload_id="wrong-suffix",
+                syntax_features=("feature-a",),
+                categories=("cat-a",),
+            ),
+            SimpleNamespace(
+                workload_id="missing-feature-keep",
+                syntax_features=("feature-b",),
+                categories=("cat-a",),
+            ),
+            SimpleNamespace(
+                workload_id="excluded-feature-keep",
+                syntax_features=("feature-a", "feature-x"),
+                categories=("cat-a",),
+            ),
+            SimpleNamespace(
+                workload_id="missing-category-keep",
+                syntax_features=("feature-a",),
+                categories=("cat-b",),
+            ),
+            SimpleNamespace(
+                workload_id="excluded-category-keep",
+                syntax_features=("feature-a",),
+                categories=("cat-a", "cat-x"),
+            ),
+            SimpleNamespace(
+                workload_id="second-keep",
+                syntax_features=("feature-a",),
+                categories=("cat-a",),
+            ),
+        ),
+    )
+    expectation = support.SourceTreeCombinedSliceExpectation(
+        manifest_id="synthetic-boundary",
+        slice_id="synthetic-slice",
+        required_syntax_features=("feature-a",),
+        excluded_syntax_features=("feature-x",),
+        required_categories=("cat-a",),
+        excluded_categories=("cat-x",),
+        required_id_suffix="-keep",
+    )
+
+    assert [
+        workload.workload_id
+        for workload in support.select_source_tree_combined_slice_rows(
+            manifest,
+            expectation,
+        )
+    ] == ["first-keep", "second-keep"]
+
+
 @pytest.mark.parametrize(
     ("case", "pattern", "expected"),
     (
