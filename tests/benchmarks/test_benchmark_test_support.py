@@ -19,51 +19,17 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_supp
 from tests.benchmarks import (
     test_benchmark_publication_runtime_contracts as publication_runtime_contracts,
 )
-from tests.benchmarks.benchmark_test_support import (
-    MODULE_BOUNDARY_MANIFEST_PATH,
-    COMPILE_MATRIX_MANIFEST_PATH,
-    CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
-    EXACT_REPEAT_MANIFEST_PATH,
-    GROUPED_ALTERNATION_MANIFEST_PATH,
-    GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-    NESTED_GROUP_MANIFEST_PATH,
-    NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
-    NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-    OPEN_ENDED_MANIFEST_PATH,
-    OPTIONAL_GROUP_MANIFEST_PATH,
-    RANGED_REPEAT_MANIFEST_PATH,
-    REGRESSION_MATRIX_MANIFEST_PATH,
-    RecordingBenchmarkCompiledPattern,
-    RecordingBenchmarkModule,
-    _module_pattern_case,
-    _owner_definition_manifest_path_names,
-    _parsed_module_ast,
-    _synthetic_manifest_loader,
-    _synthetic_workload,
-    _synthetic_workload_is_included,
-    _synthetic_workload_signature,
-    anchor_support_cache_guard,
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
-    _has_standard_benchmark_legacy_workloads,
-    _has_standard_benchmark_special_unanchored_direct_parity_cases,
-    _has_standard_benchmark_special_unanchored_workloads,
-    _runs_standard_benchmark_callback_result_parity,
-    compile_proxy_correctness_case_signature,
-    compile_proxy_workload_signature,
-    is_compile_proxy_workload,
-    _expected_exception_instance,
-    _record_numeric_materialization_fields,
-    _write_test_manifest,
-    synthetic_workload,
-)
 from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
+
+# Pytest fixture discovery needs a module-level binding for this shared fixture.
+anchor_support_cache_guard = support.anchor_support_cache_guard
 
 
 def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
     return next(
         node
-        for node in _parsed_module_ast(module).body
+        for node in support._parsed_module_ast(module).body
         if isinstance(node, ast.FunctionDef) and node.name == function_name
     )
 
@@ -71,7 +37,7 @@ def _module_function_definition(module: object, function_name: str) -> ast.Funct
 def _module_class_definition(module: object, class_name: str) -> ast.ClassDef:
     return next(
         node
-        for node in _parsed_module_ast(module).body
+        for node in support._parsed_module_ast(module).body
         if isinstance(node, ast.ClassDef) and node.name == class_name
     )
 
@@ -93,7 +59,7 @@ def _top_level_benchmark_support_alias_pairs(
 ) -> frozenset[tuple[str, str]]:
     alias_pairs: set[tuple[str, str]] = set()
 
-    for node in _parsed_module_ast(module).body:
+    for node in support._parsed_module_ast(module).body:
         if isinstance(node, ast.ImportFrom):
             if node.module != "tests.benchmarks.benchmark_test_support":
                 continue
@@ -134,7 +100,7 @@ def _top_level_package_import_alias_pairs(
 ) -> frozenset[tuple[str, str | None]]:
     return frozenset(
         (alias.name, alias.asname)
-        for node in _parsed_module_ast(module).body
+        for node in support._parsed_module_ast(module).body
         if isinstance(node, ast.ImportFrom) and node.module == package_module
         for alias in node.names
         if alias.name in imported_names
@@ -202,7 +168,7 @@ def _compiled_pattern_module_helper_manifest_id(operation: str) -> str:
 def _module_assignment(module: object, name: str) -> ast.Assign:
     return next(
         node
-        for node in _parsed_module_ast(module).body
+        for node in support._parsed_module_ast(module).body
         if isinstance(node, ast.Assign)
         and any(
             isinstance(target, ast.Name) and target.id == name
@@ -224,7 +190,7 @@ def _inline_standard_definition_assignments(
 ) -> tuple[ast.Assign, ...]:
     return tuple(
         node
-        for node in _parsed_module_ast(module).body
+        for node in support._parsed_module_ast(module).body
         if isinstance(node, ast.Assign)
         and _assignment_target_name(node).endswith("_STANDARD_BENCHMARK_DEFINITIONS")
         and isinstance(node.value, ast.Tuple)
@@ -233,7 +199,7 @@ def _inline_standard_definition_assignments(
 
 
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
-    manifest_path = _write_test_manifest(
+    manifest_path = support._write_test_manifest(
         tmp_path,
         "sample_manifest.py",
         """\
@@ -246,13 +212,13 @@ def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
 
 
 def test_expected_exception_instance_maps_supported_payloads() -> None:
-    type_error = _expected_exception_instance(
+    type_error = support._expected_exception_instance(
         {
             "type": "TypeError",
             "message_substring": "type payload",
         }
     )
-    value_error = _expected_exception_instance(
+    value_error = support._expected_exception_instance(
         {
             "type": "ValueError",
             "message_substring": "value payload",
@@ -273,7 +239,7 @@ def test_record_numeric_materialization_fields_collects_names_and_preserves_retu
         {"type": "indexlike", "value": 7},
         field_name="kwargs.count",
     )
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = support._record_numeric_materialization_fields(monkeypatch)
 
     observed_value = benchmarks.materialize_numeric_workload_argument(
         {"type": "indexlike", "value": 7},
@@ -289,7 +255,7 @@ def test_record_numeric_materialization_fields_collects_names_and_preserves_retu
 def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call_success_path(
     monkeypatch,
 ) -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id="collection-replacement-benchmark-support",
         workload_id="pattern-sub-count-indexlike-keyword-contract",
         operation="pattern.sub",
@@ -300,7 +266,7 @@ def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
         timing_scope="pattern-helper-call",
     )
 
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result="xxabc",
@@ -311,7 +277,7 @@ def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
 def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call_type_error_path(
     monkeypatch,
 ) -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id="collection-replacement-benchmark-support",
         workload_id="pattern-split-duplicate-maxsplit-keyword-contract",
         operation="pattern.split",
@@ -326,7 +292,7 @@ def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
         timing_scope="pattern-helper-call",
     )
 
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=None,
@@ -341,21 +307,21 @@ def test_manifest_workloads_resolve_and_cache_manifest_loads(
 ) -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
     workloads = (
-        _synthetic_workload("anchored", ("shared",)),
-        _synthetic_workload("unanchored", ("missing",), include=False),
+        support._synthetic_workload("anchored", ("shared",)),
+        support._synthetic_workload("unanchored", ("missing",), include=False),
     )
     load_calls: list[pathlib.Path] = []
 
     def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
         load_calls.append(path)
-        return _synthetic_manifest_loader(path, workloads=workloads)
+        return support._synthetic_manifest_loader(path, workloads=workloads)
 
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
 
     assert support.manifest_workloads(manifest_path) == workloads
     assert support.selected_manifest_workloads(
         manifest_path,
-        include_workload=_synthetic_workload_is_included,
+        include_workload=support._synthetic_workload_is_included,
     ) == (workloads[0],)
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
     assert support.live_manifest_workloads(
@@ -370,12 +336,12 @@ def test_manifest_workloads_resolve_string_paths_from_workloads_root(
     anchor_support_cache_guard: None,
 ) -> None:
     manifest_name = "synthetic_boundary.py"
-    workloads = (_synthetic_workload("anchored", ("shared",)),)
+    workloads = (support._synthetic_workload("anchored", ("shared",)),)
     resolved_paths: list[pathlib.Path] = []
 
     def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
         resolved_paths.append(path)
-        return _synthetic_manifest_loader(path, workloads=workloads)
+        return support._synthetic_manifest_loader(path, workloads=workloads)
 
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
 
@@ -390,20 +356,20 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     anchor_support_cache_guard: None,
 ) -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
-    workloads = (_synthetic_workload("anchored", ("shared",)),)
+    workloads = (support._synthetic_workload("anchored", ("shared",)),)
     manifest_load_calls: list[pathlib.Path] = []
     published_case_id_calls: list[object] = []
     published_cases_calls: list[str] = []
     source_tree_live_manifest_calls: list[tuple[pathlib.Path, tuple[str, ...]]] = []
     published_cases = {"case-1": object()}
-    source_tree_workloads = (_synthetic_workload("source-tree-anchored", ("bytes",)),)
+    source_tree_workloads = (support._synthetic_workload("source-tree-anchored", ("bytes",)),)
     expected_workload_ids = (
         collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
     )
 
     def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
         manifest_load_calls.append(path)
-        return _synthetic_manifest_loader(path, workloads=workloads)
+        return support._synthetic_manifest_loader(path, workloads=workloads)
 
     @cache
     def _published_case_ids_by_signature(
@@ -442,7 +408,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
     assert support.published_case_ids_by_signature(
-        _synthetic_workload_signature
+        support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
     assert (
@@ -450,7 +416,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         == source_tree_workloads
     )
     assert manifest_load_calls == [manifest_path]
-    assert published_case_id_calls == [_synthetic_workload_signature]
+    assert published_case_id_calls == [support._synthetic_workload_signature]
     assert published_cases_calls == ["called"]
     assert source_tree_live_manifest_calls == [
         (
@@ -462,7 +428,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
     assert support.published_case_ids_by_signature(
-        _synthetic_workload_signature
+        support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
     assert (
@@ -470,7 +436,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         == source_tree_workloads
     )
     assert manifest_load_calls == [manifest_path]
-    assert published_case_id_calls == [_synthetic_workload_signature]
+    assert published_case_id_calls == [support._synthetic_workload_signature]
     assert published_cases_calls == ["called"]
     assert source_tree_live_manifest_calls == [
         (
@@ -484,7 +450,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
     assert support.published_case_ids_by_signature(
-        _synthetic_workload_signature
+        support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
     assert (
@@ -493,8 +459,8 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     )
     assert manifest_load_calls == [manifest_path, manifest_path]
     assert published_case_id_calls == [
-        _synthetic_workload_signature,
-        _synthetic_workload_signature,
+        support._synthetic_workload_signature,
+        support._synthetic_workload_signature,
     ]
     assert published_cases_calls == ["called", "called"]
     assert source_tree_live_manifest_calls == [
@@ -545,7 +511,7 @@ def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
 
 def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata(
 ) -> None:
-    source_workload = synthetic_workload(
+    source_workload = support.synthetic_workload(
         manifest_id="source-manifest",
         workload_id="module-sub-count-keyword-warm-str",
         operation="module.sub",
@@ -600,7 +566,7 @@ def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata
 
 def test_source_tree_contract_workload_reconstructs_contract_workload_with_defaults(
 ) -> None:
-    source_workload = synthetic_workload(
+    source_workload = support.synthetic_workload(
         manifest_id="source-manifest",
         workload_id="module-subn-count-keyword-purged-str",
         operation="module.subn",
@@ -654,14 +620,14 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
 
 def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids() -> None:
     source_workloads = (
-        synthetic_workload(
+        support.synthetic_workload(
             manifest_id="source-manifest",
             workload_id="first-workload",
             operation="module.findall",
             pattern="abc",
             haystack="abcabc",
         ),
-        synthetic_workload(
+        support.synthetic_workload(
             manifest_id="source-manifest",
             workload_id="second-workload",
             operation="module.sub",
@@ -759,15 +725,15 @@ def test_contract_source_workloads_follow_selector_order_on_synthetic_manifest_r
 ) -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
     workloads = (
-        _synthetic_workload("first", ("shared", "first")),
-        _synthetic_workload("second", ("shared", "second")),
-        _synthetic_workload("third", ("shared", "third")),
+        support._synthetic_workload("first", ("shared", "first")),
+        support._synthetic_workload("second", ("shared", "second")),
+        support._synthetic_workload("third", ("shared", "third")),
     )
 
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(path, workloads=workloads),
+        lambda path: support._synthetic_manifest_loader(path, workloads=workloads),
     )
 
     source_workloads = support._contract_source_workloads(
@@ -792,14 +758,14 @@ def test_contract_source_workloads_detect_drift_on_synthetic_manifest_rows(
     anchor_support_cache_guard: None,
 ) -> None:
     workloads = (
-        _synthetic_workload("first", ("shared", "first")),
-        _synthetic_workload("second", ("shared", "second")),
+        support._synthetic_workload("first", ("shared", "first")),
+        support._synthetic_workload("second", ("shared", "second")),
     )
 
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(path, workloads=workloads),
+        lambda path: support._synthetic_manifest_loader(path, workloads=workloads),
     )
 
     with pytest.raises(AssertionError, match="synthetic workloads drifted"):
@@ -840,7 +806,7 @@ def test_compile_proxy_correctness_case_signature_uses_compile_shape() -> None:
         text_model=None,
     )
 
-    assert compile_proxy_correctness_case_signature(case) == (
+    assert support.compile_proxy_correctness_case_signature(case) == (
         "module.compile",
         b"literal",
         (),
@@ -851,7 +817,7 @@ def test_compile_proxy_correctness_case_signature_uses_compile_shape() -> None:
 
 
 def test_compile_proxy_workload_signature_uses_compile_shape() -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id="compile-proxy-benchmark-support",
         workload_id="module-compile-literal",
         operation="module.compile",
@@ -860,7 +826,7 @@ def test_compile_proxy_workload_signature_uses_compile_shape() -> None:
         text_model="bytes",
     )
 
-    assert compile_proxy_workload_signature(workload) == (
+    assert support.compile_proxy_workload_signature(workload) == (
         "module.compile",
         b"literal",
         (),
@@ -871,8 +837,8 @@ def test_compile_proxy_workload_signature_uses_compile_shape() -> None:
 
 
 def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
-    assert is_compile_proxy_workload(
-        synthetic_workload(
+    assert support.is_compile_proxy_workload(
+        support.synthetic_workload(
             manifest_id="compile-proxy-benchmark-support",
             workload_id="compile-literal",
             operation="compile",
@@ -881,8 +847,8 @@ def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
             text_model="str",
         )
     )
-    assert is_compile_proxy_workload(
-        synthetic_workload(
+    assert support.is_compile_proxy_workload(
+        support.synthetic_workload(
             manifest_id="compile-proxy-benchmark-support",
             workload_id="module-compile-literal",
             operation="module.compile",
@@ -891,8 +857,8 @@ def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
             text_model="str",
         )
     )
-    assert not is_compile_proxy_workload(
-        synthetic_workload(
+    assert not support.is_compile_proxy_workload(
+        support.synthetic_workload(
             manifest_id="compile-proxy-benchmark-support",
             workload_id="module-search-literal",
             operation="module.search",
@@ -918,19 +884,19 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
 ) -> None:
     definition = support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS[0]
 
-    assert COMPILE_MATRIX_MANIFEST_PATH == (
+    assert support.COMPILE_MATRIX_MANIFEST_PATH == (
         REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
     )
-    assert REGRESSION_MATRIX_MANIFEST_PATH == (
+    assert support.REGRESSION_MATRIX_MANIFEST_PATH == (
         REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
     )
     assert definition.manifest_paths == (
-        COMPILE_MATRIX_MANIFEST_PATH,
-        REGRESSION_MATRIX_MANIFEST_PATH,
+        support.COMPILE_MATRIX_MANIFEST_PATH,
+        support.REGRESSION_MATRIX_MANIFEST_PATH,
     )
     assert definition.expected_anchor_case_ids == (
         support._definition_anchor_expectations(
-            COMPILE_MATRIX_MANIFEST_PATH,
+            support.COMPILE_MATRIX_MANIFEST_PATH,
             {
                 "compile-inline-locale-bytes-warm": (
                     "bytes-inline-locale-flag-success",
@@ -953,7 +919,7 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
             },
         )
         | support._definition_anchor_expectations(
-            REGRESSION_MATRIX_MANIFEST_PATH,
+            support.REGRESSION_MATRIX_MANIFEST_PATH,
             {
                 "regression-parser-atomic-lookbehind-cold": (
                     "str-parser-stress-compile-proxy-success",
@@ -998,7 +964,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
         )
     ) == support.STANDARD_BENCHMARK_DEFINITIONS
 
-    support_ast = _parsed_module_ast(support)
+    support_ast = support._parsed_module_ast(support)
     definitions_assignment = next(
         node
         for node in support_ast.body
@@ -1199,7 +1165,7 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_supp
 
 
 def test_module_keyword_flags_workload_stays_pinned() -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id="module-pattern-boundary",
         workload_id="module-search-flags-keyword",
         operation="module.search",
@@ -1207,7 +1173,7 @@ def test_module_keyword_flags_workload_stays_pinned() -> None:
         kwargs={"flags": {"type": "indexlike", "value": 2}},
         flags=2,
     )
-    case = _module_pattern_case(
+    case = support._module_pattern_case(
         helper="search",
         operation="module_call",
         args=("zabc",),
@@ -1236,7 +1202,7 @@ def test_module_keyword_flags_workload_stays_pinned() -> None:
 
 
 def test_module_keyword_error_workload_stays_pinned() -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id="module-pattern-boundary",
         workload_id="module-search-duplicate-flags-keyword",
         operation="module.search",
@@ -1282,7 +1248,7 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
 
 def test_benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant(
 ) -> None:
-    assert _owner_definition_manifest_path_names(
+    assert support._owner_definition_manifest_path_names(
         _module_assignment(
             support,
             "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
@@ -1299,8 +1265,8 @@ def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_co
         definition.manifest_paths[0]
         for definition in support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
     ) == (
-        MODULE_BOUNDARY_MANIFEST_PATH,
-        MODULE_BOUNDARY_MANIFEST_PATH,
+        support.MODULE_BOUNDARY_MANIFEST_PATH,
+        support.MODULE_BOUNDARY_MANIFEST_PATH,
     )
 
 
@@ -1321,7 +1287,7 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
 
     for assignment in assignment_nodes:
         assignment_name = _assignment_target_name(assignment)
-        manifest_path_name_groups = _owner_definition_manifest_path_names(assignment)
+        manifest_path_name_groups = support._owner_definition_manifest_path_names(assignment)
         assert all(
             manifest_path_names
             and all(
@@ -1385,7 +1351,7 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
         assert getattr(module, "benchmark_test_support") is support
         assert (
             module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
-            is MODULE_BOUNDARY_MANIFEST_PATH
+            is support.MODULE_BOUNDARY_MANIFEST_PATH
         )
         if module_constant_name is not None:
             assert not hasattr(module, module_constant_name)
@@ -1403,7 +1369,7 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
             if imported_name.startswith("SHARED_")
         }
         assert module_constant_name is not None
-        assert getattr(module, module_constant_name) is MODULE_BOUNDARY_MANIFEST_PATH
+        assert getattr(module, module_constant_name) is support.MODULE_BOUNDARY_MANIFEST_PATH
     if module_constant_name is not None:
         assert module_constant_name not in assignment_names
 
@@ -1444,14 +1410,14 @@ def test_source_tree_manifest_path_consumers_reuse_support_constants_by_identity
 
 def test_shared_source_tree_manifest_path_constants_point_to_current_workload_files() -> None:
     assert (
-        OPTIONAL_GROUP_MANIFEST_PATH,
-        NESTED_GROUP_MANIFEST_PATH,
-        EXACT_REPEAT_MANIFEST_PATH,
-        RANGED_REPEAT_MANIFEST_PATH,
-        GROUPED_ALTERNATION_MANIFEST_PATH,
-        GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        OPEN_ENDED_MANIFEST_PATH,
+        support.OPTIONAL_GROUP_MANIFEST_PATH,
+        support.NESTED_GROUP_MANIFEST_PATH,
+        support.EXACT_REPEAT_MANIFEST_PATH,
+        support.RANGED_REPEAT_MANIFEST_PATH,
+        support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+        support.OPEN_ENDED_MANIFEST_PATH,
     ) == (
         REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py",
         REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py",
@@ -1518,8 +1484,8 @@ def test_publication_runtime_contracts_route_shared_support_through_package_owne
 def test_shared_publication_runtime_manifest_path_constants_point_to_current_workload_files(
 ) -> None:
     assert (
-        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
-        NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
+        support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        support.NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
     ) == (
         REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py",
         REPO_ROOT
@@ -1657,6 +1623,29 @@ def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
         assert getattr(module.support, helper_name) is getattr(support, helper_name)
 
 
+def test_benchmark_support_suite_routes_shared_owner_imports_through_package_alias(
+) -> None:
+    module = importlib.import_module("tests.benchmarks.test_benchmark_test_support")
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", "support")}),
+    )
+    assert module.support is support
+    assert {
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "RecordingBenchmarkModule",
+        "_parsed_module_ast",
+        "_synthetic_workload",
+        "_write_test_manifest",
+    }.isdisjoint(definition_names | assignment_names)
+
+
 def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
 ) -> None:
     module = importlib.import_module(
@@ -1665,7 +1654,7 @@ def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_sha
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
-    module_ast = _parsed_module_ast(module)
+    module_ast = support._parsed_module_ast(module)
     benchmark_support_imports = {
         (alias.name, alias.asname)
         for node in module_ast.body
@@ -1734,7 +1723,7 @@ def test_source_tree_anchor_support_routes_owner_imports_through_package_modules
             "tests.benchmarks.benchmark_test_support",
             "tests.benchmarks.collection_replacement_benchmark_anchor_support",
         }
-        for node in _parsed_module_ast(anchor_support).body
+        for node in support._parsed_module_ast(anchor_support).body
     )
     assert {
         "MODULE_BOUNDARY_MANIFEST_PATH",
@@ -1792,7 +1781,7 @@ def test_benchmark_test_support_routes_owner_definition_imports_through_package_
             "tests.benchmarks.collection_replacement_benchmark_anchor_support",
             "tests.benchmarks.source_tree_benchmark_anchor_support",
         }
-        for node in _parsed_module_ast(support).body
+        for node in support._parsed_module_ast(support).body
     )
     assert {
         "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
@@ -1805,7 +1794,7 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
     module = importlib.import_module(
         "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
     )
-    module_ast = _parsed_module_ast(module)
+    module_ast = support._parsed_module_ast(module)
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
@@ -2539,7 +2528,7 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
     ("workload", "callback_flags", "expected_result", "expected_call", "expected_cpython_args", "materialize"),
     (
         (
-            synthetic_workload(
+            support.synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id(
                     "module.search"
                 ),
@@ -2557,7 +2546,7 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
             False,
         ),
         (
-            synthetic_workload(
+            support.synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id("module.subn"),
                 workload_id="module-subn-success",
                 operation="module.subn",
@@ -2575,7 +2564,7 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
             False,
         ),
         (
-            synthetic_workload(
+            support.synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id(
                     "module.finditer"
                 ),
@@ -2598,7 +2587,7 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
             True,
         ),
         (
-            synthetic_workload(
+            support.synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id("module.split"),
                 workload_id="module-split-success",
                 operation="module.split",
@@ -2643,7 +2632,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
 
 
 def test_run_cpython_compiled_pattern_module_helper_workload_materializes_finditer() -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.finditer"),
         workload_id="module-finditer-runtime",
         operation="module.finditer",
@@ -2665,7 +2654,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_materializes_findit
 
 def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_result(
 ) -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.subn"),
         workload_id="module-subn-runtime",
         operation="module.subn",
@@ -2688,7 +2677,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_re
 
 def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounded_trio(
 ) -> None:
-    workload = synthetic_workload(
+    workload = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
         workload_id="module.search-wrong-text-model",
         operation="module.search",
@@ -2769,7 +2758,7 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missin
 
 def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workloads(
 ) -> None:
-    literal_workload = synthetic_workload(
+    literal_workload = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
         workload_id="module-search-literal-compiled-pattern",
         operation="module.search",
@@ -2777,7 +2766,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         haystack="zzabczz",
         use_compiled_pattern=True,
     )
-    wildcard_workload = synthetic_workload(
+    wildcard_workload = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.fullmatch"),
         workload_id="module-fullmatch-bounded-wildcard-compiled-pattern",
         operation="module.fullmatch",
@@ -2786,7 +2775,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         text_model="bytes",
         use_compiled_pattern=True,
     )
-    verbose_workload = synthetic_workload(
+    verbose_workload = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
         workload_id="module-search-verbose-bytes-compiled-pattern",
         operation="module.search",
@@ -2843,14 +2832,14 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
 
 def test_module_workflow_compiled_pattern_success_selectors_reject_non_matching_rows(
 ) -> None:
-    direct_pattern_workload = synthetic_workload(
+    direct_pattern_workload = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
         workload_id="module-search-direct-pattern",
         operation="module.search",
         pattern="abc",
         haystack="zzabczz",
     )
-    wrong_haystack_model = synthetic_workload(
+    wrong_haystack_model = support.synthetic_workload(
         manifest_id=_compiled_pattern_module_helper_manifest_id("module.match"),
         workload_id="module-match-wrong-text-model",
         operation="module.match",
@@ -2875,21 +2864,21 @@ def test_module_workflow_compiled_pattern_success_selectors_reject_non_matching_
 
 def test_module_workflow_compiled_pattern_correctness_case_signature_requires_compiled_module_call_shape(
 ) -> None:
-    matching_case = _module_pattern_case(
+    matching_case = support._module_pattern_case(
         helper="search",
         operation="module_call",
         args=("zzabczz",),
         pattern="abc",
         use_compiled_pattern=True,
     )
-    missing_args_case = _module_pattern_case(
+    missing_args_case = support._module_pattern_case(
         helper="search",
         operation="module_call",
         args=(),
         pattern="abc",
         use_compiled_pattern=True,
     )
-    unsupported_helper_case = _module_pattern_case(
+    unsupported_helper_case = support._module_pattern_case(
         helper="split",
         operation="module_call",
         args=("zzabczz",),
@@ -2923,14 +2912,14 @@ def test_anchored_workload_case_helpers_classify_anchored_and_unanchored_workloa
 ) -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
     workloads = (
-        _synthetic_workload("anchored", ("shared",)),
-        _synthetic_workload("unanchored", ("missing",)),
-        _synthetic_workload("excluded", ("shared",), include=False),
+        support._synthetic_workload("anchored", ("shared",)),
+        support._synthetic_workload("unanchored", ("missing",)),
+        support._synthetic_workload("excluded", ("shared",), include=False),
     )
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(path, workloads=workloads),
+        lambda path: support._synthetic_manifest_loader(path, workloads=workloads),
     )
 
     anchor_case_ids = {("shared",): ("case-a", "case-b")}
@@ -2938,8 +2927,8 @@ def test_anchored_workload_case_helpers_classify_anchored_and_unanchored_workloa
     assert support.anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=_synthetic_workload_signature,
-        include_workload=_synthetic_workload_is_included,
+        workload_signature=support._synthetic_workload_signature,
+        include_workload=support._synthetic_workload_is_included,
     ) == {
         ("synthetic_boundary.py", "anchored"): ("case-a", "case-b"),
         ("synthetic_boundary.py", "unanchored"): (),
@@ -2947,8 +2936,8 @@ def test_anchored_workload_case_helpers_classify_anchored_and_unanchored_workloa
     assert support.unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
-        workload_signature=_synthetic_workload_signature,
-        include_workload=_synthetic_workload_is_included,
+        workload_signature=support._synthetic_workload_signature,
+        include_workload=support._synthetic_workload_is_included,
     ) == ("unanchored",)
 
 
@@ -2957,12 +2946,12 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
     anchor_support_cache_guard: None,
 ) -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
-    workload = _synthetic_workload("anchored", ("shared",))
+    workload = support._synthetic_workload("anchored", ("shared",))
     case = SimpleNamespace(case_id="case-1")
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(path, workloads=(workload,)),
+        lambda path: support._synthetic_manifest_loader(path, workloads=(workload,)),
     )
     monkeypatch.setattr(
         support,
@@ -2993,9 +2982,9 @@ def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(
+        lambda path: support._synthetic_manifest_loader(
             path,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
+            workloads=(support._synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(
@@ -3023,9 +3012,9 @@ def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(
+        lambda path: support._synthetic_manifest_loader(
             path,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
+            workloads=(support._synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(
@@ -3059,9 +3048,9 @@ def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(
+        lambda path: support._synthetic_manifest_loader(
             path,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
+            workloads=(support._synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(
@@ -3092,9 +3081,9 @@ def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
     monkeypatch.setattr(
         support,
         "load_manifest",
-        lambda path: _synthetic_manifest_loader(
+        lambda path: support._synthetic_manifest_loader(
             path,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
+            workloads=(support._synthetic_workload("anchored", ("shared",)),),
         ),
     )
     monkeypatch.setattr(
@@ -3119,7 +3108,7 @@ def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
     monkeypatch: pytest.MonkeyPatch,
     anchor_support_cache_guard: None,
 ) -> None:
-    workload = _synthetic_workload("anchored", ("shared",))
+    workload = support._synthetic_workload("anchored", ("shared",))
     pair = support.AnchoredWorkloadCasePair(
         manifest_name="synthetic_boundary.py",
         workload_id="anchored",
@@ -3147,7 +3136,7 @@ def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
 def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    workload = _synthetic_workload("anchored", ("shared",))
+    workload = support._synthetic_workload("anchored", ("shared",))
     pair = support.AnchoredWorkloadCasePair(
         manifest_name="synthetic_boundary.py",
         workload_id="anchored",
@@ -3175,7 +3164,7 @@ def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions
 def test_assert_anchored_workload_case_result_parity_rejects_exception_message_drift(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    workload = _synthetic_workload("anchored", ("shared",))
+    workload = support._synthetic_workload("anchored", ("shared",))
     pair = support.AnchoredWorkloadCasePair(
         manifest_name="synthetic_boundary.py",
         workload_id="anchored",
@@ -3218,16 +3207,16 @@ def test_standard_benchmark_definition_params_preserve_names_and_filters() -> No
         return expected_definitions
 
     legacy_definitions = _assert_filtered_definition_params(
-        _has_standard_benchmark_legacy_workloads
+        support._has_standard_benchmark_legacy_workloads
     )
     callback_definitions = _assert_filtered_definition_params(
-        _runs_standard_benchmark_callback_result_parity
+        support._runs_standard_benchmark_callback_result_parity
     )
     special_unanchored_definitions = _assert_filtered_definition_params(
-        _has_standard_benchmark_special_unanchored_workloads
+        support._has_standard_benchmark_special_unanchored_workloads
     )
     direct_parity_definitions = _assert_filtered_definition_params(
-        _has_standard_benchmark_special_unanchored_direct_parity_cases
+        support._has_standard_benchmark_special_unanchored_direct_parity_cases
     )
 
     assert all(definition.expected_legacy_workload_ids for definition in legacy_definitions)
@@ -3296,7 +3285,7 @@ def test_source_tree_combined_suite_imports_standard_benchmark_definitions_from_
 
 def test_recording_benchmark_support_records_compile_calls_and_reuses_compiled_patterns(
 ) -> None:
-    module = RecordingBenchmarkModule()
+    module = support.RecordingBenchmarkModule()
     compiled_pattern = module.compile("abc", 0)
 
     assert module.calls == [("compile", "abc", 0)]
@@ -3307,13 +3296,13 @@ def test_recording_benchmark_support_records_compile_calls_and_reuses_compiled_p
 
 
 def test_recording_benchmark_support_records_helper_call_before_raising() -> None:
-    module = RecordingBenchmarkModule(
+    module = support.RecordingBenchmarkModule(
         helper_exception=TypeError("unexpected keyword argument 'missing'"),
     )
     callback = benchmarks.build_callable(
         module,
         "re",
-        synthetic_workload(
+        support.synthetic_workload(
             manifest_id="module-boundary",
             workload_id="module-search-warm-str-compiled-pattern-support-contract",
             operation="module.search",
@@ -3330,11 +3319,11 @@ def test_recording_benchmark_support_records_helper_call_before_raising() -> Non
 
 
 def test_recording_benchmark_support_records_pattern_helper_calls() -> None:
-    module = RecordingBenchmarkModule()
+    module = support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
-        synthetic_workload(
+        support.synthetic_workload(
             manifest_id="python-benchmark-recording-module-support",
             workload_id="pattern-search-warm-str-contract",
             operation="pattern.search",
@@ -3346,7 +3335,7 @@ def test_recording_benchmark_support_records_pattern_helper_calls() -> None:
 
     assert module.calls == [("compile", "abc", 0)]
     compiled_pattern = module.compiled_patterns[0]
-    assert isinstance(compiled_pattern, RecordingBenchmarkCompiledPattern)
+    assert isinstance(compiled_pattern, support.RecordingBenchmarkCompiledPattern)
 
     assert callback() == "pattern-result"
     assert module.calls[-1] == ("pattern.search", "zabcabc", (), {})
@@ -3391,11 +3380,11 @@ def test_recording_benchmark_module_helper_cache_modes_preserve_expected_order(
     expected_build_calls: list[tuple[object, ...]],
     expected_callback_calls: list[tuple[object, ...]],
 ) -> None:
-    module = RecordingBenchmarkModule()
+    module = support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
-        synthetic_workload(
+        support.synthetic_workload(
             manifest_id="python-benchmark-module-helper-cache-contract",
             workload_id=f"module-search-{cache_mode}-cache-contract",
             bucket="module-search",
@@ -3416,13 +3405,13 @@ def test_recording_benchmark_module_helper_cache_modes_preserve_expected_order(
 
 def test_recording_benchmark_module_helper_warm_expected_exception_prewarms_compile_cache(
 ) -> None:
-    module = RecordingBenchmarkModule(
+    module = support.RecordingBenchmarkModule(
         helper_exception=TypeError("unexpected keyword argument 'missing'"),
     )
     callback = benchmarks.build_callable(
         module,
         "re",
-        synthetic_workload(
+        support.synthetic_workload(
             manifest_id="python-benchmark-module-helper-cache-contract",
             workload_id="module-search-warm-cache-contract",
             bucket="module-search",
@@ -3490,11 +3479,11 @@ def test_recording_benchmark_pattern_helper_cache_modes_preserve_expected_order(
     expected_build_calls: list[tuple[object, ...]],
     expected_callback_calls: list[tuple[object, ...]],
 ) -> None:
-    module = RecordingBenchmarkModule()
+    module = support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
-        synthetic_workload(
+        support.synthetic_workload(
             manifest_id="python-benchmark-pattern-helper-cache-contract",
             workload_id=f"pattern-search-{cache_mode}-cache-contract",
             bucket="pattern-search",
