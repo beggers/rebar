@@ -77,6 +77,12 @@ class _SyntheticStandardBenchmarkDefinition:
             "_build_pattern_boundary_standard_benchmark_definitions",
             id="pattern-boundary",
         ),
+        pytest.param(
+            compiled_pattern_module_helper_support,
+            "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+            "_build_compiled_pattern_module_helper_standard_benchmark_definitions",
+            id="compiled-pattern-module-helper",
+        ),
     ),
 )
 def test_owner_standard_definition_exports_stay_lazy_and_cached(
@@ -112,6 +118,11 @@ def test_owner_standard_definition_exports_stay_lazy_and_cached(
             pattern_boundary_support,
             "NOT_A_PATTERN_BOUNDARY_OWNER_EXPORT",
             id="pattern-boundary",
+        ),
+        pytest.param(
+            compiled_pattern_module_helper_support,
+            "NOT_A_COMPILED_PATTERN_MODULE_HELPER_OWNER_EXPORT",
+            id="compiled-pattern-module-helper",
         ),
     ),
 )
@@ -297,6 +308,10 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
     assert "for definition in _standard_benchmark_definitions()" not in support_source
     assert "*COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+    assert (
+        "*COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,"
+        in support_source
+    )
     assert "*PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
