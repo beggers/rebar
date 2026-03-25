@@ -83,6 +83,67 @@ def _assert_compiled_pattern_module_success_payload_round_trip(
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
 
 
+def test_compiled_pattern_module_success_owner_specs_are_support_owned_without_local_duplicates(
+) -> None:
+    import ast
+    import inspect
+    import sys
+
+    from tests.benchmarks import (
+        compiled_pattern_module_success_benchmark_support as support,
+    )
+
+    test_source = inspect.getsource(sys.modules[__name__])
+    module_tree = ast.parse(test_source)
+    local_definition_names = {
+        node.name
+        for node in module_tree.body
+        if isinstance(node, (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef))
+    }
+    local_assignment_names = {
+        node.target.id
+        for node in module_tree.body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    }
+    local_assignment_names.update(
+        target.id
+        for node in module_tree.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    )
+
+    assert (
+        CompiledPatternModuleSuccessOwnerSpec
+        is support.CompiledPatternModuleSuccessOwnerSpec
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+        is support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
+        is support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        is support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+    )
+    assert {
+        "CompiledPatternModuleSuccessOwnerSpec",
+        "contract_builder_spec",
+        "source_workloads",
+        "expected_build_calls",
+        "expected_callback_result",
+        "expected_callback_call",
+    }.isdisjoint(local_definition_names)
+    assert {
+        "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+    }.isdisjoint(local_assignment_names)
+
+
 _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
     pytest.param(
         owner_spec,
