@@ -12,6 +12,7 @@ import pytest
 from rebar_harness.benchmarks import build_callable
 from rebar_harness.correctness import published_fixture_manifests
 from tests.benchmarks.benchmark_test_support import (
+    StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
@@ -168,10 +169,6 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 
 @cache
 def _module_workflow_keyword_standard_benchmark_definitions() -> tuple[object, ...]:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
-
     return (
         StandardBenchmarkAnchorContractDefinition(
             name="module-workflow-keyword-flags",
@@ -218,10 +215,6 @@ def _module_workflow_keyword_standard_benchmark_definitions() -> tuple[object, .
 
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
-
     return (
         StandardBenchmarkAnchorContractDefinition(
             name="optional-group-conditional",

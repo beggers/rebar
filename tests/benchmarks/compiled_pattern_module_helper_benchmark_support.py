@@ -9,8 +9,11 @@ import pytest
 
 from rebar_harness.benchmarks import BENCHMARK_WORKLOADS_ROOT
 from rebar_harness.benchmarks import Workload
-from tests.benchmarks.benchmark_test_support import selected_manifest_workloads
-from tests.benchmarks.benchmark_test_support import freeze_signature_value
+from tests.benchmarks.benchmark_test_support import (
+    StandardBenchmarkAnchorContractDefinition,
+    freeze_signature_value,
+    selected_manifest_workloads,
+)
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_keyword_parameter_name,
     _collection_replacement_positional_keyword_field,
@@ -378,9 +381,6 @@ def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
 def _build_compiled_pattern_module_helper_standard_benchmark_definitions() -> tuple[
     object, ...
 ]:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
     from tests.benchmarks.benchmark_test_support import _definition_anchor_expectations
     from tests.benchmarks.source_tree_benchmark_anchor_support import (
         MODULE_BOUNDARY_MANIFEST_PATH,

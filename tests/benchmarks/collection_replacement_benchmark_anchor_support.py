@@ -9,6 +9,7 @@ from typing import Any
 
 from rebar_harness import benchmarks
 from tests.benchmarks.benchmark_test_support import (
+    StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
@@ -296,10 +297,6 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
 
 @cache
 def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ...]:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
-
     return (
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-module-positional-indexlike",

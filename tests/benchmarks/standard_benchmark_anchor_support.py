@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass
 from functools import cache
 import pathlib
 import re
-from typing import Any, Protocol
+from typing import Any
 
 import pytest
 
@@ -15,6 +14,8 @@ from tests.benchmarks.benchmark_test_support import (
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
     manifest_workloads,
+    StandardBenchmarkAnchorContract,
+    StandardBenchmarkAnchorContractDefinition,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     anchored_workload_case_ids,
@@ -23,42 +24,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     unanchored_workload_ids,
 )
 from tests.conftest import records_by_string_id
-
-
-class StandardBenchmarkAnchorContract(Protocol):
-    manifest_paths: tuple[pathlib.Path, ...]
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
-    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
-    workload_signature: Callable[[Any], tuple[Any, ...]]
-    callback_anchor_workload_ids: frozenset[str]
-    expected_legacy_workload_ids: frozenset[str]
-
-    def includes_workload(self, workload: Any) -> bool: ...
-
-
-@dataclass(frozen=True, slots=True)
-class StandardBenchmarkAnchorContractDefinition:
-    name: str
-    manifest_paths: tuple[pathlib.Path, ...]
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
-    include_workload: Callable[[Any], bool]
-    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
-    workload_signature: Callable[[Any], tuple[Any, ...]]
-    run_callback_result_parity: bool = False
-    expected_excluded_workload_ids: frozenset[str] = frozenset()
-    expected_legacy_workload_ids: frozenset[str] = frozenset()
-    callback_anchor_workload_ids: frozenset[str] = frozenset()
-    expected_special_unanchored_workload_ids: tuple[str, ...] = ()
-    direct_parity_supplemental_cases: tuple[Any, ...] = ()
-    run_special_unanchored_result_parity: bool = False
-
-    def includes_workload(self, workload: Any) -> bool:
-        return (
-            workload.workload_id not in self.expected_excluded_workload_ids
-            and workload.workload_id
-            not in self.expected_special_unanchored_workload_ids
-            and self.include_workload(workload)
-        )
 
 
 def _anchor_case_subset(

@@ -9,6 +9,7 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_encoded_indexlike_payload,
 )
 from tests.benchmarks.benchmark_test_support import (
+    StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
     freeze_signature_value,
 )
@@ -455,10 +456,6 @@ def _is_pattern_boundary_wrong_text_model_workload(workload: Any) -> bool:
 
 @cache
 def _build_pattern_boundary_standard_benchmark_definitions() -> tuple[Any, ...]:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
-
     return (
         StandardBenchmarkAnchorContractDefinition(
             name="pattern-window-positional-indexlike",

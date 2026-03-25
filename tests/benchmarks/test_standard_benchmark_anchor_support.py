@@ -121,6 +121,39 @@ def _module_imported_names(module_name: str) -> set[str]:
     }
 
 
+def _module_defined_class_names(module: Any) -> set[str]:
+    import inspect
+
+    parsed_module_source = ast.parse(inspect.getsource(module))
+    return {
+        node.name
+        for node in parsed_module_source.body
+        if isinstance(node, ast.ClassDef)
+    }
+
+
+def _imported_names_from_module(module: Any, source_module_name: str) -> set[str]:
+    import inspect
+
+    parsed_module_source = ast.parse(inspect.getsource(module))
+    return {
+        alias.name
+        for node in ast.walk(parsed_module_source)
+        if isinstance(node, ast.ImportFrom) and node.module == source_module_name
+        for alias in node.names
+    }
+
+
+_OWNER_SUPPORT_MODULES = (
+    compile_proxy_support,
+    anchor_support,
+    collection_replacement_support,
+    compiled_pattern_module_compile_support,
+    compiled_pattern_module_helper_support,
+    pattern_boundary_support,
+)
+
+
 @pytest.mark.parametrize(
     ("module", "export_name", "builder_name"),
     (
@@ -255,6 +288,8 @@ def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_sup
     )
 
     assert {
+        "StandardBenchmarkAnchorContract",
+        "StandardBenchmarkAnchorContractDefinition",
         "_definition_anchor_expectations",
         "_workload_case_pair_anchor_expectations",
         "_workload_case_pairs_case_ids",
@@ -268,6 +303,27 @@ def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_sup
         "published_case_ids_by_signature",
         "unanchored_workload_ids",
     }
+
+
+def test_standard_support_no_longer_defines_shared_contract_classes() -> None:
+    assert _module_defined_class_names(support).isdisjoint(
+        {
+            "StandardBenchmarkAnchorContract",
+            "StandardBenchmarkAnchorContractDefinition",
+        }
+    )
+
+
+def test_owner_support_modules_import_contract_definition_from_benchmark_test_support(
+) -> None:
+    for module in _OWNER_SUPPORT_MODULES:
+        imported_from_standard_support = _imported_names_from_module(
+            module,
+            "tests.benchmarks.standard_benchmark_anchor_support",
+        )
+        assert "StandardBenchmarkAnchorContractDefinition" not in (
+            imported_from_standard_support
+        )
 
 
 def test_standard_benchmark_anchor_contract_definition_filters_excluded_workloads() -> None:

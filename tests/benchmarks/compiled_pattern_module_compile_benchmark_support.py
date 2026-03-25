@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from functools import cache, partial
 import pathlib
 import re
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import pytest
 
@@ -20,6 +20,7 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     compiled_pattern_contract_expected_build_calls,
 )
 from tests.benchmarks.benchmark_test_support import (
+    StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
 )
@@ -27,11 +28,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     published_case_ids_by_signature,
 )
 from tests.python.fixture_parity_support import case_pattern
-
-if TYPE_CHECKING:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
 
 MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
 
@@ -636,10 +632,6 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
-        from tests.benchmarks.standard_benchmark_anchor_support import (
-            StandardBenchmarkAnchorContractDefinition,
-        )
-
         return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
             manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
@@ -702,10 +694,6 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
-        from tests.benchmarks.standard_benchmark_anchor_support import (
-            StandardBenchmarkAnchorContractDefinition,
-        )
-
         return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
             manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),

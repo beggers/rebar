@@ -1,6 +1,6 @@
 # RBR-1291: Move standard benchmark anchor contract types into benchmark test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -112,3 +112,12 @@ PY`
   - the negative `rg` command above currently fails because `tests/benchmarks/standard_benchmark_anchor_support.py` still defines both contract classes;
   - the first AST probe above currently fails because the listed owner support modules still import `StandardBenchmarkAnchorContractDefinition` from `tests.benchmarks.standard_benchmark_anchor_support`; and
   - the second AST probe above currently fails because `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still imports `StandardBenchmarkAnchorContractDefinition` from `tests.benchmarks.standard_benchmark_anchor_support`.
+
+## Completion Note
+- Moved `StandardBenchmarkAnchorContract` and `StandardBenchmarkAnchorContractDefinition` into `tests/benchmarks/benchmark_test_support.py`, rewired the standard assembler and owner support modules to import the shared contract type from there, and updated the support test to assert the slimmer ownership boundary directly.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` -> `248 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `221 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_compile_proxy_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `557 tests collected`
+  - `bash -lc "! rg -n 'class StandardBenchmarkAnchorContract|class StandardBenchmarkAnchorContractDefinition' tests/benchmarks/standard_benchmark_anchor_support.py"`
+  - both AST import probes from the task file

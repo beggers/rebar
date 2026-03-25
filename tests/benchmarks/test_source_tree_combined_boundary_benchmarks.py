@@ -139,6 +139,8 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
 )
 from tests.benchmarks.standard_benchmark_anchor_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
+)
+from tests.benchmarks.benchmark_test_support import (
     StandardBenchmarkAnchorContractDefinition,
 )
 from tests.conftest import (
