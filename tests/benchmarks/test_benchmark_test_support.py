@@ -54,6 +54,27 @@ from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
 
+def _parsed_module_ast(module: object) -> ast.Module:
+    return ast.parse(inspect.getsource(module))
+
+
+def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.FunctionDef) and node.name == function_name
+    )
+
+
+def _module_imported_names(module: object, imported_module: str) -> frozenset[str]:
+    return frozenset(
+        alias.name
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ImportFrom) and node.module == imported_module
+        for alias in node.names
+    )
+
+
 def _module_pattern_case(
     *,
     helper: str,
@@ -83,11 +104,7 @@ def _owner_definition_manifest_path_names(
     module: object,
     function_name: str,
 ) -> tuple[tuple[str, ...], ...]:
-    builder = next(
-        node
-        for node in ast.parse(inspect.getsource(module)).body
-        if isinstance(node, ast.FunctionDef) and node.name == function_name
-    )
+    builder = _module_function_definition(module, function_name)
     builder_return = next(
         node for node in builder.body if isinstance(node, ast.Return)
     )
@@ -794,10 +811,35 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
         )
     ) == support.STANDARD_BENCHMARK_DEFINITIONS
 
-    support_source = inspect.getsource(support)
-    assert "STANDARD_BENCHMARK_DEFINITIONS = (" in support_source
-    assert "_build_standard_benchmark_definitions" not in support_source
-    assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
+    support_ast = _parsed_module_ast(support)
+    definitions_assignment = next(
+        node
+        for node in support_ast.body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name)
+            and target.id == "STANDARD_BENCHMARK_DEFINITIONS"
+            for target in node.targets
+        )
+    )
+
+    assert isinstance(definitions_assignment.value, ast.Tuple)
+    assert not any(
+        isinstance(node, ast.FunctionDef)
+        and node.name == "_build_standard_benchmark_definitions"
+        for node in support_ast.body
+    )
+    assert any(
+        isinstance(node, ast.comprehension)
+        and isinstance(node.iter, ast.Name)
+        and node.iter.id == "STANDARD_BENCHMARK_DEFINITIONS"
+        for node in ast.walk(
+            _module_function_definition(
+                support,
+                "_standard_benchmark_definition_params",
+            )
+        )
+    )
 
 
 @pytest.mark.parametrize(
@@ -1349,8 +1391,10 @@ def test_source_tree_combined_suite_imports_standard_benchmark_definitions_from_
         combined_suite.STANDARD_BENCHMARK_DEFINITIONS
         is support.STANDARD_BENCHMARK_DEFINITIONS
     )
-    combined_source = inspect.getsource(combined_suite)
-    assert "from tests.benchmarks.benchmark_test_support import (" in combined_source
+    assert "STANDARD_BENCHMARK_DEFINITIONS" in _module_imported_names(
+        combined_suite,
+        "tests.benchmarks.benchmark_test_support",
+    )
 
 
 def test_recording_benchmark_support_records_compile_calls_and_reuses_compiled_patterns(
