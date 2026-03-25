@@ -63,16 +63,20 @@ def _definition_names(definitions: tuple[Any, ...]) -> tuple[str, ...]:
     return tuple(definition.name for definition in definitions)
 
 
-def _build_standard_benchmark_definition_splice_names() -> tuple[str, ...]:
+def _standard_benchmark_definitions_builder() -> ast.FunctionDef:
     import inspect
 
     parsed_support_source = ast.parse(inspect.getsource(support))
-    builder = next(
+    return next(
         node
         for node in parsed_support_source.body
         if isinstance(node, ast.FunctionDef)
         and node.name == "_build_standard_benchmark_definitions"
     )
+
+
+def _build_standard_benchmark_definition_splice_names() -> tuple[str, ...]:
+    builder = _standard_benchmark_definitions_builder()
     builder_return = next(
         node for node in builder.body if isinstance(node, ast.Return)
     )
@@ -91,16 +95,7 @@ def _build_standard_benchmark_definition_splice_names() -> tuple[str, ...]:
 def _build_standard_benchmark_definition_imported_names(
     module_name: str,
 ) -> set[str]:
-    import inspect
-
-    parsed_support_source = ast.parse(inspect.getsource(support))
-    builder = next(
-        node
-        for node in parsed_support_source.body
-        if isinstance(node, ast.FunctionDef)
-        and node.name == "_build_standard_benchmark_definitions"
-    )
-
+    builder = _standard_benchmark_definitions_builder()
     return {
         alias.name
         for node in builder.body
