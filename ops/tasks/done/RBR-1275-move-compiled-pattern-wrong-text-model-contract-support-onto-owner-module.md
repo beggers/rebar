@@ -1,6 +1,6 @@
 ## RBR-1275: Move compiled-pattern wrong-text-model contract support onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -36,6 +36,13 @@ Created: 2026-03-25
 - Prefer consolidating onto the existing `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py` owner module over creating another helper/support file. The point is to finish the ownership move, not to add a fresh abstraction layer.
 - Keep imports direct. Do not leave compatibility aliases or forwarding wrappers in `tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py`.
 - Do not change compiled-pattern helper routing, wrong-text-model workload selection, or assertion semantics in this task.
+
+## Completion
+- Moved the compiled-pattern wrong-text-model contract workload id tuples, spec builder, workload loader, contract builder, and payload round-trip assertions into `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`.
+- Updated `tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py` to import that support surface directly and removed the duplicate local definitions.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py`
+  - `bash -lc "! rg -n 'def _compiled_pattern_wrong_text_model_specs\\(|def _compiled_pattern_wrong_text_model_source_workloads\\(|def _compiled_pattern_wrong_text_model_contract_spec\\(|def _assert_wrong_text_model_payload_round_trip\\(|^_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS\\s*=|^_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS\\s*=' tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py"`
 
 ## Notes
 - `RBR-1275` is the next available unreserved task id in this checkout:
