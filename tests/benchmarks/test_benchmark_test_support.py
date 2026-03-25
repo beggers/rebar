@@ -1390,31 +1390,36 @@ def test_assert_anchored_workload_case_result_parity_rejects_exception_message_d
 
 
 def test_standard_benchmark_definition_params_preserve_names_and_filters() -> None:
-    legacy_definitions = tuple(
-        parameter.values[0]
-        for parameter in support._standard_benchmark_definition_params(
-            include_definition=_has_standard_benchmark_legacy_workloads
+    def _assert_filtered_definition_params(
+        predicate,
+    ) -> tuple[support.StandardBenchmarkAnchorContractDefinition, ...]:
+        params = support._standard_benchmark_definition_params(
+            include_definition=predicate
         )
+        expected_definitions = tuple(
+            definition
+            for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+            if predicate(definition)
+        )
+
+        assert tuple(parameter.values[0] for parameter in params) == expected_definitions
+        assert tuple(parameter.id for parameter in params) == tuple(
+            definition.name for definition in expected_definitions
+        )
+
+        return expected_definitions
+
+    legacy_definitions = _assert_filtered_definition_params(
+        _has_standard_benchmark_legacy_workloads
     )
-    callback_definitions = tuple(
-        parameter.values[0]
-        for parameter in support._standard_benchmark_definition_params(
-            include_definition=_runs_standard_benchmark_callback_result_parity
-        )
+    callback_definitions = _assert_filtered_definition_params(
+        _runs_standard_benchmark_callback_result_parity
     )
-    special_unanchored_definitions = tuple(
-        parameter.values[0]
-        for parameter in support._standard_benchmark_definition_params(
-            include_definition=_has_standard_benchmark_special_unanchored_workloads
-        )
+    special_unanchored_definitions = _assert_filtered_definition_params(
+        _has_standard_benchmark_special_unanchored_workloads
     )
-    direct_parity_definitions = tuple(
-        parameter.values[0]
-        for parameter in support._standard_benchmark_definition_params(
-            include_definition=(
-                _has_standard_benchmark_special_unanchored_direct_parity_cases
-            )
-        )
+    direct_parity_definitions = _assert_filtered_definition_params(
+        _has_standard_benchmark_special_unanchored_direct_parity_cases
     )
 
     assert all(definition.expected_legacy_workload_ids for definition in legacy_definitions)
