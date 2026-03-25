@@ -1702,6 +1702,62 @@ def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_sha
     assert retired_owner_names.isdisjoint(definition_names | assignment_names)
 
 
+def test_source_tree_anchor_support_routes_owner_imports_through_package_modules(
+) -> None:
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(anchor_support)
+    )
+
+    assert _top_level_package_import_alias_pairs(
+        anchor_support,
+        package_module="tests.benchmarks",
+        imported_names=frozenset(
+            {
+                "benchmark_test_support",
+                "collection_replacement_benchmark_anchor_support",
+            }
+        ),
+    ) == frozenset(
+        {
+            ("benchmark_test_support", None),
+            (
+                "collection_replacement_benchmark_anchor_support",
+                "collection_replacement_support",
+            ),
+        }
+    )
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module
+        in {
+            "tests.benchmarks.benchmark_test_support",
+            "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        }
+        for node in _parsed_module_ast(anchor_support).body
+    )
+    assert {
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "EXACT_REPEAT_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+        "NESTED_GROUP_MANIFEST_PATH",
+        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+        "OPEN_ENDED_MANIFEST_PATH",
+        "OPTIONAL_GROUP_MANIFEST_PATH",
+        "RANGED_REPEAT_MANIFEST_PATH",
+        "StandardBenchmarkAnchorContractDefinition",
+        "_definition_anchor_expectations",
+        "_workload_case_pair_anchor_expectations",
+        "_workload_case_pairs_case_ids",
+        "_workload_case_pairs_workload_ids",
+        "freeze_signature_value",
+        "live_manifest_workloads",
+        "published_case_ids_by_signature",
+        "published_cases_by_id",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
+    }.isdisjoint(definition_names | assignment_names)
+
+
 def test_collection_replacement_anchor_suite_routes_owner_imports_through_package_modules(
 ) -> None:
     module = importlib.import_module(

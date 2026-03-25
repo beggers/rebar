@@ -64,6 +64,21 @@ _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
     "OPEN_ENDED_MANIFEST_PATH",
 )
 
+_RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES = (
+    "MODULE_BOUNDARY_MANIFEST_PATH",
+    *_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES,
+    "StandardBenchmarkAnchorContractDefinition",
+    "_definition_anchor_expectations",
+    "_workload_case_pair_anchor_expectations",
+    "_workload_case_pairs_case_ids",
+    "_workload_case_pairs_workload_ids",
+    "freeze_signature_value",
+    "live_manifest_workloads",
+    "published_case_ids_by_signature",
+    "published_cases_by_id",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
+)
+
 _MOVED_REPORT_CONTRACT_HELPER_NAMES = (
     "_assert_benchmark_summary_consistent",
     "_artifact_manifest_record",
@@ -369,7 +384,7 @@ def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> Non
         ("a", (("x", 0), ("y", 1))),
         ("b", (2, (("c", (5, 6)), ("d", 4)))),
     )
-    assert support.freeze_signature_value is benchmark_test_support.freeze_signature_value
+    assert not hasattr(support, "freeze_signature_value")
 
 
 def test_definition_anchor_expectations_expand_manifest_name() -> None:
@@ -385,10 +400,7 @@ def test_definition_anchor_expectations_expand_manifest_name() -> None:
         ("synthetic_boundary.py", "workload-a"): ("case-1", "case-2"),
         ("synthetic_boundary.py", "workload-b"): ("case-3",),
     }
-    assert (
-        support._definition_anchor_expectations
-        is benchmark_test_support._definition_anchor_expectations
-    )
+    assert not hasattr(support, "_definition_anchor_expectations")
 
 
 def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
@@ -408,14 +420,8 @@ def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
         "case-2",
         "case-3",
     )
-    assert (
-        support._workload_case_pairs_workload_ids
-        is benchmark_test_support._workload_case_pairs_workload_ids
-    )
-    assert (
-        support._workload_case_pairs_case_ids
-        is benchmark_test_support._workload_case_pairs_case_ids
-    )
+    assert not hasattr(support, "_workload_case_pairs_workload_ids")
+    assert not hasattr(support, "_workload_case_pairs_case_ids")
 
 
 def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
@@ -432,10 +438,7 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
         ("synthetic_boundary.py", "workload-a"): ("case-1",),
         ("synthetic_boundary.py", "workload-b"): ("case-2",),
     }
-    assert (
-        support._workload_case_pair_anchor_expectations
-        is benchmark_test_support._workload_case_pair_anchor_expectations
-    )
+    assert not hasattr(support, "_workload_case_pair_anchor_expectations")
 
 
 def test_source_tree_combined_representative_workload_ids_prefer_explicit_manifest_contract(
@@ -1608,58 +1611,35 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
-    _, assignment_names = benchmark_test_support.top_level_module_definition_and_assignment_names(
-        support
-    )
+    module_ast = benchmark_test_support._parsed_module_ast(support)
+    package_imports = {
+        (alias.name, alias.asname)
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
+        for alias in node.names
+        if alias.name
+        in {
+            "benchmark_test_support",
+            "collection_replacement_benchmark_anchor_support",
+        }
+    }
 
-    assert (
-        support.MODULE_BOUNDARY_MANIFEST_PATH
-        is benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
-    )
-    assert (
-        support.OPTIONAL_GROUP_MANIFEST_PATH,
-        support.NESTED_GROUP_MANIFEST_PATH,
-        support.EXACT_REPEAT_MANIFEST_PATH,
-        support.RANGED_REPEAT_MANIFEST_PATH,
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
-        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        support.OPEN_ENDED_MANIFEST_PATH,
-    ) == (
-        benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
-        benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
-        benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
-        benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
-        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
-        benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
-    )
-    assert {
-        "OPTIONAL_GROUP_MANIFEST_PATH",
-        "NESTED_GROUP_MANIFEST_PATH",
-        "EXACT_REPEAT_MANIFEST_PATH",
-        "RANGED_REPEAT_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
-        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
-        "OPEN_ENDED_MANIFEST_PATH",
-    }.issubset(
-        benchmark_test_support._module_imported_names(
-            support,
+    assert package_imports == {
+        ("benchmark_test_support", None),
+        (
+            "collection_replacement_benchmark_anchor_support",
+            "collection_replacement_support",
+        ),
+    }
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module
+        in {
             "tests.benchmarks.benchmark_test_support",
-        )
+            "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        }
+        for node in module_ast.body
     )
-    assert {
-        "OPTIONAL_GROUP_MANIFEST_PATH",
-        "NESTED_GROUP_MANIFEST_PATH",
-        "EXACT_REPEAT_MANIFEST_PATH",
-        "RANGED_REPEAT_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
-        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
-        "OPEN_ENDED_MANIFEST_PATH",
-    }.isdisjoint(assignment_names)
 
 
 @pytest.mark.parametrize(
@@ -1693,12 +1673,24 @@ def test_source_tree_owner_builders_reference_owner_manifest_path_constants(
     builder_return = next(
         node for node in builder.body if isinstance(node, ast.Return)
     )
+    observed_manifest_path_names: list[tuple[str, ...]] = []
+    assert isinstance(builder_return.value, ast.Tuple)
 
-    assert benchmark_test_support._owner_definition_manifest_path_names(
-        builder_return
-    ) == (
-        expected_manifest_path_names
-    )
+    for element in builder_return.value.elts:
+        assert isinstance(element, ast.Call)
+        manifest_paths_keyword = next(
+            keyword for keyword in element.keywords if keyword.arg == "manifest_paths"
+        )
+        assert isinstance(manifest_paths_keyword.value, ast.Tuple)
+        manifest_path_names: list[str] = []
+        for manifest_path in manifest_paths_keyword.value.elts:
+            assert isinstance(manifest_path, ast.Attribute)
+            assert isinstance(manifest_path.value, ast.Name)
+            assert manifest_path.value.id == "benchmark_test_support"
+            manifest_path_names.append(manifest_path.attr)
+        observed_manifest_path_names.append(tuple(manifest_path_names))
+
+    assert tuple(observed_manifest_path_names) == expected_manifest_path_names
 
 
 def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constants() -> None:
@@ -1706,14 +1698,29 @@ def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constant
         definition.manifest_paths[0]
         for definition in support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
     ) == (
-        support.OPTIONAL_GROUP_MANIFEST_PATH,
-        support.NESTED_GROUP_MANIFEST_PATH,
-        support.EXACT_REPEAT_MANIFEST_PATH,
-        support.RANGED_REPEAT_MANIFEST_PATH,
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
-        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        support.OPEN_ENDED_MANIFEST_PATH,
+        benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
+        benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
+        benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
+        benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
+    )
+
+
+def test_source_tree_owner_retired_shared_support_names_stay_out_of_top_level_namespace(
+) -> None:
+    definition_names, assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(support)
+    )
+
+    assert set(_RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES).isdisjoint(
+        definition_names | assignment_names
+    )
+    assert all(
+        not hasattr(support, name)
+        for name in _RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES
     )
 
 
@@ -1751,13 +1758,13 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
 
 
 def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
-    cases = support.published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
     workload = benchmark_test_support.live_manifest_workload(
-        support.OPTIONAL_GROUP_MANIFEST_PATH,
+        benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
         support._OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
     )
     non_conditional_workload = benchmark_test_support.live_manifest_workload(
-        support.OPTIONAL_GROUP_MANIFEST_PATH,
+        benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
         "module-search-named-optional-group-absent-warm-str",
     )
 
@@ -1807,14 +1814,14 @@ def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
 
 
 def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
-    cases = support.published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
 
     assert support._nested_group_correctness_case_signature(
         cases["nested-group-compile-metadata-str"]
     ) == ("module.compile", "a((b))d", (), (), 0, "str")
     assert support._nested_group_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.NESTED_GROUP_MANIFEST_PATH,
+            benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
             "module-compile-nested-group-cold-str",
         )
     ) == ("module.compile", "a((b))d", (), (), 0, "str")
@@ -1831,7 +1838,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
     )
     assert support._nested_group_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.NESTED_GROUP_MANIFEST_PATH,
+            benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
             "module-search-nested-group-warm-str",
         )
     ) == (
@@ -1855,7 +1862,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
     )
     assert support._nested_group_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.NESTED_GROUP_MANIFEST_PATH,
+            benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
             "pattern-fullmatch-nested-group-purged-str",
         )
     ) == (
@@ -1872,7 +1879,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
     ) == ("module.compile", "a(?P<outer>(?P<inner>b))d", (), (), 0, "str")
     assert support._nested_group_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.NESTED_GROUP_MANIFEST_PATH,
+            benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
             "module-compile-named-nested-group-warm-str",
         )
     ) == ("module.compile", "a(?P<outer>(?P<inner>b))d", (), (), 0, "str")
@@ -1889,7 +1896,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
     )
     assert support._nested_group_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.NESTED_GROUP_MANIFEST_PATH,
+            benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
             "module-search-named-nested-group-warm-str",
         )
     ) == (
@@ -1913,7 +1920,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
     )
     assert support._nested_group_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.NESTED_GROUP_MANIFEST_PATH,
+            benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
             "pattern-fullmatch-named-nested-group-purged-str",
         )
     ) == (
@@ -1927,14 +1934,14 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
 
 
 def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes() -> None:
-    cases = support.published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
 
     assert support._counted_repeat_correctness_case_signature(
         cases["exact-repeat-numbered-group-compile-metadata-str"]
     ) == ("module.compile", "a(bc){2}d", (), (), 0, "str")
     assert support._counted_repeat_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.EXACT_REPEAT_MANIFEST_PATH,
+            benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
             "module-compile-numbered-exact-repeat-group-cold-str",
         )
     ) == ("module.compile", "a(bc){2}d", (), (), 0, "str")
@@ -1951,7 +1958,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
     )
     assert support._counted_repeat_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.EXACT_REPEAT_MANIFEST_PATH,
+            benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
             "module-search-named-exact-repeat-group-warm-str",
         )
     ) == (
@@ -1975,7 +1982,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
     )
     assert support._counted_repeat_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.RANGED_REPEAT_MANIFEST_PATH,
+            benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
             "module-search-numbered-ranged-repeat-group-lower-bound-warm-str",
         )
     ) == (
@@ -1999,7 +2006,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
     )
     assert support._counted_repeat_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.RANGED_REPEAT_MANIFEST_PATH,
+            benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
             "pattern-fullmatch-named-ranged-repeat-group-lower-bound-purged-str",
         )
     ) == (
@@ -2023,7 +2030,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
     )
     assert support._counted_repeat_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.OPEN_ENDED_MANIFEST_PATH,
+            benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
             "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str",
         )
     ) == (
@@ -2047,7 +2054,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
     )
     assert support._counted_repeat_workload_signature(
         benchmark_test_support.live_manifest_workload(
-            support.OPEN_ENDED_MANIFEST_PATH,
+            benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
             "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str",
         )
     ) == (
@@ -2063,25 +2070,25 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
 def test_non_alternation_counted_repeat_selector_excludes_alternation_workloads() -> None:
     assert support._is_non_alternation_counted_repeat_workload(
         benchmark_test_support.live_manifest_workload(
-            support.EXACT_REPEAT_MANIFEST_PATH,
+            benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
             "module-compile-numbered-exact-repeat-group-cold-str",
         )
     )
     assert support._is_non_alternation_counted_repeat_workload(
         benchmark_test_support.live_manifest_workload(
-            support.RANGED_REPEAT_MANIFEST_PATH,
+            benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
             "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
         )
     )
     assert not support._is_non_alternation_counted_repeat_workload(
         benchmark_test_support.live_manifest_workload(
-            support.EXACT_REPEAT_MANIFEST_PATH,
+            benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
             "module-search-numbered-exact-repeat-group-alternation-bc-bc-warm-str",
         )
     )
     assert not support._is_non_alternation_counted_repeat_workload(
         benchmark_test_support.live_manifest_workload(
-            support.OPEN_ENDED_MANIFEST_PATH,
+            benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
             "module-search-numbered-open-ended-group-broader-range-cold-gap",
         )
     )
@@ -2105,7 +2112,7 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
         lambda: (manifest,),
     )
 
-    observed = support.published_case_ids_by_signature(lambda case: case.signature)
+    observed = benchmark_test_support.published_case_ids_by_signature(lambda case: case.signature)
 
     assert observed == {
         ("shared",): ("case-a", "case-b"),
@@ -2114,34 +2121,31 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
 
 
 def test_source_tree_reuses_shared_published_case_helpers_by_identity() -> None:
-    assert (
-        support.published_case_ids_by_signature
-        is benchmark_test_support.published_case_ids_by_signature
-    )
-    assert support.published_cases_by_id is benchmark_test_support.published_cases_by_id
+    assert not hasattr(support, "published_case_ids_by_signature")
+    assert not hasattr(support, "published_cases_by_id")
 
 
 def test_grouped_alternation_live_signatures_cover_non_replacement_routes() -> None:
-    cases = support.published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
 
     compile_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "module-compile-grouped-alternation-cold-str",
     )
     search_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "module-search-grouped-alternation-warm-str",
     )
     fullmatch_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "pattern-fullmatch-grouped-alternation-purged-str",
     )
     legacy_module_sub_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "module-sub-template-nested-grouped-alternation-warm-gap",
     )
     legacy_pattern_subn_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
     )
 
@@ -2252,22 +2256,22 @@ def test_grouped_alternation_live_signatures_cover_non_replacement_routes() -> N
 
 
 def test_grouped_alternation_replacement_live_signatures_cover_module_and_pattern_routes() -> None:
-    cases = support.published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
 
     module_sub_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "module-sub-template-grouped-alternation-warm-str",
     )
     module_subn_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "module-subn-template-named-grouped-alternation-warm-str",
     )
     pattern_sub_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "pattern-sub-template-grouped-alternation-purged-str",
     )
     pattern_subn_workload = benchmark_test_support.live_manifest_workload(
-        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "pattern-subn-template-named-grouped-alternation-purged-str",
     )
 
