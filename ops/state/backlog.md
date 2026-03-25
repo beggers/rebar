@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The surviving feature frontier is the nested broader-range open-ended grouped-alternation branch-local-backreference conditional callable wrong-return-type parity slice, pinned to `a((b|c){2,})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`.
+No ready feature follow-on currently survives on the callable-replacement module wrong-return-type owner route; the next post-conditional slice is not yet pinned in tracked state.
 
 ## Ordered Work
-1. The surviving feature frontier is the nested broader-range open-ended grouped-alternation branch-local-backreference conditional callable wrong-return-type parity slice, pinned to `a((b|c){2,})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`.
+1. No ready feature follow-on currently survives on the callable-replacement module wrong-return-type owner route; the next post-conditional slice is not yet pinned in tracked state.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
