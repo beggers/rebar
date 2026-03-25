@@ -4547,7 +4547,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     (
         pytest.param(
             benchmark_test_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
-            collection_replacement_support._is_collection_replacement_compiled_pattern_success_workload,
+            (
+                collection_replacement_support.benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
+            ),
             id="collection-replacement-success",
         ),
         pytest.param(

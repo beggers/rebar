@@ -1993,6 +1993,23 @@ _BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES = frozenset(
     }
 )
 
+_COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES = frozenset(
+    {
+        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "StandardBenchmarkAnchorContractDefinition",
+        "_SourceTreeContractBuilderSpec",
+        "_contract_source_workloads",
+        "_definition_anchor_expectations",
+        "_is_collection_replacement_compiled_pattern_success_workload",
+        "_is_module_workflow_keyword_error_workload",
+        "_workload_case_pair_anchor_expectations",
+        "_workload_case_pairs_case_ids",
+        "_workload_case_pairs_workload_ids",
+        "freeze_signature_value",
+    }
+)
+
 
 def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates(
 ) -> None:
@@ -2049,7 +2066,7 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         in owner_definition_names
     )
     assert (
-        collection_replacement_support._is_collection_replacement_compiled_pattern_success_workload
+        collection_replacement_support.benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
         is support._is_collection_replacement_compiled_pattern_success_workload
     )
     assert (
@@ -2256,26 +2273,22 @@ def test_deleted_pattern_boundary_support_stays_unimportable_and_unreferenced() 
     )
 
 
-@pytest.mark.parametrize(
-    ("module", "expected_imported_names"),
-    (
-        (
-            collection_replacement_support,
-            frozenset(
-                {
-                    "_SourceTreeContractBuilderSpec",
-                    "_contract_source_workloads",
-                }
-            ),
-        ),
-    ),
-)
-def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_helpers_from_support(
-    module: object,
-    expected_imported_names: frozenset[str],
+def test_collection_replacement_support_routes_benchmark_test_support_owner_imports_through_package_alias(
 ) -> None:
-    assert expected_imported_names.issubset(
-        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            collection_replacement_support
+        )
+    )
+
+    _assert_owner_module_routes_through_package_import(
+        collection_replacement_support,
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
+    )
+    assert _COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES.isdisjoint(
+        definition_names | assignment_names
     )
 
 

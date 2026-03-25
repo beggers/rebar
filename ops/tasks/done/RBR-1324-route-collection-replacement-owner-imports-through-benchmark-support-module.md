@@ -1,6 +1,6 @@
 # RBR-1324: Route collection-replacement owner imports through benchmark-support module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -44,6 +44,18 @@ Created: 2026-03-25
 ## Constraints
 - Keep the cleanup bounded to owner-boundary/import-plumbing simplification between `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` and `tests/benchmarks/benchmark_test_support.py`, plus the supporting AST/import contract test.
 - Prefer deleting direct owner-name bindings over introducing another indirection layer.
+
+## Completion
+- Completed on 2026-03-25.
+- Removed the direct `from tests.benchmarks.benchmark_test_support import ...` wall from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` and routed every retired benchmark-support-owned reference through the existing `benchmark_test_support` package import.
+- Added a focused ownership-contract test in `tests/benchmarks/test_benchmark_test_support.py` that asserts the owner module reaches `benchmark_test_support` only through `tests.benchmarks` and no longer defines or assigns the retired support-owned names locally.
+- Updated the one adjacent selector reference in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to reach the compiled-pattern success selector through the owner module's `benchmark_test_support` alias after the local binding disappeared.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'owner_module_owned_without_local_duplicates or keyword_error or grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers'`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'collection_replacement_support or non_owner_collection_replacement_benchmark_support_routes_shared_classifiers_through_support_alias or collection_replacement_compiled_pattern_success_selector_stays_owned_by_shared_support'`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured'`
+  - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/collection_replacement_benchmark_anchor_support.py').read_text()); direct=[n for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks.benchmark_test_support']; pkg={(a.name,a.asname) for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks' for a in n.names}; sys.exit(0 if (not direct and ('benchmark_test_support', None) in pkg) else 1)"`
+  - `bash -lc "! rg -n '^from tests\\.benchmarks\\.benchmark_test_support import ' tests/benchmarks/collection_replacement_benchmark_anchor_support.py"`
 
 ## Notes
 - `RBR-1324` is the next available unreserved task id in this checkout:
