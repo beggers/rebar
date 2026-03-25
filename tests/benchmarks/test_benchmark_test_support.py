@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+from functools import cache
 import pathlib
 from types import SimpleNamespace
 
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support as support
+from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks.benchmark_test_support import (
     _synthetic_manifest_loader,
     _synthetic_workload,
     _synthetic_workload_is_included,
+    _synthetic_workload_signature,
     anchor_support_cache_guard,
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     compile_proxy_correctness_case_signature,
@@ -172,6 +175,78 @@ def test_manifest_workloads_resolve_string_paths_from_workloads_root(
     assert resolved_paths == [
         benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_name,
     ]
+
+
+def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helpers(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    workloads = (_synthetic_workload("anchored", ("shared",)),)
+    manifest_load_calls: list[pathlib.Path] = []
+    published_case_id_calls: list[object] = []
+    published_cases_calls: list[str] = []
+    published_cases = {"case-1": object()}
+
+    def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        manifest_load_calls.append(path)
+        return _synthetic_manifest_loader(path, workloads=workloads)
+
+    @cache
+    def _published_case_ids_by_signature(
+        case_signature: object,
+    ) -> dict[tuple[str, ...], tuple[str, ...]]:
+        published_case_id_calls.append(case_signature)
+        return {("shared",): ("case-1",)}
+
+    @cache
+    def _published_cases_by_id() -> dict[str, object]:
+        published_cases_calls.append("called")
+        return published_cases
+
+    monkeypatch.setattr(support, "load_manifest", _load_manifest)
+    monkeypatch.setattr(
+        anchor_support,
+        "published_case_ids_by_signature",
+        _published_case_ids_by_signature,
+    )
+    monkeypatch.setattr(
+        anchor_support,
+        "published_cases_by_id",
+        _published_cases_by_id,
+    )
+
+    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
+    assert anchor_support.published_case_ids_by_signature(
+        _synthetic_workload_signature
+    ) == {("shared",): ("case-1",)}
+    assert anchor_support.published_cases_by_id() is published_cases
+    assert manifest_load_calls == [manifest_path]
+    assert published_case_id_calls == [_synthetic_workload_signature]
+    assert published_cases_calls == ["called"]
+
+    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
+    assert anchor_support.published_case_ids_by_signature(
+        _synthetic_workload_signature
+    ) == {("shared",): ("case-1",)}
+    assert anchor_support.published_cases_by_id() is published_cases
+    assert manifest_load_calls == [manifest_path]
+    assert published_case_id_calls == [_synthetic_workload_signature]
+    assert published_cases_calls == ["called"]
+
+    support._clear_anchor_support_caches()
+
+    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
+    assert anchor_support.published_case_ids_by_signature(
+        _synthetic_workload_signature
+    ) == {("shared",): ("case-1",)}
+    assert anchor_support.published_cases_by_id() is published_cases
+    assert manifest_load_calls == [manifest_path, manifest_path]
+    assert published_case_id_calls == [
+        _synthetic_workload_signature,
+        _synthetic_workload_signature,
+    ]
+    assert published_cases_calls == ["called", "called"]
 
 
 def _synthetic_case(
