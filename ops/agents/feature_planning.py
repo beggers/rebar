@@ -8,11 +8,11 @@ SPEC = {
     "dispatch": {
         "mode": "interval",
         "interval_seconds": 3600,
-        "timeout_seconds": 1800,
+        "timeout_seconds": 600,
     },
     "codex": {
         "config": [
-            'model_reasoning_effort="high"',
+            'model_reasoning_effort="medium"',
         ],
     },
 }
