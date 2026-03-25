@@ -57,11 +57,6 @@ from tests.benchmarks.benchmark_test_support import (
     selected_manifest_workloads,
     StandardBenchmarkAnchorContractDefinition,
     unanchored_workload_ids,
-)
-from tests.benchmarks import (
-    compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
-)
-from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
     _is_module_workflow_compiled_pattern_literal_success_workload,
     _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
@@ -69,6 +64,7 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _module_workflow_compiled_pattern_correctness_case_signature,
     _module_workflow_compiled_pattern_workload_signature,
 )
+from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import \
     _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS, \
     _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES, \

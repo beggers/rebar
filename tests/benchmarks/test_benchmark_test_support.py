@@ -16,9 +16,7 @@ from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
-from tests.benchmarks import (
-    compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
-)
+from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
 from tests.benchmarks import (
     pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
 )
@@ -1286,7 +1284,7 @@ def test_deleted_collection_replacement_keyword_contract_wrapper_stays_unimporta
     )
 
 
-def test_benchmark_test_support_does_not_define_compiled_pattern_module_helper_owner_surface(
+def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_surface(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
         support
@@ -1301,15 +1299,13 @@ def test_benchmark_test_support_does_not_define_compiled_pattern_module_helper_o
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    }.isdisjoint(definition_names)
+    }.issubset(definition_names)
 
 
-def test_compiled_pattern_module_helper_support_owns_compiled_pattern_helper_surface(
+def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
 ) -> None:
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
-            compiled_pattern_module_helper_support
-        )
+        support.top_level_module_definition_and_assignment_names(support)
     )
 
     assert {
@@ -1361,17 +1357,15 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     }.issubset(
         _module_imported_names(
             combined_suite,
-            "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
+            "tests.benchmarks.benchmark_test_support",
         )
     )
 
 
-def test_compiled_pattern_module_helper_support_owns_compiled_pattern_module_success_surface(
+def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
 ) -> None:
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
-            compiled_pattern_module_helper_support
-        )
+        support.top_level_module_definition_and_assignment_names(support)
     )
 
     assert {
@@ -1409,6 +1403,37 @@ def test_compiled_pattern_module_helper_support_owns_compiled_pattern_module_suc
     )
 
 
+def test_deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced(
+) -> None:
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=".".join(
+            (
+                "tests",
+                "benchmarks",
+                "compiled"
+                "_pattern"
+                "_module"
+                "_helper"
+                "_benchmark"
+                "_support",
+            )
+        ),
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / (
+                "compiled"
+                "_pattern"
+                "_module"
+                "_helper"
+                "_benchmark"
+                "_support.py"
+            )
+        ),
+    )
+
+
 def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_unreferenced(
 ) -> None:
     _assert_deleted_benchmark_module_stays_absent(
@@ -1433,22 +1458,6 @@ def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_
                 {
                     "_SourceTreeContractBuilderSpec",
                     "_contract_source_workloads",
-                }
-            ),
-        ),
-        (
-            compiled_pattern_module_helper_support,
-            frozenset(
-                {
-                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
-                    "_SourceTreeContractBuilderSpec",
-                    "_contract_source_workloads",
-                    "assert_benchmark_workload_contract",
-                    "compiled_pattern_contract_expected_build_calls",
-                    "find_workload_document",
-                    "find_workload_record",
-                    "manifest_workload_ids_matching",
-                    "selected_manifest_workloads",
                 }
             ),
         ),
@@ -1513,9 +1522,6 @@ def test_source_tree_contract_helper_suites_import_from_support(
     imported_names = _module_imported_names(
         module,
         "tests.benchmarks.benchmark_test_support",
-    ) | _module_imported_names(
-        module,
-        "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
     )
 
     assert expected_imported_names.issubset(imported_names)

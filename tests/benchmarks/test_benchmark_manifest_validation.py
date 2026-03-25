@@ -27,9 +27,7 @@ from tests.benchmarks.benchmark_test_support import (
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     selected_manifest_workloads,
 )
-from tests.benchmarks import (
-    compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
-)
+from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
 from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _is_pattern_boundary_wrong_text_model_workload,
 )
