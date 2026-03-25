@@ -42,6 +42,9 @@ GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
     / "workloads"
     / "grouped_alternation_replacement_boundary.py"
 )
+MODULE_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
+)
 OPTIONAL_GROUP_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
 )
@@ -53,6 +56,9 @@ EXACT_REPEAT_MANIFEST_PATH = (
 )
 RANGED_REPEAT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
+)
+NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
 )
 OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
@@ -453,6 +459,50 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_sour
     assert tuple(standard_definitions) == definition_names
     for definition in owner_definitions:
         assert standard_definitions[definition.name] is definition
+
+
+def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
+    assert support.MODULE_BOUNDARY_MANIFEST_PATH == MODULE_BOUNDARY_MANIFEST_PATH
+    assert support.OPTIONAL_GROUP_MANIFEST_PATH == OPTIONAL_GROUP_MANIFEST_PATH
+    assert support.NESTED_GROUP_MANIFEST_PATH == NESTED_GROUP_MANIFEST_PATH
+    assert support.EXACT_REPEAT_MANIFEST_PATH == EXACT_REPEAT_MANIFEST_PATH
+    assert support.RANGED_REPEAT_MANIFEST_PATH == RANGED_REPEAT_MANIFEST_PATH
+    assert (
+        support.GROUPED_ALTERNATION_MANIFEST_PATH
+        == GROUPED_ALTERNATION_MANIFEST_PATH
+    )
+    assert (
+        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH
+        == GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH
+    )
+    assert (
+        support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH
+        == NESTED_GROUP_REPLACEMENT_MANIFEST_PATH
+    )
+    assert support.OPEN_ENDED_MANIFEST_PATH == OPEN_ENDED_MANIFEST_PATH
+
+
+def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constants() -> None:
+    assert tuple(
+        definition.manifest_paths[0]
+        for definition in support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+    ) == (
+        support.MODULE_BOUNDARY_MANIFEST_PATH,
+        support.MODULE_BOUNDARY_MANIFEST_PATH,
+    )
+    assert tuple(
+        definition.manifest_paths[0]
+        for definition in support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
+    ) == (
+        support.OPTIONAL_GROUP_MANIFEST_PATH,
+        support.NESTED_GROUP_MANIFEST_PATH,
+        support.EXACT_REPEAT_MANIFEST_PATH,
+        support.RANGED_REPEAT_MANIFEST_PATH,
+        support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+        support.OPEN_ENDED_MANIFEST_PATH,
+    )
 
 
 def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() -> None:

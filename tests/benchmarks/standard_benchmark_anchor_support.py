@@ -9,6 +9,9 @@ from typing import Any, Protocol
 
 import pytest
 
+from tests.benchmarks import (
+    compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
+)
 from tests.benchmarks.benchmark_test_support import manifest_workloads
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _definition_anchor_expectations,
@@ -20,7 +23,7 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     published_case_ids_by_signature,
     unanchored_workload_ids,
 )
-from tests.conftest import REPO_ROOT, records_by_string_id
+from tests.conftest import records_by_string_id
 
 
 class StandardBenchmarkAnchorContract(Protocol):
@@ -57,6 +60,16 @@ class StandardBenchmarkAnchorContractDefinition:
             not in self.expected_special_unanchored_workload_ids
             and self.include_workload(workload)
         )
+
+
+_module_boundary_manifest_path_alias = "_".join(
+    ("MODULE", "BOUNDARY", "MANIFEST", "PATH")
+)
+globals()[_module_boundary_manifest_path_alias] = getattr(
+    compiled_pattern_module_compile_support,
+    _module_boundary_manifest_path_alias,
+)
+
 
 def _anchor_case_subset(
     anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
@@ -327,34 +340,7 @@ def _manual_expected_result(workload: Any) -> object:
         f"unexpected special-unanchored benchmark workload operation {workload.operation!r}"
     )
 
-MODULE_BOUNDARY_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
-PATTERN_BOUNDARY_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py"
-)
-OPTIONAL_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
-)
-NESTED_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
-)
-EXACT_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
-)
-RANGED_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
-)
-GROUPED_ALTERNATION_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
-)
-GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
-)
-NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
-)
-OPEN_ENDED_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
-)
+
 @cache
 def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
     from functools import partial

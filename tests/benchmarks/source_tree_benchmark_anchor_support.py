@@ -12,7 +12,7 @@ import pytest
 from rebar_harness.benchmarks import build_callable
 from rebar_harness.correctness import published_fixture_manifests
 from tests.benchmarks.benchmark_test_support import selected_manifest_workloads
-from tests.conftest import records_by_string_id
+from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -174,6 +174,32 @@ def _is_module_workflow_keyword_error_workload(workload: Any) -> bool:
     return False
 
 
+MODULE_BOUNDARY_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
+OPTIONAL_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
+)
+NESTED_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
+)
+EXACT_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
+)
+RANGED_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
+)
+GROUPED_ALTERNATION_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
+)
+GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
+)
+NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
+)
+OPEN_ENDED_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
+)
+
 _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
     "module-search-numbered-optional-group-conditional-cold-gap"
 )
@@ -182,7 +208,6 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 @cache
 def _module_workflow_keyword_standard_benchmark_definitions() -> tuple[object, ...]:
     from tests.benchmarks.standard_benchmark_anchor_support import (
-        MODULE_BOUNDARY_MANIFEST_PATH,
         StandardBenchmarkAnchorContractDefinition,
     )
 
@@ -233,14 +258,6 @@ def _module_workflow_keyword_standard_benchmark_definitions() -> tuple[object, .
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     from tests.benchmarks.standard_benchmark_anchor_support import (
-        EXACT_REPEAT_MANIFEST_PATH,
-        GROUPED_ALTERNATION_MANIFEST_PATH,
-        GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        NESTED_GROUP_MANIFEST_PATH,
-        NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        OPEN_ENDED_MANIFEST_PATH,
-        OPTIONAL_GROUP_MANIFEST_PATH,
-        RANGED_REPEAT_MANIFEST_PATH,
         StandardBenchmarkAnchorContractDefinition,
     )
 

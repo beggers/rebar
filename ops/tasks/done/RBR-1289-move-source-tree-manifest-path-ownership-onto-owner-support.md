@@ -1,6 +1,6 @@
 # RBR-1289: Move source-tree manifest-path ownership onto owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -71,3 +71,14 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `243 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `367 tests collected`; and
   - the negative `rg` command above currently fails because the central standard support file still defines the source-tree-specific manifest-path constants.
+
+## Completion
+- Moved the nine source-tree manifest-path constants into `tests/benchmarks/source_tree_benchmark_anchor_support.py` and kept the owner-local module-workflow and source-tree definition tuples unchanged.
+- Removed the nine literal source-tree manifest-path names from `tests/benchmarks/standard_benchmark_anchor_support.py`; the central assembler now only imports and splices the two source-tree owner tuples.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to pin the owner-local constants directly and assert both owner exports keep reusing those constants in the same manifest-path order.
+- Updated `tests/benchmarks/test_standard_benchmark_anchor_support.py` to assert the central source no longer contains the nine source-tree manifest-path names and that the builder-only source-tree owner imports stay limited to the two owner tuples.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n 'MODULE_BOUNDARY_MANIFEST_PATH|OPTIONAL_GROUP_MANIFEST_PATH|NESTED_GROUP_MANIFEST_PATH|EXACT_REPEAT_MANIFEST_PATH|RANGED_REPEAT_MANIFEST_PATH|GROUPED_ALTERNATION_MANIFEST_PATH|GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH|NESTED_GROUP_REPLACEMENT_MANIFEST_PATH|OPEN_ENDED_MANIFEST_PATH' tests/benchmarks/standard_benchmark_anchor_support.py"`

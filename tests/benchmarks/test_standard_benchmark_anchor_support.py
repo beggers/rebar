@@ -38,6 +38,18 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
 )
 from tests.conftest import records_by_string_id
 
+SOURCE_TREE_MANIFEST_PATH_CONSTANT_NAMES = (
+    "MODULE_BOUNDARY_MANIFEST_PATH",
+    "OPTIONAL_GROUP_MANIFEST_PATH",
+    "NESTED_GROUP_MANIFEST_PATH",
+    "EXACT_REPEAT_MANIFEST_PATH",
+    "RANGED_REPEAT_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+    "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+    "OPEN_ENDED_MANIFEST_PATH",
+)
+
 
 def _synthetic_case_signature(case: Any) -> tuple[Any, ...] | None:
     return case.signature
@@ -74,6 +86,27 @@ def _build_standard_benchmark_definition_splice_names() -> tuple[str, ...]:
         splice_names.append(element.value.id)
 
     return tuple(splice_names)
+
+
+def _build_standard_benchmark_definition_imported_names(
+    module_name: str,
+) -> set[str]:
+    import inspect
+
+    parsed_support_source = ast.parse(inspect.getsource(support))
+    builder = next(
+        node
+        for node in parsed_support_source.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "_build_standard_benchmark_definitions"
+    )
+
+    return {
+        alias.name
+        for node in builder.body
+        if isinstance(node, ast.ImportFrom) and node.module == module_name
+        for alias in node.names
+    }
 
 
 @pytest.mark.parametrize(
@@ -535,6 +568,16 @@ def test_standard_support_source_no_longer_mentions_compile_proxy_helpers_or_inl
     assert 'name="compile-proxy"' not in support_source
 
 
+def test_standard_support_source_no_longer_mentions_source_tree_manifest_path_constants(
+) -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+
+    for constant_name in SOURCE_TREE_MANIFEST_PATH_CONSTANT_NAMES:
+        assert constant_name not in support_source
+
+
 def test_standard_support_imports_only_compile_proxy_owner_tuple() -> None:
     import inspect
 
@@ -628,17 +671,14 @@ def test_standard_support_imports_and_splices_module_workflow_keyword_owner_tupl
     import inspect
 
     support_source = inspect.getsource(support)
-    parsed_support_source = ast.parse(support_source)
+    imported_names = _build_standard_benchmark_definition_imported_names(
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+    )
 
-    imported_names = {
-        alias.name
-        for node in ast.walk(parsed_support_source)
-        if isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
-        for alias in node.names
+    assert imported_names == {
+        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+        "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
     }
-
-    assert "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS" in imported_names
     assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
@@ -673,17 +713,14 @@ def test_standard_support_imports_and_splices_source_tree_standard_owner_tuple()
     import inspect
 
     support_source = inspect.getsource(support)
-    parsed_support_source = ast.parse(support_source)
+    imported_names = _build_standard_benchmark_definition_imported_names(
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+    )
 
-    imported_names = {
-        alias.name
-        for node in ast.walk(parsed_support_source)
-        if isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
-        for alias in node.names
+    assert imported_names == {
+        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+        "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
     }
-
-    assert "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS" in imported_names
     assert "*SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
