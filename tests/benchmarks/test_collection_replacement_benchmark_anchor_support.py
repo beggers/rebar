@@ -717,7 +717,7 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
     )
     definitions = [
         definition
-        for definition in combined_suite._STANDARD_BENCHMARK_DEFINITIONS
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name == "collection-replacement-grouped-callable-replacement"
     ]
 

@@ -1,6 +1,6 @@
 ## RBR-1270: Move standard benchmark definition ownership onto standard support suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -66,3 +66,14 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `348 tests collected`;
   - the first negative `rg` check in `Verification` currently fails because the support module still imports the combined suite and exposes the proxy wrapper, and that failure belongs to the exact cleanup queued here; and
   - the second negative `rg` check in `Verification` currently fails because the combined suite still owns a local `_STANDARD_BENCHMARK_DEFINITIONS` tuple, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the standard benchmark definition tuple into `tests/benchmarks/standard_benchmark_anchor_support.py` as the direct `STANDARD_BENCHMARK_DEFINITIONS` owner, using local builder imports to avoid recreating the old support-to-combined-suite dependency.
+- Removed the combined-suite import shim, `_standard_benchmark_definitions(...)`, `_StandardBenchmarkDefinitionsProxy`, and the proxy-backed export from the support module.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import the support-owned `STANDARD_BENCHMARK_DEFINITIONS` instead of defining a local `_STANDARD_BENCHMARK_DEFINITIONS` block.
+- Updated owner-contract coverage in `tests/benchmarks/test_standard_benchmark_anchor_support.py` and switched the grouped callable collection-replacement check to the support-owned tuple surface in `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` -> `206 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `351 tests collected`
+  - `bash -lc "! rg -n 'test_source_tree_combined_boundary_benchmarks as combined_suite|return combined_suite\\._STANDARD_BENCHMARK_DEFINITIONS|class _StandardBenchmarkDefinitionsProxy|STANDARD_BENCHMARK_DEFINITIONS = _StandardBenchmarkDefinitionsProxy\\(\\)' tests/benchmarks/standard_benchmark_anchor_support.py"` -> passed
+  - `bash -lc "! rg -n '^_STANDARD_BENCHMARK_DEFINITIONS\\s*=\\s*\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed

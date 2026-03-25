@@ -259,6 +259,49 @@ def test_expected_anchored_pairs_materialize_matching_workload_and_case_objects(
     assert anchored_pair.case is case
 
 
+def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_paths() -> None:
+    import inspect
+
+    assert isinstance(support.STANDARD_BENCHMARK_DEFINITIONS, tuple)
+    assert tuple(
+        parameter.values[0]
+        for parameter in support._standard_benchmark_definition_params(
+            include_definition=lambda _: True
+        )
+    ) == support.STANDARD_BENCHMARK_DEFINITIONS
+
+    support_source = inspect.getsource(support)
+    assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
+    assert "for definition in _standard_benchmark_definitions()" not in support_source
+
+
+def test_combined_suite_imports_support_owned_standard_benchmark_definitions() -> None:
+    import importlib
+    import inspect
+
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+
+    assert (
+        combined_suite.STANDARD_BENCHMARK_DEFINITIONS
+        is support.STANDARD_BENCHMARK_DEFINITIONS
+    )
+    combined_source = inspect.getsource(combined_suite)
+    assert "STANDARD_BENCHMARK_DEFINITIONS" in combined_source
+    assert "_STANDARD_BENCHMARK_DEFINITIONS = (" not in combined_source
+
+
+def test_support_module_no_longer_uses_combined_suite_proxy_path() -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    assert "test_source_tree_combined_boundary_benchmarks as combined_suite" not in support_source
+    assert "return combined_suite._STANDARD_BENCHMARK_DEFINITIONS" not in support_source
+    assert "class _StandardBenchmarkDefinitionsProxy" not in support_source
+    assert "STANDARD_BENCHMARK_DEFINITIONS = _StandardBenchmarkDefinitionsProxy()" not in support_source
+
+
 @pytest.mark.parametrize(
     ("definition", "manifest_path"),
     support._standard_benchmark_manifest_params(),
