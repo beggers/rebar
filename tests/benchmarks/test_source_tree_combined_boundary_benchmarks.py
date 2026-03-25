@@ -40,7 +40,6 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
     _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
     CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
-    CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS,
     CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
     CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
     CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
@@ -115,7 +114,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _grouped_alternation_workload_signature,
     _is_non_alternation_counted_repeat_workload,
     assert_benchmark_workload_matches_expected_result,
-    freeze_signature_value,
     _is_optional_group_conditional_workload,
     _nested_group_correctness_case_signature,
     _nested_group_workload_signature,
@@ -144,9 +142,6 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     callable_match_group_signature,
-    case_pattern,
-    case_replacement_argument,
-    case_text_argument,
 )
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
