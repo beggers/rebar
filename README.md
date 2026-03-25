@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | Published correctness covers 1853 cases across 114 manifests, with all 1853 passing in the current slice; the benchmark publication covers 1219/1219 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice. |
-| Current milestone | The surviving feature frontier is the nested broader-range open-ended grouped-alternation backtracking-heavy module wrong-return-type parity slice on the callable replacement owner path, pinned to `a(((bc|b)c){2,})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){2,})d`. |
-| Work queue | `0` ready, `0` in progress, `1250` done, `0` blocked |
+| Current milestone | The next intended follow-on is the nested broader-range open-ended grouped-alternation branch-local-backreference callable-replacement implementation slice, pinned to `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`. |
+| Work queue | `0` ready, `0` in progress, `1252` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- The surviving feature frontier is the nested broader-range open-ended grouped-alternation backtracking-heavy module wrong-return-type parity slice on the callable replacement owner path, pinned to `a(((bc|b)c){2,})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){2,})d`.
+- The next intended follow-on is the nested broader-range open-ended grouped-alternation branch-local-backreference callable-replacement implementation slice, pinned to `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`.
 
 ### Current Risks
 
