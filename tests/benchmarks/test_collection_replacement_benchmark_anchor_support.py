@@ -19,6 +19,7 @@ from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     assert_zero_gap_manifest_workloads_measured,
     _write_test_manifest,
+    assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     live_manifest_workloads,
     manifest_workloads,
     selected_manifest_workloads,
@@ -2543,30 +2544,6 @@ def _collection_replacement_wrong_text_model_source_workloads() -> tuple[Workloa
     )
 
 
-def _assert_wrong_text_model_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_haystack_type = (
-        str if source_workload.haystack_text_model == "str" else bytes
-    )
-
-    assert payload.get("use_compiled_pattern") is None
-    assert round_tripped.use_compiled_pattern is False
-    assert payload["timing_scope"] == "pattern-helper-call"
-    assert round_tripped.timing_scope == "pattern-helper-call"
-    assert payload["haystack_text_model"] == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
-    if source_workload.replacement is not None:
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
-
-
 def _collection_replacement_wrong_text_model_expected_build_calls(
     source_workload: Workload,
 ) -> list[tuple[object, ...]]:
@@ -2738,6 +2715,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
             source_workload,
             payload,
             round_tripped,
+            expect_replacement_payload=source_workload.replacement is not None,
         )
 
         with pytest.raises(TypeError) as expected_error:
@@ -2778,6 +2756,7 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
         source_workload,
         payload,
         round_tripped,
+        expect_replacement_payload=source_workload.replacement is not None,
     )
 
     probe = run_internal_workload_probe(

@@ -18,6 +18,7 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
+    assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     assert_zero_gap_manifest_workloads_measured,
     selected_manifest_workloads,
 )
@@ -382,28 +383,6 @@ def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Workload, ...
         "pattern_boundary.py",
         include_workload=support._is_pattern_boundary_wrong_text_model_workload,
     )
-
-
-def _assert_wrong_text_model_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_haystack_type = (
-        str if source_workload.haystack_text_model == "str" else bytes
-    )
-
-    assert payload.get("use_compiled_pattern") is None
-    assert round_tripped.use_compiled_pattern is False
-    assert payload["timing_scope"] == "pattern-helper-call"
-    assert round_tripped.timing_scope == "pattern-helper-call"
-    assert payload["haystack_text_model"] == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
 
 
 def _pattern_boundary_wrong_text_model_expected_build_calls(

@@ -16,6 +16,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
+    assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     selected_manifest_workloads,
 )
 from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
@@ -75,28 +76,6 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpe
     ),
     timing_scope="pattern-helper-call",
 )
-
-
-def _assert_wrong_text_model_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_haystack_type = (
-        str if source_workload.haystack_text_model == "str" else bytes
-    )
-
-    assert payload.get("use_compiled_pattern") is None
-    assert round_tripped.use_compiled_pattern is False
-    assert payload["timing_scope"] == "pattern-helper-call"
-    assert round_tripped.timing_scope == "pattern-helper-call"
-    assert payload["haystack_text_model"] == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
 
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
