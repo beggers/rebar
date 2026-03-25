@@ -186,39 +186,6 @@ def _combined_suite_class_method_names(class_name: str) -> set[str]:
     }
 
 
-def _compile_search_fullmatch_case(
-    *,
-    operation: str,
-    helper: str = "",
-    args: tuple[object, ...] = (),
-    kwargs: dict[str, object] | None = None,
-    flags: int | None = None,
-    text_model: str | None = None,
-) -> object:
-    serialized_kwargs = {} if kwargs is None else kwargs
-    return SimpleNamespace(
-        operation=operation,
-        helper=helper,
-        flags=flags,
-        text_model=text_model,
-        serialized_args=lambda: list(args),
-        serialized_kwargs=lambda: serialized_kwargs,
-    )
-
-
-def _compile_search_fullmatch_workload(
-    *,
-    operation: str,
-    flags: int = 0,
-    text_model: str = "str",
-) -> object:
-    return SimpleNamespace(
-        operation=operation,
-        flags=flags,
-        text_model=text_model,
-    )
-
-
 def _report_workload(
     *,
     workload_id: str,
@@ -1161,22 +1128,26 @@ def test_source_tree_combined_manifest_shape_expectation_rejects_invalid_manifes
     ("case", "pattern", "expected"),
     (
         pytest.param(
-            _compile_search_fullmatch_case(
+            SimpleNamespace(
                 operation="compile",
-                kwargs={"window": [1, 3]},
+                helper="",
+                flags=None,
+                text_model=None,
+                serialized_args=lambda: [],
+                serialized_kwargs=lambda: {"window": [1, 3]},
             ),
             "a((b))d",
             ("module.compile", "a((b))d", (), (("window", (1, 3)),), 0, "str"),
             id="compile-defaults",
         ),
         pytest.param(
-            _compile_search_fullmatch_case(
+            SimpleNamespace(
                 operation="module_call",
                 helper="search",
-                args=(b"a((b))d", b"zzabdzz"),
-                kwargs={"pos": [1, 4]},
                 flags=4,
                 text_model="bytes",
+                serialized_args=lambda: [b"a((b))d", b"zzabdzz"],
+                serialized_kwargs=lambda: {"pos": [1, 4]},
             ),
             b"ignored",
             (
@@ -1190,13 +1161,13 @@ def test_source_tree_combined_manifest_shape_expectation_rejects_invalid_manifes
             id="module-search",
         ),
         pytest.param(
-            _compile_search_fullmatch_case(
+            SimpleNamespace(
                 operation="pattern_call",
                 helper="fullmatch",
-                args=(b"abd",),
-                kwargs={"endpos": [3]},
                 flags=2,
                 text_model="bytes",
+                serialized_args=lambda: [b"abd"],
+                serialized_kwargs=lambda: {"endpos": [3]},
             ),
             b"a((b))d",
             (
@@ -1210,10 +1181,13 @@ def test_source_tree_combined_manifest_shape_expectation_rejects_invalid_manifes
             id="pattern-fullmatch",
         ),
         pytest.param(
-            _compile_search_fullmatch_case(
+            SimpleNamespace(
                 operation="module_call",
                 helper="match",
-                args=("zzabdzz",),
+                flags=None,
+                text_model=None,
+                serialized_args=lambda: ["zzabdzz"],
+                serialized_kwargs=lambda: {},
             ),
             "a((b))d",
             None,
@@ -1236,7 +1210,11 @@ def test_compile_search_fullmatch_case_signature_routes_shared_operations(
     ("workload", "pattern", "module_search_args", "pattern_fullmatch_args", "expected"),
     (
         pytest.param(
-            _compile_search_fullmatch_workload(operation="module.compile"),
+            SimpleNamespace(
+                operation="module.compile",
+                flags=0,
+                text_model="str",
+            ),
             "a((b))d",
             ("unused-search",),
             ("unused-fullmatch",),
@@ -1244,7 +1222,7 @@ def test_compile_search_fullmatch_case_signature_routes_shared_operations(
             id="compile",
         ),
         pytest.param(
-            _compile_search_fullmatch_workload(
+            SimpleNamespace(
                 operation="module.search",
                 flags=4,
                 text_model="bytes",
@@ -1256,7 +1234,7 @@ def test_compile_search_fullmatch_case_signature_routes_shared_operations(
             id="module-search",
         ),
         pytest.param(
-            _compile_search_fullmatch_workload(
+            SimpleNamespace(
                 operation="pattern.fullmatch",
                 flags=2,
                 text_model="bytes",
@@ -1287,7 +1265,11 @@ def test_compile_search_fullmatch_workload_signature_routes_shared_operations(
 
 def test_compile_search_fullmatch_workload_signature_rejects_unsupported_operations(
 ) -> None:
-    workload = _compile_search_fullmatch_workload(operation="pattern.search")
+    workload = SimpleNamespace(
+        operation="pattern.search",
+        flags=0,
+        text_model="str",
+    )
 
     with pytest.raises(
         AssertionError,
