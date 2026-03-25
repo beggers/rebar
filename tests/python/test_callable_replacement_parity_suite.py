@@ -236,6 +236,57 @@ _CONDITIONAL_GROUP_EXISTS_CALLABLE_OPERATION_HELPER_COUNTS = (
     _uniform_operation_helper_counts(_CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS)
 )
 
+_GROUPED_ALTERNATION_CALLABLE_CASE_STEMS = (
+    "module-sub-callable-grouped-alternation",
+    "module-subn-callable-grouped-alternation",
+    "pattern-sub-callable-grouped-alternation",
+    "pattern-subn-callable-grouped-alternation",
+    "module-sub-callable-named-grouped-alternation",
+    "module-subn-callable-named-grouped-alternation",
+    "pattern-sub-callable-named-grouped-alternation",
+    "pattern-subn-callable-named-grouped-alternation",
+)
+_NESTED_GROUP_ALTERNATION_CALLABLE_CASE_STEMS = (
+    "module-sub-callable-nested-group-alternation-numbered-b-branch",
+    "module-subn-callable-nested-group-alternation-numbered-first-match-only",
+    "pattern-sub-callable-nested-group-alternation-numbered-mixed-branches",
+    "pattern-subn-callable-nested-group-alternation-numbered-c-branch-first-match-only",
+    "module-sub-callable-nested-group-alternation-named-c-branch",
+    "module-subn-callable-nested-group-alternation-named-first-match-only",
+    "pattern-sub-callable-nested-group-alternation-named-mixed-branches",
+    "pattern-subn-callable-nested-group-alternation-named-b-branch-first-match-only",
+)
+_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_CASE_STEMS = (
+    "module-sub-callable-nested-group-alternation-branch-local-backreference-numbered-b-branch",
+    "module-subn-callable-nested-group-alternation-branch-local-backreference-numbered-first-match-only",
+    "pattern-sub-callable-nested-group-alternation-branch-local-backreference-numbered-mixed-branches",
+    "pattern-subn-callable-nested-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only",
+    "module-sub-callable-nested-group-alternation-branch-local-backreference-named-c-branch",
+    "module-subn-callable-nested-group-alternation-branch-local-backreference-named-first-match-only",
+    "pattern-sub-callable-nested-group-alternation-branch-local-backreference-named-mixed-branches",
+    "pattern-subn-callable-nested-group-alternation-branch-local-backreference-named-b-branch-first-match-only",
+)
+_QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_CASE_STEMS = (
+    "module-sub-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch",
+    "module-subn-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch",
+    "pattern-sub-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-mixed-branches",
+    "pattern-subn-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only",
+    "module-sub-callable-quantified-nested-group-alternation-branch-local-backreference-named-lower-bound-c-branch",
+    "module-subn-callable-quantified-nested-group-alternation-branch-local-backreference-named-first-match-only-b-branch",
+    "pattern-sub-callable-quantified-nested-group-alternation-branch-local-backreference-named-mixed-branches",
+    "pattern-subn-callable-quantified-nested-group-alternation-branch-local-backreference-named-c-branch-first-match-only",
+)
+_NESTED_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_CASE_STEMS = (
+    "module-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch",
+    "module-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch",
+    "pattern-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches",
+    "pattern-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only",
+    "module-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches",
+    "module-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch",
+    "pattern-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch",
+    "pattern-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only",
+)
+
 
 CALLABLE_MANIFEST_SPECS = (
     CallableManifestSpec(
@@ -307,6 +358,38 @@ CALLABLE_MANIFEST_SPECS = (
         expected_near_miss_patterns=frozenset(),
     ),
     CallableManifestSpec(
+        manifest_id="grouped-alternation-callable-replacement-workflows",
+        expected_case_ids=_case_ids_from_stems(
+            _GROUPED_ALTERNATION_CALLABLE_CASE_STEMS,
+            text_models=STR_ONLY_TEXT_MODELS,
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a(b|c)d",
+                r"a(?P<word>b|c)d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+    ),
+    CallableManifestSpec(
+        manifest_id="nested-group-alternation-callable-replacement-workflows",
+        expected_case_ids=_case_ids_from_stems(
+            _NESTED_GROUP_ALTERNATION_CALLABLE_CASE_STEMS,
+            text_models=STR_ONLY_TEXT_MODELS,
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c))d",
+                r"a(?P<outer>(?P<inner>b|c))d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+    ),
+    CallableManifestSpec(
         manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
         expected_case_ids=frozenset(
             {
@@ -347,6 +430,48 @@ CALLABLE_MANIFEST_SPECS = (
     ),
     CallableManifestSpec(
         manifest_id=(
+            "nested-group-alternation-branch-local-backreference-"
+            "callable-replacement-workflows"
+        ),
+        expected_case_ids=_case_ids_from_stems(
+            _NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_CASE_STEMS,
+            text_models=MIXED_TEXT_MODELS,
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c))\2d",
+                r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+                rb"a((b|c))\2d",
+                rb"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+    ),
+    CallableManifestSpec(
+        manifest_id=(
+            "quantified-nested-group-alternation-branch-local-backreference-"
+            "callable-replacement-workflows"
+        ),
+        expected_case_ids=_case_ids_from_stems(
+            _QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_CASE_STEMS,
+            text_models=MIXED_TEXT_MODELS,
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c)+)\2d",
+                r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+                rb"a((b|c)+)\2d",
+                rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+    ),
+    CallableManifestSpec(
+        manifest_id=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-"
             "alternation-backtracking-heavy-callable-replacement-workflows"
         ),
@@ -380,6 +505,25 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+    ),
+    CallableManifestSpec(
+        manifest_id=(
+            "nested-open-ended-quantified-group-alternation-branch-local-"
+            "backreference-callable-replacement-workflows"
+        ),
+        expected_case_ids=_case_ids_from_stems(
+            _NESTED_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_CASE_STEMS,
+            text_models=STR_ONLY_TEXT_MODELS,
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c){1,})\2d",
+                r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
     ),
     CallableManifestSpec(
@@ -3084,6 +3228,12 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     assert case.source_kwargs == {}
 
 
+def test_callable_replacement_manifest_specs_cover_loaded_bundles() -> None:
+    assert frozenset(CALLABLE_MANIFEST_SPECS_BY_ID) == frozenset(
+        FIXTURE_BUNDLES_BY_MANIFEST_ID
+    )
+
+
 @pytest.mark.parametrize(
     "manifest_spec",
     CALLABLE_MANIFEST_SPECS,
@@ -3568,6 +3718,7 @@ def test_conditional_group_exists_alternation_bytes_cases_mirror_str_cases() -> 
         if case.text_model == "str"
         and "alternation" in case.categories
         and "negative-count" not in case.categories
+        and "none-count" not in case.categories
     )
     bytes_cases = tuple(
         case
@@ -3575,6 +3726,7 @@ def test_conditional_group_exists_alternation_bytes_cases_mirror_str_cases() -> 
         if case.text_model == "bytes"
         and "alternation" in case.categories
         and "negative-count" not in case.categories
+        and "none-count" not in case.categories
     )
 
     assert len(str_cases) == len(bytes_cases) == 8
@@ -3611,6 +3763,7 @@ def test_conditional_group_exists_alternation_direct_case_tables_stay_aligned_wi
         for case in bundle.cases
         if "alternation" in case.categories
         and "negative-count" not in case.categories
+        and "none-count" not in case.categories
     )
     present_rows = {
         normalized_case_row(case)
@@ -3752,7 +3905,11 @@ def test_conditional_group_exists_nested_direct_case_tables_stay_aligned_with_pu
         assert isinstance(group_ref, (int, str))
         return pattern, group_ref, case.helper, text, _case_count(case)
 
-    nested_cases = tuple(case for case in bundle.cases if "nested" in case.categories)
+    nested_cases = tuple(
+        case
+        for case in bundle.cases
+        if "nested" in case.categories and "none-count" not in case.categories
+    )
     module_present_rows = {
         normalized_case_row(case)
         for case in nested_cases
