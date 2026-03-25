@@ -1370,20 +1370,33 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
         module
     )
 
-    assert "MODULE_BOUNDARY_MANIFEST_PATH" in _module_imported_names(
-        module,
-        "tests.benchmarks.benchmark_test_support",
-    )
-    assert not {
-        imported_name
-        for imported_name in _module_imported_names(
+    if module_name == "tests.benchmarks.test_source_tree_benchmark_anchor_support":
+        _assert_owner_module_routes_through_package_import(
+            module,
+            owner_module="tests.benchmarks.benchmark_test_support",
+            package_module="tests.benchmarks",
+            expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
+        )
+        assert getattr(module, "benchmark_test_support") is support
+        assert (
+            module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
+            is MODULE_BOUNDARY_MANIFEST_PATH
+        )
+    else:
+        assert "MODULE_BOUNDARY_MANIFEST_PATH" in _module_imported_names(
             module,
             "tests.benchmarks.benchmark_test_support",
         )
-        if imported_name.startswith("SHARED_")
-    }
+        assert not {
+            imported_name
+            for imported_name in _module_imported_names(
+                module,
+                "tests.benchmarks.benchmark_test_support",
+            )
+            if imported_name.startswith("SHARED_")
+        }
+        assert getattr(module, module_constant_name) is MODULE_BOUNDARY_MANIFEST_PATH
     assert module_constant_name not in assignment_names
-    assert getattr(module, module_constant_name) is MODULE_BOUNDARY_MANIFEST_PATH
 
 
 @pytest.mark.parametrize(
@@ -1587,11 +1600,6 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
             ),
             id="benchmark-test-support-suite",
         ),
-        pytest.param(
-            "tests.benchmarks.test_source_tree_benchmark_anchor_support",
-            frozenset({"_module_imported_names"}),
-            id="source-tree-anchor-suite",
-        ),
     ),
 )
 def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
@@ -1617,6 +1625,9 @@ def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_sha
     module = importlib.import_module(
         "tests.benchmarks.test_source_tree_benchmark_anchor_support"
     )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
     module_ast = _parsed_module_ast(module)
     benchmark_support_imports = {
         (alias.name, alias.asname)
@@ -1625,8 +1636,34 @@ def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_sha
         for alias in node.names
         if alias.name == "benchmark_test_support"
     }
+    retired_owner_names = {
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "EXACT_REPEAT_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+        "NESTED_GROUP_MANIFEST_PATH",
+        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+        "OPEN_ENDED_MANIFEST_PATH",
+        "OPTIONAL_GROUP_MANIFEST_PATH",
+        "RANGED_REPEAT_MANIFEST_PATH",
+        "STANDARD_BENCHMARK_DEFINITIONS",
+        "_module_imported_names",
+        "_module_pattern_case",
+        "_owner_definition_manifest_path_names",
+        "_parsed_module_ast",
+        "_synthetic_case",
+        "_synthetic_manifest",
+        "live_manifest_workload",
+        "synthetic_workload",
+    }
 
     assert benchmark_support_imports == {("benchmark_test_support", None)}
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.benchmark_test_support"
+        for node in module_ast.body
+    )
+    assert retired_owner_names.isdisjoint(definition_names | assignment_names)
 
 
 def test_shared_collection_replacement_classifier_contract_tests_import_from_support(

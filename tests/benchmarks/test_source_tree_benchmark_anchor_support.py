@@ -8,39 +8,14 @@ import unittest
 
 import pytest
 
-from tests.benchmarks.benchmark_test_support import (
-    MODULE_BOUNDARY_MANIFEST_PATH,
-    EXACT_REPEAT_MANIFEST_PATH,
-    GROUPED_ALTERNATION_MANIFEST_PATH,
-    GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-    NESTED_GROUP_MANIFEST_PATH,
-    NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-    OPEN_ENDED_MANIFEST_PATH,
-    OPTIONAL_GROUP_MANIFEST_PATH,
-    RANGED_REPEAT_MANIFEST_PATH,
-    STANDARD_BENCHMARK_DEFINITIONS,
-    _module_imported_names,
-    _module_pattern_case,
-    _owner_definition_manifest_path_names,
-    _parsed_module_ast,
-    _synthetic_case,
-    _synthetic_manifest,
-    _synthetic_manifest_loader,
-    _synthetic_workload,
-    _synthetic_workload_is_included,
-    _synthetic_workload_signature,
-    anchor_support_cache_guard,
-)
 from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
 )
-from tests.benchmarks.benchmark_test_support import (
-    live_manifest_workload,
-    synthetic_workload,
-)
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
+
+anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
 _MOVED_SOURCE_TREE_CLASS_NAMES = (
     "SourceTreeBenchmarkCommonCase",
@@ -880,7 +855,7 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
 ) -> None:
     local_function_names = {
         node.name
-        for node in _parsed_module_ast(owner_module).body
+        for node in benchmark_test_support._parsed_module_ast(owner_module).body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -892,17 +867,17 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
 def test_source_tree_support_module_exposes_moved_combined_case_surface() -> None:
     local_class_names = {
         node.name
-        for node in _parsed_module_ast(support).body
+        for node in benchmark_test_support._parsed_module_ast(support).body
         if isinstance(node, ast.ClassDef)
     }
     local_function_names = {
         node.name
-        for node in _parsed_module_ast(support).body
+        for node in benchmark_test_support._parsed_module_ast(support).body
         if isinstance(node, ast.FunctionDef)
     }
     local_assignment_names = {
         target.id
-        for node in _parsed_module_ast(support).body
+        for node in benchmark_test_support._parsed_module_ast(support).body
         if isinstance(node, ast.Assign)
         for target in node.targets
         if isinstance(target, ast.Name)
@@ -922,7 +897,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
     local_function_names = {
         node.name
-        for node in _parsed_module_ast(support).body
+        for node in benchmark_test_support._parsed_module_ast(support).body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -934,7 +909,7 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
 def test_source_tree_support_module_exposes_moved_conditional_callable_helpers() -> None:
     local_function_names = {
         node.name
-        for node in _parsed_module_ast(support).body
+        for node in benchmark_test_support._parsed_module_ast(support).body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -1244,28 +1219,28 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
         for workload_id in expectation.expected_workload_ids
     )
     synthetic_workloads = (
-        synthetic_workload(
+        benchmark_test_support.synthetic_workload(
             manifest_id="conditional-group-exists-boundary",
             workload_id="callable-negative-count-warm-str",
             operation="module.sub",
             text_model="str",
             categories=["callable", "negative-count", "replacement"],
         ),
-        synthetic_workload(
+        benchmark_test_support.synthetic_workload(
             manifest_id="conditional-group-exists-boundary",
             workload_id="callable-negative-count-warm-bytes",
             operation="module.sub",
             text_model="bytes",
             categories=["callable", "negative-count", "replacement"],
         ),
-        synthetic_workload(
+        benchmark_test_support.synthetic_workload(
             manifest_id="conditional-group-exists-boundary",
             workload_id="callable-negative-none-count-warm-str",
             operation="module.sub",
             text_model="str",
             categories=["callable", "negative-count", "none-count", "replacement"],
         ),
-        synthetic_workload(
+        benchmark_test_support.synthetic_workload(
             manifest_id="conditional-group-exists-boundary",
             workload_id="callable-no-match-warm-str",
             operation="module.sub",
@@ -1637,7 +1612,10 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
         support
     )
 
-    assert support.MODULE_BOUNDARY_MANIFEST_PATH is MODULE_BOUNDARY_MANIFEST_PATH
+    assert (
+        support.MODULE_BOUNDARY_MANIFEST_PATH
+        is benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
+    )
     assert (
         support.OPTIONAL_GROUP_MANIFEST_PATH,
         support.NESTED_GROUP_MANIFEST_PATH,
@@ -1648,14 +1626,14 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
         support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
         support.OPEN_ENDED_MANIFEST_PATH,
     ) == (
-        OPTIONAL_GROUP_MANIFEST_PATH,
-        NESTED_GROUP_MANIFEST_PATH,
-        EXACT_REPEAT_MANIFEST_PATH,
-        RANGED_REPEAT_MANIFEST_PATH,
-        GROUPED_ALTERNATION_MANIFEST_PATH,
-        GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        OPEN_ENDED_MANIFEST_PATH,
+        benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
+        benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
+        benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
+        benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+        benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
     )
     assert {
         "OPTIONAL_GROUP_MANIFEST_PATH",
@@ -1667,7 +1645,7 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
         "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
         "OPEN_ENDED_MANIFEST_PATH",
     }.issubset(
-        _module_imported_names(
+        benchmark_test_support._module_imported_names(
             support,
             "tests.benchmarks.benchmark_test_support",
         )
@@ -1709,14 +1687,16 @@ def test_source_tree_owner_builders_reference_owner_manifest_path_constants(
 ) -> None:
     builder = next(
         node
-        for node in _parsed_module_ast(support).body
+        for node in benchmark_test_support._parsed_module_ast(support).body
         if isinstance(node, ast.FunctionDef) and node.name == builder_name
     )
     builder_return = next(
         node for node in builder.body if isinstance(node, ast.Return)
     )
 
-    assert _owner_definition_manifest_path_names(builder_return) == (
+    assert benchmark_test_support._owner_definition_manifest_path_names(
+        builder_return
+    ) == (
         expected_manifest_path_names
     )
 
@@ -1750,7 +1730,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         "nested-group-replacement",
         "open-ended-grouped-alternation",
     )
-    standard_definitions = STANDARD_BENCHMARK_DEFINITIONS
+    standard_definitions = benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS
     start_index = next(
         index
         for index, definition in enumerate(standard_definitions)
@@ -1772,11 +1752,11 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
 
 def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
     cases = support.published_cases_by_id()
-    workload = live_manifest_workload(
+    workload = benchmark_test_support.live_manifest_workload(
         support.OPTIONAL_GROUP_MANIFEST_PATH,
         support._OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
     )
-    non_conditional_workload = live_manifest_workload(
+    non_conditional_workload = benchmark_test_support.live_manifest_workload(
         support.OPTIONAL_GROUP_MANIFEST_PATH,
         "module-search-named-optional-group-absent-warm-str",
     )
@@ -1803,7 +1783,7 @@ def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
     )
     assert (
         support._optional_group_correctness_case_signature(
-            _module_pattern_case(
+            benchmark_test_support._module_pattern_case(
                 helper="fullmatch",
                 operation="pattern_call",
                 args=("abce",),
@@ -1817,7 +1797,7 @@ def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
         match="unexpected optional-group benchmark workload operation",
     ):
         support._optional_group_workload_signature(
-            synthetic_workload(
+            benchmark_test_support.synthetic_workload(
                 manifest_id="optional-group-boundary",
                 workload_id="optional-group-compile-unsupported",
                 operation="module.compile",
@@ -1833,7 +1813,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
         cases["nested-group-compile-metadata-str"]
     ) == ("module.compile", "a((b))d", (), (), 0, "str")
     assert support._nested_group_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.NESTED_GROUP_MANIFEST_PATH,
             "module-compile-nested-group-cold-str",
         )
@@ -1850,7 +1830,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
         "str",
     )
     assert support._nested_group_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.NESTED_GROUP_MANIFEST_PATH,
             "module-search-nested-group-warm-str",
         )
@@ -1874,7 +1854,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
         "str",
     )
     assert support._nested_group_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.NESTED_GROUP_MANIFEST_PATH,
             "pattern-fullmatch-nested-group-purged-str",
         )
@@ -1891,7 +1871,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
         cases["named-nested-group-compile-metadata-str"]
     ) == ("module.compile", "a(?P<outer>(?P<inner>b))d", (), (), 0, "str")
     assert support._nested_group_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.NESTED_GROUP_MANIFEST_PATH,
             "module-compile-named-nested-group-warm-str",
         )
@@ -1908,7 +1888,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
         "str",
     )
     assert support._nested_group_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.NESTED_GROUP_MANIFEST_PATH,
             "module-search-named-nested-group-warm-str",
         )
@@ -1932,7 +1912,7 @@ def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
         "str",
     )
     assert support._nested_group_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.NESTED_GROUP_MANIFEST_PATH,
             "pattern-fullmatch-named-nested-group-purged-str",
         )
@@ -1953,7 +1933,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
         cases["exact-repeat-numbered-group-compile-metadata-str"]
     ) == ("module.compile", "a(bc){2}d", (), (), 0, "str")
     assert support._counted_repeat_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.EXACT_REPEAT_MANIFEST_PATH,
             "module-compile-numbered-exact-repeat-group-cold-str",
         )
@@ -1970,7 +1950,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
         "str",
     )
     assert support._counted_repeat_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.EXACT_REPEAT_MANIFEST_PATH,
             "module-search-named-exact-repeat-group-warm-str",
         )
@@ -1994,7 +1974,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
         "str",
     )
     assert support._counted_repeat_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.RANGED_REPEAT_MANIFEST_PATH,
             "module-search-numbered-ranged-repeat-group-lower-bound-warm-str",
         )
@@ -2018,7 +1998,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
         "str",
     )
     assert support._counted_repeat_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.RANGED_REPEAT_MANIFEST_PATH,
             "pattern-fullmatch-named-ranged-repeat-group-lower-bound-purged-str",
         )
@@ -2042,7 +2022,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
         "str",
     )
     assert support._counted_repeat_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.OPEN_ENDED_MANIFEST_PATH,
             "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str",
         )
@@ -2066,7 +2046,7 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
         "str",
     )
     assert support._counted_repeat_workload_signature(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.OPEN_ENDED_MANIFEST_PATH,
             "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str",
         )
@@ -2082,25 +2062,25 @@ def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes
 
 def test_non_alternation_counted_repeat_selector_excludes_alternation_workloads() -> None:
     assert support._is_non_alternation_counted_repeat_workload(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.EXACT_REPEAT_MANIFEST_PATH,
             "module-compile-numbered-exact-repeat-group-cold-str",
         )
     )
     assert support._is_non_alternation_counted_repeat_workload(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.RANGED_REPEAT_MANIFEST_PATH,
             "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
         )
     )
     assert not support._is_non_alternation_counted_repeat_workload(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.EXACT_REPEAT_MANIFEST_PATH,
             "module-search-numbered-exact-repeat-group-alternation-bc-bc-warm-str",
         )
     )
     assert not support._is_non_alternation_counted_repeat_workload(
-        live_manifest_workload(
+        benchmark_test_support.live_manifest_workload(
             support.OPEN_ENDED_MANIFEST_PATH,
             "module-search-numbered-open-ended-group-broader-range-cold-gap",
         )
@@ -2111,12 +2091,12 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
     monkeypatch: pytest.MonkeyPatch,
     anchor_support_cache_guard: None,
 ) -> None:
-    manifest = _synthetic_manifest(
+    manifest = benchmark_test_support._synthetic_manifest(
         cases=(
-            _synthetic_case("case-b", ("shared",)),
-            _synthetic_case("case-a", ("shared",)),
-            _synthetic_case("case-c", ("unique",)),
-            _synthetic_case("ignored", None),
+            benchmark_test_support._synthetic_case("case-b", ("shared",)),
+            benchmark_test_support._synthetic_case("case-a", ("shared",)),
+            benchmark_test_support._synthetic_case("case-c", ("unique",)),
+            benchmark_test_support._synthetic_case("ignored", None),
         )
     )
     monkeypatch.setattr(
@@ -2144,23 +2124,23 @@ def test_source_tree_reuses_shared_published_case_helpers_by_identity() -> None:
 def test_grouped_alternation_live_signatures_cover_non_replacement_routes() -> None:
     cases = support.published_cases_by_id()
 
-    compile_workload = live_manifest_workload(
+    compile_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "module-compile-grouped-alternation-cold-str",
     )
-    search_workload = live_manifest_workload(
+    search_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "module-search-grouped-alternation-warm-str",
     )
-    fullmatch_workload = live_manifest_workload(
+    fullmatch_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "pattern-fullmatch-grouped-alternation-purged-str",
     )
-    legacy_module_sub_workload = live_manifest_workload(
+    legacy_module_sub_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "module-sub-template-nested-grouped-alternation-warm-gap",
     )
-    legacy_pattern_subn_workload = live_manifest_workload(
+    legacy_pattern_subn_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_MANIFEST_PATH,
         "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
     )
@@ -2274,19 +2254,19 @@ def test_grouped_alternation_live_signatures_cover_non_replacement_routes() -> N
 def test_grouped_alternation_replacement_live_signatures_cover_module_and_pattern_routes() -> None:
     cases = support.published_cases_by_id()
 
-    module_sub_workload = live_manifest_workload(
+    module_sub_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "module-sub-template-grouped-alternation-warm-str",
     )
-    module_subn_workload = live_manifest_workload(
+    module_subn_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "module-subn-template-named-grouped-alternation-warm-str",
     )
-    pattern_sub_workload = live_manifest_workload(
+    pattern_sub_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "pattern-sub-template-grouped-alternation-purged-str",
     )
-    pattern_subn_workload = live_manifest_workload(
+    pattern_subn_workload = benchmark_test_support.live_manifest_workload(
         support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
         "pattern-subn-template-named-grouped-alternation-purged-str",
     )
@@ -2393,7 +2373,7 @@ def test_grouped_alternation_replacement_live_signatures_cover_module_and_patter
 
 
 def test_grouped_alternation_workload_helpers_reject_unsupported_operations() -> None:
-    unsupported_workload = synthetic_workload(
+    unsupported_workload = benchmark_test_support.synthetic_workload(
         manifest_id="grouped-alternation-boundary",
         workload_id="module-match-grouped-alternation-unsupported",
         operation="module.match",
