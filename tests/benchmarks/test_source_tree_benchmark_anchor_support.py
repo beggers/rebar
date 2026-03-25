@@ -2063,6 +2063,140 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
     ) == ("callable-no-match-warm-str",)
 
 
+def test_nested_conditional_callable_live_signatures_cover_exception_and_no_match_bytes_routes(
+) -> None:
+    cases = benchmark_test_support.published_cases_by_id()
+
+    absent_case = cases[
+        "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes"
+    ]
+    absent_workload = benchmark_test_support.live_manifest_workload(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    )
+    absent_signature = (
+        "pattern.subn",
+        b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        ("callable_match_group", "word", b"", b"x"),
+        (b"zzacfzz", 1),
+        True,
+        False,
+        0,
+        "bytes",
+    )
+
+    assert (
+        support._conditional_group_exists_nested_callable_correctness_case_signature(
+            absent_case
+        )
+        == absent_signature
+    )
+    assert (
+        support._conditional_group_exists_nested_callable_workload_signature(
+            absent_workload
+        )
+        == absent_signature
+    )
+
+    no_match_case = cases[
+        "module-sub-callable-conditional-group-exists-nested-near-miss-present-bytes"
+    ]
+    no_match_workload = benchmark_test_support.live_manifest_workload(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    )
+    no_match_signature = (
+        "module.sub",
+        b"a(b)?c(?(1)(?(1)d|e)|f)",
+        ("callable_match_group", 1, b"", b"x"),
+        (b"zzabcezz",),
+        False,
+        True,
+        0,
+        "bytes",
+    )
+
+    assert (
+        support._conditional_group_exists_nested_callable_correctness_case_signature(
+            no_match_case
+        )
+        == no_match_signature
+    )
+    assert (
+        support._conditional_group_exists_nested_callable_workload_signature(
+            no_match_workload
+        )
+        == no_match_signature
+    )
+
+
+def test_quantified_conditional_callable_live_signatures_cover_none_count_and_no_match_routes(
+) -> None:
+    cases = benchmark_test_support.published_cases_by_id()
+
+    none_count_case = cases[
+        "module-sub-callable-conditional-group-exists-quantified-none-count-present-str"
+    ]
+    none_count_workload = benchmark_test_support.live_manifest_workload(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-str",
+    )
+    none_count_signature = (
+        "module.sub",
+        "a(b)?c(?(1)d|e){2}",
+        ("callable_match_group", 1, "", "x"),
+        ("zzabcddzz",),
+        True,
+        False,
+        0,
+        "str",
+    )
+
+    assert (
+        support._conditional_group_exists_quantified_callable_correctness_case_signature(
+            none_count_case
+        )
+        == none_count_signature
+    )
+    assert (
+        support._conditional_group_exists_quantified_callable_workload_signature(
+            none_count_workload
+        )
+        == none_count_signature
+    )
+
+    no_match_case = cases[
+        "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes"
+    ]
+    no_match_workload = benchmark_test_support.live_manifest_workload(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged-bytes",
+    )
+    no_match_signature = (
+        "pattern.subn",
+        b"a(?P<word>b)?c(?(word)d|e){2}",
+        ("callable_match_group", "word", b"", b"x"),
+        (b"zzacedzz", 1),
+        False,
+        True,
+        0,
+        "bytes",
+    )
+
+    assert (
+        support._conditional_group_exists_quantified_callable_correctness_case_signature(
+            no_match_case
+        )
+        == no_match_signature
+    )
+    assert (
+        support._conditional_group_exists_quantified_callable_workload_signature(
+            no_match_workload
+        )
+        == no_match_signature
+    )
+
+
 def test_benchmark_summary_consistent_counts_unimplemented_and_regression_rows() -> None:
     scorecard = _synthetic_report_scorecard(
         workloads=(
