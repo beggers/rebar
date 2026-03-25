@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cache, partial
@@ -1262,6 +1263,33 @@ _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
         "from the live source workload surface"
     ),
 )
+
+
+def _assert_keyword_error_workload_probe_measured(
+    source_workload: Any,
+    *,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    payload = benchmarks.workload_to_payload(source_workload)
+    round_tripped = benchmarks.workload_from_payload(payload)
+
+    assert payload["workload_id"] == source_workload.workload_id
+    assert round_tripped.workload_id == source_workload.workload_id
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert payload["kwargs"] == source_workload.kwargs
+    assert round_tripped.kwargs == source_workload.kwargs
+
+    probe = benchmarks.run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
 
 _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS = frozenset(
     {

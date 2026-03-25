@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import re
 
 import pytest
@@ -9,9 +8,8 @@ from rebar_harness.benchmarks import (
     Workload,
     build_callable,
     load_manifest,
-    run_internal_workload_probe,
-    workload_from_payload,
     workload_to_payload,
+    workload_from_payload,
 )
 from tests.benchmarks.benchmark_test_support import (
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
@@ -24,6 +22,7 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
     _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
     _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
+    _assert_keyword_error_workload_probe_measured,
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_module_helper_keyword_error_workload,
@@ -37,32 +36,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
 from tests.conftest import records_by_string_id
-
-
-def _assert_keyword_error_workload_probe_measured(
-    source_workload: Workload,
-    *,
-    import_name: str,
-    adapter_name: str,
-) -> None:
-    payload = workload_to_payload(source_workload)
-    round_tripped = workload_from_payload(payload)
-
-    assert payload["workload_id"] == source_workload.workload_id
-    assert round_tripped.workload_id == source_workload.workload_id
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert payload["kwargs"] == source_workload.kwargs
-    assert round_tripped.kwargs == source_workload.kwargs
-
-    probe = run_internal_workload_probe(
-        workload_payload=json.dumps(payload, sort_keys=True),
-        import_name=import_name,
-        adapter_name=adapter_name,
-    )
-
-    assert probe["status"] == "measured"
-    assert probe["median_ns"] > 0
 
 
 def test_collection_replacement_keyword_contract_surface_is_support_owned_without_local_duplicates(
@@ -91,6 +64,10 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
         is support._PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     )
     assert (
+        _assert_keyword_error_workload_probe_measured
+        is support._assert_keyword_error_workload_probe_measured
+    )
+    assert (
         _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         is support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     )
@@ -115,6 +92,7 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
         is support._pattern_helper_collection_replacement_keyword_error_workload
     )
     assert {
+        "_assert_keyword_error_workload_probe_measured",
         "_pattern_helper_collection_replacement_keyword_error_workload",
         "_is_collection_replacement_keyword_workload",
         "_is_collection_replacement_pattern_helper_keyword_error_workload",
