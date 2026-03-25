@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cache
 import re
 from typing import Any
 
@@ -371,6 +372,122 @@ def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
         and workload.flags == _VERBOSE_REGRESSION_FLAGS
         and workload.text_model == "bytes"
     )
+
+
+@cache
+def _build_compiled_pattern_module_helper_standard_benchmark_definitions() -> tuple[
+    object, ...
+]:
+    from tests.benchmarks.standard_benchmark_anchor_support import (
+        MODULE_BOUNDARY_MANIFEST_PATH,
+        StandardBenchmarkAnchorContractDefinition,
+    )
+    from tests.benchmarks.source_tree_benchmark_anchor_support import (
+        _definition_anchor_expectations,
+    )
+
+    return (
+        StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-compiled-pattern-literal-success",
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-literal-warm-hit-str-compiled-pattern": (
+                        "workflow-module-search-str-compiled-pattern",
+                    ),
+                    "module-match-literal-warm-hit-str-compiled-pattern": (
+                        "workflow-module-match-str-compiled-pattern",
+                    ),
+                    "module-fullmatch-literal-purged-hit-bytes-compiled-pattern": (
+                        "workflow-module-fullmatch-bytes-compiled-pattern",
+                    ),
+                },
+            ),
+            include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
+            correctness_case_signature=(
+                _module_workflow_compiled_pattern_correctness_case_signature
+            ),
+            workload_signature=_module_workflow_compiled_pattern_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-compiled-pattern-bounded-wildcard-success",
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern": (
+                        "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+                    ),
+                    "module-match-bounded-wildcard-warm-hit-str-compiled-pattern": (
+                        "workflow-module-match-str-bounded-wildcard-compiled-pattern",
+                    ),
+                    "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern": (
+                        "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
+                    ),
+                },
+            ),
+            include_workload=(
+                _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
+            ),
+            correctness_case_signature=(
+                _module_workflow_compiled_pattern_correctness_case_signature
+            ),
+            workload_signature=_module_workflow_compiled_pattern_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-compiled-pattern-verbose-bytes-success",
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-verbose-regression-warm-hit-bytes-compiled-pattern": (
+                        "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+                    ),
+                    "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern": (
+                        "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+                    ),
+                },
+            ),
+            include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+            correctness_case_signature=(
+                _module_workflow_compiled_pattern_correctness_case_signature
+            ),
+            workload_signature=_module_workflow_compiled_pattern_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-compiled-pattern-wrong-text-model",
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-search-str-compiled-pattern-on-bytes-string",
+                    ),
+                    "module-match-on-str-string-purged-bytes-compiled-pattern": (
+                        "workflow-module-match-bytes-compiled-pattern-on-str-string",
+                    ),
+                    "module-fullmatch-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
+                    ),
+                },
+            ),
+            include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
+            correctness_case_signature=(
+                _module_workflow_compiled_pattern_correctness_case_signature
+            ),
+            workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        ),
+    )
+
+
+def __getattr__(name: str) -> Any:
+    if name == "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS":
+        return _build_compiled_pattern_module_helper_standard_benchmark_definitions()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _is_collection_replacement_compiled_pattern_keyword_error_workload(

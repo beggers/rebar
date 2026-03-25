@@ -1,6 +1,6 @@
 ## RBR-1281: Move compiled-pattern helper standard anchor definitions onto owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -67,3 +67,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` passed with `292 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `347 tests collected`; and
   - the negative `rg` check in `Verification` currently fails because those four compiled-pattern helper definition bodies still live inline in `tests/benchmarks/standard_benchmark_anchor_support.py`, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the four `module-workflow-compiled-pattern-*` standard anchor definitions onto `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py` behind the lazy cached owner export `COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS`, keeping their order and definition semantics unchanged.
+- Simplified `tests/benchmarks/standard_benchmark_anchor_support.py` so the central inventory now splices the owner tuple directly instead of carrying inline compiled-pattern helper definition bodies.
+- Added focused owner-boundary assertions in the compiled-pattern helper and standard-support benchmark tests, including direct source checks that the central file no longer inlines the moved `name="module-workflow-compiled-pattern-..."` literals.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `213 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py` passed with `50 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `351 tests collected`.
+  - `bash -lc "! rg -n 'name=\"(module-workflow-compiled-pattern-literal-success|module-workflow-compiled-pattern-bounded-wildcard-success|module-workflow-compiled-pattern-verbose-bytes-success|module-workflow-compiled-pattern-wrong-text-model)\"' tests/benchmarks/standard_benchmark_anchor_support.py"` passed.

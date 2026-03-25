@@ -22,6 +22,9 @@ from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
 from tests.benchmarks import (
+    compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
+)
+from tests.benchmarks import (
     pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
@@ -330,6 +333,20 @@ def test_standard_support_source_no_longer_inlines_pattern_boundary_definitions(
         assert f'name="{definition_name}"' not in support_source
 
 
+def test_standard_support_source_no_longer_inlines_compiled_pattern_module_helper_definitions(
+) -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    for definition_name in (
+        "module-workflow-compiled-pattern-literal-success",
+        "module-workflow-compiled-pattern-bounded-wildcard-success",
+        "module-workflow-compiled-pattern-verbose-bytes-success",
+        "module-workflow-compiled-pattern-wrong-text-model",
+    ):
+        assert f'name="{definition_name}"' not in support_source
+
+
 def test_standard_inventory_reuses_owner_owned_collection_replacement_definition_objects(
 ) -> None:
     owner_definitions = (
@@ -354,6 +371,26 @@ def test_standard_inventory_reuses_owner_owned_pattern_boundary_definition_objec
         definition
         for definition in support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name.startswith("pattern-boundary-")
+    )
+
+    assert standard_definitions == owner_definitions
+
+
+def test_standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_definition_objects(
+) -> None:
+    definition_names = {
+        "module-workflow-compiled-pattern-literal-success",
+        "module-workflow-compiled-pattern-bounded-wildcard-success",
+        "module-workflow-compiled-pattern-verbose-bytes-success",
+        "module-workflow-compiled-pattern-wrong-text-model",
+    }
+    owner_definitions = (
+        compiled_pattern_module_helper_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS
+    )
+    standard_definitions = tuple(
+        definition
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name in definition_names
     )
 
     assert standard_definitions == owner_definitions
