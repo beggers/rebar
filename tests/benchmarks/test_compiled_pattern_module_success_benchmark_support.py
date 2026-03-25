@@ -34,6 +34,7 @@ from tests.benchmarks.recording_benchmark_module_support import (
 )
 from tests.benchmarks.benchmark_test_support import _write_test_manifest
 from tests.benchmarks.benchmark_test_support import (
+    selected_manifest_workloads,
     top_level_module_definition_and_assignment_names,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
@@ -91,6 +92,36 @@ def test_compiled_pattern_module_success_owner_specs_are_support_owned_without_l
         "_assert_compiled_pattern_module_success_payload_round_trip",
         "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
     }.isdisjoint(local_definition_names)
+
+
+def test_compiled_pattern_module_success_owner_specs_match_live_nonkeyword_noncompile_success_surface_without_overlap(
+) -> None:
+    def include_live_success_workload(workload: Workload) -> bool:
+        return (
+            workload.use_compiled_pattern
+            and workload.expected_exception is None
+            and getattr(workload, "haystack_text_model", None) is None
+            and workload.operation.startswith("module.")
+            and workload.operation != "module.compile"
+            and not workload.kwargs
+        )
+
+    owner_surface_ids = tuple(
+        source_workload.workload_id
+        for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for source_workload in owner_spec.source_workloads()
+    )
+    expected_live_surface_ids = tuple(
+        workload.workload_id
+        for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for workload in selected_manifest_workloads(
+            owner_spec.manifest_path,
+            include_workload=include_live_success_workload,
+        )
+    )
+
+    assert tuple(sorted(owner_surface_ids)) == tuple(sorted(expected_live_surface_ids))
+    assert len(owner_surface_ids) == len(set(owner_surface_ids))
 
 
 _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
