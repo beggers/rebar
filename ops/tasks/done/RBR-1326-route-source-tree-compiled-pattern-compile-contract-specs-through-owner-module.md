@@ -1,6 +1,6 @@
 # RBR-1326: Route source-tree compiled-pattern compile contract specs through owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -65,3 +65,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or combined_suite_no_longer_defines_moved_source_tree_case_surface_locally or combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_locally'` passed with `3 passed, 49 deselected in 0.13s`
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in {'_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES','_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES','_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS','_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS','_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS'}}); sys.exit(0 if not direct else 1)"` currently fails because the source-tree suite still reaches that compile-contract bundle through `benchmark_test_support`, and that failure belongs exactly to this cleanup
+
+## Completion Notes
+- Routed the compiled-pattern module-compile contract bundle through `tests/benchmarks/source_tree_benchmark_anchor_support.py` by exposing the five existing `benchmark_test_support` surfaces there as owner-module assignments.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to consume those five names only through `source_tree_support`, removing the source-tree suite's direct `benchmark_test_support` references for this contract bundle.
+- Extended `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so the selected ownership checks now prove both the new owner-module exports and the absence of direct `benchmark_test_support` attribute references for those names in the combined suite.
+- Verification completed in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile'` passed with `77 passed, 202 deselected in 1.68s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or combined_suite_no_longer_defines_moved_source_tree_case_surface_locally or combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_locally'` passed with `3 passed, 49 deselected in 0.23s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+  - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in {'_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES','_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES','_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS','_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS','_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS'}}); sys.exit(0 if not direct else 1)"` passed

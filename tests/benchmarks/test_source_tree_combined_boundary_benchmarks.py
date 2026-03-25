@@ -1928,7 +1928,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 ) -> None:
     success_case = next(
         case
-        for case in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "success"
     )
     success_source_workload = success_case.source_workloads()[0]
@@ -1939,7 +1939,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 
     keyword_case = next(
         case
-        for case in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "bool-false"
     )
     keyword_source_workload = keyword_case.source_workloads()[0]
@@ -1959,8 +1959,8 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
 
 def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to_live_rows(
 ) -> None:
-    contract_cases = benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
-    anchor_lanes = benchmark_test_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
+    contract_cases = source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    anchor_lanes = source_tree_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES
 
     success_case = next(case for case in contract_cases if case.case_id == "success")
     bool_false_case = next(
@@ -2016,10 +2016,10 @@ def test_compiled_pattern_module_compile_anchor_and_case_metadata_stay_pinned_to
 
 
 @pytest.mark.parametrize(
-    "owner_spec",
+        "owner_spec",
     (
-        *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-        *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        *source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+        *source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
     ),
     ids=lambda owner_spec: owner_spec.anchor_definition_name,
 )
@@ -2049,7 +2049,7 @@ def test_compiled_pattern_module_compile_owner_specs_keep_module_boundary_rows_m
 
 @pytest.mark.parametrize(
     "anchor_lane",
-    benchmark_test_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
+    source_tree_support._COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES,
     ids=lambda anchor_lane: anchor_lane.case_id,
 )
 def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_published_correctness_cases(
@@ -2096,7 +2096,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
         pytest.param(case_group, source_workload, id=source_workload.workload_id)
         for case_group in (
             owner_spec.contract_case()
-            for owner_spec in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
+            for owner_spec in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
         )
         for source_workload in case_group.source_workloads()
     ),
@@ -2137,7 +2137,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -2177,7 +2177,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 
 @pytest.mark.parametrize(
     ("contract_case", "source_workload"),
-    benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_argument_before_timing(
     contract_case: object,

@@ -53,6 +53,14 @@ _MOVED_SOURCE_TREE_CONSTANT_NAMES = (
     "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
 )
 
+_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES = (
+    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+)
+
 _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
     "OPTIONAL_GROUP_MANIFEST_PATH",
     "NESTED_GROUP_MANIFEST_PATH",
@@ -903,6 +911,13 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
+    for constant_name in _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+        assert getattr(support, constant_name) is getattr(
+            benchmark_test_support,
+            constant_name,
+        )
 
 
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
@@ -1052,12 +1067,21 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         and isinstance(node.ctx, ast.Load)
         and node.id in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
     }
+    direct_compiled_pattern_contract_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "benchmark_test_support"
+        and node.attr in _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+    }
 
     for constant_name in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES:
         assert constant_name not in direct_import_names
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
     assert local_constant_alias_names == set()
+    assert direct_compiled_pattern_contract_refs == set()
 
 
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
