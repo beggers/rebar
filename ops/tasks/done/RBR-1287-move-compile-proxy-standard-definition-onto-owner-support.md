@@ -1,6 +1,6 @@
 # RBR-1287: Move compile-proxy standard definition onto owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -79,3 +79,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_benchmark_support.py` currently fails because the file does not exist yet, which belongs exactly to this cleanup;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_compile_proxy_benchmark_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently fails because the new compile-proxy support test file does not exist yet, which belongs exactly to this cleanup; and
   - the negative `rg` command above currently fails because the central standard support file still inlines compile-proxy-specific ownership details.
+
+## Completion Notes
+- Added `tests/benchmarks/compile_proxy_benchmark_support.py` with a lazy cached `COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS` export that owns the single `compile-proxy` definition and reuses the existing compile-proxy helper functions from `tests/benchmarks/benchmark_test_support.py`.
+- Simplified `tests/benchmarks/standard_benchmark_anchor_support.py` so the central tuple now splices `*COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS` first and no longer mentions `compile_proxy_correctness_case_signature`, `compile_proxy_workload_signature`, `is_compile_proxy_workload`, or `name="compile-proxy"`.
+- Added focused owner-module coverage in `tests/benchmarks/test_compile_proxy_benchmark_support.py` and extended `tests/benchmarks/test_standard_benchmark_anchor_support.py` to cover the new lazy export, splice boundary, source cleanup, and object reuse.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` (`242 passed`)
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_benchmark_support.py` (`3 passed`)
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_compile_proxy_benchmark_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`333 tests collected`)
+  - `bash -lc "! rg -n 'compile_proxy_correctness_case_signature|compile_proxy_workload_signature|is_compile_proxy_workload|name=\\\"compile-proxy\\\"' tests/benchmarks/standard_benchmark_anchor_support.py"`

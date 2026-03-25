@@ -20,6 +20,7 @@ from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
+from tests.benchmarks import compile_proxy_benchmark_support as compile_proxy_support
 from tests.benchmarks import (
     compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
 )
@@ -53,6 +54,12 @@ def _definition_names(definitions: tuple[Any, ...]) -> tuple[str, ...]:
 @pytest.mark.parametrize(
     ("module", "export_name", "builder_name"),
     (
+        pytest.param(
+            compile_proxy_support,
+            "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
+            "_build_compile_proxy_standard_benchmark_definitions",
+            id="compile-proxy",
+        ),
         pytest.param(
             collection_replacement_support,
             "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
@@ -115,6 +122,11 @@ def test_owner_standard_definition_exports_stay_lazy_and_cached(
 @pytest.mark.parametrize(
     ("module", "missing_name"),
     (
+        pytest.param(
+            compile_proxy_support,
+            "NOT_A_COMPILE_PROXY_OWNER_EXPORT",
+            id="compile-proxy",
+        ),
         pytest.param(
             collection_replacement_support,
             "NOT_A_COLLECTION_REPLACEMENT_OWNER_EXPORT",
@@ -327,6 +339,7 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     support_source = inspect.getsource(support)
     assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
     assert "for definition in _standard_benchmark_definitions()" not in support_source
+    assert "*COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
     assert "*COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS," in support_source
     assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
     assert (
@@ -344,6 +357,12 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
 @pytest.mark.parametrize(
     ("owner_definitions", "preceding_definition_name", "following_definition_name"),
     (
+        pytest.param(
+            compile_proxy_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+            None,
+            "collection-replacement-module-positional-indexlike",
+            id="compile-proxy-before-collection-replacement",
+        ),
         pytest.param(
             anchor_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
             "collection-replacement-grouped-callable-replacement",
@@ -374,7 +393,10 @@ def test_standard_inventory_keeps_source_tree_owner_blocks_at_expected_boundarie
     owner_names = _definition_names(owner_definitions)
 
     first_owner_index = standard_names.index(owner_names[0])
-    assert standard_names[first_owner_index - 1] == preceding_definition_name
+    if preceding_definition_name is None:
+        assert first_owner_index == 0
+    else:
+        assert standard_names[first_owner_index - 1] == preceding_definition_name
 
     standard_owner_slice = standard_definitions[
         first_owner_index : first_owner_index + len(owner_definitions)
@@ -396,6 +418,10 @@ def test_standard_inventory_keeps_source_tree_owner_blocks_at_expected_boundarie
 @pytest.mark.parametrize(
     "owner_definitions",
     (
+        pytest.param(
+            compile_proxy_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+            id="compile-proxy",
+        ),
         pytest.param(
             collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
             id="collection-replacement",
@@ -472,6 +498,26 @@ def test_standard_support_source_no_longer_inlines_collection_replacement_defini
         "collection-replacement-grouped-callable-replacement",
     ):
         assert f'name="{definition_name}"' not in support_source
+
+
+def test_standard_support_source_no_longer_mentions_compile_proxy_helpers_or_inline_definition(
+) -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+
+    assert "compile_proxy_correctness_case_signature" not in support_source
+    assert "compile_proxy_workload_signature" not in support_source
+    assert "is_compile_proxy_workload" not in support_source
+    assert 'name="compile-proxy"' not in support_source
+
+
+def test_standard_inventory_reuses_owner_owned_compile_proxy_definition() -> None:
+    owner_definitions = compile_proxy_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS
+
+    assert len(owner_definitions) == 1
+    assert owner_definitions[0].name == "compile-proxy"
+    assert support.STANDARD_BENCHMARK_DEFINITIONS[0] is owner_definitions[0]
 
 
 def test_standard_support_source_no_longer_inlines_pattern_boundary_definitions() -> None:

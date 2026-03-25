@@ -9,12 +9,7 @@ from typing import Any, Protocol
 
 import pytest
 
-from tests.benchmarks.benchmark_test_support import (
-    compile_proxy_correctness_case_signature,
-    compile_proxy_workload_signature,
-    is_compile_proxy_workload,
-    manifest_workloads,
-)
+from tests.benchmarks.benchmark_test_support import manifest_workloads
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
@@ -376,6 +371,9 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         _conditional_group_exists_quantified_callable_correctness_case_signature,
         _conditional_group_exists_quantified_callable_workload_signature,
     )
+    from tests.benchmarks.compile_proxy_benchmark_support import (
+        COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+    )
     from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
         COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
     )
@@ -391,64 +389,7 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
     )
 
     return (
-    StandardBenchmarkAnchorContractDefinition(
-        name="compile-proxy",
-        manifest_paths=(
-            COMPILE_MATRIX_MANIFEST_PATH,
-            REGRESSION_MATRIX_MANIFEST_PATH,
-        ),
-        expected_anchor_case_ids=(
-            _definition_anchor_expectations(
-                COMPILE_MATRIX_MANIFEST_PATH,
-                {
-                    "compile-inline-locale-bytes-warm": (
-                        "bytes-inline-locale-flag-success",
-                    ),
-                    "compile-lookbehind-cold": (
-                        "str-fixed-width-lookbehind-success",
-                    ),
-                    "compile-character-class-ignorecase-warm": (
-                        "str-character-class-ignorecase-success",
-                    ),
-                    "compile-possessive-quantifier-cold": (
-                        "str-possessive-quantifier-success",
-                    ),
-                    "compile-atomic-group-purged": (
-                        "str-atomic-group-success",
-                    ),
-                    "compile-parser-stress-cold": (
-                        "str-parser-stress-compile-proxy-success",
-                    ),
-                },
-            )
-            | _definition_anchor_expectations(
-                REGRESSION_MATRIX_MANIFEST_PATH,
-                {
-                    "regression-parser-atomic-lookbehind-cold": (
-                        "str-parser-stress-compile-proxy-success",
-                    ),
-                    "regression-parser-bytes-backreference-purged": (
-                        "bytes-named-backreference-compile-proxy-success",
-                    ),
-                    "regression-module-compile-verbose-purged": (
-                        "workflow-compile-str-verbose-regression",
-                    ),
-                    "regression-module-compile-multiline-purged": (
-                        "workflow-compile-str-multiline-regression",
-                    ),
-                    "regression-module-compile-multiline-purged-bytes": (
-                        "workflow-compile-bytes-multiline-regression",
-                    ),
-                    "regression-module-compile-verbose-purged-bytes": (
-                        "workflow-compile-bytes-verbose-regression",
-                    ),
-                },
-            )
-        ),
-        include_workload=is_compile_proxy_workload,
-        correctness_case_signature=compile_proxy_correctness_case_signature,
-        workload_signature=compile_proxy_workload_signature,
-    ),
+    *COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
     *COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
     *MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
     *COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
