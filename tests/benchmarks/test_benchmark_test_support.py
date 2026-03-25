@@ -2006,6 +2006,39 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     )
 
 
+def test_benchmark_test_support_owns_source_tree_combined_routing_helpers() -> None:
+    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert {
+        "_source_tree_combined_suite_module",
+        "_parsed_source_tree_combined_suite_ast",
+        "_module_alias_names",
+        "_assert_source_tree_combined_routes_owner_names_through_module_alias",
+    }.issubset(definition_names)
+
+
+def test_source_tree_combined_routing_helpers_stay_centralized() -> None:
+    source_tree_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
+    )
+    collection_suite = importlib.import_module(
+        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
+    )
+    helper_names = {
+        "_parsed_source_tree_combined_suite_ast",
+        "_module_alias_names",
+        "_assert_source_tree_combined_routes_owner_names_through_module_alias",
+    }
+
+    for suite in (source_tree_suite, collection_suite):
+        definition_names, _ = support.top_level_module_definition_and_assignment_names(
+            suite
+        )
+        assert helper_names.isdisjoint(definition_names)
+
+
 _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
     {
         "STANDARD_BENCHMARK_DEFINITIONS",

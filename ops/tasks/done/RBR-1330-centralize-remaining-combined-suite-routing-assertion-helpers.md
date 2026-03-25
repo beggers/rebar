@@ -1,6 +1,6 @@
 ## RBR-1330: Centralize remaining combined-suite routing assertion helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -58,4 +58,12 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `327 passed in 2.68s`
   - `bash -lc "! rg -n '^def (_parsed_source_tree_combined_suite_ast|_module_alias_names|_assert_source_tree_combined_routes_owner_names_through_module_alias)\\(' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently fails because those consumer-local helpers still exist, and that failure belongs exactly to this cleanup
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
+
+## Completion
+- Centralized the remaining source-tree combined-suite loader, alias-chain resolver, and owner-alias routing assertion helpers in `tests/benchmarks/benchmark_test_support.py`, then rewired the source-tree and collection-replacement consumer suites to use that shared surface instead of local helper definitions.
+- Added focused support-contract coverage in `tests/benchmarks/test_benchmark_test_support.py` to keep those helper definitions owned by `benchmark_test_support.py` and out of the consumer suites.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `329 passed in 2.71s`
+  - `bash -lc "! rg -n '^def (_parsed_source_tree_combined_suite_ast|_module_alias_names|_assert_source_tree_combined_routes_owner_names_through_module_alias)\\(' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` passed
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed

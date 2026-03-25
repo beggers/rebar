@@ -82,36 +82,6 @@ def _group_callable_replacement(
 
     return replacement
 
-
-def _assert_source_tree_combined_routes_owner_names_through_module_alias(
-    *,
-    alias_name: str,
-    owner_module: object,
-    owner_names: tuple[str, ...],
-) -> object:
-    import importlib
-
-    combined_suite = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    definition_names, assignment_names = (
-        benchmark_test_support.top_level_module_definition_and_assignment_names(
-            combined_suite
-        )
-    )
-    local_names = definition_names | assignment_names
-
-    assert getattr(combined_suite, alias_name) is owner_module
-
-    owner_alias = getattr(combined_suite, alias_name)
-    for name in owner_names:
-        assert getattr(owner_alias, name) is getattr(owner_module, name)
-        assert name not in local_names
-        assert not hasattr(combined_suite, name)
-
-    return combined_suite
-
-
 def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -1102,7 +1072,7 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
 
 
 def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
-    _assert_source_tree_combined_routes_owner_names_through_module_alias(
+    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
         owner_names=(
@@ -1136,7 +1106,7 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
         source_tree_benchmark_anchor_support as source_tree_support,
     )
 
-    combined_suite = _assert_source_tree_combined_routes_owner_names_through_module_alias(
+    combined_suite = benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="source_tree_support",
         owner_module=source_tree_support,
         owner_names=("SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",),
@@ -1161,7 +1131,7 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
 
 
 def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
-    _assert_source_tree_combined_routes_owner_names_through_module_alias(
+    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
         owner_names=(

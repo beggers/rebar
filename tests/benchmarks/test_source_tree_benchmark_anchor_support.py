@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import ast
-from functools import cache
 import pathlib
 from types import SimpleNamespace
 import unittest
@@ -188,66 +187,6 @@ def _compile_search_fullmatch_workload(
         flags=flags,
         text_model=text_model,
     )
-
-
-@cache
-def _parsed_source_tree_combined_suite_ast() -> ast.Module:
-    return ast.parse(
-        (
-            REPO_ROOT
-            / "tests"
-            / "benchmarks"
-            / "test_source_tree_combined_boundary_benchmarks.py"
-        ).read_text()
-    )
-
-
-def _module_alias_names(
-    module_ast: ast.AST,
-    *,
-    import_from_module: str,
-    import_name: str,
-    dotted_import_name: str,
-) -> set[str]:
-    alias_names = {
-        alias.asname or alias.name
-        for node in ast.walk(module_ast)
-        if isinstance(node, ast.ImportFrom)
-        and node.module == import_from_module
-        for alias in node.names
-        if alias.name == import_name
-    } | {
-        alias.asname or alias.name.rsplit(".", 1)[-1]
-        for node in ast.walk(module_ast)
-        if isinstance(node, ast.Import)
-        for alias in node.names
-        if alias.name == dotted_import_name
-    }
-
-    changed = True
-    while changed:
-        changed = False
-        for node in ast.walk(module_ast):
-            if isinstance(node, ast.Assign):
-                targets = tuple(
-                    target.id for target in node.targets if isinstance(target, ast.Name)
-                )
-                value = node.value
-            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
-                targets = (node.target.id,)
-                value = node.value
-            else:
-                continue
-
-            if not isinstance(value, ast.Name) or value.id not in alias_names:
-                continue
-
-            for target in targets:
-                if target not in alias_names:
-                    alias_names.add(target)
-                    changed = True
-
-    return alias_names
 
 
 def _report_workload(
@@ -1099,12 +1038,12 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
     local_class_names = {
         node.name
-        for node in _parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.ClassDef)
     }
     local_function_names = {
         node.name
-        for node in _parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -1116,7 +1055,7 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
 
 def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
 ) -> None:
-    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
     direct_import_names = {
         alias.name
         for node in combined_suite_ast.body
@@ -1163,7 +1102,7 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
 
 def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_locally(
 ) -> None:
-    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
     direct_import_names = {
         alias.name
         for node in combined_suite_ast.body
@@ -1239,7 +1178,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
     local_function_names = {
         node.name
-        for node in _parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -1251,7 +1190,7 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
 ) -> None:
     local_function_names = {
         node.name
-        for node in _parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -1262,13 +1201,13 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
 def test_combined_suite_imports_source_tree_support_through_owner_module_only() -> None:
     direct_owner_imports = [
         node
-        for node in _parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.ImportFrom)
         and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
     ]
     owner_module_imports = [
         alias
-        for node in _parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
         for alias in node.names
     ]
@@ -1329,7 +1268,7 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
     dotted_import_name: str,
     expected_alias_names: set[str],
 ) -> None:
-    assert _module_alias_names(
+    assert benchmark_test_support._module_alias_names(
         ast.parse(module_source),
         import_from_module="tests.benchmarks",
         import_name=import_name,
@@ -1340,101 +1279,11 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
 def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
     routed_names: tuple[str, ...],
 ) -> None:
-    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
-    benchmark_test_support_alias_names = _module_alias_names(
-        combined_suite_ast,
-        import_from_module="tests.benchmarks",
-        import_name="benchmark_test_support",
-        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+        alias_name="source_tree_support",
+        owner_module=support,
+        owner_names=routed_names,
     )
-    source_tree_support_alias_names = _module_alias_names(
-        combined_suite_ast,
-        import_from_module="tests.benchmarks",
-        import_name="source_tree_benchmark_anchor_support",
-        dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
-    )
-    direct_import_names = {
-        alias.name
-        for node in ast.walk(combined_suite_ast)
-        if isinstance(node, ast.ImportFrom)
-        for alias in node.names
-    }
-    local_assignment_names = {
-        target.id
-        for node in ast.walk(combined_suite_ast)
-        if isinstance(node, ast.Assign)
-        for target in node.targets
-        if isinstance(target, ast.Name)
-    } | {
-        node.target.id
-        for node in ast.walk(combined_suite_ast)
-        if isinstance(node, ast.AnnAssign)
-        and isinstance(node.target, ast.Name)
-    }
-    local_alias_names: set[str] = set()
-    for node in ast.walk(combined_suite_ast):
-        if isinstance(node, ast.Assign):
-            targets = tuple(
-                target.id for target in node.targets if isinstance(target, ast.Name)
-            )
-            value = node.value
-        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
-            targets = (node.target.id,)
-            value = node.value
-        else:
-            continue
-
-        if isinstance(value, ast.Name) and value.id in routed_names:
-            local_alias_names.update(targets)
-            continue
-
-        if (
-            isinstance(value, ast.Attribute)
-            and isinstance(value.value, ast.Name)
-            and value.value.id in {"source_tree_support", "benchmark_test_support"}
-            and value.attr in routed_names
-        ):
-            local_alias_names.update(targets)
-    local_name_loads = {
-        node.id
-        for node in ast.walk(combined_suite_ast)
-        if isinstance(node, ast.Name)
-        and isinstance(node.ctx, ast.Load)
-        and node.id in routed_names
-    }
-    direct_benchmark_test_support_refs = {
-        node.attr
-        for node in ast.walk(combined_suite_ast)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id in benchmark_test_support_alias_names
-        and node.attr in routed_names
-    }
-    aliased_source_tree_support_refs = {
-        node.attr
-        for node in ast.walk(combined_suite_ast)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id in (source_tree_support_alias_names - {"source_tree_support"})
-        and node.attr in routed_names
-    }
-    source_tree_support_refs = {
-        node.attr
-        for node in ast.walk(combined_suite_ast)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id == "source_tree_support"
-        and node.attr in routed_names
-    }
-
-    for constant_name in routed_names:
-        assert constant_name not in direct_import_names
-        assert constant_name not in local_assignment_names
-        assert constant_name not in local_name_loads
-    assert local_alias_names == set()
-    assert direct_benchmark_test_support_refs == set()
-    assert aliased_source_tree_support_refs == set()
-    assert source_tree_support_refs == set(routed_names)
 
 
 @pytest.mark.parametrize(

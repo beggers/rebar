@@ -5,6 +5,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from functools import cache
 from functools import partial
+import importlib
 import inspect
 import pathlib
 import re
@@ -353,6 +354,8 @@ def _clear_anchor_support_caches() -> None:
             published_case_ids_by_signature,
             published_cases_by_id,
             _parsed_module_ast,
+            _source_tree_combined_suite_module,
+            _parsed_source_tree_combined_suite_ast,
         )
     )
     source_tree_support = sys.modules.get(
@@ -629,6 +632,161 @@ def _ast_import_targets(module_ast: ast.Module) -> frozenset[str]:
             targets.update(alias.name for alias in node.names)
 
     return frozenset(targets)
+
+
+@cache
+def _source_tree_combined_suite_module() -> object:
+    return importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+
+
+@cache
+def _parsed_source_tree_combined_suite_ast() -> ast.Module:
+    return _parsed_module_ast(_source_tree_combined_suite_module())
+
+
+def _module_alias_names(
+    module_ast: ast.AST,
+    *,
+    import_from_module: str,
+    import_name: str,
+    dotted_import_name: str,
+) -> frozenset[str]:
+    alias_names = {
+        alias.asname or alias.name
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.ImportFrom)
+        and node.module == import_from_module
+        for alias in node.names
+        if alias.name == import_name
+    } | {
+        alias.asname or alias.name.rsplit(".", 1)[-1]
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Import)
+        for alias in node.names
+        if alias.name == dotted_import_name
+    }
+
+    changed = True
+    while changed:
+        changed = False
+        for node in ast.walk(module_ast):
+            if isinstance(node, ast.Assign):
+                targets = tuple(
+                    target.id for target in node.targets if isinstance(target, ast.Name)
+                )
+                value = node.value
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                targets = (node.target.id,)
+                value = node.value
+            else:
+                continue
+
+            if not isinstance(value, ast.Name) or value.id not in alias_names:
+                continue
+
+            for target in targets:
+                if target not in alias_names:
+                    alias_names.add(target)
+                    changed = True
+
+    return frozenset(alias_names)
+
+
+def _assert_source_tree_combined_routes_owner_names_through_module_alias(
+    *,
+    alias_name: str,
+    owner_module: object,
+    owner_names: tuple[str, ...],
+) -> object:
+    combined_suite = _source_tree_combined_suite_module()
+    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    _, local_assignment_names = top_level_module_definition_and_assignment_names(
+        combined_suite
+    )
+    owner_module_name = owner_module.__name__
+    owner_import_name = owner_module_name.rsplit(".", 1)[-1]
+    benchmark_test_support_alias_names = _module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    )
+    owner_alias_names = _module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name=owner_import_name,
+        dotted_import_name=owner_module_name,
+    )
+
+    assert alias_name in owner_alias_names
+    assert getattr(combined_suite, alias_name) is owner_module
+
+    direct_import_names = {
+        alias.name
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    local_alias_names: set[str] = set()
+    for node in combined_suite_ast.body:
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if isinstance(value, ast.Name) and value.id in owner_names:
+            local_alias_names.update(targets)
+            continue
+
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id in (owner_alias_names | benchmark_test_support_alias_names)
+            and value.attr in owner_names
+        ):
+            local_alias_names.update(targets)
+
+    local_name_loads = {
+        node.id
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Name)
+        and isinstance(node.ctx, ast.Load)
+        and node.id in owner_names
+    }
+    direct_benchmark_test_support_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in benchmark_test_support_alias_names
+        and node.attr in owner_names
+    }
+    aliased_owner_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in (owner_alias_names - {alias_name})
+        and node.attr in owner_names
+    }
+    owner_alias = getattr(combined_suite, alias_name)
+    for name in owner_names:
+        assert getattr(owner_alias, name) is getattr(owner_module, name)
+        assert name not in direct_import_names
+        assert name not in local_assignment_names
+        assert name not in local_name_loads
+    assert local_alias_names == set()
+    assert direct_benchmark_test_support_refs == set()
+    assert aliased_owner_refs == set()
+    return combined_suite
 
 
 def _owner_definition_manifest_path_names(
