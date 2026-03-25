@@ -8,7 +8,7 @@ import re
 from typing import Any
 
 from rebar_harness import benchmarks
-from tests.benchmarks import benchmark_test_support as shared_benchmark_support
+from tests.benchmarks import benchmark_test_support
 from tests.benchmarks.benchmark_test_support import (
     COLLECTION_REPLACEMENT_MANIFEST_PATH,
     MODULE_BOUNDARY_MANIFEST_PATH,
@@ -525,7 +525,7 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                     ),
                 },
             ),
-            include_workload=shared_benchmark_support._is_collection_replacement_keyword_workload,
+            include_workload=benchmark_test_support._is_collection_replacement_keyword_workload,
             correctness_case_signature=(
                 _collection_replacement_keyword_correctness_case_signature
             ),
@@ -587,7 +587,7 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                     ),
                 },
             ),
-            include_workload=shared_benchmark_support._is_collection_replacement_wrong_text_model_workload,
+            include_workload=benchmark_test_support._is_collection_replacement_wrong_text_model_workload,
             correctness_case_signature=(
                 _collection_replacement_wrong_text_model_correctness_case_signature
             ),
@@ -807,7 +807,7 @@ def _collection_replacement_has_expected_unexpected_keyword_error(
         return False
     keyword_name = keyword_names[0]
     expected_keyword_parameter = (
-        shared_benchmark_support._collection_replacement_keyword_parameter_name(
+        benchmark_test_support._collection_replacement_keyword_parameter_name(
             workload
         )
     )
@@ -890,7 +890,7 @@ def _collection_replacement_positional_indexlike_workload_signature(
 
 def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> bool:
     keyword_parameter = (
-        shared_benchmark_support._collection_replacement_keyword_parameter_name(
+        benchmark_test_support._collection_replacement_keyword_parameter_name(
             workload
         )
     )
@@ -903,7 +903,7 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
     return (
         not workload.kwargs
         and workload.expected_exception is None
-        and shared_benchmark_support._is_encoded_indexlike_payload(parameter_payload)
+        and benchmark_test_support._is_encoded_indexlike_payload(parameter_payload)
     )
 
 def _collection_replacement_keyword_correctness_case_signature(
@@ -933,7 +933,7 @@ def _collection_replacement_keyword_workload_args(
     workload: Any,
 ) -> tuple[object, ...]:
     positional_keyword_field = (
-        shared_benchmark_support._collection_replacement_positional_keyword_field(
+        benchmark_test_support._collection_replacement_positional_keyword_field(
             workload
         )
     )
@@ -959,7 +959,7 @@ def _collection_replacement_keyword_workload_args(
 def _collection_replacement_keyword_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not shared_benchmark_support._is_collection_replacement_keyword_workload(
+    if not benchmark_test_support._is_collection_replacement_keyword_workload(
         workload
     ):
         raise AssertionError(
@@ -1124,7 +1124,7 @@ def _is_collection_replacement_pattern_helper_keyword_error_workload(
     workload: Any,
 ) -> bool:
     return (
-        shared_benchmark_support._is_collection_replacement_keyword_workload(workload)
+        benchmark_test_support._is_collection_replacement_keyword_workload(workload)
         and not workload.use_compiled_pattern
         and workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}
         and workload.expected_exception is not None
@@ -1171,7 +1171,7 @@ def _is_collection_replacement_module_helper_keyword_error_workload(
     workload: Any,
 ) -> bool:
     return (
-        shared_benchmark_support._is_collection_replacement_keyword_workload(workload)
+        benchmark_test_support._is_collection_replacement_keyword_workload(workload)
         and not workload.use_compiled_pattern
         and workload.operation in {"module.split", "module.sub", "module.subn"}
         and workload.expected_exception is not None
@@ -1392,7 +1392,7 @@ def _collection_replacement_wrong_text_model_workload_args(
 def _collection_replacement_wrong_text_model_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not shared_benchmark_support._is_collection_replacement_wrong_text_model_workload(
+    if not benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
         workload
     ):
         raise AssertionError(
