@@ -25,15 +25,7 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.scorecard_io import ordered_published_subset_filenames
-from tests.benchmarks.benchmark_test_support import (
-    COMPILE_MATRIX_MANIFEST_PATH,
-    CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
-    NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
-    _write_test_manifest,
-    assert_benchmark_workload_matches_expected_result,
-    live_manifest_workloads,
-    run_benchmark_workload_with_cpython,
-)
+from tests.benchmarks import benchmark_test_support
 from tests.conftest import (
     REPO_ROOT,
     assert_declared_string_selector_registry_contract,
@@ -566,7 +558,7 @@ def test_standard_benchmark_manifest_selected_workloads_preserves_filters_and_or
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_selection_contract.py",
         manifest_source,
@@ -667,7 +659,7 @@ def test_standard_benchmark_manifest_measures_expected_exception_workloads(
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_exception_contract.py",
         manifest_source,
@@ -826,7 +818,7 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_unsupported_operation_contract.py",
         manifest_source,
@@ -847,8 +839,8 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
 @cache
 def _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
 ) -> tuple[Workload, ...]:
-    return live_manifest_workloads(
-        NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
+    return benchmark_test_support.live_manifest_workloads(
+        benchmark_test_support.NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
         (
             "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
             "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
@@ -881,9 +873,9 @@ def test_nested_group_callable_replacement_quantified_branch_local_backreference
     assert round_tripped.pattern_payload() == source_workload.pattern_payload()
     assert round_tripped.haystack_payload() == source_workload.haystack_payload()
 
-    assert_benchmark_workload_matches_expected_result(
+    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
         round_tripped,
-        run_benchmark_workload_with_cpython(source_workload),
+        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
     )
 
 
@@ -919,7 +911,9 @@ def test_run_internal_workload_probe_measures_nested_group_callable_replacement_
 
 @cache
 def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[Workload, ...]:
-    manifest = load_manifest(CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
+    manifest = load_manifest(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH
+    )
     workload_ids = tuple(
         workload.workload_id
         for workload in manifest.workloads
@@ -938,15 +932,17 @@ def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[W
             "suffix": "x",
         }
     )
-    return live_manifest_workloads(
-        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+    return benchmark_test_support.live_manifest_workloads(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
 
 
 @cache
 def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload, ...]:
-    manifest = load_manifest(CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
+    manifest = load_manifest(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH
+    )
     workload_ids = tuple(
         workload.workload_id
         for workload in manifest.workloads
@@ -958,8 +954,8 @@ def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload,
             "message_substring": "NoneType",
         }
     )
-    return live_manifest_workloads(
-        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+    return benchmark_test_support.live_manifest_workloads(
+        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
 
@@ -1053,7 +1049,10 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
             "",
             "x",
         )
-        assert run_benchmark_workload_with_cpython(workload) == expected_result
+        assert (
+            benchmark_test_support.run_benchmark_workload_with_cpython(workload)
+            == expected_result
+        )
 
         assert round_tripped.text_model == "str"
         assert round_tripped.count == -1
@@ -1063,7 +1062,10 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
             "",
             "x",
         )
-        assert run_benchmark_workload_with_cpython(round_tripped) == expected_result
+        assert (
+            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+            == expected_result
+        )
 
 
 @pytest.mark.parametrize(
@@ -1123,9 +1125,9 @@ def test_conditional_group_exists_callable_none_count_workloads_round_trip_prese
             TypeError,
             match=re.escape(expected_exception["message_substring"]),
         ) as expected_error:
-            run_benchmark_workload_with_cpython(workload)
+            benchmark_test_support.run_benchmark_workload_with_cpython(workload)
         with pytest.raises(TypeError) as observed_error:
-            run_benchmark_workload_with_cpython(round_tripped)
+            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
         assert str(observed_error.value) == str(expected_error.value)
 
 
@@ -1180,7 +1182,7 @@ def test_conditional_group_exists_callable_none_count_workloads_round_trip_prese
         TypeError,
         match=re.escape(expected_exception["message_substring"]),
     ):
-        run_benchmark_workload_with_cpython(round_tripped)
+        benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
 
 
 @pytest.mark.parametrize(
@@ -1293,7 +1295,7 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: pathlib.Path,
 ) -> None:
-    first_path = _write_test_manifest(
+    first_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "cached_benchmark_manifest_a.py",
         """
@@ -1311,7 +1313,7 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
         }
         """,
     )
-    second_path = _write_test_manifest(
+    second_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "cached_benchmark_manifest_b.py",
         """
@@ -1437,7 +1439,7 @@ def test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavaila
         return_value=(None, None, _MISSING_MATURIN_REASON),
     ):
         scorecard = benchmarks.run_benchmarks(
-            manifest_paths=[COMPILE_MATRIX_MANIFEST_PATH],
+            manifest_paths=[benchmark_test_support.COMPILE_MATRIX_MANIFEST_PATH],
             report_path=report_path,
             adapter_mode=benchmarks.BUILT_NATIVE_MODE,
         )
@@ -1480,7 +1482,7 @@ def test_run_benchmarks_rejects_smoke_only_selection_without_smoke_workloads(
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_no_smoke_selection_contract.py",
         manifest_source,
@@ -1505,7 +1507,7 @@ def test_run_benchmarks_reports_built_native_provenance_when_available(
     tmp_path: pathlib.Path,
 ) -> None:
     scorecard = benchmarks.run_benchmarks(
-        manifest_paths=[COMPILE_MATRIX_MANIFEST_PATH],
+        manifest_paths=[benchmark_test_support.COMPILE_MATRIX_MANIFEST_PATH],
         report_path=tmp_path / "benchmarks-native.json",
         adapter_mode=benchmarks.BUILT_NATIVE_MODE,
     )

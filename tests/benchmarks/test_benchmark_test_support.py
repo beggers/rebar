@@ -1478,29 +1478,43 @@ def test_shared_source_tree_manifest_path_constants_point_to_current_workload_fi
     )
 
 
-@pytest.mark.parametrize(
-    "manifest_path_name",
-    (
-        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
-        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
-    ),
-)
-def test_publication_runtime_manifest_path_consumers_reuse_support_constants_by_identity(
-    manifest_path_name: str,
+def test_publication_runtime_contracts_route_shared_support_through_package_owner(
 ) -> None:
-    _, assignment_names = support.top_level_module_definition_and_assignment_names(
-        publication_runtime_contracts
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            publication_runtime_contracts
+        )
     )
 
-    assert manifest_path_name in _module_imported_names(
+    _assert_owner_module_routes_through_package_import(
         publication_runtime_contracts,
-        "tests.benchmarks.benchmark_test_support",
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert manifest_path_name not in assignment_names
-    assert getattr(publication_runtime_contracts, manifest_path_name) is getattr(
-        support,
-        manifest_path_name,
-    )
+    assert publication_runtime_contracts.benchmark_test_support is support
+    assert {
+        "COMPILE_MATRIX_MANIFEST_PATH",
+        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
+        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
+        "_write_test_manifest",
+        "assert_benchmark_workload_matches_expected_result",
+        "live_manifest_workloads",
+        "run_benchmark_workload_with_cpython",
+    }.isdisjoint(definition_names | assignment_names)
+    for shared_name in (
+        "COMPILE_MATRIX_MANIFEST_PATH",
+        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
+        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
+        "_write_test_manifest",
+        "assert_benchmark_workload_matches_expected_result",
+        "live_manifest_workloads",
+        "run_benchmark_workload_with_cpython",
+    ):
+        assert getattr(publication_runtime_contracts.benchmark_test_support, shared_name) is getattr(
+            support,
+            shared_name,
+        )
 
 
 def test_shared_publication_runtime_manifest_path_constants_point_to_current_workload_files(
