@@ -8167,10 +8167,6 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 # `test_standard_benchmark_correctness_anchor_contracts.py` lives below so this
 # file is the single benchmark-owner suite.
 
-COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
-REGRESSION_MATRIX_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
-)
 MODULE_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
 )

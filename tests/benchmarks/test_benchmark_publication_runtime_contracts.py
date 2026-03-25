@@ -29,6 +29,9 @@ from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
     live_manifest_workloads,
 )
+from tests.benchmarks.compile_proxy_benchmark_support import (
+    COMPILE_MATRIX_MANIFEST_PATH,
+)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
@@ -44,7 +47,6 @@ from tests.conftest import (
 from tests.python.fixture_parity_support import callable_match_group_signature
 
 
-COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 MATURIN = shutil.which("maturin")
 _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
