@@ -2269,6 +2269,18 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
     assert _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES.isdisjoint(local_names)
 
 
+def test_pattern_boundary_anchor_support_reuses_shared_pattern_case_builder() -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support"
+    )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+
+    assert hasattr(support, "_module_pattern_case")
+    assert "_pattern_case" not in definition_names | assignment_names
+
+
 def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_test_support(
 ) -> None:
     module = importlib.import_module("tests.benchmarks.test_benchmark_manifest_validation")

@@ -26,30 +26,6 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES = (
 )
 
 
-def _pattern_case(
-    *,
-    case_id: str,
-    helper: str,
-    args: tuple[object, ...],
-    pattern: str,
-    flags: int,
-    text_model: str = "str",
-    kwargs: dict[str, object] | None = None,
-) -> object:
-    return SimpleNamespace(
-        case_id=case_id,
-        helper=helper,
-        operation="pattern_call",
-        args=args,
-        kwargs={} if kwargs is None else kwargs,
-        pattern=pattern,
-        flags=flags,
-        text_model=text_model,
-        pattern_payload=lambda: pattern.encode() if text_model == "bytes" else pattern,
-        serialized_args=lambda: list(args),
-    )
-
-
 def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -141,9 +117,10 @@ def test_pattern_window_positional_indexlike_workload_and_case_signatures_stay_p
         pos={"type": "indexlike", "value": 1},
         endpos={"type": "indexlike", "value": 6},
     )
-    case = _pattern_case(
+    case = support._module_pattern_case(
         case_id="workflow-pattern-finditer-str-window-indexlike-positional",
         helper="finditer",
+        operation="pattern_call",
         args=("zabcabc", IndexLike(1), IndexLike(6)),
         pattern="abc",
         flags=0,
@@ -182,9 +159,10 @@ def test_pattern_keyword_window_workload_and_case_signatures_stay_pinned() -> No
         kwargs={"endpos": True},
         categories=["keyword"],
     )
-    case = _pattern_case(
+    case = support._module_pattern_case(
         case_id="workflow-pattern-findall-str-bool-window-keyword",
         helper="findall",
+        operation="pattern_call",
         args=("zabcabc",),
         pattern="abc",
         flags=0,
@@ -250,9 +228,10 @@ def test_pattern_verbose_regression_selector_and_signature_stay_pinned() -> None
 
 
 def test_pattern_verbose_regression_correctness_case_signature_stays_pinned() -> None:
-    case = _pattern_case(
+    case = support._module_pattern_case(
         case_id=support._PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS[0],
         helper="fullmatch",
+        operation="pattern_call",
         args=("KEY = ABC",),
         pattern="^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
         flags=72,
@@ -349,25 +328,28 @@ def test_pattern_boundary_wrong_text_model_selector_rejects_compiled_pattern_win
 
 
 def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str_and_bytes_rows() -> None:
-    str_case = _pattern_case(
+    str_case = support._module_pattern_case(
         case_id="workflow-pattern-search-str-wrong-text-model",
         helper="search",
+        operation="pattern_call",
         args=(b"abc",),
         pattern="abc",
         flags=0,
         text_model="str",
     )
-    bytes_case = _pattern_case(
+    bytes_case = support._module_pattern_case(
         case_id="workflow-pattern-match-bytes-wrong-text-model",
         helper="match",
+        operation="pattern_call",
         args=("abc",),
         pattern="abc",
         flags=0,
         text_model="bytes",
     )
-    wrong_haystack_type = _pattern_case(
+    wrong_haystack_type = support._module_pattern_case(
         case_id="workflow-pattern-fullmatch-str-not-wrong-text-model",
         helper="fullmatch",
+        operation="pattern_call",
         args=("abc",),
         pattern="abc",
         flags=0,

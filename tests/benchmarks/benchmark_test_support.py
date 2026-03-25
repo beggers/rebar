@@ -530,6 +530,7 @@ def _module_pattern_case(
     helper: str,
     operation: str,
     args: tuple[object, ...],
+    case_id: str = "",
     kwargs: dict[str, object] | None = None,
     pattern: str = "abc",
     flags: int = 0,
@@ -538,6 +539,7 @@ def _module_pattern_case(
 ) -> SimpleNamespace:
     pattern_value = pattern.encode() if text_model == "bytes" else pattern
     return SimpleNamespace(
+        case_id=case_id,
         helper=helper,
         operation=operation,
         args=args,
@@ -547,6 +549,7 @@ def _module_pattern_case(
         text_model=text_model,
         use_compiled_pattern=use_compiled_pattern,
         pattern_payload=lambda: pattern_value,
+        serialized_args=lambda: list(args),
     )
 
 
