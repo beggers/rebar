@@ -1587,6 +1587,23 @@ def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
         assert getattr(module, helper_name) is getattr(support, helper_name)
 
 
+def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
+    )
+    module_ast = _parsed_module_ast(module)
+    benchmark_support_imports = {
+        (alias.name, alias.asname)
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
+        for alias in node.names
+        if alias.name == "benchmark_test_support"
+    }
+
+    assert benchmark_support_imports == {("benchmark_test_support", None)}
+
+
 def test_shared_collection_replacement_classifier_contract_tests_import_from_support(
 ) -> None:
     owner_suite = importlib.import_module(

@@ -31,7 +31,7 @@ from tests.benchmarks.benchmark_test_support import (
     _synthetic_workload_signature,
     anchor_support_cache_guard,
 )
-from tests.benchmarks import benchmark_test_support as benchmark_support
+from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
 )
@@ -390,17 +390,17 @@ def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> Non
         "a": {"y": 1, "x": 0},
     }
 
-    assert benchmark_support.freeze_signature_value(value) == (
+    assert benchmark_test_support.freeze_signature_value(value) == (
         ("a", (("x", 0), ("y", 1))),
         ("b", (2, (("c", (5, 6)), ("d", 4)))),
     )
-    assert support.freeze_signature_value is benchmark_support.freeze_signature_value
+    assert support.freeze_signature_value is benchmark_test_support.freeze_signature_value
 
 
 def test_definition_anchor_expectations_expand_manifest_name() -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
 
-    assert benchmark_support._definition_anchor_expectations(
+    assert benchmark_test_support._definition_anchor_expectations(
         manifest_path,
         {
             "workload-a": ("case-1", "case-2"),
@@ -412,7 +412,7 @@ def test_definition_anchor_expectations_expand_manifest_name() -> None:
     }
     assert (
         support._definition_anchor_expectations
-        is benchmark_support._definition_anchor_expectations
+        is benchmark_test_support._definition_anchor_expectations
     )
 
 
@@ -423,23 +423,23 @@ def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
         ("workload-c", "case-3"),
     )
 
-    assert benchmark_support._workload_case_pairs_workload_ids(workload_case_pairs) == (
+    assert benchmark_test_support._workload_case_pairs_workload_ids(workload_case_pairs) == (
         "workload-a",
         "workload-b",
         "workload-c",
     )
-    assert benchmark_support._workload_case_pairs_case_ids(workload_case_pairs) == (
+    assert benchmark_test_support._workload_case_pairs_case_ids(workload_case_pairs) == (
         "case-1",
         "case-2",
         "case-3",
     )
     assert (
         support._workload_case_pairs_workload_ids
-        is benchmark_support._workload_case_pairs_workload_ids
+        is benchmark_test_support._workload_case_pairs_workload_ids
     )
     assert (
         support._workload_case_pairs_case_ids
-        is benchmark_support._workload_case_pairs_case_ids
+        is benchmark_test_support._workload_case_pairs_case_ids
     )
 
 
@@ -450,7 +450,7 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
         ("workload-b", "case-2"),
     )
 
-    assert benchmark_support._workload_case_pair_anchor_expectations(
+    assert benchmark_test_support._workload_case_pair_anchor_expectations(
         manifest_path,
         workload_case_pairs,
     ) == {
@@ -459,7 +459,7 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
     }
     assert (
         support._workload_case_pair_anchor_expectations
-        is benchmark_support._workload_case_pair_anchor_expectations
+        is benchmark_test_support._workload_case_pair_anchor_expectations
     )
 
 
@@ -885,7 +885,7 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
     }
 
     for helper_name in helper_names:
-        assert getattr(owner_module, helper_name) is getattr(benchmark_support, helper_name)
+        assert getattr(owner_module, helper_name) is getattr(benchmark_test_support, helper_name)
         assert helper_name not in local_function_names
 
 
@@ -1633,7 +1633,7 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
-    _, assignment_names = benchmark_support.top_level_module_definition_and_assignment_names(
+    _, assignment_names = benchmark_test_support.top_level_module_definition_and_assignment_names(
         support
     )
 
@@ -2120,7 +2120,7 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
         )
     )
     monkeypatch.setattr(
-        benchmark_support,
+        benchmark_test_support,
         "published_fixture_manifests",
         lambda: (manifest,),
     )
@@ -2136,9 +2136,9 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
 def test_source_tree_reuses_shared_published_case_helpers_by_identity() -> None:
     assert (
         support.published_case_ids_by_signature
-        is benchmark_support.published_case_ids_by_signature
+        is benchmark_test_support.published_case_ids_by_signature
     )
-    assert support.published_cases_by_id is benchmark_support.published_cases_by_id
+    assert support.published_cases_by_id is benchmark_test_support.published_cases_by_id
 
 
 def test_grouped_alternation_live_signatures_cover_non_replacement_routes() -> None:
