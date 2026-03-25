@@ -790,6 +790,30 @@ COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS = (
 MODULE_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
 )
+OPTIONAL_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
+)
+NESTED_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
+)
+EXACT_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
+)
+RANGED_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
+)
+GROUPED_ALTERNATION_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
+)
+GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
+)
+NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
+)
+OPEN_ENDED_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
+)
 
 
 @dataclass(frozen=True, slots=True)

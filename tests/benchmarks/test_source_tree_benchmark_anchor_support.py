@@ -10,6 +10,14 @@ import pytest
 
 from tests.benchmarks.benchmark_test_support import (
     MODULE_BOUNDARY_MANIFEST_PATH as SHARED_MODULE_BOUNDARY_MANIFEST_PATH,
+    EXACT_REPEAT_MANIFEST_PATH as SHARED_EXACT_REPEAT_MANIFEST_PATH,
+    GROUPED_ALTERNATION_MANIFEST_PATH as SHARED_GROUPED_ALTERNATION_MANIFEST_PATH,
+    GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH as SHARED_GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+    NESTED_GROUP_MANIFEST_PATH as SHARED_NESTED_GROUP_MANIFEST_PATH,
+    NESTED_GROUP_REPLACEMENT_MANIFEST_PATH as SHARED_NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+    OPEN_ENDED_MANIFEST_PATH as SHARED_OPEN_ENDED_MANIFEST_PATH,
+    OPTIONAL_GROUP_MANIFEST_PATH as SHARED_OPTIONAL_GROUP_MANIFEST_PATH,
+    RANGED_REPEAT_MANIFEST_PATH as SHARED_RANGED_REPEAT_MANIFEST_PATH,
     STANDARD_BENCHMARK_DEFINITIONS,
     _module_pattern_case,
     _owner_definition_manifest_path_names,
@@ -140,6 +148,15 @@ def _parsed_source_tree_combined_suite_ast() -> ast.Module:
             / "benchmarks"
             / "test_source_tree_combined_boundary_benchmarks.py"
         ).read_text()
+    )
+
+
+def _module_imported_names(module: object, imported_module: str) -> frozenset[str]:
+    return frozenset(
+        alias.name
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ImportFrom) and node.module == imported_module
+        for alias in node.names
     )
 
 
@@ -1547,7 +1564,11 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
-    assert support.MODULE_BOUNDARY_MANIFEST_PATH == SHARED_MODULE_BOUNDARY_MANIFEST_PATH
+    _, assignment_names = benchmark_support.top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert support.MODULE_BOUNDARY_MANIFEST_PATH is SHARED_MODULE_BOUNDARY_MANIFEST_PATH
     assert (
         support.OPTIONAL_GROUP_MANIFEST_PATH,
         support.NESTED_GROUP_MANIFEST_PATH,
@@ -1558,27 +1579,40 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
         support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
         support.OPEN_ENDED_MANIFEST_PATH,
     ) == (
-        REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py",
-        REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "exact_repeat_quantified_group_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "ranged_repeat_quantified_group_boundary.py",
-        REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "grouped_alternation_replacement_boundary.py",
-        REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "open_ended_quantified_group_boundary.py",
+        SHARED_OPTIONAL_GROUP_MANIFEST_PATH,
+        SHARED_NESTED_GROUP_MANIFEST_PATH,
+        SHARED_EXACT_REPEAT_MANIFEST_PATH,
+        SHARED_RANGED_REPEAT_MANIFEST_PATH,
+        SHARED_GROUPED_ALTERNATION_MANIFEST_PATH,
+        SHARED_GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        SHARED_NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+        SHARED_OPEN_ENDED_MANIFEST_PATH,
     )
+    assert {
+        "OPTIONAL_GROUP_MANIFEST_PATH",
+        "NESTED_GROUP_MANIFEST_PATH",
+        "EXACT_REPEAT_MANIFEST_PATH",
+        "RANGED_REPEAT_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+        "OPEN_ENDED_MANIFEST_PATH",
+    }.issubset(
+        _module_imported_names(
+            support,
+            "tests.benchmarks.benchmark_test_support",
+        )
+    )
+    assert {
+        "OPTIONAL_GROUP_MANIFEST_PATH",
+        "NESTED_GROUP_MANIFEST_PATH",
+        "EXACT_REPEAT_MANIFEST_PATH",
+        "RANGED_REPEAT_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_MANIFEST_PATH",
+        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+        "OPEN_ENDED_MANIFEST_PATH",
+    }.isdisjoint(assignment_names)
 
 
 @pytest.mark.parametrize(

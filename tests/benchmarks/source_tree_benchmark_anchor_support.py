@@ -20,6 +20,14 @@ from rebar_harness.benchmarks import (
 from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.benchmarks.benchmark_test_support import (
     MODULE_BOUNDARY_MANIFEST_PATH,
+    EXACT_REPEAT_MANIFEST_PATH,
+    GROUPED_ALTERNATION_MANIFEST_PATH,
+    GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+    NESTED_GROUP_MANIFEST_PATH,
+    NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+    OPEN_ENDED_MANIFEST_PATH,
+    OPTIONAL_GROUP_MANIFEST_PATH,
+    RANGED_REPEAT_MANIFEST_PATH,
     StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
@@ -42,31 +50,6 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     callable_match_group_signature,
-)
-
-OPTIONAL_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
-)
-NESTED_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
-)
-EXACT_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
-)
-RANGED_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
-)
-GROUPED_ALTERNATION_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
-)
-GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
-)
-NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
-)
-OPEN_ENDED_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
 )
 
 _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (

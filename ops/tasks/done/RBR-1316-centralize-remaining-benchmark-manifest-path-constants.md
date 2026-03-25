@@ -1,6 +1,6 @@
 # RBR-1316: Centralize source-tree benchmark manifest path constants
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -63,3 +63,9 @@ Created: 2026-03-25
   - `bash -lc "! rg -n '^(OPTIONAL_GROUP_MANIFEST_PATH|NESTED_GROUP_MANIFEST_PATH|EXACT_REPEAT_MANIFEST_PATH|RANGED_REPEAT_MANIFEST_PATH|GROUPED_ALTERNATION_MANIFEST_PATH|GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH|NESTED_GROUP_REPLACEMENT_MANIFEST_PATH|OPEN_ENDED_MANIFEST_PATH) =' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because those duplicated local constant assignments still exist, and that failure belongs exactly to this cleanup.
 - 2026-03-25T15:47:27+00:00: harness requeued after failed or incomplete run after run `20260325T150727Z-architecture-implementation-RBR-1316-centralize-remaining-benchmark-manifest-path-constants` (exit=124, timed_out=true).
 - 2026-03-25T16:08:00+00:00: task narrowed after the timeout so the next implementation pass only has to centralize the source-tree support constants; leave the two publication-runtime aliases for a separate follow-on cleanup if they still remain afterward.
+- 2026-03-25T16:32:00+00:00: landed by moving the eight remaining source-tree manifest path constants into `tests/benchmarks/benchmark_test_support.py`, switching `tests/benchmarks/source_tree_benchmark_anchor_support.py` to import and reuse them, and updating both benchmark contract suites to assert identity plus imported-not-assigned ownership.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'shared_module_boundary_manifest_path_consumers_reuse_support_constant_by_identity or benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant or inline_standard_definition_exports_reuse_named_manifest_path_constants'` -> `5 passed, 100 deselected in 0.17s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_owner_manifest_path_constants_point_to_current_workload_files or source_tree_owner_builders_reference_owner_manifest_path_constants or source_tree_owner_definition_exports_reuse_owner_manifest_path_constants'` -> `3 passed, 47 deselected in 0.17s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_manifest_path_consumers_reuse_support_constants_by_identity or shared_source_tree_manifest_path_constants_point_to_current_workload_files'` -> `9 passed, 96 deselected in 0.11s`
+  - `bash -lc "! rg -n '^(OPTIONAL_GROUP_MANIFEST_PATH|NESTED_GROUP_MANIFEST_PATH|EXACT_REPEAT_MANIFEST_PATH|RANGED_REPEAT_MANIFEST_PATH|GROUPED_ALTERNATION_MANIFEST_PATH|GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH|NESTED_GROUP_REPLACEMENT_MANIFEST_PATH|OPEN_ENDED_MANIFEST_PATH) =' tests/benchmarks/source_tree_benchmark_anchor_support.py"` -> passed
