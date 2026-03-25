@@ -21,14 +21,8 @@ from tests.benchmarks.benchmark_test_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
-    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-    _is_module_workflow_compiled_pattern_literal_success_workload,
-    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
     _is_module_workflow_keyword_error_workload,
     _is_module_workflow_keyword_flags_workload,
-    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-    _module_workflow_compiled_pattern_correctness_case_signature,
-    _module_workflow_compiled_pattern_workload_signature,
     _module_workflow_keyword_correctness_case_signature,
     _module_workflow_keyword_workload_signature,
     _definition_anchor_expectations,
@@ -43,6 +37,14 @@ from tests.benchmarks.benchmark_test_support import (
     published_case_ids_by_signature,
     run_benchmark_workload_with_cpython,
     StandardBenchmarkAnchorContractDefinition,
+)
+from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
+    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+    _is_module_workflow_compiled_pattern_literal_success_workload,
+    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
+    _module_workflow_compiled_pattern_correctness_case_signature,
+    _module_workflow_compiled_pattern_workload_signature,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import \
     _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS, \

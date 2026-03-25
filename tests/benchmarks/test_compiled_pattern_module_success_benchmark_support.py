@@ -16,9 +16,6 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
-    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-    _is_module_workflow_compiled_pattern_literal_success_workload,
-    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
     _write_test_manifest,
@@ -40,6 +37,11 @@ from tests.benchmarks.compiled_pattern_module_success_benchmark_support import (
     _assert_compiled_pattern_success_rows_measured_in_combined_manifest,
     include_live_compiled_pattern_module_success_workload,
     live_compiled_pattern_module_success_surface_ids,
+)
+from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
+    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+    _is_module_workflow_compiled_pattern_literal_success_workload,
+    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
 )
 
 

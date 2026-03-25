@@ -16,8 +16,6 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
     STANDARD_BENCHMARK_DEFINITIONS,
-    _compiled_pattern_module_helper_route,
-    _run_cpython_compiled_pattern_module_helper_workload,
     _write_test_manifest,
     run_benchmark_workload_with_cpython,
 )
@@ -153,7 +151,7 @@ def test_compiled_pattern_wrong_text_model_helpers_preserve_callback_and_runtime
     workload: Workload,
 ) -> None:
     expected_callback_result, expected_callback_call, _, _ = (
-        _compiled_pattern_module_helper_route(
+        compiled_pattern_module_helper_support._compiled_pattern_module_helper_route(
             workload,
             collection_replacement_callback_flags=0,
         )
@@ -167,17 +165,23 @@ def test_compiled_pattern_wrong_text_model_helpers_preserve_callback_and_runtime
         if workload.cache_mode == "warm"
         else [("compile", workload.pattern_payload(), workload.flags), ("purge",)]
     )
-    assert expected_callback_call == _compiled_pattern_module_helper_route(
-        workload,
-        collection_replacement_callback_flags=0,
-    )[1]
-    assert expected_callback_result == _compiled_pattern_module_helper_route(
-        workload,
-        collection_replacement_callback_flags=0,
-    )[0]
+    assert (
+        expected_callback_call
+        == compiled_pattern_module_helper_support._compiled_pattern_module_helper_route(
+            workload,
+            collection_replacement_callback_flags=0,
+        )[1]
+    )
+    assert (
+        expected_callback_result
+        == compiled_pattern_module_helper_support._compiled_pattern_module_helper_route(
+            workload,
+            collection_replacement_callback_flags=0,
+        )[0]
+    )
 
     with pytest.raises(TypeError) as observed_error:
-        _run_cpython_compiled_pattern_module_helper_workload(
+        compiled_pattern_module_helper_support._run_cpython_compiled_pattern_module_helper_workload(
             workload,
             collection_replacement_callback_flags=0,
         )
@@ -246,7 +250,7 @@ def test_standard_benchmark_manifest_preserves_compiled_pattern_wrong_text_model
         )
 
         with pytest.raises(TypeError) as expected_error:
-            _run_cpython_compiled_pattern_module_helper_workload(
+            compiled_pattern_module_helper_support._run_cpython_compiled_pattern_module_helper_workload(
                 workload,
                 collection_replacement_callback_flags=0,
             )
@@ -323,7 +327,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
         label="wrong-text-model",
     )
     expected_callback_result, expected_callback_call, _, _ = (
-        _compiled_pattern_module_helper_route(
+        compiled_pattern_module_helper_support._compiled_pattern_module_helper_route(
             source_workload,
             collection_replacement_callback_flags=0,
         )
