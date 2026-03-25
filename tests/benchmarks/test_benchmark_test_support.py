@@ -178,6 +178,27 @@ def _module_assignment(module: object, name: str) -> ast.Assign:
     )
 
 
+def _assignment_target_name(assignment: ast.Assign) -> str:
+    return next(
+        target.id
+        for target in assignment.targets
+        if isinstance(target, ast.Name)
+    )
+
+
+def _inline_standard_definition_assignments(
+    module: object,
+) -> tuple[ast.Assign, ...]:
+    return tuple(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.Assign)
+        and _assignment_target_name(node).endswith("_STANDARD_BENCHMARK_DEFINITIONS")
+        and isinstance(node.value, ast.Tuple)
+        and all(isinstance(element, ast.Call) for element in node.value.elts)
+    )
+
+
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -1212,6 +1233,44 @@ def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_co
         MODULE_BOUNDARY_MANIFEST_PATH,
         MODULE_BOUNDARY_MANIFEST_PATH,
     )
+
+
+def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
+) -> None:
+    assignment_nodes = _inline_standard_definition_assignments(support)
+    assignment_names = {
+        _assignment_target_name(assignment)
+        for assignment in assignment_nodes
+    }
+
+    assert {
+        "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
+        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+        "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
+    }.issubset(assignment_names)
+
+    for assignment in assignment_nodes:
+        assignment_name = _assignment_target_name(assignment)
+        manifest_path_name_groups = _owner_definition_manifest_path_names(assignment)
+        assert all(
+            manifest_path_names
+            and all(
+                manifest_path_name.endswith("_MANIFEST_PATH")
+                for manifest_path_name in manifest_path_names
+            )
+            for manifest_path_names in manifest_path_name_groups
+        )
+        assert tuple(
+            definition.manifest_paths
+            for definition in getattr(support, assignment_name)
+        ) == tuple(
+            tuple(
+                getattr(support, manifest_path_name)
+                for manifest_path_name in manifest_path_names
+            )
+            for manifest_path_names in manifest_path_name_groups
+        )
 
 
 @pytest.mark.parametrize(
