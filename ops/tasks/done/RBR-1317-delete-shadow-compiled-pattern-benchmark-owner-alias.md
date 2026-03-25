@@ -1,6 +1,6 @@
 # RBR-1317: Delete shadow compiled-pattern benchmark owner alias
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -57,3 +57,8 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates or benchmark_test_support_owns_compiled_pattern_module_success_surface or deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced'` passed with `4 passed, 104 deselected in 0.28s`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `343 tests collected in 0.10s`
   - `bash -lc "! rg -n 'benchmark_test_support as compiled_pattern_module_helper_support' tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because all three consumer suites still bind that shadow alias, and that failure belongs exactly to this cleanup.
+- 2026-03-25T16:44:00+00:00: landed by deleting the consumer-local `compiled_pattern_module_helper_support` alias from the three benchmark suites, switching the two consumer modules to import `tests.benchmarks.benchmark_test_support` under its real owner name, and tightening `tests/benchmarks/test_benchmark_test_support.py` so it now requires `benchmark_test_support` to be imported from `tests.benchmarks` and rejects any reintroduced `compiled_pattern_module_helper_support` binding.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates or benchmark_test_support_owns_compiled_pattern_module_success_surface or deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced'` -> `4 passed, 104 deselected in 0.38s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` -> `343 tests collected in 0.20s`
+  - `bash -lc "! rg -n 'benchmark_test_support as compiled_pattern_module_helper_support' tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed

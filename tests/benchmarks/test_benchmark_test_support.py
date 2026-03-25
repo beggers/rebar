@@ -15,7 +15,6 @@ from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
-from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import (
     test_benchmark_publication_runtime_contracts as publication_runtime_contracts,
@@ -977,7 +976,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
         ),
         pytest.param(
-            compiled_pattern_module_helper_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+            support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
             "pattern-window-positional-indexlike",
             id="compiled-pattern-module-helper-after-module-compile",
@@ -1606,7 +1605,7 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
 
 
 @pytest.mark.parametrize(
-    ("module_name", "expected_direct_names", "expected_alias_names"),
+    ("module_name", "expected_direct_names", "expected_owner_module_names"),
     (
         pytest.param(
             "tests.benchmarks.test_benchmark_manifest_validation",
@@ -1654,7 +1653,7 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
 def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates(
     module_name: str,
     expected_direct_names: frozenset[str],
-    expected_alias_names: frozenset[str],
+    expected_owner_module_names: frozenset[str],
 ) -> None:
     module = importlib.import_module(module_name)
     definition_names, assignment_names = (
@@ -1663,19 +1662,25 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
     local_names = definition_names | assignment_names
 
     assert "tests.benchmarks.benchmark_test_support" in _module_import_targets(module)
+    assert "tests.benchmarks" in _module_import_targets(module)
     assert expected_direct_names.issubset(
         _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    )
+    assert "benchmark_test_support" in _module_imported_names(
+        module,
+        "tests.benchmarks",
     )
 
     for shared_name in expected_direct_names:
         assert getattr(module, shared_name) is getattr(support, shared_name)
         assert shared_name not in local_names
 
-    assert getattr(module, "compiled_pattern_module_helper_support") is support
-    for shared_name in expected_alias_names:
-        assert (
-            getattr(module.compiled_pattern_module_helper_support, shared_name)
-            is getattr(support, shared_name)
+    assert not hasattr(module, "compiled_pattern_module_helper_support")
+    assert getattr(module, "benchmark_test_support") is support
+    for shared_name in expected_owner_module_names:
+        assert getattr(module.benchmark_test_support, shared_name) is getattr(
+            support,
+            shared_name,
         )
         assert shared_name not in local_names
 
@@ -1700,23 +1705,23 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.issubset(assignment_names)
     assert (
-        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
+        support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
         == "contract_builder_spec"
     )
     assert (
-        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
+        support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
         == "source_workloads"
     )
     assert (
-        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.expected_build_calls.__name__
+        support.CompiledPatternModuleSuccessOwnerSpec.expected_build_calls.__name__
         == "expected_build_calls"
     )
     assert (
-        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_result.__name__
+        support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_result.__name__
         == "expected_callback_result"
     )
     assert (
-        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
+        support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
         == "expected_callback_call"
     )
 
@@ -2028,7 +2033,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
     expected_cpython_args: tuple[object, ...],
     materialize: bool,
 ) -> None:
-    route = compiled_pattern_module_helper_support._compiled_pattern_module_helper_route(
+    route = support._compiled_pattern_module_helper_route(
         workload,
         collection_replacement_callback_flags=callback_flags,
     )
@@ -2051,7 +2056,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_materializes_findit
     )
 
     result = (
-        compiled_pattern_module_helper_support._run_cpython_compiled_pattern_module_helper_workload(
+        support._run_cpython_compiled_pattern_module_helper_workload(
         workload,
         collection_replacement_callback_flags=0,
         )
@@ -2075,7 +2080,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_re
     )
 
     result = (
-        compiled_pattern_module_helper_support._run_cpython_compiled_pattern_module_helper_workload(
+        support._run_cpython_compiled_pattern_module_helper_workload(
         workload,
         collection_replacement_callback_flags=0,
         )
@@ -2100,7 +2105,7 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounde
     )
 
     assert (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             workload
         )
     )
@@ -2149,17 +2154,17 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missin
     )
 
     assert not (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_pattern_argument
         )
     )
     assert not (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             missing_haystack_text_model
         )
     )
     assert not (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_exception_type
         )
     )
@@ -2196,36 +2201,36 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
     )
 
     assert (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_literal_success_workload(
+        support._is_module_workflow_compiled_pattern_literal_success_workload(
             literal_workload
         )
     )
     assert (
-        compiled_pattern_module_helper_support._module_workflow_compiled_pattern_workload_signature(
+        support._module_workflow_compiled_pattern_workload_signature(
             literal_workload
         )
         == ("module.search", "abc", ("zzabczz",), True, 0, "str")
     )
 
     assert (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
             wildcard_workload
         )
     )
     assert (
-        compiled_pattern_module_helper_support._module_workflow_compiled_pattern_workload_signature(
+        support._module_workflow_compiled_pattern_workload_signature(
             wildcard_workload
         )
         == ("module.fullmatch", b"a.c", (b"abc",), True, 0, "bytes")
     )
 
     assert (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
+        support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
             verbose_workload
         )
     )
     assert (
-        compiled_pattern_module_helper_support._module_workflow_compiled_pattern_workload_signature(
+        support._module_workflow_compiled_pattern_workload_signature(
             verbose_workload
         )
         == (
@@ -2260,12 +2265,12 @@ def test_module_workflow_compiled_pattern_success_selectors_reject_non_matching_
     )
 
     assert not (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_literal_success_workload(
+        support._is_module_workflow_compiled_pattern_literal_success_workload(
             direct_pattern_workload
         )
     )
     assert not (
-        compiled_pattern_module_helper_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
             wrong_haystack_model
         )
     )
@@ -2296,19 +2301,19 @@ def test_module_workflow_compiled_pattern_correctness_case_signature_requires_co
     )
 
     assert (
-        compiled_pattern_module_helper_support._module_workflow_compiled_pattern_correctness_case_signature(
+        support._module_workflow_compiled_pattern_correctness_case_signature(
             matching_case
         )
         == ("module.search", "abc", ("zzabczz",), True, 0, "str")
     )
     assert (
-        compiled_pattern_module_helper_support._module_workflow_compiled_pattern_correctness_case_signature(
+        support._module_workflow_compiled_pattern_correctness_case_signature(
             missing_args_case
         )
         is None
     )
     assert (
-        compiled_pattern_module_helper_support._module_workflow_compiled_pattern_correctness_case_signature(
+        support._module_workflow_compiled_pattern_correctness_case_signature(
             unsupported_helper_case
         )
         is None

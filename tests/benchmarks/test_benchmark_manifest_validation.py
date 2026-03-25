@@ -28,7 +28,7 @@ from tests.benchmarks.benchmark_test_support import (
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     selected_manifest_workloads,
 )
-from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
+from tests.benchmarks import benchmark_test_support
 
 
 def _validation_payload(**overrides: object) -> dict[str, object]:
@@ -81,7 +81,7 @@ def _compiled_pattern_module_helper_keyword_contract_surface(case_id: str) -> ob
     return next(
         surface
         for surface in (
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         )
         if surface.case_id == case_id
     )
@@ -984,7 +984,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
     "spec",
     tuple(
         pytest.param(spec, id=str(spec["case_id"]))
-        for spec in compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_specs()
+        for spec in benchmark_test_support._compiled_pattern_wrong_text_model_specs()
     ),
 )
 def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation(
@@ -992,15 +992,11 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
     spec: dict[str, object],
 ) -> None:
     source_workloads = (
-        compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_source_workloads(
-            spec
-        )
+        benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     )
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_contract_spec(
-            spec
-        ),
+        spec=benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec(spec),
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -1029,14 +1025,14 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        compiled_pattern_module_helper_support._assert_wrong_text_model_payload_round_trip(
+        benchmark_test_support._assert_wrong_text_model_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
         )
 
         with pytest.raises(TypeError) as expected_error:
-            compiled_pattern_module_helper_support._run_cpython_compiled_pattern_module_helper_workload(
+            benchmark_test_support._run_cpython_compiled_pattern_module_helper_workload(
                 workload,
                 collection_replacement_callback_flags=0,
             )
@@ -1048,7 +1044,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
 
 @pytest.mark.parametrize(
     "owner_spec",
-    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
     ids=lambda owner_spec: owner_spec.case_id,
 )
 def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation(
@@ -1071,7 +1067,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
         owner_spec.expected_source_workload_ids
     )
     assert all(
-        compiled_pattern_module_helper_support.include_live_compiled_pattern_module_success_workload(
+        benchmark_test_support.include_live_compiled_pattern_module_success_workload(
             workload
         )
         for workload in source_workloads
@@ -1090,7 +1086,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        compiled_pattern_module_helper_support._assert_compiled_pattern_module_success_payload_round_trip(
+        benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
@@ -1104,7 +1100,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
 
 @pytest.mark.parametrize(
     "contract_surface",
-    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS,
     ids=lambda contract_surface: contract_surface.case_id,
 )
 def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation(
@@ -1242,7 +1238,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
             run_benchmark_workload_with_cpython(workload),
         )
         for workload in (
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
         )
         if workload.operation in {"module.sub", "module.subn"}
         and type(workload.kwargs.get("count")) is bool

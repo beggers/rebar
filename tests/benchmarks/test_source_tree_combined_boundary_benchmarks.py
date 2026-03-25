@@ -80,7 +80,7 @@ from tests.benchmarks.benchmark_test_support import (
     _pattern_window_positional_indexlike_correctness_case_signature,
     _pattern_window_positional_indexlike_workload_signature,
 )
-from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
+from tests.benchmarks import benchmark_test_support
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import\
     _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,\
     _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES,\
@@ -4645,22 +4645,22 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     ("owner_spec", "include_workload"),
     (
         pytest.param(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+            benchmark_test_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
             _is_collection_replacement_compiled_pattern_success_workload,
             id="collection-replacement-success",
         ),
         pytest.param(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
             _is_module_workflow_compiled_pattern_literal_success_workload,
             id="module-boundary-literal-success",
         ),
         pytest.param(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
             _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
             id="module-boundary-bounded-wildcard-success",
         ),
         pytest.param(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
             _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
             id="module-boundary-verbose-bytes-success",
         ),
@@ -4693,7 +4693,7 @@ def test_compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured(
     "spec",
     tuple(
         pytest.param(spec, id=str(spec["case_id"]))
-        for spec in compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_specs()
+        for spec in benchmark_test_support._compiled_pattern_wrong_text_model_specs()
     ),
 )
 @pytest.mark.parametrize(
@@ -4709,20 +4709,16 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     adapter_name: str,
 ) -> None:
     for source_workload in (
-        compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_source_workloads(
-            spec
-        )
+        benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
         workload = _source_tree_contract_workload(
             source_workload,
-            spec=compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_contract_spec(
-                spec
-            ),
+            spec=benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec(spec),
         )
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        compiled_pattern_module_helper_support._assert_wrong_text_model_payload_round_trip(
+        benchmark_test_support._assert_wrong_text_model_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
@@ -4742,23 +4738,21 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     "spec",
     tuple(
         pytest.param(spec, id=str(spec["case_id"]))
-        for spec in compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_specs()
+        for spec in benchmark_test_support._compiled_pattern_wrong_text_model_specs()
     ),
 )
 def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contract(
     spec: dict[str, object],
 ) -> None:
     for source_workload in (
-        compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_source_workloads(
-            spec
-        )
+        benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
         expected_build_calls = compiled_pattern_contract_expected_build_calls(
             source_workload,
             label="wrong-text-model",
         )
         expected_callback_result, expected_callback_call, _, _ = (
-            compiled_pattern_module_helper_support._compiled_pattern_module_helper_route(
+            benchmark_test_support._compiled_pattern_module_helper_route(
                 source_workload,
                 collection_replacement_callback_flags=0,
             )
@@ -4769,9 +4763,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
             "re",
             _source_tree_contract_workload(
                 source_workload,
-                spec=compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_contract_spec(
-                    spec
-                ),
+                spec=benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec(spec),
             ),
         )
 
@@ -4788,7 +4780,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -4810,7 +4802,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    compiled_pattern_module_helper_support._assert_compiled_pattern_module_success_payload_round_trip(
+    benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
@@ -4829,7 +4821,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing(
     owner_spec: object,
@@ -4863,27 +4855,27 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
     expected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in selected_manifest_workloads(
-            compiled_pattern_module_helper_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
             include_workload=(
-                compiled_pattern_module_helper_support._is_collection_replacement_compiled_pattern_keyword_error_workload
+                benchmark_test_support._is_collection_replacement_compiled_pattern_keyword_error_workload
             ),
         )
     )
     expected_source_workload_ids = tuple(
         workload.workload_id
         for workload in (
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         )
     )
     manifest_workload_count = len(
         selected_manifest_workloads(
-            compiled_pattern_module_helper_support.COLLECTION_REPLACEMENT_MANIFEST_PATH
+            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH
         )
     )
 
     assert expected_measured_workload_ids == expected_source_workload_ids
     assert_zero_gap_manifest_workloads_measured(
-        manifest_path=compiled_pattern_module_helper_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
         expected_measured_workload_count=manifest_workload_count,
@@ -4896,7 +4888,7 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
     tuple(
         pytest.param(workload, id=workload.workload_id)
         for workload in (
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
         )
     ),
 )
@@ -4907,7 +4899,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
     workload = _source_tree_contract_workload(
         source_workload,
         spec=(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec()
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec()
         ),
     )
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
@@ -4915,7 +4907,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
         workload,
         expected_result=run_benchmark_workload_with_cpython(source_workload),
         expected_field_names=(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
                 source_workload
             )
         ),
@@ -4924,7 +4916,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
 
 @pytest.mark.parametrize(
     ("contract_surface", "source_workload"),
-    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -4964,7 +4956,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
 
 @pytest.mark.parametrize(
     ("contract_surface", "source_workload"),
-    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing(
     contract_surface: object,
@@ -4998,7 +4990,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
     tuple(
         pytest.param(workload, id=workload.workload_id)
         for workload in (
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         )
     ),
 )
@@ -5009,14 +5001,14 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     contract_surface = next(
         surface
         for surface in (
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         )
         if surface.case_id == "keyword-error"
     )
     workload = _source_tree_contract_workload(
         source_workload,
         spec=(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec()
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec()
         ),
     )
     observed_field_names = _record_numeric_materialization_fields(monkeypatch)
@@ -5032,7 +5024,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
             callback()
 
         assert observed_field_names == list(
-            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_materialized_field_names(
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_materialized_field_names(
                 source_workload
             )
         )
