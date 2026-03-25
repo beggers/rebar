@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import ast
-from functools import partial
+from functools import cache, partial
 import inspect
 import pathlib
 from types import SimpleNamespace
@@ -168,14 +168,29 @@ def _compile_search_fullmatch_workload(
     )
 
 
+@cache
+def _parsed_module_ast(module: object) -> ast.Module:
+    return ast.parse(inspect.getsource(module))
+
+
+@cache
+def _parsed_source_tree_combined_suite_ast() -> ast.Module:
+    return ast.parse(
+        (
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / "test_source_tree_combined_boundary_benchmarks.py"
+        ).read_text()
+    )
+
+
 def _owner_definition_manifest_path_names(
     function_name: str,
 ) -> tuple[tuple[str, ...], ...]:
-    owner_source = inspect.getsource(support)
-    owner_module = ast.parse(owner_source)
     builder = next(
         node
-        for node in owner_module.body
+        for node in _parsed_module_ast(support).body
         if isinstance(node, ast.FunctionDef) and node.name == function_name
     )
     builder_return = next(
@@ -824,10 +839,9 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
     owner_module: object,
     helper_names: tuple[str, ...],
 ) -> None:
-    owner_source = inspect.getsource(owner_module)
     local_function_names = {
         node.name
-        for node in ast.parse(owner_source).body
+        for node in _parsed_module_ast(owner_module).body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -837,19 +851,19 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
 
 
 def test_source_tree_support_module_exposes_moved_combined_case_surface() -> None:
-    owner_source = inspect.getsource(support)
-    owner_module = ast.parse(owner_source)
     local_class_names = {
-        node.name for node in owner_module.body if isinstance(node, ast.ClassDef)
+        node.name
+        for node in _parsed_module_ast(support).body
+        if isinstance(node, ast.ClassDef)
     }
     local_function_names = {
         node.name
-        for node in owner_module.body
+        for node in _parsed_module_ast(support).body
         if isinstance(node, ast.FunctionDef)
     }
     local_assignment_names = {
         target.id
-        for node in owner_module.body
+        for node in _parsed_module_ast(support).body
         if isinstance(node, ast.Assign)
         for target in node.targets
         if isinstance(target, ast.Name)
@@ -867,11 +881,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
 
 
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
-    owner_source = inspect.getsource(support)
-    owner_module = ast.parse(owner_source)
     local_function_names = {
         node.name
-        for node in owner_module.body
+        for node in _parsed_module_ast(support).body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -881,16 +893,14 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
 
 
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
-    combined_suite_path = (
-        REPO_ROOT / "tests" / "benchmarks" / "test_source_tree_combined_boundary_benchmarks.py"
-    )
-    combined_module = ast.parse(combined_suite_path.read_text())
     local_class_names = {
-        node.name for node in combined_module.body if isinstance(node, ast.ClassDef)
+        node.name
+        for node in _parsed_source_tree_combined_suite_ast().body
+        if isinstance(node, ast.ClassDef)
     }
     local_function_names = {
         node.name
-        for node in combined_module.body
+        for node in _parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -901,13 +911,9 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
 
 
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
-    combined_suite_path = (
-        REPO_ROOT / "tests" / "benchmarks" / "test_source_tree_combined_boundary_benchmarks.py"
-    )
-    combined_module = ast.parse(combined_suite_path.read_text())
     local_function_names = {
         node.name
-        for node in combined_module.body
+        for node in _parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.FunctionDef)
     }
 
