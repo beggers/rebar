@@ -1959,6 +1959,49 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
             "tests.benchmarks.test_benchmark_manifest_validation",
             frozenset(
                 {
+                    "CompiledPatternModuleCompileContractCase",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+                }
+            ),
+        ),
+    ),
+)
+def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_exports(
+    module_name: str,
+    expected_imported_names: frozenset[str],
+) -> None:
+    module = importlib.import_module(module_name)
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    imported_names = _module_imported_names(
+        module,
+        "tests.benchmarks.benchmark_test_support",
+    )
+
+    assert expected_imported_names.issubset(imported_names)
+    assert expected_imported_names.isdisjoint(definition_names)
+    assert expected_imported_names.isdisjoint(assignment_names)
+
+
+@pytest.mark.parametrize(
+    ("module_name", "expected_imported_names"),
+    (
+        (
+            "tests.benchmarks.test_benchmark_manifest_validation",
+            frozenset(
+                {
                     "_SourceTreeContractBuilderSpec",
                     "_source_tree_contract_manifest",
                 }
