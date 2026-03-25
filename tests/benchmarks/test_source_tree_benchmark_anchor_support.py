@@ -2329,7 +2329,8 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
         )
 
 
-def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
+def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_package_only(
+) -> None:
     module_ast = benchmark_test_support._parsed_module_ast(support)
     package_imports = {
         (alias.name, alias.asname)
@@ -2359,6 +2360,38 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
         }
         for node in module_ast.body
     )
+
+
+def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
+    manifest_paths = tuple(
+        getattr(support.benchmark_test_support, manifest_path_name)
+        for manifest_path_name in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES
+    )
+
+    assert support.benchmark_test_support is benchmark_test_support
+    assert manifest_paths == (
+        REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py",
+        REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py",
+        REPO_ROOT
+        / "benchmarks"
+        / "workloads"
+        / "exact_repeat_quantified_group_boundary.py",
+        REPO_ROOT
+        / "benchmarks"
+        / "workloads"
+        / "ranged_repeat_quantified_group_boundary.py",
+        REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py",
+        REPO_ROOT
+        / "benchmarks"
+        / "workloads"
+        / "grouped_alternation_replacement_boundary.py",
+        REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py",
+        REPO_ROOT
+        / "benchmarks"
+        / "workloads"
+        / "open_ended_quantified_group_boundary.py",
+    )
+    assert all(manifest_path.is_file() for manifest_path in manifest_paths)
 
 
 @pytest.mark.parametrize(
@@ -2413,10 +2446,12 @@ def test_source_tree_owner_builders_reference_owner_manifest_path_constants(
 
 
 def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constants() -> None:
-    assert tuple(
+    manifest_paths = tuple(
         definition.manifest_paths[0]
         for definition in support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
-    ) == (
+    )
+
+    assert manifest_paths == (
         benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
         benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
         benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
@@ -2426,6 +2461,7 @@ def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constant
         benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
         benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
     )
+    assert all(manifest_path.is_file() for manifest_path in manifest_paths)
 
 
 def test_source_tree_owner_retired_shared_support_names_stay_out_of_top_level_namespace(
