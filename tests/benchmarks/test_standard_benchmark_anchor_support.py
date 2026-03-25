@@ -224,6 +224,18 @@ def test_owner_support_modules_reject_unknown_lazy_export_names(
     )
 
 
+def test_standard_support_does_not_reexport_module_boundary_manifest_path() -> None:
+    assert "MODULE_BOUNDARY_MANIFEST_PATH" not in vars(support)
+
+    with pytest.raises(AttributeError) as exc_info:
+        getattr(support, "MODULE_BOUNDARY_MANIFEST_PATH")
+
+    assert str(exc_info.value) == (
+        "module 'tests.benchmarks.standard_benchmark_anchor_support' has no "
+        "attribute 'MODULE_BOUNDARY_MANIFEST_PATH'"
+    )
+
+
 def test_standard_benchmark_anchor_contract_definition_filters_excluded_workloads() -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
     definition = support.StandardBenchmarkAnchorContractDefinition(

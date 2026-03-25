@@ -379,10 +379,10 @@ def _build_compiled_pattern_module_helper_standard_benchmark_definitions() -> tu
     object, ...
 ]:
     from tests.benchmarks.standard_benchmark_anchor_support import (
-        MODULE_BOUNDARY_MANIFEST_PATH,
         StandardBenchmarkAnchorContractDefinition,
     )
     from tests.benchmarks.source_tree_benchmark_anchor_support import (
+        MODULE_BOUNDARY_MANIFEST_PATH,
         _definition_anchor_expectations,
     )
 

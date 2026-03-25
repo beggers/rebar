@@ -9,9 +9,6 @@ from typing import Any, Protocol
 
 import pytest
 
-from tests.benchmarks import (
-    compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
-)
 from tests.benchmarks.benchmark_test_support import manifest_workloads
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _definition_anchor_expectations,
@@ -60,15 +57,6 @@ class StandardBenchmarkAnchorContractDefinition:
             not in self.expected_special_unanchored_workload_ids
             and self.include_workload(workload)
         )
-
-
-_module_boundary_manifest_path_alias = "_".join(
-    ("MODULE", "BOUNDARY", "MANIFEST", "PATH")
-)
-globals()[_module_boundary_manifest_path_alias] = getattr(
-    compiled_pattern_module_compile_support,
-    _module_boundary_manifest_path_alias,
-)
 
 
 def _anchor_case_subset(
