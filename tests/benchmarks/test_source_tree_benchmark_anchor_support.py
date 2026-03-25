@@ -673,6 +673,122 @@ def test_select_source_tree_combined_slice_rows_filters_suffix_features_and_cate
     ] == ["first-keep", "second-keep"]
 
 
+def test_source_tree_combined_case_rejects_unknown_target_manifest(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        lambda: [
+            SimpleNamespace(manifest_id="module-boundary", workloads=()),
+            SimpleNamespace(manifest_id="regression-matrix", workloads=()),
+        ],
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match="target manifest 'synthetic-boundary' is not in the published full-suite selector",
+    ):
+        support.source_tree_combined_case("synthetic-boundary")
+
+
+def test_source_tree_combined_case_requires_regression_manifest_for_non_module_targets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        lambda: [
+            SimpleNamespace(manifest_id="module-boundary", workloads=()),
+            SimpleNamespace(manifest_id="synthetic-boundary", workloads=()),
+        ],
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match="the published full-suite selector is missing the regression-matrix manifest",
+    ):
+        support.source_tree_combined_case("synthetic-boundary")
+
+
+def test_source_tree_combined_slice_manifest_ids_rejects_expectations_outside_selector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "source_tree_combined_target_manifest_ids",
+        lambda: ("module-boundary",),
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+        (
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id="module-boundary",
+                slice_id="module-slice",
+            ),
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id="synthetic-boundary",
+                slice_id="synthetic-slice",
+            ),
+        ),
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=(
+            "source-tree combined slice expectations reference manifest ids outside "
+            "the published combined selector: \\['synthetic-boundary'\\]"
+        ),
+    ):
+        support.source_tree_combined_slice_manifest_ids()
+
+
+@pytest.mark.parametrize(
+    ("manifest_expectations", "manifest_id", "message"),
+    (
+        pytest.param(
+            {},
+            "synthetic-missing",
+            "unknown source-tree combined manifest expectation 'synthetic-missing'",
+            id="unknown-manifest",
+        ),
+        pytest.param(
+            {
+                "synthetic-no-shape": (
+                    support.SourceTreeCombinedManifestExpectationDefinition()
+                ),
+            },
+            "synthetic-no-shape",
+            (
+                "source-tree combined manifest 'synthetic-no-shape' does not define "
+                "shared shape expectations"
+            ),
+            id="missing-shape",
+        ),
+    ),
+)
+def test_source_tree_combined_manifest_shape_expectation_rejects_invalid_manifests(
+    monkeypatch: pytest.MonkeyPatch,
+    manifest_expectations: dict[
+        str, support.SourceTreeCombinedManifestExpectationDefinition
+    ],
+    manifest_id: str,
+    message: str,
+) -> None:
+    support.source_tree_combined_manifest_shape_expectation.cache_clear()
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        manifest_expectations,
+    )
+
+    with pytest.raises(AssertionError, match=message):
+        support.source_tree_combined_manifest_shape_expectation(manifest_id)
+
+    support.source_tree_combined_manifest_shape_expectation.cache_clear()
+
+
 @pytest.mark.parametrize(
     ("case", "pattern", "expected"),
     (
