@@ -54,6 +54,8 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
     _collection_replacement_compiled_pattern_success_correctness_case_signature,
     _collection_replacement_compiled_pattern_success_workload_signature,
+    _collection_replacement_grouped_callable_correctness_case_signature,
+    _collection_replacement_grouped_callable_workload_signature,
     _collection_replacement_literal_replacement_correctness_case_signature,
     _collection_replacement_literal_replacement_workload_signature,
     _collection_replacement_keyword_correctness_case_signature,
@@ -8511,72 +8513,6 @@ OPEN_ENDED_MANIFEST_PATH = (
 OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
     "module-search-numbered-optional-group-conditional-cold-gap"
 )
-def _collection_replacement_grouped_callable_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    if case.case_id not in _workload_case_pairs_case_ids(
-        _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
-    ):
-        return None
-    if case.kwargs or case.use_compiled_pattern:
-        return None
-    if case.operation not in {"module_call", "pattern_call"}:
-        return None
-    if case.helper not in {"sub", "subn"}:
-        return None
-    replacement_signature = callable_match_group_signature(
-        case_replacement_argument(case)
-    )
-    if replacement_signature is None:
-        return None
-    args = [case_text_argument(case)]
-    if case.helper == "subn":
-        count = case.args[-1]
-        if type(count) is not int:
-            return None
-        args.append(count)
-    operation_prefix = "module" if case.operation == "module_call" else "pattern"
-    return (
-        f"{operation_prefix}.{case.helper}",
-        case_pattern(case),
-        replacement_signature,
-        freeze_signature_value(args),
-        (),
-        case.flags or 0,
-        case.text_model or "str",
-    )
-
-
-def _collection_replacement_grouped_callable_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    if not _is_collection_replacement_grouped_callable_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement grouped callable workload "
-            f"{workload.workload_id!r}"
-        )
-    replacement_signature = callable_match_group_signature(
-        workload.replacement_payload()
-    )
-    if replacement_signature is None:
-        raise AssertionError(
-            "expected callable_match_group replacement for grouped callable workload "
-            f"{workload.workload_id!r}"
-        )
-    args = [workload.haystack_payload()]
-    if workload.count:
-        args.append(workload.count_argument())
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        replacement_signature,
-        freeze_signature_value(args),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
-
-
 def _conditional_group_exists_quantified_callable_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:

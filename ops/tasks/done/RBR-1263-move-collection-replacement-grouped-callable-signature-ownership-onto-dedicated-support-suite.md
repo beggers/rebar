@@ -1,6 +1,6 @@
 ## RBR-1263: Move collection-replacement grouped-callable signature ownership onto dedicated support suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -57,3 +57,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `40 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `128 tests collected`.
   - `bash -lc "! rg -n 'def _collection_replacement_grouped_callable_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those two grouped-callable signature helpers still live inline in the combined suite, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved `_collection_replacement_grouped_callable_correctness_case_signature(...)` and `_collection_replacement_grouped_callable_workload_signature(...)` into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` and rewired `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import them from the owner support module.
+- Added direct owner-suite coverage in `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` for the four live grouped-callable workload/case pairs, callable-match-group routing, unchanged signature shapes, and rejection of unpaired rows, wrong helpers, and non-callable replacements.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `44 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `132 tests collected`
+  - `bash -lc "! rg -n 'def _collection_replacement_grouped_callable_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> success

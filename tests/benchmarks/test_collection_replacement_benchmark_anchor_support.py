@@ -19,6 +19,7 @@ from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     assert_zero_gap_manifest_workloads_measured,
     _write_test_manifest,
+    live_manifest_workloads,
     manifest_workloads,
     selected_manifest_workloads,
 )
@@ -49,9 +50,11 @@ def _collection_replacement_case(
     flags: int = 0,
     use_compiled_pattern: bool = False,
     include_pattern_arg: bool = True,
+    case_id: str = "synthetic-case",
 ) -> object:
     pattern_value = pattern.encode() if text_model == "bytes" else pattern
     return SimpleNamespace(
+        case_id=case_id,
         helper=helper,
         operation=operation,
         args=args,
@@ -63,6 +66,24 @@ def _collection_replacement_case(
         include_pattern_arg=include_pattern_arg,
         pattern_payload=lambda: pattern_value,
     )
+
+
+def _group_callable_replacement(
+    *,
+    group_reference: object,
+    prefix: object = "<",
+    suffix: object = ">",
+) -> object:
+    def replacement(
+        _match: object,
+        *,
+        _group_reference: object = group_reference,
+        _prefix: object = prefix,
+        _suffix: object = suffix,
+    ) -> str:
+        return ""
+
+    return replacement
 
 
 def test_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signature() -> None:
@@ -685,6 +706,258 @@ def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() 
         expected_measured_workload_count=manifest_workload_count,
         expected_total_workload_count=manifest_workload_count,
     )
+
+
+def test_grouped_callable_correctness_case_signature_keeps_live_pair_shapes() -> None:
+    cases = published_cases_by_id()
+
+    assert {
+        case_id: support._collection_replacement_grouped_callable_correctness_case_signature(
+            cases[case_id]
+        )
+        for _, case_id in support._COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+    } == {
+        "module-sub-callable-grouped-str": (
+            "module.sub",
+            "(abc)",
+            ("callable_match_group", 1, "<", ">"),
+            ("abcabc",),
+            (),
+            0,
+            "str",
+        ),
+        "module-sub-callable-grouped-bytes": (
+            "module.sub",
+            b"(abc)",
+            ("callable_match_group", 1, b"<", b">"),
+            (b"abcabc",),
+            (),
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-named-grouped-str": (
+            "pattern.subn",
+            "(?P<word>abc)",
+            ("callable_match_group", "word", "<", ">"),
+            ("abcabc", 1),
+            (),
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-named-grouped-bytes": (
+            "pattern.subn",
+            b"(?P<word>abc)",
+            ("callable_match_group", "word", b"<", b">"),
+            (b"abcabc", 1),
+            (),
+            0,
+            "bytes",
+        ),
+    }
+
+    assert (
+        support._collection_replacement_grouped_callable_correctness_case_signature(
+            _collection_replacement_case(
+                case_id="not-a-paired-case",
+                helper="sub",
+                operation="module_call",
+                args=(
+                    "(abc)",
+                    _group_callable_replacement(group_reference=1),
+                    "abcabc",
+                ),
+                pattern="(abc)",
+            )
+        )
+        is None
+    )
+
+
+def test_grouped_callable_correctness_case_signature_rejects_non_callable_and_wrong_helper(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    case = published_cases_by_id()["module-sub-callable-grouped-str"]
+    observed_replacements: list[object] = []
+
+    def fake_callable_match_group_signature(
+        replacement: object,
+    ) -> tuple[object, ...] | None:
+        observed_replacements.append(replacement)
+        return ("sentinel", 1, "<", ">")
+
+    monkeypatch.setattr(
+        support,
+        "callable_match_group_signature",
+        fake_callable_match_group_signature,
+    )
+
+    assert support._collection_replacement_grouped_callable_correctness_case_signature(
+        case
+    ) == (
+        "module.sub",
+        "(abc)",
+        ("sentinel", 1, "<", ">"),
+        ("abcabc",),
+        (),
+        0,
+        "str",
+    )
+    assert observed_replacements == [case.args[1]]
+    monkeypatch.undo()
+
+    assert (
+        support._collection_replacement_grouped_callable_correctness_case_signature(
+            _collection_replacement_case(
+                case_id="module-sub-callable-grouped-str",
+                helper="split",
+                operation="module_call",
+                args=(
+                    "(abc)",
+                    _group_callable_replacement(group_reference=1),
+                    "abcabc",
+                ),
+                pattern="(abc)",
+            )
+        )
+        is None
+    )
+    assert (
+        support._collection_replacement_grouped_callable_correctness_case_signature(
+            _collection_replacement_case(
+                case_id="module-sub-callable-grouped-str",
+                helper="sub",
+                operation="module_call",
+                args=("(abc)", "x", "abcabc"),
+                pattern="(abc)",
+            )
+        )
+        is None
+    )
+
+
+def test_grouped_callable_workload_signature_keeps_live_pair_shapes() -> None:
+    workloads = live_manifest_workloads(
+        "collection_replacement_boundary.py",
+        tuple(
+            workload_id
+            for workload_id, _ in support._COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+        ),
+    )
+
+    assert {
+        workload.workload_id: support._collection_replacement_grouped_callable_workload_signature(
+            workload
+        )
+        for workload in workloads
+    } == {
+        "module-sub-callable-grouped-warm-str": (
+            "module.sub",
+            "(abc)",
+            ("callable_match_group", 1, "<", ">"),
+            ("abcabc",),
+            (),
+            0,
+            "str",
+        ),
+        "module-sub-callable-grouped-warm-bytes": (
+            "module.sub",
+            b"(abc)",
+            ("callable_match_group", 1, b"<", b">"),
+            (b"abcabc",),
+            (),
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-named-grouped-warm-str": (
+            "pattern.subn",
+            "(?P<word>abc)",
+            ("callable_match_group", "word", "<", ">"),
+            ("abcabc", 1),
+            (),
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-named-grouped-purged-bytes": (
+            "pattern.subn",
+            b"(?P<word>abc)",
+            ("callable_match_group", "word", b"<", b">"),
+            (b"abcabc", 1),
+            (),
+            0,
+            "bytes",
+        ),
+    }
+
+
+def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_replacements(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workload = live_manifest_workloads(
+        "collection_replacement_boundary.py",
+        ("module-sub-callable-grouped-warm-str",),
+    )[0]
+    observed_replacements: list[object] = []
+
+    def fake_callable_match_group_signature(
+        replacement: object,
+    ) -> tuple[object, ...] | None:
+        observed_replacements.append(replacement)
+        return ("sentinel", 1, "<", ">")
+
+    monkeypatch.setattr(
+        support,
+        "callable_match_group_signature",
+        fake_callable_match_group_signature,
+    )
+
+    assert support._collection_replacement_grouped_callable_workload_signature(
+        workload
+    ) == (
+        "module.sub",
+        "(abc)",
+        ("sentinel", 1, "<", ">"),
+        ("abcabc",),
+        (),
+        0,
+        "str",
+    )
+    assert len(observed_replacements) == 1
+    monkeypatch.undo()
+
+    with pytest.raises(
+        AssertionError,
+        match="unexpected collection/replacement grouped callable workload",
+    ):
+        support._collection_replacement_grouped_callable_workload_signature(
+            synthetic_workload(
+                manifest_id="collection-replacement-boundary",
+                workload_id="not-a-paired-workload",
+                operation="module.sub",
+                pattern="(abc)",
+                haystack="abcabc",
+                replacement={
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "prefix": "<",
+                    "suffix": ">",
+                },
+            )
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match="expected callable_match_group replacement for grouped callable workload",
+    ):
+        support._collection_replacement_grouped_callable_workload_signature(
+            synthetic_workload(
+                manifest_id="collection-replacement-boundary",
+                workload_id="module-sub-callable-grouped-warm-str",
+                operation="module.sub",
+                pattern="(abc)",
+                haystack="abcabc",
+                replacement="x",
+            )
+        )
 
 
 def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_signatures() -> None:
