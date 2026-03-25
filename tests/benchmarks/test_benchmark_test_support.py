@@ -1192,6 +1192,43 @@ def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_co
     )
 
 
+@pytest.mark.parametrize(
+    ("module_name", "module_constant_name"),
+    (
+        pytest.param(
+            "tests.benchmarks.source_tree_benchmark_anchor_support",
+            "MODULE_BOUNDARY_MANIFEST_PATH",
+            id="source-tree-support",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_source_tree_benchmark_anchor_support",
+            "SHARED_MODULE_BOUNDARY_MANIFEST_PATH",
+            id="source-tree-contract-suite",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+            "COMPILED_PATTERN_MODULE_COMPILE_MANIFEST_PATH",
+            id="source-tree-combined-suite",
+        ),
+    ),
+)
+def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_by_identity(
+    module_name: str,
+    module_constant_name: str,
+) -> None:
+    module = importlib.import_module(module_name)
+    _, assignment_names = support.top_level_module_definition_and_assignment_names(
+        module
+    )
+
+    assert "MODULE_BOUNDARY_MANIFEST_PATH" in _module_imported_names(
+        module,
+        "tests.benchmarks.benchmark_test_support",
+    )
+    assert module_constant_name not in assignment_names
+    assert getattr(module, module_constant_name) is MODULE_BOUNDARY_MANIFEST_PATH
+
+
 def test_benchmark_test_support_owns_shared_collection_replacement_classifier_helpers(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
@@ -1207,29 +1244,32 @@ def test_benchmark_test_support_owns_shared_collection_replacement_classifier_he
     }.issubset(definition_names)
 
 
-@pytest.mark.parametrize(
-    ("module", "expected_imported_names"),
-    (
-        (
-            compiled_pattern_module_helper_support,
-            frozenset(
-                {
-                    "_collection_replacement_keyword_parameter_name",
-                    "_collection_replacement_positional_keyword_field",
-                    "_is_collection_replacement_keyword_workload",
-                    "_is_collection_replacement_wrong_text_model_workload",
-                }
-            ),
-        ),
-    ),
-)
-def test_non_owner_benchmark_support_modules_import_shared_collection_replacement_classifiers_from_support(
-    module: object,
-    expected_imported_names: frozenset[str],
+def test_non_owner_collection_replacement_benchmark_support_routes_shared_classifiers_through_support_alias(
 ) -> None:
-    assert expected_imported_names.issubset(
-        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            collection_replacement_support
+        )
     )
+
+    assert any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks"
+        and any(alias.name == "benchmark_test_support" for alias in node.names)
+        for node in _parsed_module_ast(collection_replacement_support).body
+    )
+    assert {
+        "_collection_replacement_keyword_parameter_name",
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
+    }.isdisjoint(definition_names)
+    assert {
+        "_collection_replacement_keyword_parameter_name",
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
+    }.isdisjoint(assignment_names)
 
 
 def test_shared_collection_replacement_classifier_contract_tests_import_from_support(
