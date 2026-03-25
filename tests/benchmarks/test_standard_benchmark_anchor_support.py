@@ -21,6 +21,9 @@ from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
+from tests.benchmarks import (
+    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import standard_benchmark_anchor_support as support
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
@@ -226,6 +229,7 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
     assert "for definition in _standard_benchmark_definitions()" not in support_source
     assert "*COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+    assert "*PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
 def test_standard_support_source_no_longer_inlines_collection_replacement_definitions(
@@ -249,6 +253,18 @@ def test_standard_support_source_no_longer_inlines_collection_replacement_defini
         assert f'name="{definition_name}"' not in support_source
 
 
+def test_standard_support_source_no_longer_inlines_pattern_boundary_definitions() -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    for definition_name in (
+        "pattern-boundary-bounded-wildcard",
+        "pattern-boundary-verbose-regression",
+        "pattern-boundary-wrong-text-model",
+    ):
+        assert f'name="{definition_name}"' not in support_source
+
+
 def test_standard_inventory_reuses_owner_owned_collection_replacement_definition_objects(
 ) -> None:
     owner_definitions = (
@@ -259,6 +275,20 @@ def test_standard_inventory_reuses_owner_owned_collection_replacement_definition
         for definition in support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name.startswith("collection-replacement-")
         or definition.name == "pattern-helper-collection-replacement-wrong-text-model"
+    )
+
+    assert standard_definitions == owner_definitions
+
+
+def test_standard_inventory_reuses_owner_owned_pattern_boundary_definition_objects(
+) -> None:
+    owner_definitions = (
+        pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+    )
+    standard_definitions = tuple(
+        definition
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name.startswith("pattern-boundary-")
     )
 
     assert standard_definitions == owner_definitions

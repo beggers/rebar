@@ -22,6 +22,7 @@ from tests.benchmarks.benchmark_test_support import (
     selected_manifest_workloads,
 )
 from tests.benchmarks import pattern_boundary_benchmark_anchor_support as support
+from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
@@ -34,6 +35,12 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     compiled_pattern_contract_expected_build_calls,
 )
 from tests.python.fixture_parity_support import IndexLike
+
+_PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES = (
+    "pattern-boundary-bounded-wildcard",
+    "pattern-boundary-verbose-regression",
+    "pattern-boundary-wrong-text-model",
+)
 
 
 def _pattern_case(
@@ -90,6 +97,35 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
 
     assert expected_definition_names.isdisjoint(local_definition_names)
     assert expected_assignment_names.isdisjoint(local_assignment_names)
+
+
+def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() -> None:
+    definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+
+    assert isinstance(definitions, tuple)
+    assert tuple(definition.name for definition in definitions) == (
+        _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES
+    )
+
+
+def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory() -> None:
+    owner_definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+    standard_definitions = tuple(
+        definition
+        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name in _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES
+    )
+
+    assert tuple(definition.name for definition in standard_definitions) == (
+        _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES
+    )
+    assert standard_definitions == owner_definitions
+    assert all(
+        standard_definition is owner_definition
+        for standard_definition, owner_definition in zip(
+            standard_definitions, owner_definitions
+        )
+    )
 
 
 def test_pattern_bounded_wildcard_selector_and_signature_stay_pinned() -> None:

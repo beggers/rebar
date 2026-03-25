@@ -393,19 +393,11 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         _module_workflow_compiled_pattern_workload_signature,
     )
     from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
-        _is_pattern_boundary_wrong_text_model_workload,
-        _is_pattern_bounded_wildcard_workload,
+        PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         _is_pattern_keyword_window_workload,
-        _is_pattern_verbose_regression_workload,
         _is_pattern_window_positional_indexlike_workload,
-        _pattern_boundary_wrong_text_model_correctness_case_signature,
-        _pattern_boundary_wrong_text_model_workload_signature,
-        _pattern_bounded_wildcard_correctness_case_signature,
-        _pattern_bounded_wildcard_workload_signature,
         _pattern_keyword_window_correctness_case_signature,
         _pattern_keyword_window_workload_signature,
-        _pattern_verbose_regression_correctness_case_signature,
-        _pattern_verbose_regression_workload_signature,
         _pattern_window_positional_indexlike_correctness_case_signature,
         _pattern_window_positional_indexlike_workload_signature,
     )
@@ -722,113 +714,7 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         workload_signature=_pattern_keyword_window_workload_signature,
         run_callback_result_parity=True,
     ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="pattern-boundary-bounded-wildcard",
-        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            PATTERN_BOUNDARY_MANIFEST_PATH,
-            {
-                "pattern-search-bounded-wildcard-ignorecase-warm-str": (
-                    "workflow-pattern-search-str-bounded-wildcard-ignorecase",
-                ),
-                "pattern-match-bounded-wildcard-warm-str": (
-                    "workflow-pattern-match-str-bounded-wildcard",
-                ),
-                "pattern-fullmatch-bounded-wildcard-purged-str": (
-                    "workflow-pattern-fullmatch-str-bounded-wildcard",
-                ),
-                "pattern-findall-bounded-wildcard-warm-str": (
-                    "workflow-pattern-findall-str-bounded-wildcard",
-                ),
-                "pattern-finditer-bounded-wildcard-purged-str": (
-                    "workflow-pattern-finditer-str-bounded-wildcard",
-                ),
-                "pattern-search-bounded-wildcard-endpos-miss-purged-str": (
-                    "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
-                ),
-            },
-        ),
-        include_workload=_is_pattern_bounded_wildcard_workload,
-        correctness_case_signature=(
-            _pattern_bounded_wildcard_correctness_case_signature
-        ),
-        workload_signature=_pattern_bounded_wildcard_workload_signature,
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="pattern-boundary-verbose-regression",
-        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            PATTERN_BOUNDARY_MANIFEST_PATH,
-            {
-                "pattern-search-verbose-regression-warm-str": (
-                    "workflow-pattern-search-str-verbose-regression",
-                ),
-                "pattern-search-verbose-regression-digits-warm-str": (
-                    "workflow-pattern-search-str-verbose-regression-digits",
-                ),
-                "pattern-search-verbose-regression-too-many-digits-purged-str": (
-                    "workflow-pattern-search-str-verbose-regression-too-many-digits",
-                ),
-                "pattern-search-verbose-regression-warm-bytes": (
-                    "workflow-pattern-search-bytes-verbose-regression",
-                ),
-                "pattern-search-verbose-regression-digits-warm-bytes": (
-                    "workflow-pattern-search-bytes-verbose-regression-digits",
-                ),
-                "pattern-search-verbose-regression-too-many-digits-purged-bytes": (
-                    "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
-                ),
-                "pattern-fullmatch-verbose-regression-warm-str": (
-                    "workflow-pattern-fullmatch-str-verbose-regression",
-                ),
-                "pattern-fullmatch-verbose-regression-alpha-warm-str": (
-                    "workflow-pattern-fullmatch-str-verbose-regression-alpha",
-                ),
-                "pattern-fullmatch-verbose-regression-lowercase-key-purged-str": (
-                    "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
-                ),
-                "pattern-fullmatch-verbose-regression-warm-bytes": (
-                    "workflow-pattern-fullmatch-bytes-verbose-regression",
-                ),
-                "pattern-fullmatch-verbose-regression-alpha-warm-bytes": (
-                    "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
-                ),
-                "pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes": (
-                    "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
-                ),
-            },
-        ),
-        include_workload=_is_pattern_verbose_regression_workload,
-        correctness_case_signature=(
-            _pattern_verbose_regression_correctness_case_signature
-        ),
-        workload_signature=_pattern_verbose_regression_workload_signature,
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="pattern-boundary-wrong-text-model",
-        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            PATTERN_BOUNDARY_MANIFEST_PATH,
-            {
-                "pattern-search-on-bytes-string-warm-str": (
-                    "workflow-pattern-search-str-pattern-on-bytes-string",
-                ),
-                "pattern-match-on-str-string-purged-bytes": (
-                    "workflow-pattern-match-bytes-pattern-on-str-string",
-                ),
-                "pattern-fullmatch-on-bytes-string-warm-str": (
-                    "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
-                ),
-            },
-        ),
-        include_workload=_is_pattern_boundary_wrong_text_model_workload,
-        correctness_case_signature=(
-            _pattern_boundary_wrong_text_model_correctness_case_signature
-        ),
-        workload_signature=_pattern_boundary_wrong_text_model_workload_signature,
-    ),
+    *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
     StandardBenchmarkAnchorContractDefinition(
         name="optional-group-conditional",
         manifest_paths=(OPTIONAL_GROUP_MANIFEST_PATH,),

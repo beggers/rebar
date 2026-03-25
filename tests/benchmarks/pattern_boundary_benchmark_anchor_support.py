@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import cache
 import re
 from typing import Any
 
@@ -8,6 +9,7 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_encoded_indexlike_payload,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _definition_anchor_expectations,
     freeze_signature_value,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
@@ -449,3 +451,126 @@ def _is_pattern_boundary_wrong_text_model_workload(workload: Any) -> bool:
         and workload.expected_exception is not None
         and workload.expected_exception.get("type") == "TypeError"
     )
+
+
+@cache
+def _build_pattern_boundary_standard_benchmark_definitions() -> tuple[Any, ...]:
+    from tests.benchmarks.standard_benchmark_anchor_support import (
+        StandardBenchmarkAnchorContractDefinition,
+    )
+
+    return (
+        StandardBenchmarkAnchorContractDefinition(
+            name="pattern-boundary-bounded-wildcard",
+            manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                PATTERN_BOUNDARY_MANIFEST_PATH,
+                {
+                    "pattern-search-bounded-wildcard-ignorecase-warm-str": (
+                        "workflow-pattern-search-str-bounded-wildcard-ignorecase",
+                    ),
+                    "pattern-match-bounded-wildcard-warm-str": (
+                        "workflow-pattern-match-str-bounded-wildcard",
+                    ),
+                    "pattern-fullmatch-bounded-wildcard-purged-str": (
+                        "workflow-pattern-fullmatch-str-bounded-wildcard",
+                    ),
+                    "pattern-findall-bounded-wildcard-warm-str": (
+                        "workflow-pattern-findall-str-bounded-wildcard",
+                    ),
+                    "pattern-finditer-bounded-wildcard-purged-str": (
+                        "workflow-pattern-finditer-str-bounded-wildcard",
+                    ),
+                    "pattern-search-bounded-wildcard-endpos-miss-purged-str": (
+                        "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
+                    ),
+                },
+            ),
+            include_workload=_is_pattern_bounded_wildcard_workload,
+            correctness_case_signature=(
+                _pattern_bounded_wildcard_correctness_case_signature
+            ),
+            workload_signature=_pattern_bounded_wildcard_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="pattern-boundary-verbose-regression",
+            manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                PATTERN_BOUNDARY_MANIFEST_PATH,
+                {
+                    "pattern-search-verbose-regression-warm-str": (
+                        "workflow-pattern-search-str-verbose-regression",
+                    ),
+                    "pattern-search-verbose-regression-digits-warm-str": (
+                        "workflow-pattern-search-str-verbose-regression-digits",
+                    ),
+                    "pattern-search-verbose-regression-too-many-digits-purged-str": (
+                        "workflow-pattern-search-str-verbose-regression-too-many-digits",
+                    ),
+                    "pattern-search-verbose-regression-warm-bytes": (
+                        "workflow-pattern-search-bytes-verbose-regression",
+                    ),
+                    "pattern-search-verbose-regression-digits-warm-bytes": (
+                        "workflow-pattern-search-bytes-verbose-regression-digits",
+                    ),
+                    "pattern-search-verbose-regression-too-many-digits-purged-bytes": (
+                        "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
+                    ),
+                    "pattern-fullmatch-verbose-regression-warm-str": (
+                        "workflow-pattern-fullmatch-str-verbose-regression",
+                    ),
+                    "pattern-fullmatch-verbose-regression-alpha-warm-str": (
+                        "workflow-pattern-fullmatch-str-verbose-regression-alpha",
+                    ),
+                    "pattern-fullmatch-verbose-regression-lowercase-key-purged-str": (
+                        "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
+                    ),
+                    "pattern-fullmatch-verbose-regression-warm-bytes": (
+                        "workflow-pattern-fullmatch-bytes-verbose-regression",
+                    ),
+                    "pattern-fullmatch-verbose-regression-alpha-warm-bytes": (
+                        "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
+                    ),
+                    "pattern-fullmatch-verbose-regression-lowercase-key-purged-bytes": (
+                        "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
+                    ),
+                },
+            ),
+            include_workload=_is_pattern_verbose_regression_workload,
+            correctness_case_signature=(
+                _pattern_verbose_regression_correctness_case_signature
+            ),
+            workload_signature=_pattern_verbose_regression_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="pattern-boundary-wrong-text-model",
+            manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                PATTERN_BOUNDARY_MANIFEST_PATH,
+                {
+                    "pattern-search-on-bytes-string-warm-str": (
+                        "workflow-pattern-search-str-pattern-on-bytes-string",
+                    ),
+                    "pattern-match-on-str-string-purged-bytes": (
+                        "workflow-pattern-match-bytes-pattern-on-str-string",
+                    ),
+                    "pattern-fullmatch-on-bytes-string-warm-str": (
+                        "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
+                    ),
+                },
+            ),
+            include_workload=_is_pattern_boundary_wrong_text_model_workload,
+            correctness_case_signature=(
+                _pattern_boundary_wrong_text_model_correctness_case_signature
+            ),
+            workload_signature=_pattern_boundary_wrong_text_model_workload_signature,
+        ),
+    )
+
+
+def __getattr__(name: str) -> Any:
+    if name == "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS":
+        return _build_pattern_boundary_standard_benchmark_definitions()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
