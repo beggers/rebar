@@ -1,6 +1,6 @@
 ## RBR-1284: Move non-alternation source-tree standard anchor definitions onto owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -78,3 +78,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `27 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `336 tests collected`; and
   - the negative `rg` check in `Verification` currently fails because those four non-alternation source-tree definition bodies still live inline in `tests/benchmarks/standard_benchmark_anchor_support.py`, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- 2026-03-25: Moved the four non-alternation source-tree standard benchmark definitions into `tests/benchmarks/source_tree_benchmark_anchor_support.py` as the lazy cached `SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS` tuple, spliced that owner-owned tuple back into `STANDARD_BENCHMARK_DEFINITIONS` immediately after the pattern-boundary owner tuple, and updated both support-contract test modules to pin the new owner boundary plus the absence of the old inline literals.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n 'name=\"(optional-group-conditional|nested-group|exact-repeat|ranged-repeat)\"' tests/benchmarks/standard_benchmark_anchor_support.py"`

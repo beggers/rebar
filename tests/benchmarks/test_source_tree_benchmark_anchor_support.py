@@ -277,6 +277,26 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_sour
         assert standard_definitions[definition.name] is definition
 
 
+def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() -> None:
+    owner_definitions = support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
+    definition_names = tuple(definition.name for definition in owner_definitions)
+    standard_definitions = {
+        definition.name: definition
+        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name in definition_names
+    }
+
+    assert definition_names == (
+        "optional-group-conditional",
+        "nested-group",
+        "exact-repeat",
+        "ranged-repeat",
+    )
+    assert tuple(standard_definitions) == definition_names
+    for definition in owner_definitions:
+        assert standard_definitions[definition.name] is definition
+
+
 def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
     cases = support.published_cases_by_id()
     workload = live_manifest_workload(

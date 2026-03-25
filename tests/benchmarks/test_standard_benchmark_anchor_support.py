@@ -90,6 +90,12 @@ class _SyntheticStandardBenchmarkDefinition:
             "_module_workflow_keyword_standard_benchmark_definitions",
             id="source-tree-module-workflow-keyword",
         ),
+        pytest.param(
+            anchor_support,
+            "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
+            "_source_tree_standard_benchmark_definitions",
+            id="source-tree-standard",
+        ),
     ),
 )
 def test_owner_standard_definition_exports_stay_lazy_and_cached(
@@ -326,6 +332,7 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
         in support_source
     )
     assert "*PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+    assert "*SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
 def test_standard_support_source_no_longer_inlines_collection_replacement_definitions(
@@ -375,6 +382,20 @@ def test_standard_support_source_no_longer_inlines_module_workflow_keyword_defin
         assert f'name="{definition_name}"' not in support_source
 
 
+def test_standard_support_source_no_longer_inlines_source_tree_standard_definitions(
+) -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    for definition_name in (
+        "optional-group-conditional",
+        "nested-group",
+        "exact-repeat",
+        "ranged-repeat",
+    ):
+        assert f'name="{definition_name}"' not in support_source
+
+
 def test_standard_support_imports_only_pattern_boundary_owner_tuple() -> None:
     import inspect
 
@@ -409,6 +430,24 @@ def test_standard_support_imports_and_splices_module_workflow_keyword_owner_tupl
 
     assert "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS" in imported_names
     assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+
+
+def test_standard_support_imports_and_splices_source_tree_standard_owner_tuple() -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    parsed_support_source = ast.parse(support_source)
+
+    imported_names = {
+        alias.name
+        for node in ast.walk(parsed_support_source)
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
+        for alias in node.names
+    }
+
+    assert "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS" in imported_names
+    assert "*SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
 def test_standard_support_source_no_longer_inlines_compiled_pattern_module_helper_definitions(
@@ -449,6 +488,23 @@ def test_standard_inventory_reuses_owner_owned_module_workflow_keyword_definitio
         definition
         for definition in support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name.startswith("module-workflow-keyword-")
+    )
+
+    assert standard_definitions == owner_definitions
+
+
+def test_standard_inventory_reuses_owner_owned_source_tree_standard_definition_objects(
+) -> None:
+    owner_definitions = anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
+    standard_definitions = tuple(
+        definition
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name in {
+            "optional-group-conditional",
+            "nested-group",
+            "exact-repeat",
+            "ranged-repeat",
+        }
     )
 
     assert standard_definitions == owner_definitions

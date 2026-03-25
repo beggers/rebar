@@ -344,7 +344,9 @@ PATTERN_BOUNDARY_MANIFEST_PATH = (
 OPTIONAL_GROUP_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
 )
-NESTED_GROUP_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
+NESTED_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
+)
 EXACT_REPEAT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
 )
@@ -392,18 +394,12 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
     )
     from tests.benchmarks.source_tree_benchmark_anchor_support import (
         MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-        _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID as OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
+        SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
         _counted_repeat_correctness_case_signature,
         _counted_repeat_workload_signature,
         _grouped_alternation_correctness_case_signature,
         _grouped_alternation_replacement_correctness_case_signature,
         _grouped_alternation_workload_signature,
-        _is_non_alternation_counted_repeat_workload,
-        _is_optional_group_conditional_workload,
-        _nested_group_correctness_case_signature,
-        _nested_group_workload_signature,
-        _optional_group_correctness_case_signature,
-        _optional_group_workload_signature,
     )
     from tests.python.fixture_parity_support import (
         BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -485,127 +481,7 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
     ),
     *COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
     *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
-    StandardBenchmarkAnchorContractDefinition(
-        name="optional-group-conditional",
-        manifest_paths=(OPTIONAL_GROUP_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            OPTIONAL_GROUP_MANIFEST_PATH,
-            {
-                OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID: (
-                    "optional-group-conditional-module-search-present-str",
-                ),
-            },
-        ),
-        include_workload=_is_optional_group_conditional_workload,
-        correctness_case_signature=_optional_group_correctness_case_signature,
-        workload_signature=_optional_group_workload_signature,
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="nested-group",
-        manifest_paths=(NESTED_GROUP_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            NESTED_GROUP_MANIFEST_PATH,
-            {
-                "module-compile-nested-group-cold-str": (
-                    "nested-group-compile-metadata-str",
-                ),
-                "module-search-nested-group-warm-str": (
-                    "nested-group-module-search-str",
-                ),
-                "pattern-fullmatch-nested-group-purged-str": (
-                    "nested-group-pattern-fullmatch-str",
-                ),
-                "module-compile-named-nested-group-warm-str": (
-                    "named-nested-group-compile-metadata-str",
-                ),
-                "module-search-named-nested-group-warm-str": (
-                    "named-nested-group-module-search-str",
-                ),
-                "pattern-fullmatch-named-nested-group-purged-str": (
-                    "named-nested-group-pattern-fullmatch-str",
-                ),
-            },
-        ),
-        include_workload=_include_all_workloads,
-        correctness_case_signature=_nested_group_correctness_case_signature,
-        workload_signature=_nested_group_workload_signature,
-        run_callback_result_parity=True,
-        expected_excluded_workload_ids=frozenset(
-            {
-                "module-search-triple-nested-group-cold-gap",
-                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
-            }
-        ),
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="exact-repeat",
-        manifest_paths=(EXACT_REPEAT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            EXACT_REPEAT_MANIFEST_PATH,
-            {
-                "module-compile-numbered-exact-repeat-group-cold-str": (
-                    "exact-repeat-numbered-group-compile-metadata-str",
-                ),
-                "module-search-numbered-exact-repeat-group-warm-str": (
-                    "exact-repeat-numbered-group-module-search-str",
-                ),
-                "pattern-fullmatch-numbered-exact-repeat-group-purged-str": (
-                    "exact-repeat-numbered-group-pattern-fullmatch-str",
-                ),
-                "module-compile-named-exact-repeat-group-warm-str": (
-                    "exact-repeat-named-group-compile-metadata-str",
-                ),
-                "module-search-named-exact-repeat-group-warm-str": (
-                    "exact-repeat-named-group-module-search-str",
-                ),
-                "pattern-fullmatch-named-exact-repeat-group-purged-str": (
-                    "exact-repeat-named-group-pattern-fullmatch-str",
-                ),
-                "module-search-numbered-broader-ranged-repeat-group-cold-gap": (
-                    "broader-range-wider-ranged-repeat-numbered-group-module-search-upper-bound-str",
-                ),
-            },
-        ),
-        include_workload=_is_non_alternation_counted_repeat_workload,
-        correctness_case_signature=_counted_repeat_correctness_case_signature,
-        workload_signature=_counted_repeat_workload_signature,
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="ranged-repeat",
-        manifest_paths=(RANGED_REPEAT_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            RANGED_REPEAT_MANIFEST_PATH,
-            {
-                "module-compile-numbered-ranged-repeat-group-cold-str": (
-                    "ranged-repeat-numbered-group-compile-metadata-str",
-                ),
-                "module-search-numbered-ranged-repeat-group-lower-bound-warm-str": (
-                    "ranged-repeat-numbered-group-module-search-lower-bound-str",
-                ),
-                "pattern-fullmatch-numbered-ranged-repeat-group-upper-bound-purged-str": (
-                    "ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
-                ),
-                "module-compile-named-ranged-repeat-group-warm-str": (
-                    "ranged-repeat-named-group-compile-metadata-str",
-                ),
-                "module-search-named-ranged-repeat-group-upper-bound-warm-str": (
-                    "ranged-repeat-named-group-module-search-upper-bound-str",
-                ),
-                "pattern-fullmatch-named-ranged-repeat-group-lower-bound-purged-str": (
-                    "ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
-                ),
-                "module-search-numbered-ranged-repeat-group-wider-range-cold-gap": (
-                    "broader-range-wider-ranged-repeat-numbered-group-module-search-upper-bound-str",
-                ),
-            },
-        ),
-        include_workload=_is_non_alternation_counted_repeat_workload,
-        correctness_case_signature=_counted_repeat_correctness_case_signature,
-        workload_signature=_counted_repeat_workload_signature,
-        run_callback_result_parity=True,
-    ),
+    *SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     StandardBenchmarkAnchorContractDefinition(
         name="grouped-alternation",
         manifest_paths=(GROUPED_ALTERNATION_MANIFEST_PATH,),
