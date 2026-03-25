@@ -20,7 +20,6 @@ from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
-from tests.benchmarks import compile_proxy_benchmark_support as compile_proxy_support
 from tests.benchmarks import (
     compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
 )
@@ -125,7 +124,7 @@ def _imported_names_from_module(
 
 
 _OWNER_SUPPORT_MODULES = (
-    compile_proxy_support,
+    benchmark_support,
     anchor_support,
     collection_replacement_support,
     compiled_pattern_module_compile_support,
@@ -138,7 +137,7 @@ _OWNER_SUPPORT_MODULES = (
     ("module", "export_name", "builder_name"),
     (
         pytest.param(
-            compile_proxy_support,
+            benchmark_support,
             "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
             "_build_compile_proxy_standard_benchmark_definitions",
             id="compile-proxy",
@@ -206,7 +205,7 @@ def test_owner_standard_definition_exports_stay_lazy_and_cached(
     ("module", "missing_name"),
     (
         pytest.param(
-            compile_proxy_support,
+            benchmark_support,
             "NOT_A_COMPILE_PROXY_OWNER_EXPORT",
             id="compile-proxy",
         ),
@@ -513,7 +512,7 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     ("owner_definitions", "preceding_definition_name", "following_definition_name"),
     (
         pytest.param(
-            compile_proxy_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+            benchmark_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
             None,
             "collection-replacement-module-positional-indexlike",
             id="compile-proxy-before-collection-replacement",
@@ -574,7 +573,7 @@ def test_standard_inventory_keeps_source_tree_owner_blocks_at_expected_boundarie
     "owner_definitions",
     (
         pytest.param(
-            compile_proxy_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+            benchmark_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
             id="compile-proxy",
         ),
         pytest.param(
@@ -683,15 +682,9 @@ def test_standard_support_imports_only_compile_proxy_owner_tuple() -> None:
     import inspect
 
     support_source = inspect.getsource(support)
-    parsed_support_source = ast.parse(support_source)
-
-    imported_names = {
-        alias.name
-        for node in ast.walk(parsed_support_source)
-        if isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.compile_proxy_benchmark_support"
-        for alias in node.names
-    }
+    imported_names = _build_standard_benchmark_definition_imported_names(
+        "tests.benchmarks.benchmark_test_support"
+    )
 
     assert imported_names == {"COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"}
     assert "*COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
@@ -699,7 +692,7 @@ def test_standard_support_imports_only_compile_proxy_owner_tuple() -> None:
 
 
 def test_standard_inventory_reuses_owner_owned_compile_proxy_definition() -> None:
-    owner_definitions = compile_proxy_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS
+    owner_definitions = benchmark_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS
 
     assert len(owner_definitions) == 1
     assert owner_definitions[0].name == "compile-proxy"

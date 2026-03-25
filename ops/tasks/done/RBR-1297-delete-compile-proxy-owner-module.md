@@ -60,3 +60,11 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py` passed with `458 passed, 3 skipped in 0.65s`;
   - `bash -lc "test ! -e tests/benchmarks/compile_proxy_benchmark_support.py && test ! -e tests/benchmarks/test_compile_proxy_benchmark_support.py && ! rg -n 'compile_proxy_benchmark_support' tests/benchmarks"` currently fails because the module, its dedicated test, and live imports are still present; that failure belongs to the exact cleanup this task is queuing.
+
+## Completion
+- Landed on 2026-03-25.
+- Folded the compile-proxy manifest constants, cached definition builder, and lazy `COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS` export into `tests/benchmarks/benchmark_test_support.py`, then repointed the remaining benchmark-support import sites to that shared module.
+- Deleted `tests/benchmarks/compile_proxy_benchmark_support.py` and `tests/benchmarks/test_compile_proxy_benchmark_support.py`; final `git diff --name-status` reports both paths as `D`.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py`
+  - `bash -lc "test ! -e tests/benchmarks/compile_proxy_benchmark_support.py && test ! -e tests/benchmarks/test_compile_proxy_benchmark_support.py && ! rg -n 'compile_proxy_benchmark_support' tests/benchmarks"`

@@ -23,7 +23,7 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.correctness import published_fixture_manifests
-from tests.conftest import records_by_string_id
+from tests.conftest import REPO_ROOT, records_by_string_id
 
 
 class StandardBenchmarkAnchorContract(Protocol):
@@ -466,6 +466,83 @@ def compile_proxy_workload_signature(
 
 def is_compile_proxy_workload(workload: Any) -> bool:
     return workload.operation in {"compile", "module.compile"}
+
+
+COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
+REGRESSION_MATRIX_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
+)
+
+
+@cache
+def _build_compile_proxy_standard_benchmark_definitions(
+) -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
+    return (
+        StandardBenchmarkAnchorContractDefinition(
+            name="compile-proxy",
+            manifest_paths=(
+                COMPILE_MATRIX_MANIFEST_PATH,
+                REGRESSION_MATRIX_MANIFEST_PATH,
+            ),
+            expected_anchor_case_ids=(
+                _definition_anchor_expectations(
+                    COMPILE_MATRIX_MANIFEST_PATH,
+                    {
+                        "compile-inline-locale-bytes-warm": (
+                            "bytes-inline-locale-flag-success",
+                        ),
+                        "compile-lookbehind-cold": (
+                            "str-fixed-width-lookbehind-success",
+                        ),
+                        "compile-character-class-ignorecase-warm": (
+                            "str-character-class-ignorecase-success",
+                        ),
+                        "compile-possessive-quantifier-cold": (
+                            "str-possessive-quantifier-success",
+                        ),
+                        "compile-atomic-group-purged": (
+                            "str-atomic-group-success",
+                        ),
+                        "compile-parser-stress-cold": (
+                            "str-parser-stress-compile-proxy-success",
+                        ),
+                    },
+                )
+                | _definition_anchor_expectations(
+                    REGRESSION_MATRIX_MANIFEST_PATH,
+                    {
+                        "regression-parser-atomic-lookbehind-cold": (
+                            "str-parser-stress-compile-proxy-success",
+                        ),
+                        "regression-parser-bytes-backreference-purged": (
+                            "bytes-named-backreference-compile-proxy-success",
+                        ),
+                        "regression-module-compile-verbose-purged": (
+                            "workflow-compile-str-verbose-regression",
+                        ),
+                        "regression-module-compile-multiline-purged": (
+                            "workflow-compile-str-multiline-regression",
+                        ),
+                        "regression-module-compile-multiline-purged-bytes": (
+                            "workflow-compile-bytes-multiline-regression",
+                        ),
+                        "regression-module-compile-verbose-purged-bytes": (
+                            "workflow-compile-bytes-verbose-regression",
+                        ),
+                    },
+                )
+            ),
+            include_workload=is_compile_proxy_workload,
+            correctness_case_signature=compile_proxy_correctness_case_signature,
+            workload_signature=compile_proxy_workload_signature,
+        ),
+    )
+
+
+def __getattr__(name: str) -> Any:
+    if name == "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS":
+        return _build_compile_proxy_standard_benchmark_definitions()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def manifest_workload_ids_matching(

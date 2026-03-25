@@ -307,7 +307,7 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         _conditional_group_exists_quantified_callable_correctness_case_signature,
         _conditional_group_exists_quantified_callable_workload_signature,
     )
-    from tests.benchmarks.compile_proxy_benchmark_support import (
+    from tests.benchmarks.benchmark_test_support import (
         COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
     )
     from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
