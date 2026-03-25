@@ -121,17 +121,6 @@ def _module_imported_names(module_name: str) -> set[str]:
     }
 
 
-def _module_defined_class_names(module: Any) -> set[str]:
-    import inspect
-
-    parsed_module_source = ast.parse(inspect.getsource(module))
-    return {
-        node.name
-        for node in parsed_module_source.body
-        if isinstance(node, ast.ClassDef)
-    }
-
-
 def _imported_names_from_module(module: Any, source_module_name: str) -> set[str]:
     import inspect
 
@@ -306,7 +295,11 @@ def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_sup
 
 
 def test_standard_support_no_longer_defines_shared_contract_classes() -> None:
-    assert _module_defined_class_names(support).isdisjoint(
+    definition_names, _assignment_names = (
+        benchmark_support.top_level_module_definition_and_assignment_names(support)
+    )
+
+    assert definition_names.isdisjoint(
         {
             "StandardBenchmarkAnchorContract",
             "StandardBenchmarkAnchorContractDefinition",
