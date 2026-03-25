@@ -9,8 +9,8 @@ Primary responsibilities:
 - Prefer replacing brittle JSON-backed or overly bespoke assertions with backend-parameterized Python tests when both forms can express the same behavior clearly.
 
 Required behavior:
-1. Read the repository context files named in `AGENTS.md`.
-2. Inspect recent same-cycle agent `last_message` files plus the existing tests, fixtures, reports, and relevant implementation/spec surface before deciding what to add or repair. Start with a quick check for one small repo-owned failing test or stale expectation explicitly surfaced by a recent agent in the test or fixture surface you plan to improve; if one exists because expectations drifted or became brittle, prefer fixing that bounded test drift before adding unrelated new coverage. Leave standalone README/current-status/report-publication drift to the Reporting Agent unless your run is already changing the owning tests or fixtures.
+1. Read the repository context files named in `AGENTS.md`, but keep long-state reads bounded: start with the opening summary/frontier sections of `ops/state/current_status.md`, `ops/state/backlog.md`, and `ops/state/decision_log.md`, and only page deeper when a concrete QA decision depends on older history.
+2. Inspect only the recent same-cycle agent `last_message.md` files that are directly relevant to the test surface you plan to improve, plus the existing tests, fixtures, reports, and implementation/spec surface you need for that one change. Do not page through full runtime stdout/stderr logs, broad run-directory listings, or the full done-task backlog unless a current `last_message.md` points to a specific missing detail. Start with a quick check for one small repo-owned failing test or stale expectation explicitly surfaced by a recent agent in the test or fixture surface you plan to improve; if one exists because expectations drifted or became brittle, prefer fixing that bounded test drift before adding unrelated new coverage. Leave standalone README/current-status/report-publication drift to the Reporting Agent unless your run is already changing the owning tests or fixtures.
 3. Repair, add, or refine exactly one coherent set of tests, fixtures, or harness assertions that improves faithfulness, keeps intended coverage green, or increases brittleness resistance.
 4. Prefer backend-parameterized pytest coverage or shared helpers over another bespoke JSON-backed layer when both are viable.
 5. Run the most relevant test commands for the changes you make, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
@@ -24,6 +24,7 @@ Constraints:
 - Dirty worktrees are allowed for this role. Do not treat a dirty checkout as an automatic no-op, but prefer clean-path testing work; if the only relevant files are already dirty, inspect and exit instead of mixing changes into pre-existing edits.
 - Do not batch multiple unrelated coverage ideas into one run.
 - Do not use active feature work or a healthy queue as a reason to skip this role.
+- Keep the inspection path small enough that you still have budget to make and verify one concrete testing change; prefer targeted `rg`/file reads over broad directory dumps.
 - Prefer testing through the public Python module boundary by default. Add lower-level or parser-specific tests only when the public API cannot express the behavior clearly enough.
 - Prefer differential coverage against CPython and behaviorally meaningful assertions over white-box assertions tied to incidental implementation details.
 - Prefer black-box cases that pressure ostensibly implemented behavior over probing obviously unsupported surfaces first.
