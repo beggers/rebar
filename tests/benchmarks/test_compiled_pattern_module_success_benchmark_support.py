@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import importlib
 import pathlib
+from types import SimpleNamespace
 
 import pytest
 
@@ -107,6 +108,97 @@ def test_compiled_pattern_module_success_owner_specs_match_live_nonkeyword_nonco
     assert tuple(sorted(owner_surface_ids)) == tuple(sorted(expected_live_surface_ids))
     assert expected_live_surface_ids == live_compiled_pattern_module_success_surface_ids()
     assert len(owner_surface_ids) == len(set(owner_surface_ids))
+
+
+def _compiled_pattern_module_success_selector_candidate(
+    **overrides,
+) -> SimpleNamespace:
+    payload = {
+        "operation": "module.search",
+        "use_compiled_pattern": False,
+        "expected_exception": None,
+        "haystack_text_model": None,
+        "kwargs": {},
+    }
+    payload.update(overrides)
+    return SimpleNamespace(**payload)
+
+
+@pytest.mark.parametrize(
+    ("workload", "expected"),
+    (
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(
+                use_compiled_pattern=True,
+            ),
+            True,
+            id="module-boundary-direct-success",
+        ),
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(
+                operation="module.sub",
+                use_compiled_pattern=True,
+            ),
+            True,
+            id="collection-replacement-direct-success",
+        ),
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(),
+            False,
+            id="rejects-non-compiled-pattern-workload",
+        ),
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(
+                expected_exception={
+                    "type": "TypeError",
+                    "message_substring": "synthetic selector rejection",
+                },
+                use_compiled_pattern=True,
+            ),
+            False,
+            id="rejects-exception-workload",
+        ),
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(
+                operation="module.fullmatch",
+                use_compiled_pattern=True,
+                haystack_text_model="bytes",
+            ),
+            False,
+            id="rejects-wrong-text-model-workload",
+        ),
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(
+                operation="module.split",
+                kwargs={"maxsplit": 1},
+                use_compiled_pattern=True,
+            ),
+            False,
+            id="rejects-keyword-workload",
+        ),
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(
+                operation="module.compile",
+                use_compiled_pattern=True,
+            ),
+            False,
+            id="rejects-compile-workload",
+        ),
+        pytest.param(
+            _compiled_pattern_module_success_selector_candidate(
+                operation="pattern.search",
+                use_compiled_pattern=True,
+            ),
+            False,
+            id="rejects-non-module-operation",
+        ),
+    ),
+)
+def test_include_live_compiled_pattern_module_success_workload_accepts_only_direct_success_rows(
+    workload,
+    expected: bool,
+) -> None:
+    assert include_live_compiled_pattern_module_success_workload(workload) is expected
 
 
 @pytest.mark.parametrize(
