@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference conditional slice pinned to `a((b|c){1,4})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)`.
+No ready feature follow-on currently survives on the callable-replacement owner route.
 
 ## Ordered Work
-1. The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference conditional slice pinned to `a((b|c){1,4})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)`.
+1. No ready feature follow-on currently survives on the callable-replacement owner route.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
