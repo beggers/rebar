@@ -17,6 +17,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
+    assert_zero_gap_manifest_workloads_measured,
     _write_test_manifest,
     selected_manifest_workloads,
 )
@@ -323,6 +324,120 @@ def test_keyword_correctness_case_signature_preserves_call_shape_and_compiled_pa
         False,
         0,
         "str",
+    )
+
+
+def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=lambda workload: (
+                support._is_collection_replacement_keyword_workload(workload)
+                and workload.operation.startswith("pattern.")
+            ),
+        )
+    )
+
+    assert expected_measured_workload_ids == (
+        "pattern-split-maxsplit-keyword-warm-str",
+        "pattern-split-maxsplit-bool-keyword-warm-str",
+        "pattern-split-maxsplit-indexlike-keyword-warm-str",
+        "pattern-split-duplicate-maxsplit-keyword-warm-str",
+        "pattern-split-unexpected-keyword-warm-bytes",
+        "pattern-sub-count-keyword-purged-bytes",
+        "pattern-sub-count-bool-keyword-purged-bytes",
+        "pattern-sub-count-bool-true-keyword-purged-bytes",
+        "pattern-sub-count-indexlike-keyword-purged-bytes",
+        "pattern-sub-duplicate-count-keyword-warm-str",
+        "pattern-sub-unexpected-keyword-warm-str",
+        "pattern-sub-unexpected-keyword-after-positional-count-warm-str",
+        "pattern-sub-count-alias-keyword-warm-str",
+        "pattern-subn-count-keyword-warm-str",
+        "pattern-subn-count-bool-keyword-warm-str",
+        "pattern-subn-count-bool-false-keyword-warm-str",
+        "pattern-subn-count-indexlike-keyword-warm-str",
+        "pattern-subn-duplicate-count-keyword-warm-bytes",
+        "pattern-subn-unexpected-keyword-warm-bytes",
+        "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes",
+        "pattern-subn-count-alias-keyword-warm-bytes",
+    )
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=lambda workload: (
+                support._is_collection_replacement_keyword_workload(workload)
+                and workload.operation.startswith("module.")
+            ),
+        )
+    )
+
+    assert expected_measured_workload_ids == (
+        "module-split-maxsplit-keyword-purged-bytes",
+        "module-split-maxsplit-bool-keyword-purged-bytes",
+        "module-split-maxsplit-indexlike-keyword-purged-bytes",
+        "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+        "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
+        "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
+        "module-split-duplicate-maxsplit-keyword-purged-str",
+        "module-split-unexpected-keyword-purged-str",
+        "module-split-unexpected-keyword-purged-bytes",
+        "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
+        "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
+        "module-sub-count-keyword-warm-str",
+        "module-sub-count-bool-keyword-warm-str",
+        "module-sub-count-bool-false-keyword-warm-str",
+        "module-sub-count-indexlike-keyword-warm-str",
+        "module-sub-count-keyword-warm-str-compiled-pattern",
+        "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
+        "module-sub-count-bool-keyword-warm-str-compiled-pattern",
+        "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+        "module-sub-duplicate-count-keyword-warm-str",
+        "module-sub-unexpected-keyword-purged-str",
+        "module-sub-unexpected-keyword-after-positional-count-purged-str",
+        "module-sub-count-alias-keyword-purged-str",
+        "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
+        "module-sub-unexpected-keyword-purged-str-compiled-pattern",
+        "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
+        "module-sub-count-alias-keyword-purged-str-compiled-pattern",
+        "module-subn-count-keyword-purged-bytes",
+        "module-subn-count-bool-keyword-purged-bytes",
+        "module-subn-count-bool-true-keyword-purged-bytes",
+        "module-subn-count-indexlike-keyword-purged-bytes",
+        "module-subn-duplicate-count-keyword-warm-bytes",
+        "module-subn-unexpected-keyword-purged-bytes",
+        "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
+        "module-subn-count-alias-keyword-purged-bytes",
+        "module-subn-count-keyword-purged-bytes-compiled-pattern",
+        "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
+        "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
+        "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+        "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
+        "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
+        "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
+        "module-subn-count-alias-keyword-purged-bytes-compiled-pattern",
+    )
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
     )
 
 
