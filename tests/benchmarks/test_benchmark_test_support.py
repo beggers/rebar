@@ -112,6 +112,45 @@ def _ast_import_targets(module_ast: ast.Module) -> frozenset[str]:
     return frozenset(targets)
 
 
+def _top_level_benchmark_support_alias_pairs(
+    module: object,
+    attribute_names: frozenset[str],
+) -> frozenset[tuple[str, str]]:
+    alias_pairs: set[tuple[str, str]] = set()
+
+    for node in _parsed_module_ast(module).body:
+        if isinstance(node, ast.ImportFrom):
+            if node.module != "tests.benchmarks.benchmark_test_support":
+                continue
+            alias_pairs.update(
+                (alias.name, alias.asname)
+                for alias in node.names
+                if alias.name in attribute_names and alias.asname is not None
+            )
+            continue
+
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id == "benchmark_test_support"
+            and value.attr in attribute_names
+        ):
+            alias_pairs.update((value.attr, target_name) for target_name in targets)
+
+    return frozenset(alias_pairs)
+
+
 @cache
 def _benchmark_support_import_targets_by_path(
 ) -> tuple[tuple[pathlib.Path, frozenset[str]], ...]:
@@ -1683,6 +1722,49 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
             shared_name,
         )
         assert shared_name not in local_names
+
+
+@pytest.mark.parametrize(
+    ("module_name", "expected_owner_module_names"),
+    (
+        pytest.param(
+            "tests.benchmarks.test_benchmark_manifest_validation",
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+                }
+            ),
+            id="benchmark-manifest-validation",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+                }
+            ),
+            id="source-tree-combined",
+        ),
+    ),
+)
+def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces(
+    module_name: str,
+    expected_owner_module_names: frozenset[str],
+) -> None:
+    module = importlib.import_module(module_name)
+
+    assert (
+        _top_level_benchmark_support_alias_pairs(
+            module,
+            expected_owner_module_names,
+        )
+        == frozenset()
+    )
 
 
 def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
