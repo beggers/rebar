@@ -1,6 +1,6 @@
 ## RBR-1306: Delete compiled-pattern module success support wrapper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -65,3 +65,7 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_success or compiled_pattern_module_helper or shared_compiled_pattern_helper'` passed with `116 passed, 160 deselected in 0.93s`; and
   - `bash -lc "test ! -e tests/benchmarks/compiled_pattern_module_success_benchmark_support.py && test ! -e tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py && ! rg -n 'compiled_pattern_module_success_benchmark_support' tests/benchmarks -g '*.py'"` currently fails because the wrapper module, its dedicated test file, and live imports still exist, and that failure belongs exactly to this cleanup.
+
+## Completion Note
+- Moved the compiled-pattern direct-success owner surface into `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`, preserved the existing source workload ids and helper-route callback derivation, folded the still-useful contract/selector coverage into `tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py`, updated `tests/benchmarks/test_benchmark_test_support.py` to assert the single helper-owner module shape, and deleted the wrapper support module plus its dedicated wrapper-preservation test file.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_success or compiled_pattern_module_helper or shared_compiled_pattern_helper'` (`113 passed, 160 deselected`) and `bash -lc "test ! -e tests/benchmarks/compiled_pattern_module_success_benchmark_support.py && test ! -e tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py && ! rg -n 'compiled_pattern_module_success_benchmark_support' tests/benchmarks -g '*.py'"`. `git diff --name-status -- tests/benchmarks/compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` now reports `D` for both deleted tracked files.

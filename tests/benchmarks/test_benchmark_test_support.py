@@ -23,9 +23,6 @@ from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
 )
 from tests.benchmarks import (
-    compiled_pattern_module_success_benchmark_support as compiled_pattern_module_success_support,
-)
-from tests.benchmarks import (
     pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
@@ -1159,6 +1156,11 @@ def test_compiled_pattern_module_helper_support_owns_compiled_pattern_helper_sur
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+        "CompiledPatternModuleSuccessOwnerSpec",
+        "_assert_compiled_pattern_module_success_payload_round_trip",
+        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+        "include_live_compiled_pattern_module_success_workload",
+        "live_compiled_pattern_module_success_surface_ids",
     }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
@@ -1167,27 +1169,18 @@ def test_compiled_pattern_module_helper_support_owns_compiled_pattern_helper_sur
         "_VERBOSE_REGRESSION_PATTERN",
         "_VERBOSE_REGRESSION_FLAGS",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+        "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.issubset(assignment_names)
 
 
 def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> None:
-    success_suite = importlib.import_module(
-        "tests.benchmarks.test_compiled_pattern_module_success_benchmark_support"
-    )
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
 
-    assert {
-        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-        "_is_module_workflow_compiled_pattern_literal_success_workload",
-        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    }.issubset(
-        _module_imported_names(
-            success_suite,
-            "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
-        )
-    )
     assert {
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
@@ -1201,18 +1194,13 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
             "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
         )
     )
-    assert {"_compiled_pattern_module_helper_route"}.issubset(
-        _module_imported_names(
-            compiled_pattern_module_success_support,
-            "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
-        )
-    )
 
 
-def test_compiled_pattern_module_success_support_owns_owner_surface() -> None:
+def test_compiled_pattern_module_helper_support_owns_compiled_pattern_module_success_surface(
+) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(
-            compiled_pattern_module_success_support
+            compiled_pattern_module_helper_support
         )
     )
 
@@ -1230,23 +1218,23 @@ def test_compiled_pattern_module_success_support_owns_owner_surface() -> None:
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.issubset(assignment_names)
     assert (
-        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
+        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
         == "contract_builder_spec"
     )
     assert (
-        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
+        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
         == "source_workloads"
     )
     assert (
-        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.expected_build_calls.__name__
+        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.expected_build_calls.__name__
         == "expected_build_calls"
     )
     assert (
-        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_result.__name__
+        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_result.__name__
         == "expected_callback_result"
     )
     assert (
-        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
+        compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
         == "expected_callback_call"
     )
 
@@ -1279,15 +1267,6 @@ def test_compiled_pattern_module_success_support_owns_owner_surface() -> None:
                 {
                     "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
                     "_SourceTreeContractBuilderSpec",
-                }
-            ),
-        ),
-        (
-            compiled_pattern_module_success_support,
-            frozenset(
-                {
-                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
-                    "_SourceTreeContractBuilderSpec",
                     "_contract_source_workloads",
                     "assert_benchmark_workload_contract",
                     "compiled_pattern_contract_expected_build_calls",
@@ -1316,13 +1295,6 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
     assert expected_imported_names.issubset(
         _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
     )
-    if module is compiled_pattern_module_success_support:
-        assert {"_compiled_pattern_module_helper_route"}.issubset(
-            _module_imported_names(
-                module,
-                "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
-            )
-        )
 
 
 @pytest.mark.parametrize(
@@ -1374,31 +1346,6 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
             ),
         ),
         (
-            "tests.benchmarks.test_compiled_pattern_module_success_benchmark_support",
-            frozenset(
-                {
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
-            ),
-        ),
-        (
-            "tests.benchmarks.test_compiled_pattern_module_success_benchmark_support",
-            frozenset(
-                {
-                    "CompiledPatternModuleSuccessOwnerSpec",
-                    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
-                    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
-                    "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-                    "_assert_compiled_pattern_module_success_payload_round_trip",
-                    "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
-                    "include_live_compiled_pattern_module_success_workload",
-                    "live_compiled_pattern_module_success_surface_ids",
-                }
-            ),
-        ),
-        (
             "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
             frozenset(
                 {
@@ -1420,7 +1367,7 @@ def test_source_tree_contract_helper_suites_import_from_support(
         "tests.benchmarks.benchmark_test_support",
     ) | _module_imported_names(
         module,
-        "tests.benchmarks.compiled_pattern_module_success_benchmark_support",
+        "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
     )
 
     assert expected_imported_names.issubset(imported_names)
