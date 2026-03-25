@@ -10,13 +10,14 @@ Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Read the assigned task file carefully and follow its scope, constraints, and acceptance criteria.
 3. Do the work directly in this checkout.
-4. Treat removal of JSON blobs, manifest plumbing, report glue, and other non-standard architecture patterns as the first-class objective whenever the task allows it.
-5. Update the task file with a short completion or blocker note.
-6. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
-7. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.
-8. When a task claims a tracked-file deletion or a reduced JSON/blob count, verify the final state before you say it landed. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem check the task names (for example `rg --files -g '*.json'`) must reflect the claimed reduction after your last regeneration command.
-9. When a task adds or retunes a shared fixture selector, benchmark selector, or similar harness-owned registry, update the owning support-contract tests or expectation tables in the same run and verify them with the relevant pytest target.
-10. When verification uses pytest or other repo-local Python tooling, prefer `./.venv/bin/python` when it exists instead of bare `python3` so the command runs inside the repo environment.
+4. For repo-local refactor tasks, stay on the filesystem and existing repo tooling; do not browse the web or spend time on external research unless the task explicitly requires outside information.
+5. Treat removal of JSON blobs, manifest plumbing, report glue, and other non-standard architecture patterns as the first-class objective whenever the task allows it.
+6. Update the task file with a short completion or blocker note.
+7. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
+8. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.
+9. When a task claims a tracked-file deletion or a reduced JSON/blob count, verify the final state before you say it landed. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem check the task names (for example `rg --files -g '*.json'`) must reflect the claimed reduction after your last regeneration command.
+10. When a task adds or retunes a shared fixture selector, benchmark selector, or similar harness-owned registry, update the owning support-contract tests or expectation tables in the same run and verify them with the relevant pytest target.
+11. When verification uses pytest or other repo-local Python tooling, prefer `./.venv/bin/python` when it exists instead of bare `python3` so the command runs inside the repo environment.
 
 Constraints:
 - Do not add or remove product features.
