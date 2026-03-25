@@ -1,6 +1,6 @@
 ## RBR-1274: Move collection-replacement keyword-error support onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -55,3 +55,6 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` passed with `100 passed`; and
   - the negative `rg` check in `Verification` currently fails because that support surface still lives in `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`, and that failure belongs to the exact cleanup queued here.
+- Completion note:
+  - Moved the collection-replacement keyword-error manifest constants, workload builder, selector helpers, workload id tuples, and source-workload inventories into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, then updated `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` to import that owner-owned surface directly.
+  - Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py` (`100 passed`) and with the negative `rg` contract in `Verification`, which now succeeds.

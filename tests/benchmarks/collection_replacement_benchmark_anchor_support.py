@@ -3,15 +3,18 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
-import pathlib
 from typing import Any
 
 from rebar_harness import benchmarks
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _is_module_workflow_keyword_error_workload,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
     freeze_signature_value,
+)
+from tests.benchmarks.source_tree_contract_benchmark_support import (
+    _contract_source_workloads,
 )
 from tests.python.fixture_parity_support import (
     callable_match_group_signature,
@@ -28,9 +31,10 @@ _COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
 _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
     {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
 )
-_COLLECTION_REPLACEMENT_MANIFEST_PATH = pathlib.Path(
-    "collection_replacement_boundary.py"
+COLLECTION_REPLACEMENT_MANIFEST_PATH = (
+    benchmarks.BENCHMARK_WORKLOADS_ROOT / "collection_replacement_boundary.py"
 )
+MODULE_BOUNDARY_MANIFEST_PATH = benchmarks.BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
 
 def _collection_replacement_pattern_collection_workload_args(
     workload: Any,
@@ -71,7 +75,7 @@ class _CollectionReplacementLiteralReplacementRoute:
 
     def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
         return _workload_case_pair_anchor_expectations(
-            _COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
             self.workload_case_pairs,
         )
 
@@ -94,7 +98,7 @@ class _CollectionReplacementPatternCollectionRoute:
 
     def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
         return _workload_case_pair_anchor_expectations(
-            _COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
             self.workload_case_pairs,
         )
 
@@ -674,6 +678,144 @@ def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
     if _collection_replacement_positional_keyword_field(workload) is not None:
         return True
     return _collection_replacement_has_expected_unexpected_keyword_error(workload)
+
+
+def _pattern_helper_collection_replacement_keyword_error_workload(
+    *,
+    operation: str,
+    haystack: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    expected_exception: dict[str, str],
+    text_model: str,
+) -> benchmarks.Workload:
+    return benchmarks.workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-pattern-collection-replacement-keyword-contract",
+            "workload_id": f"{operation}-keyword-error-materialization-contract",
+            "bucket": operation.replace("pattern.", "pattern-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "expected_exception": expected_exception,
+            "flags": 0,
+            "count": count,
+            "maxsplit": maxsplit,
+            "kwargs": kwargs_payload,
+            "text_model": text_model,
+            "cache_mode": "warm",
+            "timing_scope": "pattern-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+_PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS = (
+    "pattern-split-duplicate-maxsplit-keyword-warm-str",
+    "pattern-split-unexpected-keyword-warm-bytes",
+    "pattern-sub-duplicate-count-keyword-warm-str",
+    "pattern-sub-unexpected-keyword-warm-str",
+    "pattern-sub-unexpected-keyword-after-positional-count-warm-str",
+    "pattern-sub-count-alias-keyword-warm-str",
+    "pattern-subn-duplicate-count-keyword-warm-bytes",
+    "pattern-subn-unexpected-keyword-warm-bytes",
+    "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes",
+    "pattern-subn-count-alias-keyword-warm-bytes",
+)
+
+
+def _is_collection_replacement_pattern_helper_keyword_error_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_collection_replacement_keyword_workload(workload)
+        and not workload.use_compiled_pattern
+        and workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}
+        and workload.expected_exception is not None
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.workload_id
+        in _PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+    )
+
+
+_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload_selectors=(
+        _is_collection_replacement_pattern_helper_keyword_error_workload,
+    ),
+    expected_source_workload_ids=(
+        _PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+    ),
+    drift_message=(
+        "pattern helper collection/replacement keyword-error surface drifted "
+        "from the live source workload surface"
+    ),
+)
+
+
+_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS = (
+    "module-search-duplicate-flags-keyword-warm-str",
+    "module-fullmatch-unexpected-keyword-purged-str",
+)
+
+_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS = (
+    "module-split-duplicate-maxsplit-keyword-purged-str",
+    "module-split-unexpected-keyword-purged-str",
+    "module-split-unexpected-keyword-purged-bytes",
+    "module-sub-duplicate-count-keyword-warm-str",
+    "module-sub-unexpected-keyword-purged-str",
+    "module-sub-unexpected-keyword-after-positional-count-purged-str",
+    "module-sub-count-alias-keyword-purged-str",
+    "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
+    "module-subn-count-alias-keyword-purged-bytes",
+)
+
+
+def _is_collection_replacement_module_helper_keyword_error_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_collection_replacement_keyword_workload(workload)
+        and not workload.use_compiled_pattern
+        and workload.operation in {"module.split", "module.sub", "module.subn"}
+        and workload.expected_exception is not None
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.workload_id
+        in _MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+    )
+
+
+_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
+    manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+    include_workload_selectors=(_is_module_workflow_keyword_error_workload,),
+    expected_source_workload_ids=_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS,
+    drift_message=(
+        "module helper keyword-error surface drifted from the live source "
+        "workload surface"
+    ),
+) + _contract_source_workloads(
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    include_workload_selectors=(
+        _is_collection_replacement_module_helper_keyword_error_workload,
+    ),
+    expected_source_workload_ids=(
+        _MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS
+    ),
+    drift_message=(
+        "module helper collection/replacement keyword-error surface drifted "
+        "from the live source workload surface"
+    ),
+)
 
 
 def _collection_replacement_wrong_text_model_haystack_index(operation: str) -> int:
