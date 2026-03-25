@@ -19,6 +19,7 @@ from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     assert_zero_gap_manifest_workloads_measured,
     _write_test_manifest,
+    manifest_workloads,
     selected_manifest_workloads,
 )
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
@@ -26,6 +27,7 @@ from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    published_cases_by_id,
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
@@ -596,6 +598,68 @@ def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_m
         expected_measured_workload_count=manifest_workload_count,
         expected_total_workload_count=manifest_workload_count,
     )
+
+
+def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit() -> None:
+    include_workload = support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR
+    workload_signatures = {
+        support._collection_replacement_literal_replacement_workload_signature(
+            workload,
+            include_workload=include_workload,
+            workload_kind="module",
+        )
+        for workload in manifest_workloads("collection_replacement_boundary.py")
+        if include_workload(workload)
+    }
+    unbenchmarked_case_ids = tuple(
+        case.case_id
+        for case in published_cases_by_id().values()
+        if (
+            signature := (
+                support._collection_replacement_literal_replacement_correctness_case_signature(
+                    case,
+                    route=support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+                        "module"
+                    ],
+                )
+            )
+        )
+        is not None
+        and signature not in workload_signatures
+    )
+
+    assert unbenchmarked_case_ids == ()
+
+
+def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_explicit() -> None:
+    include_workload = support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR
+    workload_signatures = {
+        support._collection_replacement_literal_replacement_workload_signature(
+            workload,
+            include_workload=include_workload,
+            workload_kind="direct Pattern",
+        )
+        for workload in manifest_workloads("collection_replacement_boundary.py")
+        if include_workload(workload)
+    }
+    unbenchmarked_case_ids = tuple(
+        case.case_id
+        for case in published_cases_by_id().values()
+        if (
+            signature := (
+                support._collection_replacement_literal_replacement_correctness_case_signature(
+                    case,
+                    route=support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+                        "pattern"
+                    ],
+                )
+            )
+        )
+        is not None
+        and signature not in workload_signatures
+    )
+
+    assert unbenchmarked_case_ids == ()
 
 
 def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() -> None:

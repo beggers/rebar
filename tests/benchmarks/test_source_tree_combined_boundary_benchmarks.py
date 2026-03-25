@@ -52,14 +52,14 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
     _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
     _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
-    _CollectionReplacementLiteralReplacementRoute,
     _collection_replacement_compiled_pattern_success_correctness_case_signature,
     _collection_replacement_compiled_pattern_success_workload_signature,
+    _collection_replacement_literal_replacement_correctness_case_signature,
+    _collection_replacement_literal_replacement_workload_signature,
     _collection_replacement_keyword_correctness_case_signature,
     _collection_replacement_pattern_wrong_text_model_correctness_case_signature,
     _collection_replacement_pattern_wrong_text_model_workload_signature,
     _is_collection_replacement_compiled_pattern_success_workload,
-    _is_collection_replacement_literal_replacement_workload,
     _collection_replacement_keyword_workload_signature,
     _collection_replacement_positional_indexlike_workload_signature,
     _collection_replacement_wrong_text_model_correctness_case_signature,
@@ -4526,80 +4526,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
-    def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit(
-        self,
-    ) -> None:
-        include_workload = partial(
-            _is_collection_replacement_literal_replacement_workload,
-            route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
-        )
-        workload_signatures = {
-            _collection_replacement_literal_replacement_workload_signature(
-                workload,
-                include_workload=include_workload,
-                workload_kind="module",
-            )
-            for workload in manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
-            if include_workload(workload)
-        }
-        unbenchmarked_case_ids = tuple(
-            case.case_id
-            for case in published_cases_by_id().values()
-            if (
-                signature := _collection_replacement_literal_replacement_correctness_case_signature(
-                    case,
-                    case_ids=None,
-                    expected_operation="module_call",
-                    operation_prefix="module",
-                    args_offset=1,
-                )
-            )
-            is not None
-            and signature not in workload_signatures
-        )
-
-        self.assertEqual(
-            unbenchmarked_case_ids,
-            (),
-        )
-
-    def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_explicit(
-        self,
-    ) -> None:
-        include_workload = partial(
-            _is_collection_replacement_literal_replacement_workload,
-            route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
-        )
-        workload_signatures = {
-            _collection_replacement_literal_replacement_workload_signature(
-                workload,
-                include_workload=include_workload,
-                workload_kind="direct Pattern",
-            )
-            for workload in manifest_workloads(COLLECTION_REPLACEMENT_MANIFEST_PATH)
-            if include_workload(workload)
-        }
-        unbenchmarked_case_ids = tuple(
-            case.case_id
-            for case in published_cases_by_id().values()
-            if (
-                signature := _collection_replacement_literal_replacement_correctness_case_signature(
-                    case,
-                    case_ids=None,
-                    expected_operation="pattern_call",
-                    operation_prefix="pattern",
-                    args_offset=0,
-                )
-            )
-            is not None
-            and signature not in workload_signatures
-        )
-
-        self.assertEqual(
-            unbenchmarked_case_ids,
-            (),
-        )
-
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
         self,
     ) -> None:
@@ -8598,83 +8524,6 @@ OPEN_ENDED_MANIFEST_PATH = (
 OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
     "module-search-numbered-optional-group-conditional-cold-gap"
 )
-
-
-def _collection_replacement_literal_replacement_correctness_case_signature(
-    case: Any,
-    *,
-    route: _CollectionReplacementLiteralReplacementRoute | None = None,
-    case_ids: tuple[str, ...] | None = None,
-    expected_operation: str | None = None,
-    operation_prefix: str | None = None,
-    args_offset: int | None = None,
-) -> tuple[Any, ...] | None:
-    if route is not None:
-        case_ids = route.case_ids()
-        expected_operation = route.expected_operation
-        operation_prefix = route.operation_prefix
-        args_offset = route.args_offset
-
-    if expected_operation is None or operation_prefix is None or args_offset is None:
-        raise AssertionError(
-            "literal replacement correctness signatures require either a route "
-            "or explicit operation metadata"
-        )
-    if case.manifest_id != "collection-replacement-workflows":
-        return None
-    if case_ids is not None and case.case_id not in case_ids:
-        return None
-    if case.operation != expected_operation or case.kwargs:
-        return None
-    if case.helper not in {"sub", "subn"}:
-        return None
-    if case.use_compiled_pattern:
-        return None
-    pattern = case_pattern(case)
-    if pattern not in {"abc", b"abc"}:
-        return None
-    if len(case.args) <= args_offset:
-        return None
-    if case.args[args_offset] not in {"x", b"x"}:
-        return None
-    trailing_args = case.args[args_offset:]
-    if len(trailing_args) not in {2, 3}:
-        return None
-    if len(trailing_args) == 3 and type(trailing_args[2]) is not int:
-        return None
-    return (
-        f"{operation_prefix}.{case.helper}",
-        pattern,
-        freeze_signature_value(list(trailing_args)),
-        (),
-        case.flags or 0,
-        case.text_model or "str",
-    )
-def _collection_replacement_literal_replacement_workload_signature(
-    workload: Any,
-    *,
-    include_workload: Callable[[Any], bool],
-    workload_kind: str,
-) -> tuple[Any, ...]:
-    if not include_workload(workload):
-        raise AssertionError(
-            "unexpected collection/replacement "
-            f"{workload_kind} literal replacement workload {workload.workload_id!r}"
-        )
-    args = [
-        workload.replacement_payload(),
-        workload.haystack_payload(),
-    ]
-    if workload.count:
-        args.append(workload.count_argument())
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(args),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
 def _collection_replacement_grouped_callable_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:

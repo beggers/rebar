@@ -1,6 +1,6 @@
 ## RBR-1259: Move collection-replacement literal-replacement gap ownership onto dedicated support suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -62,3 +62,10 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `128 tests collected`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit or collection_replacement_pattern_literal_replacement_benchmark_gap_stays_explicit'` passed with `2 passed, 88 deselected`.
   - `bash -lc "! rg -n 'def test_collection_replacement_(module|pattern)_literal_replacement_benchmark_gap_stays_explicit|def _collection_replacement_literal_replacement_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because the two gap tests and two helper definitions still live inline in the combined suite, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- 2026-03-25: Moved the collection-replacement literal-replacement signature helpers into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, rehomed the two literal-replacement gap assertions into `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`, and removed the duplicated inline ownership from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `40 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `128 tests collected`.
+  - `bash -lc "! rg -n 'def test_collection_replacement_(module|pattern)_literal_replacement_benchmark_gap_stays_explicit|def _collection_replacement_literal_replacement_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed.

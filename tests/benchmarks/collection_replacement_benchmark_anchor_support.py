@@ -284,6 +284,85 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
 }
 
 
+def _collection_replacement_literal_replacement_correctness_case_signature(
+    case: Any,
+    *,
+    route: _CollectionReplacementLiteralReplacementRoute | None = None,
+    case_ids: tuple[str, ...] | None = None,
+    expected_operation: str | None = None,
+    operation_prefix: str | None = None,
+    args_offset: int | None = None,
+) -> tuple[Any, ...] | None:
+    if route is not None:
+        case_ids = route.case_ids()
+        expected_operation = route.expected_operation
+        operation_prefix = route.operation_prefix
+        args_offset = route.args_offset
+
+    if expected_operation is None or operation_prefix is None or args_offset is None:
+        raise AssertionError(
+            "literal replacement correctness signatures require either a route "
+            "or explicit operation metadata"
+        )
+    if case.manifest_id != "collection-replacement-workflows":
+        return None
+    if case_ids is not None and case.case_id not in case_ids:
+        return None
+    if case.operation != expected_operation or case.kwargs:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    if case.use_compiled_pattern:
+        return None
+    pattern = case_pattern(case)
+    if pattern not in {"abc", b"abc"}:
+        return None
+    if len(case.args) <= args_offset:
+        return None
+    if case.args[args_offset] not in {"x", b"x"}:
+        return None
+    trailing_args = case.args[args_offset:]
+    if len(trailing_args) not in {2, 3}:
+        return None
+    if len(trailing_args) == 3 and type(trailing_args[2]) is not int:
+        return None
+    return (
+        f"{operation_prefix}.{case.helper}",
+        pattern,
+        freeze_signature_value(list(trailing_args)),
+        (),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _collection_replacement_literal_replacement_workload_signature(
+    workload: Any,
+    *,
+    include_workload: Callable[[Any], bool],
+    workload_kind: str,
+) -> tuple[Any, ...]:
+    if not include_workload(workload):
+        raise AssertionError(
+            "unexpected collection/replacement "
+            f"{workload_kind} literal replacement workload {workload.workload_id!r}"
+        )
+    args = [
+        workload.replacement_payload(),
+        workload.haystack_payload(),
+    ]
+    if workload.count:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        freeze_signature_value(args),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
 def _is_encoded_indexlike_payload(value: object) -> bool:
     return (
         isinstance(value, dict)
