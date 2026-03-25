@@ -1008,6 +1008,14 @@ def _conditional_group_exists_callable_none_count_workload_ids(
         f"module-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-warm-{text_model}",
         f"pattern-sub-callable-numbered-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-{text_model}",
         f"pattern-subn-callable-named-conditional-group-exists-alternation-heavy-replacement-none-count-negative-count-purged-{text_model}",
+        f"module-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-warm-{text_model}",
+        f"module-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-warm-{text_model}",
+        f"pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-purged-{text_model}",
+        f"pattern-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-purged-{text_model}",
+        f"module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-{text_model}",
+        f"module-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-warm-{text_model}",
+        f"pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-{text_model}",
+        f"pattern-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-purged-{text_model}",
     )
 
 
