@@ -7,11 +7,6 @@ import pathlib
 from typing import Any
 
 from rebar_harness import benchmarks
-from tests.benchmarks.standard_benchmark_anchor_support import (
-    _workload_case_pair_anchor_expectations,
-    _workload_case_pairs_case_ids,
-    _workload_case_pairs_workload_ids,
-)
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     freeze_signature_value,
 )
@@ -33,6 +28,28 @@ _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
 _COLLECTION_REPLACEMENT_MANIFEST_PATH = pathlib.Path(
     "collection_replacement_boundary.py"
 )
+
+
+def _workload_case_pair_anchor_expectations(
+    manifest_path: pathlib.Path,
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return {
+        (manifest_path.name, workload_id): (case_id,)
+        for workload_id, case_id in workload_case_pairs
+    }
+
+
+def _workload_case_pairs_case_ids(
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> tuple[str, ...]:
+    return tuple(case_id for _, case_id in workload_case_pairs)
+
+
+def _workload_case_pairs_workload_ids(
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> tuple[str, ...]:
+    return tuple(workload_id for workload_id, _ in workload_case_pairs)
 
 
 def _collection_replacement_pattern_collection_workload_args(

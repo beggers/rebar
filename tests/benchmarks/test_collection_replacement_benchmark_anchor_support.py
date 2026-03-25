@@ -24,6 +24,7 @@ from tests.benchmarks.benchmark_test_support import (
     selected_manifest_workloads,
 )
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
+from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
@@ -717,7 +718,7 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
     )
     definitions = [
         definition
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name == "collection-replacement-grouped-callable-replacement"
     ]
 

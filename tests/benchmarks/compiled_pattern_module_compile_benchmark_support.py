@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from functools import partial
 import pathlib
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -22,12 +22,12 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     published_case_ids_by_signature,
 )
-from tests.benchmarks.standard_benchmark_anchor_support import (
-    StandardBenchmarkAnchorContractDefinition,
-    _definition_anchor_expectations,
-    _workload_case_pair_anchor_expectations,
-)
 from tests.python.fixture_parity_support import case_pattern
+
+if TYPE_CHECKING:
+    from tests.benchmarks.standard_benchmark_anchor_support import (
+        StandardBenchmarkAnchorContractDefinition,
+    )
 
 MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
 
@@ -48,6 +48,36 @@ _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
     "type": "ValueError",
     "message_substring": "cannot process flags argument with a compiled pattern",
 }
+
+
+def _definition_anchor_expectations(
+    manifest_path: pathlib.Path,
+    anchor_expectations: dict[str, tuple[str, ...]],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return {
+        (manifest_path.name, workload_id): case_ids
+        for workload_id, case_ids in anchor_expectations.items()
+    }
+
+
+def _workload_case_pair_anchor_expectations(
+    manifest_path: pathlib.Path,
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return {
+        (manifest_path.name, workload_id): (case_id,)
+        for workload_id, case_id in workload_case_pairs
+    }
+
+
+def _standard_benchmark_anchor_contract_definition(
+    **kwargs: Any,
+) -> StandardBenchmarkAnchorContractDefinition:
+    from tests.benchmarks.standard_benchmark_anchor_support import (
+        StandardBenchmarkAnchorContractDefinition,
+    )
+
+    return StandardBenchmarkAnchorContractDefinition(**kwargs)
 
 
 def _compiled_pattern_module_compile_keyword_kwargs_signature(
@@ -632,7 +662,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
-        return StandardBenchmarkAnchorContractDefinition(
+        return _standard_benchmark_anchor_contract_definition(
             name=self.anchor_definition_name,
             manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
@@ -694,7 +724,7 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
-        return StandardBenchmarkAnchorContractDefinition(
+        return _standard_benchmark_anchor_contract_definition(
             name=self.anchor_definition_name,
             manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
