@@ -296,6 +296,15 @@ def test_compiled_pattern_module_compile_standard_definition_export_is_lazy_cach
     )
 
 
+def test_compiled_pattern_module_compile_source_avoids_local_constructor_wrapper() -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+
+    assert "def _standard_benchmark_anchor_contract_definition" not in support_source
+    assert "StandardBenchmarkAnchorContractDefinition(" in support_source
+
+
 @pytest.mark.parametrize(
     "contract_case",
     support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,

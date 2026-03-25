@@ -53,15 +53,6 @@ _COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION = {
     "message_substring": "cannot process flags argument with a compiled pattern",
 }
 
-def _standard_benchmark_anchor_contract_definition(
-    **kwargs: Any,
-) -> StandardBenchmarkAnchorContractDefinition:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
-
-    return StandardBenchmarkAnchorContractDefinition(**kwargs)
-
 
 def _compiled_pattern_module_compile_keyword_kwargs_signature(
     kwargs: dict[str, object],
@@ -645,7 +636,11 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
-        return _standard_benchmark_anchor_contract_definition(
+        from tests.benchmarks.standard_benchmark_anchor_support import (
+            StandardBenchmarkAnchorContractDefinition,
+        )
+
+        return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
             manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
@@ -707,7 +702,11 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
         return tuple(workload_id for workload_id, _ in self.anchor_expectations)
 
     def anchor_definition(self) -> StandardBenchmarkAnchorContractDefinition:
-        return _standard_benchmark_anchor_contract_definition(
+        from tests.benchmarks.standard_benchmark_anchor_support import (
+            StandardBenchmarkAnchorContractDefinition,
+        )
+
+        return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
             manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
