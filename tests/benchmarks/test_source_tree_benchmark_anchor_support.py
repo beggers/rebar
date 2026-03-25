@@ -64,6 +64,42 @@ OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
 )
 
+_MOVED_SOURCE_TREE_CLASS_NAMES = (
+    "SourceTreeBenchmarkCommonCase",
+    "SourceTreeManifestExpectation",
+    "SourceTreeDeferredExpectation",
+    "SourceTreeScorecardCase",
+    "SourceTreeCombinedCase",
+    "SourceTreeCombinedPatternGroupExpectation",
+    "SourceTreeCombinedManifestShapeExpectation",
+    "SourceTreeCombinedFullyMeasuredManifestExpectation",
+    "SourceTreeCombinedManifestExpectationDefinition",
+    "SourceTreeCombinedSliceExpectation",
+)
+
+_MOVED_SOURCE_TREE_FUNCTION_NAMES = (
+    "source_tree_scorecard_case_ids",
+    "source_tree_scorecard_case",
+    "source_tree_combined_target_manifest_ids",
+    "source_tree_combined_case",
+    "source_tree_combined_manifest_shape_expectation",
+    "source_tree_combined_slice_manifest_ids",
+    "source_tree_combined_slice_derived_manifest_ids",
+    "source_tree_combined_slice_expectations",
+    "source_tree_combined_fully_measured_manifest_ids",
+    "source_tree_combined_fully_measured_manifest_expectation",
+    "source_tree_combined_manifest_representative_measured_workload_ids",
+    "expected_summary_for_manifests",
+    "representative_measured_workload_ids",
+    "select_source_tree_combined_slice_rows",
+)
+
+_MOVED_SOURCE_TREE_CONSTANT_NAMES = (
+    "SOURCE_TREE_SCORECARD_EXPECTATIONS",
+    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+    "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+)
+
 
 def _module_pattern_case(
     *,
@@ -433,6 +469,56 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
     for helper_name in helper_names:
         assert getattr(owner_module, helper_name) is getattr(benchmark_support, helper_name)
         assert helper_name not in local_function_names
+
+
+def test_source_tree_support_module_exposes_moved_combined_case_surface() -> None:
+    owner_source = inspect.getsource(support)
+    owner_module = ast.parse(owner_source)
+    local_class_names = {
+        node.name for node in owner_module.body if isinstance(node, ast.ClassDef)
+    }
+    local_function_names = {
+        node.name
+        for node in owner_module.body
+        if isinstance(node, ast.FunctionDef)
+    }
+    local_assignment_names = {
+        target.id
+        for node in owner_module.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+
+    for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
+        assert hasattr(support, class_name)
+        assert class_name in local_class_names
+    for function_name in _MOVED_SOURCE_TREE_FUNCTION_NAMES:
+        assert hasattr(support, function_name)
+        assert function_name in local_function_names
+    for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+
+
+def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
+    combined_suite_path = (
+        REPO_ROOT / "tests" / "benchmarks" / "test_source_tree_combined_boundary_benchmarks.py"
+    )
+    combined_module = ast.parse(combined_suite_path.read_text())
+    local_class_names = {
+        node.name for node in combined_module.body if isinstance(node, ast.ClassDef)
+    }
+    local_function_names = {
+        node.name
+        for node in combined_module.body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
+        assert class_name not in local_class_names
+    for function_name in _MOVED_SOURCE_TREE_FUNCTION_NAMES:
+        assert function_name not in local_function_names
 
 
 def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> None:
