@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import cache
 import re
 from typing import Any
 
@@ -450,9 +449,7 @@ def _is_pattern_boundary_wrong_text_model_workload(workload: Any) -> bool:
     )
 
 
-@cache
-def _build_pattern_boundary_standard_benchmark_definitions() -> tuple[Any, ...]:
-    return (
+PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
         StandardBenchmarkAnchorContractDefinition(
             name="pattern-window-positional-indexlike",
             manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
@@ -654,9 +651,4 @@ def _build_pattern_boundary_standard_benchmark_definitions() -> tuple[Any, ...]:
             ),
             workload_signature=_pattern_boundary_wrong_text_model_workload_signature,
         ),
-    )
-
-
-PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
-    _build_pattern_boundary_standard_benchmark_definitions()
 )
