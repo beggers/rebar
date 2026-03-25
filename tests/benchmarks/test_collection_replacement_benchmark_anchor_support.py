@@ -785,16 +785,6 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
     assert "def _collection_replacement_grouped_callable_workload_signature(" not in combined_source
 
 
-def test_collection_replacement_standard_definitions_are_owner_owned_in_exact_order(
-) -> None:
-    definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
-
-    assert isinstance(definitions, tuple)
-    assert tuple(definition.name for definition in definitions) == (
-        _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
-    )
-
-
 def test_collection_replacement_standard_definitions_are_reused_by_standard_inventory(
 ) -> None:
     owner_definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
@@ -804,6 +794,10 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
         if definition.name in _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
     )
 
+    assert isinstance(owner_definitions, tuple)
+    assert tuple(definition.name for definition in owner_definitions) == (
+        _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
+    )
     assert tuple(definition.name for definition in standard_definitions) == (
         _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
     )
