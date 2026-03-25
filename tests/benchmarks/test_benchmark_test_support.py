@@ -1554,6 +1554,25 @@ def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportab
     )
 
 
+def test_compiled_pattern_module_compile_support_layer_is_deleted_and_unimportable(
+) -> None:
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=".".join(
+            (
+                "tests",
+                "benchmarks",
+                "compiled_pattern_module_compile_benchmark_support",
+            )
+        ),
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / "compiled_pattern_module_compile_benchmark_support.py"
+        ),
+    )
+
+
 def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportable(
 ) -> None:
     _assert_deleted_benchmark_module_stays_absent(
