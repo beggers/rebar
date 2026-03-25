@@ -1,6 +1,6 @@
 # RBR-1323: Route collection-replacement suite imports through owner modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -56,8 +56,11 @@ Created: 2026-03-25
     - one direct `ImportFrom` edge to `tests.benchmarks.benchmark_test_support` with `20` imported names
     - one direct `ImportFrom` edge to `tests.benchmarks.collection_replacement_benchmark_anchor_support` with `9` imported names
   - the same suite already imports both owner modules through `tests.benchmarks`, so the direct owner edges are now shadow access paths rather than required module entry points
-- Verification status in this planning run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'keyword_error or support_owned_without_local_duplicates'` passed with `64 passed, 82 deselected in 0.15s`
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'collection_replacement'` passed with `10 passed, 104 deselected in 0.30s`
-  - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py').read_text()); direct=[n.module for n in mod.body if isinstance(n, ast.ImportFrom) and n.module in {'tests.benchmarks.benchmark_test_support','tests.benchmarks.collection_replacement_benchmark_anchor_support'}]; pkg={(a.name,a.asname) for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks' for a in n.names}; sys.exit(0 if (not direct and ('benchmark_test_support', None) in pkg and ('collection_replacement_benchmark_anchor_support', 'support') in pkg) else 1)"` currently fails because the suite still carries direct owner imports, and that failure belongs exactly to this cleanup
-  - `bash -lc "! rg -n '^from tests\\.benchmarks\\.(benchmark_test_support|collection_replacement_benchmark_anchor_support) import ' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently fails because both direct owner import forms are still present, and that failure belongs exactly to this cleanup
+- Completion note:
+  - Removed the collection-replacement suite's direct `ImportFrom` edges to `tests.benchmarks.benchmark_test_support` and `tests.benchmarks.collection_replacement_benchmark_anchor_support`, then routed the retired owner surface through the existing `benchmark_test_support` and `support` module imports with module-qualified attribute access.
+  - Added a focused AST/import ownership check in `tests/benchmarks/test_benchmark_test_support.py` and updated the adjacent support-contract expectations that previously assumed direct owner-name imports.
+  - Verification after the cleanup:
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'keyword_error or support_owned_without_local_duplicates'` passed with `64 passed, 82 deselected in 0.15s`
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'collection_replacement'` passed with `11 passed, 104 deselected in 0.42s`
+    - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py').read_text()); direct=[n.module for n in mod.body if isinstance(n, ast.ImportFrom) and n.module in {'tests.benchmarks.benchmark_test_support','tests.benchmarks.collection_replacement_benchmark_anchor_support'}]; pkg={(a.name,a.asname) for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks' for a in n.names}; sys.exit(0 if (not direct and ('benchmark_test_support', None) in pkg and ('collection_replacement_benchmark_anchor_support', 'support') in pkg) else 1)"` passed
+    - `bash -lc "! rg -n '^from tests\\.benchmarks\\.(benchmark_test_support|collection_replacement_benchmark_anchor_support) import ' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` passed

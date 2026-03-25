@@ -17,39 +17,6 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
-from tests.benchmarks.benchmark_test_support import synthetic_workload
-from tests.benchmarks.benchmark_test_support import (
-    RecordingBenchmarkModule,
-    STANDARD_BENCHMARK_DEFINITIONS,
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
-    _collection_replacement_positional_keyword_field,
-    _is_collection_replacement_keyword_workload,
-    _is_module_workflow_keyword_error_workload,
-    _is_collection_replacement_wrong_text_model_workload,
-    _record_numeric_materialization_fields,
-    run_benchmark_workload_with_cpython,
-    compiled_pattern_contract_expected_build_calls,
-    _source_tree_contract_manifest,
-    _source_tree_contract_workload,
-    assert_zero_gap_manifest_workloads_measured,
-    _write_test_manifest,
-    assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
-    live_manifest_workloads,
-    manifest_workloads,
-    published_cases_by_id,
-    selected_manifest_workloads,
-)
-from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    COLLECTION_REPLACEMENT_MANIFEST_PATH,
-    MODULE_BOUNDARY_MANIFEST_PATH,
-    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
-    _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
-    _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
-    _assert_keyword_error_workload_probe_measured,
-    _is_collection_replacement_module_helper_keyword_error_workload,
-    _is_collection_replacement_pattern_helper_keyword_error_workload,
-    _pattern_helper_collection_replacement_keyword_error_workload,
-)
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
@@ -120,12 +87,10 @@ def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owne
 ) -> None:
     import sys
 
-    from tests.benchmarks.benchmark_test_support import (
-        top_level_module_definition_and_assignment_names,
-    )
-
     local_definition_names, local_assignment_names = (
-        top_level_module_definition_and_assignment_names(sys.modules[__name__])
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            sys.modules[__name__]
+        )
     )
 
     expected_definition_names = {
@@ -152,14 +117,14 @@ def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owne
 
 
 def test_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signature() -> None:
-    split_workload = synthetic_workload(
+    split_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-indexlike",
         operation="module.split",
         haystack="zabcabc",
         maxsplit={"type": "indexlike", "value": 2},
     )
-    sub_workload = synthetic_workload(
+    sub_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-indexlike-bytes",
         operation="pattern.sub",
@@ -195,14 +160,14 @@ def test_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signatur
 
 
 def test_positional_indexlike_workload_filter_rejects_keyword_and_non_indexlike_rows() -> None:
-    keyword_workload = synthetic_workload(
+    keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-keyword",
         operation="module.split",
         haystack="zabcabc",
         kwargs={"maxsplit": {"type": "indexlike", "value": 1}},
     )
-    plain_int_workload = synthetic_workload(
+    plain_int_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-sub-plain-int",
         operation="module.sub",
@@ -260,14 +225,14 @@ def test_positional_indexlike_correctness_case_signature_requires_collection_cal
 
 
 def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keyword_rows() -> None:
-    expected_keyword_workload = synthetic_workload(
+    expected_keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-keyword-indexlike",
         operation="module.split",
         haystack="zabcabc",
         kwargs={"maxsplit": {"type": "indexlike", "value": 1}},
     )
-    duplicate_keyword_workload = synthetic_workload(
+    duplicate_keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-duplicate-count",
         operation="pattern.sub",
@@ -280,7 +245,7 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
             "message_substring": "sub() takes at most 3 arguments (4 given)",
         },
     )
-    unexpected_keyword_workload = synthetic_workload(
+    unexpected_keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-subn-unexpected-keyword",
         operation="module.subn",
@@ -294,7 +259,9 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         },
     )
 
-    assert _is_collection_replacement_keyword_workload(expected_keyword_workload)
+    assert benchmark_test_support._is_collection_replacement_keyword_workload(
+        expected_keyword_workload
+    )
     assert support._collection_replacement_keyword_workload_signature(
         expected_keyword_workload
     ) == (
@@ -307,8 +274,15 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         "str",
     )
 
-    assert _is_collection_replacement_keyword_workload(duplicate_keyword_workload)
-    assert _collection_replacement_positional_keyword_field(duplicate_keyword_workload) == "count"
+    assert benchmark_test_support._is_collection_replacement_keyword_workload(
+        duplicate_keyword_workload
+    )
+    assert (
+        benchmark_test_support._collection_replacement_positional_keyword_field(
+            duplicate_keyword_workload
+        )
+        == "count"
+    )
     assert support._collection_replacement_keyword_workload_signature(
         duplicate_keyword_workload
     ) == (
@@ -321,7 +295,9 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         "str",
     )
 
-    assert _is_collection_replacement_keyword_workload(unexpected_keyword_workload)
+    assert benchmark_test_support._is_collection_replacement_keyword_workload(
+        unexpected_keyword_workload
+    )
     assert support._collection_replacement_has_expected_unexpected_keyword_error(
         unexpected_keyword_workload
     )
@@ -339,7 +315,7 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
 
 
 def test_keyword_workload_filter_rejects_non_collection_keyword_shapes() -> None:
-    multiple_keyword_workload = synthetic_workload(
+    multiple_keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-sub-multiple-keywords",
         operation="module.sub",
@@ -351,7 +327,7 @@ def test_keyword_workload_filter_rejects_non_collection_keyword_shapes() -> None
             "message_substring": "sub() got an unexpected keyword argument 'missing'",
         },
     )
-    search_keyword_workload = synthetic_workload(
+    search_keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-search-keyword",
         operation="module.search",
@@ -359,8 +335,12 @@ def test_keyword_workload_filter_rejects_non_collection_keyword_shapes() -> None
         kwargs={"flags": 1},
     )
 
-    assert not _is_collection_replacement_keyword_workload(multiple_keyword_workload)
-    assert not _is_collection_replacement_keyword_workload(search_keyword_workload)
+    assert not benchmark_test_support._is_collection_replacement_keyword_workload(
+        multiple_keyword_workload
+    )
+    assert not benchmark_test_support._is_collection_replacement_keyword_workload(
+        search_keyword_workload
+    )
 
 
 def test_keyword_correctness_case_signature_preserves_call_shape_and_compiled_pattern_flag() -> None:
@@ -405,13 +385,17 @@ def test_keyword_correctness_case_signature_preserves_call_shape_and_compiled_pa
 
 def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=lambda workload: (
-                _is_collection_replacement_keyword_workload(workload)
+                benchmark_test_support._is_collection_replacement_keyword_workload(
+                    workload
+                )
                 and workload.operation.startswith("pattern.")
             ),
         )
@@ -440,7 +424,7 @@ def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_s
         "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes",
         "pattern-subn-count-alias-keyword-warm-bytes",
     )
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -451,13 +435,17 @@ def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_s
 
 def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=lambda workload: (
-                _is_collection_replacement_keyword_workload(workload)
+                benchmark_test_support._is_collection_replacement_keyword_workload(
+                    workload
+                )
                 and workload.operation.startswith("module.")
             ),
         )
@@ -508,7 +496,7 @@ def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_sp
         "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
         "module-subn-count-alias-keyword-purged-bytes-compiled-pattern",
     )
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -519,10 +507,12 @@ def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_sp
 
 def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=support._is_collection_replacement_positional_indexlike_workload,
         )
@@ -536,7 +526,7 @@ def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_p
         "pattern-sub-count-indexlike-positional-purged-bytes",
         "pattern-subn-count-indexlike-positional-warm-str",
     )
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -547,13 +537,15 @@ def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_p
 
 def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
         "findall"
     ].workload_ids()
     selected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
                 "findall"
@@ -563,7 +555,7 @@ def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_meas
 
     assert len(expected_measured_workload_ids) == 3
     assert selected_measured_workload_ids == expected_measured_workload_ids
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=selected_measured_workload_ids,
@@ -574,13 +566,15 @@ def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_meas
 
 def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
         "finditer"
     ].workload_ids()
     selected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
                 "finditer"
@@ -590,7 +584,7 @@ def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_mea
 
     assert len(expected_measured_workload_ids) == 3
     assert selected_measured_workload_ids == expected_measured_workload_ids
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=selected_measured_workload_ids,
@@ -601,13 +595,15 @@ def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_mea
 
 def test_collection_replacement_manifest_keeps_pattern_split_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
         "split"
     ].workload_ids()
     selected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
                 "split"
@@ -617,7 +613,7 @@ def test_collection_replacement_manifest_keeps_pattern_split_rows_measured() -> 
 
     assert len(expected_measured_workload_ids) == 3
     assert selected_measured_workload_ids == expected_measured_workload_ids
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=selected_measured_workload_ids,
@@ -628,10 +624,12 @@ def test_collection_replacement_manifest_keeps_pattern_split_rows_measured() -> 
 
 def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     selected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
         )
@@ -641,7 +639,7 @@ def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_
         "pattern"
     ].workload_ids()
     assert len(selected_measured_workload_ids) == 20
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=selected_measured_workload_ids,
@@ -652,10 +650,12 @@ def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_
 
 def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
         )
@@ -665,7 +665,7 @@ def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_m
         "module"
     ].workload_ids()
     assert len(expected_measured_workload_ids) == 18
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -682,12 +682,14 @@ def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_e
             include_workload=include_workload,
             workload_kind="module",
         )
-        for workload in manifest_workloads("collection_replacement_boundary.py")
+        for workload in benchmark_test_support.manifest_workloads(
+            "collection_replacement_boundary.py"
+        )
         if include_workload(workload)
     }
     unbenchmarked_case_ids = tuple(
         case.case_id
-        for case in published_cases_by_id().values()
+        for case in benchmark_test_support.published_cases_by_id().values()
         if (
             signature := (
                 support._collection_replacement_literal_replacement_correctness_case_signature(
@@ -713,12 +715,14 @@ def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_
             include_workload=include_workload,
             workload_kind="direct Pattern",
         )
-        for workload in manifest_workloads("collection_replacement_boundary.py")
+        for workload in benchmark_test_support.manifest_workloads(
+            "collection_replacement_boundary.py"
+        )
         if include_workload(workload)
     }
     unbenchmarked_case_ids = tuple(
         case.case_id
-        for case in published_cases_by_id().values()
+        for case in benchmark_test_support.published_cases_by_id().values()
         if (
             signature := (
                 support._collection_replacement_literal_replacement_correctness_case_signature(
@@ -738,10 +742,12 @@ def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_
 
 def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
-    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    manifest_workload_count = len(
+        benchmark_test_support.selected_manifest_workloads(manifest_path)
+    )
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=support._is_collection_replacement_grouped_callable_workload,
         )
@@ -752,7 +758,7 @@ def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() 
         for workload_id, _ in support._COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
     )
     assert len(expected_measured_workload_ids) == 4
-    assert_zero_gap_manifest_workloads_measured(
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -770,7 +776,7 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
     )
     definitions = [
         definition
-        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        for definition in benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name == "collection-replacement-grouped-callable-replacement"
     ]
 
@@ -792,7 +798,7 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
     owner_definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
     standard_definitions = tuple(
         definition
-        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        for definition in benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name in _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
     )
 
@@ -813,7 +819,7 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
 
 
 def test_grouped_callable_correctness_case_signature_keeps_live_pair_shapes() -> None:
-    cases = published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
 
     assert {
         case_id: support._collection_replacement_grouped_callable_correctness_case_signature(
@@ -880,7 +886,9 @@ def test_grouped_callable_correctness_case_signature_keeps_live_pair_shapes() ->
 def test_grouped_callable_correctness_case_signature_rejects_non_callable_and_wrong_helper(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    case = published_cases_by_id()["module-sub-callable-grouped-str"]
+    case = benchmark_test_support.published_cases_by_id()[
+        "module-sub-callable-grouped-str"
+    ]
     observed_replacements: list[object] = []
 
     def fake_callable_match_group_signature(
@@ -940,7 +948,7 @@ def test_grouped_callable_correctness_case_signature_rejects_non_callable_and_wr
 
 
 def test_grouped_callable_workload_signature_keeps_live_pair_shapes() -> None:
-    workloads = live_manifest_workloads(
+    workloads = benchmark_test_support.live_manifest_workloads(
         "collection_replacement_boundary.py",
         tuple(
             workload_id
@@ -996,7 +1004,7 @@ def test_grouped_callable_workload_signature_keeps_live_pair_shapes() -> None:
 def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_replacements(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    workload = live_manifest_workloads(
+    workload = benchmark_test_support.live_manifest_workloads(
         "collection_replacement_boundary.py",
         ("module-sub-callable-grouped-warm-str",),
     )[0]
@@ -1033,7 +1041,7 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
         match="unexpected collection/replacement grouped callable workload",
     ):
         support._collection_replacement_grouped_callable_workload_signature(
-            synthetic_workload(
+            benchmark_test_support.synthetic_workload(
                 manifest_id="collection-replacement-boundary",
                 workload_id="not-a-paired-workload",
                 operation="module.sub",
@@ -1053,7 +1061,7 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
         match="expected callable_match_group replacement for grouped callable workload",
     ):
         support._collection_replacement_grouped_callable_workload_signature(
-            synthetic_workload(
+            benchmark_test_support.synthetic_workload(
                 manifest_id="collection-replacement-boundary",
                 workload_id="module-sub-callable-grouped-warm-str",
                 operation="module.sub",
@@ -1327,7 +1335,7 @@ def test_conditional_template_round_trip_workload_ids_keep_bytes_leading_shape()
 
 
 def test_nested_conditional_callable_correctness_case_signature_keeps_live_tuple_shapes() -> None:
-    cases = published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
 
     assert {
         case_id: support._conditional_group_exists_nested_callable_correctness_case_signature(
@@ -1534,7 +1542,7 @@ def test_nested_conditional_callable_workload_signature_keeps_live_tuple_shapes(
         "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-bytes",
         "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
     )
-    workloads = live_manifest_workloads(
+    workloads = benchmark_test_support.live_manifest_workloads(
         "conditional_group_exists_boundary.py",
         workload_ids,
     )
@@ -1714,7 +1722,7 @@ def test_nested_conditional_callable_workload_signature_rejects_non_owned_rows_a
         match="unexpected conditional nested callable workload",
     ):
         support._conditional_group_exists_nested_callable_workload_signature(
-            synthetic_workload(
+            benchmark_test_support.synthetic_workload(
                 manifest_id="conditional-group-exists-boundary",
                 workload_id="not-an-owned-nested-callable-row",
                 operation="module.sub",
@@ -1734,7 +1742,7 @@ def test_nested_conditional_callable_workload_signature_rejects_non_owned_rows_a
         match="expected callable_match_group replacement for nested conditional workload",
     ):
         support._conditional_group_exists_nested_callable_workload_signature(
-            synthetic_workload(
+            benchmark_test_support.synthetic_workload(
                 manifest_id="conditional-group-exists-boundary",
                 workload_id="module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-str",
                 operation="module.sub",
@@ -1746,7 +1754,7 @@ def test_nested_conditional_callable_workload_signature_rejects_non_owned_rows_a
 
 
 def test_quantified_conditional_callable_correctness_case_signature_keeps_tuple_shapes_and_category_bits() -> None:
-    cases = published_cases_by_id()
+    cases = benchmark_test_support.published_cases_by_id()
 
     assert {
         case_id: support._conditional_group_exists_quantified_callable_correctness_case_signature(
@@ -1968,7 +1976,7 @@ def test_quantified_conditional_callable_correctness_case_signature_keeps_tuple_
 
 
 def test_quantified_conditional_callable_workload_signature_keeps_count_and_category_bits() -> None:
-    workloads = live_manifest_workloads(
+    workloads = benchmark_test_support.live_manifest_workloads(
         "conditional_group_exists_boundary.py",
         (
             "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
@@ -2209,7 +2217,7 @@ def test_quantified_conditional_callable_workload_signature_rejects_non_owned_ro
         match="unexpected conditional quantified callable workload",
     ):
         support._conditional_group_exists_quantified_callable_workload_signature(
-            synthetic_workload(
+            benchmark_test_support.synthetic_workload(
                 manifest_id="conditional-group-exists-boundary",
                 workload_id="not-an-owned-quantified-callable-row",
                 operation="module.sub",
@@ -2229,7 +2237,7 @@ def test_quantified_conditional_callable_workload_signature_rejects_non_owned_ro
         match="expected callable_match_group replacement for quantified conditional workload",
     ):
         support._conditional_group_exists_quantified_callable_workload_signature(
-            synthetic_workload(
+            benchmark_test_support.synthetic_workload(
                 manifest_id="conditional-group-exists-boundary",
                 workload_id="module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
                 operation="module.sub",
@@ -2241,7 +2249,7 @@ def test_quantified_conditional_callable_workload_signature_rejects_non_owned_ro
 
 
 def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_signatures() -> None:
-    split_workload = synthetic_workload(
+    split_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-wrong-text-model",
         operation="module.split",
@@ -2255,7 +2263,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    subn_workload = synthetic_workload(
+    subn_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-subn-wrong-text-model",
         operation="module.subn",
@@ -2270,7 +2278,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    direct_pattern_workload = synthetic_workload(
+    direct_pattern_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-wrong-text-model",
         operation="pattern.sub",
@@ -2284,7 +2292,9 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         },
     )
 
-    assert _is_collection_replacement_wrong_text_model_workload(split_workload)
+    assert benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
+        split_workload
+    )
     assert support._collection_replacement_wrong_text_model_workload_signature(
         split_workload
     ) == (
@@ -2296,7 +2306,9 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         "str",
     )
 
-    assert _is_collection_replacement_wrong_text_model_workload(subn_workload)
+    assert benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
+        subn_workload
+    )
     assert support._collection_replacement_wrong_text_model_workload_signature(
         subn_workload
     ) == (
@@ -2308,7 +2320,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         "str",
     )
 
-    assert not _is_collection_replacement_wrong_text_model_workload(
+    assert not benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
         direct_pattern_workload
     )
 
@@ -2398,7 +2410,7 @@ def test_wrong_text_model_correctness_case_signatures_keep_haystack_positions_fo
 
 
 def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() -> None:
-    split_workload = synthetic_workload(
+    split_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="pattern-split-wrong-text-model",
         operation="pattern.split",
@@ -2411,7 +2423,7 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    sub_workload = synthetic_workload(
+    sub_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="pattern-sub-wrong-text-model",
         operation="pattern.sub",
@@ -2425,7 +2437,7 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
             "message_substring": "cannot use a string pattern on a bytes-like object",
         },
     )
-    compiled_pattern_workload = synthetic_workload(
+    compiled_pattern_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-sub-wrong-text-model",
         operation="module.sub",
@@ -2474,7 +2486,7 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
 
 
 def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_signature() -> None:
-    split_workload = synthetic_workload(
+    split_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-literal-compiled-pattern",
         operation="module.split",
@@ -2482,7 +2494,7 @@ def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_sign
         maxsplit=2,
         use_compiled_pattern=True,
     )
-    subn_workload = synthetic_workload(
+    subn_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-subn-literal-compiled-pattern-bytes",
         operation="module.subn",
@@ -2545,7 +2557,7 @@ def test_compiled_pattern_success_selector_routes_through_shared_support_without
 
 
 def test_compiled_pattern_success_workload_filter_rejects_non_matching_rows() -> None:
-    keyword_workload = synthetic_workload(
+    keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-compiled-pattern-keyword",
         operation="module.split",
@@ -2553,7 +2565,7 @@ def test_compiled_pattern_success_workload_filter_rejects_non_matching_rows() ->
         kwargs={"maxsplit": 1},
         use_compiled_pattern=True,
     )
-    wrong_pattern_workload = synthetic_workload(
+    wrong_pattern_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-findall-bounded-wildcard-compiled-pattern",
         operation="module.findall",
@@ -2632,7 +2644,7 @@ def test_collection_replacement_pattern_wrong_text_model_source_workloads_stay_e
 def test_collection_replacement_pattern_wrong_text_model_helpers_preserve_callback_and_runtime_contract(
     workload: Workload,
 ) -> None:
-    assert compiled_pattern_contract_expected_build_calls(
+    assert benchmark_test_support.compiled_pattern_contract_expected_build_calls(
         workload,
         label="direct Pattern collection/replacement wrong-text-model",
     ) == (
@@ -2673,11 +2685,11 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = support._collection_replacement_wrong_text_model_source_workloads()
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_pattern_collection_replacement_wrong_text_model_contract.py",
         f"MANIFEST = {manifest!r}\n",
@@ -2707,7 +2719,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        _assert_wrong_text_model_payload_round_trip(
+        benchmark_test_support.assert_pattern_helper_wrong_text_model_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
@@ -2719,7 +2731,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
                 workload
             )
         with pytest.raises(TypeError) as observed_error:
-            run_benchmark_workload_with_cpython(round_tripped)
+            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
 
         assert str(observed_error.value) == str(expected_error.value)
 
@@ -2743,14 +2755,14 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = _source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_wrong_text_model_payload_round_trip(
+    benchmark_test_support.assert_pattern_helper_wrong_text_model_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
@@ -2777,7 +2789,7 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
 def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_precompile_contract(
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = compiled_pattern_contract_expected_build_calls(
+    expected_build_calls = benchmark_test_support.compiled_pattern_contract_expected_build_calls(
         source_workload,
         label="direct Pattern collection/replacement wrong-text-model",
     )
@@ -2786,11 +2798,11 @@ def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_prec
             source_workload
         )
     )
-    module = RecordingBenchmarkModule()
+    module = benchmark_test_support.RecordingBenchmarkModule()
     callback = build_callable(
         module,
         "re",
-        _source_tree_contract_workload(
+        benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
@@ -2850,44 +2862,24 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
 ) -> None:
     import sys
 
-    from tests.benchmarks.benchmark_test_support import (
-        top_level_module_definition_and_assignment_names,
-    )
-
     local_definition_names, local_assignment_names = (
-        top_level_module_definition_and_assignment_names(sys.modules[__name__])
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            sys.modules[__name__]
+        )
     )
 
-    assert COLLECTION_REPLACEMENT_MANIFEST_PATH is support.COLLECTION_REPLACEMENT_MANIFEST_PATH
-    assert MODULE_BOUNDARY_MANIFEST_PATH is support.MODULE_BOUNDARY_MANIFEST_PATH
-    assert (
-        _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES
-        is support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES
-    )
-    assert (
-        _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-        is support._PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-    )
-    assert (
-        _assert_keyword_error_workload_probe_measured
-        is support._assert_keyword_error_workload_probe_measured
-    )
-    assert (
-        _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-        is support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-    )
-    assert (
-        _is_collection_replacement_module_helper_keyword_error_workload
-        is support._is_collection_replacement_module_helper_keyword_error_workload
-    )
-    assert (
-        _is_collection_replacement_pattern_helper_keyword_error_workload
-        is support._is_collection_replacement_pattern_helper_keyword_error_workload
-    )
-    assert (
-        _pattern_helper_collection_replacement_keyword_error_workload
-        is support._pattern_helper_collection_replacement_keyword_error_workload
-    )
+    for name in (
+        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
+        "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_assert_keyword_error_workload_probe_measured",
+        "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_is_collection_replacement_module_helper_keyword_error_workload",
+        "_is_collection_replacement_pattern_helper_keyword_error_workload",
+        "_pattern_helper_collection_replacement_keyword_error_workload",
+    ):
+        assert hasattr(support, name)
     assert {
         "_assert_keyword_error_workload_probe_measured",
         "_pattern_helper_collection_replacement_keyword_error_workload",
@@ -2907,7 +2899,7 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
 
 
 def test_pattern_helper_collection_replacement_keyword_error_workload_builder_shape() -> None:
-    workload = _pattern_helper_collection_replacement_keyword_error_workload(
+    workload = support._pattern_helper_collection_replacement_keyword_error_workload(
         operation="pattern.subn",
         haystack="abc",
         kwargs_payload={"count_alias": 1},
@@ -2937,26 +2929,30 @@ def test_pattern_helper_collection_replacement_keyword_error_workload_builder_sh
 def test_pattern_helper_keyword_error_selector_stays_in_scope() -> None:
     workload = next(
         workload
-        for workload in _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        for workload in support._PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         if workload.workload_id == "pattern-sub-unexpected-keyword-warm-str"
     )
 
-    assert _is_collection_replacement_pattern_helper_keyword_error_workload(workload)
+    assert support._is_collection_replacement_pattern_helper_keyword_error_workload(
+        workload
+    )
 
 
 def test_module_helper_collection_replacement_keyword_error_selector_stays_in_scope() -> None:
     workload = next(
         workload
-        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        for workload in support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         if workload.workload_id == "module-sub-count-alias-keyword-purged-str"
     )
 
-    assert _is_collection_replacement_module_helper_keyword_error_workload(workload)
+    assert support._is_collection_replacement_module_helper_keyword_error_workload(
+        workload
+    )
 
 
 def test_keyword_error_workload_probe_helper_measures_real_source_workload() -> None:
-    _assert_keyword_error_workload_probe_measured(
-        next(iter(_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS)),
+    support._assert_keyword_error_workload_probe_measured(
+        next(iter(support._PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS)),
         import_name="re",
         adapter_name="cpython.re",
     )
@@ -3054,7 +3050,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_pattern_collection_replacement_keyword_contract.py",
         manifest_source,
@@ -3068,7 +3064,9 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
     assert round_tripped_split.kwargs == {"maxsplit": 1}
     assert round_tripped_split.keyword_arguments() == {"maxsplit": 1}
-    assert run_benchmark_workload_with_cpython(round_tripped_split) == ["z", "zabc"]
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_split
+    ) == ["z", "zabc"]
 
     sub_bool_workload = workloads_by_id["pattern-sub-count-bool-keyword-contract-bytes"]
     round_tripped_sub_bool = workload_from_payload(
@@ -3076,7 +3074,9 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     )
     assert round_tripped_sub_bool.kwargs == {"count": False}
     assert round_tripped_sub_bool.keyword_arguments() == {"count": False}
-    assert run_benchmark_workload_with_cpython(round_tripped_sub_bool) == b"xx"
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_sub_bool
+    ) == b"xx"
 
     sub_missing_after_positional_count_workload = workloads_by_id[
         "pattern-sub-unexpected-keyword-after-positional-count-contract-str"
@@ -3093,7 +3093,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         TypeError,
         match=re.escape("sub() takes at most 3 arguments (4 given)"),
     ):
-        run_benchmark_workload_with_cpython(
+        benchmark_test_support.run_benchmark_workload_with_cpython(
             round_tripped_sub_missing_after_positional_count
         )
 
@@ -3101,7 +3101,9 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
     round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
     assert round_tripped_subn.kwargs == {"count": 1}
     assert round_tripped_subn.keyword_arguments() == {"count": 1}
-    assert run_benchmark_workload_with_cpython(round_tripped_subn) == ("xabc", 1)
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_subn
+    ) == ("xabc", 1)
 
     subn_count_alias_workload = workloads_by_id[
         "pattern-subn-count-alias-keyword-contract-bytes"
@@ -3115,7 +3117,9 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_de
         TypeError,
         match=re.escape("'count_alias' is an invalid keyword argument for subn()"),
     ):
-        run_benchmark_workload_with_cpython(round_tripped_subn_count_alias)
+        benchmark_test_support.run_benchmark_workload_with_cpython(
+            round_tripped_subn_count_alias
+        )
 
 
 def test_standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation(
@@ -3213,7 +3217,7 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_module_collection_replacement_keyword_contract.py",
         manifest_source,
@@ -3227,7 +3231,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
     round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
     assert round_tripped_split.kwargs == {"maxsplit": 1}
     assert round_tripped_split.keyword_arguments() == {"maxsplit": 1}
-    assert run_benchmark_workload_with_cpython(round_tripped_split) == [b"z", b"zabc"]
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_split
+    ) == [b"z", b"zabc"]
 
     sub_indexlike_workload = workloads_by_id["module-sub-count-indexlike-keyword-warm-str"]
     round_tripped_sub_indexlike = workload_from_payload(
@@ -3237,7 +3243,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         "count": {"type": "indexlike", "value": 2}
     }
     assert round_tripped_sub_indexlike.keyword_arguments()["count"].__index__() == 2
-    assert run_benchmark_workload_with_cpython(round_tripped_sub_indexlike) == "xxabc"
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_sub_indexlike
+    ) == "xxabc"
 
     subn_duplicate_workload = workloads_by_id[
         "module-subn-duplicate-count-keyword-contract-bytes"
@@ -3251,7 +3259,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         TypeError,
         match=re.escape("subn() got multiple values for argument 'count'"),
     ):
-        run_benchmark_workload_with_cpython(round_tripped_subn_duplicate)
+        benchmark_test_support.run_benchmark_workload_with_cpython(
+            round_tripped_subn_duplicate
+        )
 
     split_missing_workload = workloads_by_id["module-split-unexpected-keyword-contract-str"]
     round_tripped_split_missing = workload_from_payload(
@@ -3262,7 +3272,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         TypeError,
         match=re.escape("split() got an unexpected keyword argument 'missing'"),
     ):
-        run_benchmark_workload_with_cpython(round_tripped_split_missing)
+        benchmark_test_support.run_benchmark_workload_with_cpython(
+            round_tripped_split_missing
+        )
 
     sub_count_alias_workload = workloads_by_id[
         "module-sub-count-alias-keyword-contract-str"
@@ -3275,7 +3287,9 @@ def test_standard_benchmark_manifest_preserves_module_collection_replacement_key
         TypeError,
         match=re.escape("sub() got an unexpected keyword argument 'count_alias'"),
     ):
-        run_benchmark_workload_with_cpython(round_tripped_sub_count_alias)
+        benchmark_test_support.run_benchmark_workload_with_cpython(
+            round_tripped_sub_count_alias
+        )
 
 
 def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_until_helper_invocation(
@@ -3335,7 +3349,7 @@ def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_unt
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_indexlike_contract.py",
         manifest_source,
@@ -3348,21 +3362,27 @@ def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_unt
     split_workload = workloads_by_id["module-split-indexlike-contract-bytes"]
     round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
     assert round_tripped_split.maxsplit_argument().__index__() == 2
-    assert run_benchmark_workload_with_cpython(round_tripped_split) == [b"z", b"", b"abc"]
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_split
+    ) == [b"z", b"", b"abc"]
 
     pattern_sub_workload = workloads_by_id["pattern-sub-indexlike-contract-bytes"]
     round_tripped_pattern_sub = workload_from_payload(
         workload_to_payload(pattern_sub_workload)
     )
     assert round_tripped_pattern_sub.count_argument().__index__() == 2
-    assert run_benchmark_workload_with_cpython(round_tripped_pattern_sub) == b"xxabc"
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_pattern_sub
+    ) == b"xxabc"
 
     pattern_subn_workload = workloads_by_id["pattern-subn-indexlike-contract-str"]
     round_tripped_pattern_subn = workload_from_payload(
         workload_to_payload(pattern_subn_workload)
     )
     assert round_tripped_pattern_subn.count_argument().__index__() == 2
-    assert run_benchmark_workload_with_cpython(round_tripped_pattern_subn) == (
+    assert benchmark_test_support.run_benchmark_workload_with_cpython(
+        round_tripped_pattern_subn
+    ) == (
         "xxabc",
         2,
     )
@@ -3477,7 +3497,7 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             "smoke": False,
         }
     )
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=expected_result,
@@ -3602,7 +3622,7 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
     expected_exception: dict[str, str],
     expected_field_names: list[str],
 ) -> None:
-    workload = _pattern_helper_collection_replacement_keyword_error_workload(
+    workload = support._pattern_helper_collection_replacement_keyword_error_workload(
         operation=operation,
         haystack=haystack,
         kwargs_payload=kwargs_payload,
@@ -3612,11 +3632,15 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
         expected_exception=expected_exception,
         text_model=text_model,
     )
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(
+        monkeypatch
+    )
     callback_field_names: list[str] = []
     helper_name = workload.operation.removeprefix("pattern.")
-    positional_keyword_field = _collection_replacement_positional_keyword_field(
-        workload
+    positional_keyword_field = (
+        benchmark_test_support._collection_replacement_positional_keyword_field(
+            workload
+        )
     )
 
     re.purge()
@@ -3665,7 +3689,7 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        for workload in support._PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     ),
 )
 @pytest.mark.parametrize(
@@ -3680,7 +3704,7 @@ def test_run_internal_workload_probe_measures_pattern_helper_keyword_error_workl
     import_name: str,
     adapter_name: str,
 ) -> None:
-    _assert_keyword_error_workload_probe_measured(
+    support._assert_keyword_error_workload_probe_measured(
         source_workload,
         import_name=import_name,
         adapter_name=adapter_name,
@@ -3828,7 +3852,7 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
             "smoke": False,
         }
     )
-    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=expected_result,
@@ -3841,14 +3865,16 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        for workload in support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     ),
 )
 def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions(
     monkeypatch,
     source_workload: Workload,
 ) -> None:
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(
+        monkeypatch
+    )
 
     re.purge()
     try:
@@ -3856,15 +3882,21 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
         assert observed_field_names == []
 
         with pytest.raises(TypeError) as expected_error:
-            run_benchmark_workload_with_cpython(source_workload)
+            benchmark_test_support.run_benchmark_workload_with_cpython(
+                source_workload
+            )
         observed_field_names.clear()
         with pytest.raises(TypeError) as observed_error:
             callback()
 
         expected_field_names = [f"kwargs.{name}" for name in source_workload.kwargs]
-        if not _is_module_workflow_keyword_error_workload(source_workload):
-            positional_keyword_field = _collection_replacement_positional_keyword_field(
-                source_workload
+        if not benchmark_test_support._is_module_workflow_keyword_error_workload(
+            source_workload
+        ):
+            positional_keyword_field = (
+                benchmark_test_support._collection_replacement_positional_keyword_field(
+                    source_workload
+                )
             )
             if positional_keyword_field is not None:
                 expected_field_names.insert(0, positional_keyword_field)
@@ -4011,7 +4043,9 @@ def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper
             "smoke": False,
         }
     )
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(
+        monkeypatch
+    )
 
     re.purge()
     try:
@@ -4027,7 +4061,7 @@ def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper
 
 def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor(
 ) -> None:
-    manifest = load_manifest(COLLECTION_REPLACEMENT_MANIFEST_PATH)
+    manifest = load_manifest(support.COLLECTION_REPLACEMENT_MANIFEST_PATH)
     workload = next(
         candidate
         for candidate in manifest.workloads
@@ -4035,15 +4069,18 @@ def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_m
     )
 
     assert workload.maxsplit == 0
-    assert _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].workload_signature(
-        workload
-    ) == (
+    assert (
+        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+            "split"
+        ].workload_signature(workload)
+        == (
         "pattern.split",
         "abc",
         ("zzz",),
         (),
         0,
         "str",
+        )
     )
 
 
@@ -4051,7 +4088,7 @@ def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_m
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        for workload in support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
     ),
 )
 @pytest.mark.parametrize(
@@ -4066,7 +4103,7 @@ def test_run_internal_workload_probe_measures_module_helper_keyword_error_worklo
     import_name: str,
     adapter_name: str,
 ) -> None:
-    _assert_keyword_error_workload_probe_measured(
+    support._assert_keyword_error_workload_probe_measured(
         source_workload,
         import_name=import_name,
         adapter_name=adapter_name,

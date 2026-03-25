@@ -1694,6 +1694,73 @@ def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_sha
     assert retired_owner_names.isdisjoint(definition_names | assignment_names)
 
 
+def test_collection_replacement_anchor_suite_routes_owner_imports_through_package_modules(
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
+    )
+    module_ast = _parsed_module_ast(module)
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+
+    assert _top_level_package_import_alias_pairs(
+        module,
+        package_module="tests.benchmarks",
+        imported_names=frozenset(
+            {
+                "benchmark_test_support",
+                "collection_replacement_benchmark_anchor_support",
+            }
+        ),
+    ) == frozenset(
+        {
+            ("benchmark_test_support", None),
+            ("collection_replacement_benchmark_anchor_support", "support"),
+        }
+    )
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module
+        in {
+            "tests.benchmarks.benchmark_test_support",
+            "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        }
+        for node in module_ast.body
+    )
+    assert {
+        "synthetic_workload",
+        "RecordingBenchmarkModule",
+        "STANDARD_BENCHMARK_DEFINITIONS",
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+        "_is_module_workflow_keyword_error_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
+        "_record_numeric_materialization_fields",
+        "run_benchmark_workload_with_cpython",
+        "compiled_pattern_contract_expected_build_calls",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "assert_zero_gap_manifest_workloads_measured",
+        "_write_test_manifest",
+        "_assert_wrong_text_model_payload_round_trip",
+        "live_manifest_workloads",
+        "manifest_workloads",
+        "published_cases_by_id",
+        "selected_manifest_workloads",
+        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
+        "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_assert_keyword_error_workload_probe_measured",
+        "_is_collection_replacement_module_helper_keyword_error_workload",
+        "_is_collection_replacement_pattern_helper_keyword_error_workload",
+        "_pattern_helper_collection_replacement_keyword_error_workload",
+    }.isdisjoint(definition_names | assignment_names)
+
+
 def test_shared_collection_replacement_classifier_contract_tests_import_from_support(
 ) -> None:
     owner_suite = importlib.import_module(
@@ -1703,14 +1770,13 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
 
-    assert {
-        "_collection_replacement_positional_keyword_field",
-        "_is_collection_replacement_keyword_workload",
-    }.issubset(
-        _module_imported_names(
-            owner_suite,
-            "tests.benchmarks.benchmark_test_support",
-        )
+    assert _top_level_package_import_alias_pairs(
+        owner_suite,
+        package_module="tests.benchmarks",
+        imported_names=frozenset({"benchmark_test_support"}),
+    ) == frozenset({("benchmark_test_support", None)})
+    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
+        owner_suite
     )
     _assert_owner_module_routes_through_package_import(
         combined_suite,
@@ -2255,12 +2321,14 @@ def test_source_tree_contract_helper_suites_import_from_support(
 ) -> None:
     module = importlib.import_module(module_name)
 
-    imported_names = _module_imported_names(
+    assert _top_level_package_import_alias_pairs(
         module,
-        "tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        imported_names=frozenset({"benchmark_test_support"}),
+    ) == frozenset({("benchmark_test_support", None)})
+    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
+        module
     )
-
-    assert expected_imported_names.issubset(imported_names)
 
 
 def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportable(
