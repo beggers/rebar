@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from functools import cache
 import pathlib
 import re
@@ -13,58 +13,14 @@ from tests.benchmarks.benchmark_test_support import (
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
-    manifest_workloads,
     published_case_ids_by_signature,
     StandardBenchmarkAnchorContract,
     StandardBenchmarkAnchorContractDefinition,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     anchored_workload_case_ids,
-    expected_anchored_workload_case_pairs,
     unanchored_workload_ids,
 )
-from tests.conftest import records_by_string_id
-
-
-def _anchor_case_subset(
-    anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
-    workload_ids: Iterable[str],
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    selected_workload_ids = frozenset(workload_ids)
-    return {
-        key: case_ids
-        for key, case_ids in anchor_case_ids.items()
-        if key[1] in selected_workload_ids
-    }
-
-
-def _expected_workload_ids(
-    definition: StandardBenchmarkAnchorContract,
-    manifest_path: pathlib.Path,
-) -> tuple[str, ...]:
-    return tuple(
-        workload_id
-        for (manifest_name, workload_id), _ in definition.expected_anchor_case_ids.items()
-        if manifest_name == manifest_path.name
-    )
-
-
-def _expected_anchor_case_ids_for_manifest(
-    definition: StandardBenchmarkAnchorContract,
-    manifest_path: pathlib.Path,
-    *,
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]] | None = None,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    anchor_case_ids = (
-        definition.expected_anchor_case_ids
-        if expected_anchor_case_ids is None
-        else expected_anchor_case_ids
-    )
-    return {
-        (manifest_name, workload_id): case_ids
-        for (manifest_name, workload_id), case_ids in anchor_case_ids.items()
-        if manifest_name == manifest_path.name
-    }
 
 
 def _anchored_case_ids(
@@ -101,88 +57,6 @@ def _unanchored_case_ids(
             None if include_special_unanchored else definition.includes_workload
         ),
     )
-
-
-def _expected_callback_anchor_case_ids(
-    definition: StandardBenchmarkAnchorContract,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    if definition.callback_anchor_workload_ids:
-        return _anchor_case_subset(
-            definition.expected_anchor_case_ids,
-            definition.callback_anchor_workload_ids,
-        )
-    return definition.expected_anchor_case_ids
-
-
-def _expected_legacy_anchor_case_ids(
-    definition: StandardBenchmarkAnchorContract,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return _anchor_case_subset(
-        definition.expected_anchor_case_ids,
-        definition.expected_legacy_workload_ids,
-    )
-
-
-def _expected_anchored_pairs(
-    definition: StandardBenchmarkAnchorContract,
-    *,
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]] | None = None,
-) -> tuple[Any, ...]:
-    anchored_pairs = []
-    for manifest_path in definition.manifest_paths:
-        manifest_anchor_case_ids = _expected_anchor_case_ids_for_manifest(
-            definition,
-            manifest_path,
-            expected_anchor_case_ids=expected_anchor_case_ids,
-        )
-        if not manifest_anchor_case_ids:
-            continue
-        anchored_pairs.extend(
-            expected_anchored_workload_case_pairs(
-                manifest_path,
-                expected_anchor_case_ids=manifest_anchor_case_ids,
-                include_workload=definition.includes_workload,
-            )
-        )
-    return tuple(anchored_pairs)
-
-
-def _definition_workloads_by_id(
-    definition: StandardBenchmarkAnchorContractDefinition,
-) -> dict[str, Any]:
-    workloads_by_id: dict[str, Any] = {}
-    for manifest_path in definition.manifest_paths:
-        workloads_by_id.update(
-                records_by_string_id(
-                manifest_workloads(manifest_path),
-                id_attr="workload_id",
-            )
-        )
-    return workloads_by_id
-
-
-@cache
-def _direct_parity_case_ids_by_signature(
-    supplemental_cases: tuple[Any, ...],
-) -> dict[tuple[str, bytes, bytes], tuple[str, ...]]:
-    case_ids_by_signature: dict[tuple[str, bytes, bytes], list[str]] = {}
-
-    for case in supplemental_cases:
-        for haystack in case.search_matches + case.search_misses:
-            case_ids_by_signature.setdefault(
-                ("module.search", case.pattern, haystack),
-                [],
-            ).append(case.id)
-        for haystack in case.fullmatch_matches + case.fullmatch_misses:
-            case_ids_by_signature.setdefault(
-                ("pattern.fullmatch", case.pattern, haystack),
-                [],
-            ).append(case.id)
-
-    return {
-        signature: tuple(case_ids)
-        for signature, case_ids in case_ids_by_signature.items()
-    }
 
 
 def _manual_expected_result(workload: Any) -> object:

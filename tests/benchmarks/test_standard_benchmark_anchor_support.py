@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+from collections.abc import Iterable
 from functools import partial
 import pathlib
 from typing import Any
@@ -34,6 +35,7 @@ from tests.benchmarks import standard_benchmark_anchor_support as support
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_anchored_workload_case_result_parity,
     assert_benchmark_workload_matches_expected_result,
+    expected_anchored_workload_case_pairs,
 )
 from tests.conftest import records_by_string_id
 
@@ -60,6 +62,128 @@ def _allow_all_workloads(_: Any) -> bool:
 
 def _definition_names(definitions: tuple[Any, ...]) -> tuple[str, ...]:
     return tuple(definition.name for definition in definitions)
+
+
+def _anchor_case_subset(
+    anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
+    workload_ids: Iterable[str],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    selected_workload_ids = frozenset(workload_ids)
+    return {
+        key: case_ids
+        for key, case_ids in anchor_case_ids.items()
+        if key[1] in selected_workload_ids
+    }
+
+
+def _expected_workload_ids(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+    manifest_path: pathlib.Path,
+) -> tuple[str, ...]:
+    return tuple(
+        workload_id
+        for (manifest_name, workload_id), _ in definition.expected_anchor_case_ids.items()
+        if manifest_name == manifest_path.name
+    )
+
+
+def _expected_anchor_case_ids_for_manifest(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+    manifest_path: pathlib.Path,
+    *,
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]] | None = None,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    anchor_case_ids = (
+        definition.expected_anchor_case_ids
+        if expected_anchor_case_ids is None
+        else expected_anchor_case_ids
+    )
+    return {
+        (manifest_name, workload_id): case_ids
+        for (manifest_name, workload_id), case_ids in anchor_case_ids.items()
+        if manifest_name == manifest_path.name
+    }
+
+
+def _expected_callback_anchor_case_ids(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    if definition.callback_anchor_workload_ids:
+        return _anchor_case_subset(
+            definition.expected_anchor_case_ids,
+            definition.callback_anchor_workload_ids,
+        )
+    return definition.expected_anchor_case_ids
+
+
+def _expected_legacy_anchor_case_ids(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return _anchor_case_subset(
+        definition.expected_anchor_case_ids,
+        definition.expected_legacy_workload_ids,
+    )
+
+
+def _expected_anchored_pairs(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+    *,
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]] | None = None,
+) -> tuple[Any, ...]:
+    anchored_pairs = []
+    for manifest_path in definition.manifest_paths:
+        manifest_anchor_case_ids = _expected_anchor_case_ids_for_manifest(
+            definition,
+            manifest_path,
+            expected_anchor_case_ids=expected_anchor_case_ids,
+        )
+        if not manifest_anchor_case_ids:
+            continue
+        anchored_pairs.extend(
+            expected_anchored_workload_case_pairs(
+                manifest_path,
+                expected_anchor_case_ids=manifest_anchor_case_ids,
+                include_workload=definition.includes_workload,
+            )
+        )
+    return tuple(anchored_pairs)
+
+
+def _definition_workloads_by_id(
+    definition: support.StandardBenchmarkAnchorContractDefinition,
+) -> dict[str, Any]:
+    workloads_by_id: dict[str, Any] = {}
+    for manifest_path in definition.manifest_paths:
+        workloads_by_id.update(
+            records_by_string_id(
+                load_manifest(manifest_path).workloads,
+                id_attr="workload_id",
+            )
+        )
+    return workloads_by_id
+
+
+def _direct_parity_case_ids_by_signature(
+    supplemental_cases: tuple[Any, ...],
+) -> dict[tuple[str, bytes, bytes], tuple[str, ...]]:
+    case_ids_by_signature: dict[tuple[str, bytes, bytes], list[str]] = {}
+
+    for case in supplemental_cases:
+        for haystack in case.search_matches + case.search_misses:
+            case_ids_by_signature.setdefault(
+                ("module.search", case.pattern, haystack),
+                [],
+            ).append(case.id)
+        for haystack in case.fullmatch_matches + case.fullmatch_misses:
+            case_ids_by_signature.setdefault(
+                ("pattern.fullmatch", case.pattern, haystack),
+                [],
+            ).append(case.id)
+
+    return {
+        signature: tuple(case_ids)
+        for signature, case_ids in case_ids_by_signature.items()
+    }
 
 
 def _standard_benchmark_definitions_builder() -> ast.FunctionDef:
@@ -315,7 +439,6 @@ def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_sup
         top_level_only=True,
     ) == {
         "anchored_workload_case_ids",
-        "expected_anchored_workload_case_pairs",
         "unanchored_workload_ids",
     }
 
@@ -391,11 +514,11 @@ def test_expected_workload_ids_filter_to_manifest_name() -> None:
         include_workload=_synthetic_workload_is_included,
     )
 
-    assert support._expected_workload_ids(definition, first_manifest) == (
+    assert _expected_workload_ids(definition, first_manifest) == (
         "first-a",
         "first-b",
     )
-    assert support._expected_anchor_case_ids_for_manifest(definition, second_manifest) == {
+    assert _expected_anchor_case_ids_for_manifest(definition, second_manifest) == {
         ("second_boundary.py", "second-a"): ("case-2",),
     }
 
@@ -417,10 +540,10 @@ def test_callback_and_legacy_anchor_subsets_select_expected_workloads() -> None:
         expected_legacy_workload_ids=frozenset({"legacy"}),
     )
 
-    assert support._expected_callback_anchor_case_ids(definition) == {
+    assert _expected_callback_anchor_case_ids(definition) == {
         ("synthetic_boundary.py", "callback"): ("case-callback",),
     }
-    assert support._expected_legacy_anchor_case_ids(definition) == {
+    assert _expected_legacy_anchor_case_ids(definition) == {
         ("synthetic_boundary.py", "legacy"): ("case-legacy",),
     }
 
@@ -504,7 +627,7 @@ def test_expected_anchored_pairs_materialize_matching_workload_and_case_objects(
         partial(records_by_string_id, (case,), id_attr="case_id"),
     )
 
-    anchored_pairs = support._expected_anchored_pairs(definition)
+    anchored_pairs = _expected_anchored_pairs(definition)
 
     assert len(anchored_pairs) == 1
     anchored_pair = anchored_pairs[0]
@@ -895,7 +1018,7 @@ def test_standard_benchmark_manifest_keeps_expected_workloads_in_scope(
         workload.workload_id
         for workload in workloads
         if definition.includes_workload(workload)
-    ) == support._expected_workload_ids(definition, manifest_path)
+    ) == _expected_workload_ids(definition, manifest_path)
 
 
 @pytest.mark.parametrize(
@@ -951,8 +1074,8 @@ def test_standard_benchmark_special_unanchored_workloads_stay_explicit(
 def test_standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases(
     definition: support.StandardBenchmarkAnchorContractDefinition,
 ) -> None:
-    workloads_by_id = support._definition_workloads_by_id(definition)
-    direct_parity_case_ids = support._direct_parity_case_ids_by_signature(
+    workloads_by_id = _definition_workloads_by_id(definition)
+    direct_parity_case_ids = _direct_parity_case_ids_by_signature(
         definition.direct_parity_supplemental_cases
     )
     uncovered_workload_ids: list[str] = []
@@ -995,7 +1118,7 @@ def test_standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids(
         key: case_ids
         for key, case_ids in support._anchored_case_ids(definition).items()
         if key[1] in definition.expected_legacy_workload_ids
-    } == support._expected_legacy_anchor_case_ids(definition)
+    } == _expected_legacy_anchor_case_ids(definition)
 
 
 @pytest.mark.parametrize(
@@ -1008,11 +1131,9 @@ def test_standard_benchmark_workload_callbacks_match_anchor_case_results(
     definition: support.StandardBenchmarkAnchorContractDefinition,
 ) -> None:
     assert_anchored_workload_case_result_parity(
-        support._expected_anchored_pairs(
+        _expected_anchored_pairs(
             definition,
-            expected_anchor_case_ids=support._expected_callback_anchor_case_ids(
-                definition
-            ),
+            expected_anchor_case_ids=_expected_callback_anchor_case_ids(definition),
         )
     )
 
@@ -1025,7 +1146,7 @@ def test_standard_benchmark_special_unanchored_workloads_match_manual_cpython_di
     definition: support.StandardBenchmarkAnchorContractDefinition,
     workload_id: str,
 ) -> None:
-    workload = support._definition_workloads_by_id(definition)[workload_id]
+    workload = _definition_workloads_by_id(definition)[workload_id]
     assert_benchmark_workload_matches_expected_result(
         workload,
         support._manual_expected_result(workload),
