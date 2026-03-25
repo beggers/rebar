@@ -1,6 +1,6 @@
 ## RBR-1257: Collapse compiled-pattern module-helper keyword support onto its owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -50,3 +50,8 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` passed with `86 passed`.
   - `bash -lc "test ! -e tests/benchmarks/compiled_pattern_module_helper_keyword_benchmark_support.py"` currently fails because the single-consumer support module still exists, and that failure belongs to the exact cleanup queued here.
   - `bash -lc "! rg -n 'compiled_pattern_module_helper_keyword_benchmark_support' -g '*.py' tests/benchmarks"` currently fails because the owner suite still imports the single-consumer support module, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Inlined `_CompiledPatternModuleHelperKeywordContractSpec`, `_CompiledPatternModuleHelperKeywordContractSurface`, the compiled-pattern selector helpers, and all owned workload/surface registries directly into `tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py`.
+- Deleted `tests/benchmarks/compiled_pattern_module_helper_keyword_benchmark_support.py` after the owner suite became self-contained.
+- Verified the owner suite stays bounded to the same `86` passing tests and that no `tests/benchmarks/*.py` file still references `compiled_pattern_module_helper_keyword_benchmark_support`.
