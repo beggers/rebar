@@ -69,6 +69,18 @@ _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES = (
     "_compiled_pattern_module_helper_route",
 )
 
+_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+    "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+)
+
 _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
     "OPTIONAL_GROUP_MANIFEST_PATH",
     "NESTED_GROUP_MANIFEST_PATH",
@@ -939,6 +951,13 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             benchmark_test_support,
             constant_name,
         )
+    for constant_name in _ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+        assert getattr(support, constant_name) is getattr(
+            benchmark_test_support,
+            constant_name,
+        )
 
 
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
@@ -1239,6 +1258,10 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
         pytest.param(
             _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES,
             id="compiled-pattern-wrong-text-model",
+        ),
+        pytest.param(
+            _ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES,
+            id="compiled-pattern-module-helper-keyword",
         ),
         pytest.param(
             _ROUTED_REPORT_CONTRACT_HELPER_NAMES,

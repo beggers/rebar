@@ -4723,6 +4723,33 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
     benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS
 )
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+)
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+)
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC
+)
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS
+)
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS
+)
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+)
+_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC
+)
+_is_collection_replacement_compiled_pattern_keyword_error_workload = (
+    benchmark_test_support._is_collection_replacement_compiled_pattern_keyword_error_workload
+)
+_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call = (
+    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
+)
 _compiled_pattern_wrong_text_model_specs = (
     benchmark_test_support._compiled_pattern_wrong_text_model_specs
 )

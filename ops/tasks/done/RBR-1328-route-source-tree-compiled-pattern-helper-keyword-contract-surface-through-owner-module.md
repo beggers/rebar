@@ -1,6 +1,6 @@
 # RBR-1328: Route source-tree compiled-pattern helper-keyword contract surface through owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -72,3 +72,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or combined_suite_routes_moved_support_surfaces_through_source_tree_support'` passed with `5 passed, 51 deselected in 0.38s`
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `python3 -c "import ast,pathlib,sys; names={'_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC','_is_collection_replacement_compiled_pattern_keyword_error_workload','_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call'}; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in names}); sys.exit(0 if not direct else 1)"` currently fails because the source-tree suite still reaches that helper-keyword bundle through `benchmark_test_support`, and that failure belongs exactly to this cleanup
+
+## Completion
+- Routed the compiled-pattern helper-keyword contract bundle through `tests/benchmarks/source_tree_benchmark_anchor_support.py` and switched the combined source-tree benchmark suite to consume those nine names only through `source_tree_support`.
+- Added owner-surface coverage proving the support module re-exports the helper-keyword bundle and the combined suite no longer reaches that bundle through `benchmark_test_support`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword'` -> `66 passed, 213 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or combined_suite_routes_moved_support_surfaces_through_source_tree_support'` -> `6 passed, 51 deselected`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `python3 -c "import ast,pathlib,sys; names={'_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES','_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC','_is_collection_replacement_compiled_pattern_keyword_error_workload','_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call'}; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in names}); sys.exit(0 if not direct else 1)"`
