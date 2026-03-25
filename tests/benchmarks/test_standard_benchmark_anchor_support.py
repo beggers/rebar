@@ -512,6 +512,25 @@ def test_standard_support_source_no_longer_mentions_compile_proxy_helpers_or_inl
     assert 'name="compile-proxy"' not in support_source
 
 
+def test_standard_support_imports_only_compile_proxy_owner_tuple() -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    parsed_support_source = ast.parse(support_source)
+
+    imported_names = {
+        alias.name
+        for node in ast.walk(parsed_support_source)
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.compile_proxy_benchmark_support"
+        for alias in node.names
+    }
+
+    assert imported_names == {"COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"}
+    assert "*COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+    assert "_build_compile_proxy_standard_benchmark_definitions" not in support_source
+
+
 def test_standard_inventory_reuses_owner_owned_compile_proxy_definition() -> None:
     owner_definitions = compile_proxy_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS
 
