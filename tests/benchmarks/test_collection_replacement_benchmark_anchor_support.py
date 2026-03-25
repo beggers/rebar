@@ -710,6 +710,7 @@ def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() 
 
 def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
     import importlib
+    import inspect
 
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
@@ -728,6 +729,9 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
     assert definition.workload_signature is (
         support._collection_replacement_grouped_callable_workload_signature
     )
+    combined_source = inspect.getsource(combined_suite)
+    assert "def _collection_replacement_grouped_callable_correctness_case_signature(" not in combined_source
+    assert "def _collection_replacement_grouped_callable_workload_signature(" not in combined_source
 
 
 def test_grouped_callable_correctness_case_signature_keeps_live_pair_shapes() -> None:
@@ -977,6 +981,1007 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
                 operation="module.sub",
                 pattern="(abc)",
                 haystack="abcabc",
+                replacement="x",
+            )
+        )
+
+
+def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
+    import importlib
+    import inspect
+
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    combined_source = inspect.getsource(combined_suite)
+
+    assert (
+        combined_suite._conditional_group_exists_nested_callable_correctness_case_signature
+        is support._conditional_group_exists_nested_callable_correctness_case_signature
+    )
+    assert (
+        combined_suite._conditional_group_exists_nested_callable_workload_signature
+        is support._conditional_group_exists_nested_callable_workload_signature
+    )
+    assert (
+        combined_suite._conditional_group_exists_quantified_callable_correctness_case_signature
+        is support._conditional_group_exists_quantified_callable_correctness_case_signature
+    )
+    assert (
+        combined_suite._conditional_group_exists_quantified_callable_workload_signature
+        is support._conditional_group_exists_quantified_callable_workload_signature
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+    )
+    assert (
+        combined_suite.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+        is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    assert (
+        "def _conditional_group_exists_nested_callable_correctness_case_signature("
+        not in combined_source
+    )
+    assert (
+        "def _conditional_group_exists_nested_callable_workload_signature("
+        not in combined_source
+    )
+    assert (
+        "def _conditional_group_exists_quantified_callable_correctness_case_signature("
+        not in combined_source
+    )
+    assert (
+        "def _conditional_group_exists_quantified_callable_workload_signature("
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS ="
+        not in combined_source
+    )
+    assert (
+        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS ="
+        not in combined_source
+    )
+
+
+def test_nested_conditional_callable_correctness_case_signature_keeps_live_tuple_shapes() -> None:
+    cases = published_cases_by_id()
+
+    assert {
+        case_id: support._conditional_group_exists_nested_callable_correctness_case_signature(
+            cases[case_id]
+        )
+        for case_id in (
+            "module-sub-callable-conditional-group-exists-nested-present-str",
+            "module-subn-callable-conditional-group-exists-nested-absent-str",
+            "pattern-sub-callable-conditional-group-exists-nested-present-str",
+            "pattern-subn-callable-conditional-group-exists-nested-absent-str",
+            "module-sub-callable-conditional-group-exists-nested-present-bytes",
+            "module-subn-callable-conditional-group-exists-nested-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-nested-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-nested-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-nested-present-str",
+            "module-subn-callable-named-conditional-group-exists-nested-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-nested-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
+            "module-sub-callable-named-conditional-group-exists-nested-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-nested-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-nested-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
+        )
+    } == {
+        "module-sub-callable-conditional-group-exists-nested-present-str": (
+            "module.sub",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-conditional-group-exists-nested-absent-str": (
+            "module.subn",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-conditional-group-exists-nested-present-str": (
+            "pattern.sub",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-conditional-group-exists-nested-absent-str": (
+            "pattern.subn",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-conditional-group-exists-nested-present-bytes": (
+            "module.sub",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-conditional-group-exists-nested-absent-bytes": (
+            "module.subn",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-conditional-group-exists-nested-present-bytes": (
+            "pattern.sub",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-conditional-group-exists-nested-absent-bytes": (
+            "pattern.subn",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-sub-callable-named-conditional-group-exists-nested-present-str": (
+            "module.sub",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-named-conditional-group-exists-nested-absent-str": (
+            "module.subn",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-named-conditional-group-exists-nested-present-str": (
+            "pattern.sub",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-named-conditional-group-exists-nested-absent-str": (
+            "pattern.subn",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-named-conditional-group-exists-nested-present-bytes": (
+            "module.sub",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-named-conditional-group-exists-nested-absent-bytes": (
+            "module.subn",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-named-conditional-group-exists-nested-present-bytes": (
+            "pattern.sub",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes": (
+            "pattern.subn",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+    }
+
+
+def test_nested_conditional_callable_workload_signature_keeps_live_tuple_shapes() -> None:
+    workload_ids = (
+        "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-str",
+        "module-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-warm-str",
+        "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-purged-str",
+        "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+        "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-bytes",
+        "module-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-warm-bytes",
+        "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-purged-bytes",
+        "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+        "module-sub-callable-named-nested-conditional-group-exists-replacement-warm-str",
+        "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-str",
+        "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str",
+        "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+        "module-sub-callable-named-nested-conditional-group-exists-replacement-warm-bytes",
+        "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-bytes",
+        "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-bytes",
+        "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    )
+    workloads = live_manifest_workloads(
+        "conditional_group_exists_boundary.py",
+        workload_ids,
+    )
+
+    assert {
+        workload.workload_id: support._conditional_group_exists_nested_callable_workload_signature(
+            workload
+        )
+        for workload in workloads
+    } == {
+        "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-str": (
+            "module.sub",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-warm-str": (
+            "module.subn",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-purged-str": (
+            "pattern.sub",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-purged-str": (
+            "pattern.subn",
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-bytes": (
+            "module.sub",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-warm-bytes": (
+            "module.subn",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-purged-bytes": (
+            "pattern.sub",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-purged-bytes": (
+            "pattern.subn",
+            b"a(b)?c(?(1)(?(1)d|e)|f)",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-sub-callable-named-nested-conditional-group-exists-replacement-warm-str": (
+            "module.sub",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-str": (
+            "module.subn",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str": (
+            "pattern.sub",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcdzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str": (
+            "pattern.subn",
+            "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", "", "x"),
+            ("zzacfzz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-named-nested-conditional-group-exists-replacement-warm-bytes": (
+            "module.sub",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-bytes": (
+            "module.subn",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-bytes": (
+            "pattern.sub",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcdzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes": (
+            "pattern.subn",
+            b"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzacfzz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+    }
+
+
+def test_nested_conditional_callable_workload_signature_rejects_non_owned_rows_and_non_callable_replacements() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="unexpected conditional nested callable workload",
+    ):
+        support._conditional_group_exists_nested_callable_workload_signature(
+            synthetic_workload(
+                manifest_id="conditional-group-exists-boundary",
+                workload_id="not-an-owned-nested-callable-row",
+                operation="module.sub",
+                pattern="a(b)?c(?(1)(?(1)d|e)|f)",
+                haystack="zzabcdzz",
+                replacement={
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "prefix": "<",
+                    "suffix": ">",
+                },
+            )
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match="expected callable_match_group replacement for nested conditional workload",
+    ):
+        support._conditional_group_exists_nested_callable_workload_signature(
+            synthetic_workload(
+                manifest_id="conditional-group-exists-boundary",
+                workload_id="module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-str",
+                operation="module.sub",
+                pattern="a(b)?c(?(1)(?(1)d|e)|f)",
+                haystack="zzabcdzz",
+                replacement="x",
+            )
+        )
+
+
+def test_quantified_conditional_callable_correctness_case_signature_keeps_tuple_shapes_and_category_bits() -> None:
+    cases = published_cases_by_id()
+
+    assert {
+        case_id: support._conditional_group_exists_quantified_callable_correctness_case_signature(
+            cases[case_id]
+        )
+        for case_id in (
+            "module-sub-callable-conditional-group-exists-quantified-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-present-str",
+            "pattern-subn-callable-conditional-group-exists-quantified-absent-str",
+            "module-sub-callable-conditional-group-exists-quantified-none-count-present-str",
+            "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+            "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str",
+            "module-sub-callable-conditional-group-exists-quantified-present-bytes",
+            "module-subn-callable-conditional-group-exists-quantified-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-present-bytes",
+            "pattern-subn-callable-conditional-group-exists-quantified-absent-bytes",
+            "module-sub-callable-named-conditional-group-exists-quantified-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
+            "module-sub-callable-named-conditional-group-exists-quantified-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-present-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-quantified-absent-bytes",
+        )
+    } == {
+        "module-sub-callable-conditional-group-exists-quantified-present-str": (
+            "module.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-conditional-group-exists-quantified-absent-str": (
+            "module.subn",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-conditional-group-exists-quantified-present-str": (
+            "pattern.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-conditional-group-exists-quantified-absent-str": (
+            "pattern.subn",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-conditional-group-exists-quantified-none-count-present-str": (
+            "module.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz",),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str": (
+            "module.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcdezz",),
+            False,
+            True,
+            0,
+            "str",
+        ),
+        "module-sub-callable-conditional-group-exists-quantified-negative-count-present-str": (
+            "module.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz", -1),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-conditional-group-exists-quantified-present-bytes": (
+            "module.sub",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-conditional-group-exists-quantified-absent-bytes": (
+            "module.subn",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-conditional-group-exists-quantified-present-bytes": (
+            "pattern.sub",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-conditional-group-exists-quantified-absent-bytes": (
+            "pattern.subn",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-sub-callable-named-conditional-group-exists-quantified-present-str": (
+            "module.sub",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-named-conditional-group-exists-quantified-absent-str": (
+            "module.subn",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-named-conditional-group-exists-quantified-present-str": (
+            "pattern.sub",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str": (
+            "pattern.subn",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-named-conditional-group-exists-quantified-present-bytes": (
+            "module.sub",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-named-conditional-group-exists-quantified-absent-bytes": (
+            "module.subn",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-named-conditional-group-exists-quantified-present-bytes": (
+            "pattern.sub",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-named-conditional-group-exists-quantified-absent-bytes": (
+            "pattern.subn",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+    }
+
+
+def test_quantified_conditional_callable_workload_signature_keeps_count_and_category_bits() -> None:
+    workloads = live_manifest_workloads(
+        "conditional_group_exists_boundary.py",
+        (
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
+            "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-str",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-str",
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-warm-str",
+            "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-purged-str",
+            "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+            "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+            "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-str",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str",
+            "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str",
+            "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes",
+            "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes",
+        ),
+    )
+
+    assert {
+        workload.workload_id: support._conditional_group_exists_quantified_callable_workload_signature(
+            workload
+        )
+        for workload in workloads
+    } == {
+        "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str": (
+            "module.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-str": (
+            "module.subn",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-str": (
+            "pattern.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-str": (
+            "pattern.subn",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm-str": (
+            "module.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz",),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged-str": (
+            "pattern.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcddzz",),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-warm-str": (
+            "module.sub",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzabcdezz", -1),
+            False,
+            True,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-purged-str": (
+            "pattern.subn",
+            "a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, "", "x"),
+            ("zzacedzz", -1),
+            False,
+            True,
+            0,
+            "str",
+        ),
+        "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-bytes": (
+            "module.sub",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes": (
+            "module.subn",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged-bytes": (
+            "pattern.sub",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes": (
+            "pattern.subn",
+            b"a(b)?c(?(1)d|e){2}",
+            ("callable_match_group", 1, b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-str": (
+            "module.sub",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-str": (
+            "module.subn",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-str": (
+            "pattern.sub",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzabcddzz",),
+            False,
+            False,
+            0,
+            "str",
+        ),
+        "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-str": (
+            "pattern.subn",
+            "a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", "", "x"),
+            ("zzaceezz", 1),
+            True,
+            False,
+            0,
+            "str",
+        ),
+        "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm-bytes": (
+            "module.sub",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm-bytes": (
+            "module.subn",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged-bytes": (
+            "pattern.sub",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzabcddzz",),
+            False,
+            False,
+            0,
+            "bytes",
+        ),
+        "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged-bytes": (
+            "pattern.subn",
+            b"a(?P<word>b)?c(?(word)d|e){2}",
+            ("callable_match_group", "word", b"", b"x"),
+            (b"zzaceezz", 1),
+            True,
+            False,
+            0,
+            "bytes",
+        ),
+    }
+
+
+def test_quantified_conditional_callable_workload_signature_rejects_non_owned_rows_and_non_callable_replacements() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="unexpected conditional quantified callable workload",
+    ):
+        support._conditional_group_exists_quantified_callable_workload_signature(
+            synthetic_workload(
+                manifest_id="conditional-group-exists-boundary",
+                workload_id="not-an-owned-quantified-callable-row",
+                operation="module.sub",
+                pattern="a(b)?c(?(1)d|e){2}",
+                haystack="zzabcddzz",
+                replacement={
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "prefix": "<",
+                    "suffix": ">",
+                },
+            )
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match="expected callable_match_group replacement for quantified conditional workload",
+    ):
+        support._conditional_group_exists_quantified_callable_workload_signature(
+            synthetic_workload(
+                manifest_id="conditional-group-exists-boundary",
+                workload_id="module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm-str",
+                operation="module.sub",
+                pattern="a(b)?c(?(1)d|e){2}",
+                haystack="zzabcddzz",
                 replacement="x",
             )
         )

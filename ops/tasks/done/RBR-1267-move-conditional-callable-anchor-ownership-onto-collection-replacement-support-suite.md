@@ -1,6 +1,6 @@
 ## RBR-1267: Move conditional callable anchor ownership onto collection-replacement support suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -68,3 +68,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `133 tests collected`.
   - `bash -lc "! rg -n 'def _conditional_group_exists_(quantified|nested)_callable_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those four helpers still live inline in the combined suite, and that failure belongs to the exact cleanup queued here.
   - `bash -lc "! rg -n '^(CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_(STR|BYTES|NEGATIVE_COUNT_BYTES)_WORKLOAD_IDS|_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS|CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_(STR|BYTES)_WORKLOAD_IDS)\\s*=' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because the conditional callable workload-id inventories still live inline in the combined suite, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the nested and quantified conditional callable workload-id inventories plus their correctness/workload signature helpers into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, and updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import them instead of owning local copies.
+- Added focused owner-suite coverage in `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` for the moved nested/quantified callable signature shapes, exception/no-match bits, workload-id rejection paths, and the no-local-definition/imported-from-support contract in the combined broker.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `52 passed`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> `140 tests collected`
+  - `bash -lc "! rg -n 'def _conditional_group_exists_(quantified|nested)_callable_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed
+  - `bash -lc "! rg -n '^(CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_(STR|BYTES|NEGATIVE_COUNT_BYTES)_WORKLOAD_IDS|_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS|CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_(STR|BYTES)_WORKLOAD_IDS)\\s*=' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed

@@ -1015,3 +1015,268 @@ def _collection_replacement_grouped_callable_workload_signature(
         workload.flags,
         workload.text_model,
     )
+
+
+def _workload_ids_for_text_model(
+    workload_stems: tuple[str, ...],
+    *,
+    text_model: str,
+) -> tuple[str, ...]:
+    suffix = "-bytes" if text_model == "bytes" else "-str"
+    return tuple(f"{stem}{suffix}" for stem in workload_stems)
+
+
+CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-str",
+    "module-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-warm-str",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-purged-str",
+    "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+    "module-sub-callable-named-nested-conditional-group-exists-replacement-warm-str",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-str",
+    "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-str",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-str",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+    "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-str",
+    "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-str",
+    "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-str",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-str",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-str",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-str",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-purged-str",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+)
+CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-bytes",
+    "module-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-warm-bytes",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-purged-bytes",
+    "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    "module-sub-callable-named-nested-conditional-group-exists-replacement-warm-bytes",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-warm-bytes",
+    "pattern-sub-callable-named-nested-conditional-group-exists-replacement-purged-bytes",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-absent-exception-purged-bytes",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "module-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+    "pattern-subn-callable-numbered-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+    "module-sub-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-no-match-warm-bytes",
+    "pattern-sub-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-no-match-purged-bytes",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-bytes",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-purged-bytes",
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+)
+CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
+    "module-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-warm-bytes",
+    "pattern-sub-callable-numbered-nested-conditional-group-exists-replacement-negative-count-purged-bytes",
+    "pattern-subn-callable-named-nested-conditional-group-exists-replacement-negative-count-purged-bytes",
+)
+_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS = (
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-warm",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-warm",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-purged",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-absent-exception-purged",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-warm",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-warm",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-purged",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-absent-exception-purged",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-warm",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-warm",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-none-count-purged",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-none-count-absent-exception-purged",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-warm",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-purged",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-purged",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-negative-count-warm",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-negative-count-warm",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-negative-count-purged",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-negative-count-purged",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-warm",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-warm",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-purged",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-negative-count-no-match-purged",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-negative-count-no-match-warm",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-negative-count-no-match-warm",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-negative-count-no-match-purged",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-negative-count-no-match-purged",
+    "module-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm",
+    "module-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-warm",
+    "pattern-sub-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged",
+    "pattern-subn-callable-numbered-quantified-conditional-group-exists-replacement-no-match-purged",
+    "module-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-warm",
+    "module-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-warm",
+    "pattern-sub-callable-named-quantified-conditional-group-exists-replacement-no-match-purged",
+    "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged",
+)
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS = _workload_ids_for_text_model(
+    _CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS,
+    text_model="str",
+)
+CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = _workload_ids_for_text_model(
+    _CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS,
+    text_model="bytes",
+)
+
+
+def _conditional_group_exists_quantified_callable_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.manifest_id != "conditional-group-exists-callable-replacement-workflows":
+        return None
+    if "quantified" not in case.categories:
+        return None
+    if any(category in case.categories for category in ("alternation", "nested")):
+        return None
+    if case.operation not in {"module_call", "pattern_call"}:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    if case.kwargs or case.use_compiled_pattern:
+        return None
+    replacement_signature = callable_match_group_signature(
+        case_replacement_argument(case)
+    )
+    if replacement_signature is None:
+        return None
+    count_index = 3 if case.operation == "module_call" else 2
+    args = [case_text_argument(case)]
+    if len(case.args) > count_index:
+        count = case.args[count_index]
+        if count is None:
+            pass
+        elif type(count) is int:
+            args.append(count)
+        else:
+            return None
+    operation_prefix = "module" if case.operation == "module_call" else "pattern"
+    return (
+        f"{operation_prefix}.{case.helper}",
+        case_pattern(case),
+        replacement_signature,
+        freeze_signature_value(args),
+        "exception" in case.categories,
+        "no-match" in case.categories,
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _conditional_group_exists_nested_callable_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.manifest_id != "conditional-group-exists-callable-replacement-workflows":
+        return None
+    if "nested" not in case.categories:
+        return None
+    if any(category in case.categories for category in ("quantified", "alternation")):
+        return None
+    if case.operation not in {"module_call", "pattern_call"}:
+        return None
+    if case.helper not in {"sub", "subn"}:
+        return None
+    if case.kwargs or case.use_compiled_pattern:
+        return None
+    replacement_signature = callable_match_group_signature(
+        case_replacement_argument(case)
+    )
+    if replacement_signature is None:
+        return None
+    count_index = 3 if case.operation == "module_call" else 2
+    args = [case_text_argument(case)]
+    if len(case.args) > count_index:
+        args.append(case.args[count_index])
+    operation_prefix = "module" if case.operation == "module_call" else "pattern"
+    return (
+        f"{operation_prefix}.{case.helper}",
+        case_pattern(case),
+        replacement_signature,
+        freeze_signature_value(args),
+        "exception" in case.categories,
+        "no-match" in case.categories,
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _conditional_group_exists_nested_callable_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    expected_workload_ids = (
+        CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+        + CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    if workload.workload_id not in expected_workload_ids:
+        raise AssertionError(
+            "unexpected conditional nested callable workload "
+            f"{workload.workload_id!r}"
+        )
+    replacement_signature = callable_match_group_signature(
+        workload.replacement_payload()
+    )
+    if replacement_signature is None:
+        raise AssertionError(
+            "expected callable_match_group replacement for nested "
+            f"conditional workload {workload.workload_id!r}"
+        )
+    args: list[object] = [workload.haystack_payload()]
+    if workload.count != 0:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        replacement_signature,
+        freeze_signature_value(args),
+        workload.expected_exception is not None,
+        "no-match" in workload.categories,
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _conditional_group_exists_quantified_callable_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    expected_workload_ids = (
+        CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        + CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    if workload.workload_id not in expected_workload_ids:
+        raise AssertionError(
+            "unexpected conditional quantified callable workload "
+            f"{workload.workload_id!r}"
+        )
+    replacement_signature = callable_match_group_signature(
+        workload.replacement_payload()
+    )
+    if replacement_signature is None:
+        raise AssertionError(
+            "expected callable_match_group replacement for quantified "
+            f"conditional workload {workload.workload_id!r}"
+        )
+    args = [workload.haystack_payload()]
+    if workload.count:
+        args.append(workload.count_argument())
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        replacement_signature,
+        freeze_signature_value(args),
+        workload.expected_exception is not None,
+        "no-match" in workload.categories,
+        workload.flags,
+        workload.text_model,
+    )
