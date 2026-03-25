@@ -1,6 +1,6 @@
 ## RBR-1253: Move pattern-boundary measured-row assertion onto dedicated owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-24
 
@@ -53,3 +53,13 @@ Created: 2026-03-24
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `23 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `123 tests collected`.
   - `bash -lc "! rg -n 'test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because that inline assertion still exists, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the pattern-boundary measured-row assertion into `tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`.
+- The dedicated suite now derives the same wrong-text-model, bounded-wildcard, verbose-regression, keyword-window, and positional-window slices from the existing owner selectors and preserves the exact workload-id tuples and concatenated measured-row ordering for the 49-row manifest.
+- Removed the inline assertion and now-unused pattern-boundary manifest constants import from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+
+## Verification
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `24 passed`.
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `123 tests collected`.
+- `bash -lc "! rg -n 'test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed.

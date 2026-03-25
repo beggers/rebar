@@ -18,6 +18,7 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
+    assert_zero_gap_manifest_workloads_measured,
     selected_manifest_workloads,
 )
 from tests.benchmarks import pattern_boundary_benchmark_anchor_support as support
@@ -456,6 +457,111 @@ def test_pattern_boundary_wrong_text_model_source_workloads_stay_exact_and_in_or
 
     assert tuple(workload.workload_id for workload in workloads) == (
         _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+    )
+
+
+def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured() -> None:
+    all_workloads = selected_manifest_workloads("pattern_boundary.py")
+    wrong_text_model_workload_ids = tuple(
+        workload.workload_id
+        for workload in _pattern_boundary_wrong_text_model_source_workloads()
+    )
+    bounded_wildcard_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            "pattern_boundary.py",
+            include_workload=support._is_pattern_bounded_wildcard_workload,
+        )
+    )
+    verbose_regression_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            "pattern_boundary.py",
+            include_workload=support._is_pattern_verbose_regression_workload,
+        )
+    )
+    fullmatch_verbose_regression_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            "pattern_boundary.py",
+            include_workload=lambda workload: (
+                support._is_pattern_verbose_regression_workload(workload)
+                and workload.operation == "pattern.fullmatch"
+            ),
+        )
+    )
+    keyword_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            "pattern_boundary.py",
+            include_workload=support._is_pattern_keyword_window_workload,
+        )
+    )
+    positional_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            "pattern_boundary.py",
+            include_workload=support._is_pattern_window_positional_indexlike_workload,
+        )
+    )
+
+    assert len(all_workloads) == 49
+    assert wrong_text_model_workload_ids == (
+        "pattern-search-on-bytes-string-warm-str",
+        "pattern-match-on-str-string-purged-bytes",
+        "pattern-fullmatch-on-bytes-string-warm-str",
+    )
+    assert (
+        bounded_wildcard_workload_ids
+        == support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS
+    )
+    assert (
+        verbose_regression_workload_ids
+        == support._PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS
+    )
+    assert (
+        fullmatch_verbose_regression_workload_ids
+        == support._PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS
+    )
+    assert keyword_workload_ids == (
+        "pattern-search-pos-keyword-warm-str",
+        "pattern-search-bool-endpos-keyword-warm-str",
+        "pattern-search-endpos-keyword-purged-bytes",
+        "pattern-search-pos-indexlike-keyword-warm-str",
+        "pattern-search-endpos-indexlike-keyword-purged-bytes",
+        "pattern-match-pos-keyword-purged-str",
+        "pattern-match-bool-pos-keyword-purged-str",
+        "pattern-match-window-indexlike-purged-bytes",
+        "pattern-fullmatch-window-keyword-purged-bytes",
+        "pattern-fullmatch-window-indexlike-keyword-purged-bytes",
+        "pattern-findall-window-keyword-warm-str",
+        "pattern-findall-window-indexlike-keyword-warm-str",
+        "pattern-findall-bool-window-keyword-warm-str",
+        "pattern-finditer-window-keyword-purged-bytes",
+        "pattern-finditer-window-indexlike-purged-bytes",
+        "pattern-finditer-bool-window-keyword-purged-bytes",
+    )
+    assert positional_workload_ids == (
+        "pattern-search-pos-indexlike-positional-warm-str",
+        "pattern-search-endpos-indexlike-positional-purged-bytes",
+        "pattern-match-window-indexlike-positional-purged-bytes",
+        "pattern-fullmatch-window-indexlike-positional-purged-bytes",
+        "pattern-findall-window-indexlike-positional-warm-str",
+        "pattern-finditer-window-indexlike-positional-purged-bytes",
+    )
+
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path="pattern_boundary.py",
+        manifest_id="pattern-boundary",
+        expected_measured_workload_ids=(
+            wrong_text_model_workload_ids
+            + bounded_wildcard_workload_ids
+            + verbose_regression_workload_ids
+            + keyword_workload_ids
+            + positional_workload_ids
+        ),
+        expected_measured_workload_count=49,
+        expected_total_workload_count=49,
     )
 
 

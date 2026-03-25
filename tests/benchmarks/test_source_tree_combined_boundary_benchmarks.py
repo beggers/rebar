@@ -79,9 +79,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _module_workflow_keyword_workload_signature,
 )
 from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
-    _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS,
-    _PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
-    _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS,
     _is_pattern_bounded_wildcard_workload,
     _is_pattern_boundary_wrong_text_model_workload,
     _is_pattern_verbose_regression_workload,
@@ -4981,102 +4978,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             unbenchmarked_case_ids,
             (),
-        )
-
-    def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("pattern-boundary")
-        self.assertEqual(len(case.target_manifest.workloads), 49)
-        wrong_text_model_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_pattern_boundary_wrong_text_model_workload,
-        )
-        bounded_wildcard_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_pattern_bounded_wildcard_workload,
-        )
-        verbose_regression_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_pattern_verbose_regression_workload,
-        )
-        fullmatch_verbose_regression_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            lambda workload: (
-                _is_pattern_verbose_regression_workload(workload)
-                and workload.operation == "pattern.fullmatch"
-            ),
-        )
-        keyword_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_pattern_keyword_window_workload,
-        )
-        positional_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_pattern_window_positional_indexlike_workload,
-        )
-        self.assertEqual(
-            wrong_text_model_workload_ids,
-            (
-                "pattern-search-on-bytes-string-warm-str",
-                "pattern-match-on-str-string-purged-bytes",
-                "pattern-fullmatch-on-bytes-string-warm-str",
-            ),
-        )
-        self.assertEqual(
-            bounded_wildcard_workload_ids,
-            _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS,
-        )
-        self.assertEqual(
-            verbose_regression_workload_ids,
-            _PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS,
-        )
-        self.assertEqual(
-            fullmatch_verbose_regression_workload_ids,
-            _PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS,
-        )
-        self.assertEqual(
-            keyword_workload_ids,
-            (
-                "pattern-search-pos-keyword-warm-str",
-                "pattern-search-bool-endpos-keyword-warm-str",
-                "pattern-search-endpos-keyword-purged-bytes",
-                "pattern-search-pos-indexlike-keyword-warm-str",
-                "pattern-search-endpos-indexlike-keyword-purged-bytes",
-                "pattern-match-pos-keyword-purged-str",
-                "pattern-match-bool-pos-keyword-purged-str",
-                "pattern-match-window-indexlike-purged-bytes",
-                "pattern-fullmatch-window-keyword-purged-bytes",
-                "pattern-fullmatch-window-indexlike-keyword-purged-bytes",
-                "pattern-findall-window-keyword-warm-str",
-                "pattern-findall-window-indexlike-keyword-warm-str",
-                "pattern-findall-bool-window-keyword-warm-str",
-                "pattern-finditer-window-keyword-purged-bytes",
-                "pattern-finditer-window-indexlike-purged-bytes",
-                "pattern-finditer-bool-window-keyword-purged-bytes",
-            ),
-        )
-        self.assertEqual(
-            positional_workload_ids,
-            (
-                "pattern-search-pos-indexlike-positional-warm-str",
-                "pattern-search-endpos-indexlike-positional-purged-bytes",
-                "pattern-match-window-indexlike-positional-purged-bytes",
-                "pattern-fullmatch-window-indexlike-positional-purged-bytes",
-                "pattern-findall-window-indexlike-positional-warm-str",
-                "pattern-finditer-window-indexlike-positional-purged-bytes",
-            ),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "pattern-boundary",
-            wrong_text_model_workload_ids
-            + bounded_wildcard_workload_ids
-            + verbose_regression_workload_ids
-            + keyword_workload_ids
-            + positional_workload_ids,
-            49,
-            expected_total_workload_count=49,
         )
 
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
