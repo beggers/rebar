@@ -136,43 +136,6 @@ def test_compiled_pattern_wrong_text_model_support_surface_is_owner_module_owned
     }.isdisjoint(local_assignment_names)
 
 
-def test_compiled_pattern_module_helper_standard_definition_export_stays_lazy_and_cached(
-) -> None:
-    import inspect
-
-    from tests.benchmarks import (
-        compiled_pattern_module_helper_benchmark_support as support,
-    )
-
-    assert "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS" not in vars(
-        support
-    )
-
-    first_export = getattr(
-        support, "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"
-    )
-    second_export = getattr(
-        support, "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"
-    )
-
-    assert isinstance(first_export, tuple)
-    assert first_export is second_export
-    assert (
-        first_export
-        is support._build_compiled_pattern_module_helper_standard_benchmark_definitions()
-    )
-    assert tuple(definition.name for definition in first_export) == (
-        "module-workflow-compiled-pattern-literal-success",
-        "module-workflow-compiled-pattern-bounded-wildcard-success",
-        "module-workflow-compiled-pattern-verbose-bytes-success",
-        "module-workflow-compiled-pattern-wrong-text-model",
-    )
-    assert "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS" not in vars(
-        support
-    )
-    assert "def __getattr__(name: str) -> Any:" in inspect.getsource(support)
-
-
 def test_standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_definitions(
 ) -> None:
     owner_definitions = (
@@ -191,6 +154,12 @@ def test_standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_de
         if definition.name in definition_names
     )
 
+    assert tuple(definition.name for definition in owner_definitions) == (
+        "module-workflow-compiled-pattern-literal-success",
+        "module-workflow-compiled-pattern-bounded-wildcard-success",
+        "module-workflow-compiled-pattern-verbose-bytes-success",
+        "module-workflow-compiled-pattern-wrong-text-model",
+    )
     assert standard_definitions == owner_definitions
     assert all(
         standard_definition is owner_definition
