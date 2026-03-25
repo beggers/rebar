@@ -314,6 +314,17 @@ def test_standard_support_no_longer_defines_shared_contract_classes() -> None:
     )
 
 
+def test_standard_support_reexports_shared_contract_types_by_identity() -> None:
+    assert (
+        support.StandardBenchmarkAnchorContract
+        is benchmark_support.StandardBenchmarkAnchorContract
+    )
+    assert (
+        support.StandardBenchmarkAnchorContractDefinition
+        is benchmark_support.StandardBenchmarkAnchorContractDefinition
+    )
+
+
 def test_owner_support_modules_import_contract_definition_from_benchmark_test_support(
 ) -> None:
     for module in _OWNER_SUPPORT_MODULES:
