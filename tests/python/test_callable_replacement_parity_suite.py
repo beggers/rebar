@@ -1972,7 +1972,7 @@ CALLABLE_RETURN_TYPE_ERROR_PARITY_OPERATIONS_BY_MANIFEST_ID: dict[
         "nested-broader-range-wider-ranged-repeat-quantified-group-"
         "alternation-branch-local-backreference-conditional-"
         "callable-replacement-workflows"
-    ): frozenset({"pattern_call"}),
+    ): frozenset({"module_call", "pattern_call"}),
     (
         "nested-open-ended-quantified-group-alternation-branch-local-"
         "backreference-callable-replacement-workflows"
