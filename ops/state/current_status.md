@@ -332,7 +332,7 @@ The published correctness slice now covers 1853 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The next intended follow-on is the nested broader-range open-ended grouped-alternation branch-local-backreference callable-replacement implementation slice, pinned to `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`.
+- The next intended follow-on is the nested broader-range open-ended grouped-alternation branch-local-backreference conditional callable wrong-return-type parity slice, pinned to `a((b|c){2,})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
