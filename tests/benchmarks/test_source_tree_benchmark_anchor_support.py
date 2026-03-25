@@ -123,6 +123,45 @@ def _compile_search_fullmatch_workload(
     )
 
 
+def _owner_definition_manifest_path_names(
+    function_name: str,
+) -> tuple[tuple[str, ...], ...]:
+    owner_source = inspect.getsource(support)
+    owner_module = ast.parse(owner_source)
+    builder = next(
+        node
+        for node in owner_module.body
+        if isinstance(node, ast.FunctionDef) and node.name == function_name
+    )
+    builder_return = next(
+        node for node in builder.body if isinstance(node, ast.Return)
+    )
+
+    assert isinstance(builder_return.value, ast.Tuple)
+
+    manifest_path_names: list[tuple[str, ...]] = []
+    for element in builder_return.value.elts:
+        assert isinstance(element, ast.Call)
+        manifest_paths_keyword = next(
+            keyword
+            for keyword in element.keywords
+            if keyword.arg == "manifest_paths"
+        )
+        assert isinstance(manifest_paths_keyword.value, ast.Tuple)
+        assert all(
+            isinstance(manifest_path, ast.Name)
+            for manifest_path in manifest_paths_keyword.value.elts
+        )
+        manifest_path_names.append(
+            tuple(
+                manifest_path.id
+                for manifest_path in manifest_paths_keyword.value.elts
+            )
+        )
+
+    return tuple(manifest_path_names)
+
+
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
     value = {
         "b": [2, {"d": 4, "c": [5, 6]}],
@@ -480,6 +519,42 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
         == NESTED_GROUP_REPLACEMENT_MANIFEST_PATH
     )
     assert support.OPEN_ENDED_MANIFEST_PATH == OPEN_ENDED_MANIFEST_PATH
+
+
+@pytest.mark.parametrize(
+    ("builder_name", "expected_manifest_path_names"),
+    (
+        pytest.param(
+            "_module_workflow_keyword_standard_benchmark_definitions",
+            (
+                ("MODULE_BOUNDARY_MANIFEST_PATH",),
+                ("MODULE_BOUNDARY_MANIFEST_PATH",),
+            ),
+            id="module-workflow-keyword",
+        ),
+        pytest.param(
+            "_source_tree_standard_benchmark_definitions",
+            (
+                ("OPTIONAL_GROUP_MANIFEST_PATH",),
+                ("NESTED_GROUP_MANIFEST_PATH",),
+                ("EXACT_REPEAT_MANIFEST_PATH",),
+                ("RANGED_REPEAT_MANIFEST_PATH",),
+                ("GROUPED_ALTERNATION_MANIFEST_PATH",),
+                ("GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",),
+                ("NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",),
+                ("OPEN_ENDED_MANIFEST_PATH",),
+            ),
+            id="source-tree-standard",
+        ),
+    ),
+)
+def test_source_tree_owner_builders_reference_owner_manifest_path_constants(
+    builder_name: str,
+    expected_manifest_path_names: tuple[tuple[str, ...], ...],
+) -> None:
+    assert _owner_definition_manifest_path_names(builder_name) == (
+        expected_manifest_path_names
+    )
 
 
 def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constants() -> None:
