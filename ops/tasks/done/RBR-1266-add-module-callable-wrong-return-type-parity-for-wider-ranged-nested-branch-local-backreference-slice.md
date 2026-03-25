@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-25
 
@@ -47,3 +47,7 @@ Created: 2026-03-25
   - the same direct runtime probe over that manifest's eight module rows also returned matching CPython `TypeError` payloads from `re` and `rebar`, so the surviving frontier stays on selector catch-up and is pinned to `a((b|c){1,4})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)`.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or pattern_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `276 passed, 6119 deselected`.
+
+## Completion
+- Extended `CALLABLE_RETURN_TYPE_ERROR_PARITY_OPERATIONS_BY_MANIFEST_ID` in `tests/python/test_callable_replacement_parity_suite.py` so `nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows` now participates in `module_call` wrong-return-type parity alongside the existing pattern-side coverage.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or pattern_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'`, which passed with `292 passed, 6119 deselected`.
