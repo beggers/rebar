@@ -146,6 +146,7 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     assert_match_result_parity,
     assert_pattern_parity,
+    callable_match_group_signature,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
@@ -506,24 +507,10 @@ class SourceTreeCombinedManifestExpectationDefinition:
     zero_gap_bytes_representative_subsets: tuple[tuple[str, ...], ...] = ()
 
 
-def _callable_match_group_signature(replacement: object) -> tuple[object, ...] | None:
-    if not callable(replacement):
-        return None
-    kwdefaults = getattr(replacement, "__kwdefaults__", None)
-    if not isinstance(kwdefaults, dict):
-        return None
-    return (
-        getattr(replacement, "__qualname__", getattr(replacement, "__name__", None)),
-        kwdefaults.get("_group_reference"),
-        kwdefaults.get("_prefix"),
-        kwdefaults.get("_suffix"),
-    )
-
-
 def _text_model_agnostic_callable_match_group_signature(
     replacement: object,
 ) -> tuple[object, ...] | None:
-    signature = _callable_match_group_signature(replacement)
+    signature = callable_match_group_signature(replacement)
     if signature is None:
         return None
     return tuple(
@@ -5113,10 +5100,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=source_workload.workload_id):
                 payload = workload_to_payload(source_workload)
                 round_tripped = workload_from_payload(payload)
-                expected_signature = _callable_match_group_signature(
+                expected_signature = callable_match_group_signature(
                     source_workload.replacement_payload()
                 )
-                observed_signature = _callable_match_group_signature(
+                observed_signature = callable_match_group_signature(
                     round_tripped.replacement_payload()
                 )
 
@@ -5200,7 +5187,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 payload = workload_to_payload(source_workload)
                 round_tripped = workload_from_payload(payload)
-                observed_signature = _callable_match_group_signature(
+                observed_signature = callable_match_group_signature(
                     round_tripped.replacement_payload()
                 )
 
@@ -5234,7 +5221,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     source_workload.haystack,
                 )
                 self.assertEqual(
-                    _callable_match_group_signature(
+                    callable_match_group_signature(
                         source_workload.replacement_payload()
                     ),
                     expected_signature,
@@ -5316,10 +5303,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=source_workload.workload_id):
                 payload = workload_to_payload(source_workload)
                 round_tripped = workload_from_payload(payload)
-                expected_signature = _callable_match_group_signature(
+                expected_signature = callable_match_group_signature(
                     source_workload.replacement_payload()
                 )
-                observed_signature = _callable_match_group_signature(
+                observed_signature = callable_match_group_signature(
                     round_tripped.replacement_payload()
                 )
 
@@ -5385,10 +5372,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=source_workload.workload_id):
                 payload = workload_to_payload(source_workload)
                 round_tripped = workload_from_payload(payload)
-                expected_signature = _callable_match_group_signature(
+                expected_signature = callable_match_group_signature(
                     source_workload.replacement_payload()
                 )
-                observed_signature = _callable_match_group_signature(
+                observed_signature = callable_match_group_signature(
                     round_tripped.replacement_payload()
                 )
 
@@ -5487,10 +5474,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=source_workload.workload_id):
                 payload = workload_to_payload(source_workload)
                 round_tripped = workload_from_payload(payload)
-                expected_signature = _callable_match_group_signature(
+                expected_signature = callable_match_group_signature(
                     source_workload.replacement_payload()
                 )
-                observed_signature = _callable_match_group_signature(
+                observed_signature = callable_match_group_signature(
                     round_tripped.replacement_payload()
                 )
 
@@ -5561,10 +5548,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=source_workload.workload_id):
                 payload = workload_to_payload(source_workload)
                 round_tripped = workload_from_payload(payload)
-                expected_signature = _callable_match_group_signature(
+                expected_signature = callable_match_group_signature(
                     source_workload.replacement_payload()
                 )
-                observed_signature = _callable_match_group_signature(
+                observed_signature = callable_match_group_signature(
                     round_tripped.replacement_payload()
                 )
 
@@ -8537,7 +8524,7 @@ def _collection_replacement_grouped_callable_correctness_case_signature(
         return None
     if case.helper not in {"sub", "subn"}:
         return None
-    replacement_signature = _callable_match_group_signature(
+    replacement_signature = callable_match_group_signature(
         case_replacement_argument(case)
     )
     if replacement_signature is None:
@@ -8568,7 +8555,7 @@ def _collection_replacement_grouped_callable_workload_signature(
             "unexpected collection/replacement grouped callable workload "
             f"{workload.workload_id!r}"
         )
-    replacement_signature = _callable_match_group_signature(
+    replacement_signature = callable_match_group_signature(
         workload.replacement_payload()
     )
     if replacement_signature is None:
@@ -8608,7 +8595,7 @@ def _conditional_group_exists_quantified_callable_correctness_case_signature(
         return None
     if case.kwargs or case.use_compiled_pattern:
         return None
-    replacement_signature = _callable_match_group_signature(
+    replacement_signature = callable_match_group_signature(
         case_replacement_argument(case)
     )
     if replacement_signature is None:
@@ -8651,7 +8638,7 @@ def _conditional_group_exists_nested_callable_correctness_case_signature(
         return None
     if case.kwargs or case.use_compiled_pattern:
         return None
-    replacement_signature = _callable_match_group_signature(
+    replacement_signature = callable_match_group_signature(
         case_replacement_argument(case)
     )
     if replacement_signature is None:
@@ -8685,7 +8672,7 @@ def _conditional_group_exists_nested_callable_workload_signature(
             "unexpected conditional nested callable workload "
             f"{workload.workload_id!r}"
         )
-    replacement_signature = _callable_match_group_signature(
+    replacement_signature = callable_match_group_signature(
         workload.replacement_payload()
     )
     if replacement_signature is None:
@@ -8720,7 +8707,7 @@ def _conditional_group_exists_quantified_callable_workload_signature(
             "unexpected conditional quantified callable workload "
             f"{workload.workload_id!r}"
         )
-    replacement_signature = _callable_match_group_signature(
+    replacement_signature = callable_match_group_signature(
         workload.replacement_payload()
     )
     if replacement_signature is None:

@@ -1631,6 +1631,20 @@ def case_text_argument(case: FixtureCase) -> str | bytes:
     return text
 
 
+def callable_match_group_signature(replacement: object) -> tuple[object, ...] | None:
+    if not callable(replacement):
+        return None
+    kwdefaults = getattr(replacement, "__kwdefaults__", None)
+    if not isinstance(kwdefaults, dict):
+        return None
+    return (
+        getattr(replacement, "__qualname__", getattr(replacement, "__name__", None)),
+        kwdefaults.get("_group_reference"),
+        kwdefaults.get("_prefix"),
+        kwdefaults.get("_suffix"),
+    )
+
+
 def invoke_bounded_pattern_case(compiled_pattern: object, case: object) -> object:
     return getattr(compiled_pattern, getattr(case, "helper"))(
         getattr(case, "string"),

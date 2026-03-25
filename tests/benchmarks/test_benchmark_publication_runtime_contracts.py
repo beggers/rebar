@@ -41,6 +41,7 @@ from tests.conftest import (
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
 )
+from tests.python.fixture_parity_support import callable_match_group_signature
 
 
 COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
@@ -922,20 +923,6 @@ def test_run_internal_workload_probe_measures_nested_group_callable_replacement_
     assert probe["median_ns"] > 0
 
 
-def _callable_match_group_signature(replacement: object) -> tuple[object, ...] | None:
-    if not callable(replacement):
-        return None
-    kwdefaults = getattr(replacement, "__kwdefaults__", None)
-    if not isinstance(kwdefaults, dict):
-        return None
-    return (
-        getattr(replacement, "__qualname__", getattr(replacement, "__name__", None)),
-        kwdefaults.get("_group_reference"),
-        kwdefaults.get("_prefix"),
-        kwdefaults.get("_suffix"),
-    )
-
-
 @cache
 def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[Workload, ...]:
     manifest = load_manifest(_CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH)
@@ -1058,7 +1045,7 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
         assert payload["text_model"] == "str"
         assert payload["replacement"] == expected_replacement
         assert payload["count"] == -1
-        assert _callable_match_group_signature(workload.replacement_payload()) == (
+        assert callable_match_group_signature(workload.replacement_payload()) == (
             "callable_match_group",
             expected_replacement["group"],
             "",
@@ -1068,7 +1055,7 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
 
         assert round_tripped.text_model == "str"
         assert round_tripped.count == -1
-        assert _callable_match_group_signature(round_tripped.replacement_payload()) == (
+        assert callable_match_group_signature(round_tripped.replacement_payload()) == (
             "callable_match_group",
             expected_replacement["group"],
             "",
@@ -1113,7 +1100,7 @@ def test_conditional_group_exists_callable_none_count_workloads_round_trip_prese
         assert payload["replacement"] == expected_replacement
         assert payload["count"] is None
         assert workload.count is None
-        assert _callable_match_group_signature(workload.replacement_payload()) == (
+        assert callable_match_group_signature(workload.replacement_payload()) == (
             "callable_match_group",
             expected_replacement["group"],
             expected_prefix,
@@ -1122,7 +1109,7 @@ def test_conditional_group_exists_callable_none_count_workloads_round_trip_prese
 
         assert round_tripped.text_model == text_model
         assert round_tripped.count is None
-        assert _callable_match_group_signature(round_tripped.replacement_payload()) == (
+        assert callable_match_group_signature(round_tripped.replacement_payload()) == (
             "callable_match_group",
             expected_replacement["group"],
             expected_prefix,
