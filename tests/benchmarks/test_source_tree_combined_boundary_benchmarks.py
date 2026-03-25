@@ -2480,78 +2480,12 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
 
                 for expectation in source_tree_support.source_tree_combined_slice_expectations(manifest_id):
                     with self.subTest(slice_id=expectation.slice_id):
-                        self._assert_source_tree_combined_manifest_slice(
+                        source_tree_support.assert_source_tree_combined_manifest_slice(
+                            self,
                             case.target_manifest,
                             scorecard,
                             expectation=expectation,
                         )
-
-    def _assert_source_tree_combined_manifest_slice(
-        self,
-        manifest: BenchmarkManifest,
-        scorecard: dict[str, object],
-        *,
-        expectation: source_tree_support.SourceTreeCombinedSliceExpectation,
-    ) -> None:
-        manifest_id = expectation.manifest_id
-        expected_workload_ids = expectation.expected_workload_ids
-        expected_status = expectation.expected_status
-        matched_rows = source_tree_support.select_source_tree_combined_slice_rows(
-            manifest,
-            expectation,
-        )
-
-        self.assertEqual(
-            tuple(workload.workload_id for workload in matched_rows),
-            expected_workload_ids,
-        )
-        self.assertEqual(
-            {workload.pattern for workload in matched_rows},
-            expectation.expected_patterns,
-        )
-        self.assertEqual(
-            {workload.operation for workload in matched_rows},
-            expectation.expected_operations,
-        )
-        self.assertEqual(
-            {
-                str(workload.haystack)
-                for workload in matched_rows
-                if workload.haystack is not None
-            },
-            expectation.expected_haystacks,
-        )
-
-        for workload in matched_rows:
-            with self.subTest(
-                slice_id=expectation.slice_id,
-                workload_id=workload.workload_id,
-            ):
-                for category in expectation.required_row_categories:
-                    self.assertIn(category, workload.categories)
-
-        scorecard_rows = [
-            workload
-            for workload in scorecard["workloads"]
-            if workload["manifest_id"] == manifest_id
-            and workload["id"] in expected_workload_ids
-        ]
-        self.assertEqual(
-            {workload["id"] for workload in scorecard_rows},
-            set(expected_workload_ids),
-        )
-
-        with self.subTest(slice_id=expectation.slice_id):
-            benchmark_test_support.assert_manifest_workload_contracts(
-                self,
-                manifest,
-                scorecard,
-                (
-                    (workload_id, expected_status)
-                    for workload_id in expected_workload_ids
-                ),
-                subtest_label="workload_id",
-            )
 
     def test_wider_ranged_repeat_manifest_shape_stays_covered_in_combined_suite(
         self,
@@ -2594,95 +2528,13 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
 
         for pattern_group in shape_expectation.pattern_groups:
             with self.subTest(slice_id=pattern_group.slice_id):
-                self._assert_source_tree_combined_pattern_group(
+                source_tree_support.assert_source_tree_combined_pattern_group(
+                    self,
                     case.target_manifest,
                     scorecard,
                     manifest_id=WIDER_RANGED_REPEAT_MANIFEST_ID,
                     expectation=pattern_group,
                 )
-
-    def _assert_source_tree_combined_pattern_group(
-        self,
-        manifest: BenchmarkManifest,
-        scorecard: dict[str, object],
-        *,
-        manifest_id: str,
-        expectation: source_tree_support.SourceTreeCombinedPatternGroupExpectation,
-    ) -> None:
-        slice_id = expectation.slice_id
-        patterns = expectation.patterns
-        required_operations = expectation.required_operations
-        required_categories = expectation.required_categories
-        search_haystacks = expectation.search_haystacks
-        search_haystack_substrings = expectation.search_haystack_substrings
-        pattern_haystacks = expectation.pattern_haystacks
-        manifest_rows = [
-            workload
-            for workload in manifest.workloads
-            if workload.pattern in patterns
-        ]
-
-        self.assertGreaterEqual(
-            len(manifest_rows),
-            expectation.minimum_rows,
-            f"expected benchmark rows for the {slice_id} slice",
-        )
-
-        for pattern in patterns:
-            pattern_rows = [
-                workload for workload in manifest_rows if workload.pattern == pattern
-            ]
-            self.assertGreaterEqual(
-                len(pattern_rows),
-                3,
-                f"expected compile/search/fullmatch coverage for {pattern!r}",
-            )
-            self.assertTrue(
-                set(required_operations).issubset(
-                    {workload.operation for workload in pattern_rows}
-                )
-            )
-            for workload in pattern_rows:
-                with self.subTest(pattern=pattern, workload_id=workload.workload_id):
-                    for category in required_categories:
-                        self.assertIn(category, workload.categories)
-
-        manifest_search_haystacks = {
-            str(workload.haystack)
-            for workload in manifest_rows
-            if workload.operation == "module.search"
-        }
-        for haystack in search_haystacks:
-            self.assertIn(haystack, manifest_search_haystacks)
-        for snippet in search_haystack_substrings:
-            self.assertTrue(
-                any(snippet in haystack for haystack in manifest_search_haystacks),
-                f"expected a module.search workload covering {snippet!r}",
-            )
-
-        manifest_pattern_haystacks = {
-            str(workload.haystack)
-            for workload in manifest_rows
-            if workload.operation == "pattern.fullmatch"
-        }
-        for haystack in pattern_haystacks:
-            self.assertIn(haystack, manifest_pattern_haystacks)
-
-        scorecard_rows = [
-            workload
-            for workload in scorecard["workloads"]
-            if workload["manifest_id"] == manifest_id
-            and workload["pattern"] in patterns
-        ]
-        self.assertEqual(
-            {workload["id"] for workload in scorecard_rows},
-            {workload.workload_id for workload in manifest_rows},
-        )
-        for workload in scorecard_rows:
-            with self.subTest(scorecard_workload_id=workload["id"]):
-                self.assertEqual(workload["status"], "measured")
-                self.assertEqual(workload["implementation_timing"]["status"], "measured")
-                self.assertGreater(workload["implementation_ns"], 0)
 
 
 class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
@@ -2730,23 +2582,6 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 fully_measured_expectation=fully_measured_expectation,
                 representative_measured_workload_ids=("drifted-measured-row",),
             )
-
-    def _assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
-        self,
-        manifest_id: str,
-    ) -> None:
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
-        combined_case = source_tree_support.source_tree_combined_case(manifest_id)
-
-        self.assertEqual(
-            case.manifest_expectations[manifest_id].known_gap_count,
-            0,
-        )
-        self.assertEqual(
-            case.representative_measured_workload_ids,
-            combined_case.manifest_expectation.representative_measured_workload_ids,
-        )
-        self.assertEqual(case.representative_known_gap_workload_ids, ())
 
     def test_raw_scorecard_case_definitions_use_direct_manifest_ids(self) -> None:
         for case_id, case_definition in source_tree_support.SOURCE_TREE_SCORECARD_EXPECTATIONS.items():
@@ -2825,12 +2660,14 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_numbered_backreference_manifest_promotes_grouped_segment_pair_to_measured(
         self,
     ) -> None:
-        self._assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+        source_tree_support.assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+            self,
             "numbered-backreference-boundary"
         )
 
     def test_nested_group_manifest_promotes_nested_pair_to_measured(self) -> None:
-        self._assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+        source_tree_support.assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+            self,
             "nested-group-boundary"
         )
 
@@ -2926,36 +2763,6 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
         )
 
-    def _assert_zero_gap_representative_workload_subset(
-        self,
-        manifest_id: str,
-        expected_workload_ids: tuple[str, ...],
-    ) -> None:
-        case = source_tree_support.source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(
-            case.manifest_expectation.representative_known_gap_workload_ids,
-            (),
-        )
-
-        explicit_representatives = (
-            case.manifest_expectation.representative_measured_workload_ids
-        )
-        for workload_id in expected_workload_ids:
-            with self.subTest(manifest_id=manifest_id, workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                if explicit_representatives:
-                    self.assertIn(workload_id, explicit_representatives)
-
-        if not explicit_representatives:
-            self.assertEqual(explicit_representatives, ())
-
     def test_zero_gap_source_tree_manifests_keep_selected_bytes_representatives_publicly_measured(
         self,
     ) -> None:
@@ -2966,7 +2773,8 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 manifest_definition.zero_gap_bytes_representative_subsets
             ):
                 with self.subTest(manifest_id=manifest_id):
-                    self._assert_zero_gap_representative_workload_subset(
+                    source_tree_support.assert_zero_gap_representative_workload_subset(
+                        self,
                         manifest_id,
                         expected_workload_ids,
                     )

@@ -1,6 +1,6 @@
 ## RBR-1333: Centralize remaining source-tree suite assertion helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -54,3 +54,8 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `346 passed, 1821 subtests passed in 13.02s`
   - `bash -lc "! rg -n '^    def (_assert_source_tree_combined_manifest_slice|_assert_source_tree_combined_pattern_group|_assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation|_assert_zero_gap_representative_workload_subset)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those class-local wrappers still exist, and that failure belongs exactly to this cleanup
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+
+## Completion
+- Landed 2026-03-25: centralized the remaining combined-suite manifest-slice, pattern-group, single-manifest zero-gap scorecard, and zero-gap representative-subset assertion helpers onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, then routed `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` through those owner helpers and deleted the four class-local wrapper methods.
+- Added focused support-contract coverage in `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so the owner helper surface is asserted on `source_tree_benchmark_anchor_support` and the combined-suite AST checks fail if any of the four deleted wrapper methods return.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` (`347 passed, 1821 subtests passed in 13.21s`), the required `rg` wrapper-definition check, and `python3 -m py_compile` on the three touched benchmark files.

@@ -46,6 +46,10 @@ _MOVED_SOURCE_TREE_FUNCTION_NAMES = (
     "expected_summary_for_manifests",
     "representative_measured_workload_ids",
     "select_source_tree_combined_slice_rows",
+    "assert_source_tree_combined_manifest_slice",
+    "assert_source_tree_combined_pattern_group",
+    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
+    "assert_zero_gap_representative_workload_subset",
 )
 
 _MOVED_SOURCE_TREE_CONSTANT_NAMES = (
@@ -137,6 +141,13 @@ _ROUTED_REPORT_CONTRACT_HELPER_NAMES = (
     "find_manifest_record",
     "assert_zero_gap_bytes_representative_subset",
     "assert_zero_gap_manifest_representative_promotion",
+)
+
+_ROUTED_SOURCE_TREE_SUITE_ASSERTION_HELPER_NAMES = (
+    "assert_source_tree_combined_manifest_slice",
+    "assert_source_tree_combined_pattern_group",
+    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
+    "assert_zero_gap_representative_workload_subset",
 )
 
 _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
@@ -1217,6 +1228,8 @@ def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers
         "_assert_zero_gap_manifest_representative_promotion"
         not in class_method_names
     )
+    assert "_assert_source_tree_combined_manifest_slice" not in class_method_names
+    assert "_assert_source_tree_combined_pattern_group" not in class_method_names
 
 
 def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() -> None:
@@ -1233,6 +1246,11 @@ def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() ->
     }
 
     assert "_assert_manifest_contracts" not in class_method_names
+    assert (
+        "_assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation"
+        not in class_method_names
+    )
+    assert "_assert_zero_gap_representative_workload_subset" not in class_method_names
     assert "_assert_representative_workloads" not in class_method_names
     assert "_assert_workloads" not in class_method_names
 
@@ -1492,6 +1510,10 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
         pytest.param(
             _ROUTED_REPORT_CONTRACT_HELPER_NAMES,
             id="report-contract-helpers",
+        ),
+        pytest.param(
+            _ROUTED_SOURCE_TREE_SUITE_ASSERTION_HELPER_NAMES,
+            id="source-tree-suite-assertion-helpers",
         ),
         pytest.param(
             _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES,

@@ -395,6 +395,210 @@ def assert_zero_gap_manifest_representative_promotion(
     )
 
 
+def assert_source_tree_combined_manifest_slice(
+    testcase: Any,
+    manifest: BenchmarkManifest,
+    scorecard: dict[str, object],
+    *,
+    expectation: SourceTreeCombinedSliceExpectation,
+) -> None:
+    manifest_id = expectation.manifest_id
+    expected_workload_ids = expectation.expected_workload_ids
+    expected_status = expectation.expected_status
+    matched_rows = select_source_tree_combined_slice_rows(
+        manifest,
+        expectation,
+    )
+
+    testcase.assertEqual(
+        tuple(workload.workload_id for workload in matched_rows),
+        expected_workload_ids,
+    )
+    testcase.assertEqual(
+        {workload.pattern for workload in matched_rows},
+        expectation.expected_patterns,
+    )
+    testcase.assertEqual(
+        {workload.operation for workload in matched_rows},
+        expectation.expected_operations,
+    )
+    testcase.assertEqual(
+        {
+            str(workload.haystack)
+            for workload in matched_rows
+            if workload.haystack is not None
+        },
+        expectation.expected_haystacks,
+    )
+
+    for workload in matched_rows:
+        with testcase.subTest(
+            slice_id=expectation.slice_id,
+            workload_id=workload.workload_id,
+        ):
+            for category in expectation.required_row_categories:
+                testcase.assertIn(category, workload.categories)
+
+    scorecard_rows = [
+        workload
+        for workload in scorecard["workloads"]
+        if workload["manifest_id"] == manifest_id
+        and workload["id"] in expected_workload_ids
+    ]
+    testcase.assertEqual(
+        {workload["id"] for workload in scorecard_rows},
+        set(expected_workload_ids),
+    )
+
+    with testcase.subTest(slice_id=expectation.slice_id):
+        benchmark_test_support.assert_manifest_workload_contracts(
+            testcase,
+            manifest,
+            scorecard,
+            (
+                (workload_id, expected_status)
+                for workload_id in expected_workload_ids
+            ),
+            subtest_label="workload_id",
+        )
+
+
+def assert_source_tree_combined_pattern_group(
+    testcase: Any,
+    manifest: BenchmarkManifest,
+    scorecard: dict[str, object],
+    *,
+    manifest_id: str,
+    expectation: SourceTreeCombinedPatternGroupExpectation,
+) -> None:
+    slice_id = expectation.slice_id
+    patterns = expectation.patterns
+    required_operations = expectation.required_operations
+    required_categories = expectation.required_categories
+    search_haystacks = expectation.search_haystacks
+    search_haystack_substrings = expectation.search_haystack_substrings
+    pattern_haystacks = expectation.pattern_haystacks
+    manifest_rows = [
+        workload
+        for workload in manifest.workloads
+        if workload.pattern in patterns
+    ]
+
+    testcase.assertGreaterEqual(
+        len(manifest_rows),
+        expectation.minimum_rows,
+        f"expected benchmark rows for the {slice_id} slice",
+    )
+
+    for pattern in patterns:
+        pattern_rows = [
+            workload for workload in manifest_rows if workload.pattern == pattern
+        ]
+        testcase.assertGreaterEqual(
+            len(pattern_rows),
+            3,
+            f"expected compile/search/fullmatch coverage for {pattern!r}",
+        )
+        testcase.assertTrue(
+            set(required_operations).issubset(
+                {workload.operation for workload in pattern_rows}
+            )
+        )
+        for workload in pattern_rows:
+            with testcase.subTest(pattern=pattern, workload_id=workload.workload_id):
+                for category in required_categories:
+                    testcase.assertIn(category, workload.categories)
+
+    manifest_search_haystacks = {
+        str(workload.haystack)
+        for workload in manifest_rows
+        if workload.operation == "module.search"
+    }
+    for haystack in search_haystacks:
+        testcase.assertIn(haystack, manifest_search_haystacks)
+    for snippet in search_haystack_substrings:
+        testcase.assertTrue(
+            any(snippet in haystack for haystack in manifest_search_haystacks),
+            f"expected a module.search workload covering {snippet!r}",
+        )
+
+    manifest_pattern_haystacks = {
+        str(workload.haystack)
+        for workload in manifest_rows
+        if workload.operation == "pattern.fullmatch"
+    }
+    for haystack in pattern_haystacks:
+        testcase.assertIn(haystack, manifest_pattern_haystacks)
+
+    scorecard_rows = [
+        workload
+        for workload in scorecard["workloads"]
+        if workload["manifest_id"] == manifest_id
+        and workload["pattern"] in patterns
+    ]
+    testcase.assertEqual(
+        {workload["id"] for workload in scorecard_rows},
+        {workload.workload_id for workload in manifest_rows},
+    )
+    for workload in scorecard_rows:
+        with testcase.subTest(scorecard_workload_id=workload["id"]):
+            testcase.assertEqual(workload["status"], "measured")
+            testcase.assertEqual(
+                workload["implementation_timing"]["status"],
+                "measured",
+            )
+            testcase.assertGreater(workload["implementation_ns"], 0)
+
+
+def assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+    testcase: Any,
+    manifest_id: str,
+) -> None:
+    case = source_tree_scorecard_case(manifest_id)
+    combined_case = source_tree_combined_case(manifest_id)
+
+    testcase.assertEqual(
+        case.manifest_expectations[manifest_id].known_gap_count,
+        0,
+    )
+    testcase.assertEqual(
+        case.representative_measured_workload_ids,
+        combined_case.manifest_expectation.representative_measured_workload_ids,
+    )
+    testcase.assertEqual(case.representative_known_gap_workload_ids, ())
+
+
+def assert_zero_gap_representative_workload_subset(
+    testcase: Any,
+    manifest_id: str,
+    expected_workload_ids: tuple[str, ...],
+) -> None:
+    case = source_tree_combined_case(manifest_id)
+    public_representatives = (
+        source_tree_combined_manifest_representative_measured_workload_ids(
+            manifest_id
+        )
+    )
+
+    testcase.assertEqual(case.manifest_expectation.known_gap_count, 0)
+    testcase.assertEqual(
+        case.manifest_expectation.representative_known_gap_workload_ids,
+        (),
+    )
+
+    explicit_representatives = (
+        case.manifest_expectation.representative_measured_workload_ids
+    )
+    for workload_id in expected_workload_ids:
+        with testcase.subTest(manifest_id=manifest_id, workload_id=workload_id):
+            testcase.assertIn(workload_id, public_representatives)
+            if explicit_representatives:
+                testcase.assertIn(workload_id, explicit_representatives)
+
+    if not explicit_representatives:
+        testcase.assertEqual(explicit_representatives, ())
+
+
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
