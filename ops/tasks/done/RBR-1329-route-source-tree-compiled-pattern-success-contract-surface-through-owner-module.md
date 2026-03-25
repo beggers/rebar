@@ -1,6 +1,6 @@
 ## RBR-1329: Route source-tree compiled-pattern success contract surface through owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -57,3 +57,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `60 passed in 0.95s`
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `python3 -c "import ast,pathlib,sys; names={'_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS','_assert_compiled_pattern_module_success_payload_round_trip'}; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in names}); print(direct); sys.exit(0 if not direct else 1)"` currently fails because the combined suite still reaches that compiled-pattern success contract surface through `benchmark_test_support`, and that failure belongs exactly to this cleanup
+
+## Completion
+- Routed `_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS` and `_assert_compiled_pattern_module_success_payload_round_trip` through `tests/benchmarks/source_tree_benchmark_anchor_support.py`, repointed the combined suite to `source_tree_support`, and extended the owner-surface test to pin both routed names.
+- Verification after the refactor:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_success_contract_workloads or compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing'` passed with `39 passed, 240 deselected in 0.19s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `60 passed in 1.05s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+  - `python3 -c "import ast,pathlib,sys; names={'_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS','_assert_compiled_pattern_module_success_payload_round_trip'}; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in names}); print(direct); sys.exit(0 if not direct else 1)"` passed and printed `[]`

@@ -4690,7 +4690,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+    source_tree_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -4712,7 +4712,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
+    source_tree_support._assert_compiled_pattern_module_success_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
@@ -4731,7 +4731,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+    source_tree_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing(
     owner_spec: object,

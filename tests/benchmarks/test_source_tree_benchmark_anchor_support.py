@@ -84,9 +84,11 @@ _ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
 _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
     "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
     "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     "_is_module_workflow_compiled_pattern_literal_success_workload",
     "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
     "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+    "_assert_compiled_pattern_module_success_payload_round_trip",
 )
 
 _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
