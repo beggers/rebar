@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import ast
-from functools import cache, partial
+from functools import cache
 import inspect
 import pathlib
 from types import SimpleNamespace
@@ -31,8 +31,7 @@ from tests.benchmarks.benchmark_test_support import (
     synthetic_workload,
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
-from tests.conftest import REPO_ROOT, records_by_string_id
-from tests.python.fixture_parity_support import IndexLike
+from tests.conftest import REPO_ROOT
 
 GROUPED_ALTERNATION_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
@@ -1224,88 +1223,6 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
         )
 
 
-def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> None:
-    workload = synthetic_workload(
-        manifest_id="module-pattern-boundary",
-        workload_id="module-search-flags-keyword",
-        operation="module.search",
-        haystack="zabc",
-        kwargs={"flags": {"type": "indexlike", "value": 2}},
-        flags=2,
-    )
-    case = _module_pattern_case(
-        helper="search",
-        operation="module_call",
-        args=("zabc",),
-        kwargs={"flags": IndexLike(2)},
-        flags=2,
-    )
-
-    assert support._is_module_workflow_keyword_flags_workload(workload)
-    assert support._module_workflow_keyword_workload_args(workload) == ("zabc",)
-    assert support._module_workflow_keyword_workload_signature(workload) == (
-        "module.search",
-        "abc",
-        ("zabc",),
-        (("flags", "indexlike", 2),),
-        2,
-        "str",
-    )
-    assert support._module_workflow_keyword_correctness_case_signature(case) == (
-        "module.search",
-        "abc",
-        ("zabc",),
-        (("flags", "indexlike", 2),),
-        2,
-        "str",
-    )
-
-
-def test_module_keyword_error_workload_stays_pinned() -> None:
-    workload = synthetic_workload(
-        manifest_id="module-pattern-boundary",
-        workload_id="module-search-duplicate-flags-keyword",
-        operation="module.search",
-        haystack="zabc",
-        kwargs={"flags": {"type": "indexlike", "value": 4}},
-        expected_exception={
-            "type": "TypeError",
-            "message_substring": "multiple values for argument 'flags'",
-        },
-        flags=4,
-    )
-
-    assert support._is_module_workflow_keyword_error_workload(workload)
-    assert support._module_workflow_keyword_workload_args(workload) == ("zabc", 4)
-    assert support._module_workflow_keyword_workload_signature(workload) == (
-        "module.search",
-        "abc",
-        ("zabc", 4),
-        (("flags", "indexlike", 4),),
-        4,
-        "str",
-    )
-
-
-def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_source_tree(
-) -> None:
-    owner_definitions = support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
-    definition_names = tuple(definition.name for definition in owner_definitions)
-    standard_definitions = {
-        definition.name: definition
-        for definition in STANDARD_BENCHMARK_DEFINITIONS
-        if definition.name in definition_names
-    }
-
-    assert definition_names == (
-        "module-workflow-keyword-flags",
-        "module-workflow-keyword-errors",
-    )
-    assert tuple(standard_definitions) == definition_names
-    for definition in owner_definitions:
-        assert standard_definitions[definition.name] is definition
-
-
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
     assert support.MODULE_BOUNDARY_MANIFEST_PATH == MODULE_BOUNDARY_MANIFEST_PATH
     assert support.OPTIONAL_GROUP_MANIFEST_PATH == OPTIONAL_GROUP_MANIFEST_PATH
@@ -1330,14 +1247,6 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
 @pytest.mark.parametrize(
     ("builder_name", "expected_manifest_path_names"),
     (
-        pytest.param(
-            "_module_workflow_keyword_standard_benchmark_definitions",
-            (
-                ("MODULE_BOUNDARY_MANIFEST_PATH",),
-                ("MODULE_BOUNDARY_MANIFEST_PATH",),
-            ),
-            id="module-workflow-keyword",
-        ),
         pytest.param(
             "_source_tree_standard_benchmark_definitions",
             (
@@ -1364,13 +1273,6 @@ def test_source_tree_owner_builders_reference_owner_manifest_path_constants(
 
 
 def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constants() -> None:
-    assert tuple(
-        definition.manifest_paths[0]
-        for definition in support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
-    ) == (
-        support.MODULE_BOUNDARY_MANIFEST_PATH,
-        support.MODULE_BOUNDARY_MANIFEST_PATH,
-    )
     assert tuple(
         definition.manifest_paths[0]
         for definition in support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
@@ -1788,289 +1690,6 @@ def test_source_tree_reuses_shared_published_case_helpers_by_identity() -> None:
         is benchmark_support.published_case_ids_by_signature
     )
     assert support.published_cases_by_id is benchmark_support.published_cases_by_id
-
-
-def test_anchored_and_unanchored_workload_helpers_follow_signatures_and_filters(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    manifest_path = pathlib.Path("synthetic_boundary.py")
-    workloads = (
-        _synthetic_workload("anchored", ("shared",)),
-        _synthetic_workload("unanchored", ("missing",)),
-        _synthetic_workload("excluded", ("shared",), include=False),
-    )
-    monkeypatch.setattr(
-        benchmark_support,
-        "load_manifest",
-        partial(_synthetic_manifest_loader, workloads=workloads),
-    )
-
-    anchor_case_ids = {("shared",): ("case-a", "case-b")}
-
-    assert support.anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_synthetic_workload_signature,
-        include_workload=_synthetic_workload_is_included,
-    ) == {
-        ("synthetic_boundary.py", "anchored"): ("case-a", "case-b"),
-        ("synthetic_boundary.py", "unanchored"): (),
-    }
-    assert support.unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=anchor_case_ids,
-        workload_signature=_synthetic_workload_signature,
-        include_workload=_synthetic_workload_is_included,
-    ) == ("unanchored",)
-
-
-def test_expected_anchored_workload_case_pairs_return_matching_objects(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    manifest_path = pathlib.Path("synthetic_boundary.py")
-    workload = _synthetic_workload("anchored", ("shared",))
-    case = SimpleNamespace(case_id="case-1")
-    monkeypatch.setattr(
-        benchmark_support,
-        "load_manifest",
-        partial(_synthetic_manifest_loader, workloads=(workload,)),
-    )
-    monkeypatch.setattr(
-        support,
-        "published_cases_by_id",
-        partial(records_by_string_id, (case,), id_attr="case_id"),
-    )
-
-    anchored_pairs = support.expected_anchored_workload_case_pairs(
-        manifest_path,
-        expected_anchor_case_ids={
-            ("synthetic_boundary.py", "anchored"): ("case-1",),
-        },
-    )
-
-    assert len(anchored_pairs) == 1
-    anchored_pair = anchored_pairs[0]
-    assert anchored_pair.manifest_name == "synthetic_boundary.py"
-    assert anchored_pair.workload_id == "anchored"
-    assert anchored_pair.case_id == "case-1"
-    assert anchored_pair.workload is workload
-    assert anchored_pair.case is case
-
-
-def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    monkeypatch.setattr(
-        benchmark_support,
-        "load_manifest",
-        partial(
-            _synthetic_manifest_loader,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
-        ),
-    )
-    monkeypatch.setattr(
-        support,
-        "published_cases_by_id",
-        partial(
-            records_by_string_id,
-            (SimpleNamespace(case_id="case-1"),),
-            id_attr="case_id",
-        ),
-    )
-
-    with pytest.raises(AssertionError, match="does not match"):
-        support.expected_anchored_workload_case_pairs(
-            pathlib.Path("synthetic_boundary.py"),
-            expected_anchor_case_ids={
-                ("other_boundary.py", "anchored"): ("case-1",),
-            },
-        )
-
-
-def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    monkeypatch.setattr(
-        benchmark_support,
-        "load_manifest",
-        partial(
-            _synthetic_manifest_loader,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
-        ),
-    )
-    monkeypatch.setattr(
-        support,
-        "published_cases_by_id",
-        partial(
-            records_by_string_id,
-            (
-                SimpleNamespace(case_id="case-1"),
-                SimpleNamespace(case_id="case-2"),
-            ),
-            id_attr="case_id",
-        ),
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match="expected exactly one published correctness case",
-    ):
-        support.expected_anchored_workload_case_pairs(
-            pathlib.Path("synthetic_boundary.py"),
-            expected_anchor_case_ids={
-                ("synthetic_boundary.py", "anchored"): ("case-1", "case-2"),
-            },
-        )
-
-
-def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    monkeypatch.setattr(
-        benchmark_support,
-        "load_manifest",
-        partial(
-            _synthetic_manifest_loader,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
-        ),
-    )
-    monkeypatch.setattr(
-        support,
-        "published_cases_by_id",
-        partial(
-            records_by_string_id,
-            (SimpleNamespace(case_id="case-1"),),
-            id_attr="case_id",
-        ),
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=r"expected anchored workload 'missing' to be in scope",
-    ):
-        support.expected_anchored_workload_case_pairs(
-            pathlib.Path("synthetic_boundary.py"),
-            expected_anchor_case_ids={
-                ("synthetic_boundary.py", "missing"): ("case-1",),
-            },
-        )
-
-
-def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    monkeypatch.setattr(
-        benchmark_support,
-        "load_manifest",
-        partial(
-            _synthetic_manifest_loader,
-            workloads=(_synthetic_workload("anchored", ("shared",)),),
-        ),
-    )
-    monkeypatch.setattr(
-        support,
-        "published_cases_by_id",
-        partial(records_by_string_id, (), id_attr="case_id"),
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=r"expected anchored correctness case 'case-1' to be published",
-    ):
-        support.expected_anchored_workload_case_pairs(
-            pathlib.Path("synthetic_boundary.py"),
-            expected_anchor_case_ids={
-                ("synthetic_boundary.py", "anchored"): ("case-1",),
-            },
-        )
-
-
-def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
-    monkeypatch: pytest.MonkeyPatch,
-    anchor_support_cache_guard: None,
-) -> None:
-    workload = _synthetic_workload("anchored", ("shared",))
-    pair = support.AnchoredWorkloadCasePair(
-        manifest_name="synthetic_boundary.py",
-        workload_id="anchored",
-        case_id="case-1",
-        workload=workload,
-        case=SimpleNamespace(case_id="case-1"),
-    )
-    calls: list[tuple[object, object]] = []
-    monkeypatch.setattr(
-        support,
-        "run_correctness_case_with_cpython",
-        lambda case: f"expected:{case.case_id}",
-    )
-    monkeypatch.setattr(
-        support,
-        "assert_benchmark_workload_matches_expected_result",
-        lambda workload, expected: calls.append((workload, expected)),
-    )
-
-    support.assert_anchored_workload_case_result_parity((pair,))
-
-    assert calls == [(workload, "expected:case-1")]
-
-
-def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    workload = _synthetic_workload("anchored", ("shared",))
-    pair = support.AnchoredWorkloadCasePair(
-        manifest_name="synthetic_boundary.py",
-        workload_id="anchored",
-        case_id="case-1",
-        workload=workload,
-        case=SimpleNamespace(case_id="case-1"),
-    )
-    benchmark_calls: list[object] = []
-
-    def _raise_expected(_: object) -> object:
-        raise ValueError("shared boom")
-
-    def _raise_observed(observed_workload: object) -> object:
-        benchmark_calls.append(observed_workload)
-        raise ValueError("shared boom")
-
-    monkeypatch.setattr(support, "run_correctness_case_with_cpython", _raise_expected)
-    monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
-
-    support.assert_anchored_workload_case_result_parity((pair,))
-
-    assert benchmark_calls == [workload]
-
-
-def test_assert_anchored_workload_case_result_parity_rejects_exception_message_drift(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    workload = _synthetic_workload("anchored", ("shared",))
-    pair = support.AnchoredWorkloadCasePair(
-        manifest_name="synthetic_boundary.py",
-        workload_id="anchored",
-        case_id="case-1",
-        workload=workload,
-        case=SimpleNamespace(case_id="case-1"),
-    )
-
-    def _raise_expected(_: object) -> object:
-        raise ValueError("expected boom")
-
-    def _raise_observed(_: object) -> object:
-        raise ValueError("observed boom")
-
-    monkeypatch.setattr(support, "run_correctness_case_with_cpython", _raise_expected)
-    monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
-
-    with pytest.raises(AssertionError):
-        support.assert_anchored_workload_case_result_parity((pair,))
 
 
 def test_grouped_alternation_live_signatures_cover_non_replacement_routes() -> None:

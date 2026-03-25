@@ -19,6 +19,7 @@ from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
     STANDARD_BENCHMARK_DEFINITIONS,
+    run_benchmark_workload_with_cpython,
     compiled_pattern_contract_expected_build_calls,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
@@ -31,9 +32,6 @@ from tests.benchmarks.benchmark_test_support import (
     selected_manifest_workloads,
 )
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    run_benchmark_workload_with_cpython,
-)
 from tests.python.fixture_parity_support import IndexLike
 
 _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES = (

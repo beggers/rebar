@@ -26,11 +26,13 @@ from tests.benchmarks.benchmark_test_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
     _write_test_manifest,
+    assert_benchmark_workload_matches_expected_result,
     compiled_pattern_contract_expected_build_calls,
     assert_benchmark_workload_contract,
     find_workload_document,
     find_workload_record,
     manifest_workload_ids_matching,
+    run_benchmark_workload_with_cpython,
     selected_manifest_workloads,
     top_level_module_definition_and_assignment_names,
 )
@@ -42,10 +44,6 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
     _is_module_workflow_compiled_pattern_literal_success_workload,
     _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    assert_benchmark_workload_matches_expected_result,
-    run_benchmark_workload_with_cpython,
 )
 from tests.conftest import run_harness_scorecard
 

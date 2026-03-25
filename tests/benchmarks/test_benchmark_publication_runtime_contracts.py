@@ -28,10 +28,8 @@ from rebar_harness.scorecard_io import ordered_published_subset_filenames
 from tests.benchmarks.benchmark_test_support import (
     COMPILE_MATRIX_MANIFEST_PATH,
     _write_test_manifest,
-    live_manifest_workloads,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
+    live_manifest_workloads,
     run_benchmark_workload_with_cpython,
 )
 from tests.conftest import (

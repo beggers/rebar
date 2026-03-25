@@ -20,8 +20,13 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
+    _is_module_workflow_keyword_error_workload,
+    _is_module_workflow_keyword_flags_workload,
+    _module_workflow_keyword_correctness_case_signature,
+    _module_workflow_keyword_workload_signature,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
+    assert_benchmark_workload_matches_expected_result,
     assert_benchmark_workload_contract,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
@@ -30,6 +35,8 @@ from tests.benchmarks.benchmark_test_support import (
     is_compile_proxy_workload,
     live_manifest_workloads,
     published_case_ids_by_signature,
+    run_benchmark_workload_with_cpython,
+    StandardBenchmarkAnchorContractDefinition,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
@@ -87,12 +94,6 @@ from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _pattern_window_positional_indexlike_correctness_case_signature,
     _pattern_window_positional_indexlike_workload_signature,
 )
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _is_module_workflow_keyword_error_workload,
-    _is_module_workflow_keyword_flags_workload,
-    _module_workflow_keyword_correctness_case_signature,
-    _module_workflow_keyword_workload_signature,
-)
 from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _is_pattern_bounded_wildcard_workload,
     _is_pattern_boundary_wrong_text_model_workload,
@@ -116,59 +117,11 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _module_workflow_compiled_pattern_workload_signature,
     _is_module_workflow_compiled_pattern_wrong_text_model_workload,
 )
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
-    SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS,
-    SOURCE_TREE_SCORECARD_EXPECTATIONS,
-    SourceTreeBenchmarkCommonCase,
-    SourceTreeCombinedCase,
-    SourceTreeCombinedFullyMeasuredManifestExpectation,
-    SourceTreeCombinedManifestExpectationDefinition,
-    SourceTreeCombinedManifestShapeExpectation,
-    SourceTreeCombinedPatternGroupExpectation,
-    SourceTreeCombinedSliceExpectation,
-    SourceTreeDeferredExpectation,
-    SourceTreeManifestExpectation,
-    SourceTreeScorecardCase,
-    _combined_fully_measured_manifest_expectation,
-    _combined_manifest_definition,
-    _is_non_alternation_counted_repeat_workload,
-    _counted_repeat_correctness_case_signature,
-    _counted_repeat_workload_signature,
-    _grouped_alternation_correctness_case_signature,
-    _grouped_alternation_replacement_correctness_case_signature,
-    _grouped_alternation_workload_signature,
-    assert_benchmark_workload_matches_expected_result,
-    assert_benchmark_manifest_contract,
-    _is_optional_group_conditional_workload,
-    _nested_group_correctness_case_signature,
-    _nested_group_workload_signature,
-    _optional_group_correctness_case_signature,
-    _optional_group_workload_signature,
-    _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID as OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
-    _text_model_agnostic_callable_match_group_signature,
-    assert_source_tree_benchmark_contract,
-    expected_summary_for_manifests,
-    find_manifest_record,
-    relative_manifest_path,
-    run_benchmark_workload_with_cpython,
-    representative_measured_workload_ids,
-    select_source_tree_combined_slice_rows,
-    source_tree_combined_case,
-    source_tree_combined_fully_measured_manifest_expectation,
-    source_tree_combined_fully_measured_manifest_ids,
-    source_tree_combined_manifest_representative_measured_workload_ids,
-    source_tree_combined_manifest_shape_expectation,
-    source_tree_combined_slice_derived_manifest_ids,
-    source_tree_combined_slice_expectations,
-    source_tree_combined_slice_manifest_ids,
-    source_tree_combined_target_manifest_ids,
-    source_tree_scorecard_case,
-    source_tree_scorecard_case_ids,
-)
-from tests.benchmarks.benchmark_test_support import (
-    StandardBenchmarkAnchorContractDefinition,
-)
+from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS, SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS, SOURCE_TREE_SCORECARD_EXPECTATIONS, SourceTreeBenchmarkCommonCase, SourceTreeCombinedCase, SourceTreeCombinedFullyMeasuredManifestExpectation, SourceTreeCombinedManifestExpectationDefinition, SourceTreeCombinedManifestShapeExpectation, SourceTreeCombinedPatternGroupExpectation, SourceTreeCombinedSliceExpectation
+from tests.benchmarks.source_tree_benchmark_anchor_support import SourceTreeDeferredExpectation, SourceTreeManifestExpectation, SourceTreeScorecardCase, _combined_fully_measured_manifest_expectation, _combined_manifest_definition, _is_non_alternation_counted_repeat_workload, _counted_repeat_correctness_case_signature, _counted_repeat_workload_signature, _grouped_alternation_correctness_case_signature, _grouped_alternation_replacement_correctness_case_signature
+from tests.benchmarks.source_tree_benchmark_anchor_support import _grouped_alternation_workload_signature, assert_benchmark_manifest_contract, _is_optional_group_conditional_workload, _nested_group_correctness_case_signature, _nested_group_workload_signature, _optional_group_correctness_case_signature, _optional_group_workload_signature, _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID as OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID, _text_model_agnostic_callable_match_group_signature, assert_source_tree_benchmark_contract
+from tests.benchmarks.source_tree_benchmark_anchor_support import expected_summary_for_manifests, find_manifest_record, relative_manifest_path, representative_measured_workload_ids, select_source_tree_combined_slice_rows, source_tree_combined_case, source_tree_combined_fully_measured_manifest_expectation, source_tree_combined_fully_measured_manifest_ids, source_tree_combined_manifest_representative_measured_workload_ids
+from tests.benchmarks.source_tree_benchmark_anchor_support import source_tree_combined_manifest_shape_expectation, source_tree_combined_slice_derived_manifest_ids, source_tree_combined_slice_expectations, source_tree_combined_slice_manifest_ids, source_tree_combined_target_manifest_ids, source_tree_scorecard_case, source_tree_scorecard_case_ids
 from tests.conftest import (
     REPO_ROOT,
     records_by_string_id,

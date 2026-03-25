@@ -13,13 +13,11 @@ from tests.benchmarks.benchmark_test_support import (
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
     _definition_anchor_expectations,
+    _is_module_workflow_keyword_error_workload,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
     freeze_signature_value,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _is_module_workflow_keyword_error_workload,
 )
 from tests.python.fixture_parity_support import (
     callable_match_group_signature,

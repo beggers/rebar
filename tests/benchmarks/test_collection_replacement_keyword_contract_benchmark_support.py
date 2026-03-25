@@ -13,7 +13,9 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
+    _is_module_workflow_keyword_error_workload,
     _record_numeric_materialization_fields,
+    run_benchmark_workload_with_cpython,
     _write_test_manifest,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
@@ -28,12 +30,6 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_collection_replacement_module_helper_keyword_error_workload,
     _is_collection_replacement_pattern_helper_keyword_error_workload,
     _pattern_helper_collection_replacement_keyword_error_workload,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    _is_module_workflow_keyword_error_workload,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    run_benchmark_workload_with_cpython,
 )
 from tests.conftest import records_by_string_id
 

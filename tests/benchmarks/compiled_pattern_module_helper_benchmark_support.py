@@ -13,8 +13,10 @@ from tests.benchmarks.benchmark_test_support import (
     COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     StandardBenchmarkAnchorContractDefinition,
     _SourceTreeContractBuilderSpec,
+    assert_benchmark_workload_matches_expected_result,
     compiled_pattern_contract_expected_build_calls,
     freeze_signature_value,
+    run_benchmark_workload_with_cpython,
     selected_manifest_workloads,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
@@ -22,10 +24,6 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    assert_benchmark_workload_matches_expected_result,
-    run_benchmark_workload_with_cpython,
 )
 from tests.python.fixture_parity_support import case_pattern
 
@@ -379,8 +377,8 @@ def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
 def _build_compiled_pattern_module_helper_standard_benchmark_definitions() -> tuple[
     object, ...
 ]:
-    from tests.benchmarks.benchmark_test_support import _definition_anchor_expectations
-    from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    from tests.benchmarks.benchmark_test_support import (
+        _definition_anchor_expectations,
         MODULE_BOUNDARY_MANIFEST_PATH,
     )
 

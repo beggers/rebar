@@ -21,12 +21,10 @@ from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     assert_zero_gap_manifest_workloads_measured,
+    run_benchmark_workload_with_cpython,
     selected_manifest_workloads,
 )
 from tests.benchmarks import pattern_boundary_benchmark_anchor_support as support
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    run_benchmark_workload_with_cpython,
-)
 from tests.benchmarks.benchmark_test_support import (
     compiled_pattern_contract_expected_build_calls,
     _source_tree_contract_manifest,

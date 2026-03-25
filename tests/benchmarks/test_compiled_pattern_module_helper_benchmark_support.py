@@ -20,6 +20,7 @@ from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
     STANDARD_BENCHMARK_DEFINITIONS,
     _write_test_manifest,
+    run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
@@ -39,9 +40,6 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _module_workflow_compiled_pattern_workload_signature,
     _is_module_workflow_compiled_pattern_wrong_text_model_workload,
     _run_cpython_compiled_pattern_module_helper_workload,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.benchmark_test_support import (
     compiled_pattern_contract_expected_build_calls,

@@ -21,19 +21,17 @@ from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
+    anchored_workload_case_ids,
+    assert_benchmark_workload_matches_expected_result,
     assert_benchmark_workload_contract,
+    expected_anchored_workload_case_pairs,
     assert_zero_gap_manifest_workloads_measured,
     _expected_exception_instance,
     _record_numeric_materialization_fields,
-    selected_manifest_workloads,
-    _write_test_manifest,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    anchored_workload_case_ids,
-    assert_benchmark_workload_matches_expected_result,
-    expected_anchored_workload_case_pairs,
     run_benchmark_workload_with_cpython,
+    selected_manifest_workloads,
     unanchored_workload_ids,
+    _write_test_manifest,
 )
 
 
