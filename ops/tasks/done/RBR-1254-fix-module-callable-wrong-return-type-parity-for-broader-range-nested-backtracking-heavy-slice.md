@@ -48,3 +48,10 @@ Created: 2026-03-25
   - that next slice is pinned to `a(((bc|b)c){2,})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){2,})d`.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `35 passed, 6252 deselected`.
+
+## Completion
+- Fixed the shared callable substitution assembly path in `python/rebar/__init__.py` to skip empty unmatched spans before coercing callable return values, which restores CPython-matching `sequence item 0` / `sequence item 1` `TypeError` args for the module and compiled-pattern broader-range nested backtracking-heavy rows without adding a manifest-specific branch.
+- Widened `MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS` in `tests/python/test_callable_replacement_parity_suite.py` to include `nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows`, so the existing module wrong-return-type parity lane now covers the eight numbered and named `sub()` / `subn()` rows for both `str` and `bytes`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` -> `51 passed, 6252 deselected`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` -> tracked publication regenerated with `1853` total / `1853` passed / `0` failed / `0` unimplemented cases across `114` manifests; the tracked diff is timestamp-only (`generated_at`).

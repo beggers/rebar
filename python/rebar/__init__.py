@@ -1474,7 +1474,7 @@ def _run_native_literal_callable_subn(
     last_end = 0
 
     for index, span in enumerate(spans[:replacement_limit]):
-        parts.append(compatible_string[last_end : span[0]])
+        _append_nonempty_callable_part(parts, compatible_string[last_end : span[0]])
         match = _build_match(
             compiled_pattern,
             compatible_string,
@@ -1493,7 +1493,7 @@ def _run_native_literal_callable_subn(
         )
         last_end = span[1]
 
-    parts.append(compatible_string[last_end:])
+    _append_nonempty_callable_part(parts, compatible_string[last_end:])
     return compatible_string[:0].join(parts), replacement_limit
 
 
@@ -2470,6 +2470,14 @@ def _coerce_callable_replacement_piece(
     return replacement
 
 
+def _append_nonempty_callable_part(
+    parts: list[str] | list[bytes],
+    part: str | bytes,
+) -> None:
+    if part:
+        parts.append(part)
+
+
 def _run_literal_sub(
     compiled_pattern: Pattern,
     repl: object,
@@ -2572,7 +2580,7 @@ def _run_literal_callable_subn(
     ):
         if remaining is not None and replacement_count >= remaining:
             break
-        parts.append(compatible_string[last_end : span[0]])
+        _append_nonempty_callable_part(parts, compatible_string[last_end : span[0]])
         match = _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
         replacement = repl(match)
         parts.append(
@@ -2588,7 +2596,7 @@ def _run_literal_callable_subn(
     if replacement_count == 0:
         return compatible_string, 0
 
-    parts.append(compatible_string[last_end:])
+    _append_nonempty_callable_part(parts, compatible_string[last_end:])
     return compatible_string[:0].join(parts), replacement_count
 
 
