@@ -36,7 +36,6 @@ from tests.benchmarks.benchmark_test_support import (
     _synthetic_workload_is_included,
     _synthetic_workload_signature,
     anchor_support_cache_guard,
-    _build_compile_proxy_standard_benchmark_definitions,
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _has_standard_benchmark_legacy_workloads,
     _has_standard_benchmark_special_unanchored_direct_parity_cases,
@@ -100,19 +99,28 @@ def _module_pattern_case(
     )
 
 
-def _owner_definition_manifest_path_names(
-    module: object,
-    function_name: str,
-) -> tuple[tuple[str, ...], ...]:
-    builder = _module_function_definition(module, function_name)
-    builder_return = next(
-        node for node in builder.body if isinstance(node, ast.Return)
+def _module_assignment(module: object, name: str) -> ast.Assign:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == name
+            for target in node.targets
+        )
     )
 
-    assert isinstance(builder_return.value, ast.Tuple)
+
+def _owner_definition_manifest_path_names(
+    module: object,
+    name: str,
+) -> tuple[tuple[str, ...], ...]:
+    assignment = _module_assignment(module, name)
+
+    assert isinstance(assignment.value, ast.Tuple)
 
     manifest_path_names: list[tuple[str, ...]] = []
-    for element in builder_return.value.elts:
+    for element in assignment.value.elts:
         assert isinstance(element, ast.Call)
         manifest_paths_keyword = next(
             keyword
@@ -715,13 +723,12 @@ def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
     )
 
 
-def test_compile_proxy_standard_definition_export_is_direct_global_cached_and_support_built(
+def test_compile_proxy_standard_definition_export_is_direct_global(
 ) -> None:
     first_export = getattr(support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
     second_export = getattr(support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
 
     assert first_export is second_export
-    assert first_export is _build_compile_proxy_standard_benchmark_definitions()
     assert len(first_export) == 1
     assert first_export[0].name == "compile-proxy"
     assert vars(support)["COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"] is first_export
@@ -1007,11 +1014,11 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
         assert standard_definitions[definition.name] is definition
 
 
-def test_benchmark_test_support_module_keyword_builder_references_owner_manifest_path_constant(
+def test_benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant(
 ) -> None:
     assert _owner_definition_manifest_path_names(
         support,
-        "_module_workflow_keyword_standard_benchmark_definitions",
+        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
     ) == (
         ("MODULE_BOUNDARY_MANIFEST_PATH",),
         ("MODULE_BOUNDARY_MANIFEST_PATH",),

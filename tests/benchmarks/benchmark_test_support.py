@@ -654,73 +654,65 @@ REGRESSION_MATRIX_MANIFEST_PATH = (
 )
 
 
-@cache
-def _build_compile_proxy_standard_benchmark_definitions(
-) -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
-    return (
-        StandardBenchmarkAnchorContractDefinition(
-            name="compile-proxy",
-            manifest_paths=(
-                COMPILE_MATRIX_MANIFEST_PATH,
-                REGRESSION_MATRIX_MANIFEST_PATH,
-            ),
-            expected_anchor_case_ids=(
-                _definition_anchor_expectations(
-                    COMPILE_MATRIX_MANIFEST_PATH,
-                    {
-                        "compile-inline-locale-bytes-warm": (
-                            "bytes-inline-locale-flag-success",
-                        ),
-                        "compile-lookbehind-cold": (
-                            "str-fixed-width-lookbehind-success",
-                        ),
-                        "compile-character-class-ignorecase-warm": (
-                            "str-character-class-ignorecase-success",
-                        ),
-                        "compile-possessive-quantifier-cold": (
-                            "str-possessive-quantifier-success",
-                        ),
-                        "compile-atomic-group-purged": (
-                            "str-atomic-group-success",
-                        ),
-                        "compile-parser-stress-cold": (
-                            "str-parser-stress-compile-proxy-success",
-                        ),
-                    },
-                )
-                | _definition_anchor_expectations(
-                    REGRESSION_MATRIX_MANIFEST_PATH,
-                    {
-                        "regression-parser-atomic-lookbehind-cold": (
-                            "str-parser-stress-compile-proxy-success",
-                        ),
-                        "regression-parser-bytes-backreference-purged": (
-                            "bytes-named-backreference-compile-proxy-success",
-                        ),
-                        "regression-module-compile-verbose-purged": (
-                            "workflow-compile-str-verbose-regression",
-                        ),
-                        "regression-module-compile-multiline-purged": (
-                            "workflow-compile-str-multiline-regression",
-                        ),
-                        "regression-module-compile-multiline-purged-bytes": (
-                            "workflow-compile-bytes-multiline-regression",
-                        ),
-                        "regression-module-compile-verbose-purged-bytes": (
-                            "workflow-compile-bytes-verbose-regression",
-                        ),
-                    },
-                )
-            ),
-            include_workload=is_compile_proxy_workload,
-            correctness_case_signature=compile_proxy_correctness_case_signature,
-            workload_signature=compile_proxy_workload_signature,
-        ),
-    )
-
-
 COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS = (
-    _build_compile_proxy_standard_benchmark_definitions()
+    StandardBenchmarkAnchorContractDefinition(
+        name="compile-proxy",
+        manifest_paths=(
+            COMPILE_MATRIX_MANIFEST_PATH,
+            REGRESSION_MATRIX_MANIFEST_PATH,
+        ),
+        expected_anchor_case_ids=(
+            _definition_anchor_expectations(
+                COMPILE_MATRIX_MANIFEST_PATH,
+                {
+                    "compile-inline-locale-bytes-warm": (
+                        "bytes-inline-locale-flag-success",
+                    ),
+                    "compile-lookbehind-cold": (
+                        "str-fixed-width-lookbehind-success",
+                    ),
+                    "compile-character-class-ignorecase-warm": (
+                        "str-character-class-ignorecase-success",
+                    ),
+                    "compile-possessive-quantifier-cold": (
+                        "str-possessive-quantifier-success",
+                    ),
+                    "compile-atomic-group-purged": (
+                        "str-atomic-group-success",
+                    ),
+                    "compile-parser-stress-cold": (
+                        "str-parser-stress-compile-proxy-success",
+                    ),
+                },
+            )
+            | _definition_anchor_expectations(
+                REGRESSION_MATRIX_MANIFEST_PATH,
+                {
+                    "regression-parser-atomic-lookbehind-cold": (
+                        "str-parser-stress-compile-proxy-success",
+                    ),
+                    "regression-parser-bytes-backreference-purged": (
+                        "bytes-named-backreference-compile-proxy-success",
+                    ),
+                    "regression-module-compile-verbose-purged": (
+                        "workflow-compile-str-verbose-regression",
+                    ),
+                    "regression-module-compile-multiline-purged": (
+                        "workflow-compile-str-multiline-regression",
+                    ),
+                    "regression-module-compile-multiline-purged-bytes": (
+                        "workflow-compile-bytes-multiline-regression",
+                    ),
+                    "regression-module-compile-verbose-purged-bytes": (
+                        "workflow-compile-bytes-verbose-regression",
+                    ),
+                },
+            )
+        ),
+        include_workload=is_compile_proxy_workload,
+        correctness_case_signature=compile_proxy_correctness_case_signature,
+        workload_signature=compile_proxy_workload_signature,
+    ),
 )
 
 MODULE_BOUNDARY_MANIFEST_PATH = (
@@ -829,55 +821,47 @@ def _module_workflow_keyword_workload_signature(
     )
 
 
-@cache
-def _module_workflow_keyword_standard_benchmark_definitions(
-) -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
-    return (
-        StandardBenchmarkAnchorContractDefinition(
-            name="module-workflow-keyword-flags",
-            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-            expected_anchor_case_ids=_definition_anchor_expectations(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                {
-                    "module-search-flags-keyword-warm-str": (
-                        "workflow-module-search-flags-keyword-str",
-                    ),
-                    "module-match-flags-keyword-purged-bytes": (
-                        "workflow-module-match-flags-keyword-bytes",
-                    ),
-                    "module-fullmatch-flags-keyword-warm-str": (
-                        "workflow-module-fullmatch-flags-keyword-str",
-                    ),
-                },
-            ),
-            include_workload=_is_module_workflow_keyword_flags_workload,
-            correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
-            workload_signature=_module_workflow_keyword_workload_signature,
-            run_callback_result_parity=True,
-        ),
-        StandardBenchmarkAnchorContractDefinition(
-            name="module-workflow-keyword-errors",
-            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-            expected_anchor_case_ids=_definition_anchor_expectations(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                {
-                    "module-search-duplicate-flags-keyword-warm-str": (
-                        "workflow-module-search-duplicate-flags-keyword",
-                    ),
-                    "module-fullmatch-unexpected-keyword-purged-str": (
-                        "workflow-module-fullmatch-unexpected-keyword",
-                    ),
-                },
-            ),
-            include_workload=_is_module_workflow_keyword_error_workload,
-            correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
-            workload_signature=_module_workflow_keyword_workload_signature,
-        ),
-    )
-
-
 MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS = (
-    _module_workflow_keyword_standard_benchmark_definitions()
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-keyword-flags",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-flags-keyword-warm-str": (
+                    "workflow-module-search-flags-keyword-str",
+                ),
+                "module-match-flags-keyword-purged-bytes": (
+                    "workflow-module-match-flags-keyword-bytes",
+                ),
+                "module-fullmatch-flags-keyword-warm-str": (
+                    "workflow-module-fullmatch-flags-keyword-str",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_keyword_flags_workload,
+        correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
+        workload_signature=_module_workflow_keyword_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-keyword-errors",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-duplicate-flags-keyword-warm-str": (
+                    "workflow-module-search-duplicate-flags-keyword",
+                ),
+                "module-fullmatch-unexpected-keyword-purged-str": (
+                    "workflow-module-fullmatch-unexpected-keyword",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_keyword_error_workload,
+        correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
+        workload_signature=_module_workflow_keyword_workload_signature,
+    ),
 )
 
 
