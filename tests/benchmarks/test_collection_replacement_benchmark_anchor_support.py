@@ -1151,6 +1151,31 @@ def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpe
     )
 
 
+def test_quantified_conditional_callable_combined_slice_expectations_use_owner_workload_ids() -> None:
+    import importlib
+
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    expectations_by_slice_id = {
+        expectation.slice_id: expectation
+        for expectation in combined_suite.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+    }
+
+    assert (
+        expectations_by_slice_id[
+            "quantified-callable-replacement-str-rows"
+        ].expected_workload_ids
+        is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+    )
+    assert (
+        expectations_by_slice_id[
+            "quantified-callable-replacement-bytes-rows"
+        ].expected_workload_ids
+        is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+
+
 def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
     import importlib
     import inspect
