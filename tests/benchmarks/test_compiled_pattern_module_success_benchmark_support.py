@@ -47,9 +47,6 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
 )
-from tests.benchmarks.test_source_tree_combined_boundary_benchmarks import (
-    source_tree_combined_case,
-)
 from tests.conftest import run_harness_scorecard
 
 
@@ -161,14 +158,14 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
     include_workload: Callable[[Any], bool],
 ) -> None:
     testcase = unittest.TestCase()
-    case = source_tree_combined_case(owner_spec.contract_manifest_id)
+    manifest = load_manifest(owner_spec.manifest_path)
     expected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in owner_spec.source_workloads()
         if include_workload(workload)
     )
     selected_measured_workload_ids = manifest_workload_ids_matching(
-        case.target_manifest,
+        manifest,
         include_workload,
     )
 
@@ -176,11 +173,11 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
 
     _, scorecard = run_harness_scorecard(
         "rebar_harness.benchmarks",
-        ["--manifest", str(case.target_manifest.path)],
+        ["--manifest", str(owner_spec.manifest_path)],
         report_name="benchmarks.json",
     )
     manifest_summary = scorecard["manifests"][owner_spec.contract_manifest_id]
-    expected_workload_count = len(case.target_manifest.workloads)
+    expected_workload_count = len(manifest.workloads)
 
     assert manifest_summary["known_gap_count"] == 0
     assert manifest_summary["measured_workloads"] == expected_workload_count
@@ -192,7 +189,7 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
             find_workload_record(scorecard, workload_id),
             manifest_id=owner_spec.contract_manifest_id,
             workload_document=find_workload_document(
-                case.target_manifest,
+                manifest,
                 workload_id,
             ),
             expected_status="measured",
