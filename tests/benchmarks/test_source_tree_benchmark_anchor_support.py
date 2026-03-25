@@ -100,6 +100,14 @@ _MOVED_SOURCE_TREE_CONSTANT_NAMES = (
     "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
 )
 
+_MOVED_REPORT_CONTRACT_HELPER_NAMES = (
+    "_assert_benchmark_summary_consistent",
+    "_artifact_manifest_record",
+    "assert_source_tree_benchmark_contract",
+    "assert_benchmark_manifest_contract",
+    "find_manifest_record",
+)
+
 
 def _module_pattern_case(
     *,
@@ -636,6 +644,20 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert constant_name in local_assignment_names
 
 
+def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
+    owner_source = inspect.getsource(support)
+    owner_module = ast.parse(owner_source)
+    local_function_names = {
+        node.name
+        for node in owner_module.body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
+        assert hasattr(support, function_name)
+        assert function_name in local_function_names
+
+
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
     combined_suite_path = (
         REPO_ROOT / "tests" / "benchmarks" / "test_source_tree_combined_boundary_benchmarks.py"
@@ -653,6 +675,21 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
     for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
         assert class_name not in local_class_names
     for function_name in _MOVED_SOURCE_TREE_FUNCTION_NAMES:
+        assert function_name not in local_function_names
+
+
+def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
+    combined_suite_path = (
+        REPO_ROOT / "tests" / "benchmarks" / "test_source_tree_combined_boundary_benchmarks.py"
+    )
+    combined_module = ast.parse(combined_suite_path.read_text())
+    local_function_names = {
+        node.name
+        for node in combined_module.body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
         assert function_name not in local_function_names
 
 

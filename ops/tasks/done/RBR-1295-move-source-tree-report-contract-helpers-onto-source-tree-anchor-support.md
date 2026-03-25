@@ -1,6 +1,6 @@
 # RBR-1295: Move source-tree report contract helpers onto source-tree anchor support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -59,3 +59,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `134 passed, 3471 subtests passed in 37.88s`;
   - `rg -n '^(def (_assert_benchmark_summary_consistent|_artifact_manifest_record|assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record))' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently reports all five local definitions, confirming the ownership cleanup is still missing there; and
   - `rg -n '(_assert_benchmark_summary_consistent|_artifact_manifest_record|assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record)' tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` currently returns no matches, confirming the support-module ownership cleanup is still missing.
+
+## Completion
+- Moved `_assert_benchmark_summary_consistent`, `_artifact_manifest_record`, `assert_source_tree_benchmark_contract`, `assert_benchmark_manifest_contract`, and `find_manifest_record` onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, including the shared `build_cpython_baseline(version_family="3.12.x")` dependency and known-gap summary checks.
+- Slimmed `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so it imports and uses the moved report-contract helpers instead of defining them locally.
+- Extended `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to assert the support owner exports those helpers and the combined suite no longer defines them locally.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `136 passed, 3471 subtests passed in 38.07s`.
+  - `bash -lc "! rg -n '^(def (_assert_benchmark_summary_consistent|_artifact_manifest_record|assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record))' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed with no matches.
