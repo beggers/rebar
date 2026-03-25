@@ -84,6 +84,39 @@ def _module_pattern_case(
     )
 
 
+def _compile_search_fullmatch_case(
+    *,
+    operation: str,
+    helper: str = "",
+    args: tuple[object, ...] = (),
+    kwargs: dict[str, object] | None = None,
+    flags: int | None = None,
+    text_model: str | None = None,
+) -> object:
+    serialized_kwargs = {} if kwargs is None else kwargs
+    return SimpleNamespace(
+        operation=operation,
+        helper=helper,
+        flags=flags,
+        text_model=text_model,
+        serialized_args=lambda: list(args),
+        serialized_kwargs=lambda: serialized_kwargs,
+    )
+
+
+def _compile_search_fullmatch_workload(
+    *,
+    operation: str,
+    flags: int = 0,
+    text_model: str = "str",
+) -> object:
+    return SimpleNamespace(
+        operation=operation,
+        flags=flags,
+        text_model=text_model,
+    )
+
+
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
     value = {
         "b": [2, {"d": 4, "c": [5, 6]}],
@@ -144,6 +177,151 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
         ("synthetic_boundary.py", "workload-a"): ("case-1",),
         ("synthetic_boundary.py", "workload-b"): ("case-2",),
     }
+
+
+@pytest.mark.parametrize(
+    ("case", "pattern", "expected"),
+    (
+        pytest.param(
+            _compile_search_fullmatch_case(
+                operation="compile",
+                kwargs={"window": [1, 3]},
+            ),
+            "a((b))d",
+            ("module.compile", "a((b))d", (), (("window", (1, 3)),), 0, "str"),
+            id="compile-defaults",
+        ),
+        pytest.param(
+            _compile_search_fullmatch_case(
+                operation="module_call",
+                helper="search",
+                args=(b"a((b))d", b"zzabdzz"),
+                kwargs={"pos": [1, 4]},
+                flags=4,
+                text_model="bytes",
+            ),
+            b"ignored",
+            (
+                "module.search",
+                None,
+                (b"a((b))d", b"zzabdzz"),
+                (("pos", (1, 4)),),
+                4,
+                "bytes",
+            ),
+            id="module-search",
+        ),
+        pytest.param(
+            _compile_search_fullmatch_case(
+                operation="pattern_call",
+                helper="fullmatch",
+                args=(b"abd",),
+                kwargs={"endpos": [3]},
+                flags=2,
+                text_model="bytes",
+            ),
+            b"a((b))d",
+            (
+                "pattern.fullmatch",
+                b"a((b))d",
+                (b"abd",),
+                (("endpos", (3,)),),
+                2,
+                "bytes",
+            ),
+            id="pattern-fullmatch",
+        ),
+        pytest.param(
+            _compile_search_fullmatch_case(
+                operation="module_call",
+                helper="match",
+                args=("zzabdzz",),
+            ),
+            "a((b))d",
+            None,
+            id="unsupported-operation",
+        ),
+    ),
+)
+def test_compile_search_fullmatch_case_signature_routes_shared_operations(
+    case: object,
+    pattern: str | bytes,
+    expected: tuple[object, ...] | None,
+) -> None:
+    assert support._compile_search_fullmatch_case_signature(
+        case,
+        pattern=lambda: pattern,
+    ) == expected
+
+
+@pytest.mark.parametrize(
+    ("workload", "pattern", "module_search_args", "pattern_fullmatch_args", "expected"),
+    (
+        pytest.param(
+            _compile_search_fullmatch_workload(operation="module.compile"),
+            "a((b))d",
+            ("unused-search",),
+            ("unused-fullmatch",),
+            ("module.compile", "a((b))d", (), (), 0, "str"),
+            id="compile",
+        ),
+        pytest.param(
+            _compile_search_fullmatch_workload(
+                operation="module.search",
+                flags=4,
+                text_model="bytes",
+            ),
+            b"a((b))d",
+            (b"a((b))d", b"zzabdzz"),
+            (b"unused-fullmatch",),
+            ("module.search", None, (b"a((b))d", b"zzabdzz"), (), 4, "bytes"),
+            id="module-search",
+        ),
+        pytest.param(
+            _compile_search_fullmatch_workload(
+                operation="pattern.fullmatch",
+                flags=2,
+                text_model="bytes",
+            ),
+            b"a((b))d",
+            (b"unused-search",),
+            (b"abd",),
+            ("pattern.fullmatch", b"a((b))d", (b"abd",), (), 2, "bytes"),
+            id="pattern-fullmatch",
+        ),
+    ),
+)
+def test_compile_search_fullmatch_workload_signature_routes_shared_operations(
+    workload: object,
+    pattern: str | bytes,
+    module_search_args: tuple[object, ...],
+    pattern_fullmatch_args: tuple[object, ...],
+    expected: tuple[object, ...],
+) -> None:
+    assert support._compile_search_fullmatch_workload_signature(
+        workload,
+        pattern=lambda: pattern,
+        module_search_args=lambda: module_search_args,
+        pattern_fullmatch_args=lambda: pattern_fullmatch_args,
+        error_label="synthetic benchmark",
+    ) == expected
+
+
+def test_compile_search_fullmatch_workload_signature_rejects_unsupported_operations(
+) -> None:
+    workload = _compile_search_fullmatch_workload(operation="pattern.search")
+
+    with pytest.raises(
+        AssertionError,
+        match="unexpected synthetic benchmark workload operation 'pattern.search'",
+    ):
+        support._compile_search_fullmatch_workload_signature(
+            workload,
+            pattern=lambda: "a((b))d",
+            module_search_args=lambda: ("unused-search",),
+            pattern_fullmatch_args=lambda: ("unused-fullmatch",),
+            error_label="synthetic benchmark",
+        )
 
 
 @pytest.mark.parametrize(
