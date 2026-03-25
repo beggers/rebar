@@ -924,6 +924,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-conditional-group-exists-nested-near-miss-present-str",
             "module-sub-callable-conditional-group-exists-quantified-present-str",
             "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
             "pattern-subn-callable-conditional-group-exists-absent-str",
             "pattern-subn-callable-conditional-group-exists-alternation-absent-second-arm-str",
             "pattern-subn-callable-conditional-group-exists-nested-absent-str",
@@ -936,6 +938,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-named-conditional-group-exists-nested-near-miss-present-str",
             "module-sub-callable-named-conditional-group-exists-quantified-present-str",
             "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
             "pattern-subn-callable-named-conditional-group-exists-absent-str",
             "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-str",
             "pattern-subn-callable-named-conditional-group-exists-nested-absent-str",
@@ -1000,6 +1004,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-conditional-group-exists-nested-near-miss-present-bytes",
             "module-sub-callable-conditional-group-exists-quantified-present-bytes",
             "module-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
+            "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
             "pattern-subn-callable-conditional-group-exists-absent-bytes",
             "pattern-subn-callable-conditional-group-exists-alternation-absent-second-arm-bytes",
             "pattern-subn-callable-conditional-group-exists-nested-absent-bytes",
@@ -1012,6 +1018,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-named-conditional-group-exists-nested-near-miss-present-bytes",
             "module-sub-callable-named-conditional-group-exists-quantified-present-bytes",
             "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
             "pattern-subn-callable-named-conditional-group-exists-absent-bytes",
             "pattern-subn-callable-named-conditional-group-exists-alternation-absent-second-arm-bytes",
             "pattern-subn-callable-named-conditional-group-exists-nested-absent-bytes",
@@ -5536,10 +5544,14 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             (
                 "module-sub-callable-conditional-group-exists-quantified-present-str",
                 "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+                "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
+                "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
                 "pattern-subn-callable-conditional-group-exists-quantified-absent-str",
                 "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
                 "module-sub-callable-named-conditional-group-exists-quantified-present-str",
                 "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
+                "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-absent-str",
                 "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
                 "module-sub-callable-conditional-group-exists-quantified-none-count-present-str",
@@ -6119,14 +6131,22 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         combined_case = correctness_scorecard_case("combined", manifest_id)
         expected_quantified_no_match_str_case_ids = (
             "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+            "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
+            "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
             "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
             "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
+            "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
             "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
         )
         expected_quantified_no_match_bytes_case_ids = (
             "module-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
+            "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-bytes",
+            "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
             "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-bytes",
             "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
+            "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
             "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
         )
         representative_quantified_no_match_str_cases = tuple(
@@ -6169,6 +6189,8 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             Counter(
                 {
                     ("module_call", "sub"): 2,
+                    ("module_call", "subn"): 2,
+                    ("pattern_call", "sub"): 2,
                     ("pattern_call", "subn"): 2,
                 }
             ),
@@ -6181,6 +6203,8 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             Counter(
                 {
                     ("module_call", "sub"): 2,
+                    ("module_call", "subn"): 2,
+                    ("pattern_call", "sub"): 2,
                     ("pattern_call", "subn"): 2,
                 }
             ),

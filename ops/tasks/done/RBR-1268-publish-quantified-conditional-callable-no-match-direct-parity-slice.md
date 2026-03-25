@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-25
 
@@ -47,3 +47,9 @@ Created: 2026-03-25
 - No exact post-drain feature follow-on is pinned after this seed:
   - the stale callable wrong-return-type conditional frontier named in tracked state is already satisfied in `tests/python/test_callable_replacement_parity_suite.py`; and
   - one adjacent owner-path scan found no second unpublished manifest-shaped follow-on beyond this quantified direct-parity publication slice, so the planning-owned frontier stays at "no ready feature follow-on currently survives."
+
+## Completion
+- Landed the combined-scorecard publication catch-up for the quantified callable near-miss rows by widening the combined `conditional-group-exists-callable-replacement-workflows` representative-case selection to include the exact numbered and named module/pattern `sub()` and `subn()` no-match rows across both `str` and `bytes`.
+- Kept `tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py` unchanged because it already carried the exact direct-parity rows with the expected helper, `count`, text, and no-substitution outcomes; the missing publication surface was the combined scorecard selection rather than fixture data.
+- Regenerated `reports/correctness/latest.py`; the tracked publication changed, but the published totals stayed at `1853` total / `1853` passed / `0` failed / `0` unimplemented cases across `114` manifests.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py -k 'conditional_group_exists_quantified'` (`102` passed, `6375` deselected).
