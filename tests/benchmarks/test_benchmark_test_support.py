@@ -1128,18 +1128,29 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
     )
 
 
+@pytest.mark.parametrize(
+    "module_name",
+    (
+        "tests.benchmarks.benchmark_test_support",
+        "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        "tests.benchmarks.test_benchmark_test_support",
+        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+    ),
+)
 def test_deleted_collection_replacement_keyword_contract_wrapper_stays_unimportable_and_unreferenced(
+    module_name: str,
 ) -> None:
     deleted_module_name = (
         "tests.benchmarks.test_collection_replacement_"
         + "keyword_contract_benchmark_support"
     )
+    module = importlib.import_module(module_name)
 
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module(deleted_module_name)
 
-    for module_path in pathlib.Path(__file__).parent.glob("*.py"):
-        assert deleted_module_name not in module_path.read_text(encoding="utf-8")
+    assert deleted_module_name not in _module_import_targets(module)
 
 
 def test_benchmark_test_support_does_not_define_compiled_pattern_module_helper_owner_surface(
