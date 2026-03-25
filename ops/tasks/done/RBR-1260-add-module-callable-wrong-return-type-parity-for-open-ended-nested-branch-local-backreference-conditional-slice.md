@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-25
 
@@ -45,3 +45,7 @@ Created: 2026-03-25
 - No exact post-drain follow-on is pinned yet after this conditional manifest on the current owner path, so planning-owned frontier state should say that no ready feature follow-on currently survives.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or pattern_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `236 passed, 6108 deselected`.
+
+## Completion Notes
+- Added `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows` to `MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS` in `tests/python/test_callable_replacement_parity_suite.py`, which widens the existing module-entrypoint wrong-return-type parity selector to the published eight-row numbered/named `sub()` / `subn()` slice for both `str` and `bytes` without adding any new selector tables or manifest-specific handling.
+- Verification on 2026-03-25: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or pattern_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `252 passed, 6108 deselected`.
