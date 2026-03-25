@@ -47,3 +47,7 @@ Created: 2026-03-25
   - a direct runtime probe over its eight module `sub()` / `subn()` rows also returned matching CPython `TypeError` args from `re` and `rebar`, so the surviving post-drain frontier is the conditional sibling parity catch-up pinned to `a((b|c){2,})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or pattern_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `220 passed, 6100 deselected`.
+
+## Completion Notes
+- Added `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows` to `MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS` in `tests/python/test_callable_replacement_parity_suite.py`, which widens the existing module-entrypoint wrong-return-type parity selector to the published eight-row numbered/named `sub()` / `subn()` slice for both `str` and `bytes` without adding new registries or case tables.
+- Verification on 2026-03-25: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or pattern_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `236 passed, 6100 deselected`.
