@@ -856,15 +856,23 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
     owner_module: object,
     helper_names: tuple[str, ...],
 ) -> None:
-    local_function_names = {
-        node.name
-        for node in benchmark_test_support._parsed_module_ast(owner_module).body
-        if isinstance(node, ast.FunctionDef)
-    }
+    local_definition_names, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            owner_module
+        )
+    )
+    owner_support = owner_module.benchmark_test_support
+
+    assert owner_support is benchmark_test_support
 
     for helper_name in helper_names:
-        assert getattr(owner_module, helper_name) is getattr(benchmark_test_support, helper_name)
-        assert helper_name not in local_function_names
+        assert getattr(owner_support, helper_name) is getattr(
+            benchmark_test_support,
+            helper_name,
+        )
+        assert helper_name not in local_definition_names
+        assert helper_name not in local_assignment_names
+        assert not hasattr(owner_module, helper_name)
 
 
 def test_source_tree_support_module_exposes_moved_combined_case_surface() -> None:

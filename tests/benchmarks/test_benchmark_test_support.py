@@ -397,6 +397,9 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     source_tree_live_manifest_calls: list[tuple[pathlib.Path, tuple[str, ...]]] = []
     published_cases = {"case-1": object()}
     source_tree_workloads = (_synthetic_workload("source-tree-anchored", ("bytes",)),)
+    expected_workload_ids = (
+        collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+    )
 
     def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
         manifest_load_calls.append(path)
@@ -428,11 +431,12 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         _published_case_ids_by_signature,
     )
     monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
-    monkeypatch.setattr(
-        anchor_support,
-        "live_manifest_workloads",
-        _live_manifest_workloads,
+    assert anchor_support.benchmark_test_support is support
+    assert (
+        anchor_support.collection_replacement_support
+        is collection_replacement_support
     )
+    monkeypatch.setattr(support, "live_manifest_workloads", _live_manifest_workloads)
 
     support._clear_anchor_support_caches()
 
@@ -452,7 +456,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         (
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
-            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+            expected_workload_ids,
         )
     ]
 
@@ -472,7 +476,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         (
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
-            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+            expected_workload_ids,
         )
     ]
 
@@ -497,12 +501,12 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         (
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
-            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+            expected_workload_ids,
         ),
         (
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
-            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+            expected_workload_ids,
         ),
     ]
 
@@ -1367,7 +1371,11 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
         module
     )
 
-    if module_name == "tests.benchmarks.test_source_tree_benchmark_anchor_support":
+    if module_name in {
+        "tests.benchmarks.source_tree_benchmark_anchor_support",
+        "tests.benchmarks.test_source_tree_benchmark_anchor_support",
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+    }:
         _assert_owner_module_routes_through_package_import(
             module,
             owner_module="tests.benchmarks.benchmark_test_support",
@@ -1379,18 +1387,8 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
             module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
             is MODULE_BOUNDARY_MANIFEST_PATH
         )
-    elif module_name == "tests.benchmarks.test_source_tree_combined_boundary_benchmarks":
-        _assert_owner_module_routes_through_package_import(
-            module,
-            owner_module="tests.benchmarks.benchmark_test_support",
-            package_module="tests.benchmarks",
-            expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
-        )
-        assert getattr(module, "benchmark_test_support") is support
-        assert (
-            module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
-            is MODULE_BOUNDARY_MANIFEST_PATH
-        )
+        if module_constant_name is not None:
+            assert not hasattr(module, module_constant_name)
     else:
         assert "MODULE_BOUNDARY_MANIFEST_PATH" in support._module_imported_names(
             module,
@@ -1430,12 +1428,15 @@ def test_source_tree_manifest_path_consumers_reuse_support_constants_by_identity
         anchor_support
     )
 
-    assert manifest_path_name in support._module_imported_names(
+    _assert_owner_module_routes_through_package_import(
         anchor_support,
-        "tests.benchmarks.benchmark_test_support",
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert manifest_path_name not in assignment_names
-    assert getattr(anchor_support, manifest_path_name) is getattr(
+    assert not hasattr(anchor_support, manifest_path_name)
+    assert getattr(anchor_support.benchmark_test_support, manifest_path_name) is getattr(
         support,
         manifest_path_name,
     )
