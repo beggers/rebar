@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from functools import cache, partial
+from functools import partial
 import pathlib
 import re
 from typing import Any
@@ -1070,7 +1070,6 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
 )
 
 
-@cache
 def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> tuple[
     StandardBenchmarkAnchorContractDefinition, ...
 ]:

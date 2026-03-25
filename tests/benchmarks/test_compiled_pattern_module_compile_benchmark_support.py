@@ -247,7 +247,7 @@ def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_
         )
 
 
-def test_compiled_pattern_module_compile_standard_definition_export_is_direct_global_cached_and_owner_built(
+def test_compiled_pattern_module_compile_standard_definition_export_is_direct_global_and_owner_built(
 ) -> None:
     expected_definitions = tuple(
         owner_spec.anchor_definition()
@@ -267,7 +267,9 @@ def test_compiled_pattern_module_compile_standard_definition_export_is_direct_gl
     )
 
     assert first_export is second_export
-    assert first_export is support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
+    assert support._build_compiled_pattern_module_compile_standard_benchmark_definitions() == (
+        first_export
+    )
     assert first_export == expected_definitions
     assert first_export is not expected_definitions
     assert tuple(definition.name for definition in first_export) == (
