@@ -403,40 +403,6 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
     )
 
 
-def _collection_replacement_pattern_split_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    if workload.operation != "pattern.split":
-        raise AssertionError(
-            "unexpected collection/replacement pattern split workload operation "
-            f"{workload.operation!r}"
-        )
-    if workload.expected_exception is not None or workload.use_compiled_pattern:
-        raise AssertionError(
-            "unexpected collection/replacement pattern split workload "
-            f"{workload.workload_id!r}"
-        )
-    if workload.kwargs or workload.pos is not None or workload.endpos is not None:
-        raise AssertionError(
-            "unexpected collection/replacement pattern split workload shape "
-            f"{workload.workload_id!r}"
-        )
-
-    args = [workload.haystack_payload()]
-    if workload.maxsplit is not None and not (
-        type(workload.maxsplit) is int and workload.maxsplit == 0
-    ):
-        args.append(workload.maxsplit_argument())
-    return (
-        workload.operation,
-        workload.pattern_payload(),
-        freeze_signature_value(args),
-        (),
-        workload.flags,
-        workload.text_model,
-    )
-
-
 def _collection_replacement_positional_keyword_field(
     workload: Any,
 ) -> str | None:

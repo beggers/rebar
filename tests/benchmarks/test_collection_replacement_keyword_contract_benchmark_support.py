@@ -21,7 +21,7 @@ from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    _collection_replacement_pattern_split_workload_signature,
+    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
 )
@@ -2447,7 +2447,9 @@ def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_m
     )
 
     assert workload.maxsplit == 0
-    assert _collection_replacement_pattern_split_workload_signature(workload) == (
+    assert _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].workload_signature(
+        workload
+    ) == (
         "pattern.split",
         "abc",
         ("zzz",),
