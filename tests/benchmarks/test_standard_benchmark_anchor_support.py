@@ -84,6 +84,12 @@ class _SyntheticStandardBenchmarkDefinition:
             "_build_compiled_pattern_module_helper_standard_benchmark_definitions",
             id="compiled-pattern-module-helper",
         ),
+        pytest.param(
+            anchor_support,
+            "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+            "_module_workflow_keyword_standard_benchmark_definitions",
+            id="source-tree-module-workflow-keyword",
+        ),
     ),
 )
 def test_owner_standard_definition_exports_stay_lazy_and_cached(
@@ -124,6 +130,11 @@ def test_owner_standard_definition_exports_stay_lazy_and_cached(
             compiled_pattern_module_helper_support,
             "NOT_A_COMPILED_PATTERN_MODULE_HELPER_OWNER_EXPORT",
             id="compiled-pattern-module-helper",
+        ),
+        pytest.param(
+            anchor_support,
+            "NOT_A_SOURCE_TREE_OWNER_EXPORT",
+            id="source-tree-module-workflow-keyword",
         ),
     ),
 )
