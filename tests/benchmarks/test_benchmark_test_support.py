@@ -95,15 +95,55 @@ def _module_imported_names(module: object, imported_module: str) -> frozenset[st
 
 
 def _module_import_targets(module: object) -> frozenset[str]:
+    return _ast_import_targets(_parsed_module_ast(module))
+
+
+def _ast_import_targets(module_ast: ast.Module) -> frozenset[str]:
     targets: set[str] = set()
 
-    for node in _parsed_module_ast(module).body:
+    for node in module_ast.body:
         if isinstance(node, ast.ImportFrom) and node.module is not None:
             targets.add(node.module)
         elif isinstance(node, ast.Import):
             targets.update(alias.name for alias in node.names)
 
     return frozenset(targets)
+
+
+@cache
+def _benchmark_support_import_targets_by_path(
+) -> tuple[tuple[pathlib.Path, frozenset[str]], ...]:
+    benchmark_root = REPO_ROOT / "tests" / "benchmarks"
+    return tuple(
+        (
+            path.relative_to(REPO_ROOT),
+            _ast_import_targets(
+                ast.parse(
+                    path.read_text(encoding="utf-8"),
+                    filename=str(path),
+                )
+            ),
+        )
+        for path in sorted(benchmark_root.glob("*.py"))
+    )
+
+
+def _assert_deleted_benchmark_module_stays_absent(
+    *,
+    deleted_module_name: str,
+    deleted_path: pathlib.Path,
+) -> None:
+    assert not deleted_path.exists()
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module(deleted_module_name)
+
+    offending_paths = tuple(
+        path
+        for path, import_targets in _benchmark_support_import_targets_by_path()
+        if deleted_module_name in import_targets
+    )
+    assert offending_paths == ()
 
 
 def _module_pattern_case(
@@ -1233,29 +1273,20 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
     )
 
 
-@pytest.mark.parametrize(
-    "module_name",
-    (
-        "tests.benchmarks.benchmark_test_support",
-        "tests.benchmarks.collection_replacement_benchmark_anchor_support",
-        "tests.benchmarks.test_benchmark_test_support",
-        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-    ),
-)
 def test_deleted_collection_replacement_keyword_contract_wrapper_stays_unimportable_and_unreferenced(
-    module_name: str,
 ) -> None:
-    deleted_module_name = (
-        "tests.benchmarks.test_collection_replacement_"
-        + "keyword_contract_benchmark_support"
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=(
+            "tests.benchmarks.test_collection_replacement_"
+            + "keyword_contract_benchmark_support"
+        ),
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / "test_collection_replacement_keyword_contract_benchmark_support.py"
+        ),
     )
-    module = importlib.import_module(module_name)
-
-    with pytest.raises(ModuleNotFoundError):
-        importlib.import_module(deleted_module_name)
-
-    assert deleted_module_name not in _module_import_targets(module)
 
 
 def test_benchmark_test_support_does_not_define_compiled_pattern_module_helper_owner_surface(
@@ -1381,24 +1412,19 @@ def test_compiled_pattern_module_helper_support_owns_compiled_pattern_module_suc
     )
 
 
-@pytest.mark.parametrize(
-    "module_name",
-    (
-        "tests.benchmarks.benchmark_test_support",
-        "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-    ),
-)
 def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_unreferenced(
-    module_name: str,
 ) -> None:
-    deleted_module_name = "tests.benchmarks.compiled_pattern_module_success_benchmark_support"
-    module = importlib.import_module(module_name)
-
-    with pytest.raises(ModuleNotFoundError):
-        importlib.import_module(deleted_module_name)
-
-    assert deleted_module_name not in _module_import_targets(module)
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=(
+            "tests.benchmarks.compiled_pattern_module_success_benchmark_support"
+        ),
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / "compiled_pattern_module_success_benchmark_support.py"
+        ),
+    )
 
 
 @pytest.mark.parametrize(
@@ -1510,92 +1536,68 @@ def test_source_tree_contract_helper_suites_import_from_support(
 
 def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportable(
 ) -> None:
-    deleted_module_name = ".".join(
-        (
-            "tests",
-            "benchmarks",
-            "test"
-            "_compiled"
-            "_pattern"
-            "_module"
-            "_compile"
-            "_benchmark"
-            "_support",
-        )
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=".".join(
+            (
+                "tests",
+                "benchmarks",
+                "test"
+                "_compiled"
+                "_pattern"
+                "_module"
+                "_compile"
+                "_benchmark"
+                "_support",
+            )
+        ),
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / (
+                "test"
+                "_compiled"
+                "_pattern"
+                "_module"
+                "_compile"
+                "_benchmark"
+                "_support.py"
+            )
+        ),
     )
-    deleted_path = (
-        REPO_ROOT
-        / "tests"
-        / "benchmarks"
-        / (
-            "test"
-            "_compiled"
-            "_pattern"
-            "_module"
-            "_compile"
-            "_benchmark"
-            "_support.py"
-        )
-    )
-
-    assert not deleted_path.exists()
-    with pytest.raises(ModuleNotFoundError):
-        importlib.import_module(deleted_module_name)
-
-    for path in (REPO_ROOT / "tests" / "benchmarks").glob("test_*.py"):
-        module_ast = ast.parse(path.read_text(encoding="utf-8"))
-        import_targets: set[str] = set()
-        for node in module_ast.body:
-            if isinstance(node, ast.ImportFrom) and node.module is not None:
-                import_targets.add(node.module)
-            elif isinstance(node, ast.Import):
-                import_targets.update(alias.name for alias in node.names)
-        assert deleted_module_name not in import_targets
 
 
 def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportable(
 ) -> None:
-    deleted_module_name = ".".join(
-        (
-            "tests",
-            "benchmarks",
-            "test"
-            "_compiled"
-            "_pattern"
-            "_module"
-            "_helper"
-            "_benchmark"
-            "_support",
-        )
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=".".join(
+            (
+                "tests",
+                "benchmarks",
+                "test"
+                "_compiled"
+                "_pattern"
+                "_module"
+                "_helper"
+                "_benchmark"
+                "_support",
+            )
+        ),
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / (
+                "test"
+                "_compiled"
+                "_pattern"
+                "_module"
+                "_helper"
+                "_benchmark"
+                "_support.py"
+            )
+        ),
     )
-    deleted_path = (
-        REPO_ROOT
-        / "tests"
-        / "benchmarks"
-        / (
-            "test"
-            "_compiled"
-            "_pattern"
-            "_module"
-            "_helper"
-            "_benchmark"
-            "_support.py"
-        )
-    )
-
-    assert not deleted_path.exists()
-    with pytest.raises(ModuleNotFoundError):
-        importlib.import_module(deleted_module_name)
-
-    for path in (REPO_ROOT / "tests" / "benchmarks").glob("test_*.py"):
-        module_ast = ast.parse(path.read_text(encoding="utf-8"))
-        import_targets: set[str] = set()
-        for node in module_ast.body:
-            if isinstance(node, ast.ImportFrom) and node.module is not None:
-                import_targets.add(node.module)
-            elif isinstance(node, ast.Import):
-                import_targets.update(alias.name for alias in node.names)
-        assert deleted_module_name not in import_targets
 
 
 @pytest.mark.parametrize(
