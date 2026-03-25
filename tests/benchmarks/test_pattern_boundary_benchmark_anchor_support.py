@@ -24,7 +24,7 @@ from tests.benchmarks.benchmark_test_support import (
     run_benchmark_workload_with_cpython,
     selected_manifest_workloads,
 )
-from tests.benchmarks import pattern_boundary_benchmark_anchor_support as support
+from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks.benchmark_test_support import (
     compiled_pattern_contract_expected_build_calls,
     _source_tree_contract_manifest,

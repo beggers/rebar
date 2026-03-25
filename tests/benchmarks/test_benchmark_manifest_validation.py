@@ -18,6 +18,7 @@ from tests.benchmarks.benchmark_test_support import (
     _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
     _SourceTreeContractBuilderSpec,
     _expected_exception_instance,
+    _is_pattern_boundary_wrong_text_model_workload,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
     _write_test_manifest,
@@ -28,9 +29,6 @@ from tests.benchmarks.benchmark_test_support import (
     selected_manifest_workloads,
 )
 from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
-from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
-    _is_pattern_boundary_wrong_text_model_workload,
-)
 
 
 def _validation_payload(**overrides: object) -> dict[str, object]:

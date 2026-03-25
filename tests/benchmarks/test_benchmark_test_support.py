@@ -17,9 +17,6 @@ from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
 from tests.benchmarks import benchmark_test_support as compiled_pattern_module_helper_support
-from tests.benchmarks import (
-    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
-)
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks.benchmark_test_support import (
     MODULE_BOUNDARY_MANIFEST_PATH,
@@ -956,7 +953,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
             id="compiled-pattern-module-helper-after-module-compile",
         ),
         pytest.param(
-            pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+            support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-compiled-pattern-wrong-text-model",
             "optional-group-conditional",
             id="pattern-boundary-after-compiled-pattern-helper",
@@ -1224,10 +1221,6 @@ def test_benchmark_test_support_owns_shared_collection_replacement_classifier_he
                 }
             ),
         ),
-        (
-            pattern_boundary_support,
-            frozenset({"_is_encoded_indexlike_payload"}),
-        ),
     ),
 )
 def test_non_owner_benchmark_support_modules_import_shared_collection_replacement_classifiers_from_support(
@@ -1282,6 +1275,42 @@ def test_deleted_collection_replacement_keyword_contract_wrapper_stays_unimporta
             / "test_collection_replacement_keyword_contract_benchmark_support.py"
         ),
     )
+
+
+def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(support)
+    )
+
+    assert {
+        "_pattern_boundary_wrong_text_model_source_workloads",
+        "_pattern_boundary_wrong_text_model_expected_callback_call",
+        "_run_cpython_pattern_boundary_wrong_text_model_workload",
+        "_pattern_window_positional_indexlike_correctness_case_signature",
+        "_pattern_window_positional_indexlike_workload_args",
+        "_pattern_window_positional_indexlike_workload_signature",
+        "_is_pattern_window_positional_indexlike_workload",
+        "_pattern_keyword_window_correctness_case_signature",
+        "_pattern_keyword_window_workload_signature",
+        "_is_pattern_keyword_window_workload",
+        "_pattern_bounded_wildcard_correctness_case_signature",
+        "_pattern_bounded_wildcard_workload_signature",
+        "_is_pattern_bounded_wildcard_workload",
+        "_pattern_verbose_regression_correctness_case_signature",
+        "_pattern_verbose_regression_workload_signature",
+        "_is_pattern_verbose_regression_workload",
+        "_pattern_boundary_wrong_text_model_correctness_case_signature",
+        "_pattern_boundary_wrong_text_model_workload_signature",
+        "_is_pattern_boundary_wrong_text_model_workload",
+    }.issubset(definition_names)
+    assert {
+        "_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS",
+        "_PATTERN_VERBOSE_REGRESSION_PATTERN",
+        "PATTERN_BOUNDARY_MANIFEST_PATH",
+        "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+        "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
+    }.issubset(assignment_names)
 
 
 def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_surface(
@@ -1449,20 +1478,23 @@ def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_
     )
 
 
+def test_deleted_pattern_boundary_support_stays_unimportable_and_unreferenced() -> None:
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name="tests.benchmarks.pattern_boundary_benchmark_anchor_support",
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / "pattern_boundary_benchmark_anchor_support.py"
+        ),
+    )
+
+
 @pytest.mark.parametrize(
     ("module", "expected_imported_names"),
     (
         (
             collection_replacement_support,
-            frozenset(
-                {
-                    "_SourceTreeContractBuilderSpec",
-                    "_contract_source_workloads",
-                }
-            ),
-        ),
-        (
-            pattern_boundary_support,
             frozenset(
                 {
                     "_SourceTreeContractBuilderSpec",
