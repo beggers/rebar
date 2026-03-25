@@ -1,4 +1,6 @@
-Status: ready
+## RBR-1299: Delete standard benchmark anchor wrapper module
+
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -84,3 +86,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py -k 'standard or owner_definitions or standard_benchmark_definitions'` passed with `257 passed, 139 deselected in 0.46s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py -k 'standard or owner_definitions or standard_benchmark_definitions'` passed with `15/299 tests collected (284 deselected) in 0.12s`; and
   - the negative `bash -lc "test ! -e tests/benchmarks/standard_benchmark_anchor_support.py && test ! -e tests/benchmarks/test_standard_benchmark_anchor_support.py && ! rg -n 'standard_benchmark_anchor_support' tests/benchmarks -g '*.py'"` command currently fails because the wrapper module, its dedicated test, and live imports still exist, and that failure belongs exactly to this cleanup.
+
+## Completion
+- Moved the shared combined standard-benchmark inventory and helper surface onto `tests/benchmarks/benchmark_test_support.py`, keeping the owner tuple splice order and definition-object identity unchanged.
+- Rewired the focused benchmark tests to import `STANDARD_BENCHMARK_DEFINITIONS` from `tests/benchmarks/benchmark_test_support.py` and moved the still-useful shared-inventory assertions onto `tests/benchmarks/test_benchmark_test_support.py`.
+- Deleted `tests/benchmarks/standard_benchmark_anchor_support.py` and `tests/benchmarks/test_standard_benchmark_anchor_support.py` after removing the last benchmark-test import of the wrapper module.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py -k 'standard or owner_definitions or standard_benchmark_definitions'`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py -k 'standard or owner_definitions or standard_benchmark_definitions'`
+  - `bash -lc "test ! -e tests/benchmarks/standard_benchmark_anchor_support.py && test ! -e tests/benchmarks/test_standard_benchmark_anchor_support.py && ! rg -n 'standard_benchmark_anchor_support' tests/benchmarks -g '*.py'"`

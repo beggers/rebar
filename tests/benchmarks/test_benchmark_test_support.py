@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 from functools import cache
+import inspect
+import importlib
 import pathlib
 from types import SimpleNamespace
 
@@ -9,6 +11,18 @@ import pytest
 
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support as support
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_replacement_support,
+)
+from tests.benchmarks import (
+    compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
+)
+from tests.benchmarks import (
+    compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
+)
+from tests.benchmarks import (
+    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks.benchmark_test_support import (
     COMPILE_MATRIX_MANIFEST_PATH,
@@ -20,6 +34,10 @@ from tests.benchmarks.benchmark_test_support import (
     anchor_support_cache_guard,
     _build_compile_proxy_standard_benchmark_definitions,
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
+    _has_standard_benchmark_legacy_workloads,
+    _has_standard_benchmark_special_unanchored_direct_parity_cases,
+    _has_standard_benchmark_special_unanchored_workloads,
+    _runs_standard_benchmark_callback_result_parity,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
     is_compile_proxy_workload,
@@ -697,3 +715,187 @@ def test_compile_proxy_standard_definition_reuses_compile_proxy_helper_functions
         is support.compile_proxy_correctness_case_signature
     )
     assert definition.workload_signature is support.compile_proxy_workload_signature
+
+
+def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() -> None:
+    assert isinstance(support.STANDARD_BENCHMARK_DEFINITIONS, tuple)
+    assert tuple(
+        parameter.values[0]
+        for parameter in support._standard_benchmark_definition_params(
+            include_definition=lambda _: True
+        )
+    ) == support.STANDARD_BENCHMARK_DEFINITIONS
+
+    support_source = inspect.getsource(support)
+    assert "STANDARD_BENCHMARK_DEFINITIONS = (" in support_source
+    assert "_build_standard_benchmark_definitions" not in support_source
+    assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
+
+
+@pytest.mark.parametrize(
+    ("owner_definitions", "preceding_definition_name", "following_definition_name"),
+    (
+        pytest.param(
+            support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+            None,
+            "collection-replacement-module-positional-indexlike",
+            id="compile-proxy-before-collection-replacement",
+        ),
+        pytest.param(
+            collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
+            "compile-proxy",
+            "module-workflow-keyword-flags",
+            id="collection-replacement-after-compile-proxy",
+        ),
+        pytest.param(
+            anchor_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+            "collection-replacement-grouped-callable-replacement",
+            "module-workflow-compiled-pattern-module-compile-literal-success",
+            id="module-workflow-keyword-after-collection-replacement",
+        ),
+        pytest.param(
+            compiled_pattern_module_compile_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            "module-workflow-keyword-errors",
+            "module-workflow-compiled-pattern-literal-success",
+            id="compiled-pattern-module-compile-after-module-workflow-keyword",
+        ),
+        pytest.param(
+            compiled_pattern_module_helper_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+            "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
+            "pattern-window-positional-indexlike",
+            id="compiled-pattern-module-helper-after-module-compile",
+        ),
+        pytest.param(
+            pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+            "module-workflow-compiled-pattern-wrong-text-model",
+            "optional-group-conditional",
+            id="pattern-boundary-after-compiled-pattern-helper",
+        ),
+        pytest.param(
+            anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+            "pattern-boundary-wrong-text-model",
+            None,
+            id="source-tree-standard-after-pattern-boundary",
+        ),
+    ),
+)
+def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
+    owner_definitions: tuple[object, ...],
+    preceding_definition_name: str | None,
+    following_definition_name: str | None,
+) -> None:
+    standard_definitions = support.STANDARD_BENCHMARK_DEFINITIONS
+    standard_names = tuple(definition.name for definition in standard_definitions)
+    owner_names = tuple(definition.name for definition in owner_definitions)
+
+    first_owner_index = standard_names.index(owner_names[0])
+    if preceding_definition_name is None:
+        assert first_owner_index == 0
+    else:
+        assert standard_names[first_owner_index - 1] == preceding_definition_name
+
+    standard_owner_slice = standard_definitions[
+        first_owner_index : first_owner_index + len(owner_definitions)
+    ]
+    assert tuple(definition.name for definition in standard_owner_slice) == owner_names
+    assert standard_owner_slice == owner_definitions
+    assert all(
+        standard_definition is owner_definition
+        for standard_definition, owner_definition in zip(
+            standard_owner_slice,
+            owner_definitions,
+            strict=True,
+        )
+    )
+
+    next_index = first_owner_index + len(owner_definitions)
+    if following_definition_name is None:
+        assert next_index == len(standard_names)
+    else:
+        assert standard_names[next_index] == following_definition_name
+
+
+def test_standard_benchmark_definition_params_preserve_names_and_filters() -> None:
+    legacy_definitions = tuple(
+        parameter.values[0]
+        for parameter in support._standard_benchmark_definition_params(
+            include_definition=_has_standard_benchmark_legacy_workloads
+        )
+    )
+    callback_definitions = tuple(
+        parameter.values[0]
+        for parameter in support._standard_benchmark_definition_params(
+            include_definition=_runs_standard_benchmark_callback_result_parity
+        )
+    )
+    special_unanchored_definitions = tuple(
+        parameter.values[0]
+        for parameter in support._standard_benchmark_definition_params(
+            include_definition=_has_standard_benchmark_special_unanchored_workloads
+        )
+    )
+    direct_parity_definitions = tuple(
+        parameter.values[0]
+        for parameter in support._standard_benchmark_definition_params(
+            include_definition=(
+                _has_standard_benchmark_special_unanchored_direct_parity_cases
+            )
+        )
+    )
+
+    assert all(definition.expected_legacy_workload_ids for definition in legacy_definitions)
+    assert all(definition.run_callback_result_parity for definition in callback_definitions)
+    assert all(
+        definition.expected_special_unanchored_workload_ids
+        for definition in special_unanchored_definitions
+    )
+    assert all(
+        definition.expected_special_unanchored_workload_ids
+        and definition.direct_parity_supplemental_cases
+        for definition in direct_parity_definitions
+    )
+    assert tuple(
+        support._standard_benchmark_definition_id(definition)
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+    ) == tuple(definition.name for definition in support.STANDARD_BENCHMARK_DEFINITIONS)
+
+
+def test_standard_benchmark_manifest_params_preserve_definition_and_manifest_order() -> None:
+    manifest_params = support._standard_benchmark_manifest_params()
+
+    assert tuple(
+        (parameter.values[0].name, parameter.values[1].name)
+        for parameter in manifest_params
+    ) == tuple(
+        (definition.name, manifest_path.name)
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        for manifest_path in definition.manifest_paths
+    )
+
+
+def test_standard_benchmark_special_unanchored_result_parity_params_preserve_order() -> None:
+    params = support._standard_benchmark_special_unanchored_result_parity_params()
+
+    assert tuple(
+        (parameter.values[0].name, parameter.values[1])
+        for parameter in params
+    ) == tuple(
+        (definition.name, workload_id)
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.run_special_unanchored_result_parity
+        for workload_id in definition.expected_special_unanchored_workload_ids
+    )
+
+
+def test_source_tree_combined_suite_imports_standard_benchmark_definitions_from_support(
+) -> None:
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+
+    assert (
+        combined_suite.STANDARD_BENCHMARK_DEFINITIONS
+        is support.STANDARD_BENCHMARK_DEFINITIONS
+    )
+    combined_source = inspect.getsource(combined_suite)
+    assert "from tests.benchmarks.benchmark_test_support import (" in combined_source

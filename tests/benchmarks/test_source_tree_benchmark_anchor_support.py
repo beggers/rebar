@@ -13,6 +13,7 @@ from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
 )
 from tests.benchmarks.benchmark_test_support import (
+    STANDARD_BENCHMARK_DEFINITIONS,
     _synthetic_case,
     _synthetic_manifest,
     _synthetic_manifest_loader,
@@ -30,7 +31,6 @@ from tests.benchmarks.benchmark_test_support import (
     synthetic_workload,
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
-from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
@@ -806,16 +806,6 @@ def test_compile_search_fullmatch_workload_signature_rejects_unsupported_operati
     ("owner_module", "helper_names"),
     (
         pytest.param(
-            standard_support,
-            (
-                "_definition_anchor_expectations",
-                "_workload_case_pair_anchor_expectations",
-                "_workload_case_pairs_case_ids",
-                "_workload_case_pairs_workload_ids",
-            ),
-            id="standard-benchmark",
-        ),
-        pytest.param(
             collection_support,
             (
                 "freeze_signature_value",
@@ -1303,7 +1293,7 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_sour
     definition_names = tuple(definition.name for definition in owner_definitions)
     standard_definitions = {
         definition.name: definition
-        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
         if definition.name in definition_names
     }
 
@@ -1409,7 +1399,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         "nested-group-replacement",
         "open-ended-grouped-alternation",
     )
-    standard_definitions = standard_support.STANDARD_BENCHMARK_DEFINITIONS
+    standard_definitions = STANDARD_BENCHMARK_DEFINITIONS
     start_index = next(
         index
         for index, definition in enumerate(standard_definitions)

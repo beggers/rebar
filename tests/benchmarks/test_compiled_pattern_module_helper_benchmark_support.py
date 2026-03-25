@@ -17,6 +17,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
+    STANDARD_BENCHMARK_DEFINITIONS,
     _write_test_manifest,
 )
 from tests.benchmarks import (
@@ -41,7 +42,6 @@ from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
-from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
@@ -150,7 +150,7 @@ def test_standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_de
 
     standard_definitions = tuple(
         definition
-        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
         if definition.name in definition_names
     )
 

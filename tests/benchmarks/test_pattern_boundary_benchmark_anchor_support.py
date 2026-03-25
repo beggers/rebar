@@ -16,13 +16,13 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
+    STANDARD_BENCHMARK_DEFINITIONS,
     _write_test_manifest,
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     assert_zero_gap_manifest_workloads_measured,
     selected_manifest_workloads,
 )
 from tests.benchmarks import pattern_boundary_benchmark_anchor_support as support
-from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
@@ -114,7 +114,7 @@ def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory(
     owner_definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
     standard_definitions = tuple(
         definition
-        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
         if definition.name in _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES
     )
 

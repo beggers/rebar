@@ -17,6 +17,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
+    STANDARD_BENCHMARK_DEFINITIONS,
     compiled_pattern_contract_expected_build_calls,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
@@ -29,7 +30,6 @@ from tests.benchmarks.benchmark_test_support import (
     selected_manifest_workloads,
 )
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
-from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
@@ -766,7 +766,7 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
     )
     definitions = [
         definition
-        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
         if definition.name == "collection-replacement-grouped-callable-replacement"
     ]
 
@@ -788,7 +788,7 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
     owner_definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
     standard_definitions = tuple(
         definition
-        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
         if definition.name in _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
     )
 

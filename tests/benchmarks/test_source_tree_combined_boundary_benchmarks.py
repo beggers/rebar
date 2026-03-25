@@ -19,6 +19,7 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks.benchmark_test_support import (
+    STANDARD_BENCHMARK_DEFINITIONS,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
     assert_benchmark_workload_contract,
@@ -164,9 +165,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     source_tree_combined_target_manifest_ids,
     source_tree_scorecard_case,
     source_tree_scorecard_case_ids,
-)
-from tests.benchmarks.standard_benchmark_anchor_support import (
-    STANDARD_BENCHMARK_DEFINITIONS,
 )
 from tests.benchmarks.benchmark_test_support import (
     StandardBenchmarkAnchorContractDefinition,
