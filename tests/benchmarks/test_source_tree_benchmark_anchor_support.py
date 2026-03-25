@@ -5,6 +5,7 @@ from functools import partial
 import inspect
 import pathlib
 from types import SimpleNamespace
+import unittest
 
 import pytest
 
@@ -204,6 +205,227 @@ def _owner_definition_manifest_path_names(
         )
 
     return tuple(manifest_path_names)
+
+
+def _report_workload(
+    *,
+    workload_id: str,
+    operation: str,
+    family: str,
+) -> object:
+    return SimpleNamespace(
+        workload_id=workload_id,
+        operation=operation,
+        family=family,
+    )
+
+
+def _report_manifest(
+    *,
+    manifest_id: str,
+    workloads: tuple[object, ...],
+    smoke_workload_ids: tuple[str, ...] = (),
+    spec_refs: tuple[str, ...] = (),
+    schema_version: int = 1,
+    notes: str | None = None,
+) -> object:
+    workload_by_id = {
+        workload.workload_id: workload
+        for workload in workloads
+    }
+
+    def _selected_workloads(
+        selected_workload_ids: tuple[str, ...] | None = None,
+    ) -> tuple[object, ...]:
+        if selected_workload_ids is None:
+            return workloads
+        return tuple(
+            workload_by_id[workload_id]
+            for workload_id in selected_workload_ids
+        )
+
+    return SimpleNamespace(
+        manifest_id=manifest_id,
+        schema_version=schema_version,
+        workloads=workloads,
+        smoke_workload_ids=lambda: smoke_workload_ids,
+        spec_refs=spec_refs,
+        notes=notes,
+        selected_workloads=_selected_workloads,
+    )
+
+
+def _synthetic_report_scorecard(
+    *,
+    workloads: tuple[dict[str, object], ...],
+    artifacts: dict[str, object],
+    baseline: dict[str, object],
+    phase: str = "synthetic-phase",
+    runner_version: str = "synthetic-runner",
+    native_module_loaded: bool = False,
+) -> dict[str, object]:
+    known_gap_statuses = {"known-gap", "unimplemented"}
+
+    def _known_gap_count(rows: list[dict[str, object]]) -> int:
+        return sum(
+            1
+            for row in rows
+            if row["status"] in known_gap_statuses
+        )
+
+    family_ids = sorted(
+        {
+            "module",
+            "parser",
+            *(str(row["family"]) for row in workloads),
+        }
+    )
+    cache_mode_ids = sorted({str(row["cache_mode"]) for row in workloads})
+    families: dict[str, dict[str, object]] = {}
+    for family_id in family_ids:
+        family_rows = [
+            row
+            for row in workloads
+            if row["family"] == family_id
+        ]
+        families[family_id] = {
+            "workload_count": len(family_rows),
+            "known_gap_count": _known_gap_count(family_rows),
+            "cache_modes": {
+                cache_mode: {
+                    "workload_count": len(
+                        [
+                            row
+                            for row in family_rows
+                            if row["cache_mode"] == cache_mode
+                        ]
+                    ),
+                    "known_gap_count": _known_gap_count(
+                        [
+                            row
+                            for row in family_rows
+                            if row["cache_mode"] == cache_mode
+                        ]
+                    ),
+                }
+                for cache_mode in sorted(
+                    {
+                        str(row["cache_mode"])
+                        for row in family_rows
+                    }
+                )
+            },
+        }
+    cache_modes = {
+        cache_mode: {
+            "workload_count": len(
+                [
+                    row
+                    for row in workloads
+                    if row["cache_mode"] == cache_mode
+                ]
+            ),
+            "known_gap_count": _known_gap_count(
+                [
+                    row
+                    for row in workloads
+                    if row["cache_mode"] == cache_mode
+                ]
+            ),
+        }
+        for cache_mode in cache_mode_ids
+    }
+    measured_workloads = sum(
+        1
+        for row in workloads
+        if row["status"] == "measured"
+    )
+    summary: dict[str, object] = {
+        "known_gap_count": _known_gap_count(list(workloads)),
+        "measured_workloads": measured_workloads,
+        "module_workloads": sum(
+            1
+            for row in workloads
+            if row["family"] == "module"
+        ),
+        "parser_workloads": sum(
+            1
+            for row in workloads
+            if row["family"] == "parser"
+        ),
+        "regression_workloads": sum(
+            1
+            for row in workloads
+            if row["manifest_id"] == "regression-matrix"
+        ),
+        "total_workloads": len(workloads),
+        "workloads_by_cache_mode": {
+            cache_mode: cache_modes[cache_mode]["workload_count"]
+            for cache_mode in cache_mode_ids
+        },
+    }
+    if measured_workloads:
+        summary.update(
+            {
+                "baseline_median_ns": 101,
+                "baseline_median_ops_per_second": 9.9,
+                "implementation_median_ns": 151,
+                "implementation_median_ops_per_second": 6.6,
+            }
+        )
+
+    return {
+        "schema_version": "1.0",
+        "suite": "benchmarks",
+        "phase": phase,
+        "baseline": baseline,
+        "implementation": {
+            "module_name": "rebar",
+            "adapter": "source-tree-shim",
+            "adapter_mode_requested": "source-tree-shim",
+            "adapter_mode_resolved": "source-tree-shim",
+            "build_mode": "source-tree-shim",
+            "timing_path": "source-tree-shim",
+            "native_build_tool": None,
+            "native_wheel": None,
+            "native_module_loaded": native_module_loaded,
+            "native_module_name": "rebar._rebar",
+            "native_scaffold_status": (
+                "scaffold-only" if native_module_loaded else None
+            ),
+            "native_target_cpython_series": (
+                "3.12.x" if native_module_loaded else None
+            ),
+            "native_unavailable_reason": (
+                "native timing not requested for synthetic contract coverage"
+            ),
+        },
+        "environment": {
+            "runner_version": runner_version,
+            "execution_model": "single-process in-process adapter comparison",
+        },
+        "summary": summary,
+        "families": families,
+        "cache_modes": cache_modes,
+        "workloads": list(workloads),
+        "artifacts": artifacts,
+    }
+
+
+def _summary_view(scorecard: dict[str, object]) -> dict[str, object]:
+    summary = scorecard["summary"]
+    assert isinstance(summary, dict)
+    return {
+        key: summary[key]
+        for key in (
+            "known_gap_count",
+            "measured_workloads",
+            "module_workloads",
+            "parser_workloads",
+            "regression_workloads",
+            "total_workloads",
+        )
+    }
 
 
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
@@ -691,6 +913,214 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
 
     for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
         assert function_name not in local_function_names
+
+
+def test_benchmark_summary_consistent_counts_unimplemented_and_regression_rows() -> None:
+    scorecard = _synthetic_report_scorecard(
+        workloads=(
+            {
+                "id": "parser-cold-gap",
+                "manifest_id": "synthetic-boundary",
+                "family": "parser",
+                "cache_mode": "cold",
+                "status": "known-gap",
+            },
+            {
+                "id": "module-warm-measured",
+                "manifest_id": "synthetic-boundary",
+                "family": "module",
+                "cache_mode": "warm",
+                "status": "measured",
+            },
+            {
+                "id": "regression-purged-unimplemented",
+                "manifest_id": "regression-matrix",
+                "family": "regression",
+                "cache_mode": "purged",
+                "status": "unimplemented",
+            },
+        ),
+        artifacts={
+            "selection_mode": "full",
+            "raw_samples": None,
+            "manifests": [],
+            "manifest": None,
+            "manifest_id": "combined-benchmark-suite",
+            "manifest_schema_version": 1,
+        },
+        baseline={
+            "python": "synthetic",
+            "version_family": "3.12.x",
+            "re_module": "re",
+        },
+    )
+
+    support._assert_benchmark_summary_consistent(
+        unittest.TestCase(),
+        scorecard,
+        _summary_view(scorecard),
+    )
+
+
+def test_source_tree_report_contract_accepts_single_manifest_native_loaded_scorecard(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "build_cpython_baseline",
+        lambda version_family: {
+            "python": "synthetic",
+            "version_family": version_family,
+        },
+    )
+    manifest_path = "benchmarks/workloads/synthetic_boundary.py"
+    manifest = _report_manifest(
+        manifest_id="synthetic-boundary",
+        schema_version=7,
+        workloads=(
+            _report_workload(
+                workload_id="module-search-synthetic-warm-str",
+                operation="module.search",
+                family="module",
+            ),
+            _report_workload(
+                workload_id="module-compile-synthetic-cold-gap",
+                operation="module.compile",
+                family="parser",
+            ),
+        ),
+        smoke_workload_ids=("module-search-synthetic-warm-str",),
+        spec_refs=("docs/spec/synthetic-boundary.md",),
+    )
+    manifest_record = support._artifact_manifest_record(manifest_path, manifest)
+    scorecard = _synthetic_report_scorecard(
+        workloads=(
+            {
+                "id": "module-search-synthetic-warm-str",
+                "manifest_id": manifest.manifest_id,
+                "family": "module",
+                "cache_mode": "warm",
+                "status": "measured",
+            },
+            {
+                "id": "module-compile-synthetic-cold-gap",
+                "manifest_id": manifest.manifest_id,
+                "family": "parser",
+                "cache_mode": "cold",
+                "status": "known-gap",
+            },
+        ),
+        artifacts={
+            "selection_mode": "full",
+            "raw_samples": None,
+            "manifests": [manifest_record],
+            "manifest": manifest_record["manifest"],
+            "manifest_id": manifest_record["manifest_id"],
+            "manifest_schema_version": manifest_record["manifest_schema_version"],
+            "workload_count": manifest_record["workload_count"],
+            "smoke_workload_ids": manifest_record["smoke_workload_ids"],
+            "spec_refs": manifest_record["spec_refs"],
+        },
+        baseline={
+            "python": "synthetic",
+            "version_family": "3.12.x",
+            "re_module": "re",
+        },
+        native_module_loaded=True,
+    )
+    tracked_report_path = tmp_path / "synthetic-benchmark-report.py"
+    tracked_report_path.write_text("REPORT = {}\n")
+
+    support.assert_source_tree_benchmark_contract(
+        unittest.TestCase(),
+        scorecard,
+        _summary_view(scorecard),
+        expected_phase="synthetic-phase",
+        expected_runner_version="synthetic-runner",
+        expected_adapter="source-tree-shim",
+        expected_manifests=[manifest],
+        expected_manifest_paths=[manifest_path],
+        expected_selection_mode="full",
+        tracked_report_path=tracked_report_path,
+    )
+
+
+def test_manifest_contract_helpers_validate_selected_workloads_and_lookup() -> None:
+    manifest_path = "benchmarks/workloads/synthetic_boundary.py"
+    manifest = _report_manifest(
+        manifest_id="synthetic-boundary",
+        workloads=(
+            _report_workload(
+                workload_id="module-compile-synthetic-cold",
+                operation="module.compile",
+                family="parser",
+            ),
+            _report_workload(
+                workload_id="module-search-synthetic-warm",
+                operation="module.search",
+                family="module",
+            ),
+            _report_workload(
+                workload_id="pattern-fullmatch-synthetic-purged",
+                operation="pattern.fullmatch",
+                family="module",
+            ),
+        ),
+        smoke_workload_ids=("module-compile-synthetic-cold",),
+        spec_refs=("docs/spec/synthetic-boundary.md",),
+        notes="synthetic manifest notes",
+    )
+    manifest_record = support._artifact_manifest_record(manifest_path, manifest)
+    manifest_summary = {
+        "workload_count": 3,
+        "selected_workload_count": 2,
+        "measured_workloads": 1,
+        "known_gap_count": 1,
+        "readiness": "partial",
+        "selection_mode": "smoke",
+        "available_smoke_workload_count": 1,
+        "smoke_workload_ids": manifest.smoke_workload_ids(),
+        "families": ["module", "parser"],
+        "operations": ["module.compile", "module.search"],
+        "spec_refs": manifest.spec_refs,
+        "notes": manifest.notes,
+    }
+    scorecard = {"artifacts": {"manifests": [manifest_record]}}
+
+    support.assert_benchmark_manifest_contract(
+        unittest.TestCase(),
+        manifest_summary,
+        support.find_manifest_record(scorecard, manifest.manifest_id),
+        manifest=manifest,
+        manifest_path=manifest_path,
+        known_gap_count=1,
+        selection_mode="smoke",
+        selected_workload_ids=(
+            "module-compile-synthetic-cold",
+            "module-search-synthetic-warm",
+        ),
+    )
+
+
+def test_find_manifest_record_rejects_missing_manifest_id() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="missing manifest record for 'missing-boundary'",
+    ):
+        support.find_manifest_record(
+            {
+                "artifacts": {
+                    "manifests": [
+                        {
+                            "manifest_id": "synthetic-boundary",
+                            "manifest": "benchmarks/workloads/synthetic_boundary.py",
+                        }
+                    ]
+                }
+            },
+            "missing-boundary",
+        )
 
 
 def test_module_keyword_success_workload_and_case_signatures_stay_pinned() -> None:
