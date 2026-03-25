@@ -1,6 +1,6 @@
 ## RBR-1277: Publish quantified conditional callable-replacement benchmark slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-25
 
@@ -52,3 +52,13 @@ Created: 2026-03-25
 - No exact post-drain feature follow-on is pinned after this seed:
   - tracked state already honestly says no ready feature follow-on currently survives on the callable-replacement owner route; and
   - this narrow same-owner-path scan identified one concrete benchmark publication gap but did not expose a second adjacent unpublished callable slice beyond it.
+
+## Completion Notes
+- Retired as already satisfied in the current checkout instead of widening any benchmark manifest:
+  - the exact quantified callable workload ids enumerated by `_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS` are already published in `benchmarks/workloads/conditional_group_exists_boundary.py`, not missing from the tracked benchmark surface;
+  - the tracked publication `reports/benchmarks/latest.py` already contains those quantified numbered and named callable replacement rows; and
+  - the acceptance tests named by this task already pass unchanged on the current branch.
+- Verified on 2026-03-25:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'quantified and callable and conditional_group_exists'` -> `6 passed, 82 deselected`;
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py -k 'quantified and callable and conditional_group_exists'` -> `24 passed, 168 deselected`.
+- No tracked benchmark artifact changed in this run, so `reports/benchmarks/latest.py` was not regenerated.
