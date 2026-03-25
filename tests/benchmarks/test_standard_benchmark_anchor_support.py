@@ -103,6 +103,14 @@ def _build_standard_benchmark_definition_imported_names(
     }
 
 
+def _function_referenced_names(function_def: ast.FunctionDef) -> set[str]:
+    return {
+        node.id
+        for node in ast.walk(function_def)
+        if isinstance(node, ast.Name)
+    }
+
+
 def _imported_names_from_module(
     module: Any,
     source_module_name: str,
@@ -656,16 +664,16 @@ def test_standard_support_source_no_longer_inlines_collection_replacement_defini
 
 def test_standard_support_source_no_longer_mentions_compile_proxy_helpers_or_inline_definition(
 ) -> None:
-    import inspect
+    referenced_names = _function_referenced_names(
+        _standard_benchmark_definitions_builder()
+    )
 
-    support_source = inspect.getsource(support)
-
-    assert "COMPILE_MATRIX_MANIFEST_PATH" not in support_source
-    assert "REGRESSION_MATRIX_MANIFEST_PATH" not in support_source
-    assert "compile_proxy_correctness_case_signature" not in support_source
-    assert "compile_proxy_workload_signature" not in support_source
-    assert "is_compile_proxy_workload" not in support_source
-    assert 'name="compile-proxy"' not in support_source
+    assert "COMPILE_MATRIX_MANIFEST_PATH" not in referenced_names
+    assert "REGRESSION_MATRIX_MANIFEST_PATH" not in referenced_names
+    assert "compile_proxy_correctness_case_signature" not in referenced_names
+    assert "compile_proxy_workload_signature" not in referenced_names
+    assert "is_compile_proxy_workload" not in referenced_names
+    assert "_build_compile_proxy_standard_benchmark_definitions" not in referenced_names
 
 
 def test_standard_support_source_no_longer_mentions_source_tree_manifest_path_constants(
@@ -679,16 +687,14 @@ def test_standard_support_source_no_longer_mentions_source_tree_manifest_path_co
 
 
 def test_standard_support_imports_only_compile_proxy_owner_tuple() -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
     imported_names = _build_standard_benchmark_definition_imported_names(
         "tests.benchmarks.benchmark_test_support"
     )
+    splice_names = _build_standard_benchmark_definition_splice_names()
 
     assert imported_names == {"COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"}
-    assert "*COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
-    assert "_build_compile_proxy_standard_benchmark_definitions" not in support_source
+    assert splice_names[0] == "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"
+    assert splice_names.count("COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS") == 1
 
 
 def test_standard_inventory_reuses_owner_owned_compile_proxy_definition() -> None:
