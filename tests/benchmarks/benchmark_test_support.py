@@ -2564,6 +2564,36 @@ def find_workload_document(
     )
 
 
+def assert_manifest_workload_contracts(
+    testcase: Any,
+    manifest: BenchmarkManifest,
+    scorecard: dict[str, Any],
+    workload_expectations: Iterable[tuple[str, str]],
+    *,
+    subtest_label: str | None = None,
+) -> None:
+    manifest_id = manifest.manifest_id
+    for workload_id, expected_status in workload_expectations:
+        if subtest_label is None:
+            assert_benchmark_workload_contract(
+                testcase,
+                find_workload_record(scorecard, workload_id),
+                manifest_id=manifest_id,
+                workload_document=find_workload_document(manifest, workload_id),
+                expected_status=expected_status,
+            )
+            continue
+
+        with testcase.subTest(**{subtest_label: workload_id}):
+            assert_benchmark_workload_contract(
+                testcase,
+                find_workload_record(scorecard, workload_id),
+                manifest_id=manifest_id,
+                workload_document=find_workload_document(manifest, workload_id),
+                expected_status=expected_status,
+            )
+
+
 def assert_zero_gap_manifest_workloads_measured(
     *,
     manifest_path: pathlib.Path | str,
@@ -2594,14 +2624,22 @@ def assert_zero_gap_manifest_workloads_measured(
             expected_total_workload_count,
         )
 
-    for workload_id in expected_measured_workload_ids:
-        assert_benchmark_workload_contract(
-            testcase,
-            find_workload_record(scorecard, workload_id),
-            manifest_id=manifest_id,
-            workload_document=find_workload_document(manifest, workload_id),
-            expected_status="measured",
-        )
+    subtest_label: str | None = None
+    if expected_total_workload_count is not None:
+        subtest_label = "measured_workload_id"
+    elif len(expected_measured_workload_ids) > 1:
+        subtest_label = "workload_id"
+
+    assert_manifest_workload_contracts(
+        testcase,
+        manifest,
+        scorecard,
+        (
+            (workload_id, "measured")
+            for workload_id in expected_measured_workload_ids
+        ),
+        subtest_label=subtest_label,
+    )
 
 
 def assert_benchmark_workload_contract(

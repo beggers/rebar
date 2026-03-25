@@ -1933,6 +1933,16 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
     }.issubset(assignment_names)
 
 
+def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper(
+) -> None:
+    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert hasattr(support, "assert_manifest_workload_contracts")
+    assert "assert_manifest_workload_contracts" in definition_names
+
+
 def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_surface(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
@@ -2267,6 +2277,26 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
     )
     assert getattr(module, "benchmark_test_support") is support
     assert _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES.isdisjoint(local_names)
+
+
+def test_source_tree_combined_suite_deletes_manifest_contract_wrapper_methods() -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    suite_definition = _module_class_definition(
+        module,
+        "SourceTreeCombinedBoundaryBenchmarkSuiteTest",
+    )
+    method_names = {
+        node.name
+        for node in suite_definition.body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    assert {
+        "_assert_manifest_workload_contracts",
+        "_assert_zero_gap_manifest_workloads_measured",
+    }.isdisjoint(method_names)
 
 
 def test_pattern_boundary_anchor_support_reuses_shared_pattern_case_builder() -> None:

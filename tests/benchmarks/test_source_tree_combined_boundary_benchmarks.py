@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Iterable
 from functools import partial
 import json
 import re
-from typing import Any
 import unittest
 
 import pytest
@@ -44,82 +42,6 @@ WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
-
-    def _assert_manifest_workload_contracts(
-        self,
-        manifest: BenchmarkManifest,
-        scorecard: dict[str, object],
-        workload_expectations: Iterable[tuple[str, str]],
-        *,
-        subtest_label: str | None = None,
-    ) -> None:
-        manifest_id = manifest.manifest_id
-        for workload_id, expected_status in workload_expectations:
-            if subtest_label is None:
-                benchmark_test_support.assert_benchmark_workload_contract(
-                    self,
-                    benchmark_test_support.find_workload_record(scorecard, workload_id),
-                    manifest_id=manifest_id,
-                    workload_document=benchmark_test_support.find_workload_document(
-                        manifest,
-                        workload_id,
-                    ),
-                    expected_status=expected_status,
-                )
-                continue
-
-            with self.subTest(**{subtest_label: workload_id}):
-                benchmark_test_support.assert_benchmark_workload_contract(
-                    self,
-                    benchmark_test_support.find_workload_record(scorecard, workload_id),
-                    manifest_id=manifest_id,
-                    workload_document=benchmark_test_support.find_workload_document(
-                        manifest,
-                        workload_id,
-                    ),
-                    expected_status=expected_status,
-                )
-
-    def _assert_zero_gap_manifest_workloads_measured(
-        self,
-        case,
-        manifest_id: str,
-        expected_measured_workload_ids: tuple[str, ...],
-        expected_measured_workload_count: int,
-        expected_total_workload_count: int | None = None,
-    ) -> None:
-        _, scorecard = run_harness_scorecard(
-            "rebar_harness.benchmarks",
-            ["--manifest", str(case.target_manifest.path)],
-            report_name="benchmarks.json",
-        )
-        manifest_summary = scorecard["manifests"][manifest_id]
-        self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(
-            manifest_summary["measured_workloads"],
-            expected_measured_workload_count,
-        )
-        if expected_total_workload_count is not None:
-            self.assertEqual(
-                manifest_summary["workload_count"],
-                expected_total_workload_count,
-            )
-
-        subtest_label: str | None = None
-        if expected_total_workload_count is not None:
-            subtest_label = "measured_workload_id"
-        elif len(expected_measured_workload_ids) > 1:
-            subtest_label = "workload_id"
-
-        self._assert_manifest_workload_contracts(
-            case.target_manifest,
-            scorecard,
-            (
-                (workload_id, "measured")
-                for workload_id in expected_measured_workload_ids
-            ),
-            subtest_label=subtest_label,
-        )
 
     def _assert_zero_gap_bytes_representative_subset(
         self,
@@ -173,11 +95,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         manifest_expectation.representative_measured_workload_ids,
                     )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_measured_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_measured_workload_count,
             expected_total_workload_count=expected_total_workload_count,
         )
 
@@ -216,11 +138,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_measured_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_measured_workload_count,
         )
 
     def test_raw_manifest_expectations_omit_empty_measured_representative_defaults(
@@ -303,14 +225,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "literal-flag-boundary",
-            (
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id="literal-flag-boundary",
+            expected_measured_workload_ids=(
                 "module-search-ignorecase-ascii-cold-gap",
                 "pattern-search-ignorecase-ascii-warm-gap",
             ),
-            10,
+            expected_measured_workload_count=10,
         )
 
     def test_zero_gap_manifest_representative_promotions_keep_selected_rows_measured(
@@ -434,11 +356,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     (),
                 )
 
-                self._assert_zero_gap_manifest_workloads_measured(
-                    case,
-                    manifest_id,
-                    expected_workload_ids,
-                    expected_measured_workload_count,
+                benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+                    manifest_path=case.target_manifest.path,
+                    manifest_id=manifest_id,
+                    expected_measured_workload_ids=expected_workload_ids,
+                    expected_measured_workload_count=expected_measured_workload_count,
                 )
 
     def test_zero_gap_bytes_manifest_promotions_keep_selected_rows_publicly_measured(
@@ -525,11 +447,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     public_representatives,
                 )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -564,11 +486,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -709,11 +631,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -774,11 +696,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -841,11 +763,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1475,11 +1397,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     public_representatives,
                 )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1527,11 +1449,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_measured_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_measured_workload_count,
             expected_total_workload_count=expected_total_workload_count,
         )
 
@@ -1575,11 +1497,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1623,11 +1545,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1671,11 +1593,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1719,11 +1641,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1767,11 +1689,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1819,11 +1741,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1867,11 +1789,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -1915,11 +1837,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -2264,11 +2186,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -2312,11 +2234,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -2360,11 +2282,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -2408,11 +2330,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -2456,11 +2378,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            manifest_id,
-            expected_workload_ids,
-            expected_workload_count,
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
             expected_total_workload_count=expected_workload_count,
         )
 
@@ -2499,7 +2421,8 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         self.assertEqual(manifest_summary["known_gap_count"], 0)
         self.assertEqual(manifest_summary["measured_workloads"], 8)
 
-        self._assert_manifest_workload_contracts(
+        benchmark_test_support.assert_manifest_workload_contracts(
+            self,
             scorecard_case.manifest_for_id("regression-matrix"),
             scorecard,
             (
@@ -2625,7 +2548,8 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                         )
                     )
 
-                self._assert_manifest_workload_contracts(
+                benchmark_test_support.assert_manifest_workload_contracts(
+                    self,
                     case.target_manifest,
                     scorecard,
                     workload_expectations,
@@ -2715,7 +2639,8 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         )
 
         with self.subTest(slice_id=expectation.slice_id):
-            self._assert_manifest_workload_contracts(
+            benchmark_test_support.assert_manifest_workload_contracts(
+                self,
                 manifest,
                 scorecard,
                 (
@@ -2753,7 +2678,8 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             len(case.target_manifest.workloads),
         )
 
-        self._assert_manifest_workload_contracts(
+        benchmark_test_support.assert_manifest_workload_contracts(
+            self,
             case.target_manifest,
             scorecard,
             (

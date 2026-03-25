@@ -1,6 +1,6 @@
 ## RBR-1331: Delete source-tree combined workload contract wrappers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -52,3 +52,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed with `466 passed, 2264 subtests passed in 13.31s`
   - `bash -lc "! rg -n '^    def (_assert_manifest_workload_contracts|_assert_zero_gap_manifest_workloads_measured)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those class-local wrappers still exist, and that failure belongs exactly to this cleanup
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
+
+## Completion
+- Added shared `assert_manifest_workload_contracts(...)` to `tests/benchmarks/benchmark_test_support.py` and routed the shared zero-gap helper through it so manifest workload contract assertions now live on the common support surface.
+- Deleted `SourceTreeCombinedBoundaryBenchmarkSuiteTest._assert_manifest_workload_contracts(...)` and `_assert_zero_gap_manifest_workloads_measured(...)`, replacing all remaining combined-suite call sites with shared support helpers.
+- Extended `tests/benchmarks/test_benchmark_test_support.py` to pin the new shared helper and to fail if the combined suite reintroduces either deleted wrapper method.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` -> `468 passed, 1807 subtests passed in 13.55s`
+  - `bash -lc "! rg -n '^    def (_assert_manifest_workload_contracts|_assert_zero_gap_manifest_workloads_measured)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py`
