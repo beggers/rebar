@@ -956,12 +956,12 @@ def test_grouped_alternation_replacement_live_signatures_cover_module_and_patter
         0,
         "str",
     )
-    assert support._grouped_alternation_replacement_workload_args(
-        module_sub_workload
-    ) == ("a(b|c)d", "\\1x", "abdacd")
-    assert support._grouped_alternation_replacement_workload_signature(
-        module_sub_workload
-    ) == (
+    assert support._grouped_alternation_workload_args(module_sub_workload) == (
+        "a(b|c)d",
+        "\\1x",
+        "abdacd",
+    )
+    assert support._grouped_alternation_workload_signature(module_sub_workload) == (
         "module.sub",
         None,
         ("a(b|c)d", "\\1x", "abdacd"),
@@ -980,10 +980,13 @@ def test_grouped_alternation_replacement_live_signatures_cover_module_and_patter
         0,
         "str",
     )
-    assert support._grouped_alternation_replacement_workload_args(
-        module_subn_workload
-    ) == ("a(?P<word>b|c)d", "\\g<word>x", "abdacd", 1)
-    assert support._grouped_alternation_replacement_workload_signature(
+    assert support._grouped_alternation_workload_args(module_subn_workload) == (
+        "a(?P<word>b|c)d",
+        "\\g<word>x",
+        "abdacd",
+        1,
+    )
+    assert support._grouped_alternation_workload_signature(
         module_subn_workload
     ) == (
         "module.subn",
@@ -1004,12 +1007,11 @@ def test_grouped_alternation_replacement_live_signatures_cover_module_and_patter
         0,
         "str",
     )
-    assert support._grouped_alternation_replacement_workload_args(
-        pattern_sub_workload
-    ) == ("\\1x", "acdabd")
-    assert support._grouped_alternation_replacement_workload_signature(
-        pattern_sub_workload
-    ) == (
+    assert support._grouped_alternation_workload_args(pattern_sub_workload) == (
+        "\\1x",
+        "acdabd",
+    )
+    assert support._grouped_alternation_workload_signature(pattern_sub_workload) == (
         "pattern.sub",
         "a(b|c)d",
         ("\\1x", "acdabd"),
@@ -1028,10 +1030,12 @@ def test_grouped_alternation_replacement_live_signatures_cover_module_and_patter
         0,
         "str",
     )
-    assert support._grouped_alternation_replacement_workload_args(
-        pattern_subn_workload
-    ) == ("\\g<word>x", "acdabd", 1)
-    assert support._grouped_alternation_replacement_workload_signature(
+    assert support._grouped_alternation_workload_args(pattern_subn_workload) == (
+        "\\g<word>x",
+        "acdabd",
+        1,
+    )
+    assert support._grouped_alternation_workload_signature(
         pattern_subn_workload
     ) == (
         "pattern.subn",
@@ -1057,25 +1061,3 @@ def test_grouped_alternation_workload_helpers_reject_unsupported_operations() ->
         support._grouped_alternation_workload_args(unsupported_workload)
     with pytest.raises(AssertionError, match="unexpected grouped-alternation"):
         support._grouped_alternation_workload_signature(unsupported_workload)
-
-
-def test_grouped_alternation_replacement_workload_helpers_reject_unsupported_operations() -> None:
-    unsupported_workload = synthetic_workload(
-        manifest_id="grouped-alternation-boundary",
-        workload_id="module-search-grouped-alternation-replacement-unsupported",
-        operation="module.search",
-        pattern="a(b|c)d",
-        haystack="abdacd",
-        replacement="\\1x",
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match="unexpected grouped-alternation replacement",
-    ):
-        support._grouped_alternation_replacement_workload_args(unsupported_workload)
-    with pytest.raises(
-        AssertionError,
-        match="unexpected grouped-alternation replacement",
-    ):
-        support._grouped_alternation_replacement_workload_signature(unsupported_workload)

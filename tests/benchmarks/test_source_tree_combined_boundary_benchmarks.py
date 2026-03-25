@@ -124,7 +124,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _counted_repeat_workload_signature,
     _grouped_alternation_correctness_case_signature,
     _grouped_alternation_replacement_correctness_case_signature,
-    _grouped_alternation_replacement_workload_signature,
     _grouped_alternation_workload_signature,
     _is_non_alternation_counted_repeat_workload,
     assert_benchmark_workload_matches_expected_result,
@@ -9238,7 +9237,7 @@ _STANDARD_BENCHMARK_DEFINITIONS = (
         correctness_case_signature=(
             _grouped_alternation_replacement_correctness_case_signature
         ),
-        workload_signature=_grouped_alternation_replacement_workload_signature,
+        workload_signature=_grouped_alternation_workload_signature,
         run_callback_result_parity=True,
         expected_legacy_workload_ids=frozenset(
             {
@@ -9343,7 +9342,7 @@ _STANDARD_BENCHMARK_DEFINITIONS = (
         correctness_case_signature=(
             _grouped_alternation_replacement_correctness_case_signature
         ),
-        workload_signature=_grouped_alternation_replacement_workload_signature,
+        workload_signature=_grouped_alternation_workload_signature,
         run_callback_result_parity=True,
         expected_special_unanchored_workload_ids=(
             "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",

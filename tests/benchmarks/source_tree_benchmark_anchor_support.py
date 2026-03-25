@@ -414,49 +414,6 @@ def _grouped_alternation_replacement_correctness_case_signature(
     return None
 
 
-def _grouped_alternation_replacement_workload_args(workload: Any) -> tuple[Any, ...]:
-    if workload.operation in {"module.sub", "module.subn"}:
-        args = [workload.pattern, workload.replacement, workload.haystack]
-    elif workload.operation in {"pattern.sub", "pattern.subn"}:
-        args = [workload.replacement, workload.haystack]
-    else:
-        raise AssertionError(
-            "unexpected grouped-alternation replacement workload operation "
-            f"{workload.operation!r}"
-        )
-
-    if workload.count:
-        args.append(workload.count)
-    return freeze_signature_value(args)
-
-
-def _grouped_alternation_replacement_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    if workload.operation in {"module.sub", "module.subn"}:
-        return (
-            workload.operation,
-            None,
-            _grouped_alternation_replacement_workload_args(workload),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    if workload.operation in {"pattern.sub", "pattern.subn"}:
-        return (
-            workload.operation,
-            workload.pattern,
-            _grouped_alternation_replacement_workload_args(workload),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-    raise AssertionError(
-        "unexpected grouped-alternation replacement workload operation "
-        f"{workload.operation!r}"
-    )
-
-
 @cache
 def published_case_ids_by_signature(
     case_signature: Callable[[Any], tuple[Any, ...] | None],
