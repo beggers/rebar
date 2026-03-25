@@ -111,6 +111,34 @@ def _function_referenced_names(function_def: ast.FunctionDef) -> set[str]:
     }
 
 
+def _assert_standard_builder_owner_tuple_wiring(
+    source_module_name: str,
+    *,
+    expected_splice_names: tuple[str, ...],
+    expected_import_names: set[str] | None = None,
+    required_import_names: tuple[str, ...] = (),
+    unexpected_referenced_names: tuple[str, ...] = (),
+) -> None:
+    builder = _standard_benchmark_definitions_builder()
+    imported_names = _build_standard_benchmark_definition_imported_names(
+        source_module_name
+    )
+
+    if expected_import_names is None:
+        assert set(required_import_names) <= imported_names
+    else:
+        assert imported_names == expected_import_names
+
+    splice_names = _build_standard_benchmark_definition_splice_names()
+    for splice_name in expected_splice_names:
+        assert splice_names.count(splice_name) == 1
+        assert splice_name in imported_names
+
+    referenced_names = _function_referenced_names(builder)
+    for referenced_name in unexpected_referenced_names:
+        assert referenced_name not in referenced_names
+
+
 def _imported_names_from_module(
     module: Any,
     source_module_name: str,
@@ -637,25 +665,23 @@ def test_standard_inventory_splices_each_owner_tuple_once_and_contiguously(
     )
 
 
-def test_standard_support_source_no_longer_inlines_collection_replacement_definitions(
+def test_standard_support_collection_replacement_owner_tuple_wiring_stays_ast_pinned(
 ) -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    for definition_name in (
-        "collection-replacement-module-positional-indexlike",
-        "collection-replacement-keyword",
-        "collection-replacement-compiled-pattern-literal-success",
-        "collection-replacement-compiled-pattern-wrong-text-model",
-        "pattern-helper-collection-replacement-wrong-text-model",
-        "collection-replacement-pattern-findall-bounded",
-        "collection-replacement-pattern-finditer-bounded",
-        "collection-replacement-pattern-split",
-        "collection-replacement-module-literal-replacement",
-        "collection-replacement-pattern-literal-replacement",
-        "collection-replacement-grouped-callable-replacement",
-    ):
-        assert f'name="{definition_name}"' not in support_source
+    _assert_standard_builder_owner_tuple_wiring(
+        "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        expected_splice_names=(
+            "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
+        ),
+        required_import_names=(
+            "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
+        ),
+        unexpected_referenced_names=(
+            "_conditional_group_exists_nested_callable_correctness_case_signature",
+            "_conditional_group_exists_nested_callable_workload_signature",
+            "_conditional_group_exists_quantified_callable_correctness_case_signature",
+            "_conditional_group_exists_quantified_callable_workload_signature",
+        ),
+    )
 
 
 def test_standard_support_source_no_longer_mentions_compile_proxy_helpers_or_inline_definition(
@@ -670,16 +696,6 @@ def test_standard_support_source_no_longer_mentions_compile_proxy_helpers_or_inl
     assert "compile_proxy_workload_signature" not in referenced_names
     assert "is_compile_proxy_workload" not in referenced_names
     assert "_build_compile_proxy_standard_benchmark_definitions" not in referenced_names
-
-
-def test_standard_support_source_no_longer_mentions_source_tree_manifest_path_constants(
-) -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-
-    for constant_name in SOURCE_TREE_MANIFEST_PATH_CONSTANT_NAMES:
-        assert constant_name not in support_source
 
 
 def test_standard_support_imports_only_compile_proxy_owner_tuple() -> None:
@@ -701,137 +717,58 @@ def test_standard_inventory_reuses_owner_owned_compile_proxy_definition() -> Non
     assert support.STANDARD_BENCHMARK_DEFINITIONS[0] is owner_definitions[0]
 
 
-def test_standard_support_source_no_longer_inlines_pattern_boundary_definitions() -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    for definition_name in (
-        "pattern-window-positional-indexlike",
-        "pattern-window-keyword",
-        "pattern-boundary-bounded-wildcard",
-        "pattern-boundary-verbose-regression",
-        "pattern-boundary-wrong-text-model",
-    ):
-        assert f'name="{definition_name}"' not in support_source
-
-
-def test_standard_support_source_no_longer_inlines_module_workflow_keyword_definitions(
-) -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    for definition_name in (
-        "module-workflow-keyword-flags",
-        "module-workflow-keyword-errors",
-    ):
-        assert f'name="{definition_name}"' not in support_source
-
-
-def test_standard_support_source_no_longer_inlines_source_tree_standard_definitions(
-) -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    for definition_name in (
-        "optional-group-conditional",
-        "nested-group",
-        "exact-repeat",
-        "ranged-repeat",
-        "grouped-alternation",
-        "grouped-alternation-replacement",
-        "nested-group-replacement",
-        "open-ended-grouped-alternation",
-    ):
-        assert f'name="{definition_name}"' not in support_source
-
-
-def test_standard_support_imports_only_pattern_boundary_owner_tuple() -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    parsed_support_source = ast.parse(support_source)
-
-    imported_names = {
-        alias.name
-        for node in ast.walk(parsed_support_source)
-        if isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.pattern_boundary_benchmark_anchor_support"
-        for alias in node.names
-    }
-
-    assert imported_names == {"PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS"}
-
-
-def test_standard_support_imports_and_splices_module_workflow_keyword_owner_tuple(
-) -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    imported_names = _build_standard_benchmark_definition_imported_names(
-        "tests.benchmarks.source_tree_benchmark_anchor_support"
+def test_standard_support_pattern_boundary_owner_tuple_wiring_stays_ast_pinned() -> None:
+    _assert_standard_builder_owner_tuple_wiring(
+        "tests.benchmarks.pattern_boundary_benchmark_anchor_support",
+        expected_splice_names=("PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",),
+        expected_import_names={"PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS"},
     )
 
-    assert imported_names == {
-        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
-        "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
-    }
-    assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
-
-def test_standard_support_imports_only_compiled_pattern_module_compile_owner_tuple() -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    parsed_support_source = ast.parse(support_source)
-
-    imported_names = {
-        alias.name
-        for node in ast.walk(parsed_support_source)
-        if isinstance(node, ast.ImportFrom)
-        and node.module
-        == "tests.benchmarks.compiled_pattern_module_compile_benchmark_support"
-        for alias in node.names
-    }
-
-    assert imported_names == {
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-    }
-    assert (
-        "*COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,"
-        in support_source
-    )
-    assert "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS" not in support_source
-    assert "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS" not in support_source
-    assert "owner_spec.anchor_definition(" not in support_source
-
-
-def test_standard_support_imports_and_splices_source_tree_standard_owner_tuple() -> None:
-    import inspect
-
-    support_source = inspect.getsource(support)
-    imported_names = _build_standard_benchmark_definition_imported_names(
-        "tests.benchmarks.source_tree_benchmark_anchor_support"
+def test_standard_support_source_tree_owner_tuple_wiring_stays_ast_pinned() -> None:
+    _assert_standard_builder_owner_tuple_wiring(
+        "tests.benchmarks.source_tree_benchmark_anchor_support",
+        expected_splice_names=(
+            "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+            "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
+        ),
+        expected_import_names={
+            "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+            "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
+        },
+        unexpected_referenced_names=SOURCE_TREE_MANIFEST_PATH_CONSTANT_NAMES,
     )
 
-    assert imported_names == {
-        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
-        "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
-    }
-    assert "*SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
-
-def test_standard_support_source_no_longer_inlines_compiled_pattern_module_helper_definitions(
+def test_standard_support_compiled_pattern_module_compile_owner_tuple_wiring_stays_ast_pinned(
 ) -> None:
-    import inspect
+    _assert_standard_builder_owner_tuple_wiring(
+        "tests.benchmarks.compiled_pattern_module_compile_benchmark_support",
+        expected_splice_names=(
+            "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+        ),
+        expected_import_names={
+            "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        },
+        unexpected_referenced_names=(
+            "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+            "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+            "owner_spec",
+        ),
+    )
 
-    support_source = inspect.getsource(support)
-    for definition_name in (
-        "module-workflow-compiled-pattern-literal-success",
-        "module-workflow-compiled-pattern-bounded-wildcard-success",
-        "module-workflow-compiled-pattern-verbose-bytes-success",
-        "module-workflow-compiled-pattern-wrong-text-model",
-    ):
-        assert f'name="{definition_name}"' not in support_source
+
+def test_standard_support_compiled_pattern_module_helper_owner_tuple_wiring_stays_ast_pinned(
+) -> None:
+    _assert_standard_builder_owner_tuple_wiring(
+        "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
+        expected_splice_names=(
+            "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+        ),
+        expected_import_names={
+            "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"
+        },
+    )
 
 
 def test_standard_inventory_reuses_owner_owned_collection_replacement_definition_objects(
