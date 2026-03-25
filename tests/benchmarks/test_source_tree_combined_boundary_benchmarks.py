@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import cache, partial
-import json
 import pathlib
 import re
 from typing import Any
 import unittest
-from unittest import mock
 
 import pytest
 
@@ -17,34 +15,23 @@ from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     BenchmarkManifest,
-    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
     Workload,
-    build_callable,
     determine_phase,
     determine_runner_version,
-    load_manifest,
     published_benchmark_manifests,
-    run_internal_workload_probe,
-    select_benchmark_manifest_paths,
     select_workloads,
     workload_from_payload,
     workload_to_payload,
 )
-from rebar_harness.scorecard_io import (
-    build_cpython_baseline,
-    ordered_published_subset_filenames,
-)
+from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.benchmarks.benchmark_test_support import (
-    _write_test_manifest,
     assert_benchmark_workload_contract,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,
     find_workload_document,
     find_workload_record,
     is_compile_proxy_workload,
-    manifest_workloads,
     live_manifest_workloads,
-    manifest_workload_ids_matching as _manifest_workload_ids_matching,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
@@ -118,23 +105,15 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
     freeze_signature_value,
     published_case_ids_by_signature,
-    published_cases_by_id,
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.standard_benchmark_anchor_support import (
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
-    _workload_case_pairs_case_ids,
-    _workload_case_pairs_workload_ids,
     StandardBenchmarkAnchorContractDefinition,
 )
 from tests.conftest import (
     REPO_ROOT,
-    assert_declared_string_selector_registry_contract,
-    assert_published_manifest_inventory_contract,
-    assert_published_manifest_helper_contract,
-    assert_published_manifest_helper_reload_contract,
-    assert_published_selector_subset_paths_contract,
     manifest_records_by_id,
     records_by_string_id,
     run_harness_scorecard,
@@ -146,8 +125,6 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    assert_match_result_parity,
-    assert_pattern_parity,
     callable_match_group_signature,
     case_pattern,
     case_replacement_argument,
