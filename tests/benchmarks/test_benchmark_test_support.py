@@ -66,6 +66,25 @@ def _module_function_definition(module: object, function_name: str) -> ast.Funct
     )
 
 
+def _module_class_definition(module: object, class_name: str) -> ast.ClassDef:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ClassDef) and node.name == class_name
+    )
+
+
+def _class_method_definition(
+    class_definition: ast.ClassDef,
+    method_name: str,
+) -> ast.FunctionDef:
+    return next(
+        node
+        for node in class_definition.body
+        if isinstance(node, ast.FunctionDef) and node.name == method_name
+    )
+
+
 def _module_imported_names(module: object, imported_module: str) -> frozenset[str]:
     return frozenset(
         alias.name
@@ -994,9 +1013,47 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_supp
         is first_export
     )
 
-    support_source = inspect.getsource(compiled_pattern_module_compile_support)
-    assert "def _standard_benchmark_anchor_contract_definition" not in support_source
-    assert "StandardBenchmarkAnchorContractDefinition(" in support_source
+    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        compiled_pattern_module_compile_support
+    )
+    assert "_standard_benchmark_anchor_contract_definition" not in definition_names
+
+    builder_definition = _module_function_definition(
+        compiled_pattern_module_compile_support,
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+    )
+    assert any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "owner_spec"
+        and node.func.attr == "anchor_definition"
+        for node in ast.walk(builder_definition)
+    )
+    assert not any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "_standard_benchmark_anchor_contract_definition"
+        for node in ast.walk(builder_definition)
+    )
+
+    for class_name in (
+        "_CompiledPatternModuleCompileSuccessOwnerSpec",
+        "_CompiledPatternModuleCompileKeywordOwnerSpec",
+    ):
+        anchor_definition = _class_method_definition(
+            _module_class_definition(
+                compiled_pattern_module_compile_support,
+                class_name,
+            ),
+            "anchor_definition",
+        )
+        assert any(
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "StandardBenchmarkAnchorContractDefinition"
+            for node in ast.walk(anchor_definition)
+        )
 
 
 def test_module_keyword_flags_workload_stays_pinned() -> None:
