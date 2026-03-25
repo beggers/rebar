@@ -4382,20 +4382,20 @@ PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
 )
 
 
-from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
-    COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
-from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
+from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 
 
 STANDARD_BENCHMARK_DEFINITIONS = (
     *COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
-    *COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
+    *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
     *MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
     *COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
     *COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
     *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
-    *SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+    *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
 )
 
 

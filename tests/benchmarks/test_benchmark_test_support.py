@@ -1759,6 +1759,47 @@ def test_source_tree_anchor_support_routes_owner_imports_through_package_modules
     }.isdisjoint(definition_names | assignment_names)
 
 
+def test_benchmark_test_support_routes_owner_definition_imports_through_package_modules(
+) -> None:
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(support)
+    )
+
+    assert _top_level_package_import_alias_pairs(
+        support,
+        package_module="tests.benchmarks",
+        imported_names=frozenset(
+            {
+                "collection_replacement_benchmark_anchor_support",
+                "source_tree_benchmark_anchor_support",
+            }
+        ),
+    ) == frozenset(
+        {
+            (
+                "collection_replacement_benchmark_anchor_support",
+                "collection_replacement_support",
+            ),
+            ("source_tree_benchmark_anchor_support", "source_tree_support"),
+        }
+    )
+    assert support.collection_replacement_support is collection_replacement_support
+    assert support.source_tree_support is anchor_support
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module
+        in {
+            "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+            "tests.benchmarks.source_tree_benchmark_anchor_support",
+        }
+        for node in _parsed_module_ast(support).body
+    )
+    assert {
+        "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
+        "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
+    }.isdisjoint(definition_names | assignment_names)
+
+
 def test_collection_replacement_anchor_suite_routes_owner_imports_through_package_modules(
 ) -> None:
     module = importlib.import_module(
