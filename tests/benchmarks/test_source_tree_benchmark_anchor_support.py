@@ -768,6 +768,264 @@ def test_select_source_tree_combined_slice_rows_filters_suffix_features_and_cate
     ] == ["first-keep", "second-keep"]
 
 
+def test_assert_source_tree_combined_manifest_slice_checks_selected_rows_and_delegates_contracts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = SimpleNamespace(
+        manifest_id="synthetic-boundary",
+        workloads=(
+            SimpleNamespace(
+                workload_id="module-search-ab-selected",
+                pattern="ab",
+                operation="module.search",
+                haystack="zzabzz",
+                categories=("branch", "selected", "shared"),
+                syntax_features=("feature-a", "feature-b"),
+            ),
+            SimpleNamespace(
+                workload_id="pattern-fullmatch-ac-selected",
+                pattern="ac",
+                operation="pattern.fullmatch",
+                haystack="ac",
+                categories=("branch", "selected", "shared"),
+                syntax_features=("feature-a",),
+            ),
+            SimpleNamespace(
+                workload_id="module-search-ab-missing-category-selected",
+                pattern="ab",
+                operation="module.search",
+                haystack="yyabyy",
+                categories=("branch",),
+                syntax_features=("feature-a",),
+            ),
+            SimpleNamespace(
+                workload_id="module-search-ad-excluded-feature-selected",
+                pattern="ad",
+                operation="module.search",
+                haystack="zzadzz",
+                categories=("branch", "selected", "shared"),
+                syntax_features=("feature-a", "feature-x"),
+            ),
+            SimpleNamespace(
+                workload_id="module-search-ae-wrong-suffix",
+                pattern="ae",
+                operation="module.search",
+                haystack="zzaezz",
+                categories=("branch", "selected", "shared"),
+                syntax_features=("feature-a",),
+            ),
+        ),
+    )
+    expectation = support.SourceTreeCombinedSliceExpectation(
+        manifest_id="synthetic-boundary",
+        slice_id="synthetic-slice",
+        required_syntax_features=("feature-a",),
+        excluded_syntax_features=("feature-x",),
+        required_categories=("branch", "selected"),
+        excluded_categories=("excluded",),
+        required_id_suffix="-selected",
+        expected_workload_ids=(
+            "module-search-ab-selected",
+            "pattern-fullmatch-ac-selected",
+        ),
+        expected_patterns=frozenset({"ab", "ac"}),
+        expected_operations=frozenset({"module.search", "pattern.fullmatch"}),
+        expected_haystacks=frozenset({"zzabzz", "ac"}),
+        required_row_categories=("selected", "shared"),
+        expected_status="known-gap",
+    )
+    scorecard = {
+        "workloads": [
+            {"manifest_id": "synthetic-boundary", "id": "module-search-ab-selected"},
+            {
+                "manifest_id": "synthetic-boundary",
+                "id": "pattern-fullmatch-ac-selected",
+            },
+            {"manifest_id": "synthetic-boundary", "id": "module-search-ignored"},
+            {"manifest_id": "other-boundary", "id": "module-search-ab-selected"},
+        ]
+    }
+    captured: dict[str, object] = {}
+
+    def _capture_manifest_workload_contracts(
+        testcase: object,
+        observed_manifest: object,
+        observed_scorecard: dict[str, object],
+        workload_expectations: object,
+        *,
+        subtest_label: str | None = None,
+    ) -> None:
+        captured["testcase"] = testcase
+        captured["manifest"] = observed_manifest
+        captured["scorecard"] = observed_scorecard
+        captured["workload_expectations"] = tuple(workload_expectations)
+        captured["subtest_label"] = subtest_label
+
+    monkeypatch.setattr(
+        benchmark_test_support,
+        "assert_manifest_workload_contracts",
+        _capture_manifest_workload_contracts,
+    )
+
+    testcase = unittest.TestCase()
+    support.assert_source_tree_combined_manifest_slice(
+        testcase,
+        manifest,
+        scorecard,
+        expectation=expectation,
+    )
+
+    assert captured == {
+        "testcase": testcase,
+        "manifest": manifest,
+        "scorecard": scorecard,
+        "workload_expectations": (
+            ("module-search-ab-selected", "known-gap"),
+            ("pattern-fullmatch-ac-selected", "known-gap"),
+        ),
+        "subtest_label": "workload_id",
+    }
+
+
+def test_assert_source_tree_combined_pattern_group_checks_measured_pattern_rows() -> None:
+    manifest_id = "synthetic-boundary"
+    manifest = SimpleNamespace(
+        workloads=(
+            SimpleNamespace(
+                workload_id="module-compile-literal-ab",
+                pattern="ab",
+                operation="module.compile",
+                haystack=None,
+                categories=("grouped", "selected"),
+            ),
+            SimpleNamespace(
+                workload_id="module-search-literal-ab",
+                pattern="ab",
+                operation="module.search",
+                haystack="zzabzz",
+                categories=("grouped", "selected"),
+            ),
+            SimpleNamespace(
+                workload_id="pattern-fullmatch-literal-ab",
+                pattern="ab",
+                operation="pattern.fullmatch",
+                haystack="ab",
+                categories=("grouped", "selected"),
+            ),
+            SimpleNamespace(
+                workload_id="module-compile-grouped-ab",
+                pattern="a(b)",
+                operation="module.compile",
+                haystack=None,
+                categories=("grouped", "selected"),
+            ),
+            SimpleNamespace(
+                workload_id="module-search-grouped-ab",
+                pattern="a(b)",
+                operation="module.search",
+                haystack="xxabyy",
+                categories=("grouped", "selected"),
+            ),
+            SimpleNamespace(
+                workload_id="pattern-fullmatch-grouped-ab",
+                pattern="a(b)",
+                operation="pattern.fullmatch",
+                haystack="ab",
+                categories=("grouped", "selected"),
+            ),
+            SimpleNamespace(
+                workload_id="module-search-unrelated",
+                pattern="cd",
+                operation="module.search",
+                haystack="zzcdzz",
+                categories=("other",),
+            ),
+        ),
+    )
+    scorecard = {
+        "workloads": [
+            {
+                "manifest_id": manifest_id,
+                "id": "module-compile-literal-ab",
+                "pattern": "ab",
+                "status": "measured",
+                "implementation_timing": {"status": "measured"},
+                "implementation_ns": 101,
+            },
+            {
+                "manifest_id": manifest_id,
+                "id": "module-search-literal-ab",
+                "pattern": "ab",
+                "status": "measured",
+                "implementation_timing": {"status": "measured"},
+                "implementation_ns": 102,
+            },
+            {
+                "manifest_id": manifest_id,
+                "id": "pattern-fullmatch-literal-ab",
+                "pattern": "ab",
+                "status": "measured",
+                "implementation_timing": {"status": "measured"},
+                "implementation_ns": 103,
+            },
+            {
+                "manifest_id": manifest_id,
+                "id": "module-compile-grouped-ab",
+                "pattern": "a(b)",
+                "status": "measured",
+                "implementation_timing": {"status": "measured"},
+                "implementation_ns": 104,
+            },
+            {
+                "manifest_id": manifest_id,
+                "id": "module-search-grouped-ab",
+                "pattern": "a(b)",
+                "status": "measured",
+                "implementation_timing": {"status": "measured"},
+                "implementation_ns": 105,
+            },
+            {
+                "manifest_id": manifest_id,
+                "id": "pattern-fullmatch-grouped-ab",
+                "pattern": "a(b)",
+                "status": "measured",
+                "implementation_timing": {"status": "measured"},
+                "implementation_ns": 106,
+            },
+            {
+                "manifest_id": manifest_id,
+                "id": "module-search-unrelated",
+                "pattern": "cd",
+                "status": "measured",
+                "implementation_timing": {"status": "measured"},
+                "implementation_ns": 107,
+            },
+        ]
+    }
+    expectation = support.SourceTreeCombinedPatternGroupExpectation(
+        slice_id="synthetic-pattern-group",
+        patterns=("ab", "a(b)"),
+        minimum_rows=6,
+        required_operations=(
+            "module.compile",
+            "module.search",
+            "pattern.fullmatch",
+        ),
+        required_categories=("grouped", "selected"),
+        search_haystacks=("zzabzz", "xxabyy"),
+        search_haystack_substrings=("ab", "yy"),
+        pattern_haystacks=("ab",),
+    )
+
+    support.assert_source_tree_combined_pattern_group(
+        unittest.TestCase(),
+        manifest,
+        scorecard,
+        manifest_id=manifest_id,
+        expectation=expectation,
+    )
+
+
 def test_source_tree_combined_case_rejects_unknown_target_manifest(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
