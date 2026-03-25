@@ -309,6 +309,7 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
     assert "for definition in _standard_benchmark_definitions()" not in support_source
     assert "*COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+    assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
     assert (
         "*COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,"
         in support_source
@@ -351,6 +352,18 @@ def test_standard_support_source_no_longer_inlines_pattern_boundary_definitions(
         assert f'name="{definition_name}"' not in support_source
 
 
+def test_standard_support_source_no_longer_inlines_module_workflow_keyword_definitions(
+) -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    for definition_name in (
+        "module-workflow-keyword-flags",
+        "module-workflow-keyword-errors",
+    ):
+        assert f'name="{definition_name}"' not in support_source
+
+
 def test_standard_support_imports_only_pattern_boundary_owner_tuple() -> None:
     import inspect
 
@@ -366,6 +379,25 @@ def test_standard_support_imports_only_pattern_boundary_owner_tuple() -> None:
     }
 
     assert imported_names == {"PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS"}
+
+
+def test_standard_support_imports_and_splices_module_workflow_keyword_owner_tuple(
+) -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    parsed_support_source = ast.parse(support_source)
+
+    imported_names = {
+        alias.name
+        for node in ast.walk(parsed_support_source)
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
+        for alias in node.names
+    }
+
+    assert "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS" in imported_names
+    assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
 def test_standard_support_source_no_longer_inlines_compiled_pattern_module_helper_definitions(
@@ -392,6 +424,20 @@ def test_standard_inventory_reuses_owner_owned_collection_replacement_definition
         for definition in support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name.startswith("collection-replacement-")
         or definition.name == "pattern-helper-collection-replacement-wrong-text-model"
+    )
+
+    assert standard_definitions == owner_definitions
+
+
+def test_standard_inventory_reuses_owner_owned_module_workflow_keyword_definition_objects(
+) -> None:
+    owner_definitions = (
+        anchor_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+    )
+    standard_definitions = tuple(
+        definition
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name.startswith("module-workflow-keyword-")
     )
 
     assert standard_definitions == owner_definitions

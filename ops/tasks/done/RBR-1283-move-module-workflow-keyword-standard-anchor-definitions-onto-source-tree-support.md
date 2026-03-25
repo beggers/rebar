@@ -1,6 +1,6 @@
 ## RBR-1283: Move module-workflow keyword standard anchor definitions onto source-tree support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -66,3 +66,8 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `26 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `330 tests collected`; and
   - the negative `rg` check in `Verification` currently fails because those two module-workflow keyword definition bodies still live inline in `tests/benchmarks/standard_benchmark_anchor_support.py`, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the `module-workflow-keyword-flags` and `module-workflow-keyword-errors` standard benchmark definitions onto `tests/benchmarks/source_tree_benchmark_anchor_support.py` as the owner-exported `MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS` tuple, and updated `tests/benchmarks/standard_benchmark_anchor_support.py` to splice that tuple immediately after `COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS` without changing definition order or behavior.
+- Added focused source-tree and standard-support coverage for the new owner boundary, central-file import/splice path, and reuse of the same definition objects from the owner tuple.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` (`219 passed`), `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` (`27 passed`), `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`334 tests collected`), and `bash -lc "! rg -n 'name=\"(module-workflow-keyword-flags|module-workflow-keyword-errors)\"' tests/benchmarks/standard_benchmark_anchor_support.py"` (passed).

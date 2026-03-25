@@ -173,6 +173,63 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 )
 
 
+@cache
+def _module_workflow_keyword_standard_benchmark_definitions() -> tuple[object, ...]:
+    from tests.benchmarks.standard_benchmark_anchor_support import (
+        MODULE_BOUNDARY_MANIFEST_PATH,
+        StandardBenchmarkAnchorContractDefinition,
+    )
+
+    return (
+        StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-keyword-flags",
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-flags-keyword-warm-str": (
+                        "workflow-module-search-flags-keyword-str",
+                    ),
+                    "module-match-flags-keyword-purged-bytes": (
+                        "workflow-module-match-flags-keyword-bytes",
+                    ),
+                    "module-fullmatch-flags-keyword-warm-str": (
+                        "workflow-module-fullmatch-flags-keyword-str",
+                    ),
+                },
+            ),
+            include_workload=_is_module_workflow_keyword_flags_workload,
+            correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
+            workload_signature=_module_workflow_keyword_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-keyword-errors",
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-duplicate-flags-keyword-warm-str": (
+                        "workflow-module-search-duplicate-flags-keyword",
+                    ),
+                    "module-fullmatch-unexpected-keyword-purged-str": (
+                        "workflow-module-fullmatch-unexpected-keyword",
+                    ),
+                },
+            ),
+            include_workload=_is_module_workflow_keyword_error_workload,
+            correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
+            workload_signature=_module_workflow_keyword_workload_signature,
+        ),
+    )
+
+
+def __getattr__(name: str) -> object:
+    if name == "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS":
+        return _module_workflow_keyword_standard_benchmark_definitions()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 def _compile_search_fullmatch_case_signature(
     case: Any,
     *,

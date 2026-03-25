@@ -391,18 +391,15 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
     )
     from tests.benchmarks.source_tree_benchmark_anchor_support import (
+        MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID as OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
         _counted_repeat_correctness_case_signature,
         _counted_repeat_workload_signature,
         _grouped_alternation_correctness_case_signature,
         _grouped_alternation_replacement_correctness_case_signature,
         _grouped_alternation_workload_signature,
-        _is_module_workflow_keyword_error_workload,
-        _is_module_workflow_keyword_flags_workload,
         _is_non_alternation_counted_repeat_workload,
         _is_optional_group_conditional_workload,
-        _module_workflow_keyword_correctness_case_signature,
-        _module_workflow_keyword_workload_signature,
         _nested_group_correctness_case_signature,
         _nested_group_workload_signature,
         _optional_group_correctness_case_signature,
@@ -477,46 +474,7 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         workload_signature=compile_proxy_workload_signature,
     ),
     *COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
-    StandardBenchmarkAnchorContractDefinition(
-        name="module-workflow-keyword-flags",
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-search-flags-keyword-warm-str": (
-                    "workflow-module-search-flags-keyword-str",
-                ),
-                "module-match-flags-keyword-purged-bytes": (
-                    "workflow-module-match-flags-keyword-bytes",
-                ),
-                "module-fullmatch-flags-keyword-warm-str": (
-                    "workflow-module-fullmatch-flags-keyword-str",
-                ),
-            },
-        ),
-        include_workload=_is_module_workflow_keyword_flags_workload,
-        correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
-        workload_signature=_module_workflow_keyword_workload_signature,
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="module-workflow-keyword-errors",
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-search-duplicate-flags-keyword-warm-str": (
-                    "workflow-module-search-duplicate-flags-keyword",
-                ),
-                "module-fullmatch-unexpected-keyword-purged-str": (
-                    "workflow-module-fullmatch-unexpected-keyword",
-                ),
-            },
-        ),
-        include_workload=_is_module_workflow_keyword_error_workload,
-        correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
-        workload_signature=_module_workflow_keyword_workload_signature,
-    ),
+    *MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
     *(
         owner_spec.anchor_definition()
         for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
