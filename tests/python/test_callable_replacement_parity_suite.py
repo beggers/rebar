@@ -1813,6 +1813,7 @@ MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = frozenset(
         "quantified-nested-group-callable-replacement-workflows",
         "quantified-nested-group-alternation-callable-replacement-workflows",
         "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
     }
 )
 MODULE_RETURN_TYPE_ERROR_PARITY_CASES = tuple(

@@ -1,4 +1,4 @@
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-25
 
@@ -47,3 +47,7 @@ Created: 2026-03-25
   - its bounded numbered and named owner-path patterns are `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`, where a narrow direct runtime probe shows the numbered module rows still fall through to `NotImplementedError` in `rebar`, so the surviving post-drain frontier is an implementation slice rather than another parity-only expansion.
 - Acceptance-command validation in this planning run:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'` returned `51 passed, 6252 deselected`.
+
+## Completion
+- Added `nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows` to `MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS` in `tests/python/test_callable_replacement_parity_suite.py`, letting the existing module-entrypoint wrong-return-type parity helper cover the published numbered and named `sub()` / `subn()` rows for both `str` and `bytes` without adding new selector tables.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k 'module_callable_replacement_wrong_return_type or return_type_error_cases_cover_quantified_callable_fixture_frontier'`, which now returns `67 passed, 6252 deselected`.
