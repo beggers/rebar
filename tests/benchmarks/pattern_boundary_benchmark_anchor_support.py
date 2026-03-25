@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
+from rebar_harness import benchmarks
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_encoded_indexlike_payload,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     freeze_signature_value,
+)
+from tests.benchmarks.source_tree_contract_benchmark_support import (
+    _SourceTreeContractBuilderSpec,
+    _contract_source_workloads,
 )
 from tests.python.fixture_parity_support import (
     case_pattern,
@@ -84,6 +90,63 @@ _PATTERN_VERBOSE_REGRESSION_PATTERN = (
 _PATTERN_BOUNDARY_OPERATIONS = frozenset(
     {"pattern.search", "pattern.match", "pattern.fullmatch"}
 )
+PATTERN_BOUNDARY_MANIFEST_PATH = benchmarks.BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py"
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "smoke",
+    }
+)
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
+    "pattern-search-on-bytes-string-warm-str",
+    "pattern-match-on-str-string-purged-bytes",
+    "pattern-fullmatch-on-bytes-string-warm-str",
+)
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
+    manifest_id="pattern-boundary",
+    excluded_fields=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
+    timing_scope="pattern-helper-call",
+)
+
+
+def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Any, ...]:
+    return _contract_source_workloads(
+        manifest_path=PATTERN_BOUNDARY_MANIFEST_PATH,
+        include_workload_selectors=(_is_pattern_boundary_wrong_text_model_workload,),
+        expected_source_workload_ids=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS,
+        drift_message=(
+            "direct Pattern pattern-boundary wrong-text-model surface drifted "
+            "from the live source workload surface"
+        ),
+    )
+
+
+def _pattern_boundary_wrong_text_model_expected_callback_call(
+    source_workload: Any,
+) -> tuple[object, ...]:
+    if source_workload.operation in _PATTERN_BOUNDARY_OPERATIONS:
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            (),
+            {},
+        )
+    raise AssertionError(
+        "unexpected direct Pattern pattern-boundary wrong-text-model "
+        f"workload operation {source_workload.operation!r}"
+    )
+
+
+def _run_cpython_pattern_boundary_wrong_text_model_workload(
+    workload: Any,
+) -> object:
+    helper_name = workload.operation.removeprefix("pattern.")
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+    return getattr(compiled_pattern, helper_name)(workload.haystack_payload())
 
 
 def _pattern_window_positional_indexlike_correctness_case_signature(

@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
+import re
 from typing import Any
 
 from rebar_harness import benchmarks
@@ -14,6 +15,7 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     freeze_signature_value,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
+    _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
 )
 from tests.python.fixture_parity_support import (
@@ -816,6 +818,104 @@ _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
         "from the live source workload surface"
     ),
 )
+
+_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "smoke",
+    }
+)
+_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
+    "pattern-split-on-bytes-string-warm-str",
+    "pattern-sub-on-bytes-string-warm-str",
+    "pattern-subn-on-str-string-purged-bytes",
+)
+_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
+    _SourceTreeContractBuilderSpec(
+        manifest_id="collection-replacement-boundary",
+        excluded_fields=_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
+        timing_scope="pattern-helper-call",
+    )
+)
+
+
+def _collection_replacement_wrong_text_model_source_workloads() -> tuple[Any, ...]:
+    return _contract_source_workloads(
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_collection_replacement_pattern_wrong_text_model_workload,
+        ),
+        expected_source_workload_ids=(
+            _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        ),
+        drift_message=(
+            "direct Pattern collection/replacement wrong-text-model surface "
+            "drifted from the live source workload surface"
+        ),
+    )
+
+
+def _collection_replacement_wrong_text_model_expected_callback_call(
+    source_workload: Any,
+) -> tuple[object, ...]:
+    if source_workload.operation == "pattern.split":
+        return (
+            "pattern.split",
+            source_workload.haystack_payload(),
+            (source_workload.maxsplit_argument(),),
+            {},
+        )
+    if source_workload.operation in {"pattern.sub", "pattern.subn"}:
+        return (
+            source_workload.operation,
+            source_workload.replacement_payload(),
+            source_workload.haystack_payload(),
+            (source_workload.count_argument(),),
+            {},
+        )
+    raise AssertionError(
+        "unexpected direct Pattern collection/replacement wrong-text-model "
+        f"workload operation {source_workload.operation!r}"
+    )
+
+
+def _collection_replacement_wrong_text_model_expected_callback_result(
+    source_workload: Any,
+) -> object:
+    if source_workload.operation == "pattern.subn":
+        return ("pattern-result", 0)
+    if source_workload.operation in {"pattern.split", "pattern.sub"}:
+        return "pattern-result"
+    raise AssertionError(
+        "unexpected direct Pattern collection/replacement wrong-text-model "
+        f"workload operation {source_workload.operation!r}"
+    )
+
+
+def _run_cpython_collection_replacement_wrong_text_model_workload(
+    workload: Any,
+) -> object:
+    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+    helper_name = workload.operation.removeprefix("pattern.")
+    if workload.operation == "pattern.split":
+        return getattr(compiled_pattern, helper_name)(
+            workload.haystack_payload(),
+            workload.maxsplit_argument(),
+        )
+    if workload.operation in {"pattern.sub", "pattern.subn"}:
+        return getattr(compiled_pattern, helper_name)(
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+            workload.count_argument(),
+        )
+    raise AssertionError(
+        "unexpected direct Pattern collection/replacement wrong-text-model "
+        f"workload operation {workload.operation!r}"
+    )
 
 
 def _collection_replacement_wrong_text_model_haystack_index(operation: str) -> int:

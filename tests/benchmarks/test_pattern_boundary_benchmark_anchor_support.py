@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import re
 from types import SimpleNamespace
 
 import pytest
@@ -30,9 +29,9 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _SourceTreeContractBuilderSpec,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
+    compiled_pattern_contract_expected_build_calls,
 )
 from tests.python.fixture_parity_support import IndexLike
 
@@ -356,86 +355,11 @@ def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str
     )
 
 
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "smoke",
-    }
-)
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
-    "pattern-search-on-bytes-string-warm-str",
-    "pattern-match-on-str-string-purged-bytes",
-    "pattern-fullmatch-on-bytes-string-warm-str",
-)
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
-    manifest_id="pattern-boundary",
-    excluded_fields=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
-    timing_scope="pattern-helper-call",
-)
-
-
-def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Workload, ...]:
-    return selected_manifest_workloads(
-        "pattern_boundary.py",
-        include_workload=support._is_pattern_boundary_wrong_text_model_workload,
-    )
-
-
-def _pattern_boundary_wrong_text_model_expected_build_calls(
-    source_workload: Workload,
-) -> list[tuple[object, ...]]:
-    compile_call = (
-        "compile",
-        source_workload.pattern_payload(),
-        source_workload.flags,
-    )
-    if source_workload.cache_mode == "warm":
-        return [compile_call]
-    if source_workload.cache_mode == "purged":
-        return [compile_call, ("purge",)]
-    raise AssertionError(
-        "unexpected direct Pattern pattern-boundary wrong-text-model "
-        f"cache mode {source_workload.cache_mode!r}"
-    )
-
-
-def _pattern_boundary_wrong_text_model_expected_callback_call(
-    source_workload: Workload,
-) -> tuple[object, ...]:
-    if source_workload.operation in {
-        "pattern.search",
-        "pattern.match",
-        "pattern.fullmatch",
-    }:
-        return (
-            source_workload.operation,
-            source_workload.haystack_payload(),
-            (),
-            {},
-        )
-    raise AssertionError(
-        "unexpected direct Pattern pattern-boundary wrong-text-model "
-        f"workload operation {source_workload.operation!r}"
-    )
-
-
-def _run_cpython_pattern_boundary_wrong_text_model_workload(
-    workload: Workload,
-) -> object:
-    helper_name = workload.operation.removeprefix("pattern.")
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return getattr(compiled_pattern, helper_name)(workload.haystack_payload())
-
-
 def test_pattern_boundary_wrong_text_model_source_workloads_stay_exact_and_in_order() -> None:
-    workloads = _pattern_boundary_wrong_text_model_source_workloads()
+    workloads = support._pattern_boundary_wrong_text_model_source_workloads()
 
     assert tuple(workload.workload_id for workload in workloads) == (
-        _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
 
 
@@ -443,7 +367,7 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
     all_workloads = selected_manifest_workloads("pattern_boundary.py")
     wrong_text_model_workload_ids = tuple(
         workload.workload_id
-        for workload in _pattern_boundary_wrong_text_model_source_workloads()
+        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
     )
     bounded_wildcard_workload_ids = tuple(
         workload.workload_id
@@ -548,18 +472,23 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _pattern_boundary_wrong_text_model_source_workloads()
+        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime_contract(
     workload: Workload,
 ) -> None:
-    assert _pattern_boundary_wrong_text_model_expected_build_calls(workload) == (
+    assert compiled_pattern_contract_expected_build_calls(
+        workload,
+        label="direct Pattern pattern-boundary wrong-text-model",
+    ) == (
         [("compile", workload.pattern_payload(), workload.flags)]
         if workload.cache_mode == "warm"
         else [("compile", workload.pattern_payload(), workload.flags), ("purge",)]
     )
-    assert _pattern_boundary_wrong_text_model_expected_callback_call(workload) == (
+    assert support._pattern_boundary_wrong_text_model_expected_callback_call(
+        workload
+    ) == (
         workload.operation,
         workload.haystack_payload(),
         (),
@@ -567,7 +496,7 @@ def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime
     )
 
     with pytest.raises(TypeError) as observed_error:
-        _run_cpython_pattern_boundary_wrong_text_model_workload(workload)
+        support._run_cpython_pattern_boundary_wrong_text_model_workload(workload)
 
     assert str(observed_error.value) == str(
         workload.expected_exception["message_substring"]
@@ -577,10 +506,10 @@ def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime
 def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = _pattern_boundary_wrong_text_model_source_workloads()
+    source_workloads = support._pattern_boundary_wrong_text_model_source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -590,11 +519,11 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     workloads = tuple(load_manifest(manifest_path).workloads)
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
-        _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         f"{workload_id}-contract"
-        for workload_id in _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        for workload_id in support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
     assert [workload.use_compiled_pattern for workload in workloads] == [False] * len(
         source_workloads
@@ -617,7 +546,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
         )
 
         with pytest.raises(TypeError) as expected_error:
-            _run_cpython_pattern_boundary_wrong_text_model_workload(workload)
+            support._run_cpython_pattern_boundary_wrong_text_model_workload(workload)
         with pytest.raises(TypeError) as observed_error:
             run_benchmark_workload_with_cpython(round_tripped)
 
@@ -635,7 +564,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _pattern_boundary_wrong_text_model_source_workloads()
+        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_contract_workloads(
@@ -645,7 +574,7 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -670,17 +599,20 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _pattern_boundary_wrong_text_model_source_workloads()
+        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contract(
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = _pattern_boundary_wrong_text_model_expected_build_calls(
-        source_workload
+    expected_build_calls = compiled_pattern_contract_expected_build_calls(
+        source_workload,
+        label="direct Pattern pattern-boundary wrong-text-model",
     )
-    expected_callback_call = _pattern_boundary_wrong_text_model_expected_callback_call(
-        source_workload
+    expected_callback_call = (
+        support._pattern_boundary_wrong_text_model_expected_callback_call(
+            source_workload
+        )
     )
     module = RecordingBenchmarkModule()
     callback = build_callable(
@@ -688,7 +620,7 @@ def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contrac
         "re",
         _source_tree_contract_workload(
             source_workload,
-            spec=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+            spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
     )
 

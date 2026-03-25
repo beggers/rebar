@@ -34,9 +34,9 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _SourceTreeContractBuilderSpec,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
+    compiled_pattern_contract_expected_build_calls,
 )
 from tests.python.fixture_parity_support import IndexLike
 
@@ -2515,117 +2515,11 @@ def test_compiled_pattern_success_correctness_case_signature_requires_collection
     )
 
 
-_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "smoke",
-    }
-)
-_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
-    "pattern-split-on-bytes-string-warm-str",
-    "pattern-sub-on-bytes-string-warm-str",
-    "pattern-subn-on-str-string-purged-bytes",
-)
-_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
-    manifest_id="collection-replacement-boundary",
-    excluded_fields=_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
-    timing_scope="pattern-helper-call",
-)
-
-
-def _collection_replacement_wrong_text_model_source_workloads() -> tuple[Workload, ...]:
-    return selected_manifest_workloads(
-        "collection_replacement_boundary.py",
-        include_workload=support._is_collection_replacement_pattern_wrong_text_model_workload,
-    )
-
-
-def _collection_replacement_wrong_text_model_expected_build_calls(
-    source_workload: Workload,
-) -> list[tuple[object, ...]]:
-    compile_call = (
-        "compile",
-        source_workload.pattern_payload(),
-        source_workload.flags,
-    )
-    if source_workload.cache_mode == "warm":
-        return [compile_call]
-    if source_workload.cache_mode == "purged":
-        return [compile_call, ("purge",)]
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"cache mode {source_workload.cache_mode!r}"
-    )
-
-
-def _collection_replacement_wrong_text_model_expected_callback_call(
-    source_workload: Workload,
-) -> tuple[object, ...]:
-    if source_workload.operation == "pattern.split":
-        return (
-            "pattern.split",
-            source_workload.haystack_payload(),
-            (source_workload.maxsplit_argument(),),
-            {},
-        )
-    if source_workload.operation in {"pattern.sub", "pattern.subn"}:
-        return (
-            source_workload.operation,
-            source_workload.replacement_payload(),
-            source_workload.haystack_payload(),
-            (source_workload.count_argument(),),
-            {},
-        )
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"workload operation {source_workload.operation!r}"
-    )
-
-
-def _collection_replacement_wrong_text_model_expected_callback_result(
-    source_workload: Workload,
-) -> object:
-    if source_workload.operation == "pattern.subn":
-        return ("pattern-result", 0)
-    if source_workload.operation in {"pattern.split", "pattern.sub"}:
-        return "pattern-result"
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"workload operation {source_workload.operation!r}"
-    )
-
-
-def _run_cpython_collection_replacement_wrong_text_model_workload(
-    workload: Workload,
-) -> object:
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    helper_name = workload.operation.removeprefix("pattern.")
-    if workload.operation == "pattern.split":
-        return getattr(compiled_pattern, helper_name)(
-            workload.haystack_payload(),
-            workload.maxsplit_argument(),
-        )
-    if workload.operation in {"pattern.sub", "pattern.subn"}:
-        return getattr(compiled_pattern, helper_name)(
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            workload.count_argument(),
-        )
-    raise AssertionError(
-        "unexpected direct Pattern collection/replacement wrong-text-model "
-        f"workload operation {workload.operation!r}"
-    )
-
-
 def test_collection_replacement_pattern_wrong_text_model_source_workloads_stay_exact_and_in_order() -> None:
-    workloads = _collection_replacement_wrong_text_model_source_workloads()
+    workloads = support._collection_replacement_wrong_text_model_source_workloads()
 
     assert tuple(workload.workload_id for workload in workloads) == (
-        _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
 
 
@@ -2633,18 +2527,21 @@ def test_collection_replacement_pattern_wrong_text_model_source_workloads_stay_e
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._collection_replacement_wrong_text_model_source_workloads()
     ),
 )
 def test_collection_replacement_pattern_wrong_text_model_helpers_preserve_callback_and_runtime_contract(
     workload: Workload,
 ) -> None:
-    assert _collection_replacement_wrong_text_model_expected_build_calls(workload) == (
+    assert compiled_pattern_contract_expected_build_calls(
+        workload,
+        label="direct Pattern collection/replacement wrong-text-model",
+    ) == (
         [("compile", workload.pattern_payload(), workload.flags)]
         if workload.cache_mode == "warm"
         else [("compile", workload.pattern_payload(), workload.flags), ("purge",)]
     )
-    assert _collection_replacement_wrong_text_model_expected_callback_call(
+    assert support._collection_replacement_wrong_text_model_expected_callback_call(
         workload
     ) == (
         ("pattern.split", workload.haystack_payload(), (workload.maxsplit_argument(),), {})
@@ -2657,7 +2554,7 @@ def test_collection_replacement_pattern_wrong_text_model_helpers_preserve_callba
             {},
         )
     )
-    assert _collection_replacement_wrong_text_model_expected_callback_result(
+    assert support._collection_replacement_wrong_text_model_expected_callback_result(
         workload
     ) == (
         ("pattern-result", 0)
@@ -2666,7 +2563,7 @@ def test_collection_replacement_pattern_wrong_text_model_helpers_preserve_callba
     )
 
     with pytest.raises(TypeError) as observed_error:
-        _run_cpython_collection_replacement_wrong_text_model_workload(workload)
+        support._run_cpython_collection_replacement_wrong_text_model_workload(workload)
 
     assert str(observed_error.value) == str(
         workload.expected_exception["message_substring"]
@@ -2676,10 +2573,10 @@ def test_collection_replacement_pattern_wrong_text_model_helpers_preserve_callba
 def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = _collection_replacement_wrong_text_model_source_workloads()
+    source_workloads = support._collection_replacement_wrong_text_model_source_workloads()
     manifest = _source_tree_contract_manifest(
         source_workloads,
-        spec=_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = _write_test_manifest(
         tmp_path,
@@ -2691,11 +2588,11 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
     )
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
-        _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         f"{workload_id}-contract"
-        for workload_id in _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        for workload_id in support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
     assert [workload.use_compiled_pattern for workload in workloads] == [False] * len(
         source_workloads
@@ -2719,7 +2616,9 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
         )
 
         with pytest.raises(TypeError) as expected_error:
-            _run_cpython_collection_replacement_wrong_text_model_workload(workload)
+            support._run_cpython_collection_replacement_wrong_text_model_workload(
+                workload
+            )
         with pytest.raises(TypeError) as observed_error:
             run_benchmark_workload_with_cpython(round_tripped)
 
@@ -2737,7 +2636,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._collection_replacement_wrong_text_model_source_workloads()
     ),
 )
 def test_run_internal_workload_probe_measures_collection_replacement_pattern_wrong_text_model_contract_workloads(
@@ -2747,7 +2646,7 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
 ) -> None:
     workload = _source_tree_contract_workload(
         source_workload,
-        spec=_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -2773,17 +2672,20 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._collection_replacement_wrong_text_model_source_workloads()
     ),
 )
 def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_precompile_contract(
     source_workload: Workload,
 ) -> None:
-    expected_build_calls = _collection_replacement_wrong_text_model_expected_build_calls(
-        source_workload
+    expected_build_calls = compiled_pattern_contract_expected_build_calls(
+        source_workload,
+        label="direct Pattern collection/replacement wrong-text-model",
     )
     expected_callback_call = (
-        _collection_replacement_wrong_text_model_expected_callback_call(source_workload)
+        support._collection_replacement_wrong_text_model_expected_callback_call(
+            source_workload
+        )
     )
     module = RecordingBenchmarkModule()
     callback = build_callable(
@@ -2791,14 +2693,14 @@ def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_prec
         "re",
         _source_tree_contract_workload(
             source_workload,
-            spec=_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+            spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
     )
 
     assert module.calls == expected_build_calls
     assert len(module.compiled_patterns) == 1
     assert callback() == (
-        _collection_replacement_wrong_text_model_expected_callback_result(
+        support._collection_replacement_wrong_text_model_expected_callback_result(
             source_workload
         )
     )
@@ -2809,7 +2711,7 @@ def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_prec
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in _collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._collection_replacement_wrong_text_model_source_workloads()
     ),
 )
 def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time(

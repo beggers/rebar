@@ -1,6 +1,6 @@
 ## RBR-1276: Move direct-Pattern wrong-text-model contract support onto owner modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -58,6 +58,10 @@ Created: 2026-03-25
 - The ownership split is concrete in the live checkout:
   - `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` still defines the direct-`Pattern` collection/replacement wrong-text-model source-workload ids, contract spec, source-workload loader, expected build/callback helpers, and CPython runtime probe locally; and
   - `tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` still defines the direct-`Pattern` pattern-boundary wrong-text-model source-workload ids, contract spec, source-workload loader, expected build/callback helpers, and CPython runtime probe locally.
-- Verification status in this planning run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `81 passed`; and
-  - the negative `rg` check in `Verification` currently fails for the expected reason described above.
+- Completion:
+  - Moved the direct-`Pattern` collection/replacement wrong-text-model source-workload ids, contract spec, source-workload loader, callback expectation helpers, callback result helper, and CPython runtime probe onto `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`.
+  - Moved the direct-`Pattern` pattern-boundary wrong-text-model source-workload ids, contract spec, source-workload loader, callback expectation helper, and CPython runtime probe onto `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`.
+  - Deleted the duplicated local definitions from both benchmark test modules and switched their precompile-call assertions to `compiled_pattern_contract_expected_build_calls(...)`.
+- Verification status:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `81 passed`.
+  - The negative `rg` check in `Verification` now passes; the duplicated wrong-text-model helpers no longer exist in either test module.
