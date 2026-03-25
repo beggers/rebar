@@ -974,6 +974,28 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
         assert function_name not in local_function_names
 
 
+def test_combined_suite_imports_source_tree_support_through_owner_module_only() -> None:
+    direct_owner_imports = [
+        node
+        for node in _parsed_source_tree_combined_suite_ast().body
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
+    ]
+    owner_module_imports = [
+        alias
+        for node in _parsed_source_tree_combined_suite_ast().body
+        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
+        for alias in node.names
+    ]
+
+    assert direct_owner_imports == []
+    assert any(
+        alias.name == "source_tree_benchmark_anchor_support"
+        and alias.asname == "source_tree_support"
+        for alias in owner_module_imports
+    )
+
+
 def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() -> None:
     expected_callable_slice_ids = (
         "minimal-callable-replacement-rows",

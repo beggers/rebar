@@ -1,6 +1,6 @@
 ## RBR-1315: Delete shadow source-tree benchmark owner import surface
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -53,3 +53,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'former_owner_modules_share_source_tree_helpers_without_local_duplicates or source_tree_support_module_exposes_moved_combined_case_surface or source_tree_owner_builders_reference_owner_manifest_path_constants'` passed with `3 passed, 45 deselected in 0.11s`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `279 tests collected in 0.09s`
   - `bash -lc "! rg -n '^from tests\\.benchmarks\\.source_tree_benchmark_anchor_support import ' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because the combined suite still contains the shadow direct-import surface, and that failure belongs exactly to this cleanup.
+
+## Completion Notes
+- Replaced the five direct `from tests.benchmarks.source_tree_benchmark_anchor_support import ...` statements in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with one owner-module import: `from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support`.
+- Updated the combined benchmark suite to reference source-tree manifest constants, dataclasses, expectation tables, helper builders, and contract assertions through `source_tree_support.*` instead of rebinding the owner surface locally.
+- Added an AST-level regression check in `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` that asserts the combined suite no longer contains `ImportFrom` nodes targeting `tests.benchmarks.source_tree_benchmark_anchor_support` and instead imports the owner through `tests.benchmarks`.
+- Verification completed in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'former_owner_modules_share_source_tree_helpers_without_local_duplicates or source_tree_support_module_exposes_moved_combined_case_surface or source_tree_owner_builders_reference_owner_manifest_path_constants or combined_suite_imports_source_tree_support_through_owner_module_only'` passed with `4 passed, 45 deselected in 0.20s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `279 tests collected in 0.16s`
+  - `bash -lc "! rg -n '^from tests\\.benchmarks\\.source_tree_benchmark_anchor_support import ' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed
