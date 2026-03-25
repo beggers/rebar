@@ -9,9 +9,6 @@ import unittest
 
 import pytest
 
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_support,
-)
 from tests.benchmarks.benchmark_test_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
     _synthetic_case,
@@ -25,6 +22,9 @@ from tests.benchmarks.benchmark_test_support import (
 from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import (
     compiled_pattern_module_compile_benchmark_support as compiled_pattern_compile_support,
+)
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_support,
 )
 from tests.benchmarks.benchmark_test_support import (
     live_manifest_workload,
@@ -952,6 +952,206 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
 
     for function_name in _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES:
         assert function_name not in local_function_names
+
+
+def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() -> None:
+    expected_callable_slice_ids = (
+        "minimal-callable-replacement-rows",
+        "minimal-callable-replacement-exception-rows",
+        "minimal-callable-replacement-none-count-exception-rows",
+        "alternation-heavy-callable-replacement-rows",
+    )
+    callable_expectations = (
+        support._conditional_group_exists_callable_replacement_expectations()
+    )
+
+    assert (
+        support._conditional_group_exists_template_replacement_expectation().slice_id
+        == "minimal-template-replacement-rows"
+    )
+    assert tuple(
+        expectation.slice_id for expectation in callable_expectations
+    ) == expected_callable_slice_ids
+    assert {
+        expectation.manifest_id for expectation in callable_expectations
+    } == {"conditional-group-exists-boundary"}
+    assert (
+        support._conditional_group_exists_alternation_callable_replacement_expectation().slice_id
+        == "alternation-heavy-callable-replacement-rows"
+    )
+    assert (
+        support._conditional_group_exists_nested_callable_replacement_expectation().slice_id
+        == "nested-callable-replacement-str-rows"
+    )
+    assert (
+        support._conditional_group_exists_nested_callable_bytes_replacement_expectation().slice_id
+        == "nested-callable-replacement-bytes-rows"
+    )
+    assert (
+        support._conditional_group_exists_quantified_callable_replacement_expectation().slice_id
+        == "quantified-callable-replacement-str-rows"
+    )
+    assert (
+        support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().slice_id
+        == "quantified-callable-replacement-bytes-rows"
+    )
+
+
+def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
+    callable_expectations = (
+        support._conditional_group_exists_callable_replacement_expectations()
+    )
+    expected_callable_workload_ids = tuple(
+        workload_id
+        for expectation in callable_expectations
+        for workload_id in expectation.expected_workload_ids
+    )
+    expected_callable_str_workload_ids, expected_callable_bytes_workload_ids = (
+        support._split_workload_ids_by_text_model(expected_callable_workload_ids)
+    )
+
+    callable_str_workloads = support._conditional_group_exists_callable_str_slice_workloads()
+    callable_bytes_workloads = (
+        support._conditional_group_exists_callable_bytes_slice_workloads()
+    )
+    nested_str_workloads = support._conditional_group_exists_nested_callable_str_workloads()
+    nested_bytes_workloads = (
+        support._conditional_group_exists_nested_callable_bytes_workloads()
+    )
+    quantified_str_workloads = (
+        support._conditional_group_exists_quantified_callable_str_workloads()
+    )
+    quantified_bytes_workloads = (
+        support._conditional_group_exists_quantified_callable_bytes_workloads()
+    )
+    alternation_bytes_workloads = (
+        support._conditional_group_exists_alternation_callable_bytes_workloads()
+    )
+
+    assert tuple(
+        workload.workload_id for workload in callable_str_workloads
+    ) == expected_callable_str_workload_ids
+    assert {workload.text_model for workload in callable_str_workloads} == {"str"}
+    assert tuple(
+        workload.workload_id for workload in callable_bytes_workloads
+    ) == expected_callable_bytes_workload_ids
+    assert {workload.text_model for workload in callable_bytes_workloads} == {
+        "bytes"
+    }
+    assert tuple(
+        workload.workload_id for workload in nested_str_workloads
+    ) == collection_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+    assert {workload.text_model for workload in nested_str_workloads} == {"str"}
+    assert tuple(
+        workload.workload_id for workload in nested_bytes_workloads
+    ) == collection_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+    assert {workload.text_model for workload in nested_bytes_workloads} == {"bytes"}
+    assert tuple(
+        workload.workload_id for workload in quantified_str_workloads
+    ) == (
+        collection_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+    )
+    assert {workload.text_model for workload in quantified_str_workloads} == {
+        "str"
+    }
+    assert tuple(
+        workload.workload_id for workload in quantified_bytes_workloads
+    ) == (
+        collection_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+    )
+    assert {workload.text_model for workload in quantified_bytes_workloads} == {
+        "bytes"
+    }
+    assert tuple(
+        workload.workload_id for workload in alternation_bytes_workloads
+    ) == (
+        collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+    )
+    assert {workload.text_model for workload in alternation_bytes_workloads} == {
+        "bytes"
+    }
+
+
+def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> None:
+    expected_callable_workload_ids = tuple(
+        workload_id
+        for expectation in support._conditional_group_exists_callable_replacement_expectations()
+        for workload_id in expectation.expected_workload_ids
+    )
+    synthetic_workloads = (
+        synthetic_workload(
+            manifest_id="conditional-group-exists-boundary",
+            workload_id="callable-negative-count-warm-str",
+            operation="module.sub",
+            text_model="str",
+            categories=["callable", "negative-count", "replacement"],
+        ),
+        synthetic_workload(
+            manifest_id="conditional-group-exists-boundary",
+            workload_id="callable-negative-count-warm-bytes",
+            operation="module.sub",
+            text_model="bytes",
+            categories=["callable", "negative-count", "replacement"],
+        ),
+        synthetic_workload(
+            manifest_id="conditional-group-exists-boundary",
+            workload_id="callable-negative-none-count-warm-str",
+            operation="module.sub",
+            text_model="str",
+            categories=["callable", "negative-count", "none-count", "replacement"],
+        ),
+        synthetic_workload(
+            manifest_id="conditional-group-exists-boundary",
+            workload_id="callable-no-match-warm-str",
+            operation="module.sub",
+            text_model="str",
+            categories=["callable", "no-match", "replacement"],
+        ),
+    )
+
+    assert support._split_workload_ids_by_text_model(
+        expected_callable_workload_ids
+    ) == (
+        tuple(
+            workload_id
+            for workload_id in expected_callable_workload_ids
+            if not workload_id.endswith("-bytes")
+        ),
+        tuple(
+            workload_id
+            for workload_id in expected_callable_workload_ids
+            if workload_id.endswith("-bytes")
+        ),
+    )
+    assert support._mirrored_bytes_workload_ids(
+        collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+    ) == (
+        collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
+    )
+    assert support._selected_workload_ids(
+        synthetic_workloads,
+        text_model="str",
+        required_categories=("negative-count",),
+    ) == (
+        "callable-negative-count-warm-str",
+        "callable-negative-none-count-warm-str",
+    )
+    assert support._selected_workload_ids(
+        synthetic_workloads,
+        text_model="str",
+        required_categories=("negative-count",),
+        excluded_categories=("none-count",),
+    ) == ("callable-negative-count-warm-str",)
+    assert support._selected_workload_ids(
+        synthetic_workloads,
+        text_model="bytes",
+        required_categories=("negative-count",),
+    ) == ("callable-negative-count-warm-bytes",)
+    assert support._selected_workload_ids(
+        synthetic_workloads,
+        text_model="str",
+        required_categories=("no-match",),
+    ) == ("callable-no-match-warm-str",)
 
 
 def test_benchmark_summary_consistent_counts_unimplemented_and_regression_rows() -> None:
