@@ -4723,6 +4723,21 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
     benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS
 )
+_compiled_pattern_wrong_text_model_specs = (
+    benchmark_test_support._compiled_pattern_wrong_text_model_specs
+)
+_compiled_pattern_wrong_text_model_source_workloads = (
+    benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads
+)
+_compiled_pattern_wrong_text_model_contract_spec = (
+    benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec
+)
+compiled_pattern_contract_expected_build_calls = (
+    benchmark_test_support.compiled_pattern_contract_expected_build_calls
+)
+_compiled_pattern_module_helper_route = (
+    benchmark_test_support._compiled_pattern_module_helper_route
+)
 
 
 SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS = (

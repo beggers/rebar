@@ -1,6 +1,6 @@
 # RBR-1327: Route source-tree compiled-pattern wrong-text-model contract surface through owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -63,3 +63,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_wrong_text_model'` passed with `6 passed, 273 deselected in 0.11s`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or combined_suite_routes_moved_compiled_pattern_compile_contract_surfaces_through_source_tree_support'` passed with `2 passed, 51 deselected in 0.14s`
   - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in {'_compiled_pattern_wrong_text_model_specs','_compiled_pattern_wrong_text_model_source_workloads','_compiled_pattern_wrong_text_model_contract_spec','compiled_pattern_contract_expected_build_calls','_compiled_pattern_module_helper_route'}}); sys.exit(0 if not direct else 1)"` currently fails because the source-tree suite still reaches that wrong-text-model bundle through `benchmark_test_support`, and that failure belongs exactly to this cleanup
+
+## Completion
+- Routed the compiled-pattern wrong-text-model contract bundle through `tests/benchmarks/source_tree_benchmark_anchor_support.py` by exposing the five existing shared-support names there and switching the source-tree combined suite to use `source_tree_support` for that bundle.
+- Added focused owner-surface assertions proving the support module exposes those routed names and the combined suite no longer touches them through `benchmark_test_support`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_wrong_text_model'` -> `6 passed, 273 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or combined_suite_routes_moved_compiled_pattern_compile_contract_surfaces_through_source_tree_support or combined_suite_routes_moved_compiled_pattern_wrong_text_model_contract_surfaces_through_source_tree_support'` -> `3 passed, 51 deselected`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=sorted({node.attr for node in ast.walk(mod) if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id=='benchmark_test_support' and node.attr in {'_compiled_pattern_wrong_text_model_specs','_compiled_pattern_wrong_text_model_source_workloads','_compiled_pattern_wrong_text_model_contract_spec','compiled_pattern_contract_expected_build_calls','_compiled_pattern_module_helper_route'}}); sys.exit(0 if not direct else 1)"`
