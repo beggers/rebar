@@ -1219,6 +1219,24 @@ def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers
     )
 
 
+def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() -> None:
+    combined_suite_class = next(
+        node
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        if isinstance(node, ast.ClassDef)
+        and node.name == "SourceTreeScorecardBenchmarkSuiteTest"
+    )
+    class_method_names = {
+        node.name
+        for node in combined_suite_class.body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    assert "_assert_manifest_contracts" not in class_method_names
+    assert "_assert_representative_workloads" not in class_method_names
+    assert "_assert_workloads" not in class_method_names
+
+
 def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
 ) -> None:
     combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()

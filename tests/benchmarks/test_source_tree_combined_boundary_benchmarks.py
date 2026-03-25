@@ -4307,70 +4307,49 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                         list(expected_workload_order),
                     )
 
-                self._assert_manifest_contracts(case, scorecard)
-                self._assert_representative_workloads(case, scorecard)
+                for manifest_id, manifest_expectation in case.manifest_expectations.items():
+                    manifest = case.manifest_for_id(manifest_id)
+                    with self.subTest(manifest_id=manifest_id):
+                        source_tree_support.assert_benchmark_manifest_contract(
+                            self,
+                            scorecard["manifests"][manifest_id],
+                            source_tree_support.find_manifest_record(scorecard, manifest_id),
+                            manifest=manifest,
+                            manifest_path=source_tree_support.relative_manifest_path(
+                                manifest.path
+                            ),
+                            known_gap_count=manifest_expectation.known_gap_count,
+                            selection_mode=case.selection_mode,
+                            selected_workload_ids=case.selected_workload_ids_for_manifest(
+                                manifest_id
+                            ),
+                        )
 
-    def _assert_manifest_contracts(
-        self,
-        case: source_tree_support.SourceTreeScorecardCase,
-        scorecard: dict[str, object],
-    ) -> None:
-        manifest_expectations = case.manifest_expectations
-        for manifest_id, manifest_expectation in manifest_expectations.items():
-            manifest_summary = scorecard["manifests"][manifest_id]
-            manifest_record = source_tree_support.find_manifest_record(scorecard, manifest_id)
-            manifest = case.manifest_for_id(manifest_id)
-            source_tree_support.assert_benchmark_manifest_contract(
-                self,
-                manifest_summary,
-                manifest_record,
-                manifest=manifest,
-                manifest_path=source_tree_support.relative_manifest_path(manifest.path),
-                known_gap_count=manifest_expectation.known_gap_count,
-                selection_mode=case.selection_mode,
-                selected_workload_ids=case.selected_workload_ids_for_manifest(
-                    manifest_id
-                ),
-            )
-
-    def _assert_representative_workloads(
-        self,
-        case: source_tree_support.SourceTreeScorecardCase,
-        scorecard: dict[str, object],
-    ) -> None:
-        self._assert_workloads(
-            case,
-            scorecard,
-            case.representative_measured_workload_ids,
-            expected_status="measured",
-        )
-        self._assert_workloads(
-            case,
-            scorecard,
-            case.representative_known_gap_workload_ids,
-            expected_status="unimplemented",
-        )
-
-    def _assert_workloads(
-        self,
-        case: source_tree_support.SourceTreeScorecardCase,
-        scorecard: dict[str, object],
-        workload_ids: tuple[str, ...],
-        *,
-        expected_status: str,
-    ) -> None:
-        for workload_id in workload_ids:
-            with self.subTest(workload_id=workload_id):
-                workload_record = benchmark_test_support.find_workload_record(scorecard, workload_id)
-                manifest_id = workload_record["manifest_id"]
-                manifest = case.manifest_for_id(manifest_id)
-                benchmark_test_support.assert_benchmark_workload_contract(
-                    self,
-                    workload_record,
-                    manifest_id=manifest_id,
-                    workload_document=benchmark_test_support.find_workload_document(manifest, workload_id),
-                    expected_status=expected_status,
-                )
+                for expected_status, workload_ids in (
+                    ("measured", case.representative_measured_workload_ids),
+                    ("unimplemented", case.representative_known_gap_workload_ids),
+                ):
+                    for workload_id in workload_ids:
+                        with self.subTest(
+                            workload_id=workload_id,
+                            expected_status=expected_status,
+                        ):
+                            workload_record = benchmark_test_support.find_workload_record(
+                                scorecard,
+                                workload_id,
+                            )
+                            manifest_id = workload_record["manifest_id"]
+                            manifest = case.manifest_for_id(manifest_id)
+                            benchmark_test_support.assert_benchmark_workload_contract(
+                                self,
+                                workload_record,
+                                manifest_id=manifest_id,
+                                workload_document=benchmark_test_support.find_workload_document(
+                                    manifest,
+                                    workload_id,
+                                ),
+                                expected_status=expected_status,
+                            )
 
 
 # Detached benchmark-anchor contract coverage from the former
