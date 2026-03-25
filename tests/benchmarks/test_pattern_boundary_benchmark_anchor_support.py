@@ -60,6 +60,38 @@ def _pattern_case(
     )
 
 
+def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
+) -> None:
+    import sys
+
+    from tests.benchmarks.benchmark_test_support import (
+        top_level_module_definition_and_assignment_names,
+    )
+
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(sys.modules[__name__])
+    )
+
+    expected_definition_names = {
+        "_pattern_boundary_wrong_text_model_source_workloads",
+        "_pattern_boundary_wrong_text_model_expected_callback_call",
+        "_run_cpython_pattern_boundary_wrong_text_model_workload",
+        "_pattern_boundary_wrong_text_model_correctness_case_signature",
+        "_pattern_boundary_wrong_text_model_workload_signature",
+        "_is_pattern_boundary_wrong_text_model_workload",
+    }
+    expected_assignment_names = {
+        "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+    }
+
+    for name in expected_definition_names | expected_assignment_names:
+        assert hasattr(support, name)
+
+    assert expected_definition_names.isdisjoint(local_definition_names)
+    assert expected_assignment_names.isdisjoint(local_assignment_names)
+
+
 def test_pattern_bounded_wildcard_selector_and_signature_stay_pinned() -> None:
     workload = synthetic_workload(
         manifest_id="pattern-boundary",

@@ -88,6 +88,41 @@ def _group_callable_replacement(
     return replacement
 
 
+def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
+) -> None:
+    import sys
+
+    from tests.benchmarks.benchmark_test_support import (
+        top_level_module_definition_and_assignment_names,
+    )
+
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(sys.modules[__name__])
+    )
+
+    expected_definition_names = {
+        "_collection_replacement_wrong_text_model_source_workloads",
+        "_collection_replacement_wrong_text_model_expected_callback_call",
+        "_collection_replacement_wrong_text_model_expected_callback_result",
+        "_run_cpython_collection_replacement_wrong_text_model_workload",
+        "_pattern_collection_replacement_wrong_text_model_haystack_index",
+        "_collection_replacement_pattern_wrong_text_model_correctness_case_signature",
+        "_collection_replacement_pattern_wrong_text_model_workload_args",
+        "_collection_replacement_pattern_wrong_text_model_workload_signature",
+        "_is_collection_replacement_pattern_wrong_text_model_workload",
+    }
+    expected_assignment_names = {
+        "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+    }
+
+    for name in expected_definition_names | expected_assignment_names:
+        assert hasattr(support, name)
+
+    assert expected_definition_names.isdisjoint(local_definition_names)
+    assert expected_assignment_names.isdisjoint(local_assignment_names)
+
+
 def test_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signature() -> None:
     split_workload = synthetic_workload(
         manifest_id="collection-replacement-boundary",
