@@ -1864,6 +1864,87 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
     )
 
 
+def test_collection_replacement_support_through_owner_module_only() -> None:
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    module_ast = _parsed_module_ast(combined_suite)
+    direct_owner_imports = [
+        node
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom)
+        and node.module
+        == "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+    ]
+    owner_alias_pairs = {
+        (alias.name, alias.asname)
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
+        for alias in node.names
+        if alias.name == "collection_replacement_benchmark_anchor_support"
+    }
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(combined_suite)
+    )
+    local_names = definition_names | assignment_names
+    owner_names = frozenset(
+        {
+            "_COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS",
+            "_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES",
+            "_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR",
+            "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
+            "_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
+            "_collection_replacement_compiled_pattern_success_correctness_case_signature",
+            "_collection_replacement_compiled_pattern_success_workload_signature",
+            "_collection_replacement_grouped_callable_correctness_case_signature",
+            "_collection_replacement_grouped_callable_workload_signature",
+            "_collection_replacement_literal_replacement_correctness_case_signature",
+            "_collection_replacement_literal_replacement_workload_signature",
+            "_collection_replacement_keyword_correctness_case_signature",
+            "_conditional_group_exists_nested_callable_correctness_case_signature",
+            "_conditional_group_exists_nested_callable_workload_signature",
+            "_conditional_group_exists_quantified_callable_correctness_case_signature",
+            "_conditional_group_exists_quantified_callable_workload_signature",
+            "_collection_replacement_pattern_wrong_text_model_correctness_case_signature",
+            "_collection_replacement_pattern_wrong_text_model_workload_signature",
+            "_is_collection_replacement_compiled_pattern_success_workload",
+            "_collection_replacement_keyword_workload_signature",
+            "_collection_replacement_positional_indexlike_workload_signature",
+            "_collection_replacement_wrong_text_model_correctness_case_signature",
+            "_collection_replacement_wrong_text_model_workload_signature",
+            "_is_collection_replacement_grouped_callable_workload",
+            "_is_collection_replacement_pattern_wrong_text_model_workload",
+            "_is_collection_replacement_positional_indexlike_workload",
+            "_module_workflow_positional_indexlike_correctness_case_signature",
+            "_workload_ids_for_text_model",
+        }
+    )
+
+    assert direct_owner_imports == []
+    assert owner_alias_pairs == {
+        (
+            "collection_replacement_benchmark_anchor_support",
+            "collection_replacement_support",
+        )
+    }
+    assert owner_names.isdisjoint(local_names)
+
+
 def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
 ) -> None:
     definition_names, assignment_names = (

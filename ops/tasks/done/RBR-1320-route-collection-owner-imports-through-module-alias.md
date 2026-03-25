@@ -1,6 +1,6 @@
 # RBR-1320: Route collection owner imports through module alias
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -52,3 +52,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing'` passed with `26 passed, 253 deselected in 0.11s`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates or compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces'` passed with `4 passed, 111 deselected in 0.17s`
   - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=[n for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks.collection_replacement_benchmark_anchor_support']; aliases=[(a.name,a.asname) for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks' for a in n.names if a.name=='collection_replacement_benchmark_anchor_support' and a.asname=='collection_replacement_support']; sys.exit(0 if (not direct and aliases) else 1)"` currently fails because the combined suite still imports the owner surface directly and has no owner-module alias yet, and that failure belongs exactly to this cleanup
+
+## Completion
+- Routed the combined benchmark suite through `from tests.benchmarks import collection_replacement_benchmark_anchor_support as collection_replacement_support` and converted the former 43 owner-owned direct imports to module-attribute access.
+- Added `test_collection_replacement_support_through_owner_module_only` in `tests/benchmarks/test_benchmark_test_support.py` to assert the direct owner `ImportFrom` edge is gone, the `tests.benchmarks` alias import is present, and the retired owner names are absent from the suite's top-level definition/assignment namespace.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing'` passed with `26 passed, 253 deselected in 0.18s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates or compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces or collection_replacement_support_through_owner_module_only'` passed with `5 passed, 111 deselected in 0.27s`
+  - `python3 -c "import ast,pathlib,sys; mod=ast.parse(pathlib.Path('tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py').read_text()); direct=[n for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks.collection_replacement_benchmark_anchor_support']; aliases=[(a.name,a.asname) for n in mod.body if isinstance(n, ast.ImportFrom) and n.module=='tests.benchmarks' for a in n.names if a.name=='collection_replacement_benchmark_anchor_support' and a.asname=='collection_replacement_support']; sys.exit(0 if (not direct and aliases) else 1)"` passed
