@@ -1,6 +1,6 @@
 ## RBR-1272: Move compiled-pattern success owner specs onto dedicated benchmark support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -50,3 +50,10 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_source_tree_contract_benchmark_support.py` passed with `54 passed`; and
   - the negative `rg` check in `Verification` currently fails because the success owner-spec surface still lives in `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py`, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the compiled-pattern success owner-spec dataclass, excluded-field constant, both owner-spec instances, and the combined owner-spec inventory into `tests/benchmarks/compiled_pattern_module_success_benchmark_support.py`.
+- Updated `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` to import and use that support surface directly while keeping the existing assertions and helper-route callback expectations unchanged.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_source_tree_contract_benchmark_support.py`
+  - `bash -lc "! rg -n 'class CompiledPatternModuleSuccessOwnerSpec|def contract_builder_spec\\(|def source_workloads\\(|def expected_build_calls\\(|def expected_callback_result\\(|def expected_callback_call\\(' tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py"`
