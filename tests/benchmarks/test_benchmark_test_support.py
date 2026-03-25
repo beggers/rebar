@@ -2039,6 +2039,116 @@ def test_source_tree_combined_routing_helpers_stay_centralized() -> None:
         assert helper_names.isdisjoint(definition_names)
 
 
+@pytest.mark.parametrize(
+    (
+        "module_source",
+        "import_name",
+        "dotted_import_name",
+        "expected_alias_names",
+    ),
+    (
+        pytest.param(
+            "\n".join(
+                (
+                    "import tests.benchmarks.benchmark_test_support as benchmark_support",
+                    "",
+                    "benchmark_support_alias = benchmark_support",
+                    "benchmark_support_final: object = benchmark_support_alias",
+                )
+            ),
+            "benchmark_test_support",
+            "tests.benchmarks.benchmark_test_support",
+            {
+                "benchmark_support",
+                "benchmark_support_alias",
+                "benchmark_support_final",
+            },
+            id="benchmark-test-support-dotted-import",
+        ),
+        pytest.param(
+            "\n".join(
+                (
+                    "import tests.benchmarks.source_tree_benchmark_anchor_support as source_tree_support",
+                    "",
+                    "source_tree_support_alias = source_tree_support",
+                    "source_tree_support_final: object = source_tree_support_alias",
+                )
+            ),
+            "source_tree_benchmark_anchor_support",
+            "tests.benchmarks.source_tree_benchmark_anchor_support",
+            {
+                "source_tree_support",
+                "source_tree_support_alias",
+                "source_tree_support_final",
+            },
+            id="source-tree-support-dotted-import",
+        ),
+    ),
+)
+def test_module_alias_names_follow_dotted_import_and_assignment_alias_chains(
+    module_source: str,
+    import_name: str,
+    dotted_import_name: str,
+    expected_alias_names: set[str],
+) -> None:
+    assert support._module_alias_names(
+        ast.parse(module_source),
+        import_from_module="tests.benchmarks",
+        import_name=import_name,
+        dotted_import_name=dotted_import_name,
+    ) == expected_alias_names
+
+
+def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface_refs(
+    monkeypatch,
+) -> None:
+    owner_surface = object()
+    owner_module = SimpleNamespace(
+        __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
+        SOURCE_TREE_SCORECARD_EXPECTATIONS=owner_surface,
+    )
+    combined_suite = SimpleNamespace(
+        source_tree_support=owner_module,
+        source_tree_support_alias=owner_module,
+    )
+    combined_suite_ast = ast.parse(
+        "\n".join(
+            (
+                "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                "",
+                "source_tree_support_alias = source_tree_support",
+                "source_tree_scorecard_expectations_alias = source_tree_support_alias.SOURCE_TREE_SCORECARD_EXPECTATIONS",
+            )
+        )
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_source_tree_combined_suite_module",
+        lambda: combined_suite,
+    )
+    monkeypatch.setattr(
+        support,
+        "_parsed_source_tree_combined_suite_ast",
+        lambda: combined_suite_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "top_level_module_definition_and_assignment_names",
+        lambda module: (
+            set(),
+            {"source_tree_support_alias", "source_tree_scorecard_expectations_alias"},
+        ),
+    )
+
+    with pytest.raises(AssertionError):
+        support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+            alias_name="source_tree_support",
+            owner_module=owner_module,
+            owner_names=("SOURCE_TREE_SCORECARD_EXPECTATIONS",),
+        )
+
+
 _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
     {
         "STANDARD_BENCHMARK_DEFINITIONS",
