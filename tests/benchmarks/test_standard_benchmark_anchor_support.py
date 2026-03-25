@@ -45,6 +45,10 @@ def _allow_all_workloads(_: Any) -> bool:
     return True
 
 
+def _definition_names(definitions: tuple[Any, ...]) -> tuple[str, ...]:
+    return tuple(definition.name for definition in definitions)
+
+
 @dataclass(frozen=True, slots=True)
 class _SyntheticStandardBenchmarkDefinition:
     manifest_paths: tuple[pathlib.Path, ...]
@@ -333,6 +337,50 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     )
     assert "*PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
     assert "*SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+
+
+@pytest.mark.parametrize(
+    ("owner_definitions", "preceding_definition_name", "following_definition_name"),
+    (
+        pytest.param(
+            anchor_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+            "collection-replacement-grouped-callable-replacement",
+            "module-workflow-compiled-pattern-module-compile-literal-success",
+            id="module-workflow-keyword-after-collection-replacement",
+        ),
+        pytest.param(
+            anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+            "pattern-boundary-wrong-text-model",
+            "grouped-alternation",
+            id="source-tree-standard-after-pattern-boundary",
+        ),
+    ),
+)
+def test_standard_inventory_keeps_source_tree_owner_blocks_at_expected_boundaries(
+    owner_definitions: tuple[Any, ...],
+    preceding_definition_name: str,
+    following_definition_name: str,
+) -> None:
+    standard_definitions = support.STANDARD_BENCHMARK_DEFINITIONS
+    standard_names = _definition_names(standard_definitions)
+    owner_names = _definition_names(owner_definitions)
+
+    first_owner_index = standard_names.index(owner_names[0])
+    assert standard_names[first_owner_index - 1] == preceding_definition_name
+
+    standard_owner_slice = standard_definitions[
+        first_owner_index : first_owner_index + len(owner_definitions)
+    ]
+    assert _definition_names(standard_owner_slice) == owner_names
+    assert all(
+        standard_definition is owner_definition
+        for standard_definition, owner_definition in zip(
+            standard_owner_slice, owner_definitions, strict=True
+        )
+    )
+    assert standard_names[first_owner_index + len(owner_definitions)] == (
+        following_definition_name
+    )
 
 
 def test_standard_support_source_no_longer_inlines_collection_replacement_definitions(
