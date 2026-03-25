@@ -1,6 +1,6 @@
 ## RBR-1255: Move collection-replacement measured-row ownership onto dedicated support suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -64,3 +64,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `31 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `128 tests collected`.
   - `bash -lc "! rg -n 'test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured|test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured|test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured|test_collection_replacement_manifest_keeps_pattern_split_rows_measured|test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured|test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured|test_collection_replacement_manifest_keeps_grouped_callable_rows_measured' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those inline assertions still exist, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the seven collection-replacement measured-row ownership assertions into `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`.
+- Rehomed the collection-replacement route and selector ownership into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, including the pattern-collection routes, literal-replacement routes/selectors, and grouped-callable workload pairs/selectors that the dedicated suite now exercises directly.
+- Removed the corresponding inline ownership assertions and now-unused local route/selector definitions from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+
+## Verification
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `38 passed`.
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `128 tests collected`.
+- `bash -lc "! rg -n 'test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured|test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured|test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured|test_collection_replacement_manifest_keeps_pattern_split_rows_measured|test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured|test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured|test_collection_replacement_manifest_keeps_grouped_callable_rows_measured' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed.

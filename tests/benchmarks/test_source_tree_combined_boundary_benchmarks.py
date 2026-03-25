@@ -47,17 +47,25 @@ from tests.benchmarks.benchmark_test_support import (
     manifest_workload_ids_matching as _manifest_workload_ids_matching,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
+    _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES,
+    _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
+    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
+    _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
+    _CollectionReplacementLiteralReplacementRoute,
     _collection_replacement_compiled_pattern_success_correctness_case_signature,
     _collection_replacement_compiled_pattern_success_workload_signature,
     _collection_replacement_keyword_correctness_case_signature,
     _collection_replacement_pattern_wrong_text_model_correctness_case_signature,
     _collection_replacement_pattern_wrong_text_model_workload_signature,
     _is_collection_replacement_compiled_pattern_success_workload,
+    _is_collection_replacement_literal_replacement_workload,
     _collection_replacement_keyword_workload_signature,
     _collection_replacement_positional_indexlike_workload_signature,
     _collection_replacement_wrong_text_model_correctness_case_signature,
     _collection_replacement_wrong_text_model_workload_signature,
     _is_collection_replacement_keyword_workload,
+    _is_collection_replacement_grouped_callable_workload,
     _is_collection_replacement_pattern_wrong_text_model_workload,
     _is_collection_replacement_positional_indexlike_workload,
     _is_collection_replacement_wrong_text_model_workload,
@@ -69,7 +77,6 @@ from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _pattern_keyword_window_correctness_case_signature,
     _pattern_keyword_window_workload_signature,
     _pattern_window_positional_indexlike_correctness_case_signature,
-    _pattern_window_positional_indexlike_workload_args,
     _pattern_window_positional_indexlike_workload_signature,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
@@ -499,29 +506,6 @@ class SourceTreeCombinedManifestExpectationDefinition:
     zero_gap_bytes_representative_subsets: tuple[tuple[str, ...], ...] = ()
 
 
-@dataclass(frozen=True, slots=True)
-class _CollectionReplacementLiteralReplacementRoute:
-    workload_case_pairs: tuple[tuple[str, str], ...]
-    expected_operation: str
-    operation_prefix: str
-    operations: tuple[str, ...]
-    text_models: tuple[str, ...]
-    args_offset: int
-    allowed_counts: tuple[int, ...] | None = None
-
-    def workload_ids(self) -> tuple[str, ...]:
-        return _workload_case_pairs_workload_ids(self.workload_case_pairs)
-
-    def case_ids(self) -> tuple[str, ...]:
-        return _workload_case_pairs_case_ids(self.workload_case_pairs)
-
-    def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
-        return _workload_case_pair_anchor_expectations(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            self.workload_case_pairs,
-        )
-
-
 def _callable_match_group_signature(replacement: object) -> tuple[object, ...] | None:
     if not callable(replacement):
         return None
@@ -546,85 +530,6 @@ def _text_model_agnostic_callable_match_group_signature(
         value.decode("utf-8") if isinstance(value, bytes) else value
         for value in signature
     )
-
-
-@dataclass(frozen=True, slots=True)
-class _CollectionReplacementPatternCollectionRoute:
-    workload_case_pairs: tuple[tuple[str, str], ...]
-    operation: str
-    requires_window_bounds: bool
-
-    @property
-    def helper(self) -> str:
-        return self.operation.removeprefix("pattern.")
-
-    def workload_ids(self) -> tuple[str, ...]:
-        return _workload_case_pairs_workload_ids(self.workload_case_pairs)
-
-    def case_ids(self) -> tuple[str, ...]:
-        return _workload_case_pairs_case_ids(self.workload_case_pairs)
-
-    def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
-        return _workload_case_pair_anchor_expectations(
-            COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            self.workload_case_pairs,
-        )
-
-    def correctness_case_signature(
-        self,
-        case: Any,
-    ) -> tuple[Any, ...] | None:
-        if case.case_id not in self.case_ids():
-            return None
-        if case.operation != "pattern_call" or case.kwargs or case.helper != self.helper:
-            return None
-        return (
-            self.operation,
-            case_pattern(case),
-            freeze_signature_value(list(case.args)),
-            (),
-            case.flags or 0,
-            case.text_model or "str",
-        )
-
-    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
-        if not self.includes_workload(workload):
-            raise AssertionError(
-                "unexpected collection/replacement bounded "
-                f"{self.operation} workload {workload.workload_id!r}"
-            )
-        return (
-            self.operation,
-            workload.pattern_payload(),
-            freeze_signature_value(list(self._workload_args(workload))),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-
-    def includes_workload(self, workload: Any) -> bool:
-        return (
-            workload.workload_id in self.workload_ids()
-            and workload.operation == self.operation
-            and workload.pattern == "abc"
-            and workload.expected_exception is None
-            and not workload.use_compiled_pattern
-            and workload.text_model in {"str", "bytes"}
-            and not workload.kwargs
-            and (workload.pos is not None) is self.requires_window_bounds
-            and (workload.endpos is not None) is self.requires_window_bounds
-        )
-
-    def _workload_args(self, workload: Any) -> tuple[Any, ...]:
-        if self.requires_window_bounds:
-            return _pattern_window_positional_indexlike_workload_args(workload)
-
-        args = [workload.haystack_payload()]
-        if workload.maxsplit is not None and not (
-            type(workload.maxsplit) is int and workload.maxsplit == 0
-        ):
-            args.append(workload.maxsplit_argument())
-        return tuple(args)
 
 
 @dataclass(frozen=True, slots=True)
@@ -4619,181 +4524,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             manifest_expectation.representative_measured_workload_ids,
             (),
-        )
-
-    def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_collection_replacement_positional_indexlike_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            (
-                "module-split-maxsplit-indexlike-positional-purged-bytes",
-                "module-sub-count-indexlike-positional-warm-str",
-                "module-subn-count-indexlike-positional-purged-bytes",
-                "pattern-split-maxsplit-indexlike-positional-warm-str",
-                "pattern-sub-count-indexlike-positional-purged-bytes",
-                "pattern-subn-count-indexlike-positional-warm-str",
-            ),
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = (
-            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"].workload_ids()
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 3)
-        selected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "findall"
-            ].includes_workload,
-        )
-        self.assertEqual(
-            selected_measured_workload_ids,
-            expected_measured_workload_ids,
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            selected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = (
-            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["finditer"].workload_ids()
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 3)
-        selected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "finditer"
-            ].includes_workload,
-        )
-        self.assertEqual(
-            selected_measured_workload_ids,
-            expected_measured_workload_ids,
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            selected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_collection_replacement_manifest_keeps_pattern_split_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = (
-            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].workload_ids()
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 3)
-        selected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].includes_workload,
-        )
-        self.assertEqual(
-            selected_measured_workload_ids,
-            expected_measured_workload_ids,
-        )
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            selected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        selected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
-        )
-        self.assertEqual(
-            selected_measured_workload_ids,
-            _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"].workload_ids(),
-        )
-        self.assertEqual(len(selected_measured_workload_ids), 20)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            selected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"].workload_ids(),
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 18)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
-        )
-
-    def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured(
-        self,
-    ) -> None:
-        case = source_tree_combined_case("collection-replacement-boundary")
-        workload_count = len(case.target_manifest.workloads)
-        expected_measured_workload_ids = _manifest_workload_ids_matching(
-            case.target_manifest,
-            _is_collection_replacement_grouped_callable_workload,
-        )
-        self.assertEqual(
-            expected_measured_workload_ids,
-            _workload_case_pairs_workload_ids(
-                _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
-            ),
-        )
-        self.assertEqual(len(expected_measured_workload_ids), 4)
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "collection-replacement-boundary",
-            expected_measured_workload_ids,
-            workload_count,
-            expected_total_workload_count=workload_count,
         )
 
     def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit(
@@ -8870,158 +8600,6 @@ OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 )
 
 
-_COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
-    {"module.split", "pattern.split"}
-)
-_COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
-    {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
-)
-_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES = {
-    "findall": _CollectionReplacementPatternCollectionRoute(
-        workload_case_pairs=(
-            ("pattern-findall-bounded-warm-str", "pattern-findall-str-bounded"),
-            (
-                "pattern-findall-bounded-no-match-warm-str",
-                "pattern-findall-str-bounded-no-match",
-            ),
-            ("pattern-findall-bounded-purged-bytes", "pattern-findall-bytes-bounded"),
-        ),
-        operation="pattern.findall",
-        requires_window_bounds=True,
-    ),
-    "finditer": _CollectionReplacementPatternCollectionRoute(
-        workload_case_pairs=(
-            ("pattern-finditer-bounded-warm-str", "pattern-finditer-str-bounded"),
-            (
-                "pattern-finditer-bounded-no-match-warm-str",
-                "pattern-finditer-str-bounded-no-match",
-            ),
-            (
-                "pattern-finditer-bounded-purged-bytes",
-                "pattern-finditer-bytes-bounded",
-            ),
-        ),
-        operation="pattern.finditer",
-        requires_window_bounds=True,
-    ),
-    "split": _CollectionReplacementPatternCollectionRoute(
-        workload_case_pairs=(
-            ("pattern-split-no-match-warm-str", "pattern-split-str-no-match"),
-            ("pattern-split-repeated-warm-str", "pattern-split-str-repeated"),
-            ("pattern-split-maxsplit-purged-bytes", "pattern-split-bytes-maxsplit"),
-        ),
-        operation="pattern.split",
-        requires_window_bounds=False,
-    ),
-}
-
-_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
-    "pattern": _CollectionReplacementLiteralReplacementRoute(
-        workload_case_pairs=(
-            ("pattern-sub-no-match-warm-str", "pattern-sub-str-no-match"),
-            ("pattern-sub-single-match-warm-str", "pattern-sub-str-single-match"),
-            ("pattern-sub-repeated-warm-str", "pattern-sub-str-repeated"),
-            ("pattern-sub-count-one-warm-str", "pattern-sub-str-count-one"),
-            ("pattern-sub-negative-count-warm-str", "pattern-sub-str-negative-count"),
-            ("pattern-sub-bytes-no-match-purged-bytes", "pattern-sub-bytes-no-match"),
-            (
-                "pattern-sub-bytes-single-match-purged-bytes",
-                "pattern-sub-bytes-single-match",
-            ),
-            (
-                "pattern-sub-bytes-repeated-purged-bytes",
-                "pattern-sub-bytes-repeated",
-            ),
-            (
-                "pattern-sub-bytes-count-one-purged-bytes",
-                "pattern-sub-bytes-count-one",
-            ),
-            (
-                "pattern-sub-bytes-negative-count-purged-bytes",
-                "pattern-sub-bytes-negative-count",
-            ),
-            ("pattern-subn-count-warm-str", "pattern-subn-str-count"),
-            ("pattern-subn-single-match-warm-str", "pattern-subn-str-single-match"),
-            ("pattern-subn-repeated-warm-str", "pattern-subn-str-repeated"),
-            ("pattern-subn-negative-count-warm-str", "pattern-subn-str-negative-count"),
-            ("pattern-subn-no-match-warm-str", "pattern-subn-str-no-match"),
-            ("pattern-subn-bytes-count-purged-bytes", "pattern-subn-bytes-count"),
-            (
-                "pattern-subn-bytes-single-match-purged-bytes",
-                "pattern-subn-bytes-single-match",
-            ),
-            (
-                "pattern-subn-bytes-repeated-purged-bytes",
-                "pattern-subn-bytes-repeated",
-            ),
-            (
-                "pattern-subn-bytes-negative-count-purged-bytes",
-                "pattern-subn-bytes-negative-count",
-            ),
-            (
-                "pattern-subn-bytes-no-match-purged-bytes",
-                "pattern-subn-bytes-no-match",
-            ),
-        ),
-        expected_operation="pattern_call",
-        operation_prefix="pattern",
-        operations=("pattern.sub", "pattern.subn"),
-        text_models=("str", "bytes"),
-        args_offset=0,
-    ),
-    "module": _CollectionReplacementLiteralReplacementRoute(
-        workload_case_pairs=(
-            ("module-sub-str-no-match-purged-str", "module-sub-str-no-match"),
-            ("module-sub-str-single-match-purged-str", "module-sub-str-single-match"),
-            ("module-sub-str-repeated-purged-str", "module-sub-str-repeated"),
-            ("module-sub-str-count-one-purged-str", "module-sub-str-count-one"),
-            ("module-sub-str-negative-count-purged-str", "module-sub-str-negative-count"),
-            ("module-subn-str-count-purged-str", "module-subn-str-count"),
-            (
-                "module-subn-str-single-match-purged-str",
-                "module-subn-str-single-match",
-            ),
-            ("module-subn-str-repeated-purged-str", "module-subn-str-repeated"),
-            (
-                "module-subn-str-negative-count-purged-str",
-                "module-subn-str-negative-count",
-            ),
-            ("module-subn-str-no-match-purged-str", "module-subn-str-no-match"),
-            ("module-sub-bytes-no-match-purged-bytes", "module-sub-bytes-no-match"),
-            (
-                "module-sub-bytes-single-match-purged-bytes",
-                "module-sub-bytes-single-match",
-            ),
-            ("module-sub-bytes-repeated-purged-bytes", "module-sub-bytes-repeated"),
-            ("module-sub-bytes-count-one-purged-bytes", "module-sub-bytes-count-one"),
-            ("module-subn-bytes-count-purged-bytes", "module-subn-bytes-count"),
-            (
-                "module-subn-bytes-single-match-purged-bytes",
-                "module-subn-bytes-single-match",
-            ),
-            ("module-subn-bytes-repeated-purged-bytes", "module-subn-bytes-repeated"),
-            ("module-subn-bytes-no-match-purged-bytes", "module-subn-bytes-no-match"),
-        ),
-        expected_operation="module_call",
-        operation_prefix="module",
-        operations=("module.sub", "module.subn"),
-        text_models=("str", "bytes"),
-        args_offset=1,
-        allowed_counts=(-1, 0, 1),
-    ),
-}
-_COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS = (
-    ("module-sub-callable-grouped-warm-str", "module-sub-callable-grouped-str"),
-    ("module-sub-callable-grouped-warm-bytes", "module-sub-callable-grouped-bytes"),
-    (
-        "pattern-subn-callable-named-grouped-warm-str",
-        "pattern-subn-callable-named-grouped-str",
-    ),
-    (
-        "pattern-subn-callable-named-grouped-purged-bytes",
-        "pattern-subn-callable-named-grouped-bytes",
-    ),
-)
 def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
     *,
@@ -9097,43 +8675,6 @@ def _collection_replacement_literal_replacement_workload_signature(
         workload.flags,
         workload.text_model,
     )
-def _is_collection_replacement_literal_replacement_workload(
-    workload: Any,
-    *,
-    route: _CollectionReplacementLiteralReplacementRoute,
-    workload_ids: tuple[str, ...] | None = None,
-) -> bool:
-    return (
-        (workload_ids is None or workload.workload_id in workload_ids)
-        and workload.operation in route.operations
-        and workload.pattern == "abc"
-        and workload.replacement == "x"
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in route.text_models
-        and (route.allowed_counts is None or workload.count in route.allowed_counts)
-        and workload.pos is None
-        and workload.endpos is None
-        and not workload.kwargs
-    )
-
-
-_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR = partial(
-    _is_collection_replacement_literal_replacement_workload,
-    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
-    workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-        "module"
-    ].workload_ids(),
-)
-_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
-    _is_collection_replacement_literal_replacement_workload,
-    route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
-    workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-        "pattern"
-    ].workload_ids(),
-)
-
-
 def _collection_replacement_grouped_callable_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -9197,28 +8738,6 @@ def _collection_replacement_grouped_callable_workload_signature(
         (),
         workload.flags,
         workload.text_model,
-    )
-
-
-def _is_collection_replacement_grouped_callable_workload(workload: Any) -> bool:
-    return (
-        workload.workload_id
-        in _workload_case_pairs_workload_ids(
-            _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
-        )
-        and workload.operation in {"module.sub", "pattern.subn"}
-        and workload.pattern in {
-            "(abc)",
-            b"(abc)",
-            "(?P<word>abc)",
-            b"(?P<word>abc)",
-        }
-        and workload.expected_exception is None
-        and not workload.use_compiled_pattern
-        and workload.text_model in {"str", "bytes"}
-        and workload.pos is None
-        and workload.endpos is None
-        and not workload.kwargs
     )
 
 

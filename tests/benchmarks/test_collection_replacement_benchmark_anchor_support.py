@@ -441,6 +441,188 @@ def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_sp
     )
 
 
+def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=support._is_collection_replacement_positional_indexlike_workload,
+        )
+    )
+
+    assert expected_measured_workload_ids == (
+        "module-split-maxsplit-indexlike-positional-purged-bytes",
+        "module-sub-count-indexlike-positional-warm-str",
+        "module-subn-count-indexlike-positional-purged-bytes",
+        "pattern-split-maxsplit-indexlike-positional-warm-str",
+        "pattern-sub-count-indexlike-positional-purged-bytes",
+        "pattern-subn-count-indexlike-positional-warm-str",
+    )
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+        "findall"
+    ].workload_ids()
+    selected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "findall"
+            ].includes_workload,
+        )
+    )
+
+    assert len(expected_measured_workload_ids) == 3
+    assert selected_measured_workload_ids == expected_measured_workload_ids
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=selected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+        "finditer"
+    ].workload_ids()
+    selected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "finditer"
+            ].includes_workload,
+        )
+    )
+
+    assert len(expected_measured_workload_ids) == 3
+    assert selected_measured_workload_ids == expected_measured_workload_ids
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=selected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+def test_collection_replacement_manifest_keeps_pattern_split_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+        "split"
+    ].workload_ids()
+    selected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "split"
+            ].includes_workload,
+        )
+    )
+
+    assert len(expected_measured_workload_ids) == 3
+    assert selected_measured_workload_ids == expected_measured_workload_ids
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=selected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    selected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
+        )
+    )
+
+    assert selected_measured_workload_ids == support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+        "pattern"
+    ].workload_ids()
+    assert len(selected_measured_workload_ids) == 20
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=selected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
+        )
+    )
+
+    assert expected_measured_workload_ids == support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+        "module"
+    ].workload_ids()
+    assert len(expected_measured_workload_ids) == 18
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() -> None:
+    manifest_path = "collection_replacement_boundary.py"
+    manifest_workload_count = len(selected_manifest_workloads(manifest_path))
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            manifest_path,
+            include_workload=support._is_collection_replacement_grouped_callable_workload,
+        )
+    )
+
+    assert expected_measured_workload_ids == tuple(
+        workload_id
+        for workload_id, _ in support._COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+    )
+    assert len(expected_measured_workload_ids) == 4
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
 def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_signatures() -> None:
     split_workload = synthetic_workload(
         manifest_id="collection-replacement-boundary",
