@@ -1,8 +1,9 @@
 ## RBR-1313: Delete duplicate source-tree benchmark test manifest-path owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
+Completed: 2026-03-25
 
 ## Goal
 - Delete the remaining duplicate manifest-path constants from the source-tree benchmark test files so those suites reuse the existing owner constants from the shared benchmark support modules instead of rebuilding the same repo paths locally.
@@ -60,3 +61,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_source_tree_owner_manifest_path_constants_point_to_current_workload_files` passed with `1 passed in 0.09s`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `279 tests collected in 0.10s`
   - `bash -lc "! rg -n '^(PATTERN_BOUNDARY_MANIFEST_PATH|OPTIONAL_GROUP_MANIFEST_PATH|NESTED_GROUP_MANIFEST_PATH|EXACT_REPEAT_MANIFEST_PATH|RANGED_REPEAT_MANIFEST_PATH|GROUPED_ALTERNATION_MANIFEST_PATH|GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH|NESTED_GROUP_REPLACEMENT_MANIFEST_PATH|OPEN_ENDED_MANIFEST_PATH) =' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because both files still carry those duplicate assignments, and that failure belongs exactly to this cleanup.
+
+## Completion Note
+- Deleted the duplicate manifest-path constant assignments from `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Reused `PATTERN_BOUNDARY_MANIFEST_PATH` from `tests/benchmarks/benchmark_test_support.py` and the eight source-tree manifest-path owners from `tests/benchmarks/source_tree_benchmark_anchor_support.py` without adding a new helper layer.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_source_tree_owner_manifest_path_constants_point_to_current_workload_files` -> `1 passed in 0.15s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'manifest_path_constants or owner_builders_reference_owner_manifest_path_constants or owner_definition_exports_reuse_owner_manifest_path_constants'` -> `3 passed, 45 deselected in 0.11s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` -> `279 tests collected in 0.16s`
+  - `bash -lc "! rg -n '^(PATTERN_BOUNDARY_MANIFEST_PATH|OPTIONAL_GROUP_MANIFEST_PATH|NESTED_GROUP_MANIFEST_PATH|EXACT_REPEAT_MANIFEST_PATH|RANGED_REPEAT_MANIFEST_PATH|GROUPED_ALTERNATION_MANIFEST_PATH|GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH|NESTED_GROUP_REPLACEMENT_MANIFEST_PATH|OPEN_ENDED_MANIFEST_PATH) =' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed

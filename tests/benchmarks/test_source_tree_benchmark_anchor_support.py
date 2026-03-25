@@ -28,36 +28,18 @@ from tests.benchmarks.benchmark_test_support import (
     live_manifest_workload,
     synthetic_workload,
 )
+from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    EXACT_REPEAT_MANIFEST_PATH,
+    GROUPED_ALTERNATION_MANIFEST_PATH,
+    GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+    NESTED_GROUP_MANIFEST_PATH,
+    NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+    OPEN_ENDED_MANIFEST_PATH,
+    OPTIONAL_GROUP_MANIFEST_PATH,
+    RANGED_REPEAT_MANIFEST_PATH,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
-
-GROUPED_ALTERNATION_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
-)
-GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT
-    / "benchmarks"
-    / "workloads"
-    / "grouped_alternation_replacement_boundary.py"
-)
-OPTIONAL_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
-)
-NESTED_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
-)
-EXACT_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
-)
-RANGED_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
-)
-NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
-)
-OPEN_ENDED_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
-)
 
 _MOVED_SOURCE_TREE_CLASS_NAMES = (
     "SourceTreeBenchmarkCommonCase",
