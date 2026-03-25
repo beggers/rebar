@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from functools import cache
 import re
 from typing import Any
 
@@ -16,6 +15,7 @@ from tests.benchmarks.benchmark_test_support import (
     _collection_replacement_keyword_parameter_name,
     _collection_replacement_positional_keyword_field,
     _compiled_pattern_module_helper_route,
+    _definition_anchor_expectations,
     _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
     _is_module_workflow_compiled_pattern_literal_success_workload,
     _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
@@ -26,6 +26,7 @@ from tests.benchmarks.benchmark_test_support import (
     compiled_pattern_contract_expected_build_calls,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
+    MODULE_BOUNDARY_MANIFEST_PATH,
     run_benchmark_workload_with_cpython,
     selected_manifest_workloads,
 )
@@ -128,115 +129,101 @@ def _assert_wrong_text_model_payload_round_trip(
         assert isinstance(round_tripped.replacement_payload(), expected_text_type)
 
 
-@cache
-def _build_compiled_pattern_module_helper_standard_benchmark_definitions() -> tuple[
-    object, ...
-]:
-    from tests.benchmarks.benchmark_test_support import (
-        _definition_anchor_expectations,
-        MODULE_BOUNDARY_MANIFEST_PATH,
-    )
-
-    return (
-        StandardBenchmarkAnchorContractDefinition(
-            name="module-workflow-compiled-pattern-literal-success",
-            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-            expected_anchor_case_ids=_definition_anchor_expectations(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                {
-                    "module-search-literal-warm-hit-str-compiled-pattern": (
-                        "workflow-module-search-str-compiled-pattern",
-                    ),
-                    "module-match-literal-warm-hit-str-compiled-pattern": (
-                        "workflow-module-match-str-compiled-pattern",
-                    ),
-                    "module-fullmatch-literal-purged-hit-bytes-compiled-pattern": (
-                        "workflow-module-fullmatch-bytes-compiled-pattern",
-                    ),
-                },
-            ),
-            include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
-            correctness_case_signature=(
-                _module_workflow_compiled_pattern_correctness_case_signature
-            ),
-            workload_signature=_module_workflow_compiled_pattern_workload_signature,
-            run_callback_result_parity=True,
-        ),
-        StandardBenchmarkAnchorContractDefinition(
-            name="module-workflow-compiled-pattern-bounded-wildcard-success",
-            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-            expected_anchor_case_ids=_definition_anchor_expectations(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                {
-                    "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern": (
-                        "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
-                    ),
-                    "module-match-bounded-wildcard-warm-hit-str-compiled-pattern": (
-                        "workflow-module-match-str-bounded-wildcard-compiled-pattern",
-                    ),
-                    "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern": (
-                        "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
-                    ),
-                },
-            ),
-            include_workload=(
-                _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
-            ),
-            correctness_case_signature=(
-                _module_workflow_compiled_pattern_correctness_case_signature
-            ),
-            workload_signature=_module_workflow_compiled_pattern_workload_signature,
-            run_callback_result_parity=True,
-        ),
-        StandardBenchmarkAnchorContractDefinition(
-            name="module-workflow-compiled-pattern-verbose-bytes-success",
-            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-            expected_anchor_case_ids=_definition_anchor_expectations(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                {
-                    "module-search-verbose-regression-warm-hit-bytes-compiled-pattern": (
-                        "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-                    ),
-                    "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern": (
-                        "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-                    ),
-                },
-            ),
-            include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
-            correctness_case_signature=(
-                _module_workflow_compiled_pattern_correctness_case_signature
-            ),
-            workload_signature=_module_workflow_compiled_pattern_workload_signature,
-            run_callback_result_parity=True,
-        ),
-        StandardBenchmarkAnchorContractDefinition(
-            name="module-workflow-compiled-pattern-wrong-text-model",
-            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-            expected_anchor_case_ids=_definition_anchor_expectations(
-                MODULE_BOUNDARY_MANIFEST_PATH,
-                {
-                    "module-search-on-bytes-string-warm-str-compiled-pattern": (
-                        "workflow-module-search-str-compiled-pattern-on-bytes-string",
-                    ),
-                    "module-match-on-str-string-purged-bytes-compiled-pattern": (
-                        "workflow-module-match-bytes-compiled-pattern-on-str-string",
-                    ),
-                    "module-fullmatch-on-bytes-string-warm-str-compiled-pattern": (
-                        "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
-                    ),
-                },
-            ),
-            include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
-            correctness_case_signature=(
-                _module_workflow_compiled_pattern_correctness_case_signature
-            ),
-            workload_signature=_module_workflow_compiled_pattern_workload_signature,
-        ),
-    )
-
-
 COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
-    _build_compiled_pattern_module_helper_standard_benchmark_definitions()
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-literal-success",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-literal-warm-hit-str-compiled-pattern": (
+                    "workflow-module-search-str-compiled-pattern",
+                ),
+                "module-match-literal-warm-hit-str-compiled-pattern": (
+                    "workflow-module-match-str-compiled-pattern",
+                ),
+                "module-fullmatch-literal-purged-hit-bytes-compiled-pattern": (
+                    "workflow-module-fullmatch-bytes-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-bounded-wildcard-success",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern": (
+                    "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+                ),
+                "module-match-bounded-wildcard-warm-hit-str-compiled-pattern": (
+                    "workflow-module-match-str-bounded-wildcard-compiled-pattern",
+                ),
+                "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern": (
+                    "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=(
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
+        ),
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-verbose-bytes-success",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern": (
+                    "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+                ),
+                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern": (
+                    "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-wrong-text-model",
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=_definition_anchor_expectations(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-on-bytes-string-warm-str-compiled-pattern": (
+                    "workflow-module-search-str-compiled-pattern-on-bytes-string",
+                ),
+                "module-match-on-str-string-purged-bytes-compiled-pattern": (
+                    "workflow-module-match-bytes-compiled-pattern-on-str-string",
+                ),
+                "module-fullmatch-on-bytes-string-warm-str-compiled-pattern": (
+                    "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
+        correctness_case_signature=(
+            _module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+    ),
 )
 
 
