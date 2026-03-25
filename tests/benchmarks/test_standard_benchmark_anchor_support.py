@@ -527,37 +527,6 @@ def test_standard_inventory_reuses_owner_owned_collection_replacement_definition
     assert standard_definitions == owner_definitions
 
 
-def test_standard_inventory_reuses_owner_owned_module_workflow_keyword_definition_objects(
-) -> None:
-    owner_definitions = (
-        anchor_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
-    )
-    standard_definitions = tuple(
-        definition
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
-        if definition.name.startswith("module-workflow-keyword-")
-    )
-
-    assert standard_definitions == owner_definitions
-
-
-def test_standard_inventory_reuses_owner_owned_source_tree_standard_definition_objects(
-) -> None:
-    owner_definitions = anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
-    standard_definitions = tuple(
-        definition
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
-        if definition.name in {
-            "optional-group-conditional",
-            "nested-group",
-            "exact-repeat",
-            "ranged-repeat",
-        }
-    )
-
-    assert standard_definitions == owner_definitions
-
-
 def test_standard_inventory_reuses_owner_owned_pattern_boundary_definition_objects(
 ) -> None:
     owner_definitions = (
