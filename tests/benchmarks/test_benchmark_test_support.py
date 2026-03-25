@@ -5,13 +5,11 @@ from types import SimpleNamespace
 
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support as support
-from tests.benchmarks.benchmark_anchor_support_test_helpers import (
+from tests.benchmarks.benchmark_test_support import (
     _synthetic_manifest_loader,
     _synthetic_workload,
     _synthetic_workload_is_included,
     anchor_support_cache_guard,
-)
-from tests.benchmarks.benchmark_test_support import (
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     compile_proxy_correctness_case_signature,
     compile_proxy_workload_signature,

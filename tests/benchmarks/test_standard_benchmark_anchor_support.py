@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 
 from rebar_harness.benchmarks import load_manifest
-from tests.benchmarks.benchmark_anchor_support_test_helpers import (
+from tests.benchmarks.benchmark_test_support import (
     _synthetic_case,
     _synthetic_manifest_loader,
     _synthetic_workload,

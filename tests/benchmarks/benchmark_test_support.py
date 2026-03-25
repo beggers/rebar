@@ -6,6 +6,7 @@ import inspect
 import pathlib
 import re
 import textwrap
+from types import SimpleNamespace
 from typing import Any
 import unittest
 
@@ -69,6 +70,72 @@ def live_manifest_workloads(
 ) -> tuple[benchmarks.Workload, ...]:
     workloads_by_id = _live_manifest_workloads_by_id(manifest_path)
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
+
+
+def _clear_anchor_support_caches() -> None:
+    from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
+
+    cached_functions = (
+        manifest_workloads,
+        _live_manifest_workloads_by_id,
+        anchor_support.published_case_ids_by_signature,
+        anchor_support.published_cases_by_id,
+    )
+    for cached_function in cached_functions:
+        cache_clear = getattr(cached_function, "cache_clear", None)
+        if cache_clear is not None:
+            cache_clear()
+
+
+@pytest.fixture
+def anchor_support_cache_guard() -> None:
+    _clear_anchor_support_caches()
+    yield
+    _clear_anchor_support_caches()
+
+
+def _synthetic_manifest(
+    *,
+    cases: tuple[object, ...] = (),
+    workloads: tuple[object, ...] = (),
+) -> SimpleNamespace:
+    return SimpleNamespace(cases=list(cases), workloads=list(workloads))
+
+
+def _synthetic_case(
+    case_id: str,
+    signature: tuple[Any, ...] | None,
+) -> SimpleNamespace:
+    return SimpleNamespace(case_id=case_id, signature=signature)
+
+
+def _synthetic_workload(
+    workload_id: str,
+    signature: tuple[Any, ...],
+    *,
+    include: bool = True,
+) -> SimpleNamespace:
+    return SimpleNamespace(
+        workload_id=workload_id,
+        signature=signature,
+        include=include,
+    )
+
+
+def _synthetic_manifest_loader(
+    _: pathlib.Path,
+    *,
+    workloads: tuple[Any, ...],
+) -> SimpleNamespace:
+    return _synthetic_manifest(workloads=workloads)
+
+
+def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
+    return workload.signature
+
+
+def _synthetic_workload_is_included(workload: Any) -> bool:
+    return workload.include
 
 
 def assert_pattern_helper_wrong_text_model_payload_round_trip(

@@ -11,7 +11,7 @@ import pytest
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
 )
-from tests.benchmarks.benchmark_anchor_support_test_helpers import (
+from tests.benchmarks.benchmark_test_support import (
     _synthetic_case,
     _synthetic_manifest,
     _synthetic_manifest_loader,
