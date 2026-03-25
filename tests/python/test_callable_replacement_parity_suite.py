@@ -1945,6 +1945,87 @@ CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS = frozenset(
         "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
     }
 )
+# Keep the module/pattern split explicit in one place so selector catch-up tasks
+# only widen the surface they actually verified.
+CALLABLE_RETURN_TYPE_ERROR_PARITY_OPERATIONS_BY_MANIFEST_ID: dict[
+    str, frozenset[str]
+] = {
+    "quantified-nested-group-callable-replacement-workflows": frozenset(
+        {"module_call", "pattern_call"}
+    ),
+    "quantified-nested-group-alternation-callable-replacement-workflows": frozenset(
+        {"module_call", "pattern_call"}
+    ),
+    (
+        "quantified-nested-group-alternation-branch-local-backreference-"
+        "callable-replacement-workflows"
+    ): frozenset({"pattern_call"}),
+    (
+        "nested-broader-range-wider-ranged-repeat-quantified-group-"
+        "alternation-backtracking-heavy-callable-replacement-workflows"
+    ): frozenset({"module_call", "pattern_call"}),
+    (
+        "nested-broader-range-wider-ranged-repeat-quantified-group-"
+        "alternation-branch-local-backreference-callable-replacement-workflows"
+    ): frozenset({"pattern_call"}),
+    (
+        "nested-broader-range-wider-ranged-repeat-quantified-group-"
+        "alternation-branch-local-backreference-conditional-"
+        "callable-replacement-workflows"
+    ): frozenset({"pattern_call"}),
+    (
+        "nested-open-ended-quantified-group-alternation-branch-local-"
+        "backreference-callable-replacement-workflows"
+    ): frozenset({"pattern_call"}),
+    (
+        "nested-broader-range-open-ended-quantified-group-alternation-"
+        "backtracking-heavy-callable-replacement-workflows"
+    ): frozenset({"module_call", "pattern_call"}),
+    (
+        "nested-broader-range-open-ended-quantified-group-alternation-"
+        "branch-local-backreference-callable-replacement-workflows"
+    ): frozenset({"module_call", "pattern_call"}),
+    (
+        "nested-broader-range-open-ended-quantified-group-alternation-"
+        "branch-local-backreference-conditional-callable-replacement-workflows"
+    ): frozenset({"module_call", "pattern_call"}),
+}
+
+
+def _return_type_error_parity_manifest_ids(operation: str) -> frozenset[str]:
+    if operation not in {"module_call", "pattern_call"}:
+        raise AssertionError(f"unexpected callable parity operation {operation!r}")
+    return frozenset(
+        manifest_id
+        for manifest_id, supported_operations in (
+            CALLABLE_RETURN_TYPE_ERROR_PARITY_OPERATIONS_BY_MANIFEST_ID.items()
+        )
+        if operation in supported_operations
+    )
+
+
+def _expected_return_type_error_case_ids(
+    *,
+    manifest_ids: frozenset[str],
+    operation: str,
+) -> frozenset[str]:
+    if operation == "module_call":
+        case_id_prefix = "module-"
+    elif operation == "pattern_call":
+        case_id_prefix = "pattern-"
+    else:
+        raise AssertionError(f"unexpected callable parity operation {operation!r}")
+
+    expected_case_ids: set[str] = set()
+    for manifest_id in manifest_ids:
+        manifest_spec = CALLABLE_MANIFEST_SPECS_BY_ID[manifest_id]
+        expected_case_ids.update(
+            case_id
+            for case_id in manifest_spec.expected_case_ids
+            if case_id.startswith(case_id_prefix)
+            and case_id not in manifest_spec.pending_rebar_case_ids
+        )
+    return frozenset(expected_case_ids)
 
 
 MODULE_RETURN_TYPE_ERROR_CASES = tuple(
@@ -1952,15 +2033,8 @@ MODULE_RETURN_TYPE_ERROR_CASES = tuple(
     for case in MODULE_CASES
     if case.manifest_id in CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
 )
-MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = frozenset(
-    {
-        "quantified-nested-group-callable-replacement-workflows",
-        "quantified-nested-group-alternation-callable-replacement-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
-    }
+MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = _return_type_error_parity_manifest_ids(
+    "module_call"
 )
 MODULE_RETURN_TYPE_ERROR_PARITY_CASES = tuple(
     case
@@ -1972,19 +2046,8 @@ PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     for case in PATTERN_CASES
     if case.manifest_id in CALLABLE_RETURN_TYPE_ERROR_FRONTIER_MANIFEST_IDS
 )
-PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = frozenset(
-    {
-        "quantified-nested-group-callable-replacement-workflows",
-        "quantified-nested-group-alternation-callable-replacement-workflows",
-        "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
-        "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
-    }
+PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS = _return_type_error_parity_manifest_ids(
+    "pattern_call"
 )
 PATTERN_RETURN_TYPE_ERROR_PARITY_CASES = tuple(
     case
@@ -3385,6 +3448,12 @@ def test_pattern_callable_replacement_wrong_return_type_parity_cases_cover_activ
     assert {
         case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_PARITY_CASES
     } == PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
+    assert {
+        case.case_id for case in PATTERN_RETURN_TYPE_ERROR_PARITY_CASES
+    } == _expected_return_type_error_case_ids(
+        manifest_ids=PATTERN_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS,
+        operation="pattern_call",
+    )
     assert not {
         case.case_id
         for case in PATTERN_RETURN_TYPE_ERROR_PARITY_CASES
@@ -3405,6 +3474,12 @@ def test_module_callable_replacement_wrong_return_type_parity_cases_cover_active
     assert {
         case.manifest_id for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
     } == MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS
+    assert {
+        case.case_id for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
+    } == _expected_return_type_error_case_ids(
+        manifest_ids=MODULE_RETURN_TYPE_ERROR_PARITY_MANIFEST_IDS,
+        operation="module_call",
+    )
     assert not {
         case.case_id
         for case in MODULE_RETURN_TYPE_ERROR_PARITY_CASES
