@@ -1484,6 +1484,52 @@ def test_non_owner_collection_replacement_benchmark_support_routes_shared_classi
     }.isdisjoint(assignment_names)
 
 
+def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_support_alias(
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support"
+    )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+
+    assert any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks"
+        and any(alias.name == "benchmark_test_support" for alias in node.names)
+        for node in _parsed_module_ast(module).body
+    )
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.benchmark_test_support"
+        for node in _parsed_module_ast(module).body
+    )
+    assert getattr(module, "support") is support
+    assert {
+        "synthetic_workload",
+        "STANDARD_BENCHMARK_DEFINITIONS",
+        "_write_test_manifest",
+        "selected_manifest_workloads",
+        "run_benchmark_workload_with_cpython",
+        "compiled_pattern_contract_expected_build_calls",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "RecordingBenchmarkModule",
+    }.isdisjoint(definition_names | assignment_names)
+    for shared_name in (
+        "synthetic_workload",
+        "STANDARD_BENCHMARK_DEFINITIONS",
+        "_write_test_manifest",
+        "selected_manifest_workloads",
+        "run_benchmark_workload_with_cpython",
+        "compiled_pattern_contract_expected_build_calls",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "RecordingBenchmarkModule",
+    ):
+        assert not hasattr(module, shared_name)
+
+
 def test_shared_collection_replacement_classifier_contract_tests_import_from_support(
 ) -> None:
     owner_suite = importlib.import_module(
@@ -1903,15 +1949,6 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
         ),
         (
             "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
-            frozenset(
-                {
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
-            ),
-        ),
-        (
-            "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
             frozenset(
                 {
                     "_source_tree_contract_manifest",
