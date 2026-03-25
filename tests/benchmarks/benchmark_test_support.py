@@ -8,6 +8,7 @@ from functools import partial
 import inspect
 import pathlib
 import re
+import sys
 import textwrap
 from types import SimpleNamespace
 from typing import Any, Protocol
@@ -337,17 +338,27 @@ def published_cases_by_id() -> dict[str, Any]:
     )
 
 
-def _clear_anchor_support_caches() -> None:
-    cached_functions = (
-        manifest_workloads,
-        _live_manifest_workloads_by_id,
-        published_case_ids_by_signature,
-        published_cases_by_id,
-    )
-    for cached_function in cached_functions:
-        cache_clear = getattr(cached_function, "cache_clear", None)
-        if cache_clear is not None:
+def _clear_cached_functions(functions: Iterable[object]) -> None:
+    for function in functions:
+        cache_clear = getattr(function, "cache_clear", None)
+        if callable(cache_clear):
             cache_clear()
+
+
+def _clear_anchor_support_caches() -> None:
+    _clear_cached_functions(
+        (
+            manifest_workloads,
+            _live_manifest_workloads_by_id,
+            published_case_ids_by_signature,
+            published_cases_by_id,
+        )
+    )
+    source_tree_support = sys.modules.get(
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+    )
+    if source_tree_support is not None:
+        _clear_cached_functions(vars(source_tree_support).values())
 
 
 @pytest.fixture

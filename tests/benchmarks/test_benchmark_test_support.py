@@ -374,7 +374,9 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     manifest_load_calls: list[pathlib.Path] = []
     published_case_id_calls: list[object] = []
     published_cases_calls: list[str] = []
+    source_tree_live_manifest_calls: list[tuple[pathlib.Path, tuple[str, ...]]] = []
     published_cases = {"case-1": object()}
+    source_tree_workloads = (_synthetic_workload("source-tree-anchored", ("bytes",)),)
 
     def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
         manifest_load_calls.append(path)
@@ -392,6 +394,13 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         published_cases_calls.append("called")
         return published_cases
 
+    def _live_manifest_workloads(
+        manifest_path: pathlib.Path,
+        workload_ids: tuple[str, ...],
+    ) -> tuple[object, ...]:
+        source_tree_live_manifest_calls.append((manifest_path, workload_ids))
+        return source_tree_workloads
+
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
     monkeypatch.setattr(
         support,
@@ -399,24 +408,11 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         _published_case_ids_by_signature,
     )
     monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
-
-    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert support.published_case_ids_by_signature(
-        _synthetic_workload_signature
-    ) == {("shared",): ("case-1",)}
-    assert support.published_cases_by_id() is published_cases
-    assert manifest_load_calls == [manifest_path]
-    assert published_case_id_calls == [_synthetic_workload_signature]
-    assert published_cases_calls == ["called"]
-
-    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert support.published_case_ids_by_signature(
-        _synthetic_workload_signature
-    ) == {("shared",): ("case-1",)}
-    assert support.published_cases_by_id() is published_cases
-    assert manifest_load_calls == [manifest_path]
-    assert published_case_id_calls == [_synthetic_workload_signature]
-    assert published_cases_calls == ["called"]
+    monkeypatch.setattr(
+        anchor_support,
+        "live_manifest_workloads",
+        _live_manifest_workloads,
+    )
 
     support._clear_anchor_support_caches()
 
@@ -425,12 +421,70 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         _synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
+    assert (
+        anchor_support._conditional_group_exists_alternation_callable_bytes_workloads()
+        == source_tree_workloads
+    )
+    assert manifest_load_calls == [manifest_path]
+    assert published_case_id_calls == [_synthetic_workload_signature]
+    assert published_cases_calls == ["called"]
+    assert source_tree_live_manifest_calls == [
+        (
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+        )
+    ]
+
+    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
+    assert support.published_case_ids_by_signature(
+        _synthetic_workload_signature
+    ) == {("shared",): ("case-1",)}
+    assert support.published_cases_by_id() is published_cases
+    assert (
+        anchor_support._conditional_group_exists_alternation_callable_bytes_workloads()
+        == source_tree_workloads
+    )
+    assert manifest_load_calls == [manifest_path]
+    assert published_case_id_calls == [_synthetic_workload_signature]
+    assert published_cases_calls == ["called"]
+    assert source_tree_live_manifest_calls == [
+        (
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+        )
+    ]
+
+    support._clear_anchor_support_caches()
+
+    assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
+    assert support.published_case_ids_by_signature(
+        _synthetic_workload_signature
+    ) == {("shared",): ("case-1",)}
+    assert support.published_cases_by_id() is published_cases
+    assert (
+        anchor_support._conditional_group_exists_alternation_callable_bytes_workloads()
+        == source_tree_workloads
+    )
     assert manifest_load_calls == [manifest_path, manifest_path]
     assert published_case_id_calls == [
         _synthetic_workload_signature,
         _synthetic_workload_signature,
     ]
     assert published_cases_calls == ["called", "called"]
+    assert source_tree_live_manifest_calls == [
+        (
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+        ),
+        (
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            anchor_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+        ),
+    ]
 
 
 def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata(
