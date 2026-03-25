@@ -556,6 +556,147 @@ def test_source_tree_combined_representative_workload_ids_derive_unique_shape_an
     ) == ("shape-a", "shared", "slice-a", "slice-b")
 
 
+def test_assert_zero_gap_bytes_representative_subset_delegates_expected_counts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest_id = "synthetic-boundary"
+    expected_workload_ids = ("bytes-a", "bytes-b")
+    selected_workload_ids = (
+        "selected-a",
+        "selected-b",
+        "selected-c",
+        "selected-d",
+        "selected-e",
+    )
+    target_manifest_path = pathlib.Path("benchmarks/workloads/synthetic_boundary.py")
+    captured_call: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            manifest_id: support.SourceTreeCombinedManifestExpectationDefinition(
+                representative_measured_workload_ids=(
+                    "bytes-a",
+                    "bytes-b",
+                    "other-representative",
+                ),
+                zero_gap_bytes_representative_subsets=(expected_workload_ids,),
+            ),
+        },
+    )
+    monkeypatch.setattr(
+        support,
+        "source_tree_combined_manifest_representative_measured_workload_ids",
+        lambda observed_manifest_id: (
+            "bytes-a",
+            "bytes-b",
+            "other-representative",
+        )
+        if observed_manifest_id == manifest_id
+        else (),
+    )
+    monkeypatch.setattr(
+        support,
+        "source_tree_combined_case",
+        lambda observed_manifest_id: SimpleNamespace(
+            manifest_expectation=support.SourceTreeManifestExpectation(
+                known_gap_count=0,
+                representative_measured_workload_ids=(
+                    "bytes-a",
+                    "bytes-b",
+                    "other-representative",
+                ),
+                representative_known_gap_workload_ids=(),
+            ),
+            target_manifest=SimpleNamespace(
+                path=target_manifest_path,
+                workloads=(object(), object(), object(), object(), object()),
+            ),
+            selected_workload_ids_for_manifest=lambda selected_manifest_id: (
+                selected_workload_ids
+                if observed_manifest_id == manifest_id
+                and selected_manifest_id == manifest_id
+                else ()
+            ),
+        ),
+    )
+    monkeypatch.setattr(
+        benchmark_test_support,
+        "assert_zero_gap_manifest_workloads_measured",
+        lambda **kwargs: captured_call.update(kwargs),
+    )
+
+    support.assert_zero_gap_bytes_representative_subset(
+        unittest.TestCase(),
+        manifest_id,
+        expected_workload_ids,
+    )
+
+    assert captured_call == {
+        "manifest_path": target_manifest_path,
+        "manifest_id": manifest_id,
+        "expected_measured_workload_ids": expected_workload_ids,
+        "expected_measured_workload_count": len(selected_workload_ids),
+        "expected_total_workload_count": 5,
+    }
+
+
+def test_assert_zero_gap_manifest_representative_promotion_delegates_selected_count(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest_id = "synthetic-boundary"
+    expected_workload_ids = ("promoted-a", "promoted-b")
+    selected_workload_ids = ("row-a", "row-b", "row-c")
+    target_manifest_path = pathlib.Path("benchmarks/workloads/synthetic_boundary.py")
+    captured_call: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            manifest_id: support.SourceTreeCombinedManifestExpectationDefinition(
+                representative_measured_workload_ids=expected_workload_ids,
+            ),
+        },
+    )
+    monkeypatch.setattr(
+        support,
+        "source_tree_combined_case",
+        lambda observed_manifest_id: SimpleNamespace(
+            manifest_expectation=support.SourceTreeManifestExpectation(
+                known_gap_count=0,
+                representative_measured_workload_ids=expected_workload_ids,
+                representative_known_gap_workload_ids=(),
+            ),
+            target_manifest=SimpleNamespace(path=target_manifest_path),
+            selected_workload_ids_for_manifest=lambda selected_manifest_id: (
+                selected_workload_ids
+                if observed_manifest_id == manifest_id
+                and selected_manifest_id == manifest_id
+                else ()
+            ),
+        ),
+    )
+    monkeypatch.setattr(
+        benchmark_test_support,
+        "assert_zero_gap_manifest_workloads_measured",
+        lambda **kwargs: captured_call.update(kwargs),
+    )
+
+    support.assert_zero_gap_manifest_representative_promotion(
+        unittest.TestCase(),
+        manifest_id,
+    )
+
+    assert captured_call == {
+        "manifest_path": target_manifest_path,
+        "manifest_id": manifest_id,
+        "expected_measured_workload_ids": expected_workload_ids,
+        "expected_measured_workload_count": len(selected_workload_ids),
+    }
+
+
 def test_select_source_tree_combined_slice_rows_filters_suffix_features_and_categories(
 ) -> None:
     manifest = SimpleNamespace(
