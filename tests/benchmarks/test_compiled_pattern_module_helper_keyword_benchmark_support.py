@@ -52,6 +52,92 @@ def _contract_surface(case_id: str):
     )
 
 
+def test_compiled_pattern_module_helper_keyword_contract_surface_is_support_owned_without_local_duplicates(
+) -> None:
+    import ast
+    import inspect
+    import sys
+
+    from tests.benchmarks import compiled_pattern_module_helper_benchmark_support as support
+
+    test_source = inspect.getsource(sys.modules[__name__])
+    module_tree = ast.parse(test_source)
+    local_definition_names = {
+        node.name
+        for node in module_tree.body
+        if isinstance(node, (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef))
+    }
+    local_assignment_names = {
+        node.target.id
+        for node in module_tree.body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    }
+    local_assignment_names.update(
+        target.id
+        for node in module_tree.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    )
+
+    assert COLLECTION_REPLACEMENT_MANIFEST_PATH is support.COLLECTION_REPLACEMENT_MANIFEST_PATH
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS
+        is support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS
+    )
+    assert (
+        _is_collection_replacement_compiled_pattern_keyword_error_workload
+        is support._is_collection_replacement_compiled_pattern_keyword_error_workload
+    )
+    assert {
+        "_CompiledPatternModuleHelperKeywordContractSpec",
+        "_CompiledPatternModuleHelperKeywordContractSurface",
+    }.isdisjoint(local_definition_names)
+    assert {
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+    }.isdisjoint(local_assignment_names)
+
+
 def test_compiled_pattern_module_helper_keyword_source_workload_order_stays_pinned() -> None:
     success_surface = _contract_surface("success")
     keyword_error_surface = _contract_surface("keyword-error")
