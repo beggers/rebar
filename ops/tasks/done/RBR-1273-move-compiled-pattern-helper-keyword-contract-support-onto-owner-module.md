@@ -1,6 +1,6 @@
 ## RBR-1273: Move compiled-pattern helper keyword contract support onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -58,3 +58,10 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` passed with `133 passed`; and
   - the negative `rg` check in `Verification` currently fails for the expected reason described above.
+
+## Completion
+- Moved the compiled-pattern helper keyword selectors, contract dataclasses, pinned specs, workload inventories, drift guards, and parametrization tuples into `tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py`, which now owns the full helper-keyword contract surface beside the existing compiled-pattern helper route support.
+- Updated `tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py` to import and use that owner-module surface directly while keeping the existing assertions, callback behavior, contract payload checks, and workload ids unchanged.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py`
+  - `bash -lc "! rg -n 'class _CompiledPatternModuleHelperKeywordContractSpec|class _CompiledPatternModuleHelperKeywordContractSurface|_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC\\s*=|_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC\\s*=|_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS\\s*=|_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS\\s*=' tests/benchmarks/test_compiled_pattern_module_helper_keyword_benchmark_support.py"`
