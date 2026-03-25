@@ -59,6 +59,71 @@ class _SyntheticStandardBenchmarkDefinition:
         )
 
 
+@pytest.mark.parametrize(
+    ("module", "export_name", "builder_name"),
+    (
+        pytest.param(
+            collection_replacement_support,
+            "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
+            "_collection_replacement_standard_benchmark_definitions",
+            id="collection-replacement",
+        ),
+        pytest.param(
+            pattern_boundary_support,
+            "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
+            "_build_pattern_boundary_standard_benchmark_definitions",
+            id="pattern-boundary",
+        ),
+    ),
+)
+def test_owner_standard_definition_exports_stay_lazy_and_cached(
+    module: Any,
+    export_name: str,
+    builder_name: str,
+) -> None:
+    builder = getattr(module, builder_name)
+
+    # Owner modules expose these tuples lazily through __getattr__ rather than
+    # binding another top-level global.
+    assert export_name not in vars(module)
+
+    first_export = getattr(module, export_name)
+    second_export = getattr(module, export_name)
+
+    assert isinstance(first_export, tuple)
+    assert first_export
+    assert first_export is second_export
+    assert first_export is builder()
+    assert export_name not in vars(module)
+
+
+@pytest.mark.parametrize(
+    ("module", "missing_name"),
+    (
+        pytest.param(
+            collection_replacement_support,
+            "NOT_A_COLLECTION_REPLACEMENT_OWNER_EXPORT",
+            id="collection-replacement",
+        ),
+        pytest.param(
+            pattern_boundary_support,
+            "NOT_A_PATTERN_BOUNDARY_OWNER_EXPORT",
+            id="pattern-boundary",
+        ),
+    ),
+)
+def test_owner_support_modules_reject_unknown_lazy_export_names(
+    module: Any,
+    missing_name: str,
+) -> None:
+    with pytest.raises(AttributeError) as exc_info:
+        getattr(module, missing_name)
+
+    assert str(exc_info.value) == (
+        f"module {module.__name__!r} has no attribute {missing_name!r}"
+    )
+
+
 def test_standard_benchmark_anchor_contract_definition_filters_excluded_workloads() -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
     definition = support.StandardBenchmarkAnchorContractDefinition(
