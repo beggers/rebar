@@ -19,6 +19,10 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks.benchmark_test_support import (
+    _SourceTreeContractBuilderSpec,
+    _contract_source_workloads,
+    _source_tree_contract_manifest,
+    _source_tree_contract_workload,
     _write_test_manifest,
     assert_benchmark_workload_contract,
     find_workload_document,
@@ -45,10 +49,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
     COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
-    _SourceTreeContractBuilderSpec,
-    _contract_source_workloads,
-    _source_tree_contract_manifest,
-    _source_tree_contract_workload,
     compiled_pattern_contract_expected_build_calls,
 )
 from tests.conftest import run_harness_scorecard

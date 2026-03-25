@@ -17,6 +17,8 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
+    _source_tree_contract_manifest,
+    _source_tree_contract_workload,
     assert_zero_gap_manifest_workloads_measured,
     _write_test_manifest,
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
@@ -34,8 +36,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _source_tree_contract_manifest,
-    _source_tree_contract_workload,
     compiled_pattern_contract_expected_build_calls,
 )
 from tests.python.fixture_parity_support import IndexLike

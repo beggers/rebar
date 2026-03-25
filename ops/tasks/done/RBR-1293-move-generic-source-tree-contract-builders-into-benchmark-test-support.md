@@ -1,8 +1,9 @@
 # RBR-1293: Move generic source-tree contract builders into benchmark test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
+Completed: 2026-03-25
 
 ## Goal
 - Remove the remaining shared contract-builder broker role from `tests/benchmarks/source_tree_contract_benchmark_support.py` by moving the generic manifest/workload construction helpers into `tests/benchmarks/benchmark_test_support.py`, then retarget the owner support modules and benchmark tests that still import those generic helpers through the source-tree contract module.
@@ -150,3 +151,7 @@ PY`
   - `bash -lc "! rg -n '^(class _SourceTreeContractBuilderSpec|def _source_tree_contract_manifest_payload|def _source_tree_contract_workload|def _source_tree_contract_manifest|def _contract_source_workloads)' tests/benchmarks/benchmark_test_support.py"` currently fails because `benchmark_test_support.py` does not yet define those helpers;
   - `rg -n '^(class _SourceTreeContractBuilderSpec|def _source_tree_contract_manifest_payload|def _source_tree_contract_workload|def _source_tree_contract_manifest|def _contract_source_workloads)' tests/benchmarks/source_tree_contract_benchmark_support.py` currently reports all five local definitions; and
   - the two AST probes above currently fail because the listed support/test files still import the generic builder API from `tests.benchmarks.source_tree_contract_benchmark_support` instead of `tests.benchmarks.benchmark_test_support`.
+
+## Completion Note
+- Moved the five generic source-tree contract builder helpers into `tests/benchmarks/benchmark_test_support.py`, slimmed `tests/benchmarks/source_tree_contract_benchmark_support.py` down to the compiled-pattern-specific contract ownership it still needs, retargeted the listed support/test imports, and updated the contract support test to assert the shared-builder boundary by identity.
+- Verified with the task pytest slice and collect-only pass; the targeted suite now passes with `410 passed` and `410 tests collected`.

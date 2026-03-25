@@ -8,12 +8,33 @@ from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     workload_to_payload,
 )
+from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import source_tree_contract_benchmark_support as support
-from tests.benchmarks.benchmark_test_support import live_manifest_workload
+from tests.benchmarks.benchmark_test_support import (
+    live_manifest_workload,
+    top_level_module_definition_and_assignment_names,
+)
 
 _COLLECTION_REPLACEMENT_MANIFEST_PATH = (
     BENCHMARK_WORKLOADS_ROOT / "collection_replacement_boundary.py"
 )
+
+
+def test_source_tree_contract_module_reuses_shared_builder_helpers_by_identity() -> None:
+    expected_names = {
+        "_SourceTreeContractBuilderSpec",
+        "_source_tree_contract_manifest_payload",
+        "_source_tree_contract_workload",
+        "_source_tree_contract_manifest",
+        "_contract_source_workloads",
+    }
+    definition_names, assignment_names = top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert expected_names.isdisjoint(definition_names | assignment_names)
+    for name in expected_names:
+        assert getattr(support, name) is getattr(benchmark_test_support, name)
 
 
 def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata() -> None:

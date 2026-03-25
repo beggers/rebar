@@ -10,12 +10,10 @@ from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
 )
 from tests.benchmarks.benchmark_test_support import (
     StandardBenchmarkAnchorContractDefinition,
-    _definition_anchor_expectations,
-    freeze_signature_value,
-)
-from tests.benchmarks.source_tree_contract_benchmark_support import (
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
+    _definition_anchor_expectations,
+    freeze_signature_value,
 )
 from tests.python.fixture_parity_support import (
     case_pattern,

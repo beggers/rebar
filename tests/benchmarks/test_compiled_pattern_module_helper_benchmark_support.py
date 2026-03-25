@@ -45,9 +45,11 @@ from tests.benchmarks import standard_benchmark_anchor_support as standard_suppo
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
 )
-from tests.benchmarks.source_tree_contract_benchmark_support import (
+from tests.benchmarks.benchmark_test_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
+)
+from tests.benchmarks.source_tree_contract_benchmark_support import (
     compiled_pattern_contract_expected_build_calls,
 )
 

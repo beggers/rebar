@@ -15,6 +15,8 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks.benchmark_test_support import (
+    _SourceTreeContractBuilderSpec,
+    _source_tree_contract_manifest,
     _write_test_manifest,
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     selected_manifest_workloads,
@@ -26,12 +28,6 @@ from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
 from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _is_pattern_boundary_wrong_text_model_workload,
 )
-from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _SourceTreeContractBuilderSpec,
-    _source_tree_contract_manifest,
-)
-
-
 def _validation_payload(**overrides: object) -> dict[str, object]:
     return {
         "warmup_iterations": 1,

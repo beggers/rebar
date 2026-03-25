@@ -21,6 +21,8 @@ from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
 from tests.benchmarks.benchmark_test_support import (
+    _source_tree_contract_manifest,
+    _source_tree_contract_workload,
     assert_benchmark_workload_contract,
     assert_zero_gap_manifest_workloads_measured,
     _expected_exception_instance,
@@ -35,11 +37,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     run_benchmark_workload_with_cpython,
     unanchored_workload_ids,
 )
-from tests.benchmarks.source_tree_contract_benchmark_support import (
-    _source_tree_contract_manifest,
-    _source_tree_contract_workload,
-)
-
 def test_compiled_pattern_module_compile_success_payload_round_trip_on_live_workload() -> None:
     contract_case = next(
         case
