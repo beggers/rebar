@@ -1,6 +1,6 @@
 ## RBR-1282: Move pattern-window standard anchor definitions onto owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -68,3 +68,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed with `27 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `330 tests collected`; and
   - the negative `rg` check in `Verification` currently fails because the two `pattern-window-*` definition bodies still live inline in `tests/benchmarks/standard_benchmark_anchor_support.py`, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved the two `pattern-window-*` standard benchmark definition objects onto the existing `PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS` owner tuple so it now owns the full five-definition family in the required order.
+- Simplified `tests/benchmarks/standard_benchmark_anchor_support.py` to splice the expanded owner tuple into `STANDARD_BENCHMARK_DEFINITIONS` and removed the now-unused pattern-window helper imports from the generic builder.
+- Updated the focused benchmark-support tests to pin the five-name owner tuple, verify the standard inventory reuses those exact owner definition objects, and assert the standard support source no longer contains inline `pattern-window-*` definition literals.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n 'name=\"(pattern-window-positional-indexlike|pattern-window-keyword)\"' tests/benchmarks/standard_benchmark_anchor_support.py"`

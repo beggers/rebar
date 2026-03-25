@@ -37,6 +37,8 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
 from tests.python.fixture_parity_support import IndexLike
 
 _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES = (
+    "pattern-window-positional-indexlike",
+    "pattern-window-keyword",
     "pattern-boundary-bounded-wildcard",
     "pattern-boundary-verbose-regression",
     "pattern-boundary-wrong-text-model",

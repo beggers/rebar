@@ -389,12 +389,6 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
     )
     from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
         PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
-        _is_pattern_keyword_window_workload,
-        _is_pattern_window_positional_indexlike_workload,
-        _pattern_keyword_window_correctness_case_signature,
-        _pattern_keyword_window_workload_signature,
-        _pattern_window_positional_indexlike_correctness_case_signature,
-        _pattern_window_positional_indexlike_workload_signature,
     )
     from tests.benchmarks.source_tree_benchmark_anchor_support import (
         _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID as OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
@@ -532,100 +526,6 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
     ),
     *COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-    StandardBenchmarkAnchorContractDefinition(
-        name="pattern-window-positional-indexlike",
-        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            PATTERN_BOUNDARY_MANIFEST_PATH,
-            {
-                "pattern-search-pos-indexlike-positional-warm-str": (
-                    "workflow-pattern-search-str-pos-indexlike-positional",
-                ),
-                "pattern-search-endpos-indexlike-positional-purged-bytes": (
-                    "workflow-pattern-search-bytes-endpos-indexlike-positional",
-                ),
-                "pattern-match-window-indexlike-positional-purged-bytes": (
-                    "workflow-pattern-match-bytes-window-indexlike-positional",
-                ),
-                "pattern-fullmatch-window-indexlike-positional-purged-bytes": (
-                    "workflow-pattern-fullmatch-bytes-window-indexlike-positional",
-                ),
-                "pattern-findall-window-indexlike-positional-warm-str": (
-                    "workflow-pattern-findall-str-window-indexlike-positional",
-                ),
-                "pattern-finditer-window-indexlike-positional-purged-bytes": (
-                    "workflow-pattern-finditer-bytes-window-indexlike-positional",
-                ),
-            },
-        ),
-        include_workload=_is_pattern_window_positional_indexlike_workload,
-        correctness_case_signature=(
-            _pattern_window_positional_indexlike_correctness_case_signature
-        ),
-        workload_signature=_pattern_window_positional_indexlike_workload_signature,
-        run_callback_result_parity=True,
-    ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="pattern-window-keyword",
-        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            PATTERN_BOUNDARY_MANIFEST_PATH,
-            {
-                "pattern-search-pos-keyword-warm-str": (
-                    "workflow-pattern-search-str-pos-keyword",
-                ),
-                "pattern-search-bool-endpos-keyword-warm-str": (
-                    "workflow-pattern-search-str-bool-endpos-keyword",
-                ),
-                "pattern-search-endpos-keyword-purged-bytes": (
-                    "workflow-pattern-search-bytes-endpos-keyword",
-                ),
-                "pattern-search-pos-indexlike-keyword-warm-str": (
-                    "workflow-pattern-search-str-pos-indexlike",
-                ),
-                "pattern-search-endpos-indexlike-keyword-purged-bytes": (
-                    "workflow-pattern-search-bytes-endpos-indexlike",
-                ),
-                "pattern-match-pos-keyword-purged-str": (
-                    "workflow-pattern-match-str-pos-keyword",
-                ),
-                "pattern-match-bool-pos-keyword-purged-str": (
-                    "workflow-pattern-match-str-bool-pos-keyword",
-                ),
-                "pattern-match-window-indexlike-purged-bytes": (
-                    "workflow-pattern-match-bytes-window-indexlike",
-                ),
-                "pattern-fullmatch-window-keyword-purged-bytes": (
-                    "workflow-pattern-fullmatch-bytes-window-keyword",
-                ),
-                "pattern-fullmatch-window-indexlike-keyword-purged-bytes": (
-                    "workflow-pattern-fullmatch-bytes-window-indexlike",
-                ),
-                "pattern-findall-window-keyword-warm-str": (
-                    "workflow-pattern-findall-str-window-keyword",
-                ),
-                "pattern-findall-window-indexlike-keyword-warm-str": (
-                    "workflow-pattern-findall-str-window-indexlike",
-                ),
-                "pattern-findall-bool-window-keyword-warm-str": (
-                    "workflow-pattern-findall-str-bool-window-keyword",
-                ),
-                "pattern-finditer-window-keyword-purged-bytes": (
-                    "workflow-pattern-finditer-bytes-window-keyword",
-                ),
-                "pattern-finditer-window-indexlike-purged-bytes": (
-                    "workflow-pattern-finditer-bytes-window-indexlike",
-                ),
-                "pattern-finditer-bool-window-keyword-purged-bytes": (
-                    "workflow-pattern-finditer-bytes-bool-window-keyword",
-                ),
-            },
-        ),
-        include_workload=_is_pattern_keyword_window_workload,
-        correctness_case_signature=_pattern_keyword_window_correctness_case_signature,
-        workload_signature=_pattern_keyword_window_workload_signature,
-        run_callback_result_parity=True,
-    ),
     *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
     StandardBenchmarkAnchorContractDefinition(
         name="optional-group-conditional",

@@ -341,6 +341,8 @@ def test_standard_support_source_no_longer_inlines_pattern_boundary_definitions(
 
     support_source = inspect.getsource(support)
     for definition_name in (
+        "pattern-window-positional-indexlike",
+        "pattern-window-keyword",
         "pattern-boundary-bounded-wildcard",
         "pattern-boundary-verbose-regression",
         "pattern-boundary-wrong-text-model",
@@ -385,7 +387,8 @@ def test_standard_inventory_reuses_owner_owned_pattern_boundary_definition_objec
     standard_definitions = tuple(
         definition
         for definition in support.STANDARD_BENCHMARK_DEFINITIONS
-        if definition.name.startswith("pattern-boundary-")
+        if definition.name.startswith("pattern-window-")
+        or definition.name.startswith("pattern-boundary-")
     )
 
     assert standard_definitions == owner_definitions
