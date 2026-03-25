@@ -83,6 +83,35 @@ def _group_callable_replacement(
     return replacement
 
 
+def _assert_source_tree_combined_routes_owner_names_through_module_alias(
+    *,
+    alias_name: str,
+    owner_module: object,
+    owner_names: tuple[str, ...],
+) -> object:
+    import importlib
+
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    definition_names, assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            combined_suite
+        )
+    )
+    local_names = definition_names | assignment_names
+
+    assert getattr(combined_suite, alias_name) is owner_module
+
+    owner_alias = getattr(combined_suite, alias_name)
+    for name in owner_names:
+        assert getattr(owner_alias, name) is getattr(owner_module, name)
+        assert name not in local_names
+        assert not hasattr(combined_suite, name)
+
+    return combined_suite
+
+
 def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -1073,172 +1102,48 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
 
 
 def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
-    import importlib
-    import inspect
-
-    combined_suite = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    combined_source = inspect.getsource(combined_suite)
-
-    assert (
-        combined_suite._conditional_group_exists_nested_callable_correctness_case_signature
-        is support._conditional_group_exists_nested_callable_correctness_case_signature
-    )
-    assert (
-        combined_suite._conditional_group_exists_nested_callable_workload_signature
-        is support._conditional_group_exists_nested_callable_workload_signature
-    )
-    assert (
-        combined_suite._conditional_group_exists_quantified_callable_correctness_case_signature
-        is support._conditional_group_exists_quantified_callable_correctness_case_signature
-    )
-    assert (
-        combined_suite._conditional_group_exists_quantified_callable_workload_signature
-        is support._conditional_group_exists_quantified_callable_workload_signature
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite._workload_ids_for_text_model
-        is support._workload_ids_for_text_model
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS
-    )
-    assert (
-        "def _conditional_group_exists_nested_callable_correctness_case_signature("
-        not in combined_source
-    )
-    assert (
-        "def _conditional_group_exists_nested_callable_workload_signature("
-        not in combined_source
-    )
-    assert (
-        "def _conditional_group_exists_quantified_callable_correctness_case_signature("
-        not in combined_source
-    )
-    assert (
-        "def _conditional_group_exists_quantified_callable_workload_signature("
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert "def _workload_ids_for_text_model(" not in combined_source
-    assert "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS =" not in combined_source
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_STEMS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS ="
-        not in combined_source
+    _assert_source_tree_combined_routes_owner_names_through_module_alias(
+        alias_name="collection_replacement_support",
+        owner_module=support,
+        owner_names=(
+            "_conditional_group_exists_nested_callable_correctness_case_signature",
+            "_conditional_group_exists_nested_callable_workload_signature",
+            "_conditional_group_exists_quantified_callable_correctness_case_signature",
+            "_conditional_group_exists_quantified_callable_workload_signature",
+            "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS",
+            "_workload_ids_for_text_model",
+            "_CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_STEMS",
+            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
+        ),
     )
 
 
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
 ) -> None:
-    import importlib
+    from tests.benchmarks import (
+        source_tree_benchmark_anchor_support as source_tree_support,
+    )
 
-    combined_suite = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    combined_suite = _assert_source_tree_combined_routes_owner_names_through_module_alias(
+        alias_name="source_tree_support",
+        owner_module=source_tree_support,
+        owner_names=("SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",),
     )
     expectations_by_slice_id = {
         expectation.slice_id: expectation
-        for expectation in combined_suite.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        for expectation in combined_suite.source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
     }
 
     assert (
@@ -1256,36 +1161,14 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
 
 
 def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
-    import importlib
-    import inspect
-
-    combined_suite = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    combined_source = inspect.getsource(combined_suite)
-
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
-    )
-    assert (
-        combined_suite.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS
-        is support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS =" not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS ="
-        not in combined_source
-    )
-    assert (
-        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS ="
-        not in combined_source
+    _assert_source_tree_combined_routes_owner_names_through_module_alias(
+        alias_name="collection_replacement_support",
+        owner_module=support,
+        owner_names=(
+            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
+        ),
     )
 
 
