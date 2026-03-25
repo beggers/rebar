@@ -383,8 +383,7 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
         _conditional_group_exists_quantified_callable_workload_signature,
     )
     from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
-        _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
-        _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+        COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
     )
     from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
         COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
@@ -458,14 +457,7 @@ def _build_standard_benchmark_definitions() -> tuple[StandardBenchmarkAnchorCont
     ),
     *COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
     *MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-    *(
-        owner_spec.anchor_definition()
-        for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
-    ),
-    *(
-        owner_spec.anchor_definition()
-        for owner_spec in _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
-    ),
+    *COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
     *COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
     *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
     *SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,

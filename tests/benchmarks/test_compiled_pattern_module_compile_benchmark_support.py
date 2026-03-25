@@ -252,6 +252,50 @@ def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_
         )
 
 
+def test_compiled_pattern_module_compile_standard_definition_export_is_lazy_cached_and_owner_built(
+) -> None:
+    expected_definitions = tuple(
+        owner_spec.anchor_definition()
+        for owner_spec in (
+            *support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        )
+    )
+
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        not in vars(support)
+    )
+
+    first_export = getattr(
+        support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+    second_export = getattr(
+        support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+
+    assert first_export is second_export
+    assert first_export is support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
+    assert first_export == expected_definitions
+    assert first_export is not expected_definitions
+    assert tuple(definition.name for definition in first_export) == (
+        "module-workflow-compiled-pattern-module-compile-literal-success",
+        "module-workflow-compiled-pattern-module-compile-named-group-success",
+        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword",
+        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
+        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword",
+        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword-named-group",
+        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection",
+        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        not in vars(support)
+    )
+
+
 @pytest.mark.parametrize(
     "contract_case",
     support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,

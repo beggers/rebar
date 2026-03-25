@@ -1,6 +1,6 @@
 ## RBR-1286: Export compiled-pattern module.compile standard definitions from owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -73,3 +73,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `225 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` passed with `81 passed`; and
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `394 tests collected`.
+
+## Completion
+- Added the lazy cached owner export `COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS` to `tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py`, built directly from the existing private success and keyword owner specs in the required eight-definition order.
+- Simplified `tests/benchmarks/standard_benchmark_anchor_support.py` so the central standard inventory now imports and splices only `COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS`, with no private owner-spec imports and no inline `owner_spec.anchor_definition()` calls.
+- Added focused coverage in the compiled-pattern module.compile and standard benchmark support tests for the new lazy export, the preserved definition order, the owner-built tuple contract, the central-file import boundary, and reuse of the same definition objects inside `STANDARD_BENCHMARK_DEFINITIONS`.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `230 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` passed with `82 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `400 tests collected`.
+  - `bash -lc "! rg -n '_COMPILED_PATTERN_MODULE_COMPILE_(SUCCESS|KEYWORD)_OWNER_SPECS|owner_spec\\.anchor_definition\\(' tests/benchmarks/standard_benchmark_anchor_support.py"` passed.

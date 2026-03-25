@@ -21,6 +21,9 @@ from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
 from tests.benchmarks import (
+    compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
+)
+from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
 )
 from tests.benchmarks import (
@@ -67,6 +70,12 @@ def _definition_names(definitions: tuple[Any, ...]) -> tuple[str, ...]:
             "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
             "_build_compiled_pattern_module_helper_standard_benchmark_definitions",
             id="compiled-pattern-module-helper",
+        ),
+        pytest.param(
+            compiled_pattern_module_compile_support,
+            "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+            "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+            id="compiled-pattern-module-compile",
         ),
         pytest.param(
             anchor_support,
@@ -120,6 +129,11 @@ def test_owner_standard_definition_exports_stay_lazy_and_cached(
             compiled_pattern_module_helper_support,
             "NOT_A_COMPILED_PATTERN_MODULE_HELPER_OWNER_EXPORT",
             id="compiled-pattern-module-helper",
+        ),
+        pytest.param(
+            compiled_pattern_module_compile_support,
+            "NOT_A_COMPILED_PATTERN_MODULE_COMPILE_OWNER_EXPORT",
+            id="compiled-pattern-module-compile",
         ),
         pytest.param(
             anchor_support,
@@ -316,6 +330,10 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     assert "*COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS," in support_source
     assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
     assert (
+        "*COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,"
+        in support_source
+    )
+    assert (
         "*COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,"
         in support_source
     )
@@ -331,6 +349,12 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
             "collection-replacement-grouped-callable-replacement",
             "module-workflow-compiled-pattern-module-compile-literal-success",
             id="module-workflow-keyword-after-collection-replacement",
+        ),
+        pytest.param(
+            compiled_pattern_module_compile_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            "module-workflow-keyword-errors",
+            "module-workflow-compiled-pattern-literal-success",
+            id="compiled-pattern-module-compile-after-module-workflow-keyword",
         ),
         pytest.param(
             anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
@@ -470,6 +494,33 @@ def test_standard_support_imports_and_splices_module_workflow_keyword_owner_tupl
     assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
+def test_standard_support_imports_only_compiled_pattern_module_compile_owner_tuple() -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    parsed_support_source = ast.parse(support_source)
+
+    imported_names = {
+        alias.name
+        for node in ast.walk(parsed_support_source)
+        if isinstance(node, ast.ImportFrom)
+        and node.module
+        == "tests.benchmarks.compiled_pattern_module_compile_benchmark_support"
+        for alias in node.names
+    }
+
+    assert imported_names == {
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+    }
+    assert (
+        "*COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,"
+        in support_source
+    )
+    assert "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS" not in support_source
+    assert "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS" not in support_source
+    assert "owner_spec.anchor_definition(" not in support_source
+
+
 def test_standard_support_imports_and_splices_source_tree_standard_owner_tuple() -> None:
     import inspect
 
@@ -550,6 +601,30 @@ def test_standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_de
     )
 
     assert standard_definitions == owner_definitions
+
+
+def test_standard_inventory_reuses_owner_owned_compiled_pattern_module_compile_definition_objects(
+) -> None:
+    owner_definitions = (
+        compiled_pattern_module_compile_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS
+    )
+    definition_names = _definition_names(owner_definitions)
+    standard_names = _definition_names(support.STANDARD_BENCHMARK_DEFINITIONS)
+    first_owner_index = standard_names.index(definition_names[0])
+    standard_definitions = support.STANDARD_BENCHMARK_DEFINITIONS[
+        first_owner_index : first_owner_index + len(owner_definitions)
+    ]
+
+    assert _definition_names(standard_definitions) == definition_names
+    assert standard_definitions == owner_definitions
+    assert all(
+        standard_definition is owner_definition
+        for standard_definition, owner_definition in zip(
+            standard_definitions,
+            owner_definitions,
+            strict=True,
+        )
+    )
 
 
 def test_combined_suite_imports_support_owned_standard_benchmark_definitions() -> None:

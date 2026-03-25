@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from functools import partial
+from functools import cache, partial
 import pathlib
 import re
 from typing import TYPE_CHECKING, Any
@@ -1083,6 +1083,25 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
         expected_exception=_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION,
     ),
 )
+
+
+@cache
+def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> tuple[
+    StandardBenchmarkAnchorContractDefinition, ...
+]:
+    return tuple(
+        owner_spec.anchor_definition()
+        for owner_spec in (
+            *_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        )
+    )
+
+
+def __getattr__(name: str) -> Any:
+    if name == "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS":
+        return _build_compiled_pattern_module_compile_standard_benchmark_definitions()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
     build_compiled_pattern_module_compile_contract_cases(
