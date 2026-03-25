@@ -1,6 +1,6 @@
 ## RBR-1308: Delete compiled-pattern module.compile test wrapper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -59,3 +59,15 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py -k 'compiled_pattern_module_compile or source_tree_contract_helper_suites_import_from_support or standard_benchmark_definitions'` passed with `110 passed, 205 deselected in 1.77s`, which is the current fuller baseline before the delete;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile or source_tree_contract_helper_suites_import_from_support or standard_benchmark_definitions'` passed with `27 passed, 205 deselected in 0.24s`, which is the command intended to stay green after the delete; and
   - `bash -lc "test ! -e tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py && ! rg -n 'test_compiled_pattern_module_compile_benchmark_support' tests/benchmarks -g '*.py'"` currently fails because the dedicated test file and its remaining reference still exist, and that failure belongs exactly to this cleanup.
+
+## Completion
+- Moved the compiled-pattern `module.compile` wrapper-preservation assertions into the surviving owner suites:
+  - payload round-trip validation now lives in `tests/benchmarks/test_benchmark_manifest_validation.py`;
+  - standard-definition ownership plus deleted-wrapper import/reference checks now live in `tests/benchmarks/test_benchmark_test_support.py`; and
+  - CPython dispatch, anchoring, zero-gap owner-spec measurement, callback-time keyword materialization, internal-probe coverage, and precompile-before-timing checks now live in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Deleted `tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` and removed the remaining helper-suite reference to it.
+
+## Verification
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile or source_tree_contract_helper_suites_import_from_support or standard_benchmark_definitions'`
+  - `113 passed, 193 deselected in 1.90s`
+- `bash -lc "test ! -e tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py && ! rg -n 'test_compiled_pattern_module_compile_benchmark_support' tests/benchmarks -g '*.py'"`

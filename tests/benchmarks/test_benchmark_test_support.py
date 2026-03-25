@@ -951,6 +951,54 @@ def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
         assert standard_names[next_index] == following_definition_name
 
 
+def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_support_owned_and_wrapper_free(
+) -> None:
+    expected_definitions = tuple(
+        owner_spec.anchor_definition()
+        for owner_spec in (
+            *compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *compiled_pattern_module_compile_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        )
+    )
+
+    first_export = getattr(
+        compiled_pattern_module_compile_support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+    second_export = getattr(
+        compiled_pattern_module_compile_support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+
+    assert first_export is second_export
+    assert (
+        compiled_pattern_module_compile_support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
+        == first_export
+    )
+    assert first_export == expected_definitions
+    assert first_export is not expected_definitions
+    assert tuple(definition.name for definition in first_export) == (
+        "module-workflow-compiled-pattern-module-compile-literal-success",
+        "module-workflow-compiled-pattern-module-compile-named-group-success",
+        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword",
+        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
+        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword",
+        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword-named-group",
+        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection",
+        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
+    )
+    assert (
+        vars(compiled_pattern_module_compile_support)[
+            "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        ]
+        is first_export
+    )
+
+    support_source = inspect.getsource(compiled_pattern_module_compile_support)
+    assert "def _standard_benchmark_anchor_contract_definition" not in support_source
+    assert "StandardBenchmarkAnchorContractDefinition(" in support_source
+
+
 def test_module_keyword_flags_workload_stays_pinned() -> None:
     workload = synthetic_workload(
         manifest_id="module-pattern-boundary",
@@ -1377,15 +1425,6 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
             ),
         ),
         (
-            "tests.benchmarks.test_compiled_pattern_module_compile_benchmark_support",
-            frozenset(
-                {
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
-            ),
-        ),
-        (
             "tests.benchmarks.test_compiled_pattern_module_helper_benchmark_support",
             frozenset(
                 {
@@ -1420,6 +1459,51 @@ def test_source_tree_contract_helper_suites_import_from_support(
     )
 
     assert expected_imported_names.issubset(imported_names)
+
+
+def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportable(
+) -> None:
+    deleted_module_name = ".".join(
+        (
+            "tests",
+            "benchmarks",
+            "test"
+            "_compiled"
+            "_pattern"
+            "_module"
+            "_compile"
+            "_benchmark"
+            "_support",
+        )
+    )
+    deleted_path = (
+        REPO_ROOT
+        / "tests"
+        / "benchmarks"
+        / (
+            "test"
+            "_compiled"
+            "_pattern"
+            "_module"
+            "_compile"
+            "_benchmark"
+            "_support.py"
+        )
+    )
+
+    assert not deleted_path.exists()
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module(deleted_module_name)
+
+    for path in (REPO_ROOT / "tests" / "benchmarks").glob("test_*.py"):
+        module_ast = ast.parse(path.read_text(encoding="utf-8"))
+        import_targets: set[str] = set()
+        for node in module_ast.body:
+            if isinstance(node, ast.ImportFrom) and node.module is not None:
+                import_targets.add(node.module)
+            elif isinstance(node, ast.Import):
+                import_targets.update(alias.name for alias in node.names)
+        assert deleted_module_name not in import_targets
 
 
 @pytest.mark.parametrize(

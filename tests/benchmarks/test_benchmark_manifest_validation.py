@@ -16,8 +16,11 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks.benchmark_test_support import (
     _SourceTreeContractBuilderSpec,
+    _expected_exception_instance,
     _source_tree_contract_manifest,
     _write_test_manifest,
+    assert_benchmark_workload_matches_expected_result,
+    run_benchmark_workload_with_cpython,
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     selected_manifest_workloads,
 )
@@ -864,6 +867,107 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
         payload,
         round_tripped,
     )
+
+
+@pytest.mark.parametrize(
+    "contract_case",
+    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+    ids=lambda contract_case: contract_case.case_id,
+)
+def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preserve_success_and_keyword_payload_round_trip_until_helper_invocation(
+    tmp_path: pathlib.Path,
+    contract_case: CompiledPatternModuleCompileContractCase,
+) -> None:
+    source_workloads = contract_case.source_workloads()
+    manifest = _source_tree_contract_manifest(
+        source_workloads,
+        spec=contract_case.contract_builder_spec(),
+    )
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        contract_case.contract_filename,
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workloads = load_manifest(manifest_path).workloads
+
+    assert tuple(workload.workload_id for workload in source_workloads) == tuple(
+        contract_case.expected_source_workload_ids()
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        workload_id for workload_id, _case_id in contract_case.expected_anchor_pairs
+    )
+    assert [workload.use_compiled_pattern for workload in workloads] == [
+        True
+    ] * len(source_workloads)
+    assert [workload.haystack_text_model for workload in workloads] == [
+        None
+    ] * len(source_workloads)
+
+    for source_workload, workload in zip(
+        source_workloads,
+        workloads,
+        strict=True,
+    ):
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        contract_case.assert_payload_round_trip(
+            source_workload,
+            payload,
+            round_tripped,
+        )
+        if source_workload.expected_exception is None:
+            assert_benchmark_workload_matches_expected_result(
+                round_tripped,
+                contract_case.run_cpython_workload(workload),
+            )
+            continue
+
+        expected_exception = _expected_exception_instance(
+            source_workload.expected_exception
+        )
+        with pytest.raises(
+            type(expected_exception),
+            match=source_workload.expected_exception["message_substring"],
+        ) as expected_error:
+            contract_case.run_cpython_workload(workload)
+        with pytest.raises(type(expected_error.value)) as observed_error:
+            run_benchmark_workload_with_cpython(round_tripped)
+        assert str(observed_error.value) == str(expected_error.value)
+
+
+def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_round_trip_preserves_keyword_signature_type(
+    tmp_path: pathlib.Path,
+) -> None:
+    contract_case = next(
+        case
+        for case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == "bool-false"
+    )
+    source_workload = contract_case.source_workloads()[0]
+    manifest = _source_tree_contract_manifest(
+        (source_workload,),
+        spec=contract_case.contract_builder_spec(),
+    )
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_compiled_pattern_module_compile_keyword_type_contract.py",
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workload = load_manifest(manifest_path).workloads[0]
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    contract_case.assert_payload_round_trip(
+        source_workload,
+        payload,
+        round_tripped,
+    )
+
+    assert source_workload.kwargs == {"flags": False}
+    assert contract_case.keyword_signature == (("flags", "bool", False),)
+    assert type(payload["kwargs"]["flags"]) is bool
+    assert type(round_tripped.kwargs["flags"]) is bool
 
 
 @pytest.mark.parametrize(
