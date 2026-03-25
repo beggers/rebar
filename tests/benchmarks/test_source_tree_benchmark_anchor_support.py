@@ -941,6 +941,53 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         assert function_name not in local_function_names
 
 
+def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
+) -> None:
+    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    direct_import_names = {
+        alias.name
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    local_assignment_names = {
+        target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    } | {
+        node.target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.target, ast.Name)
+    }
+    local_constant_alias_names = {
+        target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Attribute)
+        and isinstance(node.value.value, ast.Name)
+        and node.value.value.id == "source_tree_support"
+        and node.value.attr in _MOVED_SOURCE_TREE_CONSTANT_NAMES
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+    local_name_loads = {
+        node.id
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Name)
+        and isinstance(node.ctx, ast.Load)
+        and node.id in _MOVED_SOURCE_TREE_CONSTANT_NAMES
+    }
+
+    for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
+        assert constant_name not in direct_import_names
+        assert constant_name not in local_assignment_names
+        assert constant_name not in local_name_loads
+    assert local_constant_alias_names == set()
+
+
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
     local_function_names = {
         node.name
