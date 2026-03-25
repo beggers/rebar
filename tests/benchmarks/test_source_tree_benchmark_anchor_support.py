@@ -1052,6 +1052,111 @@ def test_source_tree_report_contract_accepts_single_manifest_native_loaded_score
     )
 
 
+def test_source_tree_report_contract_accepts_combined_manifest_scorecard_without_native_load(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "build_cpython_baseline",
+        lambda version_family: {
+            "python": "synthetic",
+            "version_family": version_family,
+        },
+    )
+    manifest_paths = [
+        "benchmarks/workloads/first_boundary.py",
+        "benchmarks/workloads/second_boundary.py",
+    ]
+    manifests = [
+        _report_manifest(
+            manifest_id="first-boundary",
+            schema_version=3,
+            workloads=(
+                _report_workload(
+                    workload_id="module-search-first-warm-str",
+                    operation="module.search",
+                    family="module",
+                ),
+            ),
+            smoke_workload_ids=("module-search-first-warm-str",),
+            spec_refs=("docs/spec/first-boundary.md",),
+        ),
+        _report_manifest(
+            manifest_id="second-boundary",
+            schema_version=5,
+            workloads=(
+                _report_workload(
+                    workload_id="module-compile-second-cold-gap",
+                    operation="module.compile",
+                    family="parser",
+                ),
+                _report_workload(
+                    workload_id="pattern-fullmatch-second-purged-str",
+                    operation="pattern.fullmatch",
+                    family="module",
+                ),
+            ),
+            smoke_workload_ids=("module-compile-second-cold-gap",),
+            spec_refs=("docs/spec/second-boundary.md",),
+        ),
+    ]
+    manifest_records = [
+        support._artifact_manifest_record(manifest_path, manifest)
+        for manifest_path, manifest in zip(manifest_paths, manifests, strict=True)
+    ]
+    scorecard = _synthetic_report_scorecard(
+        workloads=(
+            {
+                "id": "module-search-first-warm-str",
+                "manifest_id": "first-boundary",
+                "family": "module",
+                "cache_mode": "warm",
+                "status": "measured",
+            },
+            {
+                "id": "module-compile-second-cold-gap",
+                "manifest_id": "second-boundary",
+                "family": "parser",
+                "cache_mode": "cold",
+                "status": "known-gap",
+            },
+            {
+                "id": "pattern-fullmatch-second-purged-str",
+                "manifest_id": "second-boundary",
+                "family": "module",
+                "cache_mode": "purged",
+                "status": "measured",
+            },
+        ),
+        artifacts={
+            "selection_mode": "smoke",
+            "raw_samples": None,
+            "manifests": manifest_records,
+            "manifest": None,
+            "manifest_id": "combined-benchmark-suite",
+            "manifest_schema_version": 1,
+        },
+        baseline={
+            "python": "synthetic",
+            "version_family": "3.12.x",
+            "re_module": "re",
+        },
+        native_module_loaded=False,
+    )
+
+    support.assert_source_tree_benchmark_contract(
+        unittest.TestCase(),
+        scorecard,
+        _summary_view(scorecard),
+        expected_phase="synthetic-phase",
+        expected_runner_version="synthetic-runner",
+        expected_adapter="source-tree-shim",
+        expected_manifests=manifests,
+        expected_manifest_paths=manifest_paths,
+        expected_selection_mode="smoke",
+    )
+
+
 def test_manifest_contract_helpers_validate_selected_workloads_and_lookup() -> None:
     manifest_path = "benchmarks/workloads/synthetic_boundary.py"
     manifest = _report_manifest(
