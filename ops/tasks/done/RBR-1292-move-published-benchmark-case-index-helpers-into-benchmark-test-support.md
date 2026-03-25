@@ -1,6 +1,6 @@
 # RBR-1292: Move published benchmark case index helpers into benchmark test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -124,3 +124,10 @@ PY`
   - the first AST probe in the verification block currently fails because the listed support/test files do not yet import the shared helpers from `tests.benchmarks.benchmark_test_support`; and
   - the second AST probe currently fails because those same files still import the shared helpers through `tests.benchmarks.source_tree_benchmark_anchor_support`.
 - A broader benchmark-contract pytest command was intentionally excluded from this task because it is already red for unrelated drift in `tests/benchmarks/test_benchmark_publication_runtime_contracts.py::test_conditional_group_exists_callable_none_count_workloads_round_trip_preserves_suffix_only_callback_payloads[str]` and `[bytes]`; this cleanup should not inherit that unrelated blocker.
+- Completed 2026-03-25: moved `published_cases_by_id` and `published_case_ids_by_signature` into `tests/benchmarks/benchmark_test_support.py`, retargeted the standard/compiled/test consumers to import the shared helpers from there, and updated the benchmark support tests to pin the slimmer ownership boundary.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_benchmark_test_support.py` passed with `443 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py` passed with `531 tests collected`.
+  - `rg -n '^(def published_case_ids_by_signature|def published_cases_by_id)' tests/benchmarks/benchmark_test_support.py` now reports both helper definitions in the shared benchmark support module.
+  - `bash -lc "! rg -n '^(def published_case_ids_by_signature|def published_cases_by_id)' tests/benchmarks/source_tree_benchmark_anchor_support.py"` now passes with no matches.
+  - The two AST probes in the task text still report false negatives as written because their `for ... else` control flow never breaks on a satisfied import; corrected equivalent AST checks passed and confirmed the required `benchmark_test_support` imports are present while the forbidden `source_tree_benchmark_anchor_support` imports are gone in the listed files.

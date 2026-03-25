@@ -206,30 +206,26 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
 
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
     monkeypatch.setattr(
-        anchor_support,
+        support,
         "published_case_ids_by_signature",
         _published_case_ids_by_signature,
     )
-    monkeypatch.setattr(
-        anchor_support,
-        "published_cases_by_id",
-        _published_cases_by_id,
-    )
+    monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert anchor_support.published_case_ids_by_signature(
+    assert support.published_case_ids_by_signature(
         _synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
-    assert anchor_support.published_cases_by_id() is published_cases
+    assert support.published_cases_by_id() is published_cases
     assert manifest_load_calls == [manifest_path]
     assert published_case_id_calls == [_synthetic_workload_signature]
     assert published_cases_calls == ["called"]
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert anchor_support.published_case_ids_by_signature(
+    assert support.published_case_ids_by_signature(
         _synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
-    assert anchor_support.published_cases_by_id() is published_cases
+    assert support.published_cases_by_id() is published_cases
     assert manifest_load_calls == [manifest_path]
     assert published_case_id_calls == [_synthetic_workload_signature]
     assert published_cases_calls == ["called"]
@@ -237,10 +233,10 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     support._clear_anchor_support_caches()
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert anchor_support.published_case_ids_by_signature(
+    assert support.published_case_ids_by_signature(
         _synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
-    assert anchor_support.published_cases_by_id() is published_cases
+    assert support.published_cases_by_id() is published_cases
     assert manifest_load_calls == [manifest_path, manifest_path]
     assert published_case_id_calls == [
         _synthetic_workload_signature,

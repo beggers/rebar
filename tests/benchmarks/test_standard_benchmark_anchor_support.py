@@ -283,13 +283,13 @@ def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_sup
         "_workload_case_pair_anchor_expectations",
         "_workload_case_pairs_case_ids",
         "_workload_case_pairs_workload_ids",
+        "published_case_ids_by_signature",
     }.issubset(imported_names)
     assert _module_imported_names(
         "tests.benchmarks.source_tree_benchmark_anchor_support"
     ) == {
         "anchored_workload_case_ids",
         "expected_anchored_workload_case_pairs",
-        "published_case_ids_by_signature",
         "unanchored_workload_ids",
     }
 

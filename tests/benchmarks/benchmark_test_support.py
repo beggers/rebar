@@ -21,6 +21,8 @@ from rebar_harness.benchmarks import (
     load_manifest,
     workload_to_payload,
 )
+from rebar_harness.correctness import published_fixture_manifests
+from tests.conftest import records_by_string_id
 
 
 class StandardBenchmarkAnchorContract(Protocol):
@@ -110,14 +112,45 @@ def live_manifest_workloads(
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
 
 
-def _clear_anchor_support_caches() -> None:
-    from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
+@cache
+def published_case_ids_by_signature(
+    case_signature: Callable[[Any], tuple[Any, ...] | None],
+) -> dict[tuple[Any, ...], tuple[str, ...]]:
+    case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
 
+    for case in published_cases_by_id().values():
+        signature = case_signature(case)
+        if signature is None:
+            continue
+        case_ids_by_signature.setdefault(signature, []).append(case.case_id)
+
+    return {
+        signature: tuple(sorted(case_ids))
+        for signature, case_ids in case_ids_by_signature.items()
+    }
+
+
+@cache
+def published_cases_by_id() -> dict[str, Any]:
+    return records_by_string_id(
+        (
+            case
+            for manifest in published_fixture_manifests()
+            for case in manifest.cases
+        ),
+        id_attr="case_id",
+        duplicate_error=lambda duplicate_ids: AssertionError(
+            f"duplicate published correctness case id {duplicate_ids[0]!r}"
+        ),
+    )
+
+
+def _clear_anchor_support_caches() -> None:
     cached_functions = (
         manifest_workloads,
         _live_manifest_workloads_by_id,
-        anchor_support.published_case_ids_by_signature,
-        anchor_support.published_cases_by_id,
+        published_case_ids_by_signature,
+        published_cases_by_id,
     )
     for cached_function in cached_functions:
         cache_clear = getattr(cached_function, "cache_clear", None)

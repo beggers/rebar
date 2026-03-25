@@ -14,13 +14,13 @@ from tests.benchmarks.benchmark_test_support import (
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
     manifest_workloads,
+    published_case_ids_by_signature,
     StandardBenchmarkAnchorContract,
     StandardBenchmarkAnchorContractDefinition,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     anchored_workload_case_ids,
     expected_anchored_workload_case_pairs,
-    published_case_ids_by_signature,
     unanchored_workload_ids,
 )
 from tests.conftest import records_by_string_id

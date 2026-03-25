@@ -980,7 +980,7 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
         )
     )
     monkeypatch.setattr(
-        support,
+        benchmark_support,
         "published_fixture_manifests",
         lambda: (manifest,),
     )
@@ -991,6 +991,14 @@ def test_published_case_ids_by_signature_groups_duplicate_case_ids(
         ("shared",): ("case-a", "case-b"),
         ("unique",): ("case-c",),
     }
+
+
+def test_source_tree_reuses_shared_published_case_helpers_by_identity() -> None:
+    assert (
+        support.published_case_ids_by_signature
+        is benchmark_support.published_case_ids_by_signature
+    )
+    assert support.published_cases_by_id is benchmark_support.published_cases_by_id
 
 
 def test_anchored_and_unanchored_workload_helpers_follow_signatures_and_filters(

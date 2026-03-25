@@ -34,6 +34,7 @@ from tests.benchmarks.benchmark_test_support import (
     find_workload_record,
     is_compile_proxy_workload,
     live_manifest_workloads,
+    published_case_ids_by_signature,
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
@@ -134,7 +135,6 @@ from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _optional_group_correctness_case_signature,
     _optional_group_workload_signature,
     _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID as OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
-    published_case_ids_by_signature,
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.standard_benchmark_anchor_support import (

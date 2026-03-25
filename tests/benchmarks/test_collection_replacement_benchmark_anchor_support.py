@@ -22,6 +22,7 @@ from tests.benchmarks.benchmark_test_support import (
     assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
     live_manifest_workloads,
     manifest_workloads,
+    published_cases_by_id,
     selected_manifest_workloads,
 )
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
@@ -30,7 +31,6 @@ from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
-    published_cases_by_id,
     run_benchmark_workload_with_cpython,
 )
 from tests.benchmarks.source_tree_contract_benchmark_support import (

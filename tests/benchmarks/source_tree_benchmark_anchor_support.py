@@ -10,7 +10,6 @@ from typing import Any
 import pytest
 
 from rebar_harness.benchmarks import build_callable
-from rebar_harness.correctness import published_fixture_manifests
 from tests.benchmarks.benchmark_test_support import (
     StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
@@ -18,6 +17,8 @@ from tests.benchmarks.benchmark_test_support import (
     _workload_case_pairs_case_ids,
     _workload_case_pairs_workload_ids,
     freeze_signature_value,
+    published_case_ids_by_signature,
+    published_cases_by_id,
     selected_manifest_workloads,
 )
 from tests.conftest import REPO_ROOT, records_by_string_id
@@ -1024,39 +1025,6 @@ def _grouped_alternation_replacement_correctness_case_signature(
             text_model,
         )
     return None
-
-
-@cache
-def published_case_ids_by_signature(
-    case_signature: Callable[[Any], tuple[Any, ...] | None],
-) -> dict[tuple[Any, ...], tuple[str, ...]]:
-    case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
-
-    for case in published_cases_by_id().values():
-        signature = case_signature(case)
-        if signature is None:
-            continue
-        case_ids_by_signature.setdefault(signature, []).append(case.case_id)
-
-    return {
-        signature: tuple(sorted(case_ids))
-        for signature, case_ids in case_ids_by_signature.items()
-    }
-
-
-@cache
-def published_cases_by_id() -> dict[str, Any]:
-    return records_by_string_id(
-        (
-            case
-            for manifest in published_fixture_manifests()
-            for case in manifest.cases
-        ),
-        id_attr="case_id",
-        duplicate_error=lambda duplicate_ids: AssertionError(
-            f"duplicate published correctness case id {duplicate_ids[0]!r}"
-        ),
-    )
 
 
 def anchored_workload_case_ids(

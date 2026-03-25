@@ -23,8 +23,6 @@ from tests.benchmarks.benchmark_test_support import (
     StandardBenchmarkAnchorContractDefinition,
     _definition_anchor_expectations,
     _workload_case_pair_anchor_expectations,
-)
-from tests.benchmarks.source_tree_benchmark_anchor_support import (
     published_case_ids_by_signature,
 )
 from tests.python.fixture_parity_support import case_pattern
