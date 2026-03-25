@@ -17,27 +17,17 @@ if TYPE_CHECKING:
         StandardBenchmarkAnchorContractDefinition,
     )
 
-
-def _standard_benchmark_anchor_contract_definition(
-    **kwargs: Any,
-) -> StandardBenchmarkAnchorContractDefinition:
-    from tests.benchmarks.standard_benchmark_anchor_support import (
-        StandardBenchmarkAnchorContractDefinition,
-    )
-
-    return StandardBenchmarkAnchorContractDefinition(**kwargs)
-
-
 @cache
 def _build_compile_proxy_standard_benchmark_definitions(
 ) -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
     from tests.benchmarks.standard_benchmark_anchor_support import (
         COMPILE_MATRIX_MANIFEST_PATH,
         REGRESSION_MATRIX_MANIFEST_PATH,
+        StandardBenchmarkAnchorContractDefinition,
     )
 
     return (
-        _standard_benchmark_anchor_contract_definition(
+        StandardBenchmarkAnchorContractDefinition(
             name="compile-proxy",
             manifest_paths=(
                 COMPILE_MATRIX_MANIFEST_PATH,
