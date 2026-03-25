@@ -539,10 +539,9 @@ def _build_compile_proxy_standard_benchmark_definitions(
     )
 
 
-def __getattr__(name: str) -> Any:
-    if name == "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS":
-        return _build_compile_proxy_standard_benchmark_definitions()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS = (
+    _build_compile_proxy_standard_benchmark_definitions()
+)
 
 
 def manifest_workload_ids_matching(

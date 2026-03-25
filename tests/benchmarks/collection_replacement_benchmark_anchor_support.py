@@ -726,12 +726,6 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
     )
 
 
-def __getattr__(name: str) -> Any:
-    if name == "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS":
-        return _collection_replacement_standard_benchmark_definitions()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
 def _collection_replacement_literal_replacement_correctness_case_signature(
     case: Any,
     *,
@@ -2113,3 +2107,8 @@ def _conditional_group_exists_quantified_callable_workload_signature(
         workload.flags,
         workload.text_model,
     )
+
+
+COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS = (
+    _collection_replacement_standard_benchmark_definitions()
+)

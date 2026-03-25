@@ -1010,6 +1010,8 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     )
 
 
+
+
 @dataclass(frozen=True, slots=True)
 class SourceTreeBenchmarkCommonCase:
     expected_adapter: str
@@ -4417,14 +4419,6 @@ def select_source_tree_combined_slice_rows(
     ]
 
 
-def __getattr__(name: str) -> object:
-    if name == "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS":
-        return _module_workflow_keyword_standard_benchmark_definitions()
-    if name == "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS":
-        return _source_tree_standard_benchmark_definitions()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
 def _compile_search_fullmatch_case_signature(
     case: Any,
     *,
@@ -4914,3 +4908,11 @@ def run_correctness_case_with_cpython(case: Any) -> object:
         return getattr(compiled, case.helper)(*case.args, **case.kwargs)
 
     raise AssertionError(f"unexpected correctness operation {case.operation!r}")
+
+
+MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS = (
+    _module_workflow_keyword_standard_benchmark_definitions()
+)
+SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS = (
+    _source_tree_standard_benchmark_definitions()
+)

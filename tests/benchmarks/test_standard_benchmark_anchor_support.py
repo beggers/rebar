@@ -188,16 +188,12 @@ _OWNER_SUPPORT_MODULES = (
         ),
     ),
 )
-def test_owner_standard_definition_exports_stay_lazy_and_cached(
+def test_owner_standard_definition_exports_are_direct_globals_and_cached(
     module: Any,
     export_name: str,
     builder_name: str,
 ) -> None:
     builder = getattr(module, builder_name)
-
-    # Owner modules expose these tuples lazily through __getattr__ rather than
-    # binding another top-level global.
-    assert export_name not in vars(module)
 
     first_export = getattr(module, export_name)
     second_export = getattr(module, export_name)
@@ -206,7 +202,7 @@ def test_owner_standard_definition_exports_stay_lazy_and_cached(
     assert first_export
     assert first_export is second_export
     assert first_export is builder()
-    assert export_name not in vars(module)
+    assert vars(module)[export_name] is first_export
 
 
 @pytest.mark.parametrize(
@@ -244,7 +240,7 @@ def test_owner_standard_definition_exports_stay_lazy_and_cached(
         ),
     ),
 )
-def test_owner_support_modules_reject_unknown_lazy_export_names(
+def test_owner_support_modules_reject_unknown_export_names(
     module: Any,
     missing_name: str,
 ) -> None:

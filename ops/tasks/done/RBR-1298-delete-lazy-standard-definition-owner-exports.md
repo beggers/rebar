@@ -1,6 +1,6 @@
 ## RBR-1298: Delete lazy standard-definition owner exports
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -67,3 +67,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py` passed with `355 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `443 tests collected`; and
   - the negative `rg` command in `Verification` currently fails because those six `__getattr__` wrappers still exist, and that failure belongs exactly to this cleanup.
+
+## Completion
+- Bound all seven owner-export tuples as direct module globals, deleted the six `__getattr__` wrappers, and kept each exported constant identical to its cached builder return value.
+- Updated the focused benchmark support tests to assert direct-global exports plus ordinary missing-name `AttributeError` behavior without a lazy export path.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_compiled_pattern_module_compile_benchmark_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n '^def __getattr__' tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/pattern_boundary_benchmark_anchor_support.py tests/benchmarks/compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/compiled_pattern_module_compile_benchmark_support.py"`

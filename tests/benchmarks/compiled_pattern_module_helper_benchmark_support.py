@@ -482,10 +482,9 @@ def _build_compiled_pattern_module_helper_standard_benchmark_definitions() -> tu
     )
 
 
-def __getattr__(name: str) -> Any:
-    if name == "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS":
-        return _build_compiled_pattern_module_helper_standard_benchmark_definitions()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
+    _build_compiled_pattern_module_helper_standard_benchmark_definitions()
+)
 
 
 def _is_collection_replacement_compiled_pattern_keyword_error_workload(

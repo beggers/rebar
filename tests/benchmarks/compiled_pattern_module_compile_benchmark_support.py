@@ -1083,10 +1083,9 @@ def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> t
     )
 
 
-def __getattr__(name: str) -> Any:
-    if name == "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS":
-        return _build_compiled_pattern_module_compile_standard_benchmark_definitions()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
+    _build_compiled_pattern_module_compile_standard_benchmark_definitions()
+)
 
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
     build_compiled_pattern_module_compile_contract_cases(

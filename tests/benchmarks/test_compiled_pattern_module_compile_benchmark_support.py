@@ -249,7 +249,7 @@ def test_module_boundary_manifest_keeps_compiled_pattern_module_compile_keyword_
         )
 
 
-def test_compiled_pattern_module_compile_standard_definition_export_is_lazy_cached_and_owner_built(
+def test_compiled_pattern_module_compile_standard_definition_export_is_direct_global_cached_and_owner_built(
 ) -> None:
     expected_definitions = tuple(
         owner_spec.anchor_definition()
@@ -257,11 +257,6 @@ def test_compiled_pattern_module_compile_standard_definition_export_is_lazy_cach
             *support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
             *support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
         )
-    )
-
-    assert (
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        not in vars(support)
     )
 
     first_export = getattr(
@@ -288,8 +283,8 @@ def test_compiled_pattern_module_compile_standard_definition_export_is_lazy_cach
         "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
     )
     assert (
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        not in vars(support)
+        vars(support)["COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"]
+        is first_export
     )
 
 

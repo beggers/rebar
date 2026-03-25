@@ -612,10 +612,8 @@ def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
     )
 
 
-def test_compile_proxy_standard_definition_export_is_lazy_cached_and_support_built(
+def test_compile_proxy_standard_definition_export_is_direct_global_cached_and_support_built(
 ) -> None:
-    assert "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS" not in vars(support)
-
     first_export = getattr(support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
     second_export = getattr(support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
 
@@ -623,7 +621,7 @@ def test_compile_proxy_standard_definition_export_is_lazy_cached_and_support_bui
     assert first_export is _build_compile_proxy_standard_benchmark_definitions()
     assert len(first_export) == 1
     assert first_export[0].name == "compile-proxy"
-    assert "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS" not in vars(support)
+    assert vars(support)["COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"] is first_export
 
 
 def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_mapping(

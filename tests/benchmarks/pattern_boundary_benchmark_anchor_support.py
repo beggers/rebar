@@ -659,7 +659,6 @@ def _build_pattern_boundary_standard_benchmark_definitions() -> tuple[Any, ...]:
     )
 
 
-def __getattr__(name: str) -> Any:
-    if name == "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS":
-        return _build_pattern_boundary_standard_benchmark_definitions()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
+    _build_pattern_boundary_standard_benchmark_definitions()
+)
