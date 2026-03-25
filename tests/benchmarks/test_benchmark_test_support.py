@@ -1787,6 +1787,32 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
         assert shared_name not in local_names
 
 
+def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_shared_support(
+) -> None:
+    owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        support
+    )
+    consumer_definition_names, consumer_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            collection_replacement_support
+        )
+    )
+    consumer_local_names = consumer_definition_names | consumer_assignment_names
+
+    assert (
+        "_is_collection_replacement_compiled_pattern_success_workload"
+        in owner_definition_names
+    )
+    assert (
+        collection_replacement_support._is_collection_replacement_compiled_pattern_success_workload
+        is support._is_collection_replacement_compiled_pattern_success_workload
+    )
+    assert (
+        "_is_collection_replacement_compiled_pattern_success_workload"
+        not in consumer_local_names
+    )
+
+
 @pytest.mark.parametrize(
     ("module_name", "expected_owner_module_names"),
     (
@@ -1840,6 +1866,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "CompiledPatternModuleSuccessOwnerSpec",
         "_assert_compiled_pattern_module_success_payload_round_trip",
         "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+        "_is_collection_replacement_compiled_pattern_success_workload",
         "include_live_compiled_pattern_module_success_workload",
         "live_compiled_pattern_module_success_surface_ids",
     }.issubset(definition_names)

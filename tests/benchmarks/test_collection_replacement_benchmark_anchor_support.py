@@ -16,6 +16,7 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
+from tests.benchmarks import benchmark_test_support
 from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
@@ -2518,6 +2519,28 @@ def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_sign
         True,
         0,
         "bytes",
+    )
+
+
+def test_compiled_pattern_success_selector_routes_through_shared_support_without_local_definition(
+) -> None:
+    local_definition_names, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            support
+        )
+    )
+
+    assert (
+        support._is_collection_replacement_compiled_pattern_success_workload
+        is benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
+    )
+    assert (
+        "_is_collection_replacement_compiled_pattern_success_workload"
+        not in local_definition_names
+    )
+    assert (
+        "_is_collection_replacement_compiled_pattern_success_workload"
+        not in local_assignment_names
     )
 
 

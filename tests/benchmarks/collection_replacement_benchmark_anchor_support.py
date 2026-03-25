@@ -16,6 +16,7 @@ from tests.benchmarks.benchmark_test_support import (
     _SourceTreeContractBuilderSpec,
     _contract_source_workloads,
     _definition_anchor_expectations,
+    _is_collection_replacement_compiled_pattern_success_workload,
     _is_module_workflow_keyword_error_workload,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
@@ -1048,24 +1049,6 @@ def _collection_replacement_compiled_pattern_success_workload_signature(
     )
 
 
-def _is_collection_replacement_compiled_pattern_success_workload(
-    workload: Any,
-) -> bool:
-    return (
-        getattr(workload, "haystack_text_model", None) is None
-        and not workload.kwargs
-        and workload.use_compiled_pattern
-        and workload.operation
-        in {
-            "module.split",
-            "module.findall",
-            "module.finditer",
-            "module.sub",
-            "module.subn",
-        }
-        and workload.expected_exception is None
-        and workload.pattern == "abc"
-    )
 def _pattern_helper_collection_replacement_keyword_error_workload(
     *,
     operation: str,

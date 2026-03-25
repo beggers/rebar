@@ -1,6 +1,6 @@
 # RBR-1319: Delete shadow collection-replacement compiled-pattern success selector
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -56,3 +56,9 @@ Created: 2026-03-25
   - `test "$(rg -c '^def _is_collection_replacement_compiled_pattern_success_workload\\(' tests/benchmarks/benchmark_test_support.py)" = "1"` passed
   - `! rg -n '^def _is_collection_replacement_compiled_pattern_success_workload\\(' tests/benchmarks/collection_replacement_benchmark_anchor_support.py` currently fails because that module still defines the shadow selector locally, and that failure belongs exactly to this cleanup
 - A broader `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` run is currently red for unrelated pre-existing failures in `test_collection_replacement_benchmark_anchor_support.py`, so the acceptance is intentionally narrowed to the green selector-focused slices above plus the exact duplicate-definition probe.
+- 2026-03-25T17:06:09+00:00: landed by deleting the local `_is_collection_replacement_compiled_pattern_success_workload(...)` shadow from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, importing the shared selector from `tests/benchmarks/benchmark_test_support.py`, and tightening both benchmark-support test files so they assert the selector stays single-owned by the shared support module.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'compiled_pattern_success'` -> `4 passed, 142 deselected in 0.21s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_success or compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates'` -> `5 passed, 110 deselected in 0.20s`
+  - `test "$(rg -c '^def _is_collection_replacement_compiled_pattern_success_workload\(' tests/benchmarks/benchmark_test_support.py)" = "1"` -> passed
+  - `! rg -n '^def _is_collection_replacement_compiled_pattern_success_workload\(' tests/benchmarks/collection_replacement_benchmark_anchor_support.py` -> passed
