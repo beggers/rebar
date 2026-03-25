@@ -36,12 +36,15 @@ from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkCompiledPattern,
     RecordingBenchmarkModule,
     _module_pattern_case,
+    _module_import_targets,
+    _module_imported_names,
     _owner_definition_manifest_path_names,
     _parsed_module_ast,
     _synthetic_manifest_loader,
     _synthetic_workload,
     _synthetic_workload_is_included,
     _synthetic_workload_signature,
+    _ast_import_targets,
     anchor_support_cache_guard,
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _has_standard_benchmark_legacy_workloads,
@@ -85,31 +88,6 @@ def _class_method_definition(
         for node in class_definition.body
         if isinstance(node, ast.FunctionDef) and node.name == method_name
     )
-
-
-def _module_imported_names(module: object, imported_module: str) -> frozenset[str]:
-    return frozenset(
-        alias.name
-        for node in _parsed_module_ast(module).body
-        if isinstance(node, ast.ImportFrom) and node.module == imported_module
-        for alias in node.names
-    )
-
-
-def _module_import_targets(module: object) -> frozenset[str]:
-    return _ast_import_targets(_parsed_module_ast(module))
-
-
-def _ast_import_targets(module_ast: ast.Module) -> frozenset[str]:
-    targets: set[str] = set()
-
-    for node in module_ast.body:
-        if isinstance(node, ast.ImportFrom) and node.module is not None:
-            targets.add(node.module)
-        elif isinstance(node, ast.Import):
-            targets.update(alias.name for alias in node.names)
-
-    return frozenset(targets)
 
 
 def _top_level_benchmark_support_alias_pairs(
@@ -1528,6 +1506,45 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         "RecordingBenchmarkModule",
     ):
         assert not hasattr(module, shared_name)
+
+
+@pytest.mark.parametrize(
+    ("module_name", "expected_imported_names"),
+    (
+        pytest.param(
+            "tests.benchmarks.test_benchmark_test_support",
+            frozenset(
+                {
+                    "_module_imported_names",
+                    "_module_import_targets",
+                    "_ast_import_targets",
+                }
+            ),
+            id="benchmark-test-support-suite",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_source_tree_benchmark_anchor_support",
+            frozenset({"_module_imported_names"}),
+            id="source-tree-anchor-suite",
+        ),
+    ),
+)
+def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
+    module_name: str,
+    expected_imported_names: frozenset[str],
+) -> None:
+    module = importlib.import_module(module_name)
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    local_names = definition_names | assignment_names
+
+    assert expected_imported_names.issubset(
+        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    )
+    assert expected_imported_names.isdisjoint(local_names)
+    for helper_name in expected_imported_names:
+        assert getattr(module, helper_name) is getattr(support, helper_name)
 
 
 def test_shared_collection_replacement_classifier_contract_tests_import_from_support(

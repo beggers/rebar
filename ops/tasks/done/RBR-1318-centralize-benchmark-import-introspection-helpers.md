@@ -1,6 +1,6 @@
 # RBR-1318: Centralize benchmark import-introspection helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -56,3 +56,8 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `161 passed in 0.47s`
   - `bash -lc "! rg -n '^def (_module_imported_names|_module_import_targets|_ast_import_targets)\\(' tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because both benchmark suites still define those helpers locally, and that failure belongs exactly to this cleanup
   - `bash -lc \"[ \\\"$(rg -n '^def (_module_imported_names|_module_import_targets|_ast_import_targets)\\\\(' tests/benchmarks/benchmark_test_support.py | wc -l)\\\" -eq 3 ]\"` currently fails because the shared owner module does not yet define those canonical helpers
+- 2026-03-25T16:51:53+00:00: landed by moving `_module_imported_names(...)`, `_module_import_targets(...)`, and `_ast_import_targets(...)` into `tests/benchmarks/benchmark_test_support.py`, deleting the duplicated local definitions from `tests/benchmarks/test_benchmark_test_support.py` and `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`, and adding a focused ownership regression in `tests/benchmarks/test_benchmark_test_support.py` that requires both consumer suites to import these helpers from the shared support owner instead of redefining them locally.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` -> `163 passed in 0.66s`
+  - `bash -lc "! rg -n '^def (_module_imported_names|_module_import_targets|_ast_import_targets)\\(' tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` -> passed
+  - `bash -lc '[ "$(rg -n '^\"'\"'^def (_module_imported_names|_module_import_targets|_ast_import_targets)\\('\"'\"' tests/benchmarks/benchmark_test_support.py | wc -l)" -eq 3 ]'` -> passed

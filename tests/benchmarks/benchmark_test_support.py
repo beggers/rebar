@@ -605,6 +605,31 @@ def _parsed_module_ast(module: object) -> ast.Module:
     return ast.parse(inspect.getsource(module))
 
 
+def _module_imported_names(module: object, imported_module: str) -> frozenset[str]:
+    return frozenset(
+        alias.name
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ImportFrom) and node.module == imported_module
+        for alias in node.names
+    )
+
+
+def _module_import_targets(module: object) -> frozenset[str]:
+    return _ast_import_targets(_parsed_module_ast(module))
+
+
+def _ast_import_targets(module_ast: ast.Module) -> frozenset[str]:
+    targets: set[str] = set()
+
+    for node in module_ast.body:
+        if isinstance(node, ast.ImportFrom) and node.module is not None:
+            targets.add(node.module)
+        elif isinstance(node, ast.Import):
+            targets.update(alias.name for alias in node.names)
+
+    return frozenset(targets)
+
+
 def _owner_definition_manifest_path_names(
     owner_definition: ast.Assign | ast.Return,
 ) -> tuple[tuple[str, ...], ...]:

@@ -19,6 +19,7 @@ from tests.benchmarks.benchmark_test_support import (
     OPTIONAL_GROUP_MANIFEST_PATH as SHARED_OPTIONAL_GROUP_MANIFEST_PATH,
     RANGED_REPEAT_MANIFEST_PATH as SHARED_RANGED_REPEAT_MANIFEST_PATH,
     STANDARD_BENCHMARK_DEFINITIONS,
+    _module_imported_names,
     _module_pattern_case,
     _owner_definition_manifest_path_names,
     _parsed_module_ast,
@@ -159,15 +160,6 @@ def _parsed_source_tree_combined_suite_ast() -> ast.Module:
             / "benchmarks"
             / "test_source_tree_combined_boundary_benchmarks.py"
         ).read_text()
-    )
-
-
-def _module_imported_names(module: object, imported_module: str) -> frozenset[str]:
-    return frozenset(
-        alias.name
-        for node in _parsed_module_ast(module).body
-        if isinstance(node, ast.ImportFrom) and node.module == imported_module
-        for alias in node.names
     )
 
 
