@@ -20,6 +20,8 @@ from tests.benchmarks.benchmark_test_support import (
     _write_test_manifest,
 )
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
+    _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS,
+    _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS,
     _assert_wrong_text_model_payload_round_trip,
     _compiled_pattern_wrong_text_model_contract_spec,
     _compiled_pattern_wrong_text_model_source_workloads,
@@ -72,6 +74,62 @@ def _fake_workload(
         expected_exception=expected_exception,
         kwargs={} if kwargs is None else kwargs,
     )
+
+
+def test_compiled_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
+) -> None:
+    import sys
+
+    from tests.benchmarks import (
+        compiled_pattern_module_helper_benchmark_support as support,
+    )
+    from tests.benchmarks.benchmark_test_support import (
+        top_level_module_definition_and_assignment_names,
+    )
+
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(sys.modules[__name__])
+    )
+
+    assert (
+        _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        is support._COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+    )
+    assert (
+        _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        is support._COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+    )
+    assert (
+        _compiled_pattern_wrong_text_model_specs
+        is support._compiled_pattern_wrong_text_model_specs
+    )
+    assert (
+        _compiled_pattern_wrong_text_model_source_workloads
+        is support._compiled_pattern_wrong_text_model_source_workloads
+    )
+    assert (
+        _compiled_pattern_wrong_text_model_contract_spec
+        is support._compiled_pattern_wrong_text_model_contract_spec
+    )
+    assert (
+        _assert_wrong_text_model_payload_round_trip
+        is support._assert_wrong_text_model_payload_round_trip
+    )
+    assert (
+        _is_module_workflow_compiled_pattern_wrong_text_model_workload
+        is support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+    )
+    assert {
+        "_compiled_pattern_wrong_text_model_specs",
+        "_compiled_pattern_wrong_text_model_source_workloads",
+        "_compiled_pattern_wrong_text_model_contract_spec",
+        "_assert_wrong_text_model_payload_round_trip",
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+    }.isdisjoint(local_definition_names)
+    assert {
+        "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+    }.isdisjoint(local_assignment_names)
 
 
 @pytest.mark.parametrize(
