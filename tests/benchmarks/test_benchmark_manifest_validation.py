@@ -1238,7 +1238,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
             run_benchmark_workload_with_cpython(workload),
         )
         for workload in (
-            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
         )
         if workload.operation in {"module.sub", "module.subn"}
         and type(workload.kwargs.get("count")) is bool
