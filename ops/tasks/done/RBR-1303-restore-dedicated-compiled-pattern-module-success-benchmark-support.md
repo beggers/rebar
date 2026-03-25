@@ -1,6 +1,6 @@
 ## RBR-1303: Restore dedicated compiled-pattern module-success benchmark support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -55,3 +55,9 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_module_success'` passed with `48 passed, 87 deselected in 0.82s`;
   - `bash -lc "! rg -n 'class CompiledPatternModuleSuccessOwnerSpec|def _assert_compiled_pattern_module_success_payload_round_trip\\(|def _assert_compiled_pattern_success_rows_measured_in_combined_manifest\\(' tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py"` currently fails because that support surface still lives in the test module, and that failure belongs exactly to this cleanup.
+
+## Completion
+- Added `tests/benchmarks/compiled_pattern_module_success_benchmark_support.py` as the dedicated owner for the compiled-pattern module-success owner specs, source-workload params, live-surface helpers, and contract/payload assertions.
+- Updated `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` to import that support surface directly and keep the behavioral assertions in the test suite.
+- Moved the support-ownership checks onto `tests/benchmarks/test_benchmark_test_support.py`, including direct ownership assertions for the new support module and import-contract checks for the dedicated test suite.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_module_success'` (`51 passed, 87 deselected`) and `bash -lc "! rg -n 'class CompiledPatternModuleSuccessOwnerSpec|def _assert_compiled_pattern_module_success_payload_round_trip\\(|def _assert_compiled_pattern_success_rows_measured_in_combined_manifest\\(' tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py"`.

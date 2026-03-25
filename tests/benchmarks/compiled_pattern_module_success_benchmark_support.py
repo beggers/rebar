@@ -1,0 +1,278 @@
+from __future__ import annotations
+
+from collections.abc import Callable
+from dataclasses import dataclass
+import pathlib
+from typing import Any
+import unittest
+
+import pytest
+
+from rebar_harness.benchmarks import (
+    BENCHMARK_WORKLOADS_ROOT,
+    Workload,
+    load_manifest,
+)
+from tests.benchmarks.benchmark_test_support import (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+    _SourceTreeContractBuilderSpec,
+    _compiled_pattern_module_helper_route,
+    _contract_source_workloads,
+    assert_benchmark_workload_contract,
+    compiled_pattern_contract_expected_build_calls,
+    find_workload_document,
+    find_workload_record,
+    manifest_workload_ids_matching,
+    selected_manifest_workloads,
+)
+from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    _is_collection_replacement_compiled_pattern_success_workload,
+)
+from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
+    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+    _is_module_workflow_compiled_pattern_literal_success_workload,
+    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+)
+from tests.conftest import run_harness_scorecard
+
+MODULE_BOUNDARY_MANIFEST_PATH = BENCHMARK_WORKLOADS_ROOT / "module_boundary.py"
+COLLECTION_REPLACEMENT_MANIFEST_PATH = (
+    BENCHMARK_WORKLOADS_ROOT / "collection_replacement_boundary.py"
+)
+
+_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    | {
+        "categories",
+        "syntax_features",
+        "expected_exception",
+        "haystack_text_model",
+    }
+)
+
+
+@dataclass(frozen=True, slots=True)
+class CompiledPatternModuleSuccessOwnerSpec:
+    case_id: str
+    manifest_path: pathlib.Path
+    include_workload_selectors: tuple[Callable[[Any], bool], ...]
+    contract_manifest_id: str
+    contract_filename: str
+    note_surface: str
+    expected_source_workload_ids: tuple[str, ...]
+    preserved_payload_fields: tuple[str, ...]
+    preserve_replacement_payload_typing: bool
+
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        return _SourceTreeContractBuilderSpec(
+            manifest_id=self.contract_manifest_id,
+            excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+            timing_scope="module-helper-call",
+            notes=(
+                "Ensures benchmark manifests keep the bounded "
+                "compiled-pattern-first-argument successful "
+                f"{self.note_surface} rows unresolved until helper invocation.",
+            ),
+        )
+
+    def source_workloads(self) -> tuple[Workload, ...]:
+        return _contract_source_workloads(
+            manifest_path=self.manifest_path,
+            include_workload_selectors=self.include_workload_selectors,
+            expected_source_workload_ids=self.expected_source_workload_ids,
+            drift_message=(
+                "compiled-pattern module contract source workloads drifted from the "
+                f"{self.case_id} owner-spec surface"
+            ),
+        )
+
+    def expected_build_calls(
+        self,
+        source_workload: Workload,
+    ) -> list[tuple[object, ...]]:
+        return compiled_pattern_contract_expected_build_calls(
+            source_workload,
+            label=f"{self.case_id} success",
+        )
+
+    def expected_callback_result(self, source_workload: Workload) -> object:
+        callback_result, _, _, _ = _compiled_pattern_module_helper_route(
+            source_workload,
+            collection_replacement_callback_flags=source_workload.flags,
+        )
+        return callback_result
+
+    def expected_callback_call(
+        self,
+        source_workload: Workload,
+    ) -> tuple[object, ...]:
+        _, callback_call, _, _ = _compiled_pattern_module_helper_route(
+            source_workload,
+            collection_replacement_callback_flags=source_workload.flags,
+        )
+        return callback_call
+
+
+_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
+    CompiledPatternModuleSuccessOwnerSpec(
+        case_id="collection-replacement",
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_collection_replacement_compiled_pattern_success_workload,
+        ),
+        contract_manifest_id="collection-replacement-boundary",
+        contract_filename=(
+            "python_benchmark_compiled_pattern_collection_replacement_success_contract.py"
+        ),
+        note_surface="collection/replacement",
+        expected_source_workload_ids=(
+            "module-split-literal-warm-str-compiled-pattern",
+            "module-findall-literal-purged-bytes-compiled-pattern",
+            "module-finditer-literal-warm-str-compiled-pattern",
+            "module-sub-literal-warm-str-compiled-pattern",
+            "module-subn-literal-purged-bytes-compiled-pattern",
+        ),
+        preserved_payload_fields=("count", "maxsplit"),
+        preserve_replacement_payload_typing=True,
+    )
+)
+
+_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC = (
+    CompiledPatternModuleSuccessOwnerSpec(
+        case_id="module-boundary",
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_module_workflow_compiled_pattern_literal_success_workload,
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+        ),
+        contract_manifest_id="module-boundary",
+        contract_filename=(
+            "python_benchmark_compiled_pattern_module_boundary_success_contract.py"
+        ),
+        note_surface="module-boundary",
+        expected_source_workload_ids=(
+            "module-search-literal-warm-hit-str-compiled-pattern",
+            "module-match-literal-warm-hit-str-compiled-pattern",
+            "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+            "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
+            "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
+            "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
+            "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+            "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
+        ),
+        preserved_payload_fields=("flags",),
+        preserve_replacement_payload_typing=False,
+    )
+)
+
+_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
+    _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+    _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+)
+
+_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
+    pytest.param(
+        owner_spec,
+        source_workload,
+        id=f"{owner_spec.case_id}-{source_workload.workload_id}",
+    )
+    for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+    for source_workload in owner_spec.source_workloads()
+)
+
+
+def _assert_compiled_pattern_module_success_payload_round_trip(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+    *,
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload.get("expected_exception") is None
+    assert round_tripped.expected_exception is None
+    assert payload.get("haystack_text_model") is None
+    assert round_tripped.haystack_text_model is None
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_text_type)
+    for field_name in owner_spec.preserved_payload_fields:
+        assert payload[field_name] == getattr(source_workload, field_name)
+        assert getattr(round_tripped, field_name) == getattr(
+            source_workload,
+            field_name,
+        )
+    if (
+        owner_spec.preserve_replacement_payload_typing
+        and source_workload.replacement is not None
+    ):
+        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
+    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
+    *,
+    include_workload: Callable[[Any], bool],
+) -> None:
+    testcase = unittest.TestCase()
+    manifest = load_manifest(owner_spec.manifest_path)
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in owner_spec.source_workloads()
+        if include_workload(workload)
+    )
+    selected_measured_workload_ids = manifest_workload_ids_matching(
+        manifest,
+        include_workload,
+    )
+
+    assert selected_measured_workload_ids == expected_measured_workload_ids
+
+    _, scorecard = run_harness_scorecard(
+        "rebar_harness.benchmarks",
+        ["--manifest", str(owner_spec.manifest_path)],
+        report_name="benchmarks.json",
+    )
+    manifest_summary = scorecard["manifests"][owner_spec.contract_manifest_id]
+    expected_workload_count = len(manifest.workloads)
+
+    assert manifest_summary["known_gap_count"] == 0
+    assert manifest_summary["measured_workloads"] == expected_workload_count
+    assert manifest_summary["workload_count"] == expected_workload_count
+
+    for workload_id in expected_measured_workload_ids:
+        assert_benchmark_workload_contract(
+            testcase,
+            find_workload_record(scorecard, workload_id),
+            manifest_id=owner_spec.contract_manifest_id,
+            workload_document=find_workload_document(
+                manifest,
+                workload_id,
+            ),
+            expected_status="measured",
+        )
+
+
+def include_live_compiled_pattern_module_success_workload(workload: Workload) -> bool:
+    return (
+        workload.use_compiled_pattern
+        and workload.expected_exception is None
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.operation.startswith("module.")
+        and workload.operation != "module.compile"
+        and not workload.kwargs
+    )
+
+
+def live_compiled_pattern_module_success_surface_ids() -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for workload in selected_manifest_workloads(
+            owner_spec.manifest_path,
+            include_workload=include_live_compiled_pattern_module_success_workload,
+        )
+    )

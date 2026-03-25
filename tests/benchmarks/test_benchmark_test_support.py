@@ -23,6 +23,9 @@ from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
 )
 from tests.benchmarks import (
+    compiled_pattern_module_success_benchmark_support as compiled_pattern_module_success_support,
+)
+from tests.benchmarks import (
     pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
@@ -1196,6 +1199,48 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     )
 
 
+def test_compiled_pattern_module_success_support_owns_owner_surface() -> None:
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            compiled_pattern_module_success_support
+        )
+    )
+
+    assert {
+        "CompiledPatternModuleSuccessOwnerSpec",
+        "_assert_compiled_pattern_module_success_payload_round_trip",
+        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+        "include_live_compiled_pattern_module_success_workload",
+        "live_compiled_pattern_module_success_surface_ids",
+    }.issubset(definition_names)
+    assert {
+        "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+    }.issubset(assignment_names)
+    assert (
+        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
+        == "contract_builder_spec"
+    )
+    assert (
+        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
+        == "source_workloads"
+    )
+    assert (
+        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.expected_build_calls.__name__
+        == "expected_build_calls"
+    )
+    assert (
+        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_result.__name__
+        == "expected_callback_result"
+    )
+    assert (
+        compiled_pattern_module_success_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
+        == "expected_callback_call"
+    )
+
+
 @pytest.mark.parametrize(
     ("module", "expected_imported_names"),
     (
@@ -1224,6 +1269,23 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
                 {
                     "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
                     "_SourceTreeContractBuilderSpec",
+                }
+            ),
+        ),
+        (
+            compiled_pattern_module_success_support,
+            frozenset(
+                {
+                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
+                    "_SourceTreeContractBuilderSpec",
+                    "_compiled_pattern_module_helper_route",
+                    "_contract_source_workloads",
+                    "assert_benchmark_workload_contract",
+                    "compiled_pattern_contract_expected_build_calls",
+                    "find_workload_document",
+                    "find_workload_record",
+                    "manifest_workload_ids_matching",
+                    "selected_manifest_workloads",
                 }
             ),
         ),
@@ -1299,10 +1361,24 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
             "tests.benchmarks.test_compiled_pattern_module_success_benchmark_support",
             frozenset(
                 {
-                    "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
-                    "_SourceTreeContractBuilderSpec",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
+                }
+            ),
+        ),
+        (
+            "tests.benchmarks.test_compiled_pattern_module_success_benchmark_support",
+            frozenset(
+                {
+                    "CompiledPatternModuleSuccessOwnerSpec",
+                    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+                    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+                    "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+                    "_assert_compiled_pattern_module_success_payload_round_trip",
+                    "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+                    "include_live_compiled_pattern_module_success_workload",
+                    "live_compiled_pattern_module_success_surface_ids",
                 }
             ),
         ),
@@ -1323,9 +1399,15 @@ def test_source_tree_contract_helper_suites_import_from_support(
 ) -> None:
     module = importlib.import_module(module_name)
 
-    assert expected_imported_names.issubset(
-        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    imported_names = _module_imported_names(
+        module,
+        "tests.benchmarks.benchmark_test_support",
+    ) | _module_imported_names(
+        module,
+        "tests.benchmarks.compiled_pattern_module_success_benchmark_support",
     )
+
+    assert expected_imported_names.issubset(imported_names)
 
 
 @pytest.mark.parametrize(
