@@ -51,6 +51,31 @@ def _definition_names(definitions: tuple[Any, ...]) -> tuple[str, ...]:
     return tuple(definition.name for definition in definitions)
 
 
+def _build_standard_benchmark_definition_splice_names() -> tuple[str, ...]:
+    import inspect
+
+    parsed_support_source = ast.parse(inspect.getsource(support))
+    builder = next(
+        node
+        for node in parsed_support_source.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "_build_standard_benchmark_definitions"
+    )
+    builder_return = next(
+        node for node in builder.body if isinstance(node, ast.Return)
+    )
+
+    assert isinstance(builder_return.value, ast.Tuple)
+
+    splice_names = []
+    for element in builder_return.value.elts:
+        assert isinstance(element, ast.Starred)
+        assert isinstance(element.value, ast.Name)
+        splice_names.append(element.value.id)
+
+    return tuple(splice_names)
+
+
 @pytest.mark.parametrize(
     ("module", "export_name", "builder_name"),
     (
@@ -339,19 +364,15 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     support_source = inspect.getsource(support)
     assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
     assert "for definition in _standard_benchmark_definitions()" not in support_source
-    assert "*COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
-    assert "*COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS," in support_source
-    assert "*MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS," in support_source
-    assert (
-        "*COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,"
-        in support_source
+    assert _build_standard_benchmark_definition_splice_names() == (
+        "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
+        "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
+        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+        "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
+        "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
     )
-    assert (
-        "*COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,"
-        in support_source
-    )
-    assert "*PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS," in support_source
-    assert "*SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS," in support_source
 
 
 @pytest.mark.parametrize(
