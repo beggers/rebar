@@ -1,6 +1,6 @@
 ## RBR-1332: Centralize source-tree zero-gap representative assertions
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -54,3 +54,7 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `342 passed, 1807 subtests passed in 13.00s`
   - `bash -lc "! rg -n '^    def (_assert_zero_gap_bytes_representative_subset|_assert_zero_gap_manifest_representative_promotion)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those class-local wrappers still exist, and that failure belongs exactly to this cleanup
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+
+## Completion
+- Landed 2026-03-25: centralized the remaining zero-gap bytes-subset and representative-promotion assertions onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, routed the combined benchmark suite through those owner helpers, and added support-module coverage that pins the exported helper names plus fails if either deleted class wrapper returns.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` (`343 passed, 1807 subtests passed`), the `rg` wrapper-definition check, and `python3 -m py_compile` on the three touched benchmark files.
