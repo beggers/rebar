@@ -1129,6 +1129,52 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
     )
 
 
+def test_combined_suite_routes_moved_compiled_pattern_compile_contract_surfaces_through_source_tree_support(
+) -> None:
+    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    direct_import_names = {
+        alias.name
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    local_assignment_names = {
+        target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    } | {
+        node.target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.target, ast.Name)
+    }
+    local_name_loads = {
+        node.id
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Name)
+        and isinstance(node.ctx, ast.Load)
+        and node.id in _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+    }
+    source_tree_support_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "source_tree_support"
+        and node.attr in _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+    }
+
+    for constant_name in _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES:
+        assert constant_name not in direct_import_names
+        assert constant_name not in local_assignment_names
+        assert constant_name not in local_name_loads
+    assert source_tree_support_refs == set(
+        _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+    )
+
+
 def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() -> None:
     expected_callable_slice_ids = (
         "minimal-callable-replacement-rows",
