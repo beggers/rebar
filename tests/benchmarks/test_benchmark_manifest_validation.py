@@ -18,6 +18,7 @@ from tests.benchmarks.benchmark_test_support import (
     _SourceTreeContractBuilderSpec,
     _expected_exception_instance,
     _source_tree_contract_manifest,
+    _source_tree_contract_workload,
     _write_test_manifest,
     assert_benchmark_workload_matches_expected_result,
     run_benchmark_workload_with_cpython,
@@ -28,9 +29,14 @@ from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
     _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
     CompiledPatternModuleCompileContractCase,
 )
+from tests.benchmarks import (
+    compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
+)
 from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
     _is_pattern_boundary_wrong_text_model_workload,
 )
+
+
 def _validation_payload(**overrides: object) -> dict[str, object]:
     return {
         "warmup_iterations": 1,
@@ -75,6 +81,16 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpe
     ),
     timing_scope="pattern-helper-call",
 )
+
+
+def _compiled_pattern_module_helper_keyword_contract_surface(case_id: str) -> object:
+    return next(
+        surface
+        for surface in (
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        )
+        if surface.case_id == case_id
+    )
 
 
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
@@ -968,6 +984,355 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
     assert contract_case.keyword_signature == (("flags", "bool", False),)
     assert type(payload["kwargs"]["flags"]) is bool
     assert type(round_tripped.kwargs["flags"]) is bool
+
+
+@pytest.mark.parametrize(
+    "spec",
+    tuple(
+        pytest.param(spec, id=str(spec["case_id"]))
+        for spec in compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_specs()
+    ),
+)
+def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation(
+    tmp_path: pathlib.Path,
+    spec: dict[str, object],
+) -> None:
+    source_workloads = (
+        compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_source_workloads(
+            spec
+        )
+    )
+    manifest = _source_tree_contract_manifest(
+        source_workloads,
+        spec=compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_contract_spec(
+            spec
+        ),
+    )
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        str(spec["contract_filename"]),
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workloads = tuple(load_manifest(manifest_path).workloads)
+
+    assert tuple(workload.workload_id for workload in source_workloads) == tuple(
+        spec["expected_source_workload_ids"]
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        f"{workload_id}-contract" for workload_id in spec["expected_source_workload_ids"]
+    )
+    assert [workload.use_compiled_pattern for workload in workloads] == [True] * len(
+        source_workloads
+    )
+    assert [workload.timing_scope for workload in workloads] == [
+        "module-helper-call"
+    ] * len(source_workloads)
+    assert [workload.haystack_text_model for workload in workloads] == [
+        workload.haystack_text_model for workload in source_workloads
+    ]
+
+    for source_workload, workload in zip(source_workloads, workloads, strict=True):
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        compiled_pattern_module_helper_support._assert_wrong_text_model_payload_round_trip(
+            source_workload,
+            payload,
+            round_tripped,
+        )
+
+        with pytest.raises(TypeError) as expected_error:
+            compiled_pattern_module_helper_support._run_cpython_compiled_pattern_module_helper_workload(
+                workload,
+                collection_replacement_callback_flags=0,
+            )
+        with pytest.raises(TypeError) as observed_error:
+            run_benchmark_workload_with_cpython(round_tripped)
+
+        assert str(observed_error.value) == str(expected_error.value)
+
+
+@pytest.mark.parametrize(
+    "owner_spec",
+    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
+    ids=lambda owner_spec: owner_spec.case_id,
+)
+def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation(
+    tmp_path: pathlib.Path,
+    owner_spec: object,
+) -> None:
+    source_workloads = owner_spec.source_workloads()
+    manifest = _source_tree_contract_manifest(
+        source_workloads,
+        spec=owner_spec.contract_builder_spec(),
+    )
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        owner_spec.contract_filename,
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workloads = load_manifest(manifest_path).workloads
+
+    assert tuple(workload.workload_id for workload in source_workloads) == (
+        owner_spec.expected_source_workload_ids
+    )
+    assert all(
+        compiled_pattern_module_helper_support.include_live_compiled_pattern_module_success_workload(
+            workload
+        )
+        for workload in source_workloads
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        f"{workload.workload_id}-contract" for workload in source_workloads
+    )
+    assert [workload.use_compiled_pattern for workload in workloads] == [
+        True
+    ] * len(source_workloads)
+    assert [workload.haystack_text_model for workload in workloads] == [
+        None
+    ] * len(source_workloads)
+
+    for source_workload, workload in zip(source_workloads, workloads, strict=True):
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        compiled_pattern_module_helper_support._assert_compiled_pattern_module_success_payload_round_trip(
+            source_workload,
+            payload,
+            round_tripped,
+            owner_spec=owner_spec,
+        )
+        assert_benchmark_workload_matches_expected_result(
+            round_tripped,
+            run_benchmark_workload_with_cpython(round_tripped),
+        )
+
+
+@pytest.mark.parametrize(
+    "contract_surface",
+    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS,
+    ids=lambda contract_surface: contract_surface.case_id,
+)
+def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation(
+    tmp_path: pathlib.Path,
+    contract_surface: object,
+) -> None:
+    source_workloads = contract_surface.source_workloads()
+    manifest = _source_tree_contract_manifest(
+        source_workloads,
+        spec=contract_surface.spec.contract_builder_spec(),
+    )
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        contract_surface.spec.contract_filename,
+        f"MANIFEST = {manifest!r}\n",
+    )
+    workloads = load_manifest(manifest_path).workloads
+
+    assert tuple(workload.workload_id for workload in source_workloads) == (
+        contract_surface.spec.expected_source_workload_ids
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        f"{workload.workload_id}-contract" for workload in source_workloads
+    )
+    assert [workload.use_compiled_pattern for workload in workloads] == [
+        True
+    ] * len(source_workloads)
+    assert [workload.haystack_text_model for workload in workloads] == [
+        None
+    ] * len(source_workloads)
+
+    for source_workload, workload in zip(
+        source_workloads,
+        workloads,
+        strict=True,
+    ):
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        contract_surface.assert_payload_round_trip(
+            source_workload,
+            payload,
+            round_tripped,
+        )
+        contract_surface.assert_outcome(
+            source_workload,
+            workload,
+            round_tripped,
+        )
+
+
+def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_payload_types_field_names_and_bool_count_complements(
+) -> None:
+    success_surface = _compiled_pattern_module_helper_keyword_contract_surface("success")
+    keyword_error_surface = _compiled_pattern_module_helper_keyword_contract_surface(
+        "keyword-error"
+    )
+
+    success_source_workload = next(
+        workload
+        for workload in success_surface.source_workloads()
+        if workload.workload_id
+        == "module-sub-count-bool-false-keyword-warm-str-compiled-pattern"
+    )
+    success_workload = _source_tree_contract_workload(
+        success_source_workload,
+        spec=success_surface.spec.contract_builder_spec(),
+    )
+    success_payload = workload_to_payload(success_workload)
+    success_round_tripped = workload_from_payload(success_payload)
+
+    success_surface.assert_payload_round_trip(
+        success_source_workload,
+        success_payload,
+        success_round_tripped,
+    )
+    assert success_payload.get("expected_exception") is None
+    assert success_round_tripped.expected_exception is None
+    assert type(success_payload["kwargs"]["count"]) is bool
+    assert type(success_round_tripped.kwargs["count"]) is bool
+
+    keyword_error_source_workload = next(
+        workload
+        for workload in keyword_error_surface.source_workloads()
+        if workload.workload_id
+        == "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern"
+    )
+    keyword_error_workload = _source_tree_contract_workload(
+        keyword_error_source_workload,
+        spec=keyword_error_surface.spec.contract_builder_spec(),
+    )
+    keyword_error_payload = workload_to_payload(keyword_error_workload)
+    keyword_error_round_tripped = workload_from_payload(keyword_error_payload)
+
+    keyword_error_surface.assert_payload_round_trip(
+        keyword_error_source_workload,
+        keyword_error_payload,
+        keyword_error_round_tripped,
+    )
+    assert (
+        keyword_error_payload["expected_exception"]
+        == keyword_error_source_workload.expected_exception
+    )
+    assert (
+        keyword_error_round_tripped.expected_exception
+        == keyword_error_source_workload.expected_exception
+    )
+
+    split_duplicate_workload = next(
+        workload
+        for workload in keyword_error_surface.source_workloads()
+        if workload.workload_id
+        == "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern"
+    )
+    sub_keyword_workload = next(
+        workload
+        for workload in success_surface.source_workloads()
+        if workload.workload_id == "module-sub-count-keyword-warm-str-compiled-pattern"
+    )
+
+    assert keyword_error_surface.spec.expected_materialized_field_names(
+        split_duplicate_workload
+    ) == ("maxsplit", "kwargs.maxsplit")
+    assert success_surface.spec.expected_materialized_field_names(
+        sub_keyword_workload
+    ) == ("kwargs.count",)
+
+    assert {
+        (
+            workload.workload_id,
+            workload.operation,
+            workload.text_model,
+            workload.kwargs["count"],
+            run_benchmark_workload_with_cpython(workload),
+        )
+        for workload in (
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+        )
+        if workload.operation in {"module.sub", "module.subn"}
+        and type(workload.kwargs.get("count")) is bool
+    } == {
+        (
+            "module-sub-count-bool-keyword-warm-str-compiled-pattern",
+            "module.sub",
+            "str",
+            True,
+            "xabc",
+        ),
+        (
+            "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+            "module.sub",
+            "str",
+            False,
+            "xx",
+        ),
+        (
+            "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
+            "module.subn",
+            "bytes",
+            False,
+            (b"xx", 2),
+        ),
+        (
+            "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+            "module.subn",
+            "bytes",
+            True,
+            (b"xabc", 1),
+        ),
+    }
+
+
+def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_outcomes_across_success_and_error_lanes(
+) -> None:
+    success_surface = _compiled_pattern_module_helper_keyword_contract_surface("success")
+    success_source_workload = next(
+        workload
+        for workload in success_surface.source_workloads()
+        if workload.workload_id
+        == "module-subn-count-keyword-purged-bytes-compiled-pattern"
+    )
+    success_workload = _source_tree_contract_workload(
+        success_source_workload,
+        spec=success_surface.spec.contract_builder_spec(),
+    )
+    success_payload = workload_to_payload(success_workload)
+    success_round_tripped = workload_from_payload(success_payload)
+
+    success_surface.assert_outcome(
+        success_source_workload,
+        success_workload,
+        success_round_tripped,
+    )
+    assert success_surface.run_cpython_helper_workload(success_workload) == (
+        b"xabc",
+        1,
+    )
+
+    keyword_error_surface = _compiled_pattern_module_helper_keyword_contract_surface(
+        "keyword-error"
+    )
+    keyword_error_source_workload = next(
+        workload
+        for workload in keyword_error_surface.source_workloads()
+        if workload.workload_id
+        == "module-subn-count-alias-keyword-purged-bytes-compiled-pattern"
+    )
+    keyword_error_workload = _source_tree_contract_workload(
+        keyword_error_source_workload,
+        spec=keyword_error_surface.spec.contract_builder_spec(),
+    )
+    keyword_error_payload = workload_to_payload(keyword_error_workload)
+    keyword_error_round_tripped = workload_from_payload(keyword_error_payload)
+
+    keyword_error_surface.assert_outcome(
+        keyword_error_source_workload,
+        keyword_error_workload,
+        keyword_error_round_tripped,
+    )
+    with pytest.raises(TypeError):
+        run_benchmark_workload_with_cpython(keyword_error_round_tripped)
 
 
 @pytest.mark.parametrize(

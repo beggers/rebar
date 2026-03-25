@@ -1386,7 +1386,6 @@ def test_compiled_pattern_module_helper_support_owns_compiled_pattern_module_suc
     (
         "tests.benchmarks.benchmark_test_support",
         "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
-        "tests.benchmarks.test_compiled_pattern_module_helper_benchmark_support",
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
     ),
 )
@@ -1482,15 +1481,6 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
             ),
         ),
         (
-            "tests.benchmarks.test_compiled_pattern_module_helper_benchmark_support",
-            frozenset(
-                {
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
-            ),
-        ),
-        (
             "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
             frozenset(
                 {
@@ -1543,6 +1533,51 @@ def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportab
             "_pattern"
             "_module"
             "_compile"
+            "_benchmark"
+            "_support.py"
+        )
+    )
+
+    assert not deleted_path.exists()
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module(deleted_module_name)
+
+    for path in (REPO_ROOT / "tests" / "benchmarks").glob("test_*.py"):
+        module_ast = ast.parse(path.read_text(encoding="utf-8"))
+        import_targets: set[str] = set()
+        for node in module_ast.body:
+            if isinstance(node, ast.ImportFrom) and node.module is not None:
+                import_targets.add(node.module)
+            elif isinstance(node, ast.Import):
+                import_targets.update(alias.name for alias in node.names)
+        assert deleted_module_name not in import_targets
+
+
+def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportable(
+) -> None:
+    deleted_module_name = ".".join(
+        (
+            "tests",
+            "benchmarks",
+            "test"
+            "_compiled"
+            "_pattern"
+            "_module"
+            "_helper"
+            "_benchmark"
+            "_support",
+        )
+    )
+    deleted_path = (
+        REPO_ROOT
+        / "tests"
+        / "benchmarks"
+        / (
+            "test"
+            "_compiled"
+            "_pattern"
+            "_module"
+            "_helper"
             "_benchmark"
             "_support.py"
         )

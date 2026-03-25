@@ -1,6 +1,6 @@
 ## RBR-1309: Delete compiled-pattern helper test wrapper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -59,3 +59,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper or source_tree_contract_helper_suites_import_from_support or standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_definitions or pattern_boundary_wrong_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'` passed with `203 passed, 287 deselected in 1.19s`, which is the current fuller baseline before the delete;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper or source_tree_contract_helper_suites_import_from_support or standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_definitions or pattern_boundary_wrong_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'` passed with `19 passed, 287 deselected in 0.22s`, which is the command intended to stay green after the delete; and
   - `bash -lc "test ! -e tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py && ! rg -n 'test_compiled_pattern_module_helper_benchmark_support' tests/benchmarks -g '*.py'"` currently fails because the dedicated test file and its remaining references still exist, and that failure belongs exactly to this cleanup.
+
+## Completion Note
+- Moved the compiled-pattern helper wrapper coverage onto the surviving benchmark suites:
+  - `tests/benchmarks/test_benchmark_test_support.py` now matches the post-delete import surface and asserts the deleted wrapper stays absent and unreferenced.
+  - `tests/benchmarks/test_benchmark_manifest_validation.py` now owns the compiled-pattern helper contract-manifest round-trip and CPython outcome checks for wrong-text-model, success-owner, and keyword-contract rows.
+  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` now owns the zero-gap, internal-probe, callback materialization, and precompile-before-timing checks for the same compiled-pattern helper slices.
+- Deleted `tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper or source_tree_contract_helper_suites_import_from_support or standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_definitions or pattern_boundary_wrong_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'` -> `107 passed, 332 deselected in 1.24s`
+  - `bash -lc "test ! -e tests/benchmarks/test_compiled_pattern_module_helper_benchmark_support.py && ! rg -n 'test_compiled_pattern_module_helper_benchmark_support' tests/benchmarks -g '*.py'"` -> success

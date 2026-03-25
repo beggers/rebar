@@ -21,12 +21,14 @@ from rebar_harness.benchmarks import (
 from tests.benchmarks.benchmark_test_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
     RecordingBenchmarkModule,
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
     _is_module_workflow_keyword_error_workload,
     _is_module_workflow_keyword_flags_workload,
     _module_workflow_keyword_correctness_case_signature,
     _module_workflow_keyword_workload_signature,
+    compiled_pattern_contract_expected_build_calls,
     _expected_exception_instance,
     _record_numeric_materialization_fields,
     _source_tree_contract_manifest,
@@ -52,6 +54,9 @@ from tests.benchmarks.benchmark_test_support import (
 )
 from tests.benchmarks import (
     compiled_pattern_module_compile_benchmark_support as compiled_pattern_module_compile_support,
+)
+from tests.benchmarks import (
+    compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
 )
 from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
     _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
@@ -4684,3 +4689,409 @@ NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
 OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
 )
+
+
+def _compiled_pattern_module_helper_keyword_contract_surface(case_id: str) -> object:
+    return next(
+        surface
+        for surface in (
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        )
+        if surface.case_id == case_id
+    )
+
+
+@pytest.mark.parametrize(
+    ("owner_spec", "include_workload"),
+    (
+        pytest.param(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+            _is_collection_replacement_compiled_pattern_success_workload,
+            id="collection-replacement-success",
+        ),
+        pytest.param(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            _is_module_workflow_compiled_pattern_literal_success_workload,
+            id="module-boundary-literal-success",
+        ),
+        pytest.param(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            id="module-boundary-bounded-wildcard-success",
+        ),
+        pytest.param(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+            id="module-boundary-verbose-bytes-success",
+        ),
+    ),
+)
+def test_compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured(
+    owner_spec: object,
+    include_workload: object,
+) -> None:
+    manifest_workload_count = len(selected_manifest_workloads(owner_spec.manifest_path))
+    manifest_id = owner_spec.source_workloads()[0].manifest_id
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            owner_spec.manifest_path,
+            include_workload=include_workload,
+        )
+    )
+
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=owner_spec.manifest_path,
+        manifest_id=manifest_id,
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+@pytest.mark.parametrize(
+    "spec",
+    tuple(
+        pytest.param(spec, id=str(spec["case_id"]))
+        for spec in compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_specs()
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_contract_workloads(
+    spec: dict[str, object],
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    for source_workload in (
+        compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_source_workloads(
+            spec
+        )
+    ):
+        workload = _source_tree_contract_workload(
+            source_workload,
+            spec=compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_contract_spec(
+                spec
+            ),
+        )
+        payload = workload_to_payload(workload)
+        round_tripped = workload_from_payload(payload)
+
+        compiled_pattern_module_helper_support._assert_wrong_text_model_payload_round_trip(
+            source_workload,
+            payload,
+            round_tripped,
+        )
+
+        probe = benchmarks.run_internal_workload_probe(
+            workload_payload=json.dumps(payload, sort_keys=True),
+            import_name=import_name,
+            adapter_name=adapter_name,
+        )
+
+        assert probe["status"] == "measured"
+        assert probe["median_ns"] > 0
+
+
+@pytest.mark.parametrize(
+    "spec",
+    tuple(
+        pytest.param(spec, id=str(spec["case_id"]))
+        for spec in compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_specs()
+    ),
+)
+def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contract(
+    spec: dict[str, object],
+) -> None:
+    for source_workload in (
+        compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_source_workloads(
+            spec
+        )
+    ):
+        expected_build_calls = compiled_pattern_contract_expected_build_calls(
+            source_workload,
+            label="wrong-text-model",
+        )
+        expected_callback_result, expected_callback_call, _, _ = (
+            compiled_pattern_module_helper_support._compiled_pattern_module_helper_route(
+                source_workload,
+                collection_replacement_callback_flags=0,
+            )
+        )
+        module = RecordingBenchmarkModule()
+        callback = benchmarks.build_callable(
+            module,
+            "re",
+            _source_tree_contract_workload(
+                source_workload,
+                spec=compiled_pattern_module_helper_support._compiled_pattern_wrong_text_model_contract_spec(
+                    spec
+                ),
+            ),
+        )
+
+        assert module.calls == expected_build_calls
+        assert len(module.compiled_patterns) == 1
+        assert callback() == expected_callback_result
+
+        compiled_pattern = module.compiled_patterns[0]
+        last_call = module.calls[-1]
+        assert last_call[0] == expected_callback_call[0]
+        assert last_call[1] is compiled_pattern
+        assert last_call[2:] == expected_callback_call[1:]
+
+
+@pytest.mark.parametrize(
+    ("owner_spec", "source_workload"),
+    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_compiled_pattern_module_success_contract_workloads(
+    owner_spec: object,
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    workload = _source_tree_contract_workload(
+        source_workload,
+        spec=owner_spec.contract_builder_spec(),
+    )
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    compiled_pattern_module_helper_support._assert_compiled_pattern_module_success_payload_round_trip(
+        source_workload,
+        payload,
+        round_tripped,
+        owner_spec=owner_spec,
+    )
+
+    probe = benchmarks.run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
+@pytest.mark.parametrize(
+    ("owner_spec", "source_workload"),
+    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+)
+def test_compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing(
+    owner_spec: object,
+    source_workload: Workload,
+) -> None:
+    expected_build_calls = owner_spec.expected_build_calls(source_workload)
+    expected_callback_call = owner_spec.expected_callback_call(source_workload)
+    module = RecordingBenchmarkModule()
+    callback = benchmarks.build_callable(
+        module,
+        "re",
+        _source_tree_contract_workload(
+            source_workload,
+            spec=owner_spec.contract_builder_spec(),
+        ),
+    )
+
+    assert module.calls == expected_build_calls
+    assert len(module.compiled_patterns) == 1
+    assert callback() == owner_spec.expected_callback_result(source_workload)
+
+    compiled_pattern = module.compiled_patterns[0]
+    last_call = module.calls[-1]
+    assert last_call[0] == expected_callback_call[0]
+    assert last_call[1] is compiled_pattern
+    assert last_call[2:] == expected_callback_call[1:]
+
+
+def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_replacement_manifest_measured(
+) -> None:
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            compiled_pattern_module_helper_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            include_workload=(
+                compiled_pattern_module_helper_support._is_collection_replacement_compiled_pattern_keyword_error_workload
+            ),
+        )
+    )
+    expected_source_workload_ids = tuple(
+        workload.workload_id
+        for workload in (
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        )
+    )
+    manifest_workload_count = len(
+        selected_manifest_workloads(
+            compiled_pattern_module_helper_support.COLLECTION_REPLACEMENT_MANIFEST_PATH
+        )
+    )
+
+    assert expected_measured_workload_ids == expected_source_workload_ids
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=compiled_pattern_module_helper_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        manifest_id="collection-replacement-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in (
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+        )
+    ),
+)
+def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time(
+    monkeypatch: pytest.MonkeyPatch,
+    source_workload: Workload,
+) -> None:
+    workload = _source_tree_contract_workload(
+        source_workload,
+        spec=(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec()
+        ),
+    )
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result=run_benchmark_workload_with_cpython(source_workload),
+        expected_field_names=(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
+                source_workload
+            )
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    ("contract_surface", "source_workload"),
+    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads(
+    contract_surface: object,
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    workload = _source_tree_contract_workload(
+        source_workload,
+        spec=contract_surface.spec.contract_builder_spec(),
+    )
+    payload = workload_to_payload(workload)
+    round_tripped = workload_from_payload(payload)
+
+    contract_surface.assert_payload_round_trip(
+        source_workload,
+        payload,
+        round_tripped,
+    )
+
+    probe = benchmarks.run_internal_workload_probe(
+        workload_payload=json.dumps(payload, sort_keys=True),
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+    assert probe["status"] == "measured"
+    assert probe["median_ns"] > 0
+
+
+@pytest.mark.parametrize(
+    ("contract_surface", "source_workload"),
+    compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS,
+)
+def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing(
+    contract_surface: object,
+    source_workload: Workload,
+) -> None:
+    expected_build_calls = contract_surface.expected_build_calls(source_workload)
+    expected_callback_call = contract_surface.expected_callback_call(source_workload)
+    module = RecordingBenchmarkModule()
+    callback = benchmarks.build_callable(
+        module,
+        "re",
+        _source_tree_contract_workload(
+            source_workload,
+            spec=contract_surface.spec.contract_builder_spec(),
+        ),
+    )
+
+    assert module.calls == expected_build_calls
+    assert len(module.compiled_patterns) == 1
+    assert callback() == contract_surface.expected_callback_result(source_workload)
+
+    compiled_pattern = module.compiled_patterns[0]
+    last_call = module.calls[-1]
+    assert last_call[0] == expected_callback_call[0]
+    assert last_call[1] is compiled_pattern
+    assert last_call[2:] == expected_callback_call[1:]
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in (
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        )
+    ),
+)
+def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions(
+    monkeypatch: pytest.MonkeyPatch,
+    source_workload: Workload,
+) -> None:
+    contract_surface = _compiled_pattern_module_helper_keyword_contract_surface(
+        "keyword-error"
+    )
+    workload = _source_tree_contract_workload(
+        source_workload,
+        spec=(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec()
+        ),
+    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+
+    re.purge()
+    try:
+        callback = benchmarks.build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        with pytest.raises(TypeError) as expected_error:
+            contract_surface.run_cpython_helper_workload(workload)
+        with pytest.raises(TypeError) as observed_error:
+            callback()
+
+        assert observed_field_names == list(
+            compiled_pattern_module_helper_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_materialized_field_names(
+                source_workload
+            )
+        )
+        assert str(observed_error.value) == str(expected_error.value)
+    finally:
+        re.purge()
