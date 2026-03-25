@@ -33,6 +33,21 @@ GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
     / "workloads"
     / "grouped_alternation_replacement_boundary.py"
 )
+OPTIONAL_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
+)
+NESTED_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
+)
+EXACT_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
+)
+RANGED_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
+)
+OPEN_ENDED_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
+)
 
 
 def _module_pattern_case(
@@ -132,6 +147,343 @@ def test_module_keyword_error_workload_stays_pinned() -> None:
         (("flags", "indexlike", 4),),
         4,
         "str",
+    )
+
+
+def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
+    cases = support.published_cases_by_id()
+    workload = live_manifest_workload(
+        OPTIONAL_GROUP_MANIFEST_PATH,
+        support._OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID,
+    )
+    non_conditional_workload = live_manifest_workload(
+        OPTIONAL_GROUP_MANIFEST_PATH,
+        "module-search-named-optional-group-absent-warm-str",
+    )
+
+    assert support._is_optional_group_conditional_workload(workload)
+    assert not support._is_optional_group_conditional_workload(non_conditional_workload)
+    assert support._optional_group_correctness_case_signature(
+        cases["optional-group-conditional-module-search-present-str"]
+    ) == (
+        "module.search",
+        None,
+        ("a(b)?(?(1)c|d)e", "zzabcezz"),
+        (),
+        0,
+        "str",
+    )
+    assert support._optional_group_workload_signature(workload) == (
+        "module.search",
+        None,
+        ("a(b)?(?(1)c|d)e", "zzabcezz"),
+        (),
+        0,
+        "str",
+    )
+    assert (
+        support._optional_group_correctness_case_signature(
+            _module_pattern_case(
+                helper="fullmatch",
+                operation="pattern_call",
+                args=("abce",),
+                pattern="a(b)?(?(1)c|d)e",
+            )
+        )
+        is None
+    )
+    with pytest.raises(
+        AssertionError,
+        match="unexpected optional-group benchmark workload operation",
+    ):
+        support._optional_group_workload_signature(
+            synthetic_workload(
+                manifest_id="optional-group-boundary",
+                workload_id="optional-group-compile-unsupported",
+                operation="module.compile",
+                pattern="a(b)?(?(1)c|d)e",
+            )
+        )
+
+
+def test_nested_group_live_signatures_cover_numbered_and_named_routes() -> None:
+    cases = support.published_cases_by_id()
+
+    assert support._nested_group_correctness_case_signature(
+        cases["nested-group-compile-metadata-str"]
+    ) == ("module.compile", "a((b))d", (), (), 0, "str")
+    assert support._nested_group_workload_signature(
+        live_manifest_workload(
+            NESTED_GROUP_MANIFEST_PATH,
+            "module-compile-nested-group-cold-str",
+        )
+    ) == ("module.compile", "a((b))d", (), (), 0, "str")
+
+    assert support._nested_group_correctness_case_signature(
+        cases["nested-group-module-search-str"]
+    ) == (
+        "module.search",
+        None,
+        ("a((b))d", "zzabdzz"),
+        (),
+        0,
+        "str",
+    )
+    assert support._nested_group_workload_signature(
+        live_manifest_workload(
+            NESTED_GROUP_MANIFEST_PATH,
+            "module-search-nested-group-warm-str",
+        )
+    ) == (
+        "module.search",
+        None,
+        ("a((b))d", "zzabdzz"),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._nested_group_correctness_case_signature(
+        cases["nested-group-pattern-fullmatch-str"]
+    ) == (
+        "pattern.fullmatch",
+        "a((b))d",
+        ("abd",),
+        (),
+        0,
+        "str",
+    )
+    assert support._nested_group_workload_signature(
+        live_manifest_workload(
+            NESTED_GROUP_MANIFEST_PATH,
+            "pattern-fullmatch-nested-group-purged-str",
+        )
+    ) == (
+        "pattern.fullmatch",
+        "a((b))d",
+        ("abd",),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._nested_group_correctness_case_signature(
+        cases["named-nested-group-compile-metadata-str"]
+    ) == ("module.compile", "a(?P<outer>(?P<inner>b))d", (), (), 0, "str")
+    assert support._nested_group_workload_signature(
+        live_manifest_workload(
+            NESTED_GROUP_MANIFEST_PATH,
+            "module-compile-named-nested-group-warm-str",
+        )
+    ) == ("module.compile", "a(?P<outer>(?P<inner>b))d", (), (), 0, "str")
+
+    assert support._nested_group_correctness_case_signature(
+        cases["named-nested-group-module-search-str"]
+    ) == (
+        "module.search",
+        None,
+        ("a(?P<outer>(?P<inner>b))d", "zzabdzz"),
+        (),
+        0,
+        "str",
+    )
+    assert support._nested_group_workload_signature(
+        live_manifest_workload(
+            NESTED_GROUP_MANIFEST_PATH,
+            "module-search-named-nested-group-warm-str",
+        )
+    ) == (
+        "module.search",
+        None,
+        ("a(?P<outer>(?P<inner>b))d", "zzabdzz"),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._nested_group_correctness_case_signature(
+        cases["named-nested-group-pattern-fullmatch-str"]
+    ) == (
+        "pattern.fullmatch",
+        "a(?P<outer>(?P<inner>b))d",
+        ("abd",),
+        (),
+        0,
+        "str",
+    )
+    assert support._nested_group_workload_signature(
+        live_manifest_workload(
+            NESTED_GROUP_MANIFEST_PATH,
+            "pattern-fullmatch-named-nested-group-purged-str",
+        )
+    ) == (
+        "pattern.fullmatch",
+        "a(?P<outer>(?P<inner>b))d",
+        ("abd",),
+        (),
+        0,
+        "str",
+    )
+
+
+def test_counted_repeat_live_signatures_cover_exact_ranged_and_open_ended_routes() -> None:
+    cases = support.published_cases_by_id()
+
+    assert support._counted_repeat_correctness_case_signature(
+        cases["exact-repeat-numbered-group-compile-metadata-str"]
+    ) == ("module.compile", "a(bc){2}d", (), (), 0, "str")
+    assert support._counted_repeat_workload_signature(
+        live_manifest_workload(
+            EXACT_REPEAT_MANIFEST_PATH,
+            "module-compile-numbered-exact-repeat-group-cold-str",
+        )
+    ) == ("module.compile", "a(bc){2}d", (), (), 0, "str")
+
+    assert support._counted_repeat_correctness_case_signature(
+        cases["exact-repeat-named-group-module-search-str"]
+    ) == (
+        "module.search",
+        None,
+        ("a(?P<word>bc){2}d", "zzabcbcdzz"),
+        (),
+        0,
+        "str",
+    )
+    assert support._counted_repeat_workload_signature(
+        live_manifest_workload(
+            EXACT_REPEAT_MANIFEST_PATH,
+            "module-search-named-exact-repeat-group-warm-str",
+        )
+    ) == (
+        "module.search",
+        None,
+        ("a(?P<word>bc){2}d", "zzabcbcdzz"),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._counted_repeat_correctness_case_signature(
+        cases["ranged-repeat-numbered-group-module-search-lower-bound-str"]
+    ) == (
+        "module.search",
+        None,
+        ("a(bc){1,2}d", "zzabcdzz"),
+        (),
+        0,
+        "str",
+    )
+    assert support._counted_repeat_workload_signature(
+        live_manifest_workload(
+            RANGED_REPEAT_MANIFEST_PATH,
+            "module-search-numbered-ranged-repeat-group-lower-bound-warm-str",
+        )
+    ) == (
+        "module.search",
+        None,
+        ("a(bc){1,2}d", "zzabcdzz"),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._counted_repeat_correctness_case_signature(
+        cases["ranged-repeat-named-group-pattern-fullmatch-lower-bound-str"]
+    ) == (
+        "pattern.fullmatch",
+        "a(?P<word>bc){1,2}d",
+        ("abcd",),
+        (),
+        0,
+        "str",
+    )
+    assert support._counted_repeat_workload_signature(
+        live_manifest_workload(
+            RANGED_REPEAT_MANIFEST_PATH,
+            "pattern-fullmatch-named-ranged-repeat-group-lower-bound-purged-str",
+        )
+    ) == (
+        "pattern.fullmatch",
+        "a(?P<word>bc){1,2}d",
+        ("abcd",),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._counted_repeat_correctness_case_signature(
+        cases["open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str"]
+    ) == (
+        "module.search",
+        None,
+        ("a(bc|de){1,}d", "zzabcdzz"),
+        (),
+        0,
+        "str",
+    )
+    assert support._counted_repeat_workload_signature(
+        live_manifest_workload(
+            OPEN_ENDED_MANIFEST_PATH,
+            "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str",
+        )
+    ) == (
+        "module.search",
+        None,
+        ("a(bc|de){1,}d", "zzabcdzz"),
+        (),
+        0,
+        "str",
+    )
+
+    assert support._counted_repeat_correctness_case_signature(
+        cases["open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-str"]
+    ) == (
+        "pattern.fullmatch",
+        "a(?P<word>bc|de){1,}d",
+        ("adededed",),
+        (),
+        0,
+        "str",
+    )
+    assert support._counted_repeat_workload_signature(
+        live_manifest_workload(
+            OPEN_ENDED_MANIFEST_PATH,
+            "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str",
+        )
+    ) == (
+        "pattern.fullmatch",
+        "a(?P<word>bc|de){1,}d",
+        ("adededed",),
+        (),
+        0,
+        "str",
+    )
+
+
+def test_non_alternation_counted_repeat_selector_excludes_alternation_workloads() -> None:
+    assert support._is_non_alternation_counted_repeat_workload(
+        live_manifest_workload(
+            EXACT_REPEAT_MANIFEST_PATH,
+            "module-compile-numbered-exact-repeat-group-cold-str",
+        )
+    )
+    assert support._is_non_alternation_counted_repeat_workload(
+        live_manifest_workload(
+            RANGED_REPEAT_MANIFEST_PATH,
+            "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
+        )
+    )
+    assert not support._is_non_alternation_counted_repeat_workload(
+        live_manifest_workload(
+            EXACT_REPEAT_MANIFEST_PATH,
+            "module-search-numbered-exact-repeat-group-alternation-bc-bc-warm-str",
+        )
+    )
+    assert not support._is_non_alternation_counted_repeat_workload(
+        live_manifest_workload(
+            OPEN_ENDED_MANIFEST_PATH,
+            "module-search-numbered-open-ended-group-broader-range-cold-gap",
+        )
     )
 
 

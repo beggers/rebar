@@ -1,6 +1,6 @@
 ## RBR-1265: Move source-tree optional, nested, and counted-repeat anchor signatures onto dedicated support suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -63,3 +63,12 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `17 passed`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `105 tests collected`.
   - `bash -lc "! rg -n 'def (_optional_group_correctness_case_signature|_optional_group_workload_signature|_is_optional_group_conditional_workload|_nested_group_correctness_case_signature|_nested_group_workload_signature|_counted_repeat_correctness_case_signature|_counted_repeat_workload_signature|_is_non_alternation_counted_repeat_workload)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those eight helpers still live inline in the combined suite, and that failure belongs to the exact cleanup queued here.
+
+## Completion Notes
+- Moved the optional-group, nested-group, counted-repeat, and non-alternation selector helpers into `tests/benchmarks/source_tree_benchmark_anchor_support.py`, along with the pinned optional-group conditional workload id constant used by the combined anchor definition.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import those helpers from the support module and removed the inline helper definitions from the combined broker.
+- Added focused owner coverage in `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` for the optional-group conditional search route, numbered and named nested-group compile/search/fullmatch routes, counted-repeat signatures across exact/ranged/open-ended manifests, and the non-alternation selector's alternation exclusion.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `21 passed`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `109 tests collected`.
+  - `bash -lc "! rg -n 'def (_optional_group_correctness_case_signature|_optional_group_workload_signature|_is_optional_group_conditional_workload|_nested_group_correctness_case_signature|_nested_group_workload_signature|_counted_repeat_correctness_case_signature|_counted_repeat_workload_signature|_is_non_alternation_counted_repeat_workload)\\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed.
