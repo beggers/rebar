@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import ast
 from functools import cache
+import inspect
 import pathlib
 import re
 import textwrap
@@ -67,6 +69,30 @@ def live_manifest_workloads(
 ) -> tuple[benchmarks.Workload, ...]:
     workloads_by_id = _live_manifest_workloads_by_id(manifest_path)
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
+
+
+def top_level_module_definition_and_assignment_names(
+    module: object,
+) -> tuple[set[str], set[str]]:
+    module_tree = ast.parse(inspect.getsource(module))
+    definition_names = {
+        node.name
+        for node in module_tree.body
+        if isinstance(node, (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef))
+    }
+    assignment_names = {
+        node.target.id
+        for node in module_tree.body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    }
+    assignment_names.update(
+        target.id
+        for node in module_tree.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    )
+    return definition_names, assignment_names
 
 
 def compile_proxy_correctness_case_signature(

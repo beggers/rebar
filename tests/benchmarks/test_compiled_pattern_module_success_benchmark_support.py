@@ -82,32 +82,17 @@ def _assert_compiled_pattern_module_success_payload_round_trip(
 
 def test_compiled_pattern_module_success_owner_specs_are_support_owned_without_local_duplicates(
 ) -> None:
-    import ast
-    import inspect
     import sys
 
+    from tests.benchmarks.benchmark_test_support import (
+        top_level_module_definition_and_assignment_names,
+    )
     from tests.benchmarks import (
         compiled_pattern_module_success_benchmark_support as support,
     )
 
-    test_source = inspect.getsource(sys.modules[__name__])
-    module_tree = ast.parse(test_source)
-    local_definition_names = {
-        node.name
-        for node in module_tree.body
-        if isinstance(node, (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef))
-    }
-    local_assignment_names = {
-        node.target.id
-        for node in module_tree.body
-        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
-    }
-    local_assignment_names.update(
-        target.id
-        for node in module_tree.body
-        if isinstance(node, ast.Assign)
-        for target in node.targets
-        if isinstance(target, ast.Name)
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(sys.modules[__name__])
     )
 
     assert (
