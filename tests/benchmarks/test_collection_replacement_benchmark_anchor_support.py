@@ -708,6 +708,28 @@ def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() 
     )
 
 
+def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
+    import importlib
+
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    definitions = [
+        definition
+        for definition in combined_suite._STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name == "collection-replacement-grouped-callable-replacement"
+    ]
+
+    assert len(definitions) == 1
+    definition = definitions[0]
+    assert definition.correctness_case_signature is (
+        support._collection_replacement_grouped_callable_correctness_case_signature
+    )
+    assert definition.workload_signature is (
+        support._collection_replacement_grouped_callable_workload_signature
+    )
+
+
 def test_grouped_callable_correctness_case_signature_keeps_live_pair_shapes() -> None:
     cases = published_cases_by_id()
 
