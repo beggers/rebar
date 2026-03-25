@@ -187,6 +187,54 @@ def _parsed_source_tree_combined_suite_ast() -> ast.Module:
     )
 
 
+def _module_alias_names(
+    module_ast: ast.AST,
+    *,
+    import_from_module: str,
+    import_name: str,
+    dotted_import_name: str,
+) -> set[str]:
+    alias_names = {
+        alias.asname or alias.name
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.ImportFrom)
+        and node.module == import_from_module
+        for alias in node.names
+        if alias.name == import_name
+    } | {
+        alias.asname or alias.name.rsplit(".", 1)[-1]
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Import)
+        for alias in node.names
+        if alias.name == dotted_import_name
+    }
+
+    changed = True
+    while changed:
+        changed = False
+        for node in ast.walk(module_ast):
+            if isinstance(node, ast.Assign):
+                targets = tuple(
+                    target.id for target in node.targets if isinstance(target, ast.Name)
+                )
+                value = node.value
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                targets = (node.target.id,)
+                value = node.value
+            else:
+                continue
+
+            if not isinstance(value, ast.Name) or value.id not in alias_names:
+                continue
+
+            for target in targets:
+                if target not in alias_names:
+                    alias_names.add(target)
+                    changed = True
+
+    return alias_names
+
+
 def _report_workload(
     *,
     workload_id: str,
@@ -1169,10 +1217,78 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
     )
 
 
+@pytest.mark.parametrize(
+    (
+        "module_source",
+        "import_name",
+        "dotted_import_name",
+        "expected_alias_names",
+    ),
+    (
+        pytest.param(
+            """
+from tests.benchmarks import benchmark_test_support as benchmark_support
+
+benchmark_support_alias = benchmark_support
+benchmark_support_final: object = benchmark_support_alias
+""",
+            "benchmark_test_support",
+            "tests.benchmarks.benchmark_test_support",
+            {
+                "benchmark_support",
+                "benchmark_support_alias",
+                "benchmark_support_final",
+            },
+            id="benchmark-test-support",
+        ),
+        pytest.param(
+            """
+from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
+
+source_tree_support_alias = source_tree_support
+source_tree_support_final: object = source_tree_support_alias
+""",
+            "source_tree_benchmark_anchor_support",
+            "tests.benchmarks.source_tree_benchmark_anchor_support",
+            {
+                "source_tree_support",
+                "source_tree_support_alias",
+                "source_tree_support_final",
+            },
+            id="source-tree-support",
+        ),
+    ),
+)
+def test_module_alias_names_follow_import_and_assignment_alias_chains(
+    module_source: str,
+    import_name: str,
+    dotted_import_name: str,
+    expected_alias_names: set[str],
+) -> None:
+    assert _module_alias_names(
+        ast.parse(module_source),
+        import_from_module="tests.benchmarks",
+        import_name=import_name,
+        dotted_import_name=dotted_import_name,
+    ) == expected_alias_names
+
+
 def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
     routed_names: tuple[str, ...],
 ) -> None:
     combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    benchmark_test_support_alias_names = _module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    )
+    source_tree_support_alias_names = _module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name="source_tree_benchmark_anchor_support",
+        dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+    )
     direct_import_names = {
         alias.name
         for node in ast.walk(combined_suite_ast)
@@ -1227,7 +1343,15 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id == "benchmark_test_support"
+        and node.value.id in benchmark_test_support_alias_names
+        and node.attr in routed_names
+    }
+    aliased_source_tree_support_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in (source_tree_support_alias_names - {"source_tree_support"})
         and node.attr in routed_names
     }
     source_tree_support_refs = {
@@ -1245,6 +1369,7 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
         assert constant_name not in local_name_loads
     assert local_alias_names == set()
     assert direct_benchmark_test_support_refs == set()
+    assert aliased_source_tree_support_refs == set()
     assert source_tree_support_refs == set(routed_names)
 
 
