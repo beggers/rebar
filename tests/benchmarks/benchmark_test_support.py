@@ -352,6 +352,7 @@ def _clear_anchor_support_caches() -> None:
             _live_manifest_workloads_by_id,
             published_case_ids_by_signature,
             published_cases_by_id,
+            _parsed_module_ast,
         )
     )
     source_tree_support = sys.modules.get(

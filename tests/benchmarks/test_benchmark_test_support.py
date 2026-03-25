@@ -479,6 +479,38 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     ]
 
 
+def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    fake_module = object()
+    source = ["from alpha import beta\n"]
+    getsource_calls: list[object] = []
+
+    def _getsource(module: object) -> str:
+        getsource_calls.append(module)
+        assert module is fake_module
+        return source[0]
+
+    monkeypatch.setattr(support.inspect, "getsource", _getsource)
+
+    assert support._module_imported_names(fake_module, "alpha") == frozenset({"beta"})
+    assert support._module_import_targets(fake_module) == frozenset({"alpha"})
+    assert getsource_calls == [fake_module]
+
+    source[0] = "from gamma import delta\n"
+
+    assert support._module_imported_names(fake_module, "gamma") == frozenset()
+    assert support._module_import_targets(fake_module) == frozenset({"alpha"})
+    assert getsource_calls == [fake_module]
+
+    support._clear_anchor_support_caches()
+
+    assert support._module_imported_names(fake_module, "gamma") == frozenset({"delta"})
+    assert support._module_import_targets(fake_module) == frozenset({"gamma"})
+    assert getsource_calls == [fake_module, fake_module]
+
+
 def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata(
 ) -> None:
     source_workload = synthetic_workload(
