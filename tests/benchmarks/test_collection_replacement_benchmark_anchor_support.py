@@ -2369,6 +2369,7 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
 
 
 def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_signature() -> None:
+    owner_support = support.benchmark_test_support
     split_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-literal-compiled-pattern",
@@ -2388,7 +2389,7 @@ def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_sign
         use_compiled_pattern=True,
     )
 
-    assert support._is_collection_replacement_compiled_pattern_success_workload(
+    assert owner_support._is_collection_replacement_compiled_pattern_success_workload(
         split_workload
     )
     assert support._collection_replacement_compiled_pattern_success_workload_signature(
@@ -2402,7 +2403,7 @@ def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_sign
         "str",
     )
 
-    assert support._is_collection_replacement_compiled_pattern_success_workload(
+    assert owner_support._is_collection_replacement_compiled_pattern_success_workload(
         subn_workload
     )
     assert support._collection_replacement_compiled_pattern_success_workload_signature(
@@ -2424,11 +2425,14 @@ def test_compiled_pattern_success_selector_routes_through_shared_support_without
             support
         )
     )
+    owner_support = support.benchmark_test_support
 
+    assert owner_support is benchmark_test_support
     assert (
-        support._is_collection_replacement_compiled_pattern_success_workload
+        owner_support._is_collection_replacement_compiled_pattern_success_workload
         is benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
     )
+    assert not hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
     assert (
         "_is_collection_replacement_compiled_pattern_success_workload"
         not in local_definition_names
@@ -2440,6 +2444,7 @@ def test_compiled_pattern_success_selector_routes_through_shared_support_without
 
 
 def test_compiled_pattern_success_workload_filter_rejects_non_matching_rows() -> None:
+    owner_support = support.benchmark_test_support
     keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-compiled-pattern-keyword",
@@ -2457,10 +2462,10 @@ def test_compiled_pattern_success_workload_filter_rejects_non_matching_rows() ->
         use_compiled_pattern=True,
     )
 
-    assert not support._is_collection_replacement_compiled_pattern_success_workload(
+    assert not owner_support._is_collection_replacement_compiled_pattern_success_workload(
         keyword_workload
     )
-    assert not support._is_collection_replacement_compiled_pattern_success_workload(
+    assert not owner_support._is_collection_replacement_compiled_pattern_success_workload(
         wrong_pattern_workload
     )
 
@@ -2741,7 +2746,7 @@ def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materia
         re.purge()
 
 
-def test_collection_replacement_keyword_contract_surface_is_support_owned_without_local_duplicates(
+def test_collection_replacement_keyword_contract_surface_routes_owner_names_through_support_alias_without_local_duplicates(
 ) -> None:
     import sys
 
@@ -2750,10 +2755,17 @@ def test_collection_replacement_keyword_contract_surface_is_support_owned_withou
             sys.modules[__name__]
         )
     )
+    owner_support = support.benchmark_test_support
 
+    assert owner_support is benchmark_test_support
     for name in (
         "COLLECTION_REPLACEMENT_MANIFEST_PATH",
         "MODULE_BOUNDARY_MANIFEST_PATH",
+    ):
+        assert hasattr(owner_support, name)
+        assert not hasattr(support, name)
+
+    for name in (
         "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
         "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
         "_assert_keyword_error_workload_probe_measured",
@@ -3944,7 +3956,9 @@ def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper
 
 def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor(
 ) -> None:
-    manifest = load_manifest(support.COLLECTION_REPLACEMENT_MANIFEST_PATH)
+    manifest = load_manifest(
+        support.benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH
+    )
     workload = next(
         candidate
         for candidate in manifest.workloads
