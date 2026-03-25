@@ -6,6 +6,7 @@ from functools import cache
 import inspect
 import importlib
 import pathlib
+import re
 from types import SimpleNamespace
 
 import pytest
@@ -97,6 +98,12 @@ def _module_pattern_case(
         use_compiled_pattern=use_compiled_pattern,
         pattern_payload=lambda: pattern_value,
     )
+
+
+def _compiled_pattern_module_helper_manifest_id(operation: str) -> str:
+    if operation in {"module.search", "module.match", "module.fullmatch"}:
+        return "module-boundary"
+    return "collection-replacement-boundary"
 
 
 def _module_assignment(module: object, name: str) -> ast.Assign:
@@ -1107,6 +1114,428 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
             "tests.benchmarks.benchmark_test_support",
         )
     )
+
+
+def test_benchmark_test_support_owns_shared_compiled_pattern_module_helper_surface(
+) -> None:
+    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert {
+        "_compiled_pattern_module_helper_route",
+        "_run_cpython_compiled_pattern_module_helper_workload",
+        "_module_workflow_compiled_pattern_correctness_case_signature",
+        "_module_workflow_compiled_pattern_workload_signature",
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+    }.issubset(definition_names)
+
+
+@pytest.mark.parametrize(
+    ("module", "expected_imported_names"),
+    (
+        (
+            compiled_pattern_module_helper_support,
+            frozenset(
+                {
+                    "_compiled_pattern_module_helper_route",
+                    "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+                    "_is_module_workflow_compiled_pattern_literal_success_workload",
+                    "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+                    "_module_workflow_compiled_pattern_correctness_case_signature",
+                    "_module_workflow_compiled_pattern_workload_signature",
+                    "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+                }
+            ),
+        ),
+    ),
+)
+def test_non_owner_benchmark_support_modules_import_shared_compiled_pattern_helpers_from_support(
+    module: object,
+    expected_imported_names: frozenset[str],
+) -> None:
+    assert expected_imported_names.issubset(
+        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    )
+
+
+def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> None:
+    success_suite = importlib.import_module(
+        "tests.benchmarks.test_compiled_pattern_module_success_benchmark_support"
+    )
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+
+    assert {
+        "_compiled_pattern_module_helper_route",
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+    }.issubset(
+        _module_imported_names(
+            success_suite,
+            "tests.benchmarks.benchmark_test_support",
+        )
+    )
+    assert {
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+        "_module_workflow_compiled_pattern_correctness_case_signature",
+        "_module_workflow_compiled_pattern_workload_signature",
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+    }.issubset(
+        _module_imported_names(
+            combined_suite,
+            "tests.benchmarks.benchmark_test_support",
+        )
+    )
+
+
+@pytest.mark.parametrize(
+    ("workload", "callback_flags", "expected_result", "expected_call", "expected_cpython_args", "materialize"),
+    (
+        (
+            synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id(
+                    "module.search"
+                ),
+                workload_id="module-search-success",
+                operation="module.search",
+                pattern="abc",
+                haystack="zzabczz",
+                flags=re.IGNORECASE,
+                use_compiled_pattern=True,
+            ),
+            re.IGNORECASE,
+            "module-result",
+            ("module.search", "zzabczz", 0, {}),
+            ("zzabczz", re.IGNORECASE),
+            False,
+        ),
+        (
+            synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.subn"),
+                workload_id="module-subn-success",
+                operation="module.subn",
+                pattern="abc",
+                haystack="abcabc",
+                replacement="x",
+                count=1,
+                flags=re.IGNORECASE,
+                use_compiled_pattern=True,
+            ),
+            re.IGNORECASE,
+            ("module-result", 0),
+            ("module.subn", "x", "abcabc", 1, re.IGNORECASE, {}),
+            ("x", "abcabc", 1),
+            False,
+        ),
+        (
+            synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id(
+                    "module.finditer"
+                ),
+                workload_id="module-finditer-wrong-text-model",
+                operation="module.finditer",
+                pattern="abc",
+                haystack="abcabc",
+                text_model="bytes",
+                haystack_text_model="str",
+                use_compiled_pattern=True,
+                expected_exception={
+                    "type": "TypeError",
+                    "message_substring": "cannot use a bytes pattern on a string-like object",
+                },
+            ),
+            0,
+            ["module-finditer-result"],
+            ("module.finditer", "abcabc", 0),
+            ("abcabc", 0),
+            True,
+        ),
+        (
+            synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.split"),
+                workload_id="module-split-success",
+                operation="module.split",
+                pattern="abc",
+                haystack="abcabc",
+                maxsplit=2,
+                flags=re.MULTILINE,
+                use_compiled_pattern=True,
+            ),
+            re.MULTILINE,
+            "module-result",
+            ("module.split", "abcabc", 2, re.MULTILINE, {}),
+            ("abcabc", 2),
+            False,
+        ),
+    ),
+    ids=(
+        "module-boundary-search",
+        "collection-replacement-subn",
+        "wrong-text-model-finditer",
+        "collection-replacement-split",
+    ),
+)
+def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
+    workload: object,
+    callback_flags: int,
+    expected_result: object,
+    expected_call: tuple[object, ...],
+    expected_cpython_args: tuple[object, ...],
+    materialize: bool,
+) -> None:
+    route = support._compiled_pattern_module_helper_route(
+        workload,
+        collection_replacement_callback_flags=callback_flags,
+    )
+    callback_result, callback_call, cpython_call_args, materialize_cpython_result = route
+
+    assert callback_result == expected_result
+    assert callback_call == expected_call
+    assert cpython_call_args == expected_cpython_args
+    assert materialize_cpython_result is materialize
+
+
+def test_run_cpython_compiled_pattern_module_helper_workload_materializes_finditer() -> None:
+    workload = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.finditer"),
+        workload_id="module-finditer-runtime",
+        operation="module.finditer",
+        pattern="abc",
+        haystack="abcabc",
+        use_compiled_pattern=True,
+    )
+
+    result = support._run_cpython_compiled_pattern_module_helper_workload(
+        workload,
+        collection_replacement_callback_flags=0,
+    )
+
+    assert isinstance(result, list)
+    assert [match.group(0) for match in result] == ["abc", "abc"]
+
+
+def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_result(
+) -> None:
+    workload = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.subn"),
+        workload_id="module-subn-runtime",
+        operation="module.subn",
+        pattern="abc",
+        haystack="abcabc",
+        replacement="x",
+        count=1,
+        use_compiled_pattern=True,
+    )
+
+    result = support._run_cpython_compiled_pattern_module_helper_workload(
+        workload,
+        collection_replacement_callback_flags=0,
+    )
+
+    assert result == ("xabc", 1)
+
+
+def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounded_trio(
+) -> None:
+    workload = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
+        workload_id="module.search-wrong-text-model",
+        operation="module.search",
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+    )
+
+    assert support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        workload
+    )
+
+
+def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missing_guard_fields(
+) -> None:
+    wrong_pattern_argument = SimpleNamespace(
+        workload_id="module-search-direct-pattern",
+        operation="module.search",
+        flags=0,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=False,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+        kwargs={},
+    )
+    missing_haystack_text_model = SimpleNamespace(
+        workload_id="module-search-no-haystack-model",
+        operation="module.search",
+        flags=0,
+        text_model="str",
+        haystack_text_model=None,
+        use_compiled_pattern=True,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "cannot use a string pattern on a bytes-like object",
+        },
+        kwargs={},
+    )
+    wrong_exception_type = SimpleNamespace(
+        workload_id="module-search-value-error",
+        operation="module.search",
+        flags=0,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={
+            "type": "ValueError",
+            "message_substring": "wrong exception type",
+        },
+        kwargs={},
+    )
+
+    assert not support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        wrong_pattern_argument
+    )
+    assert not support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        missing_haystack_text_model
+    )
+    assert not support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        wrong_exception_type
+    )
+
+
+def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workloads(
+) -> None:
+    literal_workload = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
+        workload_id="module-search-literal-compiled-pattern",
+        operation="module.search",
+        pattern="abc",
+        haystack="zzabczz",
+        use_compiled_pattern=True,
+    )
+    wildcard_workload = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.fullmatch"),
+        workload_id="module-fullmatch-bounded-wildcard-compiled-pattern",
+        operation="module.fullmatch",
+        pattern="a.c",
+        haystack="abc",
+        text_model="bytes",
+        use_compiled_pattern=True,
+    )
+    verbose_workload = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
+        workload_id="module-search-verbose-bytes-compiled-pattern",
+        operation="module.search",
+        pattern=r"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $",
+        haystack="FOO = 123",
+        text_model="bytes",
+        flags=re.VERBOSE | re.MULTILINE,
+        use_compiled_pattern=True,
+    )
+
+    assert support._is_module_workflow_compiled_pattern_literal_success_workload(
+        literal_workload
+    )
+    assert support._module_workflow_compiled_pattern_workload_signature(
+        literal_workload
+    ) == ("module.search", "abc", ("zzabczz",), True, 0, "str")
+
+    assert support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        wildcard_workload
+    )
+    assert support._module_workflow_compiled_pattern_workload_signature(
+        wildcard_workload
+    ) == ("module.fullmatch", b"a.c", (b"abc",), True, 0, "bytes")
+
+    assert support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
+        verbose_workload
+    )
+    assert support._module_workflow_compiled_pattern_workload_signature(
+        verbose_workload
+    ) == (
+        "module.search",
+        b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+        (b"FOO = 123",),
+        True,
+        re.VERBOSE | re.MULTILINE,
+        "bytes",
+    )
+
+
+def test_module_workflow_compiled_pattern_success_selectors_reject_non_matching_rows(
+) -> None:
+    direct_pattern_workload = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
+        workload_id="module-search-direct-pattern",
+        operation="module.search",
+        pattern="abc",
+        haystack="zzabczz",
+    )
+    wrong_haystack_model = synthetic_workload(
+        manifest_id=_compiled_pattern_module_helper_manifest_id("module.match"),
+        workload_id="module-match-wrong-text-model",
+        operation="module.match",
+        pattern="abc",
+        haystack="zzabczz",
+        haystack_text_model="bytes",
+        use_compiled_pattern=True,
+        expected_exception={"type": "TypeError", "message_substring": "wrong type"},
+    )
+
+    assert not support._is_module_workflow_compiled_pattern_literal_success_workload(
+        direct_pattern_workload
+    )
+    assert not support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        wrong_haystack_model
+    )
+
+
+def test_module_workflow_compiled_pattern_correctness_case_signature_requires_compiled_module_call_shape(
+) -> None:
+    matching_case = _module_pattern_case(
+        helper="search",
+        operation="module_call",
+        args=("zzabczz",),
+        pattern="abc",
+        use_compiled_pattern=True,
+    )
+    missing_args_case = _module_pattern_case(
+        helper="search",
+        operation="module_call",
+        args=(),
+        pattern="abc",
+        use_compiled_pattern=True,
+    )
+    unsupported_helper_case = _module_pattern_case(
+        helper="split",
+        operation="module_call",
+        args=("zzabczz",),
+        pattern="abc",
+        use_compiled_pattern=True,
+    )
+
+    assert support._module_workflow_compiled_pattern_correctness_case_signature(
+        matching_case
+    ) == ("module.search", "abc", ("zzabczz",), True, 0, "str")
+    assert support._module_workflow_compiled_pattern_correctness_case_signature(
+        missing_args_case
+    ) is None
+    assert support._module_workflow_compiled_pattern_correctness_case_signature(
+        unsupported_helper_case
+    ) is None
 
 
 def test_anchored_workload_case_helpers_classify_anchored_and_unanchored_workloads(

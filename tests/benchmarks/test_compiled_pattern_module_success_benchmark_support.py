@@ -22,6 +22,10 @@ from tests.benchmarks.benchmark_test_support import (
     COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
     RecordingBenchmarkModule,
     _SourceTreeContractBuilderSpec,
+    _compiled_pattern_module_helper_route,
+    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+    _is_module_workflow_compiled_pattern_literal_success_workload,
+    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
     _contract_source_workloads,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
@@ -38,12 +42,6 @@ from tests.benchmarks.benchmark_test_support import (
 )
 from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
     _is_collection_replacement_compiled_pattern_success_workload,
-)
-from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
-    _compiled_pattern_module_helper_route,
-    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-    _is_module_workflow_compiled_pattern_literal_success_workload,
-    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
 )
 from tests.conftest import run_harness_scorecard
 

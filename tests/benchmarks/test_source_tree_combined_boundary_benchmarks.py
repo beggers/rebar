@@ -22,8 +22,14 @@ from tests.benchmarks.benchmark_test_support import (
     STANDARD_BENCHMARK_DEFINITIONS,
     _is_collection_replacement_keyword_workload,
     _is_collection_replacement_wrong_text_model_workload,
+    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+    _is_module_workflow_compiled_pattern_literal_success_workload,
+    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
     _is_module_workflow_keyword_error_workload,
     _is_module_workflow_keyword_flags_workload,
+    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
+    _module_workflow_compiled_pattern_correctness_case_signature,
+    _module_workflow_compiled_pattern_workload_signature,
     _module_workflow_keyword_correctness_case_signature,
     _module_workflow_keyword_workload_signature,
     _definition_anchor_expectations,
@@ -107,14 +113,6 @@ from tests.benchmarks.pattern_boundary_benchmark_anchor_support import (
 from tests.benchmarks.compiled_pattern_module_compile_benchmark_support import (
     _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
     _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-)
-from tests.benchmarks.compiled_pattern_module_helper_benchmark_support import (
-    _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-    _is_module_workflow_compiled_pattern_literal_success_workload,
-    _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
-    _module_workflow_compiled_pattern_correctness_case_signature,
-    _module_workflow_compiled_pattern_workload_signature,
-    _is_module_workflow_compiled_pattern_wrong_text_model_workload,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS, SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS, SOURCE_TREE_SCORECARD_EXPECTATIONS, SourceTreeBenchmarkCommonCase, SourceTreeCombinedCase, SourceTreeCombinedFullyMeasuredManifestExpectation, SourceTreeCombinedManifestExpectationDefinition, SourceTreeCombinedManifestShapeExpectation, SourceTreeCombinedPatternGroupExpectation, SourceTreeCombinedSliceExpectation
 from tests.benchmarks.source_tree_benchmark_anchor_support import SourceTreeDeferredExpectation, SourceTreeManifestExpectation, SourceTreeScorecardCase, _combined_fully_measured_manifest_expectation, _combined_manifest_definition, _is_non_alternation_counted_repeat_workload, _counted_repeat_correctness_case_signature, _counted_repeat_workload_signature, _grouped_alternation_correctness_case_signature, _grouped_alternation_replacement_correctness_case_signature
