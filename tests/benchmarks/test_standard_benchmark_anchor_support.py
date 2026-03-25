@@ -109,25 +109,21 @@ def _build_standard_benchmark_definition_imported_names(
     }
 
 
-def _module_imported_names(module_name: str) -> set[str]:
-    import inspect
-
-    parsed_support_source = ast.parse(inspect.getsource(support))
-    return {
-        alias.name
-        for node in parsed_support_source.body
-        if isinstance(node, ast.ImportFrom) and node.module == module_name
-        for alias in node.names
-    }
-
-
-def _imported_names_from_module(module: Any, source_module_name: str) -> set[str]:
+def _imported_names_from_module(
+    module: Any,
+    source_module_name: str,
+    *,
+    top_level_only: bool = False,
+) -> set[str]:
     import inspect
 
     parsed_module_source = ast.parse(inspect.getsource(module))
+    import_nodes = (
+        parsed_module_source.body if top_level_only else ast.walk(parsed_module_source)
+    )
     return {
         alias.name
-        for node in ast.walk(parsed_module_source)
+        for node in import_nodes
         if isinstance(node, ast.ImportFrom) and node.module == source_module_name
         for alias in node.names
     }
@@ -272,8 +268,10 @@ def test_standard_support_does_not_reexport_module_boundary_manifest_path() -> N
 
 def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_support(
 ) -> None:
-    imported_names = _module_imported_names(
-        "tests.benchmarks.benchmark_test_support"
+    imported_names = _imported_names_from_module(
+        support,
+        "tests.benchmarks.benchmark_test_support",
+        top_level_only=True,
     )
 
     assert {
@@ -285,8 +283,10 @@ def test_standard_builder_imports_generic_anchor_helpers_from_benchmark_test_sup
         "_workload_case_pairs_workload_ids",
         "published_case_ids_by_signature",
     }.issubset(imported_names)
-    assert _module_imported_names(
-        "tests.benchmarks.source_tree_benchmark_anchor_support"
+    assert _imported_names_from_module(
+        support,
+        "tests.benchmarks.source_tree_benchmark_anchor_support",
+        top_level_only=True,
     ) == {
         "anchored_workload_case_ids",
         "expected_anchored_workload_case_pairs",
