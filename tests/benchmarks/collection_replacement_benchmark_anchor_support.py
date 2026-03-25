@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
-from functools import cache, partial
+from functools import partial
 import re
 from typing import Any
 
@@ -292,7 +292,6 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
 }
 
 
-@cache
 def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
         StandardBenchmarkAnchorContractDefinition(
