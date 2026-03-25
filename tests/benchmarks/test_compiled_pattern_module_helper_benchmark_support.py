@@ -17,7 +17,9 @@ from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
     STANDARD_BENCHMARK_DEFINITIONS,
     _write_test_manifest,
+    published_case_ids_by_signature,
     run_benchmark_workload_with_cpython,
+    selected_manifest_workloads,
 )
 from tests.benchmarks import (
     compiled_pattern_module_helper_benchmark_support as compiled_pattern_module_helper_support,
@@ -26,6 +28,92 @@ from tests.benchmarks.benchmark_test_support import (
     compiled_pattern_contract_expected_build_calls,
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
+)
+
+
+def _compiled_pattern_module_helper_standard_definition(name: str) -> object:
+    return next(
+        definition
+        for definition in (
+            compiled_pattern_module_helper_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS
+        )
+        if definition.name == name
+    )
+
+
+_COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_EXPECTATIONS = (
+    pytest.param(
+        "module-workflow-compiled-pattern-literal-success",
+        (
+            (
+                "module-search-literal-warm-hit-str-compiled-pattern",
+                ("workflow-module-search-str-compiled-pattern",),
+            ),
+            (
+                "module-match-literal-warm-hit-str-compiled-pattern",
+                ("workflow-module-match-str-compiled-pattern",),
+            ),
+            (
+                "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
+                ("workflow-module-fullmatch-bytes-compiled-pattern",),
+            ),
+        ),
+        True,
+        id="literal-success",
+    ),
+    pytest.param(
+        "module-workflow-compiled-pattern-bounded-wildcard-success",
+        (
+            (
+                "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
+                ("workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",),
+            ),
+            (
+                "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
+                ("workflow-module-match-str-bounded-wildcard-compiled-pattern",),
+            ),
+            (
+                "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
+                ("workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",),
+            ),
+        ),
+        True,
+        id="bounded-wildcard-success",
+    ),
+    pytest.param(
+        "module-workflow-compiled-pattern-verbose-bytes-success",
+        (
+            (
+                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
+                ("workflow-module-search-bytes-verbose-regression-compiled-pattern",),
+            ),
+            (
+                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
+                ("workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",),
+            ),
+        ),
+        True,
+        id="verbose-bytes-success",
+    ),
+    pytest.param(
+        "module-workflow-compiled-pattern-wrong-text-model",
+        (
+            (
+                "module-search-on-bytes-string-warm-str-compiled-pattern",
+                ("workflow-module-search-str-compiled-pattern-on-bytes-string",),
+            ),
+            (
+                "module-match-on-str-string-purged-bytes-compiled-pattern",
+                ("workflow-module-match-bytes-compiled-pattern-on-str-string",),
+            ),
+            (
+                "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+                ("workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",),
+            ),
+        ),
+        False,
+        id="wrong-text-model",
+    ),
 )
 
 
@@ -113,6 +201,47 @@ def test_standard_inventory_reuses_owner_owned_compiled_pattern_module_helper_de
             strict=True,
         )
     )
+
+
+@pytest.mark.parametrize(
+    ("definition_name", "expected_workload_case_pairs", "expects_callback_parity"),
+    _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_EXPECTATIONS,
+)
+def test_compiled_pattern_module_helper_standard_definitions_select_expected_live_workloads_and_case_anchors(
+    definition_name: str,
+    expected_workload_case_pairs: tuple[tuple[str, tuple[str, ...]], ...],
+    expects_callback_parity: bool,
+) -> None:
+    definition = _compiled_pattern_module_helper_standard_definition(definition_name)
+    manifest_path = definition.manifest_paths[0]
+    workloads = selected_manifest_workloads(
+        manifest_path,
+        include_workload=definition.includes_workload,
+    )
+    published_case_ids = published_case_ids_by_signature(
+        definition.correctness_case_signature
+    )
+
+    assert definition.manifest_paths == (
+        compiled_pattern_module_helper_support.MODULE_BOUNDARY_MANIFEST_PATH,
+    )
+    assert tuple(workload.workload_id for workload in workloads) == tuple(
+        workload_id for workload_id, _ in expected_workload_case_pairs
+    )
+    assert all(workload.use_compiled_pattern for workload in workloads)
+    assert all(workload.manifest_id == "module-boundary" for workload in workloads)
+    assert tuple(
+        (
+            workload.workload_id,
+            published_case_ids[definition.workload_signature(workload)],
+        )
+        for workload in workloads
+    ) == expected_workload_case_pairs
+    assert definition.expected_anchor_case_ids == {
+        (manifest_path.name, workload_id): case_ids
+        for workload_id, case_ids in expected_workload_case_pairs
+    }
+    assert definition.run_callback_result_parity is expects_callback_parity
 
 
 @pytest.mark.parametrize(
