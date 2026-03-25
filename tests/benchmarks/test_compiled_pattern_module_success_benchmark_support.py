@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 import json
 import pathlib
-import unittest
 
 import pytest
 
@@ -28,16 +26,15 @@ from tests.benchmarks.compiled_pattern_module_success_benchmark_support import (
     _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
     _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
     _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
+    _assert_compiled_pattern_module_success_payload_round_trip,
+    _assert_compiled_pattern_success_rows_measured_in_combined_manifest,
 )
 from tests.benchmarks.recording_benchmark_module_support import (
     RecordingBenchmarkModule,
 )
 from tests.benchmarks.benchmark_test_support import _write_test_manifest
 from tests.benchmarks.benchmark_test_support import (
-    assert_benchmark_workload_contract,
-    find_workload_document,
-    find_workload_record,
-    manifest_workload_ids_matching,
+    top_level_module_definition_and_assignment_names,
 )
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     assert_benchmark_workload_matches_expected_result,
@@ -47,46 +44,12 @@ from tests.benchmarks.source_tree_contract_benchmark_support import (
     _source_tree_contract_manifest,
     _source_tree_contract_workload,
 )
-from tests.conftest import run_harness_scorecard
-
-
-def _assert_compiled_pattern_module_success_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-    *,
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload.get("expected_exception") is None
-    assert round_tripped.expected_exception is None
-    assert payload.get("haystack_text_model") is None
-    assert round_tripped.haystack_text_model is None
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_text_type)
-    for field_name in owner_spec.preserved_payload_fields:
-        assert payload[field_name] == getattr(source_workload, field_name)
-        assert getattr(round_tripped, field_name) == getattr(
-            source_workload,
-            field_name,
-        )
-    if (
-        owner_spec.preserve_replacement_payload_typing
-        and source_workload.replacement is not None
-    ):
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
 
 
 def test_compiled_pattern_module_success_owner_specs_are_support_owned_without_local_duplicates(
 ) -> None:
     import sys
 
-    from tests.benchmarks.benchmark_test_support import (
-        top_level_module_definition_and_assignment_names,
-    )
     from tests.benchmarks import (
         compiled_pattern_module_success_benchmark_support as support,
     )
@@ -124,6 +87,10 @@ def test_compiled_pattern_module_success_owner_specs_are_support_owned_without_l
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
     }.isdisjoint(local_assignment_names)
+    assert {
+        "_assert_compiled_pattern_module_success_payload_round_trip",
+        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+    }.isdisjoint(local_definition_names)
 
 
 _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
@@ -135,52 +102,6 @@ _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
     for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
     for source_workload in owner_spec.source_workloads()
 )
-
-
-def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
-    owner_spec: CompiledPatternModuleSuccessOwnerSpec,
-    *,
-    include_workload: Callable[[Any], bool],
-) -> None:
-    testcase = unittest.TestCase()
-    manifest = load_manifest(owner_spec.manifest_path)
-    expected_measured_workload_ids = tuple(
-        workload.workload_id
-        for workload in owner_spec.source_workloads()
-        if include_workload(workload)
-    )
-    selected_measured_workload_ids = manifest_workload_ids_matching(
-        manifest,
-        include_workload,
-    )
-
-    assert selected_measured_workload_ids == expected_measured_workload_ids
-
-    _, scorecard = run_harness_scorecard(
-        "rebar_harness.benchmarks",
-        ["--manifest", str(owner_spec.manifest_path)],
-        report_name="benchmarks.json",
-    )
-    manifest_summary = scorecard["manifests"][owner_spec.contract_manifest_id]
-    expected_workload_count = len(manifest.workloads)
-
-    assert manifest_summary["known_gap_count"] == 0
-    assert manifest_summary["measured_workloads"] == expected_workload_count
-    assert manifest_summary["workload_count"] == expected_workload_count
-
-    for workload_id in expected_measured_workload_ids:
-        assert_benchmark_workload_contract(
-            testcase,
-            find_workload_record(scorecard, workload_id),
-            manifest_id=owner_spec.contract_manifest_id,
-            workload_document=find_workload_document(
-                manifest,
-                workload_id,
-            ),
-            expected_status="measured",
-        )
-
-
 @pytest.mark.parametrize(
     "owner_spec",
     _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,

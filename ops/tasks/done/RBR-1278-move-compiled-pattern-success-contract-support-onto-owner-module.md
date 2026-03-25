@@ -1,6 +1,6 @@
 ## RBR-1278: Move compiled-pattern success contract support onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -49,3 +49,10 @@ Created: 2026-03-25
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` passed with `46 passed`; and
   - the negative `rg` check in `Verification` currently fails because those helpers still live in the test module, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- Moved `_assert_compiled_pattern_module_success_payload_round_trip(...)` and `_assert_compiled_pattern_success_rows_measured_in_combined_manifest(...)` into `tests/benchmarks/compiled_pattern_module_success_benchmark_support.py` so the owner module now carries the remaining compiled-pattern success contract helpers beside the owner specs.
+- Updated `tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` to import and use those owner-owned helpers directly, and tightened the local-duplicate guard so the moved helper names are no longer allowed as local test-module definitions.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py` -> `46 passed`
+  - `bash -lc "! rg -n 'def _assert_compiled_pattern_module_success_payload_round_trip\\(|def _assert_compiled_pattern_success_rows_measured_in_combined_manifest\\(' tests/benchmarks/test_compiled_pattern_module_success_benchmark_support.py"` -> success
