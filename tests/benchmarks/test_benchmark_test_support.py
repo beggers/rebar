@@ -1370,15 +1370,6 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
             ),
         ),
         (
-            "tests.benchmarks.test_compiled_pattern_module_helper_keyword_benchmark_support",
-            frozenset(
-                {
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
-            ),
-        ),
-        (
             "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
             frozenset(
                 {
