@@ -1895,6 +1895,25 @@ _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
         "_pattern_window_positional_indexlike_workload_signature",
     }
 )
+
+_BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES = frozenset(
+    {
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_SourceTreeContractBuilderSpec",
+        "_expected_exception_instance",
+        "_is_pattern_boundary_wrong_text_model_workload",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "_write_test_manifest",
+        "CompiledPatternModuleCompileContractCase",
+        "assert_benchmark_workload_matches_expected_result",
+        "run_benchmark_workload_with_cpython",
+        "assert_pattern_helper_wrong_text_model_payload_round_trip",
+        "selected_manifest_workloads",
+    }
+)
+
+
 def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates(
 ) -> None:
     module = importlib.import_module(
@@ -1921,22 +1940,6 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
-    owner_owned_names = frozenset(
-        {
-            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-            "_SourceTreeContractBuilderSpec",
-            "_expected_exception_instance",
-            "_is_pattern_boundary_wrong_text_model_workload",
-            "_source_tree_contract_manifest",
-            "_source_tree_contract_workload",
-            "_write_test_manifest",
-            "CompiledPatternModuleCompileContractCase",
-            "assert_benchmark_workload_matches_expected_result",
-            "run_benchmark_workload_with_cpython",
-            "assert_pattern_helper_wrong_text_model_payload_round_trip",
-            "selected_manifest_workloads",
-        }
-    )
 
     _assert_owner_module_routes_through_package_import(
         module,
@@ -1944,7 +1947,9 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert owner_owned_names.isdisjoint(definition_names | assignment_names)
+    assert _BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES.isdisjoint(
+        definition_names | assignment_names
+    )
 
 
 def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_shared_support(
@@ -1972,19 +1977,31 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         not in consumer_local_names
     )
 
-def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces(
-) -> None:
-    module = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-
-    assert (
-        _top_level_benchmark_support_alias_pairs(
-            module,
+@pytest.mark.parametrize(
+    ("module_name", "retired_owner_names"),
+    (
+        pytest.param(
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
-        )
-        == frozenset()
-    )
+            id="source-tree-combined",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_benchmark_manifest_validation",
+            _BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES,
+            id="manifest-validation",
+        ),
+    ),
+)
+def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces(
+    module_name: str,
+    retired_owner_names: frozenset[str],
+) -> None:
+    module = importlib.import_module(module_name)
+
+    assert _top_level_benchmark_support_alias_pairs(
+        module,
+        retired_owner_names,
+    ) == frozenset()
 
 
 def test_collection_replacement_support_through_owner_module_only() -> None:
