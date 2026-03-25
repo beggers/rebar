@@ -91,6 +91,11 @@ _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
     "_assert_compiled_pattern_module_success_payload_round_trip",
 )
 
+_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
+    support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+    support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+)
+
 _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
     "OPTIONAL_GROUP_MANIFEST_PATH",
     "NESTED_GROUP_MANIFEST_PATH",
@@ -1023,6 +1028,48 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             benchmark_test_support,
             constant_name,
         )
+
+
+@pytest.mark.parametrize(
+    ("owner_spec",),
+    tuple(
+        pytest.param(owner_spec, id=owner_spec.case_id)
+        for owner_spec in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+    ),
+)
+def test_compiled_pattern_module_success_owner_specs_pin_live_source_workload_ids(
+    owner_spec: object,
+) -> None:
+    workload_ids = tuple(
+        workload.workload_id
+        for workload in owner_spec.source_workloads()
+    )
+
+    assert workload_ids == owner_spec.expected_source_workload_ids
+    assert len(workload_ids) == len(set(workload_ids))
+
+
+def test_compiled_pattern_module_success_source_workload_params_follow_owner_specs(
+) -> None:
+    expected_params = tuple(
+        (
+            owner_spec.case_id,
+            source_workload.workload_id,
+            f"{owner_spec.case_id}-{source_workload.workload_id}",
+        )
+        for owner_spec in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for source_workload in owner_spec.source_workloads()
+    )
+    observed_params = tuple(
+        (
+            param.values[0].case_id,
+            param.values[1].workload_id,
+            param.id,
+        )
+        for param in support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS
+    )
+
+    assert observed_params == expected_params
 
 
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
