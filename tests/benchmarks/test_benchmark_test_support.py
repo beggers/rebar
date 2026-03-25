@@ -75,6 +75,18 @@ def _module_imported_names(module: object, imported_module: str) -> frozenset[st
     )
 
 
+def _module_import_targets(module: object) -> frozenset[str]:
+    targets: set[str] = set()
+
+    for node in _parsed_module_ast(module).body:
+        if isinstance(node, ast.ImportFrom) and node.module is not None:
+            targets.add(node.module)
+        elif isinstance(node, ast.Import):
+            targets.update(alias.name for alias in node.names)
+
+    return frozenset(targets)
+
+
 def _module_pattern_case(
     *,
     helper: str,
@@ -1237,6 +1249,27 @@ def test_compiled_pattern_module_helper_support_owns_compiled_pattern_module_suc
         compiled_pattern_module_helper_support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
         == "expected_callback_call"
     )
+
+
+@pytest.mark.parametrize(
+    "module_name",
+    (
+        "tests.benchmarks.benchmark_test_support",
+        "tests.benchmarks.compiled_pattern_module_helper_benchmark_support",
+        "tests.benchmarks.test_compiled_pattern_module_helper_benchmark_support",
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+    ),
+)
+def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_unreferenced(
+    module_name: str,
+) -> None:
+    deleted_module_name = "tests.benchmarks.compiled_pattern_module_success_benchmark_support"
+    module = importlib.import_module(module_name)
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module(deleted_module_name)
+
+    assert deleted_module_name not in _module_import_targets(module)
 
 
 @pytest.mark.parametrize(
