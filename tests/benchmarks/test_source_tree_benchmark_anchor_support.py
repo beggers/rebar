@@ -194,6 +194,42 @@ _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_FUNCTION_NAMES = (
 )
 
 
+def _top_level_name_sets(module: object) -> tuple[set[str], set[str], set[str]]:
+    module_ast = benchmark_test_support._parsed_module_ast(module)
+    class_names = {
+        node.name for node in module_ast.body if isinstance(node, ast.ClassDef)
+    }
+    function_names = {
+        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
+    }
+    assignment_names = {
+        node.target.id
+        for node in module_ast.body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    }
+    assignment_names.update(
+        target.id
+        for node in module_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    )
+    return class_names, function_names, assignment_names
+
+
+def _combined_suite_class_method_names(class_name: str) -> set[str]:
+    combined_suite_class = next(
+        node
+        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        if isinstance(node, ast.ClassDef) and node.name == class_name
+    )
+    return {
+        node.name
+        for node in combined_suite_class.body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+
 def _compile_search_fullmatch_case(
     *,
     operation: str,
@@ -1349,23 +1385,9 @@ def test_former_owner_modules_share_source_tree_helpers_without_local_duplicates
 
 
 def test_source_tree_support_module_exposes_moved_combined_case_surface() -> None:
-    local_class_names = {
-        node.name
-        for node in benchmark_test_support._parsed_module_ast(support).body
-        if isinstance(node, ast.ClassDef)
-    }
-    local_function_names = {
-        node.name
-        for node in benchmark_test_support._parsed_module_ast(support).body
-        if isinstance(node, ast.FunctionDef)
-    }
-    local_assignment_names = {
-        target.id
-        for node in benchmark_test_support._parsed_module_ast(support).body
-        if isinstance(node, ast.Assign)
-        for target in node.targets
-        if isinstance(target, ast.Name)
-    }
+    local_class_names, local_function_names, local_assignment_names = (
+        _top_level_name_sets(support)
+    )
 
     for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
         assert hasattr(support, class_name)
@@ -1449,11 +1471,7 @@ def test_compiled_pattern_module_success_source_workload_params_follow_owner_spe
 
 
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
-    local_function_names = {
-        node.name
-        for node in benchmark_test_support._parsed_module_ast(support).body
-        if isinstance(node, ast.FunctionDef)
-    }
+    _, local_function_names, _ = _top_level_name_sets(support)
 
     for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
         assert hasattr(support, function_name)
@@ -1461,11 +1479,7 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
 
 
 def test_source_tree_support_module_exposes_moved_conditional_callable_helpers() -> None:
-    local_function_names = {
-        node.name
-        for node in benchmark_test_support._parsed_module_ast(support).body
-        if isinstance(node, ast.FunctionDef)
-    }
+    _, local_function_names, _ = _top_level_name_sets(support)
 
     for function_name in _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES:
         assert hasattr(support, function_name)
@@ -1473,19 +1487,9 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
 
 
 def test_source_tree_support_module_exposes_routed_collection_owner_surface() -> None:
-    module_ast = benchmark_test_support._parsed_module_ast(support)
-    local_function_names = {
-        node.name
-        for node in module_ast.body
-        if isinstance(node, ast.FunctionDef)
-    }
-    local_assignment_names = {
-        target.id
-        for node in module_ast.body
-        if isinstance(node, ast.Assign)
-        for target in node.targets
-        if isinstance(target, ast.Name)
-    }
+    _, local_function_names, local_assignment_names = _top_level_name_sets(
+        support
+    )
 
     for constant_name in _ROUTED_COLLECTION_REPLACEMENT_SOURCE_TREE_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
@@ -1496,16 +1500,9 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
 
 
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
-    local_class_names = {
-        node.name
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
-        if isinstance(node, ast.ClassDef)
-    }
-    local_function_names = {
-        node.name
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
-        if isinstance(node, ast.FunctionDef)
-    }
+    local_class_names, local_function_names, _ = _top_level_name_sets(
+        benchmark_test_support._source_tree_combined_suite_module()
+    )
 
     for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
         assert class_name not in local_class_names
@@ -1515,17 +1512,9 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
 
 def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers(
 ) -> None:
-    combined_suite_class = next(
-        node
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
-        if isinstance(node, ast.ClassDef)
-        and node.name == "SourceTreeCombinedBoundaryBenchmarkSuiteTest"
+    class_method_names = _combined_suite_class_method_names(
+        "SourceTreeCombinedBoundaryBenchmarkSuiteTest"
     )
-    class_method_names = {
-        node.name
-        for node in combined_suite_class.body
-        if isinstance(node, ast.FunctionDef)
-    }
 
     assert "_assert_zero_gap_bytes_representative_subset" not in class_method_names
     assert (
@@ -1537,17 +1526,9 @@ def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers
 
 
 def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() -> None:
-    combined_suite_class = next(
-        node
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
-        if isinstance(node, ast.ClassDef)
-        and node.name == "SourceTreeScorecardBenchmarkSuiteTest"
+    class_method_names = _combined_suite_class_method_names(
+        "SourceTreeScorecardBenchmarkSuiteTest"
     )
-    class_method_names = {
-        node.name
-        for node in combined_suite_class.body
-        if isinstance(node, ast.FunctionDef)
-    }
 
     assert "_assert_manifest_contracts" not in class_method_names
     assert (
@@ -1682,11 +1663,9 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
 
 
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
-    local_function_names = {
-        node.name
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
-        if isinstance(node, ast.FunctionDef)
-    }
+    _, local_function_names, _ = _top_level_name_sets(
+        benchmark_test_support._source_tree_combined_suite_module()
+    )
 
     for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
         assert function_name not in local_function_names
@@ -1694,11 +1673,9 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
 
 def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_locally(
 ) -> None:
-    local_function_names = {
-        node.name
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
-        if isinstance(node, ast.FunctionDef)
-    }
+    _, local_function_names, _ = _top_level_name_sets(
+        benchmark_test_support._source_tree_combined_suite_module()
+    )
 
     for function_name in _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES:
         assert function_name not in local_function_names
