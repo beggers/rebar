@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from functools import partial
+from functools import cache, partial
 import re
 from typing import Any
 
 from rebar_harness import benchmarks
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
+    _definition_anchor_expectations,
     _is_module_workflow_keyword_error_workload,
     _workload_case_pair_anchor_expectations,
     _workload_case_pairs_case_ids,
@@ -288,6 +289,449 @@ _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES = {
         allowed_counts=(-1, 0, 1),
     ),
 }
+
+
+@cache
+def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ...]:
+    from tests.benchmarks.standard_benchmark_anchor_support import (
+        StandardBenchmarkAnchorContractDefinition,
+    )
+
+    return (
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-module-positional-indexlike",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                {
+                    "module-split-maxsplit-indexlike-positional-purged-bytes": (
+                        "workflow-module-split-maxsplit-indexlike-positional-bytes",
+                    ),
+                    "module-sub-count-indexlike-positional-warm-str": (
+                        "workflow-module-sub-count-indexlike-positional-str",
+                    ),
+                    "module-subn-count-indexlike-positional-purged-bytes": (
+                        "workflow-module-subn-count-indexlike-positional-bytes",
+                    ),
+                    "pattern-split-maxsplit-indexlike-positional-warm-str": (
+                        "workflow-pattern-split-str-maxsplit-indexlike-positional",
+                    ),
+                    "pattern-sub-count-indexlike-positional-purged-bytes": (
+                        "workflow-pattern-sub-count-indexlike-positional-bytes",
+                    ),
+                    "pattern-subn-count-indexlike-positional-warm-str": (
+                        "workflow-pattern-subn-count-indexlike-positional-str",
+                    ),
+                },
+            ),
+            include_workload=_is_collection_replacement_positional_indexlike_workload,
+            correctness_case_signature=(
+                _module_workflow_positional_indexlike_correctness_case_signature
+            ),
+            workload_signature=_collection_replacement_positional_indexlike_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-keyword",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                {
+                    "module-split-maxsplit-keyword-purged-bytes": (
+                        "workflow-module-split-maxsplit-keyword-bytes",
+                    ),
+                    "module-split-maxsplit-bool-keyword-purged-bytes": (
+                        "workflow-module-split-maxsplit-bool-false-bytes",
+                    ),
+                    "module-split-maxsplit-indexlike-keyword-purged-bytes": (
+                        "workflow-module-split-maxsplit-indexlike-bytes",
+                    ),
+                    "module-split-maxsplit-keyword-purged-str-compiled-pattern": (
+                        "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
+                    ),
+                    "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
+                    ),
+                    "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-split-maxsplit-bool-false-bytes-compiled-pattern",
+                    ),
+                    "module-split-duplicate-maxsplit-keyword-purged-str": (
+                        "workflow-module-split-duplicate-maxsplit-keyword",
+                    ),
+                    "module-split-unexpected-keyword-purged-str": (
+                        "workflow-module-split-unexpected-keyword",
+                    ),
+                    "module-split-unexpected-keyword-purged-bytes": (
+                        "workflow-module-split-unexpected-keyword-bytes",
+                    ),
+                    "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern": (
+                        "workflow-module-split-duplicate-maxsplit-keyword-str-compiled-pattern",
+                    ),
+                    "module-split-unexpected-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-split-unexpected-keyword-bytes-compiled-pattern",
+                    ),
+                    "module-sub-count-keyword-warm-str": (
+                        "workflow-module-sub-count-keyword-str",
+                    ),
+                    "module-sub-count-bool-keyword-warm-str": (
+                        "workflow-module-sub-count-bool-true-str",
+                    ),
+                    "module-sub-count-bool-false-keyword-warm-str": (
+                        "workflow-module-sub-count-bool-false-str",
+                    ),
+                    "module-sub-count-indexlike-keyword-warm-str": (
+                        "workflow-module-sub-count-indexlike-str",
+                    ),
+                    "module-sub-count-keyword-warm-str-compiled-pattern": (
+                        "workflow-module-sub-count-keyword-str-compiled-pattern",
+                    ),
+                    "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern": (
+                        "workflow-module-sub-count-indexlike-bytes-compiled-pattern",
+                    ),
+                    "module-sub-count-bool-keyword-warm-str-compiled-pattern": (
+                        "workflow-module-sub-count-bool-true-str-compiled-pattern",
+                    ),
+                    "module-sub-count-bool-false-keyword-warm-str-compiled-pattern": (
+                        "workflow-module-sub-count-bool-false-str-compiled-pattern",
+                    ),
+                    "module-sub-duplicate-count-keyword-warm-str": (
+                        "workflow-module-sub-duplicate-count-keyword",
+                    ),
+                    "module-sub-unexpected-keyword-purged-str": (
+                        "workflow-module-sub-unexpected-keyword",
+                    ),
+                    "module-sub-unexpected-keyword-after-positional-count-purged-str": (
+                        "workflow-module-sub-unexpected-keyword-after-positional-count",
+                    ),
+                    "module-sub-count-alias-keyword-purged-str": (
+                        "workflow-module-sub-count-alias-keyword",
+                    ),
+                    "module-sub-duplicate-count-keyword-warm-str-compiled-pattern": (
+                        "workflow-module-sub-duplicate-count-keyword-str-compiled-pattern",
+                    ),
+                    "module-sub-unexpected-keyword-purged-str-compiled-pattern": (
+                        "workflow-module-sub-unexpected-keyword-str-compiled-pattern",
+                    ),
+                    "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern": (
+                        "workflow-module-sub-unexpected-keyword-after-positional-count-str-compiled-pattern",
+                    ),
+                    "module-sub-count-alias-keyword-purged-str-compiled-pattern": (
+                        "workflow-module-sub-count-alias-keyword-str-compiled-pattern",
+                    ),
+                    "module-subn-count-keyword-purged-bytes": (
+                        "workflow-module-subn-count-keyword-bytes",
+                    ),
+                    "module-subn-count-bool-keyword-purged-bytes": (
+                        "workflow-module-subn-count-bool-false-bytes",
+                    ),
+                    "module-subn-count-bool-true-keyword-purged-bytes": (
+                        "workflow-module-subn-count-bool-true-bytes",
+                    ),
+                    "module-subn-count-indexlike-keyword-purged-bytes": (
+                        "workflow-module-subn-count-indexlike-bytes",
+                    ),
+                    "module-subn-duplicate-count-keyword-warm-bytes": (
+                        "workflow-module-subn-duplicate-count-keyword-bytes",
+                    ),
+                    "module-subn-unexpected-keyword-purged-bytes": (
+                        "workflow-module-subn-unexpected-keyword-bytes",
+                    ),
+                    "module-subn-unexpected-keyword-after-positional-count-purged-bytes": (
+                        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes",
+                    ),
+                    "module-subn-count-alias-keyword-purged-bytes": (
+                        "workflow-module-subn-count-alias-keyword-bytes",
+                    ),
+                    "module-subn-count-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-count-keyword-bytes-compiled-pattern",
+                    ),
+                    "module-subn-count-indexlike-keyword-purged-str-compiled-pattern": (
+                        "workflow-module-subn-count-indexlike-str-compiled-pattern",
+                    ),
+                    "module-subn-count-bool-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-count-bool-false-bytes-compiled-pattern",
+                    ),
+                    "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-count-bool-true-bytes-compiled-pattern",
+                    ),
+                    "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern": (
+                        "workflow-module-subn-duplicate-count-keyword-bytes-compiled-pattern",
+                    ),
+                    "module-subn-unexpected-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-unexpected-keyword-bytes-compiled-pattern",
+                    ),
+                    "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-unexpected-keyword-after-positional-count-bytes-compiled-pattern",
+                    ),
+                    "module-subn-count-alias-keyword-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-count-alias-keyword-bytes-compiled-pattern",
+                    ),
+                    "pattern-split-maxsplit-keyword-warm-str": (
+                        "workflow-pattern-split-str-maxsplit-keyword",
+                    ),
+                    "pattern-split-maxsplit-bool-keyword-warm-str": (
+                        "workflow-pattern-split-str-maxsplit-bool-true",
+                    ),
+                    "pattern-split-maxsplit-indexlike-keyword-warm-str": (
+                        "workflow-pattern-split-str-maxsplit-indexlike",
+                    ),
+                    "pattern-split-duplicate-maxsplit-keyword-warm-str": (
+                        "workflow-pattern-split-duplicate-maxsplit-keyword-str",
+                    ),
+                    "pattern-split-unexpected-keyword-warm-bytes": (
+                        "workflow-pattern-split-unexpected-keyword-bytes",
+                    ),
+                    "pattern-sub-count-keyword-purged-bytes": (
+                        "workflow-pattern-sub-count-keyword-bytes",
+                    ),
+                    "pattern-sub-count-bool-keyword-purged-bytes": (
+                        "workflow-pattern-sub-count-bool-false-bytes",
+                    ),
+                    "pattern-sub-count-bool-true-keyword-purged-bytes": (
+                        "workflow-pattern-sub-count-bool-true-bytes",
+                    ),
+                    "pattern-sub-count-indexlike-keyword-purged-bytes": (
+                        "workflow-pattern-sub-count-indexlike-bytes",
+                    ),
+                    "pattern-sub-duplicate-count-keyword-warm-str": (
+                        "workflow-pattern-sub-duplicate-count-keyword-str",
+                    ),
+                    "pattern-sub-unexpected-keyword-warm-str": (
+                        "workflow-pattern-sub-unexpected-keyword-str",
+                    ),
+                    "pattern-sub-unexpected-keyword-after-positional-count-warm-str": (
+                        "workflow-pattern-sub-unexpected-keyword-after-positional-count-str",
+                    ),
+                    "pattern-sub-count-alias-keyword-warm-str": (
+                        "workflow-pattern-sub-count-alias-keyword-str",
+                    ),
+                    "pattern-subn-count-keyword-warm-str": (
+                        "workflow-pattern-subn-count-keyword-str",
+                    ),
+                    "pattern-subn-count-bool-keyword-warm-str": (
+                        "workflow-pattern-subn-count-bool-true-str",
+                    ),
+                    "pattern-subn-count-bool-false-keyword-warm-str": (
+                        "workflow-pattern-subn-count-bool-false-str",
+                    ),
+                    "pattern-subn-count-indexlike-keyword-warm-str": (
+                        "workflow-pattern-subn-count-indexlike-str",
+                    ),
+                    "pattern-subn-duplicate-count-keyword-warm-bytes": (
+                        "workflow-pattern-subn-duplicate-count-keyword-bytes",
+                    ),
+                    "pattern-subn-unexpected-keyword-warm-bytes": (
+                        "workflow-pattern-subn-unexpected-keyword-bytes",
+                    ),
+                    "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes": (
+                        "workflow-pattern-subn-unexpected-keyword-after-positional-count-bytes",
+                    ),
+                    "pattern-subn-count-alias-keyword-warm-bytes": (
+                        "workflow-pattern-subn-count-alias-keyword-bytes",
+                    ),
+                },
+            ),
+            include_workload=_is_collection_replacement_keyword_workload,
+            correctness_case_signature=(
+                _collection_replacement_keyword_correctness_case_signature
+            ),
+            workload_signature=_collection_replacement_keyword_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-compiled-pattern-literal-success",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                {
+                    "module-split-literal-warm-str-compiled-pattern": (
+                        "workflow-module-split-str-compiled-pattern",
+                    ),
+                    "module-findall-literal-purged-bytes-compiled-pattern": (
+                        "workflow-module-findall-bytes-compiled-pattern",
+                    ),
+                    "module-finditer-literal-warm-str-compiled-pattern": (
+                        "workflow-module-finditer-str-compiled-pattern",
+                    ),
+                    "module-sub-literal-warm-str-compiled-pattern": (
+                        "workflow-module-sub-str-compiled-pattern",
+                    ),
+                    "module-subn-literal-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-bytes-compiled-pattern",
+                    ),
+                },
+            ),
+            include_workload=_is_collection_replacement_compiled_pattern_success_workload,
+            correctness_case_signature=(
+                _collection_replacement_compiled_pattern_success_correctness_case_signature
+            ),
+            workload_signature=(
+                _collection_replacement_compiled_pattern_success_workload_signature
+            ),
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-compiled-pattern-wrong-text-model",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                {
+                    "module-split-on-bytes-string-purged-str-compiled-pattern": (
+                        "workflow-module-split-str-compiled-pattern-on-bytes-string",
+                    ),
+                    "module-findall-on-str-string-purged-bytes-compiled-pattern": (
+                        "workflow-module-findall-bytes-compiled-pattern-on-str-string",
+                    ),
+                    "module-finditer-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-finditer-str-compiled-pattern-on-bytes-string",
+                    ),
+                    "module-sub-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-sub-str-compiled-pattern-on-bytes-string",
+                    ),
+                    "module-subn-on-str-string-purged-bytes-compiled-pattern": (
+                        "workflow-module-subn-bytes-compiled-pattern-on-str-string",
+                    ),
+                },
+            ),
+            include_workload=_is_collection_replacement_wrong_text_model_workload,
+            correctness_case_signature=(
+                _collection_replacement_wrong_text_model_correctness_case_signature
+            ),
+            workload_signature=_collection_replacement_wrong_text_model_workload_signature,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="pattern-helper-collection-replacement-wrong-text-model",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_definition_anchor_expectations(
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                {
+                    "pattern-split-on-bytes-string-warm-str": (
+                        "workflow-pattern-split-str-pattern-on-bytes-string",
+                    ),
+                    "pattern-sub-on-bytes-string-warm-str": (
+                        "workflow-pattern-sub-str-pattern-on-bytes-string",
+                    ),
+                    "pattern-subn-on-str-string-purged-bytes": (
+                        "workflow-pattern-subn-bytes-pattern-on-str-string",
+                    ),
+                },
+            ),
+            include_workload=_is_collection_replacement_pattern_wrong_text_model_workload,
+            correctness_case_signature=(
+                _collection_replacement_pattern_wrong_text_model_correctness_case_signature
+            ),
+            workload_signature=(
+                _collection_replacement_pattern_wrong_text_model_workload_signature
+            ),
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-pattern-findall-bounded",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "findall"
+            ].anchor_expectations(),
+            include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "findall"
+            ].includes_workload,
+            correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "findall"
+            ].correctness_case_signature,
+            workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "findall"
+            ].workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-pattern-finditer-bounded",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "finditer"
+            ].anchor_expectations(),
+            include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "finditer"
+            ].includes_workload,
+            correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "finditer"
+            ].correctness_case_signature,
+            workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "finditer"
+            ].workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-pattern-split",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "split"
+            ].anchor_expectations(),
+            include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "split"
+            ].includes_workload,
+            correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "split"
+            ].correctness_case_signature,
+            workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "split"
+            ].workload_signature,
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-module-literal-replacement",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+                "module"
+            ].anchor_expectations(),
+            include_workload=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
+            correctness_case_signature=partial(
+                _collection_replacement_literal_replacement_correctness_case_signature,
+                route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+            ),
+            workload_signature=partial(
+                _collection_replacement_literal_replacement_workload_signature,
+                include_workload=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
+                workload_kind="module",
+            ),
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-pattern-literal-replacement",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+                "pattern"
+            ].anchor_expectations(),
+            include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
+            correctness_case_signature=partial(
+                _collection_replacement_literal_replacement_correctness_case_signature,
+                route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+            ),
+            workload_signature=partial(
+                _collection_replacement_literal_replacement_workload_signature,
+                include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
+                workload_kind="direct Pattern",
+            ),
+            run_callback_result_parity=True,
+        ),
+        StandardBenchmarkAnchorContractDefinition(
+            name="collection-replacement-grouped-callable-replacement",
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
+            ),
+            include_workload=_is_collection_replacement_grouped_callable_workload,
+            correctness_case_signature=(
+                _collection_replacement_grouped_callable_correctness_case_signature
+            ),
+            workload_signature=_collection_replacement_grouped_callable_workload_signature,
+            run_callback_result_parity=True,
+        ),
+    )
+
+
+def __getattr__(name: str) -> Any:
+    if name == "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS":
+        return _collection_replacement_standard_benchmark_definitions()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _collection_replacement_literal_replacement_correctness_case_signature(

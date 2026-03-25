@@ -18,6 +18,9 @@ from tests.benchmarks.benchmark_test_support import (
     anchor_support_cache_guard,
 )
 from tests.benchmarks import benchmark_test_support as benchmark_support
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_replacement_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import standard_benchmark_anchor_support as support
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
@@ -222,6 +225,43 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
     support_source = inspect.getsource(support)
     assert "for definition in STANDARD_BENCHMARK_DEFINITIONS" in support_source
     assert "for definition in _standard_benchmark_definitions()" not in support_source
+    assert "*COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS," in support_source
+
+
+def test_standard_support_source_no_longer_inlines_collection_replacement_definitions(
+) -> None:
+    import inspect
+
+    support_source = inspect.getsource(support)
+    for definition_name in (
+        "collection-replacement-module-positional-indexlike",
+        "collection-replacement-keyword",
+        "collection-replacement-compiled-pattern-literal-success",
+        "collection-replacement-compiled-pattern-wrong-text-model",
+        "pattern-helper-collection-replacement-wrong-text-model",
+        "collection-replacement-pattern-findall-bounded",
+        "collection-replacement-pattern-finditer-bounded",
+        "collection-replacement-pattern-split",
+        "collection-replacement-module-literal-replacement",
+        "collection-replacement-pattern-literal-replacement",
+        "collection-replacement-grouped-callable-replacement",
+    ):
+        assert f'name="{definition_name}"' not in support_source
+
+
+def test_standard_inventory_reuses_owner_owned_collection_replacement_definition_objects(
+) -> None:
+    owner_definitions = (
+        collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
+    )
+    standard_definitions = tuple(
+        definition
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name.startswith("collection-replacement-")
+        or definition.name == "pattern-helper-collection-replacement-wrong-text-model"
+    )
+
+    assert standard_definitions == owner_definitions
 
 
 def test_combined_suite_imports_support_owned_standard_benchmark_definitions() -> None:

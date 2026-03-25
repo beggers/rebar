@@ -1,6 +1,6 @@
 ## RBR-1279: Move collection-replacement standard anchor definitions onto owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -77,3 +77,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `58 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `349 tests collected`; and
   - the negative `rg` check in `Verification` currently fails because the collection-replacement definition bodies still live inline in `tests/benchmarks/standard_benchmark_anchor_support.py`, and that failure belongs to the exact cleanup queued here.
+
+## Completion
+- 2026-03-25: Moved the 11 collection-replacement standard benchmark definition objects onto `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` behind the exported owner-owned `COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS` tuple, spliced that tuple back into `tests/benchmarks/standard_benchmark_anchor_support.py` in the same order, and added focused tests that pin the exported order, object reuse, and the absence of inline collection-replacement `name="..."` literals in the central standard-support source.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n 'name=\"(collection-replacement-module-positional-indexlike|collection-replacement-keyword|collection-replacement-compiled-pattern-literal-success|collection-replacement-compiled-pattern-wrong-text-model|pattern-helper-collection-replacement-wrong-text-model|collection-replacement-pattern-findall-bounded|collection-replacement-pattern-finditer-bounded|collection-replacement-pattern-split|collection-replacement-module-literal-replacement|collection-replacement-pattern-literal-replacement|collection-replacement-grouped-callable-replacement)\"' tests/benchmarks/standard_benchmark_anchor_support.py"`
