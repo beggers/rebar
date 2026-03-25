@@ -11,18 +11,24 @@ from tests.benchmarks.benchmark_test_support import (
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _definition_anchor_expectations,
 )
+from tests.conftest import REPO_ROOT
 
 if TYPE_CHECKING:
     from tests.benchmarks.standard_benchmark_anchor_support import (
         StandardBenchmarkAnchorContractDefinition,
     )
 
+
+COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
+REGRESSION_MATRIX_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
+)
+
+
 @cache
 def _build_compile_proxy_standard_benchmark_definitions(
 ) -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
     from tests.benchmarks.standard_benchmark_anchor_support import (
-        COMPILE_MATRIX_MANIFEST_PATH,
-        REGRESSION_MATRIX_MANIFEST_PATH,
         StandardBenchmarkAnchorContractDefinition,
     )
 

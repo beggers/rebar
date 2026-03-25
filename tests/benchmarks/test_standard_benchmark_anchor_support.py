@@ -506,6 +506,8 @@ def test_standard_support_source_no_longer_mentions_compile_proxy_helpers_or_inl
 
     support_source = inspect.getsource(support)
 
+    assert "COMPILE_MATRIX_MANIFEST_PATH" not in support_source
+    assert "REGRESSION_MATRIX_MANIFEST_PATH" not in support_source
     assert "compile_proxy_correctness_case_signature" not in support_source
     assert "compile_proxy_workload_signature" not in support_source
     assert "is_compile_proxy_workload" not in support_source

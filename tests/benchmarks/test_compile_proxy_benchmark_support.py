@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from tests.conftest import REPO_ROOT
 from tests.benchmarks import benchmark_test_support as benchmark_support
 from tests.benchmarks import compile_proxy_benchmark_support as support
-from tests.benchmarks import standard_benchmark_anchor_support as standard_support
 from tests.benchmarks.source_tree_benchmark_anchor_support import (
     _definition_anchor_expectations,
 )
@@ -25,13 +25,19 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
 ) -> None:
     definition = support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS[0]
 
+    assert support.COMPILE_MATRIX_MANIFEST_PATH == (
+        REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
+    )
+    assert support.REGRESSION_MATRIX_MANIFEST_PATH == (
+        REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
+    )
     assert definition.manifest_paths == (
-        standard_support.COMPILE_MATRIX_MANIFEST_PATH,
-        standard_support.REGRESSION_MATRIX_MANIFEST_PATH,
+        support.COMPILE_MATRIX_MANIFEST_PATH,
+        support.REGRESSION_MATRIX_MANIFEST_PATH,
     )
     assert definition.expected_anchor_case_ids == (
         _definition_anchor_expectations(
-            standard_support.COMPILE_MATRIX_MANIFEST_PATH,
+            support.COMPILE_MATRIX_MANIFEST_PATH,
             {
                 "compile-inline-locale-bytes-warm": (
                     "bytes-inline-locale-flag-success",
@@ -54,7 +60,7 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
             },
         )
         | _definition_anchor_expectations(
-            standard_support.REGRESSION_MATRIX_MANIFEST_PATH,
+            support.REGRESSION_MATRIX_MANIFEST_PATH,
             {
                 "regression-parser-atomic-lookbehind-cold": (
                     "str-parser-stress-compile-proxy-success",

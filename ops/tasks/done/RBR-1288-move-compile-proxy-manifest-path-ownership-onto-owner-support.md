@@ -1,6 +1,6 @@
 # RBR-1288: Move compile-proxy manifest-path ownership onto owner support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -64,3 +64,13 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `243 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_compile_proxy_benchmark_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `334 tests collected`; and
   - the negative `rg` command above currently fails because `tests/benchmarks/standard_benchmark_anchor_support.py` still defines the compile-proxy-specific manifest-path constants.
+
+## Completion
+- Moved `COMPILE_MATRIX_MANIFEST_PATH` and `REGRESSION_MATRIX_MANIFEST_PATH` into `tests/benchmarks/compile_proxy_benchmark_support.py` and kept the owner tuple behavior unchanged.
+- Removed the compile-proxy-specific manifest-path constants from `tests/benchmarks/standard_benchmark_anchor_support.py`; the central assembler now only imports and splices `COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS`.
+- Updated the compile-proxy owner tests to pin the owner-local constants directly and updated the standard-support tests to assert the central source no longer mentions those manifest-path names.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_benchmark_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_compile_proxy_benchmark_support.py tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n 'COMPILE_MATRIX_MANIFEST_PATH|REGRESSION_MATRIX_MANIFEST_PATH' tests/benchmarks/standard_benchmark_anchor_support.py"`
