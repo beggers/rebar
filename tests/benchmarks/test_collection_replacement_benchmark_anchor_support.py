@@ -11,6 +11,7 @@ from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     Workload,
     build_callable,
+    load_manifest,
     run_internal_workload_probe,
     workload_from_payload,
     workload_to_payload,
@@ -19,9 +20,12 @@ from tests.benchmarks.benchmark_test_support import synthetic_workload
 from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkModule,
     STANDARD_BENCHMARK_DEFINITIONS,
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _collection_replacement_positional_keyword_field,
     _is_collection_replacement_keyword_workload,
+    _is_module_workflow_keyword_error_workload,
     _is_collection_replacement_wrong_text_model_workload,
+    _record_numeric_materialization_fields,
     run_benchmark_workload_with_cpython,
     compiled_pattern_contract_expected_build_calls,
     _source_tree_contract_manifest,
@@ -34,7 +38,19 @@ from tests.benchmarks.benchmark_test_support import (
     published_cases_by_id,
     selected_manifest_workloads,
 )
+from tests.benchmarks.collection_replacement_benchmark_anchor_support import (
+    COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    MODULE_BOUNDARY_MANIFEST_PATH,
+    _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES,
+    _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
+    _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS,
+    _assert_keyword_error_workload_probe_measured,
+    _is_collection_replacement_module_helper_keyword_error_workload,
+    _is_collection_replacement_pattern_helper_keyword_error_workload,
+    _pattern_helper_collection_replacement_keyword_error_workload,
+)
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
+from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
 _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES = (
@@ -2805,3 +2821,1230 @@ def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materia
         assert observed_workload_ids == [workload.workload_id]
     finally:
         re.purge()
+
+
+def test_collection_replacement_keyword_contract_surface_is_support_owned_without_local_duplicates(
+) -> None:
+    import sys
+
+    from tests.benchmarks.benchmark_test_support import (
+        top_level_module_definition_and_assignment_names,
+    )
+
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(sys.modules[__name__])
+    )
+
+    assert COLLECTION_REPLACEMENT_MANIFEST_PATH is support.COLLECTION_REPLACEMENT_MANIFEST_PATH
+    assert MODULE_BOUNDARY_MANIFEST_PATH is support.MODULE_BOUNDARY_MANIFEST_PATH
+    assert (
+        _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES
+        is support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES
+    )
+    assert (
+        _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        is support._PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    )
+    assert (
+        _assert_keyword_error_workload_probe_measured
+        is support._assert_keyword_error_workload_probe_measured
+    )
+    assert (
+        _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        is support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    )
+    assert (
+        _is_collection_replacement_module_helper_keyword_error_workload
+        is support._is_collection_replacement_module_helper_keyword_error_workload
+    )
+    assert (
+        _is_collection_replacement_pattern_helper_keyword_error_workload
+        is support._is_collection_replacement_pattern_helper_keyword_error_workload
+    )
+    assert (
+        _pattern_helper_collection_replacement_keyword_error_workload
+        is support._pattern_helper_collection_replacement_keyword_error_workload
+    )
+    assert {
+        "_assert_keyword_error_workload_probe_measured",
+        "_pattern_helper_collection_replacement_keyword_error_workload",
+        "_is_collection_replacement_pattern_helper_keyword_error_workload",
+        "_is_collection_replacement_module_helper_keyword_error_workload",
+    }.isdisjoint(local_definition_names)
+    assert {
+        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
+        "_PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS",
+        "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS",
+        "_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS",
+        "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+    }.isdisjoint(local_assignment_names)
+
+
+def test_pattern_helper_collection_replacement_keyword_error_workload_builder_shape() -> None:
+    workload = _pattern_helper_collection_replacement_keyword_error_workload(
+        operation="pattern.subn",
+        haystack="abc",
+        kwargs_payload={"count_alias": 1},
+        replacement="x",
+        count=0,
+        maxsplit=0,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "'count_alias' is an invalid keyword argument for subn()",
+        },
+        text_model="bytes",
+    )
+    payload = workload_to_payload(workload)
+
+    assert payload["manifest_id"] == (
+        "python-benchmark-pattern-collection-replacement-keyword-contract"
+    )
+    assert payload["timing_scope"] == "pattern-helper-call"
+    assert payload["expected_exception"] == {
+        "type": "TypeError",
+        "message_substring": "'count_alias' is an invalid keyword argument for subn()",
+    }
+    assert payload["kwargs"] == {"count_alias": 1}
+    assert payload["text_model"] == "bytes"
+
+
+def test_pattern_helper_keyword_error_selector_stays_in_scope() -> None:
+    workload = next(
+        workload
+        for workload in _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        if workload.workload_id == "pattern-sub-unexpected-keyword-warm-str"
+    )
+
+    assert _is_collection_replacement_pattern_helper_keyword_error_workload(workload)
+
+
+def test_module_helper_collection_replacement_keyword_error_selector_stays_in_scope() -> None:
+    workload = next(
+        workload
+        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        if workload.workload_id == "module-sub-count-alias-keyword-purged-str"
+    )
+
+    assert _is_collection_replacement_module_helper_keyword_error_workload(workload)
+
+
+def test_keyword_error_workload_probe_helper_measures_real_source_workload() -> None:
+    _assert_keyword_error_workload_probe_measured(
+        next(iter(_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS)),
+        import_name="re",
+        adapter_name="cpython.re",
+    )
+
+
+def test_standard_benchmark_manifest_preserves_collection_replacement_keyword_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-pattern-collection-replacement-keyword-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            {
+                "id": "pattern-split-maxsplit-keyword-contract-str",
+                "bucket": "pattern-split",
+                "family": "module",
+                "operation": "pattern.split",
+                "pattern": "abc",
+                "haystack": "zabczabc",
+                "kwargs": {"maxsplit": 1},
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "pattern-sub-count-bool-keyword-contract-bytes",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "text_model": "bytes",
+                "kwargs": {"count": False},
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "pattern-sub-unexpected-keyword-after-positional-count-contract-str",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "count": 1,
+                "kwargs": {"missing": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "sub() takes at most 3 arguments (4 given)",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "pattern-subn-count-keyword-contract-str",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "kwargs": {"count": 1},
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "pattern-subn-count-alias-keyword-contract-bytes",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "text_model": "bytes",
+                "kwargs": {"count_alias": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "'count_alias' is an invalid keyword argument for subn()",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_pattern_collection_replacement_keyword_contract.py",
+        manifest_source,
+    )
+    workloads_by_id = records_by_string_id(
+        load_manifest(manifest_path).workloads,
+        id_attr="workload_id",
+    )
+
+    split_workload = workloads_by_id["pattern-split-maxsplit-keyword-contract-str"]
+    round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
+    assert round_tripped_split.kwargs == {"maxsplit": 1}
+    assert round_tripped_split.keyword_arguments() == {"maxsplit": 1}
+    assert run_benchmark_workload_with_cpython(round_tripped_split) == ["z", "zabc"]
+
+    sub_bool_workload = workloads_by_id["pattern-sub-count-bool-keyword-contract-bytes"]
+    round_tripped_sub_bool = workload_from_payload(
+        workload_to_payload(sub_bool_workload)
+    )
+    assert round_tripped_sub_bool.kwargs == {"count": False}
+    assert round_tripped_sub_bool.keyword_arguments() == {"count": False}
+    assert run_benchmark_workload_with_cpython(round_tripped_sub_bool) == b"xx"
+
+    sub_missing_after_positional_count_workload = workloads_by_id[
+        "pattern-sub-unexpected-keyword-after-positional-count-contract-str"
+    ]
+    round_tripped_sub_missing_after_positional_count = workload_from_payload(
+        workload_to_payload(sub_missing_after_positional_count_workload)
+    )
+    assert round_tripped_sub_missing_after_positional_count.count == 1
+    assert (
+        round_tripped_sub_missing_after_positional_count.keyword_arguments()
+        == {"missing": 1}
+    )
+    with pytest.raises(
+        TypeError,
+        match=re.escape("sub() takes at most 3 arguments (4 given)"),
+    ):
+        run_benchmark_workload_with_cpython(
+            round_tripped_sub_missing_after_positional_count
+        )
+
+    subn_workload = workloads_by_id["pattern-subn-count-keyword-contract-str"]
+    round_tripped_subn = workload_from_payload(workload_to_payload(subn_workload))
+    assert round_tripped_subn.kwargs == {"count": 1}
+    assert round_tripped_subn.keyword_arguments() == {"count": 1}
+    assert run_benchmark_workload_with_cpython(round_tripped_subn) == ("xabc", 1)
+
+    subn_count_alias_workload = workloads_by_id[
+        "pattern-subn-count-alias-keyword-contract-bytes"
+    ]
+    round_tripped_subn_count_alias = workload_from_payload(
+        workload_to_payload(subn_count_alias_workload)
+    )
+    assert round_tripped_subn_count_alias.kwargs == {"count_alias": 1}
+    assert round_tripped_subn_count_alias.keyword_arguments() == {"count_alias": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("'count_alias' is an invalid keyword argument for subn()"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_subn_count_alias)
+
+
+def test_standard_benchmark_manifest_preserves_module_collection_replacement_keyword_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-module-collection-replacement-keyword-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 2,
+        },
+        "workloads": [
+            {
+                "id": "module-split-maxsplit-keyword-contract-bytes",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "zabczabc",
+                "text_model": "bytes",
+                "kwargs": {"maxsplit": 1},
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "module-sub-count-indexlike-keyword-warm-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "kwargs": {"count": {"type": "indexlike", "value": 2}},
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "module-subn-duplicate-count-keyword-contract-bytes",
+                "bucket": "module-subn",
+                "family": "module",
+                "operation": "module.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abc",
+                "count": 1,
+                "text_model": "bytes",
+                "kwargs": {"count": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "multiple values for argument 'count'",
+                },
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "module-split-unexpected-keyword-contract-str",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "abc",
+                "kwargs": {"missing": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'missing'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "module-sub-count-alias-keyword-contract-str",
+                "bucket": "module-sub",
+                "family": "module",
+                "operation": "module.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabc",
+                "kwargs": {"count_alias": 1},
+                "expected_exception": {
+                    "type": "TypeError",
+                    "message_substring": "unexpected keyword argument 'count_alias'",
+                },
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_module_collection_replacement_keyword_contract.py",
+        manifest_source,
+    )
+    workloads_by_id = records_by_string_id(
+        load_manifest(manifest_path).workloads,
+        id_attr="workload_id",
+    )
+
+    split_workload = workloads_by_id["module-split-maxsplit-keyword-contract-bytes"]
+    round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
+    assert round_tripped_split.kwargs == {"maxsplit": 1}
+    assert round_tripped_split.keyword_arguments() == {"maxsplit": 1}
+    assert run_benchmark_workload_with_cpython(round_tripped_split) == [b"z", b"zabc"]
+
+    sub_indexlike_workload = workloads_by_id["module-sub-count-indexlike-keyword-warm-str"]
+    round_tripped_sub_indexlike = workload_from_payload(
+        workload_to_payload(sub_indexlike_workload)
+    )
+    assert round_tripped_sub_indexlike.kwargs == {
+        "count": {"type": "indexlike", "value": 2}
+    }
+    assert round_tripped_sub_indexlike.keyword_arguments()["count"].__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_sub_indexlike) == "xxabc"
+
+    subn_duplicate_workload = workloads_by_id[
+        "module-subn-duplicate-count-keyword-contract-bytes"
+    ]
+    round_tripped_subn_duplicate = workload_from_payload(
+        workload_to_payload(subn_duplicate_workload)
+    )
+    assert round_tripped_subn_duplicate.count == 1
+    assert round_tripped_subn_duplicate.keyword_arguments() == {"count": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("subn() got multiple values for argument 'count'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_subn_duplicate)
+
+    split_missing_workload = workloads_by_id["module-split-unexpected-keyword-contract-str"]
+    round_tripped_split_missing = workload_from_payload(
+        workload_to_payload(split_missing_workload)
+    )
+    assert round_tripped_split_missing.keyword_arguments() == {"missing": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("split() got an unexpected keyword argument 'missing'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_split_missing)
+
+    sub_count_alias_workload = workloads_by_id[
+        "module-sub-count-alias-keyword-contract-str"
+    ]
+    round_tripped_sub_count_alias = workload_from_payload(
+        workload_to_payload(sub_count_alias_workload)
+    )
+    assert round_tripped_sub_count_alias.keyword_arguments() == {"count_alias": 1}
+    with pytest.raises(
+        TypeError,
+        match=re.escape("sub() got an unexpected keyword argument 'count_alias'"),
+    ):
+        run_benchmark_workload_with_cpython(round_tripped_sub_count_alias)
+
+
+def test_standard_benchmark_manifest_preserves_indexlike_numeric_descriptors_until_helper_invocation(
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_source = """
+    MANIFEST = {
+        "schema_version": 1,
+        "manifest_id": "python-benchmark-indexlike-contract",
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+        },
+        "workloads": [
+            {
+                "id": "module-split-indexlike-contract-bytes",
+                "bucket": "module-split",
+                "family": "module",
+                "operation": "module.split",
+                "pattern": "abc",
+                "haystack": "zabcabcabc",
+                "maxsplit": {"type": "indexlike", "value": 2},
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "module-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "pattern-sub-indexlike-contract-bytes",
+                "bucket": "pattern-sub",
+                "family": "module",
+                "operation": "pattern.sub",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {"type": "indexlike", "value": 2},
+                "text_model": "bytes",
+                "cache_mode": "purged",
+                "timing_scope": "pattern-helper-call",
+                "notes": [],
+            },
+            {
+                "id": "pattern-subn-indexlike-contract-str",
+                "bucket": "pattern-subn",
+                "family": "module",
+                "operation": "pattern.subn",
+                "pattern": "abc",
+                "replacement": "x",
+                "haystack": "abcabcabc",
+                "count": {"type": "indexlike", "value": 2},
+                "cache_mode": "warm",
+                "timing_scope": "pattern-helper-call",
+                "notes": [],
+            },
+        ],
+    }
+    """
+
+    manifest_path = _write_test_manifest(
+        tmp_path,
+        "python_benchmark_indexlike_contract.py",
+        manifest_source,
+    )
+    workloads_by_id = records_by_string_id(
+        load_manifest(manifest_path).workloads,
+        id_attr="workload_id",
+    )
+
+    split_workload = workloads_by_id["module-split-indexlike-contract-bytes"]
+    round_tripped_split = workload_from_payload(workload_to_payload(split_workload))
+    assert round_tripped_split.maxsplit_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_split) == [b"z", b"", b"abc"]
+
+    pattern_sub_workload = workloads_by_id["pattern-sub-indexlike-contract-bytes"]
+    round_tripped_pattern_sub = workload_from_payload(
+        workload_to_payload(pattern_sub_workload)
+    )
+    assert round_tripped_pattern_sub.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_sub) == b"xxabc"
+
+    pattern_subn_workload = workloads_by_id["pattern-subn-indexlike-contract-str"]
+    round_tripped_pattern_subn = workload_from_payload(
+        workload_to_payload(pattern_subn_workload)
+    )
+    assert round_tripped_pattern_subn.count_argument().__index__() == 2
+    assert run_benchmark_workload_with_cpython(round_tripped_pattern_subn) == (
+        "xxabc",
+        2,
+    )
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "haystack",
+        "kwargs_payload",
+        "replacement",
+        "text_model",
+        "expected_result",
+        "expected_field_names",
+    ),
+    (
+        pytest.param(
+            "pattern.split",
+            "zabcabc",
+            {"maxsplit": {"type": "indexlike", "value": 1}},
+            None,
+            "str",
+            ["z", "abc"],
+            ["kwargs.maxsplit"],
+            id="split-maxsplit-indexlike",
+        ),
+        pytest.param(
+            "pattern.sub",
+            "abcabc",
+            {"count": {"type": "indexlike", "value": 1}},
+            "x",
+            "bytes",
+            b"xabc",
+            ["kwargs.count"],
+            id="sub-count-indexlike",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "abcabc",
+            {"count": {"type": "indexlike", "value": 1}},
+            "x",
+            "str",
+            ("xabc", 1),
+            ["kwargs.count"],
+            id="subn-count-indexlike",
+        ),
+        pytest.param(
+            "pattern.split",
+            "zabcabc",
+            {"maxsplit": True},
+            None,
+            "str",
+            ["z", "abc"],
+            ["kwargs.maxsplit"],
+            id="split-maxsplit-bool",
+        ),
+        pytest.param(
+            "pattern.sub",
+            "abcabc",
+            {"count": False},
+            "x",
+            "bytes",
+            b"xx",
+            ["kwargs.count"],
+            id="sub-count-bool",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "abcabc",
+            {"count": True},
+            "x",
+            "str",
+            ("xabc", 1),
+            ["kwargs.count"],
+            id="subn-count-bool",
+        ),
+    ),
+)
+def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time(
+    monkeypatch,
+    operation: str,
+    haystack: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    text_model: str,
+    expected_result: object,
+    expected_field_names: list[str],
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-pattern-collection-replacement-keyword-contract",
+            "workload_id": f"{operation}-keyword-materialization-contract",
+            "bucket": operation.replace("pattern.", "pattern-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "flags": 0,
+            "count": 0,
+            "maxsplit": 0,
+            "kwargs": kwargs_payload,
+            "text_model": text_model,
+            "cache_mode": "warm",
+            "timing_scope": "pattern-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result=expected_result,
+        expected_field_names=expected_field_names,
+    )
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "haystack",
+        "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
+        "text_model",
+        "expected_exception",
+        "expected_field_names",
+    ),
+    (
+        pytest.param(
+            "pattern.split",
+            "abcabc",
+            {"maxsplit": 1},
+            None,
+            0,
+            1,
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "split() takes at most 2 arguments (3 given)",
+            },
+            ["maxsplit", "kwargs.maxsplit"],
+            id="pattern-split-duplicate-maxsplit-keyword",
+        ),
+        pytest.param(
+            "pattern.split",
+            "abcabc",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "'missing' is an invalid keyword argument for split()",
+            },
+            ["kwargs.missing"],
+            id="pattern-split-unexpected-keyword",
+        ),
+        pytest.param(
+            "pattern.sub",
+            "abc",
+            {"count": 1},
+            "x",
+            1,
+            0,
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "sub() takes at most 3 arguments (4 given)",
+            },
+            ["count", "kwargs.count"],
+            id="pattern-sub-duplicate-count-keyword",
+        ),
+        pytest.param(
+            "pattern.sub",
+            "abcabc",
+            {"count_alias": 1},
+            "x",
+            0,
+            0,
+            "str",
+            {
+                "type": "TypeError",
+                "message_substring": "'count_alias' is an invalid keyword argument for sub()",
+            },
+            ["kwargs.count_alias"],
+            id="pattern-sub-count-alias-keyword",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "abc",
+            {"missing": 1},
+            "x",
+            0,
+            0,
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "'missing' is an invalid keyword argument for subn()",
+            },
+            ["kwargs.missing"],
+            id="pattern-subn-unexpected-keyword",
+        ),
+        pytest.param(
+            "pattern.subn",
+            "abcabc",
+            {"count_alias": 1},
+            "x",
+            0,
+            0,
+            "bytes",
+            {
+                "type": "TypeError",
+                "message_substring": "'count_alias' is an invalid keyword argument for subn()",
+            },
+            ["kwargs.count_alias"],
+            id="pattern-subn-count-alias-keyword",
+        ),
+    ),
+)
+def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpython_exceptions(
+    monkeypatch,
+    operation: str,
+    haystack: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: object,
+    maxsplit: object,
+    text_model: str,
+    expected_exception: dict[str, str],
+    expected_field_names: list[str],
+) -> None:
+    workload = _pattern_helper_collection_replacement_keyword_error_workload(
+        operation=operation,
+        haystack=haystack,
+        kwargs_payload=kwargs_payload,
+        replacement=replacement,
+        count=count,
+        maxsplit=maxsplit,
+        expected_exception=expected_exception,
+        text_model=text_model,
+    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+    callback_field_names: list[str] = []
+    helper_name = workload.operation.removeprefix("pattern.")
+    positional_keyword_field = _collection_replacement_positional_keyword_field(
+        workload
+    )
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        for _ in range(2):
+            with pytest.raises(TypeError) as expected_error:
+                compiled_pattern = re.compile(
+                    workload.pattern_payload(),
+                    workload.flags,
+                )
+                kwargs = dict(workload.kwargs)
+                if workload.operation == "pattern.split":
+                    args: list[object] = [workload.haystack_payload()]
+                    if positional_keyword_field == "maxsplit":
+                        args.append(workload.maxsplit_argument())
+                    getattr(compiled_pattern, helper_name)(*args, **kwargs)
+                elif workload.operation in {"pattern.sub", "pattern.subn"}:
+                    args = [
+                        workload.replacement_payload(),
+                        workload.haystack_payload(),
+                    ]
+                    if positional_keyword_field == "count":
+                        args.append(workload.count_argument())
+                    getattr(compiled_pattern, helper_name)(*args, **kwargs)
+                else:
+                    raise AssertionError(
+                        "unexpected pattern helper keyword-error workload "
+                        f"operation {workload.operation!r}"
+                    )
+            observed_field_names.clear()
+            with pytest.raises(TypeError) as observed_error:
+                callback()
+            callback_field_names.extend(observed_field_names)
+
+            assert str(observed_error.value) == str(expected_error.value)
+
+        assert callback_field_names == expected_field_names * 2
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_pattern_helper_keyword_error_workloads(
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    _assert_keyword_error_workload_probe_measured(
+        source_workload,
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )
+
+
+@pytest.mark.parametrize(
+    (
+        "operation",
+        "haystack",
+        "kwargs_payload",
+        "replacement",
+        "count",
+        "maxsplit",
+        "text_model",
+        "expected_result",
+        "expected_exception_message",
+        "expected_field_names",
+    ),
+    (
+        pytest.param(
+            "module.split",
+            "zabczabc",
+            {"maxsplit": 1},
+            None,
+            0,
+            0,
+            "bytes",
+            [b"z", b"zabc"],
+            None,
+            ["kwargs.maxsplit"],
+            id="module-split-maxsplit-int",
+        ),
+        pytest.param(
+            "module.sub",
+            "abcabc",
+            {"count": 1},
+            "x",
+            0,
+            0,
+            "str",
+            "xabc",
+            None,
+            ["kwargs.count"],
+            id="module-sub-count-int",
+        ),
+        pytest.param(
+            "module.subn",
+            "abcabc",
+            {"count": True},
+            "x",
+            0,
+            0,
+            "bytes",
+            (b"xabc", 1),
+            None,
+            ["kwargs.count"],
+            id="module-subn-count-bool",
+        ),
+        pytest.param(
+            "module.split",
+            "abc",
+            {"missing": 1},
+            None,
+            0,
+            0,
+            "str",
+            None,
+            "split() got an unexpected keyword argument 'missing'",
+            ["kwargs.missing"],
+            id="module-split-unexpected-keyword",
+        ),
+        pytest.param(
+            "module.sub",
+            "abcabc",
+            {"count_alias": 1},
+            "x",
+            0,
+            0,
+            "str",
+            None,
+            "sub() got an unexpected keyword argument 'count_alias'",
+            ["kwargs.count_alias"],
+            id="module-sub-count-alias-keyword",
+        ),
+        pytest.param(
+            "module.subn",
+            "abc",
+            {"missing": 1},
+            "x",
+            1,
+            0,
+            "bytes",
+            None,
+            "subn() got an unexpected keyword argument 'missing'",
+            ["count", "kwargs.missing"],
+            id="module-subn-unexpected-keyword-after-positional-count",
+        ),
+    ),
+)
+def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time(
+    monkeypatch,
+    operation: str,
+    haystack: str,
+    kwargs_payload: dict[str, object],
+    replacement: object,
+    count: int,
+    maxsplit: int,
+    text_model: str,
+    expected_result: object | None,
+    expected_exception_message: str | None,
+    expected_field_names: list[str],
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-module-collection-replacement-keyword-contract",
+            "workload_id": f"{operation}-keyword-materialization-contract",
+            "bucket": operation.replace("module.", "module-"),
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "flags": 0,
+            "count": count,
+            "maxsplit": maxsplit,
+            "kwargs": kwargs_payload,
+            "expected_exception": (
+                None
+                if expected_exception_message is None
+                else {
+                    "type": "TypeError",
+                    "message_substring": expected_exception_message,
+                }
+            ),
+            "text_model": text_model,
+            "cache_mode": "purged",
+            "timing_scope": "module-helper-call",
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+        monkeypatch,
+        workload,
+        expected_result=expected_result,
+        expected_exception_message=expected_exception_message,
+        expected_field_names=expected_field_names,
+    )
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    ),
+)
+def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions(
+    monkeypatch,
+    source_workload: Workload,
+) -> None:
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", source_workload)
+        assert observed_field_names == []
+
+        with pytest.raises(TypeError) as expected_error:
+            run_benchmark_workload_with_cpython(source_workload)
+        observed_field_names.clear()
+        with pytest.raises(TypeError) as observed_error:
+            callback()
+
+        expected_field_names = [f"kwargs.{name}" for name in source_workload.kwargs]
+        if not _is_module_workflow_keyword_error_workload(source_workload):
+            positional_keyword_field = _collection_replacement_positional_keyword_field(
+                source_workload
+            )
+            if positional_keyword_field is not None:
+                expected_field_names.insert(0, positional_keyword_field)
+
+        assert observed_field_names == expected_field_names
+        assert str(observed_error.value) == str(expected_error.value)
+    finally:
+        re.purge()
+
+
+@pytest.mark.parametrize(
+    (
+        "workload_id",
+        "bucket",
+        "operation",
+        "haystack",
+        "replacement",
+        "count",
+        "maxsplit",
+        "text_model",
+        "expected_result",
+        "expected_field_name",
+    ),
+    (
+        pytest.param(
+            "module-split-indexlike-contract-bytes",
+            "module-split",
+            "module.split",
+            "zabcabcabc",
+            None,
+            0,
+            {"type": "indexlike", "value": 2},
+            "bytes",
+            [b"z", b"", b"abc"],
+            "maxsplit",
+            id="module-split",
+        ),
+        pytest.param(
+            "module-sub-indexlike-contract-str",
+            "module-sub",
+            "module.sub",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "str",
+            "xxabc",
+            "count",
+            id="module-sub",
+        ),
+        pytest.param(
+            "module-subn-indexlike-contract-bytes",
+            "module-subn",
+            "module.subn",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "bytes",
+            (b"xxabc", 2),
+            "count",
+            id="module-subn",
+        ),
+        pytest.param(
+            "pattern-split-indexlike-contract-str",
+            "pattern-split",
+            "pattern.split",
+            "zabcabcabc",
+            None,
+            0,
+            {"type": "indexlike", "value": 2},
+            "str",
+            ["z", "", "abc"],
+            "maxsplit",
+            id="pattern-split",
+        ),
+        pytest.param(
+            "pattern-sub-indexlike-contract-bytes",
+            "pattern-sub",
+            "pattern.sub",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "bytes",
+            b"xxabc",
+            "count",
+            id="pattern-sub",
+        ),
+        pytest.param(
+            "pattern-subn-indexlike-contract-str",
+            "pattern-subn",
+            "pattern.subn",
+            "abcabcabc",
+            "x",
+            {"type": "indexlike", "value": 2},
+            0,
+            "str",
+            ("xxabc", 2),
+            "count",
+            id="pattern-subn",
+        ),
+    ),
+)
+def test_collection_replacement_indexlike_descriptors_materialize_on_each_helper_call(
+    monkeypatch,
+    workload_id: str,
+    bucket: str,
+    operation: str,
+    haystack: str,
+    replacement: str | None,
+    count: object,
+    maxsplit: object,
+    text_model: str,
+    expected_result: object,
+    expected_field_name: str,
+) -> None:
+    workload = workload_from_payload(
+        {
+            "manifest_id": "python-benchmark-indexlike-contract",
+            "workload_id": workload_id,
+            "bucket": bucket,
+            "family": "module",
+            "operation": operation,
+            "pattern": "abc",
+            "haystack": haystack,
+            "replacement": replacement,
+            "flags": 0,
+            "count": count,
+            "maxsplit": maxsplit,
+            "text_model": text_model,
+            "cache_mode": "purged",
+            "timing_scope": (
+                "module-helper-call"
+                if operation.startswith("module.")
+                else "pattern-helper-call"
+            ),
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "notes": [],
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
+
+    re.purge()
+    try:
+        callback = build_callable(re, "re", workload)
+        assert observed_field_names == []
+        assert callback() == expected_result
+        assert callback() == expected_result
+    finally:
+        re.purge()
+
+    assert observed_field_names == [expected_field_name, expected_field_name]
+
+
+def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_match_correctness_anchor(
+) -> None:
+    manifest = load_manifest(COLLECTION_REPLACEMENT_MANIFEST_PATH)
+    workload = next(
+        candidate
+        for candidate in manifest.workloads
+        if candidate.workload_id == "pattern-split-no-match-warm-str"
+    )
+
+    assert workload.maxsplit == 0
+    assert _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"].workload_signature(
+        workload
+    ) == (
+        "pattern.split",
+        "abc",
+        ("zzz",),
+        (),
+        0,
+        "str",
+    )
+
+
+@pytest.mark.parametrize(
+    "source_workload",
+    tuple(
+        pytest.param(workload, id=workload.workload_id)
+        for workload in _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    ),
+)
+@pytest.mark.parametrize(
+    ("import_name", "adapter_name"),
+    (
+        pytest.param("re", "cpython.re", id="cpython"),
+        pytest.param("rebar", "rebar", id="rebar"),
+    ),
+)
+def test_run_internal_workload_probe_measures_module_helper_keyword_error_workloads(
+    source_workload: Workload,
+    import_name: str,
+    adapter_name: str,
+) -> None:
+    _assert_keyword_error_workload_probe_measured(
+        source_workload,
+        import_name=import_name,
+        adapter_name=adapter_name,
+    )

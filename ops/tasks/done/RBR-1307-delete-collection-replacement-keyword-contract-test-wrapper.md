@@ -1,6 +1,6 @@
 ## RBR-1307: Delete collection-replacement keyword-contract test wrapper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -59,3 +59,9 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'collection_replacement_keyword or keyword_error or keyword_kwargs_materialize or indexlike_descriptors_materialize or implicit_zero_maxsplit or shared_collection_replacement_classifier_contract_tests_import_from_support'` passed with `4 passed, 146 deselected in 0.13s`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py -k 'collection_replacement_keyword or keyword_error or keyword_kwargs_materialize or indexlike_descriptors_materialize or implicit_zero_maxsplit or shared_collection_replacement_classifier_contract_tests_import_from_support'` passed with `105 passed, 146 deselected in 0.22s`, which is the current fuller baseline before the delete; and
   - `bash -lc "test ! -e tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py && ! rg -n 'test_collection_replacement_keyword_contract_benchmark_support|collection_replacement_keyword_contract_benchmark_support' tests/benchmarks -g '*.py'"` currently fails because the dedicated test file and its remaining ownership reference still exist, and that failure belongs exactly to this cleanup.
+
+## Completion Note
+- Landed by moving the surviving collection-replacement keyword-contract coverage onto `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`, updating `tests/benchmarks/test_benchmark_test_support.py` to point at the single owner suite and assert the deleted wrapper stays unimportable/unreferenced, and deleting `tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py`.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'collection_replacement_keyword or keyword_error or keyword_kwargs_materialize or indexlike_descriptors_materialize or implicit_zero_maxsplit or shared_collection_replacement_classifier_contract_tests_import_from_support'` passed with `90 passed, 147 deselected in 0.40s`.
+  - `bash -lc "test ! -e tests/benchmarks/test_collection_replacement_keyword_contract_benchmark_support.py && ! rg -n 'test_collection_replacement_keyword_contract_benchmark_support|collection_replacement_keyword_contract_benchmark_support' tests/benchmarks -g '*.py'"` passed.

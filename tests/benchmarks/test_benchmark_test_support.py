@@ -1101,8 +1101,8 @@ def test_non_owner_benchmark_support_modules_import_shared_collection_replacemen
 
 def test_shared_collection_replacement_classifier_contract_tests_import_from_support(
 ) -> None:
-    keyword_contract_suite = importlib.import_module(
-        "tests.benchmarks.test_collection_replacement_keyword_contract_benchmark_support"
+    owner_suite = importlib.import_module(
+        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
     )
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
@@ -1113,7 +1113,7 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
         "_is_collection_replacement_keyword_workload",
     }.issubset(
         _module_imported_names(
-            keyword_contract_suite,
+            owner_suite,
             "tests.benchmarks.benchmark_test_support",
         )
     )
@@ -1126,6 +1126,20 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
             "tests.benchmarks.benchmark_test_support",
         )
     )
+
+
+def test_deleted_collection_replacement_keyword_contract_wrapper_stays_unimportable_and_unreferenced(
+) -> None:
+    deleted_module_name = (
+        "tests.benchmarks.test_collection_replacement_"
+        + "keyword_contract_benchmark_support"
+    )
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module(deleted_module_name)
+
+    for module_path in pathlib.Path(__file__).parent.glob("*.py"):
+        assert deleted_module_name not in module_path.read_text(encoding="utf-8")
 
 
 def test_benchmark_test_support_does_not_define_compiled_pattern_module_helper_owner_surface(
