@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness covers 1853 cases across 114 manifests, with all 1853 passing in the current slice; the benchmark publication covers 1219/1219 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree-shim path on a bounded slice.
 
 ## README Next Steps
-- The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference slice pinned to `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`.
+- The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference conditional slice pinned to `a((b|c){1,4})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree-shim path rather than the built-native extension path.
@@ -22,7 +22,7 @@ Published correctness covers 1853 cases across 114 manifests, with all 1853 pass
 The published correctness slice now covers 1853 cases across 114 manifests, all passing, and 1219 benchmark workloads are measured through the source-tree-shim path; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## Queue Frontier
-- The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference slice pinned to `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`.
+- The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference conditional slice pinned to `a((b|c){1,4})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)`.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -332,7 +332,7 @@ The published correctness slice now covers 1853 cases across 114 manifests, all 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference slice pinned to `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`.
+- The callable-replacement module wrong-return-type owner route continues with the broader-range wider-ranged branch-local-backreference conditional slice pinned to `a((b|c){1,4})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree-shim path rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
