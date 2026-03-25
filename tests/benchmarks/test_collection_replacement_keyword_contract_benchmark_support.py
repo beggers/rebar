@@ -65,6 +65,74 @@ def _assert_keyword_error_workload_probe_measured(
     assert probe["median_ns"] > 0
 
 
+def test_collection_replacement_keyword_contract_surface_is_support_owned_without_local_duplicates(
+) -> None:
+    import sys
+
+    from tests.benchmarks.benchmark_test_support import (
+        top_level_module_definition_and_assignment_names,
+    )
+    from tests.benchmarks import (
+        collection_replacement_benchmark_anchor_support as support,
+    )
+
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(sys.modules[__name__])
+    )
+
+    assert COLLECTION_REPLACEMENT_MANIFEST_PATH is support.COLLECTION_REPLACEMENT_MANIFEST_PATH
+    assert MODULE_BOUNDARY_MANIFEST_PATH is support.MODULE_BOUNDARY_MANIFEST_PATH
+    assert (
+        _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES
+        is support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES
+    )
+    assert (
+        _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        is support._PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    )
+    assert (
+        _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+        is support._MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+    )
+    assert (
+        _collection_replacement_positional_keyword_field
+        is support._collection_replacement_positional_keyword_field
+    )
+    assert (
+        _is_collection_replacement_keyword_workload
+        is support._is_collection_replacement_keyword_workload
+    )
+    assert (
+        _is_collection_replacement_module_helper_keyword_error_workload
+        is support._is_collection_replacement_module_helper_keyword_error_workload
+    )
+    assert (
+        _is_collection_replacement_pattern_helper_keyword_error_workload
+        is support._is_collection_replacement_pattern_helper_keyword_error_workload
+    )
+    assert (
+        _pattern_helper_collection_replacement_keyword_error_workload
+        is support._pattern_helper_collection_replacement_keyword_error_workload
+    )
+    assert {
+        "_pattern_helper_collection_replacement_keyword_error_workload",
+        "_is_collection_replacement_keyword_workload",
+        "_is_collection_replacement_pattern_helper_keyword_error_workload",
+        "_is_collection_replacement_module_helper_keyword_error_workload",
+    }.isdisjoint(local_definition_names)
+    assert {
+        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
+        "_PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS",
+        "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS",
+        "_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS",
+        "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_collection_replacement_positional_keyword_field",
+    }.isdisjoint(local_assignment_names)
+
+
 def test_pattern_helper_collection_replacement_keyword_error_workload_builder_shape() -> None:
     workload = _pattern_helper_collection_replacement_keyword_error_workload(
         operation="pattern.subn",
