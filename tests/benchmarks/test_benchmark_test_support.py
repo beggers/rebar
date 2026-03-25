@@ -1767,25 +1767,6 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     ("module_name", "expected_direct_names", "expected_owner_module_names"),
     (
         pytest.param(
-            "tests.benchmarks.test_benchmark_manifest_validation",
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-                    "CompiledPatternModuleCompileContractCase",
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
-            ),
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-                }
-            ),
-            id="benchmark-manifest-validation",
-        ),
-        pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
                 {
@@ -1842,6 +1823,43 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
             shared_name,
         )
         assert shared_name not in local_names
+
+
+def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_test_support(
+) -> None:
+    module = importlib.import_module("tests.benchmarks.test_benchmark_manifest_validation")
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    owner_owned_names = frozenset(
+        {
+            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+            "_SourceTreeContractBuilderSpec",
+            "_expected_exception_instance",
+            "_is_pattern_boundary_wrong_text_model_workload",
+            "_source_tree_contract_manifest",
+            "_source_tree_contract_workload",
+            "_write_test_manifest",
+            "CompiledPatternModuleCompileContractCase",
+            "assert_benchmark_workload_matches_expected_result",
+            "run_benchmark_workload_with_cpython",
+            "assert_pattern_helper_wrong_text_model_payload_round_trip",
+            "selected_manifest_workloads",
+        }
+    )
+
+    assert any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks"
+        and any(alias.name == "benchmark_test_support" for alias in node.names)
+        for node in _parsed_module_ast(module).body
+    )
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.benchmark_test_support"
+        for node in _parsed_module_ast(module).body
+    )
+    assert owner_owned_names.isdisjoint(definition_names | assignment_names)
 
 
 def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_shared_support(
@@ -2121,15 +2139,6 @@ def test_non_owner_benchmark_support_modules_import_shared_source_tree_contract_
     ("module_name", "expected_imported_names"),
     (
         (
-            "tests.benchmarks.test_benchmark_manifest_validation",
-            frozenset(
-                {
-                    "CompiledPatternModuleCompileContractCase",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-                }
-            ),
-        ),
-        (
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
                 {
@@ -2163,15 +2172,6 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
 @pytest.mark.parametrize(
     ("module_name", "expected_imported_names"),
     (
-        (
-            "tests.benchmarks.test_benchmark_manifest_validation",
-            frozenset(
-                {
-                    "_SourceTreeContractBuilderSpec",
-                    "_source_tree_contract_manifest",
-                }
-            ),
-        ),
         (
             "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
             frozenset(

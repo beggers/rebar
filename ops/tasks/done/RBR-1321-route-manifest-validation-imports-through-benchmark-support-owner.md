@@ -1,8 +1,14 @@
 # RBR-1321: Route manifest-validation imports through benchmark-support owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
+
+## Completion
+- Completed on 2026-03-25.
+- Removed the direct `from tests.benchmarks.benchmark_test_support import ...` wall from `tests/benchmarks/test_benchmark_manifest_validation.py` and routed the referenced support surface through the existing `benchmark_test_support` module import.
+- Updated `tests/benchmarks/test_benchmark_test_support.py` to stop expecting direct support imports from the manifest-validation suite and to assert the suite now imports only the owner module path with no direct owner `ImportFrom` edge and no top-level definition/assignment bindings for the retired owner-owned names.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_benchmark_test_support.py` and `bash -lc "! rg -n '^from tests\\.benchmarks\\.benchmark_test_support import ' tests/benchmarks/test_benchmark_manifest_validation.py"`.
 
 ## Goal
 - Delete the direct 12-name `benchmark_test_support` owner import wall from `tests/benchmarks/test_benchmark_manifest_validation.py` so the suite reaches that shared benchmark-support surface through the existing `tests.benchmarks.benchmark_test_support` module owner instead of rebinding owner-owned names locally.

@@ -14,20 +14,6 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from tests.benchmarks.benchmark_test_support import (
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-    _SourceTreeContractBuilderSpec,
-    _expected_exception_instance,
-    _is_pattern_boundary_wrong_text_model_workload,
-    _source_tree_contract_manifest,
-    _source_tree_contract_workload,
-    _write_test_manifest,
-    CompiledPatternModuleCompileContractCase,
-    assert_benchmark_workload_matches_expected_result,
-    run_benchmark_workload_with_cpython,
-    assert_pattern_helper_wrong_text_model_payload_round_trip as _assert_wrong_text_model_payload_round_trip,
-    selected_manifest_workloads,
-)
 from tests.benchmarks import benchmark_test_support
 
 
@@ -52,7 +38,11 @@ def _assert_manifest_and_payload_entry_points_raise(
     payload: dict[str, object],
     error_pattern: str,
 ) -> None:
-    manifest_path = _write_test_manifest(tmp_path, filename, manifest_source)
+    manifest_path = benchmark_test_support._write_test_manifest(
+        tmp_path,
+        filename,
+        manifest_source,
+    )
 
     with pytest.raises(ValueError, match=error_pattern):
         load_manifest(manifest_path)
@@ -61,19 +51,21 @@ def _assert_manifest_and_payload_entry_points_raise(
         workload_from_payload(payload)
 
 
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
-    manifest_id="pattern-boundary",
-    excluded_fields=frozenset(
-        {
-            "manifest_id",
-            "workload_id",
-            "warmup_iterations",
-            "sample_iterations",
-            "timed_samples",
-            "smoke",
-        }
-    ),
-    timing_scope="pattern-helper-call",
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
+    benchmark_test_support._SourceTreeContractBuilderSpec(
+        manifest_id="pattern-boundary",
+        excluded_fields=frozenset(
+            {
+                "manifest_id",
+                "workload_id",
+                "warmup_iterations",
+                "sample_iterations",
+                "timed_samples",
+                "smoke",
+            }
+        ),
+        timing_scope="pattern-helper-call",
+    )
 )
 
 
@@ -130,7 +122,7 @@ def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_nested_constant_contract.py",
         manifest_source,
@@ -274,7 +266,7 @@ def test_standard_benchmark_manifest_materializes_callable_replacement_descripto
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_loader_contract.py",
         manifest_source,
@@ -437,8 +429,14 @@ def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(
     )
 
     for first_module, second_module, error_pattern in duplicate_modules:
-        first_path = _write_test_manifest(tmp_path, *first_module)
-        second_path = _write_test_manifest(tmp_path, *second_module)
+        first_path = benchmark_test_support._write_test_manifest(
+            tmp_path,
+            *first_module,
+        )
+        second_path = benchmark_test_support._write_test_manifest(
+            tmp_path,
+            *second_module,
+        )
         with pytest.raises(ValueError, match=error_pattern):
             load_manifests([first_path, second_path])
 
@@ -503,7 +501,7 @@ def test_standard_benchmark_manifest_materializes_bytes_template_replacements_fo
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_bytes_template_contract.py",
         manifest_source,
@@ -558,7 +556,7 @@ def test_standard_benchmark_manifest_replacement_payload_rejects_unsupported_tex
     }
     """
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_invalid_text_model_contract.py",
         manifest_source,
@@ -586,7 +584,11 @@ def test_standard_benchmark_manifest_rejects_missing_and_non_dict_manifest_value
     )
 
     for filename, source, error_pattern in invalid_modules:
-        manifest_path = _write_test_manifest(tmp_path, filename, source)
+        manifest_path = benchmark_test_support._write_test_manifest(
+            tmp_path,
+            filename,
+            source,
+        )
         with pytest.raises(ValueError, match=error_pattern):
             load_manifest(manifest_path)
 
@@ -849,21 +851,21 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
     ("case_group", "source_workload"),
     tuple(
         pytest.param(case_group, source_workload, id=source_workload.workload_id)
-        for case_group in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case_group in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         for source_workload in case_group.source_workloads()
         if source_workload.expected_exception
     ),
 )
 def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows(
     tmp_path: pathlib.Path,
-    case_group: CompiledPatternModuleCompileContractCase,
+    case_group: benchmark_test_support.CompiledPatternModuleCompileContractCase,
     source_workload: Workload,
 ) -> None:
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
         spec=case_group.contract_builder_spec(),
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_compiled_pattern_module_compile_ignorecase_validation_contract.py",
         f"MANIFEST = {manifest!r}\n",
@@ -881,19 +883,19 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
 
 @pytest.mark.parametrize(
     "contract_case",
-    _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
     ids=lambda contract_case: contract_case.case_id,
 )
 def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preserve_success_and_keyword_payload_round_trip_until_helper_invocation(
     tmp_path: pathlib.Path,
-    contract_case: CompiledPatternModuleCompileContractCase,
+    contract_case: benchmark_test_support.CompiledPatternModuleCompileContractCase,
 ) -> None:
     source_workloads = contract_case.source_workloads()
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=contract_case.contract_builder_spec(),
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         contract_case.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -927,13 +929,13 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
             round_tripped,
         )
         if source_workload.expected_exception is None:
-            assert_benchmark_workload_matches_expected_result(
+            benchmark_test_support.assert_benchmark_workload_matches_expected_result(
                 round_tripped,
                 contract_case.run_cpython_workload(workload),
             )
             continue
 
-        expected_exception = _expected_exception_instance(
+        expected_exception = benchmark_test_support._expected_exception_instance(
             source_workload.expected_exception
         )
         with pytest.raises(
@@ -942,7 +944,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
         ) as expected_error:
             contract_case.run_cpython_workload(workload)
         with pytest.raises(type(expected_error.value)) as observed_error:
-            run_benchmark_workload_with_cpython(round_tripped)
+            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
         assert str(observed_error.value) == str(expected_error.value)
 
 
@@ -951,15 +953,15 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
 ) -> None:
     contract_case = next(
         case
-        for case in _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "bool-false"
     )
     source_workload = contract_case.source_workloads()[0]
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
         spec=contract_case.contract_builder_spec(),
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         "python_benchmark_compiled_pattern_module_compile_keyword_type_contract.py",
         f"MANIFEST = {manifest!r}\n",
@@ -994,11 +996,11 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
     source_workloads = (
         benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     )
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec(spec),
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         str(spec["contract_filename"]),
         f"MANIFEST = {manifest!r}\n",
@@ -1037,7 +1039,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
                 collection_replacement_callback_flags=0,
             )
         with pytest.raises(TypeError) as observed_error:
-            run_benchmark_workload_with_cpython(round_tripped)
+            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
 
         assert str(observed_error.value) == str(expected_error.value)
 
@@ -1052,11 +1054,11 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
     owner_spec: object,
 ) -> None:
     source_workloads = owner_spec.source_workloads()
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=owner_spec.contract_builder_spec(),
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         owner_spec.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -1092,9 +1094,9 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
             round_tripped,
             owner_spec=owner_spec,
         )
-        assert_benchmark_workload_matches_expected_result(
+        benchmark_test_support.assert_benchmark_workload_matches_expected_result(
             round_tripped,
-            run_benchmark_workload_with_cpython(round_tripped),
+            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped),
         )
 
 
@@ -1108,12 +1110,12 @@ def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows
     contract_surface: object,
 ) -> None:
     source_workloads = contract_surface.source_workloads()
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=contract_surface.spec.contract_builder_spec(),
     )
 
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         contract_surface.spec.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -1166,7 +1168,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
         if workload.workload_id
         == "module-sub-count-bool-false-keyword-warm-str-compiled-pattern"
     )
-    success_workload = _source_tree_contract_workload(
+    success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
         spec=success_surface.spec.contract_builder_spec(),
     )
@@ -1189,7 +1191,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
         if workload.workload_id
         == "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern"
     )
-    keyword_error_workload = _source_tree_contract_workload(
+    keyword_error_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_error_source_workload,
         spec=keyword_error_surface.spec.contract_builder_spec(),
     )
@@ -1235,7 +1237,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
             workload.operation,
             workload.text_model,
             workload.kwargs["count"],
-            run_benchmark_workload_with_cpython(workload),
+            benchmark_test_support.run_benchmark_workload_with_cpython(workload),
         )
         for workload in (
             benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
@@ -1283,7 +1285,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
         if workload.workload_id
         == "module-subn-count-keyword-purged-bytes-compiled-pattern"
     )
-    success_workload = _source_tree_contract_workload(
+    success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
         spec=success_surface.spec.contract_builder_spec(),
     )
@@ -1309,7 +1311,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
         if workload.workload_id
         == "module-subn-count-alias-keyword-purged-bytes-compiled-pattern"
     )
-    keyword_error_workload = _source_tree_contract_workload(
+    keyword_error_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_error_source_workload,
         spec=keyword_error_surface.spec.contract_builder_spec(),
     )
@@ -1322,7 +1324,9 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
         keyword_error_round_tripped,
     )
     with pytest.raises(TypeError):
-        run_benchmark_workload_with_cpython(keyword_error_round_tripped)
+        benchmark_test_support.run_benchmark_workload_with_cpython(
+            keyword_error_round_tripped
+        )
 
 
 @pytest.mark.parametrize(
@@ -1537,9 +1541,9 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in selected_manifest_workloads(
+        for workload in benchmark_test_support.selected_manifest_workloads(
             BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py",
-            include_workload=_is_pattern_boundary_wrong_text_model_workload,
+            include_workload=benchmark_test_support._is_pattern_boundary_wrong_text_model_workload,
         )
     ),
 )
@@ -1547,11 +1551,11 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
     tmp_path: pathlib.Path,
     source_workload: Workload,
 ) -> None:
-    manifest = _source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
         spec=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
-    manifest_path = _write_test_manifest(
+    manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
         f"python_benchmark_{source_workload.workload_id}_haystack_text_model_contract.py",
         f"MANIFEST = {manifest!r}\n",
@@ -1560,7 +1564,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
     payload = workload_to_payload(loaded_workload)
     round_tripped = workload_from_payload(payload)
 
-    _assert_wrong_text_model_payload_round_trip(
+    benchmark_test_support.assert_pattern_helper_wrong_text_model_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
