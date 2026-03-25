@@ -36,15 +36,12 @@ from tests.benchmarks.benchmark_test_support import (
     RecordingBenchmarkCompiledPattern,
     RecordingBenchmarkModule,
     _module_pattern_case,
-    _module_import_targets,
-    _module_imported_names,
     _owner_definition_manifest_path_names,
     _parsed_module_ast,
     _synthetic_manifest_loader,
     _synthetic_workload,
     _synthetic_workload_is_included,
     _synthetic_workload_signature,
-    _ast_import_targets,
     anchor_support_cache_guard,
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call,
     _has_standard_benchmark_legacy_workloads,
@@ -151,8 +148,8 @@ def _assert_owner_module_routes_through_package_import(
     package_module: str,
     expected_alias_pairs: frozenset[tuple[str, str | None]],
 ) -> None:
-    assert package_module in _module_import_targets(module)
-    assert owner_module not in _module_import_targets(module)
+    assert package_module in support._module_import_targets(module)
+    assert owner_module not in support._module_import_targets(module)
     assert _top_level_package_import_alias_pairs(
         module,
         package_module=package_module,
@@ -167,7 +164,7 @@ def _benchmark_support_import_targets_by_path(
     return tuple(
         (
             path.relative_to(REPO_ROOT),
-            _ast_import_targets(
+            support._ast_import_targets(
                 ast.parse(
                     path.read_text(encoding="utf-8"),
                     filename=str(path),
@@ -1395,13 +1392,13 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
             is MODULE_BOUNDARY_MANIFEST_PATH
         )
     else:
-        assert "MODULE_BOUNDARY_MANIFEST_PATH" in _module_imported_names(
+        assert "MODULE_BOUNDARY_MANIFEST_PATH" in support._module_imported_names(
             module,
             "tests.benchmarks.benchmark_test_support",
         )
         assert not {
             imported_name
-            for imported_name in _module_imported_names(
+            for imported_name in support._module_imported_names(
                 module,
                 "tests.benchmarks.benchmark_test_support",
             )
@@ -1433,7 +1430,7 @@ def test_source_tree_manifest_path_consumers_reuse_support_constants_by_identity
         anchor_support
     )
 
-    assert manifest_path_name in _module_imported_names(
+    assert manifest_path_name in support._module_imported_names(
         anchor_support,
         "tests.benchmarks.benchmark_test_support",
     )
@@ -1615,7 +1612,7 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
 
 
 @pytest.mark.parametrize(
-    ("module_name", "expected_imported_names"),
+    ("module_name", "expected_helper_names"),
     (
         pytest.param(
             "tests.benchmarks.test_benchmark_test_support",
@@ -1632,20 +1629,31 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
 )
 def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
     module_name: str,
-    expected_imported_names: frozenset[str],
+    expected_helper_names: frozenset[str],
 ) -> None:
     module = importlib.import_module(module_name)
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
+    module_ast = support._parsed_module_ast(module)
     local_names = definition_names | assignment_names
 
-    assert expected_imported_names.issubset(
-        _module_imported_names(module, "tests.benchmarks.benchmark_test_support")
+    assert _top_level_package_import_alias_pairs(
+        module,
+        package_module="tests.benchmarks",
+        imported_names=frozenset({"benchmark_test_support"}),
+    ) == frozenset({("benchmark_test_support", "support")})
+    assert not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.benchmark_test_support"
+        and any(alias.name in expected_helper_names for alias in node.names)
+        for node in module_ast.body
     )
-    assert expected_imported_names.isdisjoint(local_names)
-    for helper_name in expected_imported_names:
-        assert getattr(module, helper_name) is getattr(support, helper_name)
+    assert expected_helper_names.isdisjoint(local_names)
+    assert module.support is support
+    for helper_name in expected_helper_names:
+        assert not hasattr(module, helper_name)
+        assert getattr(module.support, helper_name) is getattr(support, helper_name)
 
 
 def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
@@ -1775,7 +1783,7 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
         package_module="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", None)})
-    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
+    assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         owner_suite
     )
     _assert_owner_module_routes_through_package_import(
@@ -1906,7 +1914,7 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
         package_module="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", None)})
-    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
+    assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         combined_suite
     )
 
@@ -2339,7 +2347,7 @@ def test_source_tree_contract_helper_suites_import_from_support(
         package_module="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", None)})
-    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
+    assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         module
     )
 
