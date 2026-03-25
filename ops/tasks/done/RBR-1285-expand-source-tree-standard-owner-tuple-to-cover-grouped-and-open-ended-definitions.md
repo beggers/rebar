@@ -1,6 +1,6 @@
 ## RBR-1285: Expand source-tree standard owner tuple to cover grouped and open-ended definitions
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -84,3 +84,8 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_anchor_support.py` passed with `225 passed`;
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `28 passed`; and
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest --collect-only -q tests/benchmarks/test_standard_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `341 tests collected`.
+
+## Completion
+- Expanded `tests/benchmarks/source_tree_benchmark_anchor_support.py` so `SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS` now owns the full eight-definition source-tree block, including the grouped-alternation, grouped-alternation-replacement, nested-group-replacement, and open-ended-grouped-alternation definitions with their existing manifest metadata and direct-parity supplemental cases.
+- Simplified `tests/benchmarks/standard_benchmark_anchor_support.py` to splice the expanded owner tuple immediately after `PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS` and removed the last inline source-tree definition bodies from the central assembler.
+- Updated the focused benchmark-support tests to pin the new eight-name owner tuple order, object reuse inside `STANDARD_BENCHMARK_DEFINITIONS`, the absence of the moved inline literals in the central file, and the unchanged owner-boundary assembly behavior.

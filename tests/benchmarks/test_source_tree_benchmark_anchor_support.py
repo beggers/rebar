@@ -280,21 +280,34 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_sour
 def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() -> None:
     owner_definitions = support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
     definition_names = tuple(definition.name for definition in owner_definitions)
-    standard_definitions = {
-        definition.name: definition
-        for definition in standard_support.STANDARD_BENCHMARK_DEFINITIONS
-        if definition.name in definition_names
-    }
-
     assert definition_names == (
         "optional-group-conditional",
         "nested-group",
         "exact-repeat",
         "ranged-repeat",
+        "grouped-alternation",
+        "grouped-alternation-replacement",
+        "nested-group-replacement",
+        "open-ended-grouped-alternation",
     )
-    assert tuple(standard_definitions) == definition_names
-    for definition in owner_definitions:
-        assert standard_definitions[definition.name] is definition
+    standard_definitions = standard_support.STANDARD_BENCHMARK_DEFINITIONS
+    start_index = next(
+        index
+        for index, definition in enumerate(standard_definitions)
+        if definition.name == definition_names[0]
+    )
+    standard_owner_slice = standard_definitions[
+        start_index : start_index + len(owner_definitions)
+    ]
+
+    assert tuple(definition.name for definition in standard_owner_slice) == definition_names
+    assert standard_owner_slice == owner_definitions
+    assert all(
+        standard_definition is owner_definition
+        for standard_definition, owner_definition in zip(
+            standard_owner_slice, owner_definitions, strict=True
+        )
+    )
 
 
 def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:

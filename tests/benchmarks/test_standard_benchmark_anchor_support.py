@@ -351,7 +351,7 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
         pytest.param(
             anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
             "pattern-boundary-wrong-text-model",
-            "grouped-alternation",
+            None,
             id="source-tree-standard-after-pattern-boundary",
         ),
     ),
@@ -359,7 +359,7 @@ def test_standard_benchmark_definitions_are_support_owned_tuple_used_by_helper_p
 def test_standard_inventory_keeps_source_tree_owner_blocks_at_expected_boundaries(
     owner_definitions: tuple[Any, ...],
     preceding_definition_name: str,
-    following_definition_name: str,
+    following_definition_name: str | None,
 ) -> None:
     standard_definitions = support.STANDARD_BENCHMARK_DEFINITIONS
     standard_names = _definition_names(standard_definitions)
@@ -378,9 +378,11 @@ def test_standard_inventory_keeps_source_tree_owner_blocks_at_expected_boundarie
             standard_owner_slice, owner_definitions, strict=True
         )
     )
-    assert standard_names[first_owner_index + len(owner_definitions)] == (
-        following_definition_name
-    )
+    next_index = first_owner_index + len(owner_definitions)
+    if following_definition_name is None:
+        assert next_index == len(standard_names)
+    else:
+        assert standard_names[next_index] == following_definition_name
 
 
 def test_standard_support_source_no_longer_inlines_collection_replacement_definitions(
@@ -440,6 +442,10 @@ def test_standard_support_source_no_longer_inlines_source_tree_standard_definiti
         "nested-group",
         "exact-repeat",
         "ranged-repeat",
+        "grouped-alternation",
+        "grouped-alternation-replacement",
+        "nested-group-replacement",
+        "open-ended-grouped-alternation",
     ):
         assert f'name="{definition_name}"' not in support_source
 
