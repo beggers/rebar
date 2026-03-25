@@ -6032,89 +6032,84 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
             ),
         )
 
-    def test_conditional_group_exists_callable_scorecards_keep_quantified_none_count_follow_on_cases_in_sync(
+    def _assert_conditional_group_exists_callable_quantified_follow_on_cases_in_sync(
         self,
+        *,
+        required_categories: tuple[str, ...],
+        excluded_categories: tuple[str, ...] = (),
+        expected_str_case_ids: tuple[str, ...],
+        expected_helper_counts: Counter[tuple[str, str | None]],
     ) -> None:
         manifest_id = "conditional-group-exists-callable-replacement-workflows"
         manifest = manifest_records_by_id(
             correctness.published_fixture_manifests()
         )[manifest_id]
         combined_case = correctness_scorecard_case("combined", manifest_id)
-        expected_quantified_none_count_str_case_ids = (
-            "module-sub-callable-conditional-group-exists-quantified-none-count-present-str",
-            "module-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
-            "pattern-sub-callable-conditional-group-exists-quantified-none-count-present-str",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
+
+        def selected_case_ids(
+            cases: Iterable[FixtureCase],
+            *,
+            text_model: str,
+        ) -> tuple[str, ...]:
+            return tuple(
+                case.case_id
+                for case in cases
+                if case.text_model == text_model
+                and all(category in case.categories for category in required_categories)
+                and all(category not in case.categories for category in excluded_categories)
+            )
+
+        expected_bytes_case_ids = tuple(
+            f"{case_id.removesuffix('-str')}-bytes" for case_id in expected_str_case_ids
         )
-        expected_quantified_none_count_bytes_case_ids = tuple(
-            f"{case_id.removesuffix('-str')}-bytes"
-            for case_id in expected_quantified_none_count_str_case_ids
-        )
-        manifest_quantified_none_count_str_case_ids = tuple(
-            case.case_id
-            for case in manifest.cases
-            if case.text_model == "str"
-            and "quantified" in case.categories
-            and "none-count" in case.categories
-        )
-        manifest_quantified_none_count_bytes_case_ids = tuple(
-            case.case_id
-            for case in manifest.cases
-            if case.text_model == "bytes"
-            and "quantified" in case.categories
-            and "none-count" in case.categories
-        )
-        representative_quantified_none_count_str_cases = tuple(
+        representative_str_cases = tuple(
             case
             for case in combined_case.representative_cases
-            if case.text_model == "str"
-            and "quantified" in case.categories
-            and "none-count" in case.categories
+            if case.case_id in expected_str_case_ids
         )
-        representative_quantified_none_count_bytes_cases = tuple(
+        representative_bytes_cases = tuple(
             case
             for case in combined_case.representative_cases
-            if case.text_model == "bytes"
-            and "quantified" in case.categories
-            and "none-count" in case.categories
+            if case.case_id in expected_bytes_case_ids
         )
 
         self.assertEqual(
-            manifest_quantified_none_count_str_case_ids,
-            expected_quantified_none_count_str_case_ids,
+            selected_case_ids(manifest.cases, text_model="str"),
+            expected_str_case_ids,
         )
         self.assertEqual(
-            manifest_quantified_none_count_bytes_case_ids,
-            expected_quantified_none_count_bytes_case_ids,
+            selected_case_ids(manifest.cases, text_model="bytes"),
+            expected_bytes_case_ids,
         )
         self.assertEqual(
-            tuple(case.case_id for case in representative_quantified_none_count_str_cases),
-            expected_quantified_none_count_str_case_ids,
+            tuple(case.case_id for case in representative_str_cases),
+            expected_str_case_ids,
         )
         self.assertEqual(
-            tuple(case.case_id for case in representative_quantified_none_count_bytes_cases),
-            expected_quantified_none_count_bytes_case_ids,
+            tuple(case.case_id for case in representative_bytes_cases),
+            expected_bytes_case_ids,
         )
         self.assertEqual(
-            Counter(
-                (case.operation, case.helper)
-                for case in representative_quantified_none_count_str_cases
+            Counter((case.operation, case.helper) for case in representative_str_cases),
+            expected_helper_counts,
+        )
+        self.assertEqual(
+            Counter((case.operation, case.helper) for case in representative_bytes_cases),
+            expected_helper_counts,
+        )
+
+    def test_conditional_group_exists_callable_scorecards_keep_quantified_none_count_follow_on_cases_in_sync(
+        self,
+    ) -> None:
+        self._assert_conditional_group_exists_callable_quantified_follow_on_cases_in_sync(
+            required_categories=("quantified", "none-count"),
+            expected_str_case_ids=(
+                "module-sub-callable-conditional-group-exists-quantified-none-count-present-str",
+                "module-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
+                "pattern-sub-callable-conditional-group-exists-quantified-none-count-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-none-count-absent-str",
             ),
-            Counter(
-                {
-                    ("module_call", "sub"): 1,
-                    ("module_call", "subn"): 1,
-                    ("pattern_call", "sub"): 1,
-                    ("pattern_call", "subn"): 1,
-                }
-            ),
-        )
-        self.assertEqual(
-            Counter(
-                (case.operation, case.helper)
-                for case in representative_quantified_none_count_bytes_cases
-            ),
-            Counter(
+            expected_helper_counts=Counter(
                 {
                     ("module_call", "sub"): 1,
                     ("module_call", "subn"): 1,
@@ -6127,80 +6122,20 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
     def test_conditional_group_exists_callable_scorecards_keep_quantified_no_match_follow_on_cases_in_sync(
         self,
     ) -> None:
-        manifest_id = "conditional-group-exists-callable-replacement-workflows"
-        combined_case = correctness_scorecard_case("combined", manifest_id)
-        expected_quantified_no_match_str_case_ids = (
-            "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
-            "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
-            "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
-            "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
-            "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
-            "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
-        )
-        expected_quantified_no_match_bytes_case_ids = (
-            "module-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
-            "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-bytes",
-            "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-bytes",
-            "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-bytes",
-            "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
-            "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
-            "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-bytes",
-            "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-bytes",
-        )
-        representative_quantified_no_match_str_cases = tuple(
-            case
-            for case in combined_case.representative_cases
-            if case.text_model == "str"
-            and "quantified" in case.categories
-            and "negative-count" not in case.categories
-            and "no-match" in case.categories
-        )
-        representative_quantified_no_match_bytes_cases = tuple(
-            case
-            for case in combined_case.representative_cases
-            if case.text_model == "bytes"
-            and "quantified" in case.categories
-            and "negative-count" not in case.categories
-            and "no-match" in case.categories
-        )
-
-        self.assertEqual(
-            tuple(case.case_id for case in representative_quantified_no_match_str_cases),
-            expected_quantified_no_match_str_case_ids,
-        )
-        self.assertEqual(
-            tuple(case.case_id for case in representative_quantified_no_match_bytes_cases),
-            expected_quantified_no_match_bytes_case_ids,
-        )
-        self.assertEqual(
-            expected_quantified_no_match_bytes_case_ids,
-            tuple(
-                f"{case_id.removesuffix('-str')}-bytes"
-                for case_id in expected_quantified_no_match_str_case_ids
+        self._assert_conditional_group_exists_callable_quantified_follow_on_cases_in_sync(
+            required_categories=("quantified", "no-match"),
+            excluded_categories=("negative-count",),
+            expected_str_case_ids=(
+                "module-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+                "module-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
+                "pattern-sub-callable-conditional-group-exists-quantified-near-miss-present-str",
+                "pattern-subn-callable-conditional-group-exists-quantified-near-miss-absent-str",
+                "module-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
+                "module-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-quantified-near-miss-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-quantified-near-miss-absent-str",
             ),
-        )
-        self.assertEqual(
-            Counter(
-                (case.operation, case.helper)
-                for case in representative_quantified_no_match_str_cases
-            ),
-            Counter(
-                {
-                    ("module_call", "sub"): 2,
-                    ("module_call", "subn"): 2,
-                    ("pattern_call", "sub"): 2,
-                    ("pattern_call", "subn"): 2,
-                }
-            ),
-        )
-        self.assertEqual(
-            Counter(
-                (case.operation, case.helper)
-                for case in representative_quantified_no_match_bytes_cases
-            ),
-            Counter(
+            expected_helper_counts=Counter(
                 {
                     ("module_call", "sub"): 2,
                     ("module_call", "subn"): 2,
