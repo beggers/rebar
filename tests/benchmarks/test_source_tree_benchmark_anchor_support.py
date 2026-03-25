@@ -108,6 +108,26 @@ _MOVED_REPORT_CONTRACT_HELPER_NAMES = (
     "find_manifest_record",
 )
 
+_MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
+    "_conditional_group_exists_callable_str_slice_workloads",
+    "_conditional_group_exists_callable_bytes_slice_workloads",
+    "_conditional_group_exists_quantified_callable_str_workloads",
+    "_conditional_group_exists_nested_callable_str_workloads",
+    "_conditional_group_exists_nested_callable_bytes_workloads",
+    "_conditional_group_exists_quantified_callable_bytes_workloads",
+    "_conditional_group_exists_alternation_callable_bytes_workloads",
+    "_split_workload_ids_by_text_model",
+    "_selected_workload_ids",
+    "_mirrored_bytes_workload_ids",
+    "_conditional_group_exists_template_replacement_expectation",
+    "_conditional_group_exists_callable_replacement_expectations",
+    "_conditional_group_exists_alternation_callable_replacement_expectation",
+    "_conditional_group_exists_nested_callable_replacement_expectation",
+    "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
+    "_conditional_group_exists_quantified_callable_replacement_expectation",
+    "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
+)
+
 
 def _module_pattern_case(
     *,
@@ -881,6 +901,18 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
         assert function_name in local_function_names
 
 
+def test_source_tree_support_module_exposes_moved_conditional_callable_helpers() -> None:
+    local_function_names = {
+        node.name
+        for node in _parsed_module_ast(support).body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    for function_name in _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES:
+        assert hasattr(support, function_name)
+        assert function_name in local_function_names
+
+
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
     local_class_names = {
         node.name
@@ -907,6 +939,18 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
     }
 
     for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
+        assert function_name not in local_function_names
+
+
+def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_locally(
+) -> None:
+    local_function_names = {
+        node.name
+        for node in _parsed_source_tree_combined_suite_ast().body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    for function_name in _MOVED_CONDITIONAL_CALLABLE_HELPER_NAMES:
         assert function_name not in local_function_names
 
 
