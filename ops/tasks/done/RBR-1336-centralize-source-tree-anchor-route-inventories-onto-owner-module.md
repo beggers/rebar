@@ -1,6 +1,6 @@
 ## RBR-1336: Centralize source-tree anchor route inventories onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-25
 
@@ -58,3 +58,11 @@ Created: 2026-03-25
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `78 passed in 1.05s`
   - `bash -lc "! rg -n '^(_MOVED_SOURCE_TREE_CLASS_NAMES|_MOVED_SOURCE_TREE_FUNCTION_NAMES|_MOVED_SOURCE_TREE_CONSTANT_NAMES|_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES|_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES|_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES|_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES|_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES|_RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES|_MOVED_REPORT_CONTRACT_HELPER_NAMES|_ROUTED_REPORT_CONTRACT_HELPER_NAMES|_ROUTED_SOURCE_TREE_SUITE_ASSERTION_HELPER_NAMES) =' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because those local route/name inventory tuples still exist, and that failure belongs exactly to this cleanup
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+
+## Completion
+- Added owner-owned source-tree surface inventory tuples to `tests/benchmarks/source_tree_benchmark_anchor_support.py` for the moved class/function/constant groups, routed compiled-pattern contract groups, centralized manifest-path and retired-shared-support groups, and moved/routed report and suite assertion helper groups.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to consume those owner-owned tuples directly and deleted the duplicated local inventory tuple definitions listed in this task.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` -> `78 passed in 1.15s`
+  - `bash -lc "! rg -n '^(_MOVED_SOURCE_TREE_CLASS_NAMES|_MOVED_SOURCE_TREE_FUNCTION_NAMES|_MOVED_SOURCE_TREE_CONSTANT_NAMES|_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES|_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES|_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES|_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES|_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES|_RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES|_MOVED_REPORT_CONTRACT_HELPER_NAMES|_ROUTED_REPORT_CONTRACT_HELPER_NAMES|_ROUTED_SOURCE_TREE_SUITE_ASSERTION_HELPER_NAMES) =' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` -> passed
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` -> passed

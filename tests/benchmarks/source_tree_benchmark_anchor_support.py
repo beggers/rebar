@@ -43,6 +43,135 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
+SOURCE_TREE_MOVED_CLASS_NAMES = (
+    "SourceTreeBenchmarkCommonCase",
+    "SourceTreeManifestExpectation",
+    "SourceTreeDeferredExpectation",
+    "SourceTreeScorecardCase",
+    "SourceTreeCombinedCase",
+    "SourceTreeCombinedPatternGroupExpectation",
+    "SourceTreeCombinedManifestShapeExpectation",
+    "SourceTreeCombinedFullyMeasuredManifestExpectation",
+    "SourceTreeCombinedManifestExpectationDefinition",
+    "SourceTreeCombinedSliceExpectation",
+)
+
+SOURCE_TREE_MOVED_FUNCTION_NAMES = (
+    "source_tree_scorecard_case_ids",
+    "source_tree_scorecard_case",
+    "source_tree_combined_target_manifest_ids",
+    "source_tree_combined_case",
+    "source_tree_combined_manifest_shape_expectation",
+    "source_tree_combined_slice_manifest_ids",
+    "source_tree_combined_slice_derived_manifest_ids",
+    "source_tree_combined_slice_expectations",
+    "source_tree_combined_fully_measured_manifest_ids",
+    "source_tree_combined_fully_measured_manifest_expectation",
+    "source_tree_combined_manifest_representative_measured_workload_ids",
+    "assert_zero_gap_bytes_representative_subset",
+    "assert_zero_gap_manifest_representative_promotion",
+    "expected_summary_for_manifests",
+    "representative_measured_workload_ids",
+    "select_source_tree_combined_slice_rows",
+    "assert_source_tree_combined_manifest_slice",
+    "assert_source_tree_combined_pattern_group",
+    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
+    "assert_zero_gap_representative_workload_subset",
+)
+
+SOURCE_TREE_MOVED_CONSTANT_NAMES = (
+    "SOURCE_TREE_SCORECARD_EXPECTATIONS",
+    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+    "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+)
+
+SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES = (
+    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+)
+
+SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES = (
+    "_compiled_pattern_wrong_text_model_specs",
+    "_compiled_pattern_wrong_text_model_source_workloads",
+    "_compiled_pattern_wrong_text_model_contract_spec",
+    "compiled_pattern_contract_expected_build_calls",
+    "_compiled_pattern_module_helper_route",
+)
+
+SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+    "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+)
+
+SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
+    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+    "_is_module_workflow_compiled_pattern_literal_success_workload",
+    "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+    "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+    "_assert_compiled_pattern_module_success_payload_round_trip",
+)
+
+SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES = (
+    "OPTIONAL_GROUP_MANIFEST_PATH",
+    "NESTED_GROUP_MANIFEST_PATH",
+    "EXACT_REPEAT_MANIFEST_PATH",
+    "RANGED_REPEAT_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+    "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+    "OPEN_ENDED_MANIFEST_PATH",
+)
+
+SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
+    "MODULE_BOUNDARY_MANIFEST_PATH",
+    *SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES,
+    "StandardBenchmarkAnchorContractDefinition",
+    "_definition_anchor_expectations",
+    "_workload_case_pair_anchor_expectations",
+    "_workload_case_pairs_case_ids",
+    "_workload_case_pairs_workload_ids",
+    "freeze_signature_value",
+    "live_manifest_workloads",
+    "published_case_ids_by_signature",
+    "published_cases_by_id",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
+)
+
+SOURCE_TREE_MOVED_REPORT_CONTRACT_HELPER_NAMES = (
+    "_assert_benchmark_summary_consistent",
+    "_artifact_manifest_record",
+    "assert_source_tree_benchmark_contract",
+    "assert_benchmark_manifest_contract",
+    "find_manifest_record",
+)
+
+SOURCE_TREE_ROUTED_REPORT_CONTRACT_HELPER_NAMES = (
+    "assert_source_tree_benchmark_contract",
+    "assert_benchmark_manifest_contract",
+    "find_manifest_record",
+    "assert_zero_gap_bytes_representative_subset",
+    "assert_zero_gap_manifest_representative_promotion",
+)
+
+SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES = (
+    "assert_source_tree_combined_manifest_slice",
+    "assert_source_tree_combined_pattern_group",
+    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
+    "assert_zero_gap_representative_workload_subset",
+)
+
 
 def _assert_benchmark_summary_consistent(
     testcase: Any,

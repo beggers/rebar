@@ -16,138 +16,9 @@ from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
-_MOVED_SOURCE_TREE_CLASS_NAMES = (
-    "SourceTreeBenchmarkCommonCase",
-    "SourceTreeManifestExpectation",
-    "SourceTreeDeferredExpectation",
-    "SourceTreeScorecardCase",
-    "SourceTreeCombinedCase",
-    "SourceTreeCombinedPatternGroupExpectation",
-    "SourceTreeCombinedManifestShapeExpectation",
-    "SourceTreeCombinedFullyMeasuredManifestExpectation",
-    "SourceTreeCombinedManifestExpectationDefinition",
-    "SourceTreeCombinedSliceExpectation",
-)
-
-_MOVED_SOURCE_TREE_FUNCTION_NAMES = (
-    "source_tree_scorecard_case_ids",
-    "source_tree_scorecard_case",
-    "source_tree_combined_target_manifest_ids",
-    "source_tree_combined_case",
-    "source_tree_combined_manifest_shape_expectation",
-    "source_tree_combined_slice_manifest_ids",
-    "source_tree_combined_slice_derived_manifest_ids",
-    "source_tree_combined_slice_expectations",
-    "source_tree_combined_fully_measured_manifest_ids",
-    "source_tree_combined_fully_measured_manifest_expectation",
-    "source_tree_combined_manifest_representative_measured_workload_ids",
-    "assert_zero_gap_bytes_representative_subset",
-    "assert_zero_gap_manifest_representative_promotion",
-    "expected_summary_for_manifests",
-    "representative_measured_workload_ids",
-    "select_source_tree_combined_slice_rows",
-    "assert_source_tree_combined_manifest_slice",
-    "assert_source_tree_combined_pattern_group",
-    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
-    "assert_zero_gap_representative_workload_subset",
-)
-
-_MOVED_SOURCE_TREE_CONSTANT_NAMES = (
-    "SOURCE_TREE_SCORECARD_EXPECTATIONS",
-    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-    "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
-)
-
-_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES = (
-    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
-    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-)
-
-_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES = (
-    "_compiled_pattern_wrong_text_model_specs",
-    "_compiled_pattern_wrong_text_model_source_workloads",
-    "_compiled_pattern_wrong_text_model_contract_spec",
-    "compiled_pattern_contract_expected_build_calls",
-    "_compiled_pattern_module_helper_route",
-)
-
-_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-    "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
-)
-
-_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
-    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
-    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
-    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    "_is_module_workflow_compiled_pattern_literal_success_workload",
-    "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-    "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    "_assert_compiled_pattern_module_success_payload_round_trip",
-)
-
 _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
     support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
     support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-)
-
-_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
-    "OPTIONAL_GROUP_MANIFEST_PATH",
-    "NESTED_GROUP_MANIFEST_PATH",
-    "EXACT_REPEAT_MANIFEST_PATH",
-    "RANGED_REPEAT_MANIFEST_PATH",
-    "GROUPED_ALTERNATION_MANIFEST_PATH",
-    "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
-    "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
-    "OPEN_ENDED_MANIFEST_PATH",
-)
-
-_RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES = (
-    "MODULE_BOUNDARY_MANIFEST_PATH",
-    *_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES,
-    "StandardBenchmarkAnchorContractDefinition",
-    "_definition_anchor_expectations",
-    "_workload_case_pair_anchor_expectations",
-    "_workload_case_pairs_case_ids",
-    "_workload_case_pairs_workload_ids",
-    "freeze_signature_value",
-    "live_manifest_workloads",
-    "published_case_ids_by_signature",
-    "published_cases_by_id",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
-)
-
-_MOVED_REPORT_CONTRACT_HELPER_NAMES = (
-    "_assert_benchmark_summary_consistent",
-    "_artifact_manifest_record",
-    "assert_source_tree_benchmark_contract",
-    "assert_benchmark_manifest_contract",
-    "find_manifest_record",
-)
-
-_ROUTED_REPORT_CONTRACT_HELPER_NAMES = (
-    "assert_source_tree_benchmark_contract",
-    "assert_benchmark_manifest_contract",
-    "find_manifest_record",
-    "assert_zero_gap_bytes_representative_subset",
-    "assert_zero_gap_manifest_representative_promotion",
-)
-
-_ROUTED_SOURCE_TREE_SUITE_ASSERTION_HELPER_NAMES = (
-    "assert_source_tree_combined_manifest_slice",
-    "assert_source_tree_combined_pattern_group",
-    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
-    "assert_zero_gap_representative_workload_subset",
 )
 
 def _top_level_name_sets(module: object) -> tuple[set[str], set[str], set[str]]:
@@ -1327,37 +1198,45 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         _top_level_name_sets(support)
     )
 
-    for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
+    for class_name in support.SOURCE_TREE_MOVED_CLASS_NAMES:
         assert hasattr(support, class_name)
         assert class_name in local_class_names
-    for function_name in _MOVED_SOURCE_TREE_FUNCTION_NAMES:
+    for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
-    for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
+    for constant_name in support.SOURCE_TREE_MOVED_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
-    for constant_name in _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES:
-        assert hasattr(support, constant_name)
-        assert constant_name in local_assignment_names
-        assert getattr(support, constant_name) is getattr(
-            benchmark_test_support,
-            constant_name,
-        )
-    for constant_name in _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES:
+    for constant_name in (
+        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+    ):
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
         assert getattr(support, constant_name) is getattr(
             benchmark_test_support,
             constant_name,
         )
-    for constant_name in _ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES:
+    for constant_name in (
+        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
+    ):
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
         assert getattr(support, constant_name) is getattr(
             benchmark_test_support,
             constant_name,
         )
-    for constant_name in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES:
+    for constant_name in (
+        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES
+    ):
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+        assert getattr(support, constant_name) is getattr(
+            benchmark_test_support,
+            constant_name,
+        )
+    for constant_name in (
+        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES
+    ):
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
         assert getattr(support, constant_name) is getattr(
@@ -1411,7 +1290,7 @@ def test_compiled_pattern_module_success_source_workload_params_follow_owner_spe
 def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
     _, local_function_names, _ = _top_level_name_sets(support)
 
-    for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
+    for function_name in support.SOURCE_TREE_MOVED_REPORT_CONTRACT_HELPER_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
 
@@ -1460,9 +1339,9 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         benchmark_test_support._source_tree_combined_suite_module()
     )
 
-    for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
+    for class_name in support.SOURCE_TREE_MOVED_CLASS_NAMES:
         assert class_name not in local_class_names
-    for function_name in _MOVED_SOURCE_TREE_FUNCTION_NAMES:
+    for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
         assert function_name not in local_function_names
 
 
@@ -1524,7 +1403,7 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
         and isinstance(node.value, ast.Attribute)
         and isinstance(node.value.value, ast.Name)
         and node.value.value.id == "source_tree_support"
-        and node.value.attr in _MOVED_SOURCE_TREE_CONSTANT_NAMES
+        and node.value.attr in support.SOURCE_TREE_MOVED_CONSTANT_NAMES
         for target in node.targets
         if isinstance(target, ast.Name)
     }
@@ -1533,10 +1412,10 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Name)
         and isinstance(node.ctx, ast.Load)
-        and node.id in _MOVED_SOURCE_TREE_CONSTANT_NAMES
+        and node.id in support.SOURCE_TREE_MOVED_CONSTANT_NAMES
     }
 
-    for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
+    for constant_name in support.SOURCE_TREE_MOVED_CONSTANT_NAMES:
         assert constant_name not in direct_import_names
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
@@ -1578,7 +1457,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
             continue
 
         if isinstance(value, ast.Name):
-            if value.id in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES:
+            if value.id in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES:
                 local_constant_alias_names.update(targets)
             continue
 
@@ -1590,7 +1469,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
                 "compiled_pattern_module_helper_support",
                 "source_tree_support",
             }
-            and value.attr in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
+            and value.attr in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES
         ):
             local_constant_alias_names.update(targets)
 
@@ -1599,7 +1478,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Name)
         and isinstance(node.ctx, ast.Load)
-        and node.id in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
+        and node.id in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES
     }
     direct_compiled_pattern_contract_refs = {
         node.attr
@@ -1607,10 +1486,11 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
         and node.value.id == "benchmark_test_support"
-        and node.attr in _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+        and node.attr
+        in support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
     }
 
-    for constant_name in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES:
+    for constant_name in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES:
         assert constant_name not in direct_import_names
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
@@ -1623,7 +1503,7 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
         benchmark_test_support._source_tree_combined_suite_module()
     )
 
-    for function_name in _MOVED_REPORT_CONTRACT_HELPER_NAMES:
+    for function_name in support.SOURCE_TREE_MOVED_REPORT_CONTRACT_HELPER_NAMES:
         assert function_name not in local_function_names
 
 
@@ -1753,27 +1633,27 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
     ("routed_names",),
     [
         pytest.param(
-            _ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES,
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES,
             id="compiled-pattern-module-compile",
         ),
         pytest.param(
-            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES,
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES,
             id="compiled-pattern-wrong-text-model",
         ),
         pytest.param(
-            _ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES,
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES,
             id="compiled-pattern-module-helper-keyword",
         ),
         pytest.param(
-            _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES,
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES,
             id="compiled-pattern-module-success",
         ),
         pytest.param(
-            _ROUTED_REPORT_CONTRACT_HELPER_NAMES,
+            support.SOURCE_TREE_ROUTED_REPORT_CONTRACT_HELPER_NAMES,
             id="report-contract-helpers",
         ),
         pytest.param(
-            _ROUTED_SOURCE_TREE_SUITE_ASSERTION_HELPER_NAMES,
+            support.SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES,
             id="source-tree-suite-assertion-helpers",
         ),
         pytest.param(
@@ -2554,12 +2434,12 @@ def test_source_tree_owner_retired_shared_support_names_stay_out_of_top_level_na
         benchmark_test_support.top_level_module_definition_and_assignment_names(support)
     )
 
-    assert set(_RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES).isdisjoint(
+    assert set(support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES).isdisjoint(
         definition_names | assignment_names
     )
     assert all(
         not hasattr(support, name)
-        for name in _RETIRED_SHARED_SOURCE_TREE_SUPPORT_NAMES
+        for name in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
     )
 
 
