@@ -2004,15 +2004,7 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
     [
         pytest.param(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES,
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-                }
-            ),
+            frozenset(),
             id="compiled-pattern-module-compile",
         ),
         pytest.param(

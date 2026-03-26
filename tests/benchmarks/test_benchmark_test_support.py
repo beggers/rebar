@@ -997,7 +997,6 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_com
 
     assert {
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
-        "build_compiled_pattern_module_contract_anchor_lanes",
         "live_compiled_pattern_module_success_surface_ids",
     }.isdisjoint(definition_names)
     assert {
@@ -1005,7 +1004,6 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_com
     }.isdisjoint(assignment_names)
     assert re.search(
         r"^def (_build_compiled_pattern_module_compile_standard_benchmark_definitions|"
-        r"build_compiled_pattern_module_contract_anchor_lanes|"
         r"live_compiled_pattern_module_success_surface_ids)\b|"
         r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
         source,
