@@ -47,6 +47,47 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
     )
 
 
+def test_pattern_boundary_wrong_text_model_contract_spec_stays_source_tree_owned() -> None:
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            pattern_boundary_support
+        )
+    )
+    spec = pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC
+
+    assert spec == source_tree_support._SourceTreeContractBuilderSpec(
+        manifest_id="pattern-boundary",
+        excluded_fields=(
+            pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS
+        ),
+        manifest_timed_samples=source_tree_support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+            "manifest_timed_samples"
+        ].default,
+        timing_scope="pattern-helper-call",
+        notes=(),
+    )
+    assert isinstance(spec, source_tree_support._SourceTreeContractBuilderSpec)
+    assert "_SourceTreeContractBuilderSpec" not in definition_names | assignment_names
+    assert not hasattr(support, "_SourceTreeContractBuilderSpec")
+    assert "tests.benchmarks" in support._module_import_targets(pattern_boundary_support)
+    assert (
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+        not in support._module_import_targets(pattern_boundary_support)
+    )
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(pattern_boundary_support),
+        module_name="tests.benchmarks",
+        imported_names=frozenset(
+            {"benchmark_test_support", "source_tree_benchmark_anchor_support"}
+        ),
+    ) == frozenset(
+        {
+            ("benchmark_test_support", None),
+            ("source_tree_benchmark_anchor_support", "source_tree_support"),
+        }
+    )
+
+
 def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() -> None:
     definitions = pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
     definition_names = tuple(definition.name for definition in definitions)
