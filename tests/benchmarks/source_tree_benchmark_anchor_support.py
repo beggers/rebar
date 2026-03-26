@@ -2896,34 +2896,6 @@ def _single_manifest_scorecard_fallback_expectation(
     )
 
 
-def _source_tree_manifest_known_gap_counts(
-    manifests: list[BenchmarkManifest],
-    case_definition: _SourceTreeScorecardDefinition,
-    *,
-    selection_mode: str,
-) -> dict[str, int]:
-    known_gap_counts: dict[str, int] = {}
-    for manifest in manifests:
-        manifest_id = manifest.manifest_id
-        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
-        if manifest_expectation is None:
-            raise AssertionError(
-                "missing known-gap expectation for source-tree scorecard manifest "
-                f"{manifest_id!r}"
-            )
-        known_gap_counts[manifest_id] = len(
-            _filter_manifest_workload_ids(
-                manifest_expectation.known_gap_workload_ids,
-                selected_workload_ids=(
-                    workload.workload_id
-                    for workload in manifest.selected_workloads(
-                        selection_mode=selection_mode
-                    )
-                ),
-            )
-        )
-    return known_gap_counts
-
 def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     if case_id not in SOURCE_TREE_SCORECARD_EXPECTATIONS:
         raise AssertionError(f"unknown source-tree scorecard case {case_id!r}")
@@ -2943,11 +2915,26 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
         [workload for manifest in manifests for workload in manifest.workloads],
         smoke_only=case_definition.selection_mode == "smoke",
     )
-    manifest_known_gap_counts = _source_tree_manifest_known_gap_counts(
-        manifests,
-        case_definition,
-        selection_mode=case_definition.selection_mode,
-    )
+    manifest_known_gap_counts: dict[str, int] = {}
+    for manifest in manifests:
+        manifest_id = manifest.manifest_id
+        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+        if manifest_expectation is None:
+            raise AssertionError(
+                "missing known-gap expectation for source-tree scorecard manifest "
+                f"{manifest_id!r}"
+            )
+        manifest_known_gap_counts[manifest_id] = len(
+            _filter_manifest_workload_ids(
+                manifest_expectation.known_gap_workload_ids,
+                selected_workload_ids=(
+                    workload.workload_id
+                    for workload in manifest.selected_workloads(
+                        selection_mode=case_definition.selection_mode
+                    )
+                ),
+            )
+        )
     manifest_expectations: dict[str, SourceTreeManifestExpectation] = {}
     for manifest in manifests:
         manifest_id = manifest.manifest_id
