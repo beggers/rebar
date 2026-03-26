@@ -20,7 +20,7 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
-    source_tree_benchmark_anchor_support as source_tree_owner_support,
+    source_tree_benchmark_anchor_support as source_tree_support,
 )
 from tests.conftest import (
     REPO_ROOT,
@@ -39,9 +39,6 @@ from tests.python.fixture_parity_support import (
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
-
-
-source_tree_support = source_tree_owner_support
 
 
 def _workload_ids_for_declared_slice(

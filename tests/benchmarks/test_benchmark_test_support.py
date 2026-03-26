@@ -3434,7 +3434,7 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         expected_alias_pairs=frozenset(
             {
                 ("benchmark_test_support", None),
-                ("source_tree_benchmark_anchor_support", "source_tree_owner_support"),
+                ("source_tree_benchmark_anchor_support", "source_tree_support"),
             }
         ),
     )
@@ -3905,7 +3905,7 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
                 ("benchmark_test_support", None),
                 (
                     "source_tree_benchmark_anchor_support",
-                    "source_tree_owner_support",
+                    "source_tree_support",
                 ),
             }
         ),
@@ -3918,7 +3918,7 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
             {
                 (
                     "source_tree_benchmark_anchor_support",
-                    "source_tree_owner_support",
+                    "source_tree_support",
                 ),
             }
         ),
@@ -3955,15 +3955,14 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
             {
                 (
                     "source_tree_benchmark_anchor_support",
-                    "source_tree_owner_support",
+                    "source_tree_support",
                 ),
             }
         ),
     )
-    assert module.source_tree_owner_support is anchor_support
     assert module.source_tree_support is anchor_support
     assert owner_names.isdisjoint(definition_names | assignment_names)
-    assert owner_names.issubset(dir(module.source_tree_owner_support))
+    assert owner_names.issubset(dir(module.source_tree_support))
     assert owner_names.isdisjoint(dir(module.benchmark_test_support))
 
 
@@ -3978,7 +3977,7 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
                     ("benchmark_test_support", None),
                     (
                         "source_tree_benchmark_anchor_support",
-                        "source_tree_owner_support",
+                        "source_tree_support",
                     ),
                 }
             ),
