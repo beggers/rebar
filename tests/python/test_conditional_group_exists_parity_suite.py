@@ -492,6 +492,15 @@ def _select_match_api_cases() -> tuple[FixtureCase, ...]:
 
 
 MATCH_API_CASES = _select_match_api_cases()
+FULLY_EMPTY_ALTERNATION_MODULE_MATCH_METADATA_CASES = tuple(
+    CASES_BY_ID[case_id]
+    for case_id in (
+        "conditional-group-exists-fully-empty-alternation-module-search-present-str",
+        "conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+        "named-conditional-group-exists-fully-empty-alternation-module-search-present-str",
+        "named-conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+    )
+)
 
 # Preserve the extra module.fullmatch mixed-iteration checks that only lived in
 # the superseded singleton files and were never promoted into scorecard fixtures.
@@ -811,6 +820,23 @@ def test_match_api_cases_remain_published_quantified_conditional_matches() -> No
     assert {case.text_model for case in MATCH_API_CASES} == {"str"}
 
 
+def test_fully_empty_alternation_module_metadata_cases_remain_published() -> None:
+    assert tuple(
+        case.case_id for case in FULLY_EMPTY_ALTERNATION_MODULE_MATCH_METADATA_CASES
+    ) == (
+        "conditional-group-exists-fully-empty-alternation-module-search-present-str",
+        "conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+        "named-conditional-group-exists-fully-empty-alternation-module-search-present-str",
+        "named-conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+    )
+    assert {
+        case.manifest_id for case in FULLY_EMPTY_ALTERNATION_MODULE_MATCH_METADATA_CASES
+    } == {"conditional-group-exists-fully-empty-alternation-workflows"}
+    assert {case.text_model for case in FULLY_EMPTY_ALTERNATION_MODULE_MATCH_METADATA_CASES} == {
+        "str"
+    }
+
+
 @pytest.mark.parametrize(
     "case",
     CORE_CONDITIONAL_COMPILE_CASES,
@@ -1102,6 +1128,35 @@ def test_optional_group_conditional_branch_selection_matches_cpython(
 
 @pytest.mark.parametrize("case", MATCH_API_CASES, ids=fixture_case_pytest_id)
 def test_match_convenience_and_group_access_apis_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    FULLY_EMPTY_ALTERNATION_MODULE_MATCH_METADATA_CASES,
+    ids=fixture_case_pytest_id,
+)
+def test_fully_empty_alternation_module_match_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
