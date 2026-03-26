@@ -2055,6 +2055,13 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
         pytest.param(
             "collection_replacement_support",
             collection_support,
+            collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES,
+            frozenset(),
+            id="conditional-callable-signature-helpers",
+        ),
+        pytest.param(
+            "collection_replacement_support",
+            collection_support,
             collection_support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES,
             frozenset(),
             id="collection-owner-combined-slice-owner-names",

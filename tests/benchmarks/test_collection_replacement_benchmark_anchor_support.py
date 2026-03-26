@@ -1065,24 +1065,6 @@ def test_moved_collection_replacement_workload_ids_in_combined_suite_use_direct_
     )
 
 
-def test_combined_suite_uses_collection_owner_conditional_callable_signature_helpers(
-) -> None:
-    combined_suite = source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="collection_replacement_support",
-        owner_module=support,
-        owner_names=support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES,
-    )
-
-    for helper_name in (
-        support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES
-    ):
-        assert getattr(combined_suite.collection_replacement_support, helper_name) is getattr(
-            support,
-            helper_name,
-        )
-        assert not hasattr(combined_suite.source_tree_support, helper_name)
-
-
 def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with_owner_workload_ids(
 ) -> None:
     callable_expectations = {
