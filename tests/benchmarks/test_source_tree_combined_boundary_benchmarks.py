@@ -17,6 +17,9 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_replacement_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.conftest import (
     REPO_ROOT,
@@ -374,7 +377,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_workload_ids,
         )
         self.assertEqual({workload.text_model for workload in matched_rows}, {"str", "bytes"})
-        for workload_id in source_tree_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
+        for workload_id in collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
@@ -401,19 +404,19 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 workload
                 for workload in case.target_manifest.workloads
                 if workload.workload_id
-                in source_tree_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
+                in collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
                 or workload.workload_id
-                in source_tree_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+                in collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
             ),
             id_attr="workload_id",
         )
 
         self.assertEqual(
             tuple(workloads_by_id),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS,
         )
 
-        for workload_id in source_tree_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS:
+        for workload_id in collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS:
             expected_serialized_replacement = "\\g<word>x" if "-named-" in workload_id else "\\1x"
             expected_text_model = "bytes" if workload_id.endswith("-bytes") else "str"
             expected_template_payload = (
@@ -501,7 +504,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        expected_workload_ids = source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
+        expected_workload_ids = collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
         case = source_tree_support.source_tree_combined_case(manifest_id)
         expected_workload_count = len(case.selected_workload_ids_for_manifest(manifest_id))
         manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
@@ -542,7 +545,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         source_tree_support.assert_zero_gap_bytes_representative_subset(
             self,
             "conditional-group-exists-boundary",
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
         )
 
     def test_conditional_group_exists_nested_callable_str_manifest_promotes_replacement_and_exception_rows_to_measured(
@@ -554,7 +557,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         matched_rows = tuple(
             source_tree_support.select_source_tree_combined_slice_rows(case.target_manifest, expectation)
         )
-        expected_workload_ids = source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+        expected_workload_ids = collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
         expected_workload_count = len(case.selected_workload_ids_for_manifest(manifest_id))
 
         self.assertEqual(
@@ -606,7 +609,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        expected_workload_ids = source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+        expected_workload_ids = collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
         source_tree_support.assert_zero_gap_bytes_representative_subset(
             self,
             manifest_id,
@@ -690,7 +693,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
         )
 
         for source_workload in source_workloads:
@@ -759,7 +762,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
         )
 
         def normalized_text_model_payload(value: str | bytes | None) -> str | None:
@@ -3042,7 +3045,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         expected_none_count_workload_ids = (
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
         )
         callable_slice_rows = tuple(
             workload
@@ -3093,19 +3096,19 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(case.representative_known_gap_workload_ids, ())
         self.assertEqual(
             representative_str_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS,
         )
         self.assertEqual(
             representative_bytes_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(
             manifest_none_count_str_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS,
         )
         self.assertEqual(
             manifest_none_count_bytes_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(
             Counter(
@@ -3169,8 +3172,8 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             for workload_id in case.representative_measured_workload_ids
             if workload_id
             in (
-                source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
-                + source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+                + collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
             )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
@@ -3209,20 +3212,20 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             tuple(workload.workload_id for workload in str_rows),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
         )
         self.assertEqual(
             tuple(workload.workload_id for workload in bytes_rows),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
         self.assertEqual(
             representative_str_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
         )
         self.assertEqual(
             representative_bytes_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(
             Counter(nested_workload_signature(workload) for workload in str_rows),
@@ -3537,7 +3540,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             tuple(workload.workload_id for workload in matched_rows),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS,
         )
         self.assertEqual(
             Counter(workload.text_model for workload in matched_rows),
@@ -3550,7 +3553,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
-        for workload_id in source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS:
+        for workload_id in collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS:
             with self.subTest(workload_id=workload_id):
                 self.assertIn(workload_id, case.representative_measured_workload_ids)
                 self.assertNotIn(
@@ -3607,7 +3610,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
         self.assertEqual({workload.text_model for workload in matched_rows}, {"str", "bytes"})
-        for workload_id in source_tree_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
+        for workload_id in collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS:
             with self.subTest(workload_id=workload_id):
                 self.assertIn(workload_id, case.representative_measured_workload_ids)
                 self.assertNotIn(
@@ -3676,7 +3679,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             expected_bytes_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(
             representative_str_workload_ids[-len(expected_negative_count_str_workload_ids) :],

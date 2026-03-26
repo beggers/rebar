@@ -36,6 +36,19 @@ _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES = (
     "collection-replacement-grouped-callable-replacement",
 )
 
+_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES = (
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
+    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
+)
+
 
 def _collection_replacement_case(
     *,
@@ -1072,12 +1085,12 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
         )
 
 
-def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
+def test_moved_collection_replacement_workload_ids_in_combined_suite_use_direct_owner_import(
+) -> None:
     source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="source_tree_support",
-        owner_module=source_tree_support,
-        owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES
-        + source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES,
+        alias_name="collection_replacement_support",
+        owner_module=support,
+        owner_names=_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES,
     )
 
 
@@ -1109,11 +1122,9 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
 
 def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
     source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="source_tree_support",
-        owner_module=source_tree_support,
-        owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES[
-            :3
-        ],
+        alias_name="collection_replacement_support",
+        owner_module=support,
+        owner_names=_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES[:3],
     )
 
 
