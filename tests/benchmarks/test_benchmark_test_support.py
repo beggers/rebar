@@ -2798,23 +2798,6 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
     assert captured_call["subtest_label"] == expected_subtest_label
 
 
-def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_surface(
-) -> None:
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        anchor_support
-    )
-
-    assert {
-        "_compiled_pattern_module_helper_route",
-        "_module_workflow_compiled_pattern_success_correctness_case_signature",
-        "_module_workflow_compiled_pattern_success_workload_signature",
-        "_is_module_workflow_compiled_pattern_literal_success_workload",
-        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    }.issubset(definition_names)
-    assert not hasattr(support, "_compiled_pattern_module_helper_route")
-
-
 def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
 ) -> None:
     definition_names, assignment_names = (
