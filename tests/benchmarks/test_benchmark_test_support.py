@@ -3835,6 +3835,50 @@ def test_source_tree_combined_manifest_expectations_get_preserves_fallback_contr
     assert 7 not in expectations
 
 
+def test_source_tree_combined_manifest_expectations_fallback_lookup_preserves_dict_shape(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    published_manifests = lambda: (
+        SimpleNamespace(manifest_id="compile-matrix"),
+        SimpleNamespace(manifest_id="synthetic-fallback-boundary"),
+    )
+
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        published_manifests,
+    )
+    monkeypatch.setattr(
+        combined_suite,
+        "published_benchmark_manifests",
+        published_manifests,
+    )
+    support._clear_anchor_support_caches()
+
+    expectations = combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+    explicit_keys_before_lookup = tuple(expectations.keys())
+    explicit_length_before_lookup = len(expectations)
+
+    assert expectations["compile-matrix"] is expectations.get("compile-matrix")
+    assert expectations["synthetic-fallback-boundary"] is (
+        combined_suite._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
+    )
+    assert expectations.get("synthetic-fallback-boundary") is (
+        combined_suite._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
+    )
+    assert "synthetic-fallback-boundary" in expectations
+
+    assert tuple(expectations.keys()) == explicit_keys_before_lookup
+    assert len(expectations) == explicit_length_before_lookup
+    assert "synthetic-fallback-boundary" not in expectations.keys()
+    assert "synthetic-fallback-boundary" not in dict(expectations)
+    assert tuple(expectations.items()) == tuple(dict(expectations).items())
+
+
 def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportable(
 ) -> None:
     _assert_deleted_benchmark_module_stays_absent(
