@@ -14,9 +14,6 @@ from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
 )
-from tests.benchmarks import (
-    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
-)
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
 
@@ -3514,7 +3511,7 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                         "collection_replacement_benchmark_anchor_support",
                         "collection_replacement_support",
                     ),
-                    ("source_tree_benchmark_anchor_support", "source_tree_support"),
+                    ("source_tree_benchmark_anchor_support", "pattern_boundary_support"),
                 }
             ),
             id="pattern-boundary",
@@ -3659,6 +3656,12 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
             "tests.benchmarks.collection_replacement_benchmark_anchor_support"
         ),
     )
+    source_tree_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="source_tree_benchmark_anchor_support",
+        dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+    )
     package_imports = {
         (alias.name, alias.asname)
         for node in module_ast.body
@@ -3701,7 +3704,7 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id == "source_tree_support"
+        and node.value.id in source_tree_alias_names
         and node.attr in expected_source_tree_names
     ) == expected_source_tree_names
     assert frozenset(
@@ -4320,7 +4323,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-        *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )
     start_index = next(

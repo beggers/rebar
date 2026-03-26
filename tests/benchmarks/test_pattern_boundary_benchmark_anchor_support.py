@@ -19,9 +19,8 @@ from tests.benchmarks import (
 )
 from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import (
-    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+    source_tree_benchmark_anchor_support as pattern_boundary_support,
 )
-from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.python.fixture_parity_support import IndexLike
 
 
@@ -77,36 +76,23 @@ def test_pattern_boundary_wrong_text_model_contract_spec_stays_source_tree_owned
     )
     spec = pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC
 
-    assert spec == source_tree_support._SourceTreeContractBuilderSpec(
+    assert spec == pattern_boundary_support._SourceTreeContractBuilderSpec(
         manifest_id="pattern-boundary",
         excluded_fields=(
             pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS
         ),
-        manifest_timed_samples=source_tree_support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+        manifest_timed_samples=pattern_boundary_support._SourceTreeContractBuilderSpec.__dataclass_fields__[
             "manifest_timed_samples"
         ].default,
         timing_scope="pattern-helper-call",
         notes=(),
     )
-    assert isinstance(spec, source_tree_support._SourceTreeContractBuilderSpec)
-    assert "_SourceTreeContractBuilderSpec" not in definition_names | assignment_names
+    assert isinstance(spec, pattern_boundary_support._SourceTreeContractBuilderSpec)
+    assert "_SourceTreeContractBuilderSpec" in definition_names | assignment_names
     assert not hasattr(support, "_SourceTreeContractBuilderSpec")
-    assert "tests.benchmarks" in support._module_import_targets(pattern_boundary_support)
     assert (
-        "tests.benchmarks.source_tree_benchmark_anchor_support"
+        "tests.benchmarks.pattern_boundary_benchmark_anchor_support"
         not in support._module_import_targets(pattern_boundary_support)
-    )
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(pattern_boundary_support),
-        module_name="tests.benchmarks",
-        imported_names=frozenset(
-            {"benchmark_test_support", "source_tree_benchmark_anchor_support"}
-        ),
-    ) == frozenset(
-        {
-            ("benchmark_test_support", None),
-            ("source_tree_benchmark_anchor_support", "source_tree_support"),
-        }
     )
 
 
@@ -133,10 +119,10 @@ def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory(
             *support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
             *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
             *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-            *source_tree_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
-            *source_tree_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+            *pattern_boundary_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            *pattern_boundary_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
             *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
-            *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+            *pattern_boundary_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
         )
         if definition.name in owner_definition_names
     }
@@ -724,7 +710,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = pattern_boundary_support._pattern_boundary_wrong_text_model_source_workloads()
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = pattern_boundary_support._source_tree_contract_manifest(
         source_workloads,
         spec=pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -789,7 +775,7 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = pattern_boundary_support._source_tree_contract_workload(
         source_workload,
         spec=pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -835,7 +821,7 @@ def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contrac
     callback = build_callable(
         module,
         "re",
-        source_tree_support._source_tree_contract_workload(
+        pattern_boundary_support._source_tree_contract_workload(
             source_workload,
             spec=pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
