@@ -3596,45 +3596,6 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
         workload_signature=_module_workflow_compiled_pattern_success_workload_signature,
         run_callback_result_parity=True,
     ),
-    StandardBenchmarkAnchorContractDefinition(
-        name="module-workflow-compiled-pattern-wrong-text-model",
-        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-search-on-bytes-string-warm-str-compiled-pattern": (
-                    "workflow-module-search-str-compiled-pattern-on-bytes-string",
-                ),
-                "module-match-on-str-string-purged-bytes-compiled-pattern": (
-                    "workflow-module-match-bytes-compiled-pattern-on-str-string",
-                ),
-                "module-fullmatch-on-bytes-string-warm-str-compiled-pattern": (
-                    "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
-                ),
-            },
-        ),
-        include_workload=(
-            lambda workload: importlib.import_module(
-                "tests.benchmarks.source_tree_benchmark_anchor_support"
-            )._is_module_workflow_compiled_pattern_wrong_text_model_workload(
-                workload
-            )
-        ),
-        correctness_case_signature=(
-            lambda case: importlib.import_module(
-                "tests.benchmarks.source_tree_benchmark_anchor_support"
-            )._module_workflow_compiled_pattern_correctness_case_signature(
-                case
-            )
-        ),
-        workload_signature=(
-            lambda workload: importlib.import_module(
-                "tests.benchmarks.source_tree_benchmark_anchor_support"
-            )._module_workflow_compiled_pattern_workload_signature(
-                workload
-            )
-        ),
-    ),
 )
 
 @dataclass(frozen=True, slots=True)

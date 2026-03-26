@@ -403,6 +403,33 @@ def _assert_wrong_text_model_payload_round_trip(
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-compiled-pattern-wrong-text-model",
+            manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-search-str-compiled-pattern-on-bytes-string",
+                    ),
+                    "module-match-on-str-string-purged-bytes-compiled-pattern": (
+                        "workflow-module-match-bytes-compiled-pattern-on-str-string",
+                    ),
+                    "module-fullmatch-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
+                    ),
+                },
+            ),
+            include_workload=(
+                _is_module_workflow_compiled_pattern_wrong_text_model_workload
+            ),
+            correctness_case_signature=(
+                _module_workflow_compiled_pattern_correctness_case_signature
+            ),
+            workload_signature=(
+                _module_workflow_compiled_pattern_workload_signature
+            ),
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
             name="optional-group-conditional",
             manifest_paths=(benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,),
             expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(

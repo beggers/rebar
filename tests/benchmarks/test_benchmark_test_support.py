@@ -1073,8 +1073,8 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
         ),
         pytest.param(
             support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+            "module-workflow-compiled-pattern-verbose-bytes-success",
             "module-workflow-compiled-pattern-wrong-text-model",
-            "optional-group-conditional",
             id="pattern-boundary-after-compiled-pattern-helper",
         ),
         pytest.param(

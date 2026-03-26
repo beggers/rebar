@@ -3712,6 +3712,7 @@ def test_source_tree_owner_manifest_path_constants_point_to_current_workload_fil
         pytest.param(
             "_source_tree_standard_benchmark_definitions",
             (
+                ("MODULE_BOUNDARY_MANIFEST_PATH",),
                 ("OPTIONAL_GROUP_MANIFEST_PATH",),
                 ("NESTED_GROUP_MANIFEST_PATH",),
                 ("EXACT_REPEAT_MANIFEST_PATH",),
@@ -3764,6 +3765,7 @@ def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constant
     )
 
     assert manifest_paths == (
+        benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
         benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
         benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
         benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
@@ -3894,6 +3896,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
     owner_definitions = support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
     definition_names = tuple(definition.name for definition in owner_definitions)
     assert definition_names == (
+        "module-workflow-compiled-pattern-wrong-text-model",
         "optional-group-conditional",
         "nested-group",
         "exact-repeat",
