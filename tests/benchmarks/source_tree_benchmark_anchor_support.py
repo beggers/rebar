@@ -1079,6 +1079,14 @@ class CompiledPatternModuleCompileContractCase:
     allowed_patterns: tuple[str, ...] = ()
     expected_exception: dict[str, str] | None = None
 
+    def required_keyword_signature(self) -> tuple[tuple[str, str, object], ...]:
+        if self.keyword_signature is None:
+            raise AssertionError(
+                "missing compiled-pattern module.compile keyword signature for "
+                f"{self.case_id!r}"
+            )
+        return self.keyword_signature
+
     def expected_source_workload_ids(self) -> tuple[str, ...]:
         return tuple(
             workload_id.removesuffix("-contract")
@@ -1163,23 +1171,30 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE = (
             "module.compile rows unresolved until helper invocation."
         ),
         correctness_case_signature_builder=(
-            benchmark_test_support._compiled_pattern_module_compile_success_correctness_case_signature
+            lambda _contract_case, case: benchmark_test_support._module_workflow_compiled_pattern_compile_correctness_case_signature(
+                case
+            )
         ),
         workload_signature_builder=(
-            benchmark_test_support._compiled_pattern_module_compile_success_workload_signature
+            lambda _contract_case, workload: benchmark_test_support._module_workflow_compiled_pattern_compile_workload_signature(
+                workload
+            )
         ),
         include_workload_selector=(
-            benchmark_test_support._is_compiled_pattern_module_compile_success_workload
+            lambda _contract_case, workload: benchmark_test_support._is_module_workflow_compiled_pattern_compile_workload(
+                workload
+            )
         ),
         payload_round_trip_assertion=(
             benchmark_test_support._assert_compiled_pattern_module_compile_success_payload_round_trip
         ),
         cpython_dispatch=(
-            benchmark_test_support._run_cpython_compiled_pattern_module_compile_success_workload
+            lambda _contract_case, workload: re.compile(
+                re.compile(workload.pattern_payload(), workload.flags),
+                workload.flags,
+            )
         ),
-        callback_flags_selector=(
-            benchmark_test_support._compiled_pattern_module_compile_success_callback_flags
-        ),
+        callback_flags_selector=(lambda _contract_case, source_workload: source_workload.flags),
     )
 )
 
@@ -1195,22 +1210,40 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE = (
             "module.compile flags= keyword rows unresolved until helper invocation."
         ),
         correctness_case_signature_builder=(
-            benchmark_test_support._compiled_pattern_module_compile_keyword_correctness_case_signature
+            lambda contract_case, case: benchmark_test_support._module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+                case,
+                keyword_signature=contract_case.required_keyword_signature(),
+                allowed_patterns=contract_case.allowed_patterns,
+            )
         ),
         workload_signature_builder=(
-            benchmark_test_support._compiled_pattern_module_compile_keyword_workload_signature
+            lambda contract_case, workload: benchmark_test_support._module_workflow_compiled_pattern_compile_keyword_workload_signature(
+                workload,
+                keyword_label=contract_case.case_id,
+                keyword_signature=contract_case.required_keyword_signature(),
+                allowed_patterns=contract_case.allowed_patterns,
+                expected_exception=contract_case.expected_exception,
+            )
         ),
         include_workload_selector=(
-            benchmark_test_support._is_compiled_pattern_module_compile_keyword_workload
+            lambda contract_case, workload: benchmark_test_support._is_module_workflow_compiled_pattern_compile_keyword_workload(
+                workload,
+                keyword_signature=contract_case.required_keyword_signature(),
+                allowed_patterns=contract_case.allowed_patterns,
+                expected_exception=contract_case.expected_exception,
+            )
         ),
         payload_round_trip_assertion=(
             benchmark_test_support._assert_compiled_pattern_module_compile_keyword_payload_round_trip
         ),
         cpython_dispatch=(
-            benchmark_test_support._run_cpython_compiled_pattern_module_compile_keyword_workload
+            lambda _contract_case, workload: re.compile(
+                re.compile(workload.pattern_payload(), workload.flags),
+                **workload.keyword_arguments(),
+            )
         ),
         callback_flags_selector=(
-            benchmark_test_support._compiled_pattern_module_compile_keyword_callback_flags
+            lambda _contract_case, source_workload: source_workload.keyword_arguments()["flags"]
         ),
     )
 )

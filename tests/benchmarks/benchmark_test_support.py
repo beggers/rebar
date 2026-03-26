@@ -1554,17 +1554,6 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
     )
 
 
-def _compiled_pattern_module_compile_keyword_signature(
-    contract_case: Any,
-) -> tuple[tuple[str, str, object], ...]:
-    if contract_case.keyword_signature is None:
-        raise AssertionError(
-            "missing compiled-pattern module.compile keyword signature for "
-            f"{contract_case.case_id!r}"
-        )
-    return contract_case.keyword_signature
-
-
 def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
     source_workload: Workload,
     payload: dict[str, object],
@@ -1617,106 +1606,6 @@ def _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
     assert type(round_tripped.kwargs["flags"]) is type(expected_keyword_value)
     assert payload.get("haystack_text_model") is None
     assert round_tripped.haystack_text_model is None
-
-
-def _compiled_pattern_module_compile_keyword_correctness_case_signature(
-    contract_case: Any,
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
-        case,
-        keyword_signature=_compiled_pattern_module_compile_keyword_signature(
-            contract_case
-        ),
-        allowed_patterns=contract_case.allowed_patterns,
-    )
-
-
-def _compiled_pattern_module_compile_keyword_workload_signature(
-    contract_case: Any,
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
-        workload,
-        keyword_label=contract_case.case_id,
-        keyword_signature=_compiled_pattern_module_compile_keyword_signature(
-            contract_case
-        ),
-        allowed_patterns=contract_case.allowed_patterns,
-        expected_exception=contract_case.expected_exception,
-    )
-
-
-def _is_compiled_pattern_module_compile_keyword_workload(
-    contract_case: Any,
-    workload: Any,
-) -> bool:
-    return _is_module_workflow_compiled_pattern_compile_keyword_workload(
-        workload,
-        keyword_signature=_compiled_pattern_module_compile_keyword_signature(
-            contract_case
-        ),
-        allowed_patterns=contract_case.allowed_patterns,
-        expected_exception=contract_case.expected_exception,
-    )
-
-
-def _run_cpython_compiled_pattern_module_compile_keyword_workload(
-    contract_case: Any,
-    workload: Workload,
-) -> object:
-    del contract_case
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return re.compile(compiled_pattern, **workload.keyword_arguments())
-
-
-def _compiled_pattern_module_compile_keyword_callback_flags(
-    contract_case: Any,
-    source_workload: Workload,
-) -> object:
-    del contract_case
-    return source_workload.keyword_arguments()["flags"]
-
-
-def _compiled_pattern_module_compile_success_correctness_case_signature(
-    contract_case: Any,
-    case: Any,
-) -> tuple[Any, ...] | None:
-    del contract_case
-    return _module_workflow_compiled_pattern_compile_correctness_case_signature(case)
-
-
-def _compiled_pattern_module_compile_success_workload_signature(
-    contract_case: Any,
-    workload: Any,
-) -> tuple[Any, ...]:
-    del contract_case
-    return _module_workflow_compiled_pattern_compile_workload_signature(workload)
-
-
-def _is_compiled_pattern_module_compile_success_workload(
-    contract_case: Any,
-    workload: Any,
-) -> bool:
-    del contract_case
-    return _is_module_workflow_compiled_pattern_compile_workload(workload)
-
-
-def _run_cpython_compiled_pattern_module_compile_success_workload(
-    contract_case: Any,
-    workload: Workload,
-) -> object:
-    del contract_case
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return re.compile(compiled_pattern, workload.flags)
-
-
-def _compiled_pattern_module_compile_success_callback_flags(
-    contract_case: Any,
-    source_workload: Workload,
-) -> object:
-    del contract_case
-    return source_workload.flags
 
 
 def anchored_workload_case_ids(
