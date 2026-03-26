@@ -51,6 +51,22 @@ _is_collection_replacement_wrong_text_model_workload = (
 )
 
 
+def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload["flags"] == source_workload.flags
+    assert round_tripped.flags == source_workload.flags
+    assert payload.get("expected_exception") == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+
+
 def _assert_compiled_pattern_module_compile_success_payload_round_trip(
     contract_case: object,
     source_workload: Workload,
@@ -58,7 +74,7 @@ def _assert_compiled_pattern_module_compile_success_payload_round_trip(
     round_tripped: Workload,
 ) -> None:
     del contract_case
-    benchmark_test_support._assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
+    _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
         source_workload,
         payload,
         round_tripped,
@@ -74,7 +90,7 @@ def _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
     round_tripped: Workload,
 ) -> None:
     del contract_case
-    benchmark_test_support._assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
+    _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
         source_workload,
         payload,
         round_tripped,

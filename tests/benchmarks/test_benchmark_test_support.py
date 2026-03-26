@@ -1194,7 +1194,6 @@ def test_benchmark_test_support_exports_compiled_pattern_module_compile_helper_s
         "_module_workflow_compiled_pattern_compile_keyword_correctness_case_signature",
         "_module_workflow_compiled_pattern_compile_keyword_workload_signature",
         "_is_module_workflow_compiled_pattern_compile_keyword_workload",
-        "_assert_compiled_pattern_module_compile_contract_payload_round_trip_common",
     }
 
     shared_definition_names, _ = support.top_level_module_definition_and_assignment_names(
@@ -1203,6 +1202,32 @@ def test_benchmark_test_support_exports_compiled_pattern_module_compile_helper_s
     assert helper_names.issubset(shared_definition_names)
     for helper_name in helper_names:
         assert getattr(support, helper_name) is getattr(anchor_support, helper_name)
+
+
+def test_source_tree_combined_suite_owns_compile_contract_round_trip_helper() -> None:
+    source = (
+        REPO_ROOT
+        / "tests"
+        / "benchmarks"
+        / "test_source_tree_combined_boundary_benchmarks.py"
+    ).read_text(encoding="utf-8")
+    support_source = (
+        REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
+    ).read_text(encoding="utf-8")
+
+    assert re.search(
+        r"^def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common\(",
+        source,
+        re.MULTILINE,
+    )
+    assert (
+        re.search(
+            r"^def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common\(",
+            support_source,
+            re.MULTILINE,
+        )
+        is None
+    )
 
 
 def test_module_keyword_flags_workload_stays_pinned() -> None:

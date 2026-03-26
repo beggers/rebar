@@ -3422,22 +3422,6 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
     )
 
 
-def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload["flags"] == source_workload.flags
-    assert round_tripped.flags == source_workload.flags
-    assert payload.get("expected_exception") == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-
-
 @cache
 def _build_source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
