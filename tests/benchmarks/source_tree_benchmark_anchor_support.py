@@ -3708,19 +3708,6 @@ def source_tree_combined_slice_manifest_ids() -> tuple[str, ...]:
     )
 
 
-def source_tree_combined_slice_derived_manifest_ids() -> tuple[str, ...]:
-    return tuple(
-        manifest_id
-        for manifest_id in source_tree_combined_slice_manifest_ids()
-        if SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-            manifest_id
-        ].representative_measured_workload_ids
-        is None
-        and SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id].shape_expectation
-        is None
-    )
-
-
 def source_tree_combined_slice_expectations(
     manifest_id: str,
 ) -> tuple[SourceTreeCombinedSliceExpectation, ...]:

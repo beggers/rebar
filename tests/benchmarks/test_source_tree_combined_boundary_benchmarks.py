@@ -2420,7 +2420,18 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                         )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
-        for manifest_id in source_tree_support.source_tree_combined_slice_derived_manifest_ids():
+        for manifest_id in (
+            manifest_id
+            for manifest_id in source_tree_support.source_tree_combined_slice_manifest_ids()
+            if source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                manifest_id
+            ].representative_measured_workload_ids
+            is None
+            and source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                manifest_id
+            ].shape_expectation
+            is None
+        ):
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_support.source_tree_combined_case(manifest_id)
                 self.assertEqual(

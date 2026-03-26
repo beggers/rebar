@@ -872,7 +872,7 @@ def test_source_tree_combined_slice_manifest_ids_rejects_expectations_outside_se
         support.source_tree_combined_slice_manifest_ids()
 
 
-def test_source_tree_combined_slice_derived_manifest_ids_keep_only_slice_derived_contracts(
+def test_source_tree_combined_slice_manifest_filter_keeps_only_slice_derived_contracts(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
@@ -924,7 +924,18 @@ def test_source_tree_combined_slice_derived_manifest_ids_keep_only_slice_derived
         ),
     )
 
-    assert support.source_tree_combined_slice_derived_manifest_ids() == (
+    assert tuple(
+        manifest_id
+        for manifest_id in support.source_tree_combined_slice_manifest_ids()
+        if support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            manifest_id
+        ].representative_measured_workload_ids
+        is None
+        and support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            manifest_id
+        ].shape_expectation
+        is None
+    ) == (
         "slice-derived-boundary",
     )
 
@@ -1207,7 +1218,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "source_tree_combined_case",
         "source_tree_combined_manifest_shape_expectation",
         "source_tree_combined_slice_manifest_ids",
-        "source_tree_combined_slice_derived_manifest_ids",
         "source_tree_combined_slice_expectations",
         "source_tree_combined_manifest_representative_measured_workload_ids",
         "assert_zero_gap_bytes_representative_subset",
@@ -1813,7 +1823,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         "source_tree_combined_case",
         "source_tree_combined_manifest_shape_expectation",
         "source_tree_combined_slice_manifest_ids",
-        "source_tree_combined_slice_derived_manifest_ids",
         "source_tree_combined_slice_expectations",
         "source_tree_combined_manifest_representative_measured_workload_ids",
         "assert_zero_gap_bytes_representative_subset",
