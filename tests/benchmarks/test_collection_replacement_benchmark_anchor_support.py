@@ -94,21 +94,6 @@ def _workload_ids_for_declared_slice(
     )
 
 
-def _route_workload_ids(route: object) -> tuple[str, ...]:
-    return tuple(workload_id for workload_id, _ in route.workload_case_pairs)
-
-
-def _route_case_ids(route: object) -> tuple[str, ...]:
-    return tuple(case_id for _, case_id in route.workload_case_pairs)
-
-
-def _route_anchor_expectations(route: object) -> dict[tuple[str, str], tuple[str, ...]]:
-    return benchmark_test_support._workload_case_pair_anchor_expectations(
-        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        route.workload_case_pairs,
-    )
-
-
 def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -606,17 +591,23 @@ def test_collection_replacement_routes_preserve_declared_workload_case_pair_orde
 ) -> None:
     del label
 
-    assert _route_workload_ids(route) == tuple(
+    anchor_expectations = benchmark_test_support._workload_case_pair_anchor_expectations(
+        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        route.workload_case_pairs,
+    )
+
+    assert all(
+        isinstance(workload_id, str) and isinstance(case_id, str)
+        for workload_id, case_id in route.workload_case_pairs
+    )
+    assert tuple(manifest_path for manifest_path, _ in anchor_expectations) == (
+        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH.name,
+    ) * len(route.workload_case_pairs)
+    assert tuple(workload_id for _, workload_id in anchor_expectations) == tuple(
         workload_id for workload_id, _ in route.workload_case_pairs
     )
-    assert _route_case_ids(route) == tuple(
-        case_id for _, case_id in route.workload_case_pairs
-    )
-    assert _route_anchor_expectations(route) == (
-        benchmark_test_support._workload_case_pair_anchor_expectations(
-            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            route.workload_case_pairs,
-        )
+    assert tuple(anchor_expectations.values()) == tuple(
+        (case_id,) for _, case_id in route.workload_case_pairs
     )
 
 
@@ -625,16 +616,15 @@ def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_meas
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    expected_measured_workload_ids = _route_workload_ids(
-        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"]
+    route = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"]
+    expected_measured_workload_ids = tuple(
+        workload_id for workload_id, _ in route.workload_case_pairs
     )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "findall"
-            ].includes_workload,
+            include_workload=route.includes_workload,
         )
     )
 
@@ -654,16 +644,15 @@ def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_mea
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    expected_measured_workload_ids = _route_workload_ids(
-        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["finditer"]
+    route = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["finditer"]
+    expected_measured_workload_ids = tuple(
+        workload_id for workload_id, _ in route.workload_case_pairs
     )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "finditer"
-            ].includes_workload,
+            include_workload=route.includes_workload,
         )
     )
 
@@ -683,16 +672,15 @@ def test_collection_replacement_manifest_keeps_pattern_split_rows_measured() -> 
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    expected_measured_workload_ids = _route_workload_ids(
-        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"]
+    route = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"]
+    expected_measured_workload_ids = tuple(
+        workload_id for workload_id, _ in route.workload_case_pairs
     )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "split"
-            ].includes_workload,
+            include_workload=route.includes_workload,
         )
     )
 
@@ -720,8 +708,11 @@ def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_
         )
     )
 
-    assert selected_measured_workload_ids == _route_workload_ids(
-        support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"]
+    assert selected_measured_workload_ids == tuple(
+        workload_id
+        for workload_id, _ in support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "pattern"
+        ].workload_case_pairs
     )
     assert len(selected_measured_workload_ids) == 20
     benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
@@ -746,8 +737,11 @@ def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_m
         )
     )
 
-    assert expected_measured_workload_ids == _route_workload_ids(
-        support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"]
+    assert expected_measured_workload_ids == tuple(
+        workload_id
+        for workload_id, _ in support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "module"
+        ].workload_case_pairs
     )
     assert len(expected_measured_workload_ids) == 18
     benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
