@@ -1898,6 +1898,7 @@ def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_sha
         "OPTIONAL_GROUP_MANIFEST_PATH",
         "RANGED_REPEAT_MANIFEST_PATH",
         "STANDARD_BENCHMARK_DEFINITIONS",
+        "_compiled_pattern_contract_builder_spec",
         "_module_imported_names",
         "_module_pattern_case",
         "_owner_definition_manifest_path_names",
@@ -3136,6 +3137,131 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
         assert "contract_builder_spec" in class_method_names
         assert not source_tree_has_wrapper
         assert wrapper_name not in source_tree_function_names
+
+
+@pytest.mark.parametrize(
+    ("owner",),
+    (
+        pytest.param(
+            anchor_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES[0],
+            id="module-compile",
+        ),
+        pytest.param(
+            anchor_support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS[
+                0
+            ],
+            id="module-success",
+        ),
+        pytest.param(
+            anchor_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+            id="module-helper-keyword",
+        ),
+    ),
+)
+def test_compiled_pattern_contract_builder_spec_resolves_current_owner_route(
+    owner: object,
+) -> None:
+    owner_builder = getattr(owner, "contract_builder_spec", None)
+
+    assert callable(owner_builder)
+    assert support._compiled_pattern_contract_builder_spec(
+        owner,
+        source_tree_module=anchor_support,
+    ) == owner_builder()
+
+
+@pytest.mark.parametrize(
+    "wrapper_kind",
+    (
+        pytest.param("zero-arg", id="zero-arg-wrapper"),
+        pytest.param("owner-arg", id="owner-arg-wrapper"),
+    ),
+)
+def test_compiled_pattern_contract_builder_spec_accepts_wrapper_only_route(
+    wrapper_kind: str,
+) -> None:
+    expected_spec = support._SourceTreeContractBuilderSpec(
+        manifest_id="synthetic-boundary",
+        excluded_fields=frozenset({"pattern"}),
+        manifest_timed_samples=2,
+        timing_scope="module-helper-call",
+        notes=("synthetic wrapper route",),
+    )
+
+    if wrapper_kind == "zero-arg":
+        source_tree_module = SimpleNamespace(
+            synthetic_contract_builder=lambda: expected_spec
+        )
+    else:
+        source_tree_module = SimpleNamespace(
+            synthetic_contract_builder=lambda owner: expected_spec
+        )
+
+    assert support._compiled_pattern_contract_builder_spec(
+        object(),
+        source_tree_module=source_tree_module,
+        wrapper_name="synthetic_contract_builder",
+    ) == expected_spec
+
+
+def test_compiled_pattern_contract_builder_spec_rejects_duplicate_routes() -> None:
+    expected_spec = support._SourceTreeContractBuilderSpec(
+        manifest_id="synthetic-boundary",
+        excluded_fields=frozenset(),
+        manifest_timed_samples=2,
+        timing_scope="module-helper-call",
+        notes=("duplicate route",),
+    )
+    owner = SimpleNamespace(contract_builder_spec=lambda: expected_spec)
+    source_tree_module = SimpleNamespace(
+        synthetic_contract_builder=lambda: expected_spec
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match="expected exactly one compiled-pattern contract builder route",
+    ):
+        support._compiled_pattern_contract_builder_spec(
+            owner,
+            source_tree_module=source_tree_module,
+            wrapper_name="synthetic_contract_builder",
+        )
+
+
+def test_compiled_pattern_contract_builder_spec_rejects_missing_routes() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="expected exactly one compiled-pattern contract builder route",
+    ):
+        support._compiled_pattern_contract_builder_spec(
+            object(),
+            source_tree_module=SimpleNamespace(),
+            wrapper_name="synthetic_contract_builder",
+        )
+
+
+def test_compiled_pattern_contract_builder_spec_rejects_ambiguous_wrapper_signature(
+) -> None:
+    expected_spec = support._SourceTreeContractBuilderSpec(
+        manifest_id="synthetic-boundary",
+        excluded_fields=frozenset(),
+        manifest_timed_samples=2,
+        timing_scope="module-helper-call",
+        notes=("ambiguous wrapper",),
+    )
+    source_tree_module = SimpleNamespace(
+        synthetic_contract_builder=lambda owner=None: expected_spec
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match="must accept exactly zero arguments or one owner argument",
+    ):
+        support._compiled_pattern_contract_builder_spec(
+            object(),
+            source_tree_module=source_tree_module,
+            wrapper_name="synthetic_contract_builder",
+        )
 
 
 def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() -> None:

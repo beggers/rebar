@@ -204,18 +204,6 @@ def _attribute_alias_pairs(
         ).items()
         if attribute_name in attribute_names
     )
-
-def _compiled_pattern_contract_builder_spec(
-    owner: object,
-) -> benchmark_test_support._SourceTreeContractBuilderSpec:
-    owner_builder = getattr(owner, "contract_builder_spec", None)
-    if owner_builder is None:
-        raise AssertionError(
-            f"missing compiled-pattern contract builder on {type(owner).__name__}"
-        )
-    return owner_builder()
-
-
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
     value = {
         "b": [2, {"d": 4, "c": [5, 6]}],
@@ -1268,8 +1256,9 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
     contract_case = support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES[0]
     excluded_fields = contract_case.manifest_excluded_fields()
 
-    assert _compiled_pattern_contract_builder_spec(
+    assert benchmark_test_support._compiled_pattern_contract_builder_spec(
         contract_case,
+        source_tree_module=support,
     ) == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
@@ -1432,8 +1421,9 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
 def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata(
     owner_spec: object,
 ) -> None:
-    spec = _compiled_pattern_contract_builder_spec(
+    spec = benchmark_test_support._compiled_pattern_contract_builder_spec(
         owner_spec,
+        source_tree_module=support,
     )
 
     assert spec.manifest_id == owner_spec.contract_manifest_id
@@ -1471,8 +1461,9 @@ def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_ex
     spec: benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
     expected_excluded_fields: frozenset[str],
 ) -> None:
-    built_spec = _compiled_pattern_contract_builder_spec(
+    built_spec = benchmark_test_support._compiled_pattern_contract_builder_spec(
         spec,
+        source_tree_module=support,
     )
 
     assert built_spec == benchmark_test_support._SourceTreeContractBuilderSpec(
