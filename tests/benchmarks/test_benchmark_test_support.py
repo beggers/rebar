@@ -1517,6 +1517,58 @@ def test_benchmark_support_suite_routes_shared_owner_imports_through_package_ali
     }.isdisjoint(definition_names | assignment_names)
 
 
+@pytest.mark.parametrize(
+    ("import_targets", "observed_alias_pairs", "expected_alias_pairs"),
+    (
+        pytest.param(
+            frozenset(),
+            frozenset(),
+            frozenset({("benchmark_test_support", "support")}),
+            id="missing-package-import",
+        ),
+        pytest.param(
+            frozenset(
+                {
+                    "tests.benchmarks",
+                    "tests.benchmarks.benchmark_test_support",
+                }
+            ),
+            frozenset({("benchmark_test_support", "support")}),
+            frozenset({("benchmark_test_support", "support")}),
+            id="direct-owner-import",
+        ),
+        pytest.param(
+            frozenset({"tests.benchmarks"}),
+            frozenset({("benchmark_test_support", None)}),
+            frozenset({("benchmark_test_support", "support")}),
+            id="alias-drift",
+        ),
+    ),
+)
+def test_owner_module_package_import_helper_rejects_missing_package_alias_or_direct_owner_import(
+    monkeypatch,
+    import_targets: frozenset[str],
+    observed_alias_pairs: frozenset[tuple[str, str | None]],
+    expected_alias_pairs: frozenset[tuple[str, str | None]],
+) -> None:
+    current_module = importlib.import_module(__name__)
+
+    monkeypatch.setattr(support, "_module_import_targets", lambda _: import_targets)
+    monkeypatch.setattr(
+        current_module,
+        "_top_level_package_import_alias_pairs",
+        lambda *args, **kwargs: observed_alias_pairs,
+    )
+
+    with pytest.raises(AssertionError):
+        _assert_owner_module_routes_through_package_import(
+            current_module,
+            owner_module="tests.benchmarks.benchmark_test_support",
+            package_module="tests.benchmarks",
+            expected_alias_pairs=expected_alias_pairs,
+        )
+
+
 def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
 ) -> None:
     module = importlib.import_module(
