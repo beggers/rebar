@@ -1177,6 +1177,126 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         )
 
 
+def test_compiled_pattern_module_compile_contract_builder_spec_builds_source_tree_contract(
+) -> None:
+    excluded_fields = frozenset({"timed_samples", "notes"})
+    contract_case = SimpleNamespace(
+        manifest_excluded_fields=lambda: excluded_fields,
+        note=lambda: "compile rows stay helper-routed",
+    )
+
+    assert support.compiled_pattern_module_compile_contract_builder_spec(
+        contract_case
+    ) == support._SourceTreeContractBuilderSpec(
+        manifest_id="module-boundary",
+        excluded_fields=excluded_fields,
+        manifest_timed_samples=2,
+        timing_scope="module-helper-call",
+        notes=("compile rows stay helper-routed",),
+    )
+
+
+@pytest.mark.parametrize(
+    ("contract_manifest_id", "expected_note_fragment"),
+    (
+        pytest.param(
+            "collection-replacement-boundary",
+            "collection/replacement",
+            id="collection-replacement-boundary",
+        ),
+        pytest.param(
+            "module-boundary",
+            "module-boundary",
+            id="module-boundary",
+        ),
+    ),
+)
+def test_compiled_pattern_wrong_text_model_contract_spec_tracks_manifest_family(
+    contract_manifest_id: str,
+    expected_note_fragment: str,
+) -> None:
+    spec = support._compiled_pattern_wrong_text_model_contract_spec(
+        {"contract_manifest_id": contract_manifest_id}
+    )
+
+    assert spec.manifest_id == contract_manifest_id
+    assert (
+        spec.excluded_fields
+        == benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    )
+    assert spec.manifest_timed_samples == 2
+    assert spec.timing_scope == "module-helper-call"
+    assert spec.notes
+    assert expected_note_fragment in spec.notes[0]
+    assert "wrong-text-model" in spec.notes[0]
+    assert spec.notes[0].endswith("rows unresolved until helper invocation.")
+
+
+@pytest.mark.parametrize(
+    ("owner_spec",),
+    tuple(
+        pytest.param(owner_spec, id=owner_spec.case_id)
+        for owner_spec in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+    ),
+)
+def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata(
+    owner_spec: object,
+) -> None:
+    spec = support.compiled_pattern_module_success_contract_builder_spec(owner_spec)
+
+    assert spec.manifest_id == owner_spec.contract_manifest_id
+    assert (
+        spec.excluded_fields
+        == benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+    )
+    assert spec.manifest_timed_samples == 2
+    assert spec.timing_scope == "module-helper-call"
+    assert spec.notes
+    assert "compiled-pattern-first-argument successful" in spec.notes[0]
+    assert owner_spec.note_surface in spec.notes[0]
+    assert spec.notes[0].endswith("rows unresolved until helper invocation.")
+
+
+@pytest.mark.parametrize(
+    ("preserve_expected_exception", "expected_excluded_fields"),
+    (
+        pytest.param(
+            True,
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
+            id="preserve-expected-exception",
+        ),
+        pytest.param(
+            False,
+            (
+                benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+                | frozenset({"expected_exception"})
+            ),
+            id="drop-expected-exception",
+        ),
+    ),
+)
+def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_exception_field(
+    preserve_expected_exception: bool,
+    expected_excluded_fields: frozenset[str],
+) -> None:
+    notes = ("keyword helper rows stay helper-routed",)
+    spec = support.compiled_pattern_module_helper_keyword_contract_builder_spec(
+        SimpleNamespace(
+            preserve_expected_exception=preserve_expected_exception,
+            manifest_timed_samples=7,
+            notes=notes,
+        )
+    )
+
+    assert spec == support._SourceTreeContractBuilderSpec(
+        manifest_id="collection-replacement-boundary",
+        excluded_fields=expected_excluded_fields,
+        manifest_timed_samples=7,
+        timing_scope="module-helper-call",
+        notes=notes,
+    )
+
+
 @pytest.mark.parametrize(
     ("owner_spec",),
     tuple(
