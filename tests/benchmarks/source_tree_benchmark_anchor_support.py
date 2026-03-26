@@ -5452,13 +5452,6 @@ _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
 )
 
 
-@cache
-def _source_tree_benchmark_anchor_support() -> object:
-    return importlib.import_module(
-        "tests.benchmarks.source_tree_benchmark_anchor_support"
-    )
-
-
 def _collection_replacement_keyword_parameter_name(
     workload: Any,
 ) -> str | None:
@@ -5610,14 +5603,12 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         return (f"kwargs.{keyword_parameter}",)
 
     def contract_builder_spec(self) -> object:
-        source_tree_support = _source_tree_benchmark_anchor_support()
-
         excluded_fields = (
             benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
         )
         if not self.preserve_expected_exception:
             excluded_fields = excluded_fields | {"expected_exception"}
-        return source_tree_support._SourceTreeContractBuilderSpec(
+        return _SourceTreeContractBuilderSpec(
             manifest_id="collection-replacement-boundary",
             excluded_fields=excluded_fields,
             manifest_timed_samples=self.manifest_timed_samples,
@@ -6469,7 +6460,7 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                 },
             ),
             include_workload=(
-                _source_tree_benchmark_anchor_support()._is_collection_replacement_compiled_pattern_success_workload
+                _is_collection_replacement_compiled_pattern_success_workload
             ),
             correctness_case_signature=(
                 _collection_replacement_compiled_pattern_success_correctness_case_signature
@@ -6959,9 +6950,7 @@ def _collection_replacement_compiled_pattern_success_correctness_case_signature(
 def _collection_replacement_compiled_pattern_success_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not _source_tree_benchmark_anchor_support()._is_collection_replacement_compiled_pattern_success_workload(
-        workload
-    ):
+    if not _is_collection_replacement_compiled_pattern_success_workload(workload):
         raise AssertionError(
             "unexpected collection/replacement compiled-pattern success workload "
             f"{workload.workload_id!r}"
