@@ -3020,6 +3020,7 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         collection_replacement_support.benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
         is support._is_collection_replacement_compiled_pattern_success_workload
     )
+    assert not hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_success_workload")
     assert (
         "_is_collection_replacement_compiled_pattern_success_workload"
         not in consumer_local_names

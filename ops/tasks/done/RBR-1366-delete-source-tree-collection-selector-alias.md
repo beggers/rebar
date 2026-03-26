@@ -1,6 +1,6 @@
 ## RBR-1366: Delete source-tree collection selector alias
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -52,4 +52,9 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'collection_replacement_compiled_pattern_success_selector_stays_owned_by_shared_support'` passed with `1 passed, 169 deselected in 0.29s`
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
   - `bash -lc "! rg -n 'source_tree_support\\._is_collection_replacement_compiled_pattern_success_workload' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed
-  - `bash -lc "! rg -n '^SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES|^_is_collection_replacement_compiled_pattern_success_workload =' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because both the routed-name tuple and the alias assignment still exist, and that failure belongs exactly to this cleanup
+  - `bash -lc "! rg -n '^SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES|^_is_collection_replacement_compiled_pattern_success_workload =' tests/benchmarks/source_tree_benchmark_anchor_support.py"` passed after deleting the routed-name tuple and alias assignment
+
+## Completion
+- Deleted `SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES` and the `_is_collection_replacement_compiled_pattern_success_workload` transit alias from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Updated source-tree ownership tests to stop treating the shared collection-replacement selector as `source_tree_support` surface, while keeping the collection owner on the direct shared-support import path.
+- Verified with the task's narrow pytest targets, `py_compile`, and both negative `rg` checks; the final grep confirms the tuple and alias assignment no longer exist in `tests/benchmarks/source_tree_benchmark_anchor_support.py`.

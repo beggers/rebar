@@ -2265,11 +2265,6 @@ def _combined_slice_expectation(
         expected_status=expected_status,
     )
 
-SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES = (
-    "_is_collection_replacement_compiled_pattern_success_workload",
-)
-
-
 SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     _combined_slice_expectation(
         manifest_id="module-boundary",
@@ -4400,12 +4395,6 @@ def _grouped_alternation_replacement_correctness_case_signature(
             text_model,
         )
     return None
-
-
-_is_collection_replacement_compiled_pattern_success_workload = (
-    benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
-)
-
 
 def live_compiled_pattern_module_success_surface_ids() -> tuple[str, ...]:
     return tuple(

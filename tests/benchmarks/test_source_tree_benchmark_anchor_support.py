@@ -1594,12 +1594,10 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
             support
         )
     )
-
-    for constant_name in (
-        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES
-    ):
-        assert hasattr(support, constant_name)
-        assert constant_name in local_assignment_names
+    assert (
+        "_is_collection_replacement_compiled_pattern_success_workload"
+        not in local_assignment_names
+    )
 
     collection_module_ast = benchmark_test_support._parsed_module_ast(collection_support)
     _, collection_local_assignment_names = (
@@ -2060,15 +2058,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES,
             frozenset(),
             id="conditional-callable-helpers",
-        ),
-        pytest.param(
-            "source_tree_support",
-            support,
-            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES,
-            frozenset(
-                support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES
-            ),
-            id="collection-owner-routed-constants",
         ),
         pytest.param(
             "collection_replacement_support",
