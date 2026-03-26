@@ -104,6 +104,22 @@ def _inline_standard_definition_assignments(
         and all(isinstance(element, ast.Call) for element in node.value.elts)
     )
 
+
+COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES = frozenset(
+    {
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    }
+)
+
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -3271,18 +3287,7 @@ def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_c
         support.top_level_module_definition_and_assignment_names(support)
     )
 
-    moved_names = {
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    }
+    moved_names = COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES
     function_names = {
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     }
@@ -3293,6 +3298,18 @@ def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_c
     for name in moved_names:
         assert hasattr(support, name)
         assert not hasattr(anchor_support, name)
+
+
+def test_compiled_pattern_module_helper_keyword_shared_surface_stays_listed_in_retired_owner_registries(
+) -> None:
+    for retired_owner_names in (
+        support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES,
+        anchor_support.SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
+        frozenset(anchor_support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES),
+    ):
+        assert COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES <= (
+            retired_owner_names
+        )
 
 
 def test_deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced(
