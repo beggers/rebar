@@ -120,6 +120,30 @@ COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES = frozenset(
     }
 )
 
+_BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES = frozenset(
+    {
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_expected_exception_instance",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+        "_is_pattern_boundary_wrong_text_model_workload",
+        "_write_test_manifest",
+        "CompiledPatternModuleCompileContractCase",
+        "assert_benchmark_workload_matches_expected_result",
+        "assert_pattern_helper_wrong_text_model_payload_round_trip",
+        "run_benchmark_workload_with_cpython",
+        "selected_manifest_workloads",
+    }
+)
+
 COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES = frozenset(
     {
         "COLLECTION_REPLACEMENT_MANIFEST_PATH",
@@ -3010,12 +3034,7 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
-    assert {
-        "_SourceTreeContractBuilderSpec",
-        "_source_tree_contract_manifest",
-        "_source_tree_contract_workload",
-    }.isdisjoint(support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES)
-    assert support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES.isdisjoint(
+    assert _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES.isdisjoint(
         definition_names | assignment_names
     )
 
@@ -3047,7 +3066,7 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
     )
 
 @pytest.mark.parametrize(
-    ("module_name", "retired_owner_names"),
+    ("module_name", "forbidden_owner_names"),
     (
         pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
@@ -3056,14 +3075,14 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         ),
         pytest.param(
             "tests.benchmarks.test_benchmark_manifest_validation",
-            support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES,
+            _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES,
             id="manifest-validation",
         ),
     ),
 )
 def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces(
     module_name: str,
-    retired_owner_names: frozenset[str],
+    forbidden_owner_names: frozenset[str],
 ) -> None:
     module = importlib.import_module(module_name)
     alias_pairs: set[tuple[str, str | None]] = set()
@@ -3074,7 +3093,7 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
             alias_pairs.update(
                 (alias.name, alias.asname)
                 for alias in node.names
-                if alias.name in retired_owner_names and alias.asname is not None
+                if alias.name in forbidden_owner_names and alias.asname is not None
             )
             continue
 
@@ -3093,7 +3112,7 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
             isinstance(value, ast.Attribute)
             and isinstance(value.value, ast.Name)
             and value.value.id == "benchmark_test_support"
-            and value.attr in retired_owner_names
+            and value.attr in forbidden_owner_names
         ):
             alias_pairs.update((value.attr, target_name) for target_name in targets)
 
@@ -3375,10 +3394,9 @@ def test_benchmark_test_support_exports_generic_workload_id_selector_helpers() -
         assert not hasattr(collection_replacement_support, name)
 
 
-def test_compiled_pattern_module_helper_keyword_shared_surface_stays_listed_in_retired_owner_registries(
+def test_compiled_pattern_module_helper_keyword_shared_surface_stays_listed_in_source_tree_retired_owner_registries(
 ) -> None:
     for retired_owner_names in (
-        support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES,
         anchor_support.SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
         frozenset(anchor_support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES),
     ):

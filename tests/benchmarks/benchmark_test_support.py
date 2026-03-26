@@ -4948,30 +4948,6 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
 )
 
-BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES = frozenset(
-    {
-        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-        "_expected_exception_instance",
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-        "_is_pattern_boundary_wrong_text_model_workload",
-        "_write_test_manifest",
-        "CompiledPatternModuleCompileContractCase",
-        "assert_benchmark_workload_matches_expected_result",
-        "run_benchmark_workload_with_cpython",
-        "assert_pattern_helper_wrong_text_model_payload_round_trip",
-        "selected_manifest_workloads",
-    }
-)
-
 
 def _anchored_case_ids(
     definition: StandardBenchmarkAnchorContract,
