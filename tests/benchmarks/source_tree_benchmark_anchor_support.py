@@ -744,9 +744,11 @@ class SourceTreeBenchmarkCommonCase:
         raise AssertionError(f"unknown source-tree benchmark manifest {manifest_id!r}")
 
     def selected_workload_ids_for_manifest(self, manifest_id: str) -> tuple[str, ...]:
-        return _selected_source_tree_manifest_workload_ids(
-            self.manifest_for_id(manifest_id),
-            selection_mode=self.selection_mode,
+        return tuple(
+            workload.workload_id
+            for workload in self.manifest_for_id(manifest_id).selected_workloads(
+                selection_mode=self.selection_mode
+            )
         )
 
 
@@ -3067,29 +3069,15 @@ def _source_tree_manifest_known_gap_counts(
         known_gap_counts[manifest_id] = len(
             _filter_manifest_workload_ids(
                 manifest_expectation.known_gap_workload_ids,
-                selected_workload_ids=_selected_source_tree_manifest_workload_ids(
-                    manifest,
-                    selection_mode=selection_mode,
+                selected_workload_ids=(
+                    workload.workload_id
+                    for workload in manifest.selected_workloads(
+                        selection_mode=selection_mode
+                    )
                 ),
             )
         )
     return known_gap_counts
-
-
-def _selected_source_tree_manifest_workload_ids(
-    manifest: BenchmarkManifest,
-    *,
-    selection_mode: str,
-) -> tuple[str, ...]:
-    return tuple(
-        workload.workload_id
-        for workload in manifest.selected_workloads(selection_mode=selection_mode)
-    )
-
-
-def _flatten_manifest_workloads(manifests: list[BenchmarkManifest]) -> list[Workload]:
-    return [workload for manifest in manifests for workload in manifest.workloads]
-
 
 def _source_tree_benchmark_common_case_kwargs(
     *,
@@ -3138,7 +3126,7 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
                 f"unknown benchmark manifest id {manifest_id!r}"
             ) from exc
     selected_workloads = select_workloads(
-        _flatten_manifest_workloads(manifests),
+        [workload for manifest in manifests for workload in manifest.workloads],
         smoke_only=case_definition.selection_mode == "smoke",
     )
     manifest_known_gap_counts = _source_tree_manifest_known_gap_counts(
@@ -3149,9 +3137,11 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     manifest_expectations: dict[str, SourceTreeManifestExpectation] = {}
     for manifest in manifests:
         manifest_id = manifest.manifest_id
-        selected_workload_ids = _selected_source_tree_manifest_workload_ids(
-            manifest,
-            selection_mode=case_definition.selection_mode,
+        selected_workload_ids = tuple(
+            workload.workload_id
+            for workload in manifest.selected_workloads(
+                selection_mode=case_definition.selection_mode
+            )
         )
         manifest_expectations[manifest_id] = (
             _public_source_tree_manifest_expectation(
@@ -3289,9 +3279,11 @@ def expected_summary_for_manifests(
                     SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
                         manifest.manifest_id
                     ].known_gap_workload_ids,
-                    selected_workload_ids=_selected_source_tree_manifest_workload_ids(
-                        manifest,
-                        selection_mode=selection_mode,
+                    selected_workload_ids=(
+                        workload.workload_id
+                        for workload in manifest.selected_workloads(
+                            selection_mode=selection_mode
+                        )
                     ),
                 )
             )
@@ -3314,7 +3306,7 @@ def expected_summary_for_manifests(
 
 def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase:
     manifests = _selected_source_tree_manifests_for_target_manifest(target_manifest_id)
-    workloads = _flatten_manifest_workloads(manifests)
+    workloads = [workload for manifest in manifests for workload in manifest.workloads]
     target_manifest = next(
         manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
     )
