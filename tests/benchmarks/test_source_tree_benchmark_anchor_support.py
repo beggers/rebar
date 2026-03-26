@@ -221,6 +221,43 @@ def _attribute_alias_pairs(
     )
 
 
+_COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES = (
+    (
+        "compiled_pattern_module_compile_contract_builder_spec",
+        benchmark_test_support.CompiledPatternModuleCompileContractCase,
+    ),
+    (
+        "compiled_pattern_module_success_contract_builder_spec",
+        benchmark_test_support.CompiledPatternModuleSuccessOwnerSpec,
+    ),
+    (
+        "compiled_pattern_module_helper_keyword_contract_builder_spec",
+        benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
+    ),
+)
+
+
+def _compiled_pattern_contract_builder_spec(
+    owner: object,
+    *,
+    wrapper_name: str,
+) -> benchmark_test_support._SourceTreeContractBuilderSpec:
+    local_builder = getattr(support, wrapper_name, None)
+    owner_builder = getattr(owner, "contract_builder_spec", None)
+
+    if local_builder is not None:
+        if owner_builder is not None:
+            raise AssertionError(
+                f"{wrapper_name} is duplicated on the source-tree and owner surfaces"
+            )
+        return local_builder(owner)
+
+    if owner_builder is None:
+        raise AssertionError(f"missing compiled-pattern contract builder {wrapper_name}")
+
+    return owner_builder()
+
+
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
     value = {
         "b": [2, {"d": 4, "c": [5, 6]}],
@@ -1156,9 +1193,12 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
-    for function_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_FUNCTION_NAMES:
-        assert hasattr(support, function_name)
-        assert function_name in local_function_names
+    for function_name, owner_type in _COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES:
+        local_builder = getattr(support, function_name, None)
+        owner_builder = getattr(owner_type, "contract_builder_spec", None)
+
+        assert (local_builder is not None) != (owner_builder is not None)
+        assert (function_name in local_function_names) is (local_builder is not None)
     for constant_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
@@ -1262,22 +1302,20 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         )
 
 
-def test_compiled_pattern_module_compile_contract_builder_spec_builds_source_tree_contract(
+def test_compiled_pattern_module_compile_contract_builder_surface_builds_expected_spec(
 ) -> None:
-    excluded_fields = frozenset({"timed_samples", "notes"})
-    contract_case = SimpleNamespace(
-        manifest_excluded_fields=lambda: excluded_fields,
-        note=lambda: "compile rows stay helper-routed",
-    )
+    contract_case = support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES[0]
+    excluded_fields = contract_case.manifest_excluded_fields()
 
-    assert support.compiled_pattern_module_compile_contract_builder_spec(
-        contract_case
+    assert _compiled_pattern_contract_builder_spec(
+        contract_case,
+        wrapper_name="compiled_pattern_module_compile_contract_builder_spec",
     ) == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
         manifest_timed_samples=2,
         timing_scope="module-helper-call",
-        notes=("compile rows stay helper-routed",),
+        notes=(contract_case.note(),),
     )
 
 
@@ -1434,7 +1472,10 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
 def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata(
     owner_spec: object,
 ) -> None:
-    spec = support.compiled_pattern_module_success_contract_builder_spec(owner_spec)
+    spec = _compiled_pattern_contract_builder_spec(
+        owner_spec,
+        wrapper_name="compiled_pattern_module_success_contract_builder_spec",
+    )
 
     assert spec.manifest_id == owner_spec.contract_manifest_id
     assert spec.excluded_fields == support._COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
@@ -1447,15 +1488,15 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
 
 
 @pytest.mark.parametrize(
-    ("preserve_expected_exception", "expected_excluded_fields"),
+    ("spec", "expected_excluded_fields"),
     (
         pytest.param(
-            True,
+            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
             support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
             id="preserve-expected-exception",
         ),
         pytest.param(
-            False,
+            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
             (
                 support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
                 | frozenset({"expected_exception"})
@@ -1465,24 +1506,20 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     ),
 )
 def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_exception_field(
-    preserve_expected_exception: bool,
+    spec: benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
     expected_excluded_fields: frozenset[str],
 ) -> None:
-    notes = ("keyword helper rows stay helper-routed",)
-    spec = support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-        SimpleNamespace(
-            preserve_expected_exception=preserve_expected_exception,
-            manifest_timed_samples=7,
-            notes=notes,
-        )
+    built_spec = _compiled_pattern_contract_builder_spec(
+        spec,
+        wrapper_name="compiled_pattern_module_helper_keyword_contract_builder_spec",
     )
 
-    assert spec == benchmark_test_support._SourceTreeContractBuilderSpec(
+    assert built_spec == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
         excluded_fields=expected_excluded_fields,
-        manifest_timed_samples=7,
+        manifest_timed_samples=spec.manifest_timed_samples,
         timing_scope="module-helper-call",
-        notes=notes,
+        notes=spec.notes,
     )
 
 

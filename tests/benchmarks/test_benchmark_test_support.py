@@ -120,6 +120,22 @@ def _inline_standard_definition_assignments(
     )
 
 
+_COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES = (
+    (
+        support.CompiledPatternModuleCompileContractCase,
+        "compiled_pattern_module_compile_contract_builder_spec",
+    ),
+    (
+        support.CompiledPatternModuleSuccessOwnerSpec,
+        "compiled_pattern_module_success_contract_builder_spec",
+    ),
+    (
+        support._CompiledPatternModuleHelperKeywordContractSpec,
+        "compiled_pattern_module_helper_keyword_contract_builder_spec",
+    ),
+)
+
+
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -3058,10 +3074,6 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
     assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
         definition_names | assignment_names
     )
-    assert not hasattr(
-        support.CompiledPatternModuleSuccessOwnerSpec,
-        "contract_builder_spec",
-    )
     assert (
         support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
         == "source_workloads"
@@ -3126,45 +3138,30 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_com
     ) is None
 
 
-def test_compiled_pattern_contract_builder_helpers_live_only_in_source_tree_owner_module(
+def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
 ) -> None:
-    for class_name in (
-        "CompiledPatternModuleCompileContractCase",
-        "CompiledPatternModuleSuccessOwnerSpec",
-        "_CompiledPatternModuleHelperKeywordContractSpec",
-    ):
-        class_definition = support._module_class_definition(support, class_name)
-        assert {
+    source_tree_function_names = {
+        node.name
+        for node in support._parsed_module_ast(anchor_support).body
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    for owner_type, wrapper_name in _COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES:
+        class_definition = support._module_class_definition(
+            support,
+            owner_type.__name__,
+        )
+        class_method_names = {
             node.name
             for node in class_definition.body
             if isinstance(node, ast.FunctionDef)
-        }.isdisjoint({"contract_builder_spec"})
+        }
+        owner_has_builder = hasattr(owner_type, "contract_builder_spec")
+        source_tree_has_wrapper = hasattr(anchor_support, wrapper_name)
 
-    assert not hasattr(
-        support.CompiledPatternModuleCompileContractCase,
-        "contract_builder_spec",
-    )
-    assert not hasattr(
-        support.CompiledPatternModuleSuccessOwnerSpec,
-        "contract_builder_spec",
-    )
-    assert not hasattr(
-        support._CompiledPatternModuleHelperKeywordContractSpec,
-        "contract_builder_spec",
-    )
-
-    assert hasattr(
-        anchor_support,
-        "compiled_pattern_module_compile_contract_builder_spec",
-    )
-    assert hasattr(
-        anchor_support,
-        "compiled_pattern_module_success_contract_builder_spec",
-    )
-    assert hasattr(
-        anchor_support,
-        "compiled_pattern_module_helper_keyword_contract_builder_spec",
-    )
+        assert ("contract_builder_spec" in class_method_names) is owner_has_builder
+        assert (wrapper_name in source_tree_function_names) is source_tree_has_wrapper
+        assert owner_has_builder != source_tree_has_wrapper
 
 
 def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() -> None:
