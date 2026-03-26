@@ -169,6 +169,183 @@ def _source_tree_contract_manifest(
         "workloads": workloads,
     }
 
+
+def compiled_pattern_contract_expected_build_calls(
+    source_workload: Workload,
+    *,
+    label: str,
+) -> list[tuple[object, ...]]:
+    compile_call = ("compile", source_workload.pattern_payload(), source_workload.flags)
+    if source_workload.cache_mode == "purged":
+        return [compile_call, ("purge",)]
+    if source_workload.cache_mode == "warm":
+        return [compile_call]
+    raise AssertionError(
+        f"unexpected compiled-pattern {label} workload cache mode "
+        f"{source_workload.cache_mode!r}"
+    )
+
+
+def _run_cpython_compiled_pattern_module_helper_workload(
+    workload: Workload,
+    *,
+    collection_replacement_callback_flags: int,
+) -> object:
+    del collection_replacement_callback_flags
+
+    compiled_pattern = re.compile(
+        workload.pattern_payload(),
+        workload.flags,
+    )
+    if workload.operation in benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_OPERATIONS:
+        cpython_call_args = (workload.haystack_payload(), workload.flags)
+        materialize_cpython_result = False
+    elif workload.operation == "module.split":
+        cpython_call_args = (
+            workload.haystack_payload(),
+            workload.maxsplit_argument(),
+        )
+        materialize_cpython_result = False
+    elif workload.operation == "module.findall":
+        cpython_call_args = (workload.haystack_payload(), workload.flags)
+        materialize_cpython_result = False
+    elif workload.operation == "module.finditer":
+        cpython_call_args = (workload.haystack_payload(), workload.flags)
+        materialize_cpython_result = True
+    elif workload.operation == "module.sub":
+        cpython_call_args = (
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+            workload.count_argument(),
+        )
+        materialize_cpython_result = False
+    elif workload.operation == "module.subn":
+        cpython_call_args = (
+            workload.replacement_payload(),
+            workload.haystack_payload(),
+            workload.count_argument(),
+        )
+        materialize_cpython_result = False
+    else:
+        raise AssertionError(
+            "unexpected compiled-pattern module helper workload operation "
+            f"{workload.operation!r}"
+        )
+    helper = getattr(re, workload.operation.removeprefix("module."))
+    result = helper(compiled_pattern, *cpython_call_args)
+    if materialize_cpython_result:
+        return list(result)
+    return result
+
+
+def _assert_wrong_text_model_payload_round_trip(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+    expected_haystack_type = (
+        str if source_workload.haystack_text_model == "str" else bytes
+    )
+
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload["timing_scope"] == "module-helper-call"
+    assert round_tripped.timing_scope == "module-helper-call"
+    assert payload["haystack_text_model"] == source_workload.haystack_text_model
+    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
+    if source_workload.replacement is not None:
+        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+def _assert_compiled_pattern_module_success_payload_round_trip(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+    *,
+    owner_spec: Any,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload.get("expected_exception") is None
+    assert round_tripped.expected_exception is None
+    assert payload.get("haystack_text_model") is None
+    assert round_tripped.haystack_text_model is None
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_text_type)
+    for field_name in owner_spec.preserved_payload_fields:
+        assert payload[field_name] == getattr(source_workload, field_name)
+        assert getattr(round_tripped, field_name) == getattr(
+            source_workload,
+            field_name,
+        )
+    if (
+        owner_spec.preserve_replacement_payload_typing
+        and source_workload.replacement is not None
+    ):
+        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
+    owner_spec: Any,
+    *,
+    include_workload: Callable[[Any], bool],
+) -> None:
+    testcase = benchmark_test_support.unittest.TestCase()
+    manifest = benchmark_test_support.load_manifest(owner_spec.manifest_path)
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in owner_spec.source_workloads()
+        if include_workload(workload)
+    )
+    selected_measured_workload_ids = benchmark_test_support.manifest_workload_ids_matching(
+        manifest,
+        include_workload,
+    )
+
+    assert selected_measured_workload_ids == expected_measured_workload_ids
+
+    _, scorecard = benchmark_test_support.run_harness_scorecard(
+        "rebar_harness.benchmarks",
+        ["--manifest", str(owner_spec.manifest_path)],
+        report_name="benchmarks.json",
+    )
+    manifest_summary = scorecard["manifests"][owner_spec.contract_manifest_id]
+    expected_workload_count = len(manifest.workloads)
+
+    assert manifest_summary["known_gap_count"] == 0
+    assert manifest_summary["measured_workloads"] == expected_workload_count
+    assert manifest_summary["workload_count"] == expected_workload_count
+
+    for workload_id in expected_measured_workload_ids:
+        benchmark_test_support.assert_benchmark_workload_contract(
+            testcase,
+            benchmark_test_support.find_workload_record(scorecard, workload_id),
+            manifest_id=owner_spec.contract_manifest_id,
+            workload_document=benchmark_test_support.find_workload_document(
+                manifest,
+                workload_id,
+            ),
+            expected_status="measured",
+        )
+
+
+def include_live_compiled_pattern_module_success_workload(workload: Workload) -> bool:
+    return (
+        workload.use_compiled_pattern
+        and workload.expected_exception is None
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.operation.startswith("module.")
+        and workload.operation != "module.compile"
+        and not workload.kwargs
+    )
+
 @dataclass(frozen=True, slots=True)
 class _SourceTreeBenchmarkCommonCase:
     expected_adapter: str
@@ -3384,7 +3561,7 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         self,
         source_workload: benchmarks.Workload,
     ) -> list[tuple[object, ...]]:
-        return benchmark_test_support.compiled_pattern_contract_expected_build_calls(
+        return compiled_pattern_contract_expected_build_calls(
             source_workload,
             label="module helper keyword",
         )
@@ -3802,7 +3979,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
         self,
         source_workload: Workload,
     ) -> list[tuple[object, ...]]:
-        return benchmark_test_support.compiled_pattern_contract_expected_build_calls(
+        return compiled_pattern_contract_expected_build_calls(
             source_workload,
             label=f"{self.case_id} success",
         )
@@ -4233,7 +4410,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
             anchor_contract_filename=self.anchor_contract_filename,
             expected_anchor_pairs=self.expected_anchor_pairs,
             expected_build_calls_builder=partial(
-                benchmark_test_support.compiled_pattern_contract_expected_build_calls,
+                compiled_pattern_contract_expected_build_calls,
                 label="module.compile contract",
             ),
             expected_exception=self.expected_exception,
@@ -4680,7 +4857,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
     build_compiled_pattern_module_compile_contract_cases(
         manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
         expected_build_calls_builder=partial(
-            benchmark_test_support.compiled_pattern_contract_expected_build_calls,
+            compiled_pattern_contract_expected_build_calls,
             label="module.compile contract",
         ),
         success_owner_specs=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
@@ -13096,14 +13273,14 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        benchmark_test_support._assert_wrong_text_model_payload_round_trip(
+        _assert_wrong_text_model_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
         )
 
         with pytest.raises(TypeError) as expected_error:
-            benchmark_test_support._run_cpython_compiled_pattern_module_helper_workload(
+            _run_cpython_compiled_pattern_module_helper_workload(
                 workload,
                 collection_replacement_callback_flags=0,
             )
@@ -13138,7 +13315,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
         owner_spec.expected_source_workload_ids
     )
     assert all(
-        benchmark_test_support.include_live_compiled_pattern_module_success_workload(
+        include_live_compiled_pattern_module_success_workload(
             workload
         )
         for workload in source_workloads
@@ -13157,7 +13334,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
+        _assert_compiled_pattern_module_success_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
@@ -13531,7 +13708,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        benchmark_test_support._assert_wrong_text_model_payload_round_trip(
+        _assert_wrong_text_model_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
@@ -13560,7 +13737,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
     for source_workload in _compiled_pattern_wrong_text_model_source_workloads(
         spec
     ):
-        expected_build_calls = benchmark_test_support.compiled_pattern_contract_expected_build_calls(
+        expected_build_calls = compiled_pattern_contract_expected_build_calls(
             source_workload,
             label="wrong-text-model",
         )
@@ -13617,7 +13794,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
+    _assert_compiled_pattern_module_success_payload_round_trip(
         source_workload,
         payload,
         round_tripped,

@@ -764,9 +764,9 @@ def test_compiled_pattern_contract_expected_build_calls_cover_warm_and_purged_mo
     workload,
     expected_calls,
 ) -> None:
-    assert support.compiled_pattern_contract_expected_build_calls(
+    assert collection_replacement_support.compiled_pattern_contract_expected_build_calls(
         workload,
-        label="support test",
+        label="source-tree test",
     ) == expected_calls
 
 
@@ -779,11 +779,11 @@ def test_compiled_pattern_contract_expected_build_calls_rejects_unknown_cache_mo
 
     with pytest.raises(
         AssertionError,
-        match="unexpected compiled-pattern support test workload cache mode 'cold'",
+        match="unexpected compiled-pattern source-tree test workload cache mode 'cold'",
     ):
-        support.compiled_pattern_contract_expected_build_calls(
+        collection_replacement_support.compiled_pattern_contract_expected_build_calls(
             mutated_workload,
-            label="support test",
+            label="source-tree test",
         )
 
 
@@ -2703,11 +2703,23 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
         "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
     }.issubset(support_assignment_names)
+    moved_owner_names = {
+        "compiled_pattern_contract_expected_build_calls",
+        "_run_cpython_compiled_pattern_module_helper_workload",
+        "_assert_wrong_text_model_payload_round_trip",
+        "_assert_compiled_pattern_module_success_payload_round_trip",
+        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+        "include_live_compiled_pattern_module_success_workload",
+    }
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
     assert hasattr(collection_replacement_support, "_compiled_pattern_wrong_text_model_source_workloads")
     assert hasattr(support, "_is_module_workflow_compiled_pattern_wrong_text_model_workload")
-    assert hasattr(support, "_run_cpython_compiled_pattern_module_helper_workload")
-    assert hasattr(support, "_assert_wrong_text_model_payload_round_trip")
+    assert moved_owner_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert all(not hasattr(support, name) for name in moved_owner_names)
+    assert moved_owner_names.issubset(
+        collection_definition_names | collection_assignment_names
+    )
+    assert all(hasattr(collection_replacement_support, name) for name in moved_owner_names)
     assert "_compiled_pattern_module_helper_runtime_route" not in (
         support_definition_names | support_assignment_names
     )
@@ -3326,9 +3338,21 @@ def test_source_tree_combined_suite_owns_compiled_pattern_module_success_surface
     )
     assert hasattr(collection_replacement_support, "CompiledPatternModuleSuccessOwnerSpec")
     assert not hasattr(support, "CompiledPatternModuleSuccessOwnerSpec")
-    assert hasattr(support, "_assert_compiled_pattern_module_success_payload_round_trip")
-    assert hasattr(support, "_assert_compiled_pattern_success_rows_measured_in_combined_manifest")
-    assert hasattr(support, "include_live_compiled_pattern_module_success_workload")
+    assert hasattr(
+        collection_replacement_support,
+        "_assert_compiled_pattern_module_success_payload_round_trip",
+    )
+    assert hasattr(
+        collection_replacement_support,
+        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+    )
+    assert hasattr(
+        collection_replacement_support,
+        "include_live_compiled_pattern_module_success_workload",
+    )
+    assert not hasattr(support, "_assert_compiled_pattern_module_success_payload_round_trip")
+    assert not hasattr(support, "_assert_compiled_pattern_success_rows_measured_in_combined_manifest")
+    assert not hasattr(support, "include_live_compiled_pattern_module_success_workload")
 
 
 def test_source_tree_combined_suite_owns_compiled_pattern_module_success_owner_specs(
@@ -3356,6 +3380,26 @@ def test_source_tree_combined_suite_owns_compiled_pattern_module_success_owner_s
         r"_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|"
         r"_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|"
         r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
+        support_source,
+        re.MULTILINE,
+    ) is None
+    assert re.search(
+        r"^(def compiled_pattern_contract_expected_build_calls|"
+        r"def _run_cpython_compiled_pattern_module_helper_workload|"
+        r"def _assert_wrong_text_model_payload_round_trip|"
+        r"def _assert_compiled_pattern_module_success_payload_round_trip|"
+        r"def _assert_compiled_pattern_success_rows_measured_in_combined_manifest|"
+        r"def include_live_compiled_pattern_module_success_workload)\b",
+        source,
+        re.MULTILINE,
+    ) is not None
+    assert re.search(
+        r"^(def compiled_pattern_contract_expected_build_calls|"
+        r"def _run_cpython_compiled_pattern_module_helper_workload|"
+        r"def _assert_wrong_text_model_payload_round_trip|"
+        r"def _assert_compiled_pattern_module_success_payload_round_trip|"
+        r"def _assert_compiled_pattern_success_rows_measured_in_combined_manifest|"
+        r"def include_live_compiled_pattern_module_success_workload)\b",
         support_source,
         re.MULTILINE,
     ) is None
@@ -3837,6 +3881,12 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
         support.top_level_module_definition_and_assignment_names(module)
     )
     local_owner_names = {
+        "compiled_pattern_contract_expected_build_calls",
+        "_run_cpython_compiled_pattern_module_helper_workload",
+        "_assert_wrong_text_model_payload_round_trip",
+        "_assert_compiled_pattern_module_success_payload_round_trip",
+        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+        "include_live_compiled_pattern_module_success_workload",
         "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
         "_compiled_pattern_wrong_text_model_source_workloads",
         "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
@@ -3868,7 +3918,18 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
     (
         (
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            frozenset({"_source_tree_contract_manifest", "_source_tree_contract_workload"}),
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                    "compiled_pattern_contract_expected_build_calls",
+                    "_run_cpython_compiled_pattern_module_helper_workload",
+                    "_assert_wrong_text_model_payload_round_trip",
+                    "_assert_compiled_pattern_module_success_payload_round_trip",
+                    "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
+                    "include_live_compiled_pattern_module_success_workload",
+                }
+            ),
             frozenset({("benchmark_test_support", None)}),
         ),
     ),
@@ -4252,7 +4313,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_materializes_findit
     )
 
     result = (
-        anchor_support._run_cpython_compiled_pattern_module_helper_workload(
+        collection_replacement_support._run_cpython_compiled_pattern_module_helper_workload(
         workload,
         collection_replacement_callback_flags=0,
         )
@@ -4276,7 +4337,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_re
     )
 
     result = (
-        anchor_support._run_cpython_compiled_pattern_module_helper_workload(
+        collection_replacement_support._run_cpython_compiled_pattern_module_helper_workload(
         workload,
         collection_replacement_callback_flags=0,
         )
