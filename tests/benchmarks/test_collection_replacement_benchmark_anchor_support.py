@@ -22,6 +22,15 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
+
+def _default_collection_replacement_wrong_text_model_manifest_timed_samples() -> int:
+    default = (
+        support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC.manifest_timed_samples
+    )
+    assert isinstance(default, int)
+    return default
+
+
 def _collection_replacement_case(
     *,
     helper: str,
@@ -122,6 +131,27 @@ def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owne
             "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
             "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC",
         ),
+    )
+
+
+def test_collection_replacement_pattern_wrong_text_model_contract_spec_uses_owner_metadata(
+) -> None:
+    spec = support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC
+
+    assert spec == SimpleNamespace(
+        manifest_id="collection-replacement-boundary",
+        excluded_fields=(
+            support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS
+        ),
+        manifest_timed_samples=(
+            _default_collection_replacement_wrong_text_model_manifest_timed_samples()
+        ),
+        timing_scope="pattern-helper-call",
+        notes=(),
+    )
+    assert (
+        spec.manifest_timed_samples
+        == _default_collection_replacement_wrong_text_model_manifest_timed_samples()
     )
 
 
@@ -2756,6 +2786,13 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
     workloads = tuple(
         benchmarks.load_manifest(manifest_path).workloads
     )
+    assert manifest["defaults"] == {
+        "warmup_iterations": 1,
+        "sample_iterations": 1,
+        "timed_samples": (
+            _default_collection_replacement_wrong_text_model_manifest_timed_samples()
+        ),
+    }
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
         support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
