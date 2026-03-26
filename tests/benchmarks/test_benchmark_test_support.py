@@ -3574,11 +3574,12 @@ def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_c
         assert not hasattr(anchor_support, name)
 
 
-def test_benchmark_test_support_exports_generic_workload_id_selector_helpers() -> None:
+def test_benchmark_test_support_no_longer_exports_deleted_workload_id_selector_helpers(
+) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
         support
     )
-    moved_names = frozenset(
+    deleted_names = frozenset(
         {
             "_split_workload_ids_by_text_model",
             "_selected_workload_ids",
@@ -3586,9 +3587,9 @@ def test_benchmark_test_support_exports_generic_workload_id_selector_helpers() -
         }
     )
 
-    assert moved_names <= definition_names
-    for name in moved_names:
-        assert hasattr(support, name)
+    assert deleted_names.isdisjoint(definition_names)
+    for name in deleted_names:
+        assert not hasattr(support, name)
         assert not hasattr(anchor_support, name)
         assert not hasattr(collection_replacement_support, name)
 
