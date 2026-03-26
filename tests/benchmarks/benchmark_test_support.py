@@ -994,39 +994,37 @@ def _module_attribute_alias_targets(
     module_alias_names: frozenset[str],
 ) -> dict[str, str]:
     attribute_alias_targets: dict[str, str] = {}
+    module_body = getattr(module_ast, "body", ())
 
-    changed = True
-    while changed:
-        changed = False
-        for node in ast.walk(module_ast):
-            if isinstance(node, ast.Assign):
-                targets = tuple(
-                    target.id for target in node.targets if isinstance(target, ast.Name)
-                )
-                value = node.value
-            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
-                targets = (node.target.id,)
-                value = node.value
-            else:
-                continue
+    for node in module_body:
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
 
-            if (
-                isinstance(value, ast.Attribute)
-                and isinstance(value.value, ast.Name)
-                and value.value.id in module_alias_names
-            ):
-                aliased_attribute = value.attr
-            elif isinstance(value, ast.Name):
-                aliased_attribute = attribute_alias_targets.get(value.id)
-                if aliased_attribute is None:
-                    continue
-            else:
-                continue
+        aliased_attribute: str | None = None
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id in module_alias_names
+        ):
+            aliased_attribute = value.attr
+        elif isinstance(value, ast.Name):
+            aliased_attribute = attribute_alias_targets.get(value.id)
 
+        if aliased_attribute is None:
             for target in targets:
-                if attribute_alias_targets.get(target) != aliased_attribute:
-                    attribute_alias_targets[target] = aliased_attribute
-                    changed = True
+                attribute_alias_targets.pop(target, None)
+            continue
+
+        for target in targets:
+            attribute_alias_targets[target] = aliased_attribute
 
     return attribute_alias_targets
 

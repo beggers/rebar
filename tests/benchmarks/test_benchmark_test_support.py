@@ -2766,6 +2766,53 @@ def test_module_alias_names_follow_dotted_import_and_assignment_alias_chains(
     ) == expected_alias_names
 
 
+def test_module_attribute_alias_targets_drop_shadowed_top_level_rebindings() -> None:
+    module_ast = ast.parse(
+        """
+from tests.benchmarks import benchmark_test_support as shared_support
+
+OWNER_SURFACE = shared_support.SHARED_ALIAS
+FOLLOWER_BEFORE_REBIND = OWNER_SURFACE
+OWNER_SURFACE = None
+FOLLOWER_AFTER_REBIND = OWNER_SURFACE
+ANNOTATED_ALIAS: object = shared_support.OTHER_ALIAS
+FINAL_FOLLOWER: object = ANNOTATED_ALIAS
+"""
+    )
+
+    assert support._module_attribute_alias_targets(
+        module_ast,
+        module_alias_names=frozenset({"shared_support"}),
+    ) == {
+        "FOLLOWER_BEFORE_REBIND": "SHARED_ALIAS",
+        "ANNOTATED_ALIAS": "OTHER_ALIAS",
+        "FINAL_FOLLOWER": "OTHER_ALIAS",
+    }
+
+
+def test_module_attribute_alias_targets_ignore_nested_scope_assignments() -> None:
+    module_ast = ast.parse(
+        """
+from tests.benchmarks import benchmark_test_support
+
+def helper():
+    NESTED_ALIAS = benchmark_test_support.SHARED_ALIAS
+
+class Holder:
+    CLASS_ALIAS = benchmark_test_support.OTHER_ALIAS
+
+MODULE_ALIAS = benchmark_test_support.MODULE_ALIAS
+"""
+    )
+
+    assert support._module_attribute_alias_targets(
+        module_ast,
+        module_alias_names=frozenset({"benchmark_test_support"}),
+    ) == {
+        "MODULE_ALIAS": "MODULE_ALIAS",
+    }
+
+
 def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface_refs(
     monkeypatch,
 ) -> None:
