@@ -2763,12 +2763,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_VERBOSE_REGRESSION_PATTERN",
         "_VERBOSE_REGRESSION_FLAGS",
     }.issubset(assignment_names)
-    assert {
-        "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.issubset(assignment_names)
     assert {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}.issubset(
         assignment_names
     )
@@ -3514,7 +3508,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.issubset(assignment_names)
+    }.isdisjoint(assignment_names)
     assert (
         support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
         == "source_workloads"
@@ -3537,10 +3531,25 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
     )
 
 
-def test_benchmark_test_support_owns_compiled_pattern_module_success_owner_specs(
+def test_benchmark_test_support_no_longer_owns_compiled_pattern_module_success_owner_specs(
 ) -> None:
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
+    ).read_text(encoding="utf-8")
+
+    assert re.search(
+        r"^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|"
+        r"_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|"
+        r"_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|"
+        r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
+        source,
+        re.MULTILINE,
+    ) is None
+
+
+def test_source_tree_support_owns_compiled_pattern_module_success_owner_specs() -> None:
+    source = (
+        REPO_ROOT / "tests" / "benchmarks" / "source_tree_benchmark_anchor_support.py"
     ).read_text(encoding="utf-8")
 
     assert re.search(
@@ -3618,7 +3627,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
     + tuple(
         pytest.param(owner, id=f"module-success-{owner.case_id}")
         for owner in (
-            support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+            anchor_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
         )
     )
     + (

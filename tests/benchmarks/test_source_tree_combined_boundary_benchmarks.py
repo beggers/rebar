@@ -4781,22 +4781,22 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     ("owner_spec", "include_workload"),
     (
         pytest.param(
-            benchmark_test_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
+            source_tree_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
             benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload,
             id="collection-replacement-success",
         ),
         pytest.param(
-            benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            source_tree_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
             benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
             id="module-boundary-literal-success",
         ),
         pytest.param(
-            benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            source_tree_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
             benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
             id="module-boundary-bounded-wildcard-success",
         ),
         pytest.param(
-            benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
+            source_tree_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
             benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
             id="module-boundary-verbose-bytes-success",
         ),
@@ -4920,7 +4920,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+    source_tree_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -4961,7 +4961,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
 
 @pytest.mark.parametrize(
     ("owner_spec", "source_workload"),
-    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
+    source_tree_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing(
     owner_spec: object,

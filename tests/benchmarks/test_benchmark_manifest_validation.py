@@ -1023,7 +1023,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
 
 @pytest.mark.parametrize(
     "owner_spec",
-    benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
+    source_tree_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS,
     ids=lambda owner_spec: owner_spec.case_id,
 )
 def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation(

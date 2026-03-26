@@ -1282,6 +1282,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+    ):
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+    for constant_name in (
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
@@ -1457,7 +1461,7 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
     ("owner_spec",),
     tuple(
         pytest.param(owner_spec, id=owner_spec.case_id)
-        for owner_spec in benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for owner_spec in support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
     ),
 )
 def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata(
@@ -1522,7 +1526,7 @@ def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_ex
     ("owner_spec",),
     tuple(
         pytest.param(owner_spec, id=owner_spec.case_id)
-        for owner_spec in benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for owner_spec in support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
     ),
 )
 def test_compiled_pattern_module_success_owner_specs_pin_live_source_workload_ids(
@@ -1537,7 +1541,7 @@ def test_compiled_pattern_module_success_owner_specs_pin_live_source_workload_id
     assert len(workload_ids) == len(set(workload_ids))
 
 
-def test_compiled_pattern_module_success_owner_spec_surface_is_not_owned_locally() -> None:
+def test_compiled_pattern_module_success_owner_spec_surface_is_owned_locally() -> None:
     local_definition_names, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
             support
@@ -1549,9 +1553,7 @@ def test_compiled_pattern_module_success_owner_spec_surface_is_not_owned_locally
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-        "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
-        "SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
-    }.isdisjoint(local_definition_names | local_assignment_names)
+    }.issubset(local_definition_names | local_assignment_names)
 
 
 def test_compiled_pattern_module_success_source_workload_params_follow_owner_specs(
@@ -1562,7 +1564,7 @@ def test_compiled_pattern_module_success_source_workload_params_follow_owner_spe
             source_workload.workload_id,
             f"{owner_spec.case_id}-{source_workload.workload_id}",
         )
-        for owner_spec in benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for owner_spec in support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
         for source_workload in owner_spec.source_workloads()
     )
     observed_params = tuple(
@@ -1571,7 +1573,7 @@ def test_compiled_pattern_module_success_source_workload_params_follow_owner_spe
             param.values[1].workload_id,
             param.id,
         )
-        for param in benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS
+        for param in support._COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS
     )
 
     assert observed_params == expected_params
