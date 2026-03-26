@@ -220,20 +220,6 @@ def _summary_view(scorecard: dict[str, object]) -> dict[str, object]:
     }
 
 
-def _attribute_alias_pairs(
-    module_ast: ast.Module,
-    *,
-    module_alias_names: frozenset[str],
-    attribute_names: frozenset[str],
-) -> frozenset[tuple[str, str]]:
-    return frozenset(
-        (target_name, attribute_name)
-        for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
-            module_ast,
-            module_alias_names=module_alias_names,
-        ).items()
-        if attribute_name in attribute_names
-    )
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
     value = {
         "b": [2, {"d": 4, "c": [5, 6]}],
@@ -2245,10 +2231,13 @@ def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_s
         module_name="tests.benchmarks.benchmark_test_support",
         imported_names=helper_names,
     ) == frozenset()
-    assert _attribute_alias_pairs(
-        module_ast,
-        module_alias_names=benchmark_support_alias_names,
-        attribute_names=helper_names,
+    assert frozenset(
+        (target_name, attribute_name)
+        for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
+            module_ast,
+            module_alias_names=benchmark_support_alias_names,
+        ).items()
+        if attribute_name in helper_names
     ) == frozenset()
     assert frozenset(
         node.attr
@@ -2294,10 +2283,13 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         module_name="tests.benchmarks.benchmark_test_support",
         imported_names=owner_names,
     ) == frozenset()
-    assert _attribute_alias_pairs(
-        module_ast,
-        module_alias_names=benchmark_support_alias_names,
-        attribute_names=owner_names,
+    assert frozenset(
+        (target_name, attribute_name)
+        for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
+            module_ast,
+            module_alias_names=benchmark_support_alias_names,
+        ).items()
+        if attribute_name in owner_names
     ) == frozenset()
     assert frozenset(
         node.attr
@@ -3230,10 +3222,13 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         module_name="tests.benchmarks.benchmark_test_support",
         imported_names=expected_benchmark_support_names,
     )
-    benchmark_support_local_aliases = _attribute_alias_pairs(
-        module_ast,
-        module_alias_names=benchmark_support_alias_names,
-        attribute_names=expected_benchmark_support_names,
+    benchmark_support_local_aliases = frozenset(
+        (target_name, attribute_name)
+        for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
+            module_ast,
+            module_alias_names=benchmark_support_alias_names,
+        ).items()
+        if attribute_name in expected_benchmark_support_names
     )
 
     assert "tests.benchmarks" in benchmark_test_support._module_import_targets(module)
@@ -3324,10 +3319,13 @@ def test_source_tree_contract_builder_consumer_guard_detects_direct_imports_and_
         module_name="tests.benchmarks.source_tree_benchmark_anchor_support",
         imported_names=contract_builder_names,
     ) == expected_direct_imports
-    assert _attribute_alias_pairs(
-        module_ast,
-        module_alias_names=source_tree_support_alias_names,
-        attribute_names=contract_builder_names,
+    assert frozenset(
+        (target_name, attribute_name)
+        for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
+            module_ast,
+            module_alias_names=source_tree_support_alias_names,
+        ).items()
+        if attribute_name in contract_builder_names
     ) == expected_local_aliases
 
 
