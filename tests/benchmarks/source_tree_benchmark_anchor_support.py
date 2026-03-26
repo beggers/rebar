@@ -1983,58 +1983,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
 })
 
 
-def _combined_slice_expectation(
-    *,
-    manifest_id: str,
-    slice_id: str,
-    required_syntax_features: tuple[str, ...] = (),
-    excluded_syntax_features: tuple[str, ...] = (),
-    required_categories: tuple[str, ...] = (),
-    excluded_categories: tuple[str, ...] = (),
-    required_id_suffix: str | None = None,
-    expected_workload_ids: tuple[str, ...],
-    expected_patterns: set[str],
-    expected_operations: set[str],
-    expected_haystacks: set[str],
-    required_row_categories: tuple[str, ...],
-    expected_status: str = "measured",
-) -> SourceTreeCombinedSliceExpectation:
-    return SourceTreeCombinedSliceExpectation(
-        manifest_id=manifest_id,
-        slice_id=slice_id,
-        required_syntax_features=tuple(
-            str(feature) for feature in required_syntax_features
-        ),
-        excluded_syntax_features=tuple(
-            str(feature) for feature in excluded_syntax_features
-        ),
-        required_categories=tuple(str(category) for category in required_categories),
-        excluded_categories=tuple(str(category) for category in excluded_categories),
-        required_id_suffix=required_id_suffix,
-        expected_workload_ids=(
-            expected_workload_ids
-            if isinstance(expected_workload_ids, tuple)
-            and all(
-                isinstance(workload_id, str)
-                for workload_id in expected_workload_ids
-            )
-            else tuple(str(workload_id) for workload_id in expected_workload_ids)
-        ),
-        expected_patterns=frozenset(str(pattern) for pattern in expected_patterns),
-        expected_operations=frozenset(
-            str(operation) for operation in expected_operations
-        ),
-        expected_haystacks=frozenset(
-            str(haystack) for haystack in expected_haystacks
-        ),
-        required_row_categories=tuple(
-            str(category) for category in required_row_categories
-        ),
-        expected_status=expected_status,
-    )
 
 SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="anchored-module-compile-cluster",
         required_syntax_features=("module-compile", "literal-text"),
@@ -2045,13 +1996,13 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-literal-warm",
             "module-compile-literal-purged",
         ),
-        expected_patterns={r"^abc$"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({r"^abc$"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=("compile", "literal"),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-literal-success",
         required_syntax_features=(
@@ -2066,13 +2017,13 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-literal-warm-str-compiled-pattern",
             "module-compile-literal-purged-bytes-compiled-pattern",
         ),
-        expected_patterns={"abc"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"abc"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=("compile", "literal", "compiled-pattern"),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-named-group-success",
         required_syntax_features=(
@@ -2088,13 +2039,13 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-named-group-warm-str-compiled-pattern",
             "module-compile-named-group-purged-bytes-compiled-pattern",
         ),
-        expected_patterns={"(?P<word>abc)"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"(?P<word>abc)"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=("compile", "named-group", "compiled-pattern"),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
         required_syntax_features=(
@@ -2110,9 +2061,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-flags-int-zero-warm-str-compiled-pattern-named-group",
             "module-compile-flags-int-zero-purged-bytes-compiled-pattern-named-group",
         ),
-        expected_patterns={"(?P<word>abc)"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"(?P<word>abc)"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=(
             "compile",
             "named-group",
@@ -2122,7 +2073,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-bool-false-keyword-named-group",
         required_syntax_features=(
@@ -2144,9 +2095,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-flags-bool-false-warm-str-compiled-pattern-named-group",
             "module-compile-flags-bool-false-purged-bytes-compiled-pattern-named-group",
         ),
-        expected_patterns={"(?P<word>abc)"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"(?P<word>abc)"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=(
             "compile",
             "named-group",
@@ -2157,7 +2108,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
         required_syntax_features=(
@@ -2181,9 +2132,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-flags-ignorecase-warm-str-compiled-pattern-named-group",
             "module-compile-flags-ignorecase-purged-bytes-compiled-pattern-named-group",
         ),
-        expected_patterns={"(?P<word>abc)"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"(?P<word>abc)"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=(
             "compile",
             "named-group",
@@ -2195,7 +2146,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-int-zero-keyword",
         required_syntax_features=(
@@ -2210,13 +2161,13 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-flags-int-zero-warm-str-compiled-pattern",
             "module-compile-flags-int-zero-purged-bytes-compiled-pattern",
         ),
-        expected_patterns={"abc"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"abc"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=("compile", "literal", "compiled-pattern", "keyword", "flags"),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-bool-false-keyword",
         required_syntax_features=(
@@ -2237,9 +2188,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-flags-bool-false-warm-str-compiled-pattern",
             "module-compile-flags-bool-false-purged-bytes-compiled-pattern",
         ),
-        expected_patterns={"abc"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"abc"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=(
             "compile",
             "literal",
@@ -2250,7 +2201,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-ignorecase-keyword-rejection",
         required_syntax_features=(
@@ -2273,9 +2224,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-flags-ignorecase-warm-str-compiled-pattern",
             "module-compile-flags-ignorecase-purged-bytes-compiled-pattern",
         ),
-        expected_patterns={"abc"},
-        expected_operations={"module.compile"},
-        expected_haystacks=set(),
+        expected_patterns=frozenset({"abc"}),
+        expected_operations=frozenset({"module.compile"}),
+        expected_haystacks=frozenset(),
         required_row_categories=(
             "compile",
             "literal",
@@ -2287,7 +2238,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="branch-local-backreference-boundary",
         slice_id="broader-range-open-ended-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -2311,12 +2262,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-bytes",
             "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){2,})\2(?(2)d|e)",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-        },
-        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
-        expected_haystacks={"zzabbbdzz", "abcbccd", "zzacccdzz", "abbbd"},
+        }),
+        expected_operations=frozenset({"module.compile", "module.search", "pattern.fullmatch"}),
+        expected_haystacks=frozenset({"zzabbbdzz", "abcbccd", "zzacccdzz", "abbbd"}),
         required_row_categories=(
             "grouped",
             "nested-group",
@@ -2329,7 +2280,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="quantified-nested-alternation",
         required_syntax_features=("alternation", "quantifiers"),
@@ -2340,19 +2291,19 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-search-named-quantified-nested-group-alternation-lower-bound-c-warm-str",
             "pattern-fullmatch-named-quantified-nested-group-alternation-repeated-mixed-purged-str",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c)+)d",
             r"a(?P<outer>(?P<inner>b|c)+)d",
-        },
-        expected_operations={"module.search", "pattern.fullmatch"},
-        expected_haystacks={"zzabdzz", "acbbd", "zzacdzz", "abccd"},
+        }),
+        expected_operations=frozenset({"module.search", "pattern.fullmatch"}),
+        expected_haystacks=frozenset({"zzabdzz", "acbbd", "zzacdzz", "abccd"}),
         required_row_categories=(
             "nested-group",
             "alternation",
             "quantified",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="non-quantified-branch-local-backreference",
         required_syntax_features=("branch-local-backreferences",),
@@ -2362,19 +2313,19 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-compile-named-nested-group-branch-local-backreference-warm-str",
             "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c))\2d",
             r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
-        },
-        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
-        expected_haystacks={"zzabbdzz", "accd"},
+        }),
+        expected_operations=frozenset({"module.compile", "module.search", "pattern.fullmatch"}),
+        expected_haystacks=frozenset({"zzabbdzz", "accd"}),
         required_row_categories=(
             "nested-group",
             "alternation",
             "branch-local",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="quantified-branch-local-backreference",
         required_syntax_features=("branch-local-backreferences", "quantifiers"),
@@ -2387,12 +2338,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str",
             "pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c)+)\2d",
             r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
-        },
-        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
-        expected_haystacks={"zzabbdzz", "abccd"},
+        }),
+        expected_operations=frozenset({"module.compile", "module.search", "pattern.fullmatch"}),
+        expected_haystacks=frozenset({"zzabbdzz", "abccd"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2400,7 +2351,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="broader-range-branch-local-backreference",
         required_syntax_features=(
@@ -2416,12 +2367,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-fullmatch-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-upper-bound-all-c-purged-str",
             "pattern-fullmatch-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-upper-bound-all-c-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){1,4})\2d",
             r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
-        },
-        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
-        expected_haystacks={"zzabbdzz", "acccccd"},
+        }),
+        expected_operations=frozenset({"module.compile", "module.search", "pattern.fullmatch"}),
+        expected_haystacks=frozenset({"zzabbdzz", "acccccd"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2432,7 +2383,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="broader-range-open-ended-branch-local-backreference",
         required_syntax_features=("branch-local-backreferences", "counted-repeats"),
@@ -2446,12 +2397,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str",
             "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){2,})\2d",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-        },
-        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
-        expected_haystacks={"zzabbbdzz", "acccd"},
+        }),
+        expected_operations=frozenset({"module.compile", "module.search", "pattern.fullmatch"}),
+        expected_haystacks=frozenset({"zzabbbdzz", "acccd"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2462,7 +2413,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-group-bytes",
         required_syntax_features=("callable-replacement", "pattern-text-model"),
@@ -2481,12 +2432,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-nested-group-named-purged-bytes",
             "pattern-subn-callable-nested-group-named-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b))d",
             r"a(?P<outer>(?P<inner>b))d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abdabd"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abdabd"}),
         required_row_categories=(
             "nested-group",
             "replacement",
@@ -2494,7 +2445,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "bytes",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-alternation",
         required_syntax_features=("alternation", "callable-replacement"),
@@ -2505,12 +2456,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-sub-callable-named-nested-group-alternation-c-branch-warm-str",
             "pattern-subn-callable-named-nested-group-alternation-b-branch-first-match-only-purged-str",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c))d",
             r"a(?P<outer>(?P<inner>b|c))d",
-        },
-        expected_operations={"module.sub", "pattern.subn"},
-        expected_haystacks={"abdacd", "acdabd", "acd"},
+        }),
+        expected_operations=frozenset({"module.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abdacd", "acdabd", "acd"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2518,7 +2469,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "callable",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="quantified-nested-group",
         required_syntax_features=(
@@ -2536,12 +2487,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-quantified-nested-group-repeated-outer-purged-bytes",
             "pattern-subn-callable-named-quantified-nested-group-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((bc)+)d",
             r"a(?P<outer>(?P<inner>bc)+)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzabcbcdabcbcdzz", "zzabcbcdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"zzabcdzz", "zzabcbcdabcbcdzz", "zzabcbcdzz"}),
         required_row_categories=(
             "nested-group",
             "replacement",
@@ -2549,7 +2500,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="quantified-nested-alternation",
         required_syntax_features=("alternation", "callable-replacement", "quantifiers"),
@@ -2565,12 +2516,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-quantified-nested-group-alternation-repeated-mixed-purged-bytes",
             "pattern-subn-callable-named-quantified-nested-group-alternation-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c)+)d",
             r"a(?P<outer>(?P<inner>b|c)+)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabdzz", "zzabccdacbbdzz", "zzabccdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"zzabdzz", "zzabccdacbbdzz", "zzabccdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2579,7 +2530,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-broader-range-backtracking-heavy-callable-replacement",
         required_syntax_features=(
@@ -2601,17 +2552,17 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-upper-bound-mixed-purged-bytes",
             "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a(((bc|b)c){1,4})d",
             r"a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({
             "abcd",
             "abccdabcbccd",
             "zzabcbccbccbcdzz",
             "zzabccbcdabccdzz",
-        },
+        }),
         required_row_categories=(
             "grouped",
             "nested-group",
@@ -2625,7 +2576,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "backtracking-heavy",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-broader-range-open-ended-backtracking-heavy-callable-replacement",
         required_syntax_features=(
@@ -2650,17 +2601,17 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-fourth-repetition-short-only-purged-bytes",
             "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a(((bc|b)c){2,})d",
             r"a(?P<outer>(?:(?P<inner>bc|b)c){2,})d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({
             "abcbcd",
             "abccbccdabcbcd",
             "zzabcbcbcbcdzz",
             "zzabcbcbcbcdabccbccdzz",
-        },
+        }),
         required_row_categories=(
             "grouped",
             "nested-group",
@@ -2674,7 +2625,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "backtracking-heavy",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="branch-local-backreference",
         required_syntax_features=("branch-local-backreferences", "callable-replacement"),
@@ -2689,12 +2640,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-nested-group-alternation-branch-local-backreference-c-branch-purged-bytes",
             "pattern-subn-callable-named-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c))\2d",
             r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbd", "abbdaccd", "accd", "accdabbd"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbd", "abbdaccd", "accd", "accdabbd"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2703,7 +2654,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "branch-local",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="quantified-branch-local-backreference",
         required_syntax_features=(
@@ -2722,12 +2673,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-bytes",
             "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c)+)\2d",
             r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbd", "abbbdaccd", "zzabccdzz", "zzaccdabbbdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbd", "abbbdaccd", "zzabccdzz", "zzaccdabbbdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2737,7 +2688,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-branch-local-backreference",
         required_syntax_features=(
@@ -2758,12 +2709,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-bytes",
             "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){1,4})\2d",
             r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbd", "abcbccdabbd", "zzacccccdzz", "zzacccccdabbbdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbd", "abcbccdabbd", "zzacccccdzz", "zzacccccdabbbdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2776,7 +2727,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -2797,12 +2748,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-conditional-upper-bound-all-c-purged-bytes",
             "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-conditional-upper-bound-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){1,4})\2(?(2)d|e)",
             r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbd", "abbbdaccd", "zzacccccdzz", "zzacccccdabbbdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbd", "abbbdaccd", "zzacccccdzz", "zzacccccdabbbdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2817,7 +2768,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -2834,12 +2785,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
             "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){1,})\2d",
             r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbd", "abbbdaccd", "zzaccdzz", "zzaccdabcbccdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbd", "abbbdaccd", "zzaccdzz", "zzaccdabcbccdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2851,7 +2802,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "open-ended-repeat",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -2872,12 +2823,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
             "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){2,})\2d",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2890,7 +2841,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-open-ended-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -2912,12 +2863,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-bytes",
             "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){2,})\2(?(2)d|e)",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2932,7 +2883,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="quantified-nested-group",
         required_syntax_features=("quantifiers", "replacement-template"),
@@ -2943,12 +2894,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-template-named-quantified-nested-group-replacement-repeated-outer-purged-str",
             "pattern-subn-template-named-quantified-nested-group-replacement-purged-gap",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((bc)+)d",
             r"a(?P<outer>(?P<inner>bc)+)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzabcbcdabcbcdzz", "zzabcbcdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"zzabcdzz", "zzabcbcdabcbcdzz", "zzabcbcdzz"}),
         required_row_categories=(
             "nested-group",
             "replacement",
@@ -2956,7 +2907,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="broader-range-branch-local-backreference",
         required_syntax_features=(
@@ -2978,12 +2929,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-bytes",
             "pattern-subn-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){1,4})\2d",
             r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbd", "abbbdaccd", "zzacccccdzz", "zzacccccdabbbdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbd", "abbbdaccd", "zzacccccdzz", "zzacccccdabbbdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -2996,7 +2947,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -3013,12 +2964,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
             "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){1,})\2d",
             r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbd", "abbbdaccd", "zzaccdzz", "zzaccdabcbccdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbd", "abbbdaccd", "zzaccdzz", "zzaccdabcbccdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -3030,7 +2981,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "open-ended-repeat",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="broader-range-open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -3051,12 +3002,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
             "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){2,})\2d",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -3069,7 +3020,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="broader-range-open-ended-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -3091,12 +3042,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-bytes",
             "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c){2,})\2(?(2)d|e)",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"}),
         required_row_categories=(
             "nested-group",
             "alternation",
@@ -3111,7 +3062,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="open-ended-quantified-group-boundary",
         slice_id="broader-range-group-alternation",
         required_syntax_features=("module-search",),
@@ -3128,9 +3079,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-search-numbered-open-ended-group-broader-range-cold-gap",
             "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
         ),
-        expected_patterns={r"a(bc|de){2,}d"},
-        expected_operations={"module.search"},
-        expected_haystacks={"zzabcbcdzz"},
+        expected_patterns=frozenset({r"a(bc|de){2,}d"}),
+        expected_operations=frozenset({"module.search"}),
+        expected_haystacks=frozenset({"zzabcbcdzz"}),
         required_row_categories=(
             "grouped",
             "alternation",
@@ -3144,7 +3095,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "bc-bc",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="open-ended-quantified-group-boundary",
         slice_id="broader-range-group-conditional",
         required_syntax_features=("module-search", "conditionals"),
@@ -3163,9 +3114,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap",
             "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
         ),
-        expected_patterns={r"a((bc|de){2,})?(?(1)d|e)"},
-        expected_operations={"module.search"},
-        expected_haystacks={"zzabcbcdzz"},
+        expected_patterns=frozenset({r"a((bc|de){2,})?(?(1)d|e)"}),
+        expected_operations=frozenset({"module.search"}),
+        expected_haystacks=frozenset({"zzabcbcdzz"}),
         required_row_categories=(
             "grouped",
             "alternation",
@@ -3182,7 +3133,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "bc-branch",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="open-ended-quantified-group-boundary",
         slice_id="broader-range-group-backtracking-heavy",
         required_syntax_features=("pattern-fullmatch", "named-groups"),
@@ -3200,9 +3151,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-str",
             "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
         ),
-        expected_patterns={r"a(?P<word>(bc|b)c){2,}d"},
-        expected_operations={"pattern.fullmatch"},
-        expected_haystacks={"abcbcbcbcd"},
+        expected_patterns=frozenset({r"a(?P<word>(bc|b)c){2,}d"}),
+        expected_operations=frozenset({"pattern.fullmatch"}),
+        expected_haystacks=frozenset({"abcbcbcbcd"}),
         required_row_categories=(
             "grouped",
             "alternation",
@@ -3218,7 +3169,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "b-branch",
         ),
     ),
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="grouped-alternation-callable-replacement-boundary",
         slice_id="former-gap-callable-replacement-rows",
         required_syntax_features=("callable-replacement",),
@@ -3227,12 +3178,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-sub-callable-nested-grouped-alternation-cold-gap",
             "pattern-subn-callable-named-nested-grouped-alternation-purged-gap",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a((b|c))d",
             r"a(?P<outer>(b|c))d",
-        },
-        expected_operations={"module.sub", "pattern.subn"},
-        expected_haystacks={"abdacd", "acdabd"},
+        }),
+        expected_operations=frozenset({"module.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({"abdacd", "acdabd"}),
         required_row_categories=(
             "alternation",
             "replacement",
@@ -3241,7 +3192,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
     ),
     *collection_replacement_support.COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS,
-    _combined_slice_expectation(
+    SourceTreeCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="quantified-alternation-heavy-constant-replacement-rows",
         required_syntax_features=("conditionals", "alternation", "quantifiers"),
@@ -3256,17 +3207,17 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-named-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
             "pattern-subn-named-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
         ),
-        expected_patterns={
+        expected_patterns=frozenset({
             r"a(b)?c(?(1)(de|df)|(eg|eh)){2}",
             r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={
+        }),
+        expected_operations=frozenset({"module.sub", "module.subn", "pattern.sub", "pattern.subn"}),
+        expected_haystacks=frozenset({
             "zzabcdedezz",
             "zzabcdfdfzz",
             "zzacegegzz",
             "zzacehehzz",
-        },
+        }),
         required_row_categories=(
             "grouped",
             "optional-group",

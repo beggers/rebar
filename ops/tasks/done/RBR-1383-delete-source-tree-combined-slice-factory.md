@@ -30,6 +30,11 @@ Created: 2026-03-26
 - Keep the run bounded to the shared combined-slice factory deletion in the source-tree benchmark owner layer.
 
 ## Notes
+- Completed 2026-03-26: removed `_combined_slice_expectation(...)`, rewrote `SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS` as direct `SourceTreeCombinedSliceExpectation(...)` literals with explicit `frozenset(...)` fields, and added a support-module assertion that the deleted helper is absent from the local function surface.
+- Verification completed 2026-03-26:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed (`107 passed in 1.22s`).
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed.
+  - `bash -lc "! rg -n '_combined_slice_expectation\\(' tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` passed.
 - ID check in this run:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`.
   - `git ls-files '*.json' | wc -l` returned `0`.

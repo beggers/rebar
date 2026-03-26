@@ -1165,6 +1165,8 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ):
         assert hasattr(support, function_name)
         assert function_name in local_function_names
+    assert not hasattr(support, "_combined_slice_expectation")
+    assert "_combined_slice_expectation" not in local_function_names
     for function_name, owner_type in (
         (
             "compiled_pattern_module_compile_contract_builder_spec",
