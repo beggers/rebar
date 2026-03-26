@@ -2414,6 +2414,84 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
         )
 
 
+@pytest.mark.parametrize(
+    ("module_source", "local_assignment_names"),
+    (
+        pytest.param(
+            "\n".join(
+                (
+                    "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                    "from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                )
+            ),
+            set(),
+            id="direct-owner-import",
+        ),
+        pytest.param(
+            "\n".join(
+                (
+                    "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                    "",
+                    "SOURCE_TREE_SCORECARD_EXPECTATIONS = source_tree_support.SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                )
+            ),
+            {"SOURCE_TREE_SCORECARD_EXPECTATIONS"},
+            id="local-owner-rebinding",
+        ),
+        pytest.param(
+            "\n".join(
+                (
+                    "from tests.benchmarks import benchmark_test_support",
+                    "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                    "",
+                    "benchmark_test_support.SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                )
+            ),
+            set(),
+            id="benchmark-test-support-owner-ref",
+        ),
+    ),
+)
+def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
+    monkeypatch,
+    module_source: str,
+    local_assignment_names: set[str],
+) -> None:
+    owner_surface = object()
+    owner_module = SimpleNamespace(
+        __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
+        SOURCE_TREE_SCORECARD_EXPECTATIONS=owner_surface,
+    )
+    combined_suite = SimpleNamespace(
+        benchmark_test_support=support,
+        source_tree_support=owner_module,
+    )
+    combined_suite_ast = ast.parse(module_source)
+
+    monkeypatch.setattr(
+        support,
+        "_source_tree_combined_suite_module",
+        lambda: combined_suite,
+    )
+    monkeypatch.setattr(
+        support,
+        "_parsed_source_tree_combined_suite_ast",
+        lambda: combined_suite_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "top_level_module_definition_and_assignment_names",
+        lambda module: (set(), local_assignment_names),
+    )
+
+    with pytest.raises(AssertionError):
+        support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+            alias_name="source_tree_support",
+            owner_module=owner_module,
+            owner_names=("SOURCE_TREE_SCORECARD_EXPECTATIONS",),
+        )
+
+
 _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
     {
         "STANDARD_BENCHMARK_DEFINITIONS",
