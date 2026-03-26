@@ -2734,7 +2734,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_is_module_workflow_compiled_pattern_workload",
         "_module_workflow_compiled_pattern_success_correctness_case_signature",
         "_module_workflow_compiled_pattern_success_workload_signature",
-        "_source_tree_benchmark_anchor_support_module",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
@@ -2763,6 +2762,7 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     )
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_specs")
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
+    assert not hasattr(support, "_source_tree_benchmark_anchor_support_module")
     assert not hasattr(
         support,
         "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
