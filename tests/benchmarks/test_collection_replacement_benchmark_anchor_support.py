@@ -1070,19 +1070,17 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
 ) -> None:
     callable_expectations = {
         expectation.slice_id: expectation.expected_workload_ids
-        for expectation in source_tree_support._conditional_group_exists_callable_replacement_expectations()
+        for expectation in support._conditional_group_exists_callable_replacement_expectations()
     }
     minimal_callable_workload_ids = (
         callable_expectations["minimal-callable-replacement-rows"]
         + callable_expectations["minimal-callable-replacement-exception-rows"]
     )
     minimal_callable_str_ids, minimal_callable_bytes_ids = (
-        source_tree_support._split_workload_ids_by_text_model(
-            minimal_callable_workload_ids
-        )
+        support._split_workload_ids_by_text_model(minimal_callable_workload_ids)
     )
     none_count_str_ids, none_count_bytes_ids = (
-        source_tree_support._split_workload_ids_by_text_model(
+        support._split_workload_ids_by_text_model(
             tuple(
                 workload_id
                 for workload_id in (
@@ -1098,14 +1096,14 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
         )
     )
     alternation_str_ids, alternation_bytes_ids = (
-        source_tree_support._split_workload_ids_by_text_model(
+        support._split_workload_ids_by_text_model(
             callable_expectations["alternation-heavy-callable-replacement-rows"]
         )
     )
     template_workload_ids = (
-        source_tree_support._conditional_group_exists_template_replacement_expectation().expected_workload_ids
+        support._conditional_group_exists_template_replacement_expectation().expected_workload_ids
     )
-    template_str_ids, template_bytes_ids = source_tree_support._split_workload_ids_by_text_model(
+    template_str_ids, template_bytes_ids = support._split_workload_ids_by_text_model(
         template_workload_ids
     )
 
@@ -1145,16 +1143,16 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
             if "negative-count" in workload_id
         ),
         "nested-callable-str": (
-            source_tree_support._conditional_group_exists_nested_callable_replacement_expectation().expected_workload_ids
+            support._conditional_group_exists_nested_callable_replacement_expectation().expected_workload_ids
         ),
         "nested-callable-bytes": (
-            source_tree_support._conditional_group_exists_nested_callable_bytes_replacement_expectation().expected_workload_ids
+            support._conditional_group_exists_nested_callable_bytes_replacement_expectation().expected_workload_ids
         ),
         "quantified-callable-str": (
-            source_tree_support._conditional_group_exists_quantified_callable_replacement_expectation().expected_workload_ids
+            support._conditional_group_exists_quantified_callable_replacement_expectation().expected_workload_ids
         ),
         "quantified-callable-bytes": (
-            source_tree_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().expected_workload_ids
+            support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().expected_workload_ids
         ),
     }
     expected_workload_ids_by_label = {
