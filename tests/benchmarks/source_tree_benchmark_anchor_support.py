@@ -34,7 +34,6 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    callable_match_group_signature,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
@@ -1315,18 +1314,6 @@ class SourceTreeCombinedManifestExpectationDefinition:
     fully_measured_expectation: SourceTreeCombinedFullyMeasuredManifestExpectation | None = None
     shape_expectation: SourceTreeCombinedManifestShapeExpectation | None = None
     zero_gap_bytes_representative_subsets: tuple[tuple[str, ...], ...] = ()
-
-
-def _text_model_agnostic_callable_match_group_signature(
-    replacement: object,
-) -> tuple[object, ...] | None:
-    signature = callable_match_group_signature(replacement)
-    if signature is None:
-        return None
-    return tuple(
-        value.decode("utf-8") if isinstance(value, bytes) else value
-        for value in signature
-    )
 
 
 @dataclass(frozen=True, slots=True)

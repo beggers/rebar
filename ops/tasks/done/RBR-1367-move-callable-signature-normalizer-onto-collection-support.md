@@ -1,6 +1,6 @@
 # RBR-1367: Move callable signature normalizer onto collection support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -53,3 +53,16 @@ Created: 2026-03-26
   - `bash -lc "! rg -n '^def _text_model_agnostic_callable_match_group_signature\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because the helper still lives on `tests/benchmarks/source_tree_benchmark_anchor_support.py`, and that failure belongs exactly to this cleanup
   - `rg -n '^def _text_model_agnostic_callable_match_group_signature\\b' tests/benchmarks/collection_replacement_benchmark_anchor_support.py` currently fails because the collection owner does not yet define the helper, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'source_tree_support\\._text_model_agnostic_callable_match_group_signature' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently fails because the combined-suite tests still route that helper through `source_tree_support`, and that failure belongs exactly to this cleanup
+
+## Completion Note
+- Moved `_text_model_agnostic_callable_match_group_signature` into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, added it to `COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES`, and deleted the source-tree-local copy from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the callable replacement combined-suite checks normalize replacements through `collection_replacement_support`.
+- Tightened `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so the owner-boundary assertion confirms the routed signature helpers, including the moved normalizer, are defined on the collection owner module and absent from the source-tree module.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'combined_suite_uses_collection_owner_conditional_callable_signature_helpers or moved_collection_replacement_workload_ids_in_combined_suite_use_direct_owner_import'` -> `2 passed, 146 deselected in 0.37s`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers or source_tree_support_module_exposes_routed_collection_owner_surface'` -> `2 passed, 103 deselected in 0.43s`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'alternation_callable_scorecards_keep_measured_rows_in_sync_with_scorecard_case or conditional_group_exists_nested_callable_scorecards_keep_bytes_rows_in_sync_with_str_slice or conditional_group_exists_quantified_callable_scorecards_keep_negative_count_follow_on_workloads_in_sync'` -> `2 passed, 277 deselected in 0.32s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `rg -n '^def _text_model_agnostic_callable_match_group_signature\\b' tests/benchmarks/collection_replacement_benchmark_anchor_support.py`
+  - `bash -lc "! rg -n '^def _text_model_agnostic_callable_match_group_signature\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'source_tree_support\\._text_model_agnostic_callable_match_group_signature' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"`

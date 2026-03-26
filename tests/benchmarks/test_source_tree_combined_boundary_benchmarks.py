@@ -1233,10 +1233,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     source_workload.haystack_payload(),
                 )
                 self.assertEqual(
-                    source_tree_support._text_model_agnostic_callable_match_group_signature(
+                    collection_replacement_support._text_model_agnostic_callable_match_group_signature(
                         round_tripped.replacement_payload()
                     ),
-                    source_tree_support._text_model_agnostic_callable_match_group_signature(
+                    collection_replacement_support._text_model_agnostic_callable_match_group_signature(
                         source_workload.replacement_payload()
                     ),
                 )
@@ -2928,7 +2928,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 workload.operation,
                 workload.pattern,
                 workload.haystack,
-                source_tree_support._text_model_agnostic_callable_match_group_signature(
+                collection_replacement_support._text_model_agnostic_callable_match_group_signature(
                     workload.replacement_payload()
                 ),
                 workload.count,
@@ -2942,7 +2942,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 workload.operation,
                 workload.pattern,
                 workload.haystack,
-                source_tree_support._text_model_agnostic_callable_match_group_signature(
+                collection_replacement_support._text_model_agnostic_callable_match_group_signature(
                     workload.replacement_payload()
                 ),
                 workload.count,
@@ -3074,7 +3074,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 workload.operation,
                 workload.pattern,
                 workload.haystack,
-                source_tree_support._text_model_agnostic_callable_match_group_signature(
+                collection_replacement_support._text_model_agnostic_callable_match_group_signature(
                     workload.replacement_payload()
                 ),
                 workload.count,
@@ -3190,7 +3190,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 workload.operation,
                 normalized_text_model_payload(workload.pattern_payload()),
                 normalized_text_model_payload(workload.haystack_payload()),
-                source_tree_support._text_model_agnostic_callable_match_group_signature(
+                collection_replacement_support._text_model_agnostic_callable_match_group_signature(
                     workload.replacement_payload()
                 ),
                 workload.count,
@@ -3353,7 +3353,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 workload.operation,
                 normalized_text_model_payload(workload.pattern_payload()),
                 normalized_text_model_payload(workload.haystack_payload()),
-                source_tree_support._text_model_agnostic_callable_match_group_signature(
+                collection_replacement_support._text_model_agnostic_callable_match_group_signature(
                     workload.replacement_payload()
                 ),
                 workload.count,

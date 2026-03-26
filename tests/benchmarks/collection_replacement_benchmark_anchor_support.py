@@ -1717,6 +1717,18 @@ def _collection_replacement_grouped_callable_workload_signature(
     )
 
 
+def _text_model_agnostic_callable_match_group_signature(
+    replacement: object,
+) -> tuple[object, ...] | None:
+    signature = callable_match_group_signature(replacement)
+    if signature is None:
+        return None
+    return tuple(
+        value.decode("utf-8") if isinstance(value, bytes) else value
+        for value in signature
+    )
+
+
 def _workload_ids_for_text_model(
     workload_stems: tuple[str, ...],
     *,
@@ -2698,6 +2710,7 @@ def _conditional_group_exists_quantified_callable_workload_signature(
 
 
 COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES = (
+    "_text_model_agnostic_callable_match_group_signature",
     "_conditional_group_exists_nested_callable_correctness_case_signature",
     "_conditional_group_exists_nested_callable_workload_signature",
     "_conditional_group_exists_quantified_callable_correctness_case_signature",

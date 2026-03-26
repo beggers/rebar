@@ -1610,9 +1610,13 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
 
 def test_source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers(
 ) -> None:
-    module_ast = benchmark_test_support._parsed_module_ast(support)
+    source_tree_ast = benchmark_test_support._parsed_module_ast(support)
     local_function_names = {
-        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
+        node.name for node in source_tree_ast.body if isinstance(node, ast.FunctionDef)
+    }
+    collection_ast = benchmark_test_support._parsed_module_ast(collection_support)
+    collection_function_names = {
+        node.name for node in collection_ast.body if isinstance(node, ast.FunctionDef)
     }
 
     for function_name in (
@@ -1621,6 +1625,7 @@ def test_source_tree_support_module_no_longer_exposes_collection_owned_signature
         assert not hasattr(support, function_name)
         assert function_name not in local_function_names
         assert hasattr(collection_support, function_name)
+        assert function_name in collection_function_names
 
 
 def test_source_tree_support_module_exports_combined_slice_owner_group() -> None:
