@@ -4996,12 +4996,6 @@ PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
     ),
 )
 
-
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_replacement_support,
-)
-from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
-
 _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
     "collection-replacement-boundary": _SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
@@ -5032,17 +5026,6 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
         timing_scope="pattern-helper-call",
     )
 )
-
-STANDARD_BENCHMARK_DEFINITIONS = (
-    *COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
-    *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
-    *MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-    *COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
-    *COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-    *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
-    *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
-)
-
 
 def _anchored_case_ids(
     definition: StandardBenchmarkAnchorContract,
@@ -5218,25 +5201,28 @@ def _has_standard_benchmark_special_unanchored_direct_parity_cases(
     )
 
 
-def _standard_benchmark_manifest_params() -> tuple[Any, ...]:
+def _standard_benchmark_manifest_params(
+    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
+) -> tuple[Any, ...]:
     return tuple(
         pytest.param(
             definition,
             manifest_path,
             id=f"{definition.name}:{manifest_path.name}",
         )
-        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        for definition in definitions
         for manifest_path in definition.manifest_paths
     )
 
 
 def _standard_benchmark_definition_params(
+    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
     *,
     include_definition: Callable[[StandardBenchmarkAnchorContractDefinition], bool],
 ) -> tuple[Any, ...]:
     return tuple(
         pytest.param(definition, id=definition.name)
-        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        for definition in definitions
         if include_definition(definition)
     )
 
@@ -5247,14 +5233,16 @@ def _standard_benchmark_definition_id(
     return definition.name
 
 
-def _standard_benchmark_special_unanchored_result_parity_params() -> tuple[Any, ...]:
+def _standard_benchmark_special_unanchored_result_parity_params(
+    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
+) -> tuple[Any, ...]:
     return tuple(
         pytest.param(
             definition,
             workload_id,
             id=f"{definition.name}:{workload_id}",
         )
-        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        for definition in definitions
         if definition.run_special_unanchored_result_parity
         for workload_id in definition.expected_special_unanchored_workload_ids
     )

@@ -27,7 +27,7 @@ Created: 2026-03-26
 - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py -k 'pattern_boundary_standard_definitions_are_owner_owned_in_exact_order or pattern_boundary_standard_definitions_are_reused_by_standard_inventory'`
 - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_standard_definitions_export_stays_owned_by_source_tree'`
 - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
-- `bash -lc "! rg -n 'STANDARD_BENCHMARK_DEFINITIONS|collection_replacement_support\\.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS|source_tree_support\\.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS' tests/benchmarks/benchmark_test_support.py"`
+- `bash -lc "! rg -n '^STANDARD_BENCHMARK_DEFINITIONS\\b|collection_replacement_support\\.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS|source_tree_support\\.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS' tests/benchmarks/benchmark_test_support.py"`
 
 ## Constraints
 - Prefer deleting the shared aggregate layer outright over moving it to another helper or another support module.
@@ -53,3 +53,14 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_standard_definitions_export_stays_owned_by_source_tree'` passed with `1 passed, 115 deselected in 0.12s`.
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed.
   - `bash -lc "rg -n 'STANDARD_BENCHMARK_DEFINITIONS|collection_replacement_support\\.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS|source_tree_support\\.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS' tests/benchmarks/benchmark_test_support.py"` currently reports the global aggregate assignment, the two owner-module tuple splices, and the helper comprehensions that this task is intended to delete or rewrite.
+- Completion note:
+  - Deleted `STANDARD_BENCHMARK_DEFINITIONS` and the owner-only import splice from `tests/benchmarks/benchmark_test_support.py`.
+  - Rewrote the shared benchmark param helpers to accept an explicit caller-owned definition tuple.
+  - Reworked the benchmark support and owner-local tests to build explicit combined inventories in the test layer instead of reading a benchmark-support-global aggregate.
+  - Final verification in this run:
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py` passed with `176 passed in 0.91s`.
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers or collection_replacement_standard_definitions_are_reused_by_standard_inventory'` passed with `2 passed, 153 deselected in 0.33s`.
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py -k 'pattern_boundary_standard_definitions_are_owner_owned_in_exact_order or pattern_boundary_standard_definitions_are_reused_by_standard_inventory'` passed with `2 passed, 25 deselected in 0.18s`.
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_standard_definitions_export_stays_owned_by_source_tree'` passed with `1 passed, 115 deselected in 0.19s`.
+    - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed.
+    - `bash -lc "! rg -n '^STANDARD_BENCHMARK_DEFINITIONS\\b|collection_replacement_support\\.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS|source_tree_support\\.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS' tests/benchmarks/benchmark_test_support.py"` passed.

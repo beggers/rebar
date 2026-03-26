@@ -104,6 +104,20 @@ def _inline_standard_definition_assignments(
         and all(isinstance(element, ast.Call) for element in node.value.elts)
     )
 
+
+def _explicit_standard_benchmark_definitions(
+) -> tuple[support.StandardBenchmarkAnchorContractDefinition, ...]:
+    return (
+        *support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+        *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+    )
+
+
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -934,43 +948,44 @@ def test_compile_proxy_standard_definition_reuses_compile_proxy_helper_functions
     assert definition.workload_signature is support.compile_proxy_workload_signature
 
 
-def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() -> None:
-    assert isinstance(support.STANDARD_BENCHMARK_DEFINITIONS, tuple)
+def test_standard_benchmark_param_helpers_require_explicit_definition_inventory() -> None:
+    standard_definitions = _explicit_standard_benchmark_definitions()
+
+    assert not hasattr(support, "STANDARD_BENCHMARK_DEFINITIONS")
     assert tuple(
         parameter.values[0]
         for parameter in support._standard_benchmark_definition_params(
+            standard_definitions,
             include_definition=lambda _: True
         )
-    ) == support.STANDARD_BENCHMARK_DEFINITIONS
+    ) == standard_definitions
 
     support_ast = support._parsed_module_ast(support)
-    definitions_assignment = next(
-        node
-        for node in support_ast.body
-        if isinstance(node, ast.Assign)
+    assert not any(
+        isinstance(node, ast.Assign)
         and any(
             isinstance(target, ast.Name)
             and target.id == "STANDARD_BENCHMARK_DEFINITIONS"
             for target in node.targets
         )
+        for node in support_ast.body
     )
-
-    assert isinstance(definitions_assignment.value, ast.Tuple)
     assert not any(
         isinstance(node, ast.FunctionDef)
         and node.name == "_build_standard_benchmark_definitions"
         for node in support_ast.body
     )
-    assert any(
-        isinstance(node, ast.comprehension)
-        and isinstance(node.iter, ast.Name)
-        and node.iter.id == "STANDARD_BENCHMARK_DEFINITIONS"
-        for node in ast.walk(
-            support._module_function_definition(
-                support,
-                "_standard_benchmark_definition_params",
-            )
-        )
+    helper_definition = support._module_function_definition(
+        support,
+        "_standard_benchmark_definition_params",
+    )
+    assert tuple(argument.arg for argument in helper_definition.args.args) == (
+        "definitions",
+    )
+    assert not any(
+        isinstance(node, ast.Name)
+        and node.id == "STANDARD_BENCHMARK_DEFINITIONS"
+        for node in ast.walk(helper_definition)
     )
 
 
@@ -1026,7 +1041,7 @@ def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
     preceding_definition_name: str | None,
     following_definition_name: str | None,
 ) -> None:
-    standard_definitions = support.STANDARD_BENCHMARK_DEFINITIONS
+    standard_definitions = _explicit_standard_benchmark_definitions()
     standard_names = tuple(definition.name for definition in standard_definitions)
     owner_names = tuple(definition.name for definition in owner_definitions)
 
@@ -1149,7 +1164,7 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
     definition_names = tuple(definition.name for definition in owner_definitions)
     standard_definitions_by_name = {
         definition.name: definition
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in _explicit_standard_benchmark_definitions()
         if definition.name in definition_names
     }
 
@@ -1505,7 +1520,6 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
     assert getattr(module, "source_tree_support") is anchor_support
     assert {
         "synthetic_workload",
-        "STANDARD_BENCHMARK_DEFINITIONS",
         "_write_test_manifest",
         "selected_manifest_workloads",
         "run_benchmark_workload_with_cpython",
@@ -1514,7 +1528,6 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
     }.isdisjoint(definition_names | assignment_names)
     for shared_name in (
         "synthetic_workload",
-        "STANDARD_BENCHMARK_DEFINITIONS",
         "_write_test_manifest",
         "selected_manifest_workloads",
         "run_benchmark_workload_with_cpython",
@@ -2108,7 +2121,6 @@ def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_sha
         "OPEN_ENDED_MANIFEST_PATH",
         "OPTIONAL_GROUP_MANIFEST_PATH",
         "RANGED_REPEAT_MANIFEST_PATH",
-        "STANDARD_BENCHMARK_DEFINITIONS",
         "_module_imported_names",
         "_module_pattern_case",
         "_owner_definition_manifest_path_names",
@@ -2188,17 +2200,7 @@ def test_benchmark_test_support_routes_owner_definition_imports_through_package_
                 "source_tree_benchmark_anchor_support",
             }
         ),
-    ) == frozenset(
-        {
-            (
-                "collection_replacement_benchmark_anchor_support",
-                "collection_replacement_support",
-            ),
-            ("source_tree_benchmark_anchor_support", "source_tree_support"),
-        }
-    )
-    assert support.collection_replacement_support is collection_replacement_support
-    assert support.source_tree_support is anchor_support
+    ) == frozenset()
     assert not any(
         isinstance(node, ast.ImportFrom)
         and node.module
@@ -2212,6 +2214,8 @@ def test_benchmark_test_support_routes_owner_definition_imports_through_package_
         "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
         "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
     }.isdisjoint(definition_names | assignment_names)
+    assert not hasattr(support, "collection_replacement_support")
+    assert not hasattr(support, "source_tree_support")
 
 
 def test_collection_replacement_anchor_suite_routes_owner_imports_through_package_modules(
@@ -2251,7 +2255,6 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
     assert {
         "synthetic_workload",
         "RecordingBenchmarkModule",
-        "STANDARD_BENCHMARK_DEFINITIONS",
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
@@ -3750,9 +3753,9 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
     )
     assert "_SourceTreeContractBuilderSpec" not in runtime_names
     assert "source_tree_support" not in definition_names | assignment_names
-    assert (
-        collection_replacement_support.benchmark_test_support.source_tree_support
-        is anchor_support
+    assert not hasattr(
+        collection_replacement_support.benchmark_test_support,
+        "source_tree_support",
     )
     retired_shared_surface_names = {
         "COLLECTION_REPLACEMENT_MANIFEST_PATH",
@@ -4580,12 +4583,14 @@ def test_standard_benchmark_definition_params_preserve_names_and_filters() -> No
     def _assert_filtered_definition_params(
         predicate,
     ) -> tuple[support.StandardBenchmarkAnchorContractDefinition, ...]:
+        standard_definitions = _explicit_standard_benchmark_definitions()
         params = support._standard_benchmark_definition_params(
+            standard_definitions,
             include_definition=predicate
         )
         expected_definitions = tuple(
             definition
-            for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+            for definition in standard_definitions
             if predicate(definition)
         )
 
@@ -4622,38 +4627,45 @@ def test_standard_benchmark_definition_params_preserve_names_and_filters() -> No
     )
     assert tuple(
         support._standard_benchmark_definition_id(definition)
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
-    ) == tuple(definition.name for definition in support.STANDARD_BENCHMARK_DEFINITIONS)
+        for definition in _explicit_standard_benchmark_definitions()
+    ) == tuple(
+        definition.name
+        for definition in _explicit_standard_benchmark_definitions()
+    )
 
 
 def test_standard_benchmark_manifest_params_preserve_definition_and_manifest_order() -> None:
-    manifest_params = support._standard_benchmark_manifest_params()
+    standard_definitions = _explicit_standard_benchmark_definitions()
+    manifest_params = support._standard_benchmark_manifest_params(standard_definitions)
 
     assert tuple(
         (parameter.values[0].name, parameter.values[1].name)
         for parameter in manifest_params
     ) == tuple(
         (definition.name, manifest_path.name)
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in standard_definitions
         for manifest_path in definition.manifest_paths
     )
 
 
 def test_standard_benchmark_special_unanchored_result_parity_params_preserve_order() -> None:
-    params = support._standard_benchmark_special_unanchored_result_parity_params()
+    standard_definitions = _explicit_standard_benchmark_definitions()
+    params = support._standard_benchmark_special_unanchored_result_parity_params(
+        standard_definitions
+    )
 
     assert tuple(
         (parameter.values[0].name, parameter.values[1])
         for parameter in params
     ) == tuple(
         (definition.name, workload_id)
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in standard_definitions
         if definition.run_special_unanchored_result_parity
         for workload_id in definition.expected_special_unanchored_workload_ids
     )
 
 
-def test_source_tree_combined_suite_imports_standard_benchmark_definitions_from_support(
+def test_source_tree_combined_suite_does_not_expose_deleted_standard_benchmark_inventory(
 ) -> None:
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
@@ -4667,10 +4679,7 @@ def test_source_tree_combined_suite_imports_standard_benchmark_definitions_from_
     )
     assert not hasattr(combined_suite, "STANDARD_BENCHMARK_DEFINITIONS")
     assert combined_suite.benchmark_test_support is support
-    assert (
-        combined_suite.benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS
-        is support.STANDARD_BENCHMARK_DEFINITIONS
-    )
+    assert not hasattr(combined_suite.benchmark_test_support, "STANDARD_BENCHMARK_DEFINITIONS")
 
 
 def test_recording_benchmark_support_records_compile_calls_and_reuses_compiled_patterns(

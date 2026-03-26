@@ -19,6 +19,19 @@ from tests.conftest import REPO_ROOT
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
 
+def _explicit_standard_benchmark_definitions(
+) -> tuple[benchmark_test_support.StandardBenchmarkAnchorContractDefinition, ...]:
+    return (
+        *benchmark_test_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+        *collection_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
+        *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+        *benchmark_test_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+        *benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+        *benchmark_test_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+    )
+
+
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -3800,7 +3813,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         "nested-group-replacement",
         "open-ended-grouped-alternation",
     )
-    standard_definitions = benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS
+    standard_definitions = _explicit_standard_benchmark_definitions()
     start_index = next(
         index
         for index, definition in enumerate(standard_definitions)

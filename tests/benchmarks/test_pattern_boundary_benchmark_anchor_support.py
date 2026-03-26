@@ -14,9 +14,26 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_replacement_support,
+)
 from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.python.fixture_parity_support import IndexLike
+
+
+def _explicit_standard_benchmark_definitions(
+) -> tuple[support.StandardBenchmarkAnchorContractDefinition, ...]:
+    return (
+        *support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+        *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+    )
+
 
 def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
@@ -54,7 +71,7 @@ def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory(
     owner_definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
     standard_definitions_by_name = {
         definition.name: definition
-        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        for definition in _explicit_standard_benchmark_definitions()
         if definition.name in support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
     }
 
