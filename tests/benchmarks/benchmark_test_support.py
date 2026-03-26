@@ -3,7 +3,6 @@ from __future__ import annotations
 import ast
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-import importlib
 import inspect
 import pathlib
 import re
@@ -494,7 +493,6 @@ def _clear_anchor_support_caches() -> None:
         (
             manifest_workloads,
             _live_manifest_workloads_by_id,
-            _collection_replacement_anchor_support,
             published_case_ids_by_signature,
             published_cases_by_id,
             _parsed_module_ast,
@@ -525,14 +523,6 @@ def _synthetic_manifest(
     workloads: tuple[object, ...] = (),
 ) -> SimpleNamespace:
     return SimpleNamespace(cases=list(cases), workloads=list(workloads))
-
-
-@cache
-def _collection_replacement_anchor_support() -> object:
-    return importlib.import_module(
-        "tests.benchmarks.collection_replacement_benchmark_anchor_support"
-    )
-
 
 def _contract_source_workloads(
     *,
@@ -2128,7 +2118,10 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         self,
         source_workload: Workload,
     ) -> tuple[str, ...]:
-        collection_replacement_support = _collection_replacement_anchor_support()
+        from tests.benchmarks import (
+            collection_replacement_benchmark_anchor_support as collection_replacement_support,
+        )
+
         if self.materializes_positional_keyword_field:
             field_names: list[str] = []
             positional_keyword_field = (
@@ -2227,7 +2220,10 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         self,
         workload: Workload,
     ) -> object:
-        collection_replacement_support = _collection_replacement_anchor_support()
+        from tests.benchmarks import (
+            collection_replacement_benchmark_anchor_support as collection_replacement_support,
+        )
+
         compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
         helper_name = workload.operation.removeprefix("module.")
         helper = getattr(re, helper_name)
