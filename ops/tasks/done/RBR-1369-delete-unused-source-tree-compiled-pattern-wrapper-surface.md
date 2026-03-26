@@ -1,8 +1,9 @@
 # RBR-1369: Delete unused source-tree compiled-pattern wrapper surface
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
+Completed: 2026-03-26
 
 ## Goal
 - Delete the remaining unused source-tree compiled-pattern wrapper surface from `tests/benchmarks/source_tree_benchmark_anchor_support.py` so the benchmark support layer stops carrying owner-local helpers that no benchmark suite consumes and that only restate behavior already available from `tests/benchmarks/benchmark_test_support.py`.
@@ -54,3 +55,14 @@ Created: 2026-03-26
   - `rg -n '^def build_compiled_pattern_module_contract_anchor_lanes\\b' tests/benchmarks/benchmark_test_support.py` passed and reported the shared builder at line `2310`
   - `bash -lc "! rg -n '^def (build_compiled_pattern_module_contract_anchor_lanes|live_compiled_pattern_module_success_surface_ids)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because both dead wrappers still live on the source-tree owner, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'build_compiled_pattern_module_contract_anchor_lanes|live_compiled_pattern_module_success_surface_ids' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"` currently fails because the ownership tests still pin those deleted names, and that failure belongs exactly to this cleanup
+
+## Completion Note
+- Deleted the dead source-tree wrapper definitions `build_compiled_pattern_module_contract_anchor_lanes(...)` and `live_compiled_pattern_module_success_surface_ids(...)` from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Updated the touched benchmark support tests so they no longer name either deleted wrapper and continue to pin the shared compile-definition ownership on `tests/benchmarks/benchmark_test_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_compile_standard_definition_surface_moves_to_shared_support or source_tree_owner_retires_compiled_pattern_module_compile_surface_to_shared_support'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'benchmark_test_support_owns_compiled_pattern_module_compile_standard_definitions or shared_compiled_pattern_helper_contract_tests_import_from_support'`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py`
+  - `rg -n '^def build_compiled_pattern_module_contract_anchor_lanes\\b' tests/benchmarks/benchmark_test_support.py`
+  - `bash -lc "! rg -n '^def (build_compiled_pattern_module_contract_anchor_lanes|live_compiled_pattern_module_success_surface_ids)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'build_compiled_pattern_module_contract_anchor_lanes|live_compiled_pattern_module_success_surface_ids' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"`

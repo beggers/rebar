@@ -398,34 +398,6 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     assert aliased_owner_refs == set()
     return combined_suite
 
-def build_compiled_pattern_module_contract_anchor_lanes(
-    *,
-    contract_cases: Iterable[benchmark_test_support.CompiledPatternModuleCompileContractCase],
-    published_case_ids_by_signature: Callable[
-        [Callable[[Any], tuple[Any, ...] | None]],
-        dict[tuple[Any, ...], tuple[str, ...]],
-    ],
-) -> tuple[benchmark_test_support._CompiledPatternModuleContractAnchorLane, ...]:
-    contract_cases = tuple(contract_cases)
-    return tuple(
-        benchmark_test_support._CompiledPatternModuleContractAnchorLane(
-            case_id=contract_case.case_id,
-            contract_filename=contract_case.anchor_contract_filename,
-            source_workloads=source_workloads,
-            contract_builder_spec=contract_case.contract_builder_spec,
-            expected_anchor_case_ids=contract_case.expected_anchor_case_ids,
-            anchor_case_ids=published_case_ids_by_signature(
-                contract_case.correctness_case_signature
-            ),
-            workload_signature=contract_case.workload_signature,
-            include_workload=contract_case.include_workload,
-            expected_anchor_pairs=contract_case.expected_anchor_pairs,
-        )
-        for contract_case in contract_cases
-        for source_workloads in (contract_case.source_workloads(),)
-    )
-
-
 def _assert_zero_gap_manifest_state(
     testcase: Any,
     manifest_id: str,
@@ -4431,19 +4403,6 @@ def _grouped_alternation_replacement_correctness_case_signature(
             text_model,
         )
     return None
-
-def live_compiled_pattern_module_success_surface_ids() -> tuple[str, ...]:
-    return tuple(
-        workload.workload_id
-        for owner_spec in benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
-        for workload in benchmark_test_support.selected_manifest_workloads(
-            owner_spec.manifest_path,
-            include_workload=(
-                benchmark_test_support.include_live_compiled_pattern_module_success_workload
-            ),
-        )
-    )
-
 
 SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS = (
     _source_tree_standard_benchmark_definitions()

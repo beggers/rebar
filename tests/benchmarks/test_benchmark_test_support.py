@@ -1071,18 +1071,12 @@ def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_de
     assert {
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     }.issubset(assignment_names)
-    assert "live_compiled_pattern_module_success_surface_ids" not in definition_names
     assert re.search(
         r"^def _build_compiled_pattern_module_compile_standard_benchmark_definitions\b|"
         r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
         source,
         re.MULTILINE,
     ) is not None
-    assert re.search(
-        r"^def live_compiled_pattern_module_success_surface_ids\b",
-        source,
-        re.MULTILINE,
-    ) is None
 
 
 def test_module_keyword_flags_workload_stays_pinned() -> None:
@@ -2655,9 +2649,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.issubset(assignment_names)
-    assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
-        definition_names | assignment_names
-    )
     assert {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}.issubset(
         assignment_names
     )
@@ -3189,9 +3180,6 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.issubset(assignment_names)
-    assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
-        definition_names | assignment_names
-    )
     assert (
         support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
         == "source_workloads"
@@ -3228,20 +3216,6 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_owner_specs
         source,
         re.MULTILINE,
     ) is not None
-
-
-def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_success_surface_export(
-) -> None:
-    source = (
-        REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
-    ).read_text(encoding="utf-8")
-
-    assert re.search(
-        r"^def live_compiled_pattern_module_success_surface_ids\b",
-        source,
-        re.MULTILINE,
-    ) is None
-
 
 def test_benchmark_test_support_defines_compiled_pattern_module_compile_owner_surface(
 ) -> None:

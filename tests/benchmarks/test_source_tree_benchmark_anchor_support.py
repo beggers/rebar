@@ -1283,10 +1283,6 @@ def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_sh
         )
     )
 
-    assert {
-        "build_compiled_pattern_module_contract_anchor_lanes",
-        "live_compiled_pattern_module_success_surface_ids",
-    }.issubset(definition_names)
     assert (
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
         not in definition_names
@@ -1309,15 +1305,9 @@ def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_sh
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
         in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
     )
-    for function_name in (
-        "build_compiled_pattern_module_contract_anchor_lanes",
-        "live_compiled_pattern_module_success_surface_ids",
-    ):
-        function_definition = benchmark_test_support._module_function_definition(
-            support,
-            function_name,
-        )
-        assert function_definition.name == function_name
+    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" in (
+        support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    )
 
 
 def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shared_support_owned(
