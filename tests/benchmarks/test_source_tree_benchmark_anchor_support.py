@@ -1902,15 +1902,22 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
     )
 
 
-def test_combined_suite_no_longer_imports_or_reads_collection_owner_surface_directly(
+def test_combined_suite_imports_and_reads_collection_owner_surface_through_package_alias(
 ) -> None:
     combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
-    direct_collection_imports = [
-        alias
+    package_collection_imports = [
+        (alias.name, alias.asname)
         for node in combined_suite_ast.body
         if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
         for alias in node.names
         if alias.name == "collection_replacement_benchmark_anchor_support"
+    ]
+    direct_collection_owner_imports = [
+        node
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.ImportFrom)
+        and node.module
+        == "tests.benchmarks.collection_replacement_benchmark_anchor_support"
     ]
     direct_collection_attribute_reads = {
         node.attr
@@ -1920,8 +1927,14 @@ def test_combined_suite_no_longer_imports_or_reads_collection_owner_surface_dire
         and node.value.id == "collection_replacement_support"
     }
 
-    assert direct_collection_imports == []
-    assert direct_collection_attribute_reads == set()
+    assert package_collection_imports == [
+        (
+            "collection_replacement_benchmark_anchor_support",
+            "collection_replacement_support",
+        )
+    ]
+    assert direct_collection_owner_imports == []
+    assert direct_collection_attribute_reads
 
 
 def test_source_tree_support_defines_combined_route_helpers_locally() -> None:
