@@ -16,7 +16,7 @@ SPEC = {
         "max_runs_per_cycle": 1,
         "require_write_probe": True,
         "environment_issue_backoff_seconds": 300,
-        "probe_timeout_seconds": 120,
+        "probe_timeout_seconds": 30,
         "timeout_seconds": 1800,
     },
     "codex": {
