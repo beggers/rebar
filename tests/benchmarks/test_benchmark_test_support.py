@@ -3675,6 +3675,53 @@ def test_source_tree_contract_helper_suites_import_from_support(
     )
 
 
+def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        lambda: (
+            SimpleNamespace(manifest_id="module-boundary"),
+        ),
+    )
+    support._clear_anchor_support_caches()
+
+    assert support._published_benchmark_manifest_ids() == frozenset({"module-boundary"})
+    assert (
+        "synthetic-new-boundary"
+        not in support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+    )
+
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        lambda: (
+            SimpleNamespace(manifest_id="synthetic-new-boundary"),
+        ),
+    )
+
+    assert support._published_benchmark_manifest_ids() == frozenset({"module-boundary"})
+    assert (
+        "synthetic-new-boundary"
+        not in support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+    )
+
+    support._clear_anchor_support_caches()
+
+    assert support._published_benchmark_manifest_ids() == frozenset(
+        {"synthetic-new-boundary"}
+    )
+    assert "synthetic-new-boundary" in support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+    assert (
+        support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            "synthetic-new-boundary"
+        ]
+        is support._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
+    )
+
+
 def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportable(
 ) -> None:
     _assert_deleted_benchmark_module_stays_absent(
