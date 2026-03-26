@@ -3759,13 +3759,18 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
         ),
         (
             "compiled_pattern_module_helper_keyword_contract_builder_spec",
-            support._CompiledPatternModuleHelperKeywordContractSpec,
+            collection_replacement_support._CompiledPatternModuleHelperKeywordContractSpec,
         ),
     ):
         owner_module = (
-            anchor_support
-            if owner_type is anchor_support.CompiledPatternModuleSuccessOwnerSpec
-            else support
+            collection_replacement_support
+            if owner_type
+            is collection_replacement_support._CompiledPatternModuleHelperKeywordContractSpec
+            else (
+                anchor_support
+                if owner_type is anchor_support.CompiledPatternModuleSuccessOwnerSpec
+                else support
+            )
         )
         class_definition = support._module_class_definition(
             owner_module,
@@ -3867,6 +3872,10 @@ def test_collection_replacement_support_exports_compiled_pattern_module_helper_k
             collection_replacement_support
         )
     )
+    moved_definition_names = {
+        "_CompiledPatternModuleHelperKeywordContractSpec",
+        "_CompiledPatternModuleHelperKeywordContractSurface",
+    }
     assignment_only_names = {
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
@@ -3879,7 +3888,13 @@ def test_collection_replacement_support_exports_compiled_pattern_module_helper_k
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     }
 
-    assert assignment_only_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert moved_definition_names.isdisjoint(
+        support_definition_names | support_assignment_names
+    )
+    assert moved_definition_names <= collection_definition_names
+    assert assignment_only_names.isdisjoint(
+        support_definition_names | support_assignment_names
+    )
     assert assignment_only_names <= collection_assignment_names
     assert not hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     assert not hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
@@ -3887,6 +3902,10 @@ def test_collection_replacement_support_exports_compiled_pattern_module_helper_k
         collection_replacement_support,
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
+    for name in moved_definition_names:
+        assert not hasattr(support, name)
+        assert not hasattr(anchor_support, name)
+        assert hasattr(collection_replacement_support, name)
     for name in assignment_only_names:
         assert not hasattr(support, name)
         assert not hasattr(anchor_support, name)
@@ -3915,6 +3934,10 @@ def test_benchmark_test_support_no_longer_exports_deleted_workload_id_selector_h
 
 def test_compiled_pattern_module_helper_keyword_surface_moves_to_collection_replacement_owner(
 ) -> None:
+    definition_only_names = (
+        "_CompiledPatternModuleHelperKeywordContractSpec",
+        "_CompiledPatternModuleHelperKeywordContractSurface",
+    )
     assignment_only_names = (
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
@@ -3927,6 +3950,12 @@ def test_compiled_pattern_module_helper_keyword_surface_moves_to_collection_repl
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     )
 
+    assert all(not hasattr(support, name) for name in definition_only_names)
+    assert all(not hasattr(anchor_support, name) for name in definition_only_names)
+    assert all(
+        hasattr(collection_replacement_support, name)
+        for name in definition_only_names
+    )
     assert all(not hasattr(support, name) for name in assignment_only_names)
     assert all(not hasattr(anchor_support, name) for name in assignment_only_names)
     assert all(

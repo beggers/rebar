@@ -153,8 +153,213 @@ def _is_collection_replacement_compiled_pattern_keyword_error_workload(
     )
 
 
+@dataclass(frozen=True, slots=True)
+class _CompiledPatternModuleHelperKeywordContractSpec:
+    contract_filename: str
+    expected_source_workload_ids: tuple[str, ...]
+    manifest_timed_samples: int
+    preserve_expected_exception: bool
+    materializes_positional_keyword_field: bool
+    notes: tuple[str, ...] = ()
+    precompile_anchor_ids: tuple[str, ...] = ()
+
+    def expected_materialized_field_names(
+        self,
+        source_workload: benchmarks.Workload,
+    ) -> tuple[str, ...]:
+        if self.materializes_positional_keyword_field:
+            field_names: list[str] = []
+            positional_keyword_field = _collection_replacement_positional_keyword_field(
+                source_workload
+            )
+            if positional_keyword_field is not None:
+                field_names.append(positional_keyword_field)
+            field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
+            return tuple(field_names)
+
+        keyword_parameter = _collection_replacement_keyword_parameter_name(
+            source_workload
+        )
+        if keyword_parameter is None:
+            raise AssertionError(
+                "unexpected compiled-pattern module helper keyword workload "
+                f"{source_workload.workload_id!r}"
+            )
+        return (f"kwargs.{keyword_parameter}",)
+
+    def contract_builder_spec(self) -> object:
+        source_tree_support = _source_tree_benchmark_anchor_support()
+
+        excluded_fields = (
+            benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+        )
+        if not self.preserve_expected_exception:
+            excluded_fields = excluded_fields | {"expected_exception"}
+        return source_tree_support._SourceTreeContractBuilderSpec(
+            manifest_id="collection-replacement-boundary",
+            excluded_fields=excluded_fields,
+            manifest_timed_samples=self.manifest_timed_samples,
+            timing_scope="module-helper-call",
+            notes=self.notes,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class _CompiledPatternModuleHelperKeywordContractSurface:
+    case_id: str
+    spec: _CompiledPatternModuleHelperKeywordContractSpec
+    source_workloads_value: tuple[benchmarks.Workload, ...]
+    precompile_source_workloads_value: tuple[benchmarks.Workload, ...] | None = None
+
+    def source_workloads(self) -> tuple[benchmarks.Workload, ...]:
+        return self.source_workloads_value
+
+    def precompile_source_workloads(self) -> tuple[benchmarks.Workload, ...]:
+        return self.precompile_source_workloads_value or self.source_workloads_value
+
+    def expected_build_calls(
+        self,
+        source_workload: benchmarks.Workload,
+    ) -> list[tuple[object, ...]]:
+        return benchmark_test_support.compiled_pattern_contract_expected_build_calls(
+            source_workload,
+            label="module helper keyword",
+        )
+
+    def expected_callback_call(
+        self,
+        source_workload: benchmarks.Workload,
+    ) -> tuple[object, ...]:
+        if source_workload.operation == "module.split":
+            return (
+                source_workload.operation,
+                source_workload.haystack_payload(),
+                source_workload.maxsplit,
+                source_workload.flags,
+                source_workload.kwargs,
+            )
+        if source_workload.operation in {"module.sub", "module.subn"}:
+            return (
+                source_workload.operation,
+                source_workload.replacement_payload(),
+                source_workload.haystack_payload(),
+                source_workload.count,
+                source_workload.flags,
+                source_workload.kwargs,
+            )
+        raise AssertionError(
+            "unexpected compiled-pattern module helper keyword workload operation "
+            f"{source_workload.operation!r}"
+        )
+
+    def expected_callback_result(self, source_workload: benchmarks.Workload) -> object:
+        if source_workload.operation == "module.subn":
+            return ("module-result", 0)
+        return "module-result"
+
+    def run_cpython_helper_workload(
+        self,
+        workload: benchmarks.Workload,
+    ) -> object:
+        compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
+        helper_name = workload.operation.removeprefix("module.")
+        helper = getattr(re, helper_name)
+        kwargs = dict(workload.kwargs)
+        positional_keyword_field = _collection_replacement_positional_keyword_field(
+            workload
+        )
+
+        if workload.operation == "module.split":
+            args: list[object] = [compiled_pattern, workload.haystack_payload()]
+            if positional_keyword_field == "maxsplit":
+                args.append(workload.maxsplit)
+            return helper(*args, **kwargs)
+
+        if workload.operation in {"module.sub", "module.subn"}:
+            args = [
+                compiled_pattern,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+            ]
+            if positional_keyword_field == "count":
+                args.append(workload.count)
+            return helper(*args, **kwargs)
+
+        raise AssertionError(
+            "unexpected compiled-pattern module helper keyword workload operation "
+            f"{workload.operation!r}"
+        )
+
+    def assert_outcome(
+        self,
+        source_workload: benchmarks.Workload,
+        workload: benchmarks.Workload,
+        round_tripped: benchmarks.Workload,
+    ) -> None:
+        if self.case_id == "success":
+            benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                round_tripped,
+                benchmark_test_support.run_benchmark_workload_with_cpython(
+                    source_workload
+                ),
+            )
+            return
+
+        if self.case_id == "keyword-error":
+            with pytest.raises(TypeError) as expected_error:
+                self.run_cpython_helper_workload(workload)
+            with pytest.raises(TypeError) as observed_error:
+                benchmark_test_support.run_benchmark_workload_with_cpython(
+                    round_tripped
+                )
+            assert str(observed_error.value) == str(expected_error.value)
+            return
+
+        raise AssertionError(
+            "unexpected compiled-pattern module helper keyword contract surface "
+            f"{self.case_id!r}"
+        )
+
+    def assert_payload_round_trip(
+        self,
+        source_workload: benchmarks.Workload,
+        payload: dict[str, object],
+        round_tripped: benchmarks.Workload,
+    ) -> None:
+        expected_text_type = str if source_workload.text_model == "str" else bytes
+        expected_exception = (
+            source_workload.expected_exception
+            if self.spec.preserve_expected_exception
+            else None
+        )
+        assert payload["use_compiled_pattern"] is True
+        assert round_tripped.use_compiled_pattern is True
+        assert payload["count"] == source_workload.count
+        assert round_tripped.count == source_workload.count
+        assert payload["maxsplit"] == source_workload.maxsplit
+        assert round_tripped.maxsplit == source_workload.maxsplit
+        assert payload["kwargs"] == source_workload.kwargs
+        assert round_tripped.kwargs == source_workload.kwargs
+        assert payload.get("expected_exception") == expected_exception
+        assert round_tripped.expected_exception == expected_exception
+        assert payload.get("haystack_text_model") is None
+        assert round_tripped.haystack_text_model is None
+        assert round_tripped.text_model == source_workload.text_model
+        assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+        assert isinstance(round_tripped.haystack_payload(), expected_text_type)
+        if source_workload.replacement is not None:
+            assert isinstance(
+                round_tripped.replacement_payload(),
+                expected_text_type,
+            )
+        for name, value in source_workload.kwargs.items():
+            if type(value) is bool:
+                assert type(payload["kwargs"][name]) is bool
+                assert type(round_tripped.kwargs[name]) is bool
+
+
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC = (
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec(
+    _CompiledPatternModuleHelperKeywordContractSpec(
         contract_filename=(
             "python_benchmark_compiled_pattern_collection_replacement_keyword_contract.py"
         ),
@@ -188,7 +393,7 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC = (
 )
 
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec(
+    _CompiledPatternModuleHelperKeywordContractSpec(
         contract_filename=(
             "python_benchmark_compiled_pattern_collection_replacement_keyword_error_contract.py"
         ),
@@ -266,10 +471,10 @@ if (
     raise AssertionError(
         "compiled-pattern module-helper keyword-error source workloads drifted "
         "from the live source workload surface"
-    )
+)
 
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSurface(
+    _CompiledPatternModuleHelperKeywordContractSurface(
         case_id="success",
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
         source_workloads_value=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS,
@@ -277,7 +482,7 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
             _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS
         ),
     ),
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSurface(
+    _CompiledPatternModuleHelperKeywordContractSurface(
         case_id="keyword-error",
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
         source_workloads_value=(

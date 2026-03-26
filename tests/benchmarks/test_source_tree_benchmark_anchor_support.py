@@ -1199,7 +1199,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         ),
         (
             "compiled_pattern_module_helper_keyword_contract_builder_spec",
-            benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
+            collection_support._CompiledPatternModuleHelperKeywordContractSpec,
         ),
     ):
         local_builder = getattr(support, function_name, None)
@@ -1561,7 +1561,7 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     ),
 )
 def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_exception_field(
-    spec: benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
+    spec: collection_support._CompiledPatternModuleHelperKeywordContractSpec,
     expected_excluded_fields: frozenset[str],
 ) -> None:
     built_spec = spec.contract_builder_spec()
