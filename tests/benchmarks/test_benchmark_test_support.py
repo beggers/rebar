@@ -1046,8 +1046,8 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_supp
     expected_definitions = tuple(
         owner_spec.anchor_definition()
         for owner_spec in (
-            *support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-            *support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+            *anchor_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *anchor_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
         )
     )
 
@@ -2901,6 +2901,23 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_suc
     ) is None
 
 
+def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_compile_owner_surface(
+) -> None:
+    source = (
+        REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
+    ).read_text(encoding="utf-8")
+
+    assert re.search(
+        r"^(_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS|"
+        r"_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES)\b",
+        source,
+        re.MULTILINE,
+    ) is None
+
+
 def test_compiled_pattern_contract_builder_helpers_live_only_in_source_tree_owner_module(
 ) -> None:
     for class_name in (
@@ -3072,9 +3089,14 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
     )
     _assert_owner_module_routes_through_package_import(
         module,
-        owner_module="tests.benchmarks.benchmark_test_support",
+        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
         package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
+        expected_alias_pairs=frozenset(
+            {
+                ("benchmark_test_support", None),
+                ("source_tree_benchmark_anchor_support", "source_tree_support"),
+            }
+        ),
     )
     assert {
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",

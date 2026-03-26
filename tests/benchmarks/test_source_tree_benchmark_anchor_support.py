@@ -2711,6 +2711,44 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
     ) == expected_benchmark_support_names
 
 
+def test_source_tree_owner_defines_compiled_pattern_module_compile_surface_locally(
+) -> None:
+    owner_assignment_names = {
+        "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+    }
+    module_ast = benchmark_test_support._parsed_module_ast(support)
+    local_definition_names, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            support
+        )
+    )
+
+    assert owner_assignment_names.issubset(local_assignment_names)
+    assert owner_assignment_names.isdisjoint(local_definition_names)
+
+    for assignment_name in owner_assignment_names:
+        assignment = _module_assignment(support, assignment_name)
+        assert not (
+            isinstance(assignment.value, ast.Attribute)
+            and isinstance(assignment.value.value, ast.Name)
+            and assignment.value.value.id == "benchmark_test_support"
+            and assignment.value.attr == assignment_name
+        )
+
+    assert {
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "benchmark_test_support"
+        and node.attr in owner_assignment_names
+    } == set()
+
+
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
     manifest_paths = tuple(
         getattr(support.benchmark_test_support, manifest_path_name)

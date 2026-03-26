@@ -1,6 +1,6 @@
 ## RBR-1344: Move source-tree compiled-pattern module compile owner surface onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -64,3 +64,8 @@ Created: 2026-03-26
   - `./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py::test_compiled_pattern_module_compile_standard_benchmark_definitions_are_support_owned_and_wrapper_free tests/benchmarks/test_benchmark_test_support.py::test_compiled_pattern_module_compile_surviving_suites_import_shared_support_exports tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_source_tree_contract_builder_consumers_route_owner_surface_through_package_alias` passed with `6 passed in 0.27s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS|_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES|_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS|_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES)\\b' tests/benchmarks/benchmark_test_support.py"` currently fails because that source-tree-only compile owner-surface block still lives in the generic support module, and that failure belongs exactly to this cleanup
+
+## Completion
+- Moved the compiled-pattern module compile owner-surface assignments onto `tests/benchmarks/source_tree_benchmark_anchor_support.py` and left the shared builders/types on `tests/benchmarks/benchmark_test_support.py`.
+- Updated manifest-validation and ownership tests to consume the moved source-tree owner surface directly and added guards that fail if the generic support module reintroduces those assignments or if the source-tree module falls back to aliasing them from `benchmark_test_support`.
+- Verified with the task's targeted pytest commands, `python3 -m py_compile ...`, `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS|_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES|_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS|_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES)\\b' tests/benchmarks/benchmark_test_support.py"`, plus the added focused guards for the new ownership tests.
