@@ -3319,6 +3319,20 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         pytest.param(
             "\n".join(
                 (
+                    "from tests.benchmarks import benchmark_test_support",
+                    (
+                        "from tests.benchmarks.source_tree_benchmark_anchor_support import "
+                        "_source_tree_contract_manifest as contract_manifest"
+                    ),
+                )
+            ),
+            frozenset({("_source_tree_contract_manifest", "contract_manifest")}),
+            frozenset(),
+            id="direct-import-asname",
+        ),
+        pytest.param(
+            "\n".join(
+                (
                     "from tests.benchmarks import source_tree_benchmark_anchor_support",
                     "",
                     (
