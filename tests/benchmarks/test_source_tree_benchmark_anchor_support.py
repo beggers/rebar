@@ -1274,9 +1274,16 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         )
 
 
+@pytest.mark.parametrize(
+    ("contract_case",),
+    tuple(
+        pytest.param(contract_case, id=contract_case.case_id)
+        for contract_case in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    ),
+)
 def test_compiled_pattern_module_compile_contract_builder_surface_builds_expected_spec(
+    contract_case: benchmark_test_support.CompiledPatternModuleCompileContractCase,
 ) -> None:
-    contract_case = support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES[0]
     excluded_fields = contract_case.manifest_excluded_fields()
 
     assert contract_case.contract_builder_spec() == benchmark_test_support._SourceTreeContractBuilderSpec(
