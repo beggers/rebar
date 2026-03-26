@@ -497,6 +497,35 @@ def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
     assert getsource_calls == [fake_module, fake_module]
 
 
+def test_collection_replacement_anchor_support_import_is_lazy_and_cache_resettable(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    target_module = "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+    original_import_module = support.importlib.import_module
+    import_calls: list[str] = []
+
+    def _import_module(module_name: str):
+        if module_name == target_module:
+            import_calls.append(module_name)
+        return original_import_module(module_name)
+
+    monkeypatch.setattr(support.importlib, "import_module", _import_module)
+
+    first = support._collection_replacement_anchor_support()
+    second = support._collection_replacement_anchor_support()
+
+    assert first is second is collection_replacement_support
+    assert import_calls == [target_module]
+
+    support._clear_anchor_support_caches()
+
+    third = support._collection_replacement_anchor_support()
+
+    assert third is collection_replacement_support
+    assert import_calls == [target_module, target_module]
+
+
 def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects_metadata(
 ) -> None:
     source_workload = support.synthetic_workload(
