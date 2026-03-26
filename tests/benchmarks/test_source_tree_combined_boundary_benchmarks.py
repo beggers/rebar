@@ -625,7 +625,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         matched_rows = tuple(
             source_tree_support.select_source_tree_combined_slice_rows(case.target_manifest, expectation)
         )
-        expected_workload_ids = source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        expected_workload_ids = (
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        )
         expected_workload_count = len(case.selected_workload_ids_for_manifest(manifest_id))
 
         self.assertEqual(
@@ -678,7 +680,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
         expected_workload_ids = (
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
         )
         source_tree_support.assert_zero_gap_bytes_representative_subset(
             self,
@@ -896,7 +898,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
         )
 
         for source_workload in source_workloads:
@@ -965,7 +967,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
         )
 
         for source_workload in source_workloads:
@@ -3253,8 +3255,8 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             for workload_id in case.representative_measured_workload_ids
             if workload_id
             in (
-                source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
-                + source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+                + collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
             )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
@@ -3375,20 +3377,20 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             tuple(workload.workload_id for workload in str_rows),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
         )
         self.assertEqual(
             tuple(workload.workload_id for workload in bytes_rows),
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
         self.assertEqual(
             representative_str_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
         )
         self.assertEqual(
             representative_bytes_workload_ids,
-            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
         )
         self.assertEqual(
             Counter(

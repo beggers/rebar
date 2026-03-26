@@ -2751,19 +2751,6 @@ _SOURCE_TREE_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS = (
     "pattern-subn-callable-named-quantified-conditional-group-exists-replacement-no-match-purged",
 )
 
-CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS = (
-    _source_tree_workload_ids_for_text_model(
-        _SOURCE_TREE_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS,
-        text_model="str",
-    )
-)
-CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = (
-    _source_tree_workload_ids_for_text_model(
-        _SOURCE_TREE_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS,
-        text_model="bytes",
-    )
-)
-
 SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES = (
     "_conditional_group_exists_callable_str_slice_workloads",
     "_conditional_group_exists_callable_bytes_slice_workloads",
@@ -2785,8 +2772,6 @@ SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES = (
 )
 
 SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES = (
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
     "_is_collection_replacement_compiled_pattern_success_workload",
 )
 
@@ -4410,7 +4395,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "nested-group",
             "unsupported",
         ),
-        expected_workload_ids=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        expected_workload_ids=collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
         expected_patterns={
             r"a(b)?c(?(1)d|e){2}",
             r"a(?P<word>b)?c(?(word)d|e){2}",
@@ -4444,7 +4429,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "nested-group",
             "unsupported",
         ),
-        expected_workload_ids=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+        expected_workload_ids=collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
         expected_patterns={
             r"a(b)?c(?(1)d|e){2}",
             r"a(?P<word>b)?c(?(word)d|e){2}",
@@ -5399,8 +5384,8 @@ def _conditional_group_exists_quantified_callable_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
     expected_workload_ids = (
-        CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
-        + CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+        collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        + collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
     )
     if workload.workload_id not in expected_workload_ids:
         raise AssertionError(
