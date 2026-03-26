@@ -85,6 +85,21 @@ def _workload_ids_for_declared_slice(
     )
 
 
+def _route_workload_ids(route: object) -> tuple[str, ...]:
+    return tuple(workload_id for workload_id, _ in route.workload_case_pairs)
+
+
+def _route_case_ids(route: object) -> tuple[str, ...]:
+    return tuple(case_id for _, case_id in route.workload_case_pairs)
+
+
+def _route_anchor_expectations(route: object) -> dict[tuple[str, str], tuple[str, ...]]:
+    return benchmark_test_support._workload_case_pair_anchor_expectations(
+        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        route.workload_case_pairs,
+    )
+
+
 def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -561,13 +576,13 @@ def test_collection_replacement_routes_preserve_declared_workload_case_pair_orde
 ) -> None:
     del label
 
-    assert route.workload_ids() == tuple(
+    assert _route_workload_ids(route) == tuple(
         workload_id for workload_id, _ in route.workload_case_pairs
     )
-    assert route.case_ids() == tuple(
+    assert _route_case_ids(route) == tuple(
         case_id for _, case_id in route.workload_case_pairs
     )
-    assert route.anchor_expectations() == (
+    assert _route_anchor_expectations(route) == (
         benchmark_test_support._workload_case_pair_anchor_expectations(
             benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
             route.workload_case_pairs,
@@ -580,9 +595,9 @@ def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_meas
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "findall"
-    ].workload_ids()
+    expected_measured_workload_ids = _route_workload_ids(
+        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"]
+    )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
@@ -609,9 +624,9 @@ def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_mea
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "finditer"
-    ].workload_ids()
+    expected_measured_workload_ids = _route_workload_ids(
+        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["finditer"]
+    )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
@@ -638,9 +653,9 @@ def test_collection_replacement_manifest_keeps_pattern_split_rows_measured() -> 
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    expected_measured_workload_ids = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-        "split"
-    ].workload_ids()
+    expected_measured_workload_ids = _route_workload_ids(
+        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"]
+    )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
@@ -675,9 +690,9 @@ def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_
         )
     )
 
-    assert selected_measured_workload_ids == support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-        "pattern"
-    ].workload_ids()
+    assert selected_measured_workload_ids == _route_workload_ids(
+        support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"]
+    )
     assert len(selected_measured_workload_ids) == 20
     benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
@@ -701,9 +716,9 @@ def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_m
         )
     )
 
-    assert expected_measured_workload_ids == support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-        "module"
-    ].workload_ids()
+    assert expected_measured_workload_ids == _route_workload_ids(
+        support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"]
+    )
     assert len(expected_measured_workload_ids) == 18
     benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
