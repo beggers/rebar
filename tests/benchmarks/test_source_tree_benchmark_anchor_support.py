@@ -3341,14 +3341,17 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             "tests.benchmarks.test_benchmark_manifest_validation",
             frozenset(
                 {
+                    "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
                     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+                    "_assert_compiled_pattern_module_success_payload_round_trip",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
                     "_compiled_pattern_wrong_text_model_specs",
                     "_compiled_pattern_wrong_text_model_source_workloads",
                     "_run_cpython_compiled_pattern_module_helper_workload",
                     "_assert_wrong_text_model_payload_round_trip",
+                    "include_live_compiled_pattern_module_success_workload",
                 }
             ),
             frozenset(
@@ -3380,7 +3383,11 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
                 {
+                    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+                    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+                    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+                    "_assert_compiled_pattern_module_success_payload_round_trip",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
                     "_compiled_pattern_wrong_text_model_specs",
