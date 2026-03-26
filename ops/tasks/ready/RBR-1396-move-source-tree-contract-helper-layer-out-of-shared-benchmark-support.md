@@ -1,0 +1,61 @@
+## RBR-1396: Move the source-tree contract helper layer out of shared benchmark support
+
+Owner: architecture-implementation
+Created: 2026-03-26
+
+## Goal
+- Remove the remaining source-tree-specific contract-builder layer from `tests/benchmarks/benchmark_test_support.py`. The shared support file still owns `_SourceTreeContractBuilderSpec`, `_source_tree_contract_manifest(...)`, `_source_tree_contract_workload(...)`, `_parsed_source_tree_combined_suite_ast()`, and `_assert_source_tree_combined_routes_owner_names_through_module_alias(...)` even though the live callers are all source-tree owner tests or benchmark-manifest validation coverage for source-tree contract rows.
+- Move that family onto `tests/benchmarks/source_tree_benchmark_anchor_support.py` so the shared benchmark support module stops carrying a source-tree-only helper layer.
+
+## Deliverables
+- `tests/benchmarks/benchmark_test_support.py`
+- `tests/benchmarks/source_tree_benchmark_anchor_support.py`
+- `tests/benchmarks/test_benchmark_test_support.py`
+- `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+- `tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`
+- `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`
+- `tests/benchmarks/test_benchmark_manifest_validation.py`
+- `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+
+## Acceptance Criteria
+- Move `_SourceTreeContractBuilderSpec`, `_source_tree_contract_manifest(...)`, `_source_tree_contract_workload(...)`, `_parsed_source_tree_combined_suite_ast()`, and `_assert_source_tree_combined_routes_owner_names_through_module_alias(...)` out of `tests/benchmarks/benchmark_test_support.py` and into `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Update source-tree contract callers in `tests/benchmarks/test_benchmark_manifest_validation.py`, `tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`, `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to use the source-tree owner module for that helper family instead of `benchmark_test_support`.
+- Rewrite ownership assertions in `tests/benchmarks/test_benchmark_test_support.py` and `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so they treat that helper family as source-tree-owned, not shared-support-owned.
+- Do not create another helper module or re-export the moved names back through `tests/benchmarks/benchmark_test_support.py`.
+- Do not change workload definitions, benchmark execution behavior, generated reports, or tracked project-state prose.
+
+## Verification
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_contract_manifest_workload_payload_drops_fields_and_injects_metadata or source_tree_contract_workload_reconstructs_contract_workload_with_defaults or source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids or source_tree_combined_owner_route_helper_tracks_only_shared_support_surface'`
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'combined_suite_no_longer_defines_moved_source_tree_case_surface_locally or source_tree_support_module_exposes_moved_conditional_callable_helpers or combined_suite_no_longer_routes_deleted_wrapper_helpers_through_source_tree_support or compiled_pattern_module_compile_standard_definition_surface_moves_to_shared_support'`
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py -k 'contract_manifest or contract_workload'`
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'contract_manifest or contract_workload or source_tree_combined_routes_owner_names_through_module_alias'`
+- `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows or compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation or compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation or compiled_pattern_module_helper_keyword_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation'`
+- `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+- `bash -lc "! rg -n 'class _SourceTreeContractBuilderSpec|def _source_tree_contract_manifest|def _source_tree_contract_workload|def _parsed_source_tree_combined_suite_ast|def _assert_source_tree_combined_routes_owner_names_through_module_alias' tests/benchmarks/benchmark_test_support.py"`
+- `bash -lc \"rg -n 'class _SourceTreeContractBuilderSpec|def _source_tree_contract_manifest|def _source_tree_contract_workload|def _parsed_source_tree_combined_suite_ast|def _assert_source_tree_combined_routes_owner_names_through_module_alias' tests/benchmarks/source_tree_benchmark_anchor_support.py\"`
+
+## Constraints
+- Keep the run bounded to this source-tree contract-helper ownership move. Do not widen into the larger compiled-pattern contract surface still living in `tests/benchmarks/benchmark_test_support.py`.
+- Prefer moving the existing helper family into `tests/benchmarks/source_tree_benchmark_anchor_support.py` over introducing another shared abstraction layer.
+
+## Notes
+- Queue and JSON check in this run:
+  - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`.
+  - `git status --short` was empty in this run, so the runtime counts were not lagging a dirty checkout.
+  - `git ls-files '*.json' | wc -l` returned `0`.
+  - `rg --files -g '*.json' | wc -l` returned `0`.
+- ID and duplicate check in this run:
+  - `rg -n 'RBR-1396|RBR-1397|RBR-1398' ops/state/backlog.md ops/state/current_status.md ops/tasks/ready ops/tasks/in_progress ops/tasks/blocked ops/tasks/done` returned only historical mentions inside completed task notes, with no reserved future-id hit and no ready/in-progress/blocked duplicate for `RBR-1396`.
+  - No blocked architecture task existed to reopen, refine, or normalize first in this run.
+- Candidate selection in this run:
+  - I first re-checked the larger compiled-pattern contract family in `tests/benchmarks/benchmark_test_support.py`, but the live references still span `tests/benchmarks/test_benchmark_test_support.py`, `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`, `tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`, and `tests/benchmarks/test_benchmark_manifest_validation.py`, with ownership assertions currently written around that family being shared-support-owned. That is still a broader follow-on rather than the smallest next shared-layer cleanup.
+  - I then checked the generic source-tree contract-builder layer. `rg -n '_SourceTreeContractBuilderSpec|_source_tree_contract_manifest|_source_tree_contract_workload|_parsed_source_tree_combined_suite_ast|_assert_source_tree_combined_routes_owner_names_through_module_alias' tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` shows the definitions still live only in `benchmark_test_support.py`, while the callers are source-tree owner and source-tree-contract validation tests.
+  - That makes the helper-family move a bounded post-JSON structural cleanup with a clear owner boundary: source-tree-specific contract builders and combined-suite AST routing live with the source-tree owner module, while `benchmark_test_support.py` keeps only genuinely shared benchmark-test helpers.
+- Verification status in this planning run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_contract_manifest_workload_payload_drops_fields_and_injects_metadata or source_tree_contract_workload_reconstructs_contract_workload_with_defaults or source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids or source_tree_combined_owner_route_helper_tracks_only_shared_support_surface'` passed with `3 passed, 173 deselected in 0.30s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'combined_suite_no_longer_defines_moved_source_tree_case_surface_locally or source_tree_support_module_exposes_moved_conditional_callable_helpers or combined_suite_no_longer_routes_deleted_wrapper_helpers_through_source_tree_support or compiled_pattern_module_compile_standard_definition_surface_moves_to_shared_support'` passed with `4 passed, 113 deselected in 0.34s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py -k 'contract_manifest or contract_workload'` passed with `6 passed, 21 deselected in 0.24s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'contract_manifest or contract_workload or source_tree_combined_routes_owner_names_through_module_alias'` passed with `6 passed, 149 deselected in 0.26s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows or compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation or compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation or compiled_pattern_module_helper_keyword_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation'` passed with `10 passed, 54 deselected in 0.26s`.
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
+  - `bash -lc "rg -n '_SourceTreeContractBuilderSpec|_source_tree_contract_manifest|_source_tree_contract_workload|_parsed_source_tree_combined_suite_ast|_assert_source_tree_combined_routes_owner_names_through_module_alias' tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently reports the exact shared-support seam this task is intended to remove from `tests/benchmarks/benchmark_test_support.py`.
