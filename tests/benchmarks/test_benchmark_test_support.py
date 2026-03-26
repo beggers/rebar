@@ -6,6 +6,7 @@ from functools import cache
 import importlib
 import pathlib
 import re
+import sys
 from types import SimpleNamespace
 
 import pytest
@@ -65,6 +66,7 @@ def _assert_deleted_benchmark_module_stays_absent(
 ) -> None:
     assert not deleted_path.exists()
 
+    sys.modules.pop(deleted_module_name, None)
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module(deleted_module_name)
 
@@ -3979,6 +3981,27 @@ def test_deleted_benchmark_module_absence_helper_rejects_lingering_import_target
             deleted_module_name=deleted_module_name,
             deleted_path=deleted_path,
         )
+
+
+def test_deleted_benchmark_module_absence_helper_ignores_stale_sys_modules_entry(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    deleted_module_name = "tests.benchmarks.synthetic_deleted_support"
+    deleted_path = tmp_path / "synthetic_deleted_support.py"
+
+    monkeypatch.setitem(
+        sys.modules,
+        deleted_module_name,
+        SimpleNamespace(__name__=deleted_module_name),
+    )
+
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=deleted_module_name,
+        deleted_path=deleted_path,
+    )
+
+    assert deleted_module_name not in sys.modules
 
 
 def test_collection_replacement_support_reaches_source_tree_owner_surface_through_benchmark_test_support_alias(
