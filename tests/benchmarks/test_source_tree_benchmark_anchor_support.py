@@ -2145,6 +2145,42 @@ def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_s
     ) == helper_names
 
 
+def test_source_tree_combined_slice_expectations_splice_collection_owned_conditional_replacement_block_once(
+) -> None:
+    combined_expectations = support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+    moved_expectations = (
+        collection_support.COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+    )
+    combined_slice_ids = tuple(
+        expectation.slice_id for expectation in combined_expectations
+    )
+    moved_slice_ids = tuple(expectation.slice_id for expectation in moved_expectations)
+
+    matching_starts = [
+        index
+        for index, slice_id in enumerate(combined_slice_ids)
+        if slice_id == moved_slice_ids[0]
+        and combined_slice_ids[index : index + len(moved_slice_ids)] == moved_slice_ids
+    ]
+
+    assert matching_starts == [combined_slice_ids.index(moved_slice_ids[0])]
+    start = matching_starts[0]
+    end = start + len(moved_expectations)
+
+    assert combined_slice_ids[start - 1] == "former-gap-callable-replacement-rows"
+    assert (
+        combined_slice_ids[end]
+        == "quantified-alternation-heavy-constant-replacement-rows"
+    )
+    assert combined_expectations[start:end] == moved_expectations
+    assert all(
+        observed is expected
+        for observed, expected in zip(
+            combined_expectations[start:end], moved_expectations, strict=True
+        )
+    )
+
+
 def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_test_module(
 ) -> None:
     module = importlib.import_module(__name__)
