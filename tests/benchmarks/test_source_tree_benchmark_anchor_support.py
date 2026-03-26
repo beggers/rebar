@@ -190,6 +190,37 @@ def _summary_view(scorecard: dict[str, object]) -> dict[str, object]:
     }
 
 
+def _top_level_import_alias_pairs(
+    module_ast: ast.Module,
+    *,
+    module_name: str,
+    imported_names: frozenset[str],
+) -> frozenset[tuple[str, str | None]]:
+    return frozenset(
+        (alias.name, alias.asname)
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == module_name
+        for alias in node.names
+        if alias.name in imported_names
+    )
+
+
+def _attribute_alias_pairs(
+    module_ast: ast.Module,
+    *,
+    module_alias_names: frozenset[str],
+    attribute_names: frozenset[str],
+) -> frozenset[tuple[str, str]]:
+    return frozenset(
+        (target_name, attribute_name)
+        for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
+            module_ast,
+            module_alias_names=module_alias_names,
+        ).items()
+        if attribute_name in attribute_names
+    )
+
+
 def test_freeze_signature_value_canonicalizes_nested_mappings_and_lists() -> None:
     value = {
         "b": [2, {"d": 4, "c": [5, 6]}],
@@ -2859,15 +2890,31 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         for alias in node.names
         if alias.name == "source_tree_benchmark_anchor_support"
     }
+    direct_benchmark_support_imports = _top_level_import_alias_pairs(
+        module_ast,
+        module_name="tests.benchmarks.benchmark_test_support",
+        imported_names=expected_benchmark_support_names,
+    )
+    benchmark_support_local_aliases = _attribute_alias_pairs(
+        module_ast,
+        module_alias_names=benchmark_support_alias_names,
+        attribute_names=expected_benchmark_support_names,
+    )
 
     assert "tests.benchmarks" in benchmark_test_support._module_import_targets(module)
     assert (
         "tests.benchmarks.source_tree_benchmark_anchor_support"
         not in benchmark_test_support._module_import_targets(module)
     )
+    assert (
+        "tests.benchmarks.benchmark_test_support"
+        not in benchmark_test_support._module_import_targets(module)
+    )
     assert package_imports == {
         ("source_tree_benchmark_anchor_support", "source_tree_support")
     }
+    assert direct_benchmark_support_imports == frozenset()
+    assert benchmark_support_local_aliases == frozenset()
     assert forbidden_local_names.isdisjoint(local_names)
     assert expected_source_tree_names.isdisjoint(local_names)
     assert expected_benchmark_support_names.isdisjoint(local_names)
@@ -2887,6 +2934,68 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         and node.value.id in benchmark_support_alias_names
         and node.attr in expected_benchmark_support_names
     ) == expected_benchmark_support_names
+
+
+@pytest.mark.parametrize(
+    ("module_source", "expected_direct_imports", "expected_local_aliases"),
+    (
+        pytest.param(
+            "\n".join(
+                (
+                    "from tests.benchmarks import benchmark_test_support",
+                    (
+                        "from tests.benchmarks.benchmark_test_support import "
+                        "_source_tree_contract_manifest"
+                    ),
+                )
+            ),
+            frozenset({("_source_tree_contract_manifest", None)}),
+            frozenset(),
+            id="direct-import",
+        ),
+        pytest.param(
+            "\n".join(
+                (
+                    "from tests.benchmarks import benchmark_test_support",
+                    "",
+                    (
+                        "contract_manifest = "
+                        "benchmark_test_support._source_tree_contract_manifest"
+                    ),
+                )
+            ),
+            frozenset(),
+            frozenset({("contract_manifest", "_source_tree_contract_manifest")}),
+            id="local-alias",
+        ),
+    ),
+)
+def test_source_tree_contract_builder_consumer_guard_detects_direct_imports_and_local_aliases(
+    module_source: str,
+    expected_direct_imports: frozenset[tuple[str, str | None]],
+    expected_local_aliases: frozenset[tuple[str, str]],
+) -> None:
+    module_ast = ast.parse(module_source)
+    benchmark_support_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    )
+    contract_builder_names = frozenset(
+        {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
+    )
+
+    assert _top_level_import_alias_pairs(
+        module_ast,
+        module_name="tests.benchmarks.benchmark_test_support",
+        imported_names=contract_builder_names,
+    ) == expected_direct_imports
+    assert _attribute_alias_pairs(
+        module_ast,
+        module_alias_names=benchmark_support_alias_names,
+        attribute_names=contract_builder_names,
+    ) == expected_local_aliases
 
 
 def test_source_tree_owner_defines_compiled_pattern_module_compile_surface_locally(
