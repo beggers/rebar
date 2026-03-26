@@ -1,6 +1,6 @@
 ## RBR-1351: Centralize collection owner route inventories onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -48,3 +48,8 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'moved_collection_replacement_workload_ids_in_combined_suite_use_direct_owner_import or combined_suite_uses_collection_owner_conditional_callable_signature_helpers'` passed with `2 passed, 146 deselected in 0.29s`
   - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^(_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES|_COMBINED_SUITE_COLLECTION_SIGNATURE_HELPER_NAMES)\\b' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently fails because those two mirrored constants still live on the test module, and that failure belongs exactly to this cleanup
+- 2026-03-26T00:00:00+00:00: landed by adding the routed source-tree workload-id and conditional-callable helper inventories to `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` and switching `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` to consume those owner-owned tuples directly instead of mirroring them locally.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'moved_collection_replacement_workload_ids_in_combined_suite_use_direct_owner_import or combined_suite_uses_collection_owner_conditional_callable_signature_helpers'` -> `2 passed, 146 deselected in 0.38s`
+  - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> passed
+  - `bash -lc "! rg -n '^(_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES|_COMBINED_SUITE_COLLECTION_SIGNATURE_HELPER_NAMES)\\b' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` -> passed

@@ -36,27 +36,6 @@ _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES = (
     "collection-replacement-grouped-callable-replacement",
 )
 
-_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES = (
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
-)
-_COMBINED_SUITE_COLLECTION_SIGNATURE_HELPER_NAMES = (
-    "_conditional_group_exists_nested_callable_correctness_case_signature",
-    "_conditional_group_exists_nested_callable_workload_signature",
-    "_conditional_group_exists_quantified_callable_correctness_case_signature",
-    "_conditional_group_exists_quantified_callable_workload_signature",
-)
-
 
 def _collection_replacement_case(
     *,
@@ -1098,7 +1077,7 @@ def test_moved_collection_replacement_workload_ids_in_combined_suite_use_direct_
     source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
-        owner_names=_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES,
+        owner_names=support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_WORKLOAD_ID_NAMES,
     )
 
 
@@ -1107,10 +1086,12 @@ def test_combined_suite_uses_collection_owner_conditional_callable_signature_hel
     combined_suite = source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
-        owner_names=_COMBINED_SUITE_COLLECTION_SIGNATURE_HELPER_NAMES,
+        owner_names=support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES,
     )
 
-    for helper_name in _COMBINED_SUITE_COLLECTION_SIGNATURE_HELPER_NAMES:
+    for helper_name in (
+        support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES
+    ):
         assert getattr(combined_suite.collection_replacement_support, helper_name) is getattr(
             support,
             helper_name,
@@ -1290,7 +1271,9 @@ def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpe
     source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
-        owner_names=_MOVED_SOURCE_TREE_WORKLOAD_ID_NAMES[:3],
+        owner_names=support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_WORKLOAD_ID_NAMES[
+            :3
+        ],
     )
 
 
