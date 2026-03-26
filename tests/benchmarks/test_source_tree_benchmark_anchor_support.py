@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import importlib
 import pathlib
+import re
 from types import SimpleNamespace
 import unittest
 
@@ -1540,6 +1541,150 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
             "manifest_timed_samples"
         ].default
     )
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expected"),
+    (
+        pytest.param(
+            {"flags": False},
+            (("flags", "bool", False),),
+            id="bool-false",
+        ),
+        pytest.param(
+            {"flags": re.NOFLAG},
+            (("flags", "noflag", 0),),
+            id="re-noflag",
+        ),
+        pytest.param(
+            {"flags": 0},
+            (("flags", "int", 0),),
+            id="int-zero",
+        ),
+    ),
+)
+def test_compiled_pattern_module_compile_keyword_kwargs_signature_preserves_flag_kind(
+    kwargs: dict[str, object],
+    expected: tuple[tuple[str, str, object], ...],
+) -> None:
+    assert (
+        support._compiled_pattern_module_compile_keyword_kwargs_signature(kwargs)
+        == expected
+    )
+
+
+def test_compiled_pattern_module_compile_keyword_correctness_case_signature_matches_noflag_rows(
+) -> None:
+    case = SimpleNamespace(
+        operation="module_call",
+        helper="compile",
+        args=(),
+        kwargs={"flags": re.NOFLAG},
+        use_compiled_pattern=True,
+        pattern="(?P<word>abc)",
+        pattern_payload=lambda: b"(?P<word>abc)",
+        flags=0,
+        text_model="bytes",
+    )
+
+    assert (
+        support._module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+            case,
+            keyword_signature=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE
+            ),
+            allowed_patterns=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS
+            ),
+        )
+        is None
+    )
+    assert (
+        support._module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+            case,
+            keyword_signature=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE
+            ),
+            allowed_patterns=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS
+            ),
+        )
+        is None
+    )
+    assert (
+        support._module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+            case,
+            keyword_signature=(("flags", "noflag", 0),),
+            allowed_patterns=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS
+            ),
+        )
+        == (
+            "module.compile",
+            b"(?P<word>abc)",
+            (),
+            (("flags", "noflag", 0),),
+            True,
+            0,
+            "bytes",
+        )
+    )
+
+
+def test_compiled_pattern_module_compile_keyword_workload_signature_keeps_expected_exception_rows_distinct(
+) -> None:
+    workload = benchmark_test_support.synthetic_workload(
+        manifest_id="module-boundary",
+        workload_id="module-compile-ignorecase-keyword-contract",
+        operation="module.compile",
+        pattern="abc",
+        kwargs={"flags": int(re.IGNORECASE)},
+        expected_exception=(
+            support._COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION
+        ),
+        use_compiled_pattern=True,
+    )
+
+    assert (
+        support._module_workflow_compiled_pattern_compile_keyword_workload_signature(
+            workload,
+            keyword_label="ignorecase",
+            keyword_signature=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE
+            ),
+            allowed_patterns=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS
+            ),
+            expected_exception=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION
+            ),
+        )
+        == (
+            "module.compile",
+            "abc",
+            (),
+            support._COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE,
+            True,
+            0,
+            "str",
+        )
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match="unexpected module-workflow compiled-pattern module.compile ignorecase keyword workload",
+    ):
+        support._module_workflow_compiled_pattern_compile_keyword_workload_signature(
+            workload,
+            keyword_label="ignorecase",
+            keyword_signature=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE
+            ),
+            allowed_patterns=(
+                support._COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS
+            ),
+            expected_exception=None,
+        )
 
 
 @pytest.mark.parametrize(
