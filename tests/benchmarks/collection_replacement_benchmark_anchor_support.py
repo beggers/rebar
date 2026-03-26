@@ -1052,28 +1052,6 @@ def _collection_replacement_compiled_pattern_success_correctness_case_signature(
     )
 
 
-def _collection_replacement_compiled_pattern_success_workload_args(
-    workload: Any,
-) -> tuple[object, ...]:
-    if workload.operation == "module.split":
-        return (
-            workload.haystack_payload(),
-            workload.maxsplit_argument(),
-        )
-    if workload.operation in {"module.findall", "module.finditer"}:
-        return (workload.haystack_payload(),)
-    if workload.operation in {"module.sub", "module.subn"}:
-        return (
-            workload.replacement_payload(),
-            workload.haystack_payload(),
-            workload.count_argument(),
-        )
-    raise AssertionError(
-        "unexpected collection/replacement compiled-pattern success workload "
-        f"operation {workload.operation!r}"
-    )
-
-
 def _collection_replacement_compiled_pattern_success_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
@@ -1088,7 +1066,7 @@ def _collection_replacement_compiled_pattern_success_workload_signature(
         workload.operation,
         workload.pattern_payload(),
         benchmark_test_support.freeze_signature_value(
-            list(_collection_replacement_compiled_pattern_success_workload_args(workload))
+            list(_collection_replacement_wrong_text_model_workload_args(workload))
         ),
         workload.use_compiled_pattern,
         workload.flags,
