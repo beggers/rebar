@@ -3548,6 +3548,40 @@ def test_compiled_pattern_contract_builder_owner_methods_return_live_specs(
     assert built_spec.timing_scope == "module-helper-call"
 
 
+def test_build_source_tree_contract_builder_spec_resolves_owner_surface_at_call_time(
+    monkeypatch,
+) -> None:
+    benchmark_package = importlib.import_module("tests.benchmarks")
+
+    def _build_fake_spec(**kwargs: object) -> tuple[str, dict[str, object]]:
+        return ("fake-source-tree-contract-spec", dict(kwargs))
+
+    monkeypatch.setattr(
+        benchmark_package,
+        "source_tree_benchmark_anchor_support",
+        SimpleNamespace(_SourceTreeContractBuilderSpec=_build_fake_spec),
+    )
+
+    built_spec = support._build_source_tree_contract_builder_spec(
+        manifest_id="synthetic-boundary",
+        excluded_fields=frozenset({"expected_exception"}),
+        manifest_timed_samples=3,
+        timing_scope="module-helper-call",
+        notes=("synthetic note",),
+    )
+
+    assert built_spec == (
+        "fake-source-tree-contract-spec",
+        {
+            "manifest_id": "synthetic-boundary",
+            "excluded_fields": frozenset({"expected_exception"}),
+            "manifest_timed_samples": 3,
+            "timing_scope": "module-helper-call",
+            "notes": ("synthetic note",),
+        },
+    )
+
+
 def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
         support
