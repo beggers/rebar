@@ -470,7 +470,7 @@ def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
     assert getsource_calls == [fake_module, fake_module]
 
 
-def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata(
+def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects_metadata(
 ) -> None:
     source_workload = support.synthetic_workload(
         manifest_id="source-manifest",
@@ -506,10 +506,11 @@ def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata
         notes=("keeps helper invocation unresolved",),
     )
 
-    payload = anchor_support._source_tree_contract_manifest_payload(
-        source_workload,
+    manifest = anchor_support._source_tree_contract_manifest(
+        (source_workload,),
         spec=spec,
     )
+    payload = manifest["workloads"][0]
 
     assert payload["id"] == "module-sub-count-keyword-warm-str-contract"
     assert payload["pattern"] == source_payload["pattern"]
@@ -523,6 +524,7 @@ def test_source_tree_contract_manifest_payload_drops_fields_and_injects_metadata
     assert payload["notes"] == ["keeps helper invocation unresolved"]
     for field_name in spec.excluded_fields - {"notes"}:
         assert field_name not in payload
+    assert not hasattr(anchor_support, "_source_tree_contract_manifest_payload")
 
 
 def test_source_tree_contract_workload_reconstructs_contract_workload_with_defaults(
