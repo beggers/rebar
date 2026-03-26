@@ -341,9 +341,20 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
     assert benchmark_test_support._is_collection_replacement_keyword_workload(
         unexpected_keyword_workload
     )
-    assert support._collection_replacement_has_expected_unexpected_keyword_error(
-        unexpected_keyword_workload
+    keyword_names = tuple(unexpected_keyword_workload.kwargs)
+    assert keyword_names == ("missing",)
+    assert (
+        benchmark_test_support._collection_replacement_keyword_parameter_name(
+            unexpected_keyword_workload
+        )
+        != keyword_names[0]
     )
+    expected_exception = unexpected_keyword_workload.expected_exception
+    assert expected_exception is not None
+    assert expected_exception.get("type") == "TypeError"
+    message_substring = expected_exception.get("message_substring")
+    assert isinstance(message_substring, str)
+    assert f"unexpected keyword argument '{keyword_names[0]}'" in message_substring
     assert support._collection_replacement_keyword_workload_signature(
         unexpected_keyword_workload
     ) == (

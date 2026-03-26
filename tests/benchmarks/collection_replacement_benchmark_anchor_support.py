@@ -855,37 +855,6 @@ def _collection_replacement_literal_replacement_workload_signature(
         workload.flags,
         workload.text_model,
     )
-def _collection_replacement_has_expected_unexpected_keyword_error(
-    workload: Any,
-) -> bool:
-    keyword_names = tuple(workload.kwargs)
-    if len(keyword_names) != 1:
-        return False
-    keyword_name = keyword_names[0]
-    expected_keyword_parameter = (
-        benchmark_test_support._collection_replacement_keyword_parameter_name(
-            workload
-        )
-    )
-    if keyword_name == expected_keyword_parameter:
-        return False
-    expected_exception = workload.expected_exception
-    if expected_exception is None or expected_exception.get("type") != "TypeError":
-        return False
-    message_substring = expected_exception.get("message_substring")
-    if not isinstance(message_substring, str):
-        return False
-    if f"unexpected keyword argument '{keyword_name}'" in message_substring:
-        return True
-    if workload.operation.startswith("pattern."):
-        helper_name = workload.operation.removeprefix("pattern.")
-        return (
-            message_substring
-            == f"'{keyword_name}' is an invalid keyword argument for {helper_name}()"
-        )
-    return False
-
-
 def _module_workflow_positional_indexlike_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -2621,8 +2590,6 @@ def _conditional_group_exists_quantified_callable_workload_signature(
         workload.flags,
         workload.text_model,
     )
-
-
 COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS = (
     _collection_replacement_standard_benchmark_definitions()
 )
