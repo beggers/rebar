@@ -799,6 +799,79 @@ def test_source_tree_combined_case_requires_regression_manifest_for_non_module_t
         support.source_tree_combined_case("synthetic-boundary")
 
 
+def test_source_tree_combined_target_manifest_ids_rejects_missing_expectation_drift(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        lambda: [
+            SimpleNamespace(manifest_id="module-boundary"),
+            SimpleNamespace(manifest_id="synthetic-boundary"),
+            SimpleNamespace(manifest_id="regression-matrix"),
+        ],
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            "module-boundary": support.SourceTreeCombinedManifestExpectationDefinition(),
+            "regression-matrix": (
+                support.SourceTreeCombinedManifestExpectationDefinition(
+                    exclude_from_combined_targets=True,
+                )
+            ),
+        },
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=(
+            "source-tree combined manifest expectations drifted from the "
+            "published full-suite selector: missing \\['synthetic-boundary'\\]"
+        ),
+    ):
+        support.source_tree_combined_target_manifest_ids()
+
+
+def test_source_tree_combined_target_manifest_ids_preserve_order_and_exclusion_flags(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        lambda: [
+            SimpleNamespace(manifest_id="compile-matrix"),
+            SimpleNamespace(manifest_id="module-boundary"),
+            SimpleNamespace(manifest_id="synthetic-boundary"),
+            SimpleNamespace(manifest_id="regression-matrix"),
+        ],
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            "compile-matrix": support.SourceTreeCombinedManifestExpectationDefinition(
+                exclude_from_combined_targets=True,
+            ),
+            "module-boundary": support.SourceTreeCombinedManifestExpectationDefinition(),
+            "synthetic-boundary": (
+                support.SourceTreeCombinedManifestExpectationDefinition()
+            ),
+            "regression-matrix": (
+                support.SourceTreeCombinedManifestExpectationDefinition(
+                    exclude_from_combined_targets=True,
+                )
+            ),
+        },
+    )
+
+    assert support.source_tree_combined_target_manifest_ids() == (
+        "module-boundary",
+        "synthetic-boundary",
+    )
+
+
 def test_deleted_source_tree_wrapper_helpers_are_absent() -> None:
     for attribute_name in (
         "source_tree_combined_manifest_shape_expectation",
