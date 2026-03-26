@@ -3712,6 +3712,34 @@ def test_source_tree_owner_no_longer_keeps_contract_builder_spec_local() -> None
     assert hasattr(benchmark_test_support, "_SourceTreeContractBuilderSpec")
 
 
+def test_combined_suite_single_manifest_representatives_use_combined_suite_slice_expectations(
+) -> None:
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    class_definition = benchmark_test_support._module_class_definition(
+        combined_suite,
+        "SourceTreeScorecardBenchmarkSuiteTest",
+    )
+    method_definition = benchmark_test_support._class_method_definition(
+        class_definition,
+        "test_single_manifest_scorecards_keep_slice_backed_representatives",
+    )
+
+    assert frozenset(
+        node.attr
+        for node in ast.walk(method_definition)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "source_tree_support"
+        and node.attr
+        in {
+            "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+            "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS",
+        }
+    ) == frozenset({"SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS"})
+
+
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(
 ) -> None:
     owner_definition_names = frozenset(
