@@ -2733,11 +2733,31 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     ),
                 )
 
-                representative_ids = source_tree_support.representative_measured_workload_ids(
-                    scorecard,
-                    case.target_manifest,
-                    extra_workload_ids=manifest_expectation.representative_measured_workload_ids,
+                representative_ids = list(
+                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                        manifest_id
+                    )
                 )
+                for workload_id in (
+                    manifest_expectation.representative_measured_workload_ids
+                ):
+                    if workload_id not in representative_ids:
+                        representative_ids.append(workload_id)
+                for operation in source_tree_support.ordered_operations(
+                    case.target_manifest.workloads
+                ):
+                    for workload in scorecard["workloads"]:
+                        if workload["manifest_id"] != manifest_id:
+                            continue
+                        if (
+                            workload["operation"] != operation
+                            or workload["status"] != "measured"
+                        ):
+                            continue
+                        workload_id = str(workload["id"])
+                        if workload_id not in representative_ids:
+                            representative_ids.append(workload_id)
+                        break
                 representative_gap_ids = set(
                     manifest_expectation.representative_known_gap_workload_ids
                 )

@@ -3520,36 +3520,6 @@ def expected_summary_for_manifests(
     }
 
 
-def representative_measured_workload_ids(
-    scorecard: dict[str, Any],
-    manifest: BenchmarkManifest,
-    *,
-    extra_workload_ids: tuple[str, ...] = (),
-) -> list[str]:
-    manifest_id = manifest.manifest_id
-    representative_ids: list[str] = []
-    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
-    if manifest_expectation is not None:
-        _append_unique_workload_ids(
-            representative_ids,
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            ),
-        )
-    _append_unique_workload_ids(representative_ids, extra_workload_ids)
-    for operation in ordered_operations(manifest.workloads):
-        for workload in scorecard["workloads"]:
-            if workload["manifest_id"] != manifest_id:
-                continue
-            if workload["operation"] != operation or workload["status"] != "measured":
-                continue
-            workload_id = str(workload["id"])
-            if workload_id not in representative_ids:
-                representative_ids.append(workload_id)
-            break
-    return representative_ids
-
-
 def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase:
     manifests = _selected_source_tree_manifests_for_target_manifest(target_manifest_id)
     workloads = _flatten_manifest_workloads(manifests)
