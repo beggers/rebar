@@ -3260,7 +3260,8 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
         "expected_source_tree_names",
         "forbidden_local_names",
         "expected_benchmark_support_names",
-        "expected_source_tree_package_imports",
+        "expected_collection_replacement_names",
+        "expected_package_imports",
     ),
     (
         pytest.param(
@@ -3274,7 +3275,16 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             ),
             frozenset(),
             frozenset(),
-            frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
+            frozenset(),
+            frozenset(
+                {
+                    (
+                        "collection_replacement_benchmark_anchor_support",
+                        "collection_replacement_support",
+                    ),
+                    ("source_tree_benchmark_anchor_support", "source_tree_support"),
+                }
+            ),
             id="pattern-boundary",
         ),
         pytest.param(
@@ -3284,7 +3294,13 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             ),
             frozenset(),
             frozenset(),
-            frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
+            frozenset(),
+            frozenset(
+                {
+                    ("collection_replacement_benchmark_anchor_support", "support"),
+                    ("source_tree_benchmark_anchor_support", "source_tree_support"),
+                }
+            ),
             id="collection-replacement",
         ),
         pytest.param(
@@ -3307,24 +3323,25 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
-                frozenset(
-                    {
-                        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-                        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-                    }
-                ),
-                frozenset(
-                    {
-                        (
-                            "collection_replacement_benchmark_anchor_support",
-                            "collection_replacement_support",
-                        ),
-                        ("source_tree_benchmark_anchor_support", "source_tree_support"),
-                    }
-                ),
-                id="manifest-validation",
+            frozenset(),
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                }
             ),
+            frozenset(
+                {
+                    (
+                        "collection_replacement_benchmark_anchor_support",
+                        "collection_replacement_support",
+                    ),
+                    ("source_tree_benchmark_anchor_support", "source_tree_support"),
+                }
+            ),
+            id="manifest-validation",
+        ),
         pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
@@ -3347,6 +3364,13 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                 {
                     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
                     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+                }
+            ),
+            frozenset(
+                {
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
@@ -3355,13 +3379,16 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
                     "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
                 }
             ),
             frozenset(
-                {("source_tree_benchmark_anchor_support", "source_tree_owner_support")}
+                {
+                    (
+                        "collection_replacement_benchmark_anchor_support",
+                        "collection_replacement_support",
+                    ),
+                    ("source_tree_benchmark_anchor_support", "source_tree_owner_support"),
+                }
             ),
             id="source-tree-combined",
         ),
@@ -3372,7 +3399,8 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
     expected_source_tree_names: frozenset[str],
     forbidden_local_names: frozenset[str],
     expected_benchmark_support_names: frozenset[str],
-    expected_source_tree_package_imports: frozenset[tuple[str, str | None]],
+    expected_collection_replacement_names: frozenset[str],
+    expected_package_imports: frozenset[tuple[str, str | None]],
 ) -> None:
     module = importlib.import_module(module_name)
     module_ast = benchmark_test_support._parsed_module_ast(module)
@@ -3388,12 +3416,24 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         import_name="benchmark_test_support",
         dotted_import_name="tests.benchmarks.benchmark_test_support",
     )
+    collection_replacement_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="collection_replacement_benchmark_anchor_support",
+        dotted_import_name=(
+            "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+        ),
+    )
     package_imports = {
         (alias.name, alias.asname)
         for node in module_ast.body
         if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
         for alias in node.names
-        if alias.name == "source_tree_benchmark_anchor_support"
+        if alias.name
+        in {
+            "collection_replacement_benchmark_anchor_support",
+            "source_tree_benchmark_anchor_support",
+        }
     }
     direct_benchmark_support_imports = benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
@@ -3414,12 +3454,13 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         "tests.benchmarks.benchmark_test_support"
         not in benchmark_test_support._module_import_targets(module)
     )
-    assert package_imports == expected_source_tree_package_imports
+    assert package_imports == expected_package_imports
     assert direct_benchmark_support_imports == frozenset()
     assert benchmark_support_local_aliases == frozenset()
     assert forbidden_local_names.isdisjoint(local_names)
     assert expected_source_tree_names.isdisjoint(local_names)
     assert expected_benchmark_support_names.isdisjoint(local_names)
+    assert expected_collection_replacement_names.isdisjoint(local_names)
     assert frozenset(
         node.attr
         for node in ast.walk(module_ast)
@@ -3436,6 +3477,14 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         and node.value.id in benchmark_support_alias_names
         and node.attr in expected_benchmark_support_names
     ) == expected_benchmark_support_names
+    assert frozenset(
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in collection_replacement_alias_names
+        and node.attr in expected_collection_replacement_names
+    ) == expected_collection_replacement_names
 
 
 @pytest.mark.parametrize(
