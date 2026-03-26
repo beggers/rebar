@@ -26,26 +26,6 @@ _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
     {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
 )
 
-def _collection_replacement_pattern_collection_workload_args(
-    workload: Any,
-    *,
-    requires_window_bounds: bool,
-) -> tuple[Any, ...]:
-    if requires_window_bounds:
-        args: list[object] = [workload.haystack_payload()]
-        if workload.pos is not None or workload.endpos is not None:
-            args.append(0 if workload.pos is None else workload.pos)
-        if workload.endpos is not None:
-            args.append(workload.endpos)
-        return tuple(args)
-
-    args = [workload.haystack_payload()]
-    if workload.maxsplit is not None and not (
-        type(workload.maxsplit) is int and workload.maxsplit == 0
-    ):
-        args.append(workload.maxsplit_argument())
-    return tuple(args)
-
 
 def _collection_replacement_pattern_collection_correctness_case_signature(
     case: Any,
@@ -108,17 +88,22 @@ def _collection_replacement_pattern_collection_workload_signature(
             "unexpected collection/replacement bounded "
             f"{expected_operation} workload {workload.workload_id!r}"
         )
+    if requires_window_bounds:
+        args: list[object] = [workload.haystack_payload()]
+        if workload.pos is not None or workload.endpos is not None:
+            args.append(0 if workload.pos is None else workload.pos)
+        if workload.endpos is not None:
+            args.append(workload.endpos)
+    else:
+        args = [workload.haystack_payload()]
+        if workload.maxsplit is not None and not (
+            type(workload.maxsplit) is int and workload.maxsplit == 0
+        ):
+            args.append(workload.maxsplit_argument())
     return (
         expected_operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(
-            list(
-                _collection_replacement_pattern_collection_workload_args(
-                    workload,
-                    requires_window_bounds=requires_window_bounds,
-                )
-            )
-        ),
+        benchmark_test_support.freeze_signature_value(list(args)),
         (),
         workload.flags,
         workload.text_model,
