@@ -137,13 +137,6 @@ SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
     "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
 )
 
-SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES = (
-    "assert_source_tree_combined_manifest_slice",
-    "assert_source_tree_combined_pattern_group",
-    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
-    "assert_zero_gap_representative_workload_subset",
-)
-
 SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
     {
         "STANDARD_BENCHMARK_DEFINITIONS",

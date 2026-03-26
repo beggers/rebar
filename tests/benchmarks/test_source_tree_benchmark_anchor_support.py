@@ -2041,7 +2041,12 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
         pytest.param(
             "source_tree_support",
             support,
-            support.SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES,
+            (
+                "assert_source_tree_combined_manifest_slice",
+                "assert_source_tree_combined_pattern_group",
+                "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
+                "assert_zero_gap_representative_workload_subset",
+            ),
             frozenset(),
             id="source-tree-suite-assertion-helpers",
         ),
