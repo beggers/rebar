@@ -48,3 +48,14 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `147 passed in 1.75s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '\\b(_workload_case_pairs_workload_ids|_workload_case_pairs_case_ids)\\b' tests/benchmarks/benchmark_test_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails with the exact definitions and call sites this task is intended to delete
+
+## Completion
+- Landed 2026-03-26.
+- Deleted `_workload_case_pairs_workload_ids` and `_workload_case_pairs_case_ids` from `tests/benchmarks/benchmark_test_support.py`.
+- Rewrote the collection-replacement routes and grouped-callable selectors to derive workload-id and case-id tuples directly from `workload_case_pairs` at each use site.
+- Updated the benchmark-support ownership tests so they no longer treat the deleted wrappers as shared helper surface while preserving the surviving no-local-duplicate and import-routing checks.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed with `281 passed in 1.71s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `147 passed in 1.77s`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
+  - `bash -lc "! rg -n '\\b(_workload_case_pairs_workload_ids|_workload_case_pairs_case_ids)\\b' tests/benchmarks/benchmark_test_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` passed

@@ -2157,8 +2157,6 @@ def test_source_tree_anchor_support_routes_owner_imports_through_package_modules
         "StandardBenchmarkAnchorContractDefinition",
         "_definition_anchor_expectations",
         "_workload_case_pair_anchor_expectations",
-        "_workload_case_pairs_case_ids",
-        "_workload_case_pairs_workload_ids",
         "freeze_signature_value",
         "live_manifest_workloads",
         "published_case_ids_by_signature",

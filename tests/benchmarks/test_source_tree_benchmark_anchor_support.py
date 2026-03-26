@@ -253,25 +253,25 @@ def test_definition_anchor_expectations_expand_manifest_name() -> None:
     assert not hasattr(support, "_definition_anchor_expectations")
 
 
-def test_workload_case_pair_helpers_preserve_tuple_order() -> None:
+def test_workload_case_pair_tuple_projections_preserve_tuple_order() -> None:
     workload_case_pairs = (
         ("workload-a", "case-1"),
         ("workload-b", "case-2"),
         ("workload-c", "case-3"),
     )
 
-    assert benchmark_test_support._workload_case_pairs_workload_ids(workload_case_pairs) == (
+    assert tuple(
+        workload_id for workload_id, _ in workload_case_pairs
+    ) == (
         "workload-a",
         "workload-b",
         "workload-c",
     )
-    assert benchmark_test_support._workload_case_pairs_case_ids(workload_case_pairs) == (
+    assert tuple(case_id for _, case_id in workload_case_pairs) == (
         "case-1",
         "case-2",
         "case-3",
     )
-    assert not hasattr(support, "_workload_case_pairs_workload_ids")
-    assert not hasattr(support, "_workload_case_pairs_case_ids")
 
 
 def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
@@ -1109,8 +1109,6 @@ def test_compile_search_fullmatch_workload_signature_rejects_unsupported_operati
             (
                 "freeze_signature_value",
                 "_workload_case_pair_anchor_expectations",
-                "_workload_case_pairs_case_ids",
-                "_workload_case_pairs_workload_ids",
             ),
             id="collection-replacement",
         ),

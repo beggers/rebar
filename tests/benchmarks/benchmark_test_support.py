@@ -820,18 +820,6 @@ def _definition_anchor_expectations(
     }
 
 
-def _workload_case_pairs_workload_ids(
-    workload_case_pairs: tuple[tuple[str, str], ...],
-) -> tuple[str, ...]:
-    return tuple(workload_id for workload_id, _ in workload_case_pairs)
-
-
-def _workload_case_pairs_case_ids(
-    workload_case_pairs: tuple[tuple[str, str], ...],
-) -> tuple[str, ...]:
-    return tuple(case_id for _, case_id in workload_case_pairs)
-
-
 def _workload_case_pair_anchor_expectations(
     manifest_path: pathlib.Path,
     workload_case_pairs: tuple[tuple[str, str], ...],

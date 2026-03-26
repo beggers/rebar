@@ -58,14 +58,10 @@ class _CollectionReplacementLiteralReplacementRoute:
     allowed_counts: tuple[int, ...] | None = None
 
     def workload_ids(self) -> tuple[str, ...]:
-        return benchmark_test_support._workload_case_pairs_workload_ids(
-            self.workload_case_pairs
-        )
+        return tuple(workload_id for workload_id, _ in self.workload_case_pairs)
 
     def case_ids(self) -> tuple[str, ...]:
-        return benchmark_test_support._workload_case_pairs_case_ids(
-            self.workload_case_pairs
-        )
+        return tuple(case_id for _, case_id in self.workload_case_pairs)
 
     def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
         return benchmark_test_support._workload_case_pair_anchor_expectations(
@@ -85,14 +81,10 @@ class _CollectionReplacementPatternCollectionRoute:
         return self.operation.removeprefix("pattern.")
 
     def workload_ids(self) -> tuple[str, ...]:
-        return benchmark_test_support._workload_case_pairs_workload_ids(
-            self.workload_case_pairs
-        )
+        return tuple(workload_id for workload_id, _ in self.workload_case_pairs)
 
     def case_ids(self) -> tuple[str, ...]:
-        return benchmark_test_support._workload_case_pairs_case_ids(
-            self.workload_case_pairs
-        )
+        return tuple(case_id for _, case_id in self.workload_case_pairs)
 
     def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
         return benchmark_test_support._workload_case_pair_anchor_expectations(
@@ -1615,8 +1607,9 @@ _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS = (
 def _is_collection_replacement_grouped_callable_workload(workload: Any) -> bool:
     return (
         workload.workload_id
-        in benchmark_test_support._workload_case_pairs_workload_ids(
-            _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+        in tuple(
+            workload_id
+            for workload_id, _ in _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
         )
         and workload.operation in {"module.sub", "pattern.subn"}
         and workload.pattern in {
@@ -1637,8 +1630,9 @@ def _is_collection_replacement_grouped_callable_workload(workload: Any) -> bool:
 def _collection_replacement_grouped_callable_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    if case.case_id not in benchmark_test_support._workload_case_pairs_case_ids(
-        _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
+    if case.case_id not in tuple(
+        case_id
+        for _, case_id in _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS
     ):
         return None
     if case.kwargs or case.use_compiled_pattern:
