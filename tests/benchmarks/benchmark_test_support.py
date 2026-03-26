@@ -3731,6 +3731,23 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
 )
 
+BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES = frozenset(
+    {
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_SourceTreeContractBuilderSpec",
+        "_expected_exception_instance",
+        "_is_pattern_boundary_wrong_text_model_workload",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "_write_test_manifest",
+        "CompiledPatternModuleCompileContractCase",
+        "assert_benchmark_workload_matches_expected_result",
+        "run_benchmark_workload_with_cpython",
+        "assert_pattern_helper_wrong_text_model_payload_round_trip",
+        "selected_manifest_workloads",
+    }
+)
+
 
 def _anchored_case_ids(
     definition: StandardBenchmarkAnchorContract,

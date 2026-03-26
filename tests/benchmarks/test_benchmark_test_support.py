@@ -2708,106 +2708,6 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
         )
 
 
-_SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
-    {
-        "STANDARD_BENCHMARK_DEFINITIONS",
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "PATTERN_BOUNDARY_MANIFEST_PATH",
-        "RecordingBenchmarkModule",
-        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-        "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-        "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
-        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
-        "_is_collection_replacement_keyword_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
-        "_is_module_workflow_keyword_error_workload",
-        "_is_module_workflow_keyword_flags_workload",
-        "_module_workflow_keyword_correctness_case_signature",
-        "_module_workflow_keyword_workload_signature",
-        "compiled_pattern_contract_expected_build_calls",
-        "_expected_exception_instance",
-        "_record_numeric_materialization_fields",
-        "_source_tree_contract_manifest",
-        "_source_tree_contract_workload",
-        "_write_test_manifest",
-        "_definition_anchor_expectations",
-        "_workload_case_pair_anchor_expectations",
-        "anchored_workload_case_ids",
-        "assert_benchmark_workload_matches_expected_result",
-        "assert_benchmark_workload_contract",
-        "assert_zero_gap_manifest_workloads_measured",
-        "compile_proxy_correctness_case_signature",
-        "expected_anchored_workload_case_pairs",
-        "compile_proxy_workload_signature",
-        "find_workload_document",
-        "find_workload_record",
-        "is_compile_proxy_workload",
-        "published_case_ids_by_signature",
-        "run_benchmark_workload_with_cpython",
-        "selected_manifest_workloads",
-        "StandardBenchmarkAnchorContractDefinition",
-        "unanchored_workload_ids",
-        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-        "_is_module_workflow_compiled_pattern_literal_success_workload",
-        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
-        "_is_pattern_bounded_wildcard_workload",
-        "_is_pattern_boundary_wrong_text_model_workload",
-        "_is_pattern_keyword_window_workload",
-        "_is_pattern_verbose_regression_workload",
-        "_is_pattern_window_positional_indexlike_workload",
-        "_module_workflow_compiled_pattern_correctness_case_signature",
-        "_module_workflow_compiled_pattern_workload_signature",
-        "_pattern_bounded_wildcard_correctness_case_signature",
-        "_pattern_bounded_wildcard_workload_signature",
-        "_pattern_boundary_wrong_text_model_correctness_case_signature",
-        "_pattern_boundary_wrong_text_model_workload_signature",
-        "_pattern_keyword_window_correctness_case_signature",
-        "_pattern_keyword_window_workload_signature",
-        "_pattern_verbose_regression_correctness_case_signature",
-        "_pattern_verbose_regression_workload_signature",
-        "_pattern_window_positional_indexlike_correctness_case_signature",
-        "_pattern_window_positional_indexlike_workload_signature",
-    }
-)
-
-_BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES = frozenset(
-    {
-        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-        "_SourceTreeContractBuilderSpec",
-        "_expected_exception_instance",
-        "_is_pattern_boundary_wrong_text_model_workload",
-        "_source_tree_contract_manifest",
-        "_source_tree_contract_workload",
-        "_write_test_manifest",
-        "CompiledPatternModuleCompileContractCase",
-        "assert_benchmark_workload_matches_expected_result",
-        "run_benchmark_workload_with_cpython",
-        "assert_pattern_helper_wrong_text_model_payload_round_trip",
-        "selected_manifest_workloads",
-    }
-)
-
-_COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES = frozenset(
-    {
-        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "StandardBenchmarkAnchorContractDefinition",
-        "_SourceTreeContractBuilderSpec",
-        "_contract_source_workloads",
-        "_definition_anchor_expectations",
-        "_is_collection_replacement_compiled_pattern_success_workload",
-        "_is_module_workflow_keyword_error_workload",
-        "_workload_case_pair_anchor_expectations",
-        "_workload_case_pairs_case_ids",
-        "_workload_case_pairs_workload_ids",
-        "freeze_signature_value",
-    }
-)
-
-
 def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates(
 ) -> None:
     module = importlib.import_module(
@@ -2825,7 +2725,9 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert getattr(module, "benchmark_test_support") is support
-    assert _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES.isdisjoint(local_names)
+    assert anchor_support.SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES.isdisjoint(
+        local_names
+    )
 
 
 def test_source_tree_combined_suite_deletes_manifest_contract_wrapper_methods() -> None:
@@ -2899,7 +2801,7 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         package_module="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
-    assert _BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES.isdisjoint(
+    assert support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES.isdisjoint(
         definition_names | assignment_names
     )
 
@@ -2934,12 +2836,12 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
     (
         pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            _SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
+            anchor_support.SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
             id="source-tree-combined",
         ),
         pytest.param(
             "tests.benchmarks.test_benchmark_manifest_validation",
-            _BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES,
+            support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES,
             id="manifest-validation",
         ),
     ),
@@ -3308,8 +3210,11 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
         collection_replacement_support.benchmark_test_support.source_tree_support
         is anchor_support
     )
-    assert _COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES.isdisjoint(
-        definition_names | assignment_names
+    assert (
+        collection_replacement_support
+        .COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES.isdisjoint(
+            definition_names | assignment_names
+        )
     )
 
 

@@ -1,8 +1,9 @@
 ## RBR-1354: Centralize retired benchmark owner inventories onto owner modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
+Completed: 2026-03-26
 
 ## Goal
 - Delete the remaining retired-owner inventory mirrors from `tests/benchmarks/test_benchmark_test_support.py` so source-tree, manifest-validation, and collection owner surfaces are described once on their owning support modules instead of being duplicated in a consumer test file.
@@ -51,3 +52,9 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'consumer_suites_reuse_shared_support_without_local_duplicates or benchmark_manifest_validation_routes_owner_surface_through_benchmark_test_support or collection_replacement_support_reaches_source_tree_owner_surface_through_benchmark_test_support_alias or do_not_alias_owner_module_surfaces'` passed with `5 passed, 147 deselected in 0.18s`
   - `python3 -m py_compile tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^(_SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES|_BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES|_COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES)\\b' tests/benchmarks/test_benchmark_test_support.py"` currently fails because those three mirrored constants still live on the consumer test module, and that failure belongs exactly to this cleanup
+- Completion note:
+  - Added owner-owned retired-name inventories to `tests/benchmarks/source_tree_benchmark_anchor_support.py`, `tests/benchmarks/benchmark_test_support.py`, and `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, then rewired `tests/benchmarks/test_benchmark_test_support.py` to consume those exported constants directly.
+  - Verification in this run:
+    - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'consumer_suites_reuse_shared_support_without_local_duplicates or benchmark_manifest_validation_routes_owner_surface_through_benchmark_test_support or collection_replacement_support_reaches_source_tree_owner_surface_through_benchmark_test_support_alias or do_not_alias_owner_module_surfaces'` passed with `5 passed, 147 deselected in 0.33s`
+    - `python3 -m py_compile tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py` passed
+    - `bash -lc "! rg -n '^(_SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES|_BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES|_COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES)\\b' tests/benchmarks/test_benchmark_test_support.py"` passed
