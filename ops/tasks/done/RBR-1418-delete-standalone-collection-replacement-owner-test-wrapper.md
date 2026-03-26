@@ -49,3 +49,12 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py -q` passed with `620 passed, 1557 subtests passed in 13.82s`.
   - `python3 -m py_compile tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py` passed.
   - `bash -lc '! test -e tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py'` currently fails only because the redundant wrapper file still exists, which is the exact cleanup this task queues.
+
+## Completion
+- Moved the surviving collection/replacement owner assertions into `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, including wrong-text-model contract coverage, positional-indexlike selector/signature checks, measured-row ownership checks, and combined conditional slice ownership assertions.
+- Updated `tests/benchmarks/test_benchmark_test_support.py` to stop treating `tests.benchmarks.test_collection_replacement_benchmark_anchor_support` as a live consumer module and to keep the deleted wrapper unimportable.
+- Deleted `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`.
+- Verification in this completion run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py -q` passed with `646 passed, 1573 subtests passed in 14.62s`.
+  - `python3 -m py_compile tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py` passed.
+  - `bash -lc '! test -e tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py'` passed.

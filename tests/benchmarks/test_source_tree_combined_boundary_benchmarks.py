@@ -43,6 +43,22 @@ source_tree_support = source_tree_owner_support
 collection_replacement_support = source_tree_owner_support
 
 
+def _workload_ids_for_declared_slice(
+    workloads: tuple[Workload, ...],
+    *,
+    text_model: str | None = None,
+    include_categories: tuple[str, ...] = (),
+    exclude_categories: tuple[str, ...] = (),
+) -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for workload in workloads
+        if (text_model is None or workload.text_model == text_model)
+        and all(category in workload.categories for category in include_categories)
+        and all(category not in workload.categories for category in exclude_categories)
+    )
+
+
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
 
@@ -105,6 +121,358 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             manifest_expectation.representative_measured_workload_ids,
             (),
+        )
+
+    def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured(
+        self,
+    ) -> None:
+        manifest_path = "collection_replacement_boundary.py"
+        manifest_workload_count = len(
+            benchmark_test_support.selected_manifest_workloads(manifest_path)
+        )
+        expected_measured_workload_ids = tuple(
+            workload.workload_id
+            for workload in benchmark_test_support.selected_manifest_workloads(
+                manifest_path,
+                include_workload=lambda workload: (
+                    collection_replacement_support._is_collection_replacement_keyword_workload(
+                        workload
+                    )
+                    and workload.operation.startswith("pattern.")
+                ),
+            )
+        )
+
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "pattern-split-maxsplit-keyword-warm-str",
+                "pattern-split-maxsplit-bool-keyword-warm-str",
+                "pattern-split-maxsplit-indexlike-keyword-warm-str",
+                "pattern-split-duplicate-maxsplit-keyword-warm-str",
+                "pattern-split-unexpected-keyword-warm-bytes",
+                "pattern-sub-count-keyword-purged-bytes",
+                "pattern-sub-count-bool-keyword-purged-bytes",
+                "pattern-sub-count-bool-true-keyword-purged-bytes",
+                "pattern-sub-count-indexlike-keyword-purged-bytes",
+                "pattern-sub-duplicate-count-keyword-warm-str",
+                "pattern-sub-unexpected-keyword-warm-str",
+                "pattern-sub-unexpected-keyword-after-positional-count-warm-str",
+                "pattern-sub-count-alias-keyword-warm-str",
+                "pattern-subn-count-keyword-warm-str",
+                "pattern-subn-count-bool-keyword-warm-str",
+                "pattern-subn-count-bool-false-keyword-warm-str",
+                "pattern-subn-count-indexlike-keyword-warm-str",
+                "pattern-subn-duplicate-count-keyword-warm-bytes",
+                "pattern-subn-unexpected-keyword-warm-bytes",
+                "pattern-subn-unexpected-keyword-after-positional-count-warm-bytes",
+                "pattern-subn-count-alias-keyword-warm-bytes",
+            ),
+        )
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=manifest_path,
+            manifest_id="collection-replacement-boundary",
+            expected_measured_workload_ids=expected_measured_workload_ids,
+            expected_measured_workload_count=manifest_workload_count,
+            expected_total_workload_count=manifest_workload_count,
+        )
+
+    def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured(
+        self,
+    ) -> None:
+        manifest_path = "collection_replacement_boundary.py"
+        manifest_workload_count = len(
+            benchmark_test_support.selected_manifest_workloads(manifest_path)
+        )
+        expected_measured_workload_ids = tuple(
+            workload.workload_id
+            for workload in benchmark_test_support.selected_manifest_workloads(
+                manifest_path,
+                include_workload=lambda workload: (
+                    collection_replacement_support._is_collection_replacement_keyword_workload(
+                        workload
+                    )
+                    and workload.operation.startswith("module.")
+                ),
+            )
+        )
+
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "module-split-maxsplit-keyword-purged-bytes",
+                "module-split-maxsplit-bool-keyword-purged-bytes",
+                "module-split-maxsplit-indexlike-keyword-purged-bytes",
+                "module-split-maxsplit-keyword-purged-str-compiled-pattern",
+                "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
+                "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
+                "module-split-duplicate-maxsplit-keyword-purged-str",
+                "module-split-unexpected-keyword-purged-str",
+                "module-split-unexpected-keyword-purged-bytes",
+                "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
+                "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
+                "module-sub-count-keyword-warm-str",
+                "module-sub-count-bool-keyword-warm-str",
+                "module-sub-count-bool-false-keyword-warm-str",
+                "module-sub-count-indexlike-keyword-warm-str",
+                "module-sub-count-keyword-warm-str-compiled-pattern",
+                "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
+                "module-sub-count-bool-keyword-warm-str-compiled-pattern",
+                "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
+                "module-sub-duplicate-count-keyword-warm-str",
+                "module-sub-unexpected-keyword-purged-str",
+                "module-sub-unexpected-keyword-after-positional-count-purged-str",
+                "module-sub-count-alias-keyword-purged-str",
+                "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
+                "module-sub-unexpected-keyword-purged-str-compiled-pattern",
+                "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
+                "module-sub-count-alias-keyword-purged-str-compiled-pattern",
+                "module-subn-count-keyword-purged-bytes",
+                "module-subn-count-bool-keyword-purged-bytes",
+                "module-subn-count-bool-true-keyword-purged-bytes",
+                "module-subn-count-indexlike-keyword-purged-bytes",
+                "module-subn-duplicate-count-keyword-warm-bytes",
+                "module-subn-unexpected-keyword-purged-bytes",
+                "module-subn-unexpected-keyword-after-positional-count-purged-bytes",
+                "module-subn-count-alias-keyword-purged-bytes",
+                "module-subn-count-keyword-purged-bytes-compiled-pattern",
+                "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
+                "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
+                "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
+                "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
+                "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
+                "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
+                "module-subn-count-alias-keyword-purged-bytes-compiled-pattern",
+            ),
+        )
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=manifest_path,
+            manifest_id="collection-replacement-boundary",
+            expected_measured_workload_ids=expected_measured_workload_ids,
+            expected_measured_workload_count=manifest_workload_count,
+            expected_total_workload_count=manifest_workload_count,
+        )
+
+    def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured(
+        self,
+    ) -> None:
+        manifest_path = "collection_replacement_boundary.py"
+        manifest_workload_count = len(
+            benchmark_test_support.selected_manifest_workloads(manifest_path)
+        )
+        expected_measured_workload_ids = tuple(
+            workload.workload_id
+            for workload in benchmark_test_support.selected_manifest_workloads(
+                manifest_path,
+                include_workload=collection_replacement_support._is_collection_replacement_positional_indexlike_workload,
+            )
+        )
+
+        self.assertEqual(
+            expected_measured_workload_ids,
+            (
+                "module-split-maxsplit-indexlike-positional-purged-bytes",
+                "module-sub-count-indexlike-positional-warm-str",
+                "module-subn-count-indexlike-positional-purged-bytes",
+                "pattern-split-maxsplit-indexlike-positional-warm-str",
+                "pattern-sub-count-indexlike-positional-purged-bytes",
+                "pattern-subn-count-indexlike-positional-warm-str",
+            ),
+        )
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=manifest_path,
+            manifest_id="collection-replacement-boundary",
+            expected_measured_workload_ids=expected_measured_workload_ids,
+            expected_measured_workload_count=manifest_workload_count,
+            expected_total_workload_count=manifest_workload_count,
+        )
+
+    def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with_owner_workload_ids(
+        self,
+    ) -> None:
+        callable_expectations = {
+            expectation.slice_id: expectation.expected_workload_ids
+            for expectation in (
+                collection_replacement_support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
+            )
+        }
+        minimal_callable_workloads = benchmark_test_support.live_manifest_workloads(
+            "conditional_group_exists_boundary.py",
+            callable_expectations["minimal-callable-replacement-rows"]
+            + callable_expectations["minimal-callable-replacement-exception-rows"],
+        )
+        callable_none_count_candidate_workloads = (
+            benchmark_test_support.live_manifest_workloads(
+                "conditional_group_exists_boundary.py",
+                callable_expectations[
+                    "minimal-callable-replacement-none-count-exception-rows"
+                ]
+                + callable_expectations["alternation-heavy-callable-replacement-rows"],
+            )
+        )
+        alternation_workloads = benchmark_test_support.live_manifest_workloads(
+            "conditional_group_exists_boundary.py",
+            callable_expectations["alternation-heavy-callable-replacement-rows"],
+        )
+        template_workload_ids = (
+            collection_replacement_support._CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION.expected_workload_ids
+        )
+        template_workloads = benchmark_test_support.live_manifest_workloads(
+            "conditional_group_exists_boundary.py",
+            template_workload_ids,
+        )
+        callable_none_count_str_ids = _workload_ids_for_declared_slice(
+            callable_none_count_candidate_workloads,
+            text_model="str",
+            include_categories=("none-count",),
+        )
+        callable_none_count_bytes_ids = _workload_ids_for_declared_slice(
+            callable_none_count_candidate_workloads,
+            text_model="bytes",
+            include_categories=("none-count",),
+        )
+
+        observed_workload_ids_by_label = {
+            "callable-bytes": _workload_ids_for_declared_slice(
+                minimal_callable_workloads,
+                text_model="bytes",
+                exclude_categories=("negative-count",),
+            ),
+            "callable-negative-count-str": _workload_ids_for_declared_slice(
+                minimal_callable_workloads,
+                text_model="str",
+                include_categories=("negative-count",),
+            ),
+            "callable-negative-count-bytes": _workload_ids_for_declared_slice(
+                minimal_callable_workloads,
+                text_model="bytes",
+                include_categories=("negative-count",),
+            ),
+            "callable-none-count-all": (
+                callable_none_count_str_ids + callable_none_count_bytes_ids
+            ),
+            "callable-none-count-str": callable_none_count_str_ids,
+            "callable-none-count-bytes": callable_none_count_bytes_ids,
+            "callable-alternation-all": _workload_ids_for_declared_slice(
+                alternation_workloads,
+                include_categories=("alternation-heavy",),
+            ),
+            "callable-alternation-str": _workload_ids_for_declared_slice(
+                alternation_workloads,
+                text_model="str",
+                include_categories=("alternation-heavy",),
+            ),
+            "callable-alternation-bytes": _workload_ids_for_declared_slice(
+                alternation_workloads,
+                text_model="bytes",
+                include_categories=("alternation-heavy",),
+            ),
+            "template-round-trip": tuple(
+                workload.workload_id
+                for workload in template_workloads
+                if workload.text_model == "bytes"
+                or "negative-count" in workload.categories
+            ),
+            "template-bytes": _workload_ids_for_declared_slice(
+                template_workloads,
+                text_model="bytes",
+            ),
+            "template-negative-count-str": _workload_ids_for_declared_slice(
+                template_workloads,
+                text_model="str",
+                include_categories=("negative-count",),
+            ),
+            "nested-callable-str": (
+                collection_replacement_support._CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_REPLACEMENT_EXPECTATION.expected_workload_ids
+            ),
+            "nested-callable-bytes": (
+                collection_replacement_support._CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.expected_workload_ids
+            ),
+            "quantified-callable-str": (
+                collection_replacement_support._CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION.expected_workload_ids
+            ),
+            "quantified-callable-bytes": (
+                collection_replacement_support._CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.expected_workload_ids
+            ),
+        }
+        expected_workload_ids_by_label = {
+            "callable-bytes": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS
+            ),
+            "callable-negative-count-str": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+            ),
+            "callable-negative-count-bytes": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
+            ),
+            "callable-none-count-all": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
+            ),
+            "callable-none-count-str": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
+            ),
+            "callable-none-count-bytes": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
+            ),
+            "callable-alternation-all": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS
+            ),
+            "callable-alternation-str": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS
+            ),
+            "callable-alternation-bytes": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+            ),
+            "template-round-trip": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS
+            ),
+            "template-bytes": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS
+            ),
+            "template-negative-count-str": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+            ),
+            "nested-callable-str": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+            ),
+            "nested-callable-bytes": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+            ),
+            "quantified-callable-str": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+            ),
+            "quantified-callable-bytes": (
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+            ),
+        }
+
+        for label, expected_workload_ids in expected_workload_ids_by_label.items():
+            with self.subTest(label=label):
+                self.assertEqual(
+                    observed_workload_ids_by_label[label], expected_workload_ids
+                )
+
+    def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
+        self,
+    ) -> None:
+        expectations_by_slice_id = {
+            expectation.slice_id: expectation
+            for expectation in (
+                collection_replacement_support.COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+            )
+        }
+
+        self.assertEqual(
+            expectations_by_slice_id[
+                "quantified-callable-replacement-str-rows"
+            ].expected_workload_ids,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            expectations_by_slice_id[
+                "quantified-callable-replacement-bytes-rows"
+            ].expected_workload_ids,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
         )
 
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(

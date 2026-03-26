@@ -2245,11 +2245,7 @@ def test_source_tree_anchor_support_routes_owner_imports_through_package_modules
     ) == frozenset({("benchmark_test_support", None)})
     assert not any(
         isinstance(node, ast.ImportFrom)
-        and node.module
-        in {
-            "tests.benchmarks.benchmark_test_support",
-            "tests.benchmarks.collection_replacement_benchmark_anchor_support",
-        }
+        and node.module == "tests.benchmarks.benchmark_test_support"
         for node in support._parsed_module_ast(anchor_support).body
     )
     assert {
@@ -2283,18 +2279,13 @@ def test_benchmark_test_support_routes_owner_definition_imports_through_package_
         module_name="tests.benchmarks",
         imported_names=frozenset(
             {
-                "collection_replacement_benchmark_anchor_support",
                 "source_tree_benchmark_anchor_support",
             }
         ),
     ) == frozenset()
     assert not any(
         isinstance(node, ast.ImportFrom)
-        and node.module
-        in {
-            "tests.benchmarks.collection_replacement_benchmark_anchor_support",
-            "tests.benchmarks.source_tree_benchmark_anchor_support",
-        }
+        and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
         for node in support._parsed_module_ast(support).body
     )
     assert {
@@ -2305,92 +2296,19 @@ def test_benchmark_test_support_routes_owner_definition_imports_through_package_
     assert not hasattr(support, "source_tree_support")
 
 
-def test_collection_replacement_anchor_suite_routes_owner_imports_through_package_modules(
+def test_deleted_collection_replacement_anchor_suite_stays_unimportable_and_unreferenced(
 ) -> None:
-    module = importlib.import_module(
-        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
-    )
-    module_ast = support._parsed_module_ast(module)
-    definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
-    )
-
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(module),
-        module_name="tests.benchmarks",
-        imported_names=frozenset(
-            {
-                "benchmark_test_support",
-                "source_tree_benchmark_anchor_support",
-            }
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=(
+            "tests.benchmarks.test_collection_replacement_"
+            "benchmark_anchor_support"
         ),
-    ) == frozenset(
-        {
-            ("benchmark_test_support", None),
-            ("source_tree_benchmark_anchor_support", "support"),
-        }
-    )
-    assert not any(
-        isinstance(node, ast.ImportFrom)
-        and node.module
-        in {
-            "tests.benchmarks.benchmark_test_support",
-            "tests.benchmarks.source_tree_benchmark_anchor_support",
-        }
-        for node in module_ast.body
-    )
-    assert {
-        "synthetic_workload",
-        "RecordingBenchmarkModule",
-        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
-        "_collection_replacement_positional_keyword_field",
-        "_is_collection_replacement_keyword_workload",
-        "_is_module_workflow_keyword_error_workload",
-        "_record_numeric_materialization_fields",
-        "run_benchmark_workload_with_cpython",
-        "compiled_pattern_contract_expected_build_calls",
-        "assert_zero_gap_manifest_workloads_measured",
-        "_write_test_manifest",
-        "live_manifest_workloads",
-        "manifest_workloads",
-        "published_cases_by_id",
-        "selected_manifest_workloads",
-        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS",
-        "_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS",
-        "_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS",
-        "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_assert_keyword_error_workload_probe_measured",
-        "_is_collection_replacement_module_helper_keyword_error_workload",
-        "_is_collection_replacement_pattern_helper_keyword_error_workload",
-        "_pattern_helper_collection_replacement_keyword_error_workload",
-    }.isdisjoint(definition_names | assignment_names)
-
-
-def test_shared_collection_replacement_classifier_contract_tests_import_from_support(
-) -> None:
-    owner_suite = importlib.import_module(
-        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
-    )
-    combined_suite = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(owner_suite),
-        module_name="tests.benchmarks",
-        imported_names=frozenset({"benchmark_test_support"}),
-    ) == frozenset({("benchmark_test_support", None)})
-    assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
-        owner_suite
-    )
-    _assert_owner_module_routes_through_package_import(
-        combined_suite,
-        owner_module="tests.benchmarks.benchmark_test_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / "test_collection_replacement_benchmark_anchor_support.py"
+        ),
     )
 
 
@@ -2900,9 +2818,6 @@ def test_source_tree_combined_routing_helpers_move_out_of_shared_support_scope()
     source_tree_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_benchmark_anchor_support"
     )
-    collection_suite = importlib.import_module(
-        "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
-    )
     helper_names = {
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
     }
@@ -2918,11 +2833,10 @@ def test_source_tree_combined_routing_helpers_move_out_of_shared_support_scope()
     for helper_name in helper_names:
         assert not hasattr(support, helper_name)
 
-    for suite in (source_tree_suite, collection_suite):
-        definition_names, _ = support.top_level_module_definition_and_assignment_names(
-            suite
-        )
-        assert helper_names.isdisjoint(definition_names)
+    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        source_tree_suite
+    )
+    assert helper_names.isdisjoint(definition_names)
 
 
 @pytest.mark.parametrize(
@@ -4091,17 +4005,27 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
 
 
 @pytest.mark.parametrize(
-    ("module_name", "expected_imported_names"),
+    ("module_name", "expected_imported_names", "expected_alias_pairs"),
     (
         (
-            "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset({"_source_tree_contract_manifest", "_source_tree_contract_workload"}),
+            frozenset(
+                {
+                    ("benchmark_test_support", None),
+                    (
+                        "source_tree_benchmark_anchor_support",
+                        "source_tree_owner_support",
+                    ),
+                }
+            ),
         ),
     ),
 )
 def test_source_tree_contract_helper_suites_import_from_support(
     module_name: str,
     expected_imported_names: frozenset[str],
+    expected_alias_pairs: frozenset[tuple[str, str | None]],
 ) -> None:
     module = importlib.import_module(module_name)
 
@@ -4111,12 +4035,7 @@ def test_source_tree_contract_helper_suites_import_from_support(
         imported_names=frozenset(
             {"benchmark_test_support", "source_tree_benchmark_anchor_support"}
         ),
-    ) == frozenset(
-        {
-            ("benchmark_test_support", None),
-            ("source_tree_benchmark_anchor_support", "support"),
-        }
-    )
+    ) == expected_alias_pairs
     assert expected_imported_names.issubset(dir(module.source_tree_support))
     assert expected_imported_names.isdisjoint(dir(module.benchmark_test_support))
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
