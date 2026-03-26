@@ -45,10 +45,19 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 )
 
 
+@dataclass(frozen=True, slots=True)
+class _SourceTreeContractBuilderSpec:
+    manifest_id: str
+    excluded_fields: frozenset[str]
+    manifest_timed_samples: int = 2
+    timing_scope: str | None = None
+    notes: tuple[str, ...] = ()
+
+
 def _source_tree_contract_workload(
     source_workload: Workload,
     *,
-    spec: benchmark_test_support._SourceTreeContractBuilderSpec,
+    spec: _SourceTreeContractBuilderSpec,
 ) -> Workload:
     manifest_payload = _source_tree_contract_manifest((source_workload,), spec=spec)[
         "workloads"
@@ -71,7 +80,7 @@ def _source_tree_contract_workload(
 def _source_tree_contract_manifest(
     source_workloads: tuple[Workload, ...],
     *,
-    spec: benchmark_test_support._SourceTreeContractBuilderSpec,
+    spec: _SourceTreeContractBuilderSpec,
 ) -> dict[str, object]:
     workloads: list[dict[str, object]] = []
     for source_workload in source_workloads:
@@ -328,7 +337,7 @@ def assert_source_tree_benchmark_contract(
 
 
 _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
-    "collection-replacement-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
+    "collection-replacement-boundary": _SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
@@ -340,7 +349,7 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
             "collection/replacement rows unresolved until helper invocation.",
         ),
     ),
-    "module-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
+    "module-boundary": _SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
@@ -841,8 +850,8 @@ class CompiledPatternModuleSuccessOwnerSpec:
         )
         return callback_call
 
-    def contract_builder_spec(self) -> benchmark_test_support._SourceTreeContractBuilderSpec:
-        return benchmark_test_support._SourceTreeContractBuilderSpec(
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        return _SourceTreeContractBuilderSpec(
             manifest_id=self.contract_manifest_id,
             excluded_fields=(
                 benchmark_test_support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
@@ -1150,8 +1159,8 @@ class CompiledPatternModuleCompileContractCase:
     ) -> list[tuple[object, ...]]:
         return self.expected_build_calls_builder(source_workload)
 
-    def contract_builder_spec(self) -> benchmark_test_support._SourceTreeContractBuilderSpec:
-        return benchmark_test_support._SourceTreeContractBuilderSpec(
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        return _SourceTreeContractBuilderSpec(
             manifest_id="module-boundary",
             excluded_fields=self.manifest_excluded_fields(),
             manifest_timed_samples=2,

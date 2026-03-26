@@ -73,15 +73,6 @@ class StandardBenchmarkAnchorContractDefinition:
         )
 
 
-@dataclass(frozen=True, slots=True)
-class _SourceTreeContractBuilderSpec:
-    manifest_id: str
-    excluded_fields: frozenset[str]
-    manifest_timed_samples: int = 2
-    timing_scope: str | None = None
-    notes: tuple[str, ...] = ()
-
-
 class RecordingBenchmarkCompiledPattern:
     def __init__(self, calls: list[tuple[object, ...]]) -> None:
         self._calls = calls
@@ -2162,11 +2153,15 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
             )
         return (f"kwargs.{keyword_parameter}",)
 
-    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+    def contract_builder_spec(self) -> object:
+        from tests.benchmarks import (
+            source_tree_benchmark_anchor_support as source_tree_support,
+        )
+
         excluded_fields = COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
         if not self.preserve_expected_exception:
             excluded_fields = excluded_fields | {"expected_exception"}
-        return _SourceTreeContractBuilderSpec(
+        return source_tree_support._SourceTreeContractBuilderSpec(
             manifest_id="collection-replacement-boundary",
             excluded_fields=excluded_fields,
             manifest_timed_samples=self.manifest_timed_samples,

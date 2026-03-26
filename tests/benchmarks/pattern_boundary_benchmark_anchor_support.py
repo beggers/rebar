@@ -4,6 +4,7 @@ from typing import Any
 
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support
+from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 
 _PATTERN_BOUNDARY_OPERATIONS = frozenset(
     {"pattern.search", "pattern.match", "pattern.fullmatch"}
@@ -25,7 +26,7 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS = frozenset(
 )
 
 _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
-    benchmark_test_support._SourceTreeContractBuilderSpec(
+    source_tree_support._SourceTreeContractBuilderSpec(
         manifest_id="pattern-boundary",
         excluded_fields=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
         timing_scope="pattern-helper-call",

@@ -549,7 +549,7 @@ def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects
         smoke=True,
     )
     source_payload = benchmarks.workload_to_payload(source_workload)
-    spec = support._SourceTreeContractBuilderSpec(
+    spec = anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset(
             {
@@ -605,7 +605,7 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
         smoke=True,
     )
     source_payload = benchmarks.workload_to_payload(source_workload)
-    spec = support._SourceTreeContractBuilderSpec(
+    spec = anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset(
             {
@@ -657,7 +657,7 @@ def test_source_tree_contract_workload_preserves_source_timing_scope_but_drops_n
         syntax_features=["source-syntax"],
         smoke=True,
     )
-    spec = support._SourceTreeContractBuilderSpec(
+    spec = anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset(
             {
@@ -707,7 +707,7 @@ def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids()
             replacement="x",
         ),
     )
-    spec = support._SourceTreeContractBuilderSpec(
+    spec = anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset({"manifest_id", "workload_id"}),
         manifest_timed_samples=7,
@@ -3846,7 +3846,7 @@ def test_compiled_pattern_contract_builder_owner_methods_return_live_specs(
 
     assert callable(owner_builder)
     built_spec = owner_builder()
-    assert isinstance(built_spec, support._SourceTreeContractBuilderSpec)
+    assert isinstance(built_spec, anchor_support._SourceTreeContractBuilderSpec)
     assert built_spec.manifest_timed_samples == expected_manifest_timed_samples
     assert built_spec.timing_scope == "module-helper-call"
 
@@ -3864,7 +3864,7 @@ def test_compiled_pattern_owner_builder_methods_return_shared_specs_directly() -
     )
     built_spec = owner_spec.contract_builder_spec()
 
-    assert built_spec == support._SourceTreeContractBuilderSpec(
+    assert built_spec == anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="synthetic-boundary",
         excluded_fields=(
             support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
