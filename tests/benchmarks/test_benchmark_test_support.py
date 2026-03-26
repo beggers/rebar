@@ -2921,6 +2921,49 @@ def _patch_source_tree_combined_route_helper_dependencies(
     )
 
 
+def test_source_tree_combined_route_helper_allows_expected_benchmark_test_support_refs(
+    monkeypatch,
+) -> None:
+    owner_surface = object()
+    owner_module = SimpleNamespace(
+        __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
+        SOURCE_TREE_SCORECARD_EXPECTATIONS=owner_surface,
+    )
+    combined_suite = SimpleNamespace(
+        benchmark_test_support=support,
+        source_tree_support=owner_module,
+    )
+    combined_suite_ast = ast.parse(
+        "\n".join(
+            (
+                "from tests.benchmarks import benchmark_test_support",
+                "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                "",
+                "benchmark_test_support.SOURCE_TREE_SCORECARD_EXPECTATIONS",
+            )
+        )
+    )
+
+    _patch_source_tree_combined_route_helper_dependencies(
+        monkeypatch,
+        combined_suite=combined_suite,
+        combined_suite_ast=combined_suite_ast,
+        local_assignment_names=set(),
+    )
+
+    assert (
+        anchor_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+            alias_name="source_tree_support",
+            owner_module=owner_module,
+            owner_names=("SOURCE_TREE_SCORECARD_EXPECTATIONS",),
+            expected_direct_benchmark_test_support_refs=frozenset(
+                {"SOURCE_TREE_SCORECARD_EXPECTATIONS"}
+            ),
+        )
+        is combined_suite
+    )
+
+
 def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface_refs(
     monkeypatch,
 ) -> None:
