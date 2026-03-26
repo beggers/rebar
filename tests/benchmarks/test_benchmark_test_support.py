@@ -128,23 +128,6 @@ _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES = frozenset(
     }
 )
 
-COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES = frozenset(
-    {
-        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "StandardBenchmarkAnchorContractDefinition",
-        "_SourceTreeContractBuilderSpec",
-        "_contract_source_workloads",
-        "_definition_anchor_expectations",
-        "_is_collection_replacement_compiled_pattern_success_workload",
-        "_is_module_workflow_keyword_error_workload",
-        "_source_tree_contract_manifest",
-        "_source_tree_contract_workload",
-        "freeze_signature_value",
-        "source_tree_support",
-    }
-)
-
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -3526,12 +3509,22 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
         collection_replacement_support.benchmark_test_support.source_tree_support
         is anchor_support
     )
-    assert COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES.isdisjoint(
-        definition_names | assignment_names
-    )
-    assert COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES.isdisjoint(
-        runtime_names
-    )
+    retired_shared_surface_names = {
+        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "StandardBenchmarkAnchorContractDefinition",
+        "_SourceTreeContractBuilderSpec",
+        "_contract_source_workloads",
+        "_definition_anchor_expectations",
+        "_is_collection_replacement_compiled_pattern_success_workload",
+        "_is_module_workflow_keyword_error_workload",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "freeze_signature_value",
+        "source_tree_support",
+    }
+    assert retired_shared_surface_names.isdisjoint(definition_names | assignment_names)
+    assert retired_shared_surface_names.isdisjoint(runtime_names)
 
 
 def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_exports(
