@@ -866,12 +866,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             + source_tree_support._conditional_group_exists_nested_callable_bytes_workloads()
         )
         case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
-            source_tree_support._conditional_group_exists_nested_callable_correctness_case_signature
+            collection_replacement_support._conditional_group_exists_nested_callable_correctness_case_signature
         )
         anchored_case_ids: list[str] = []
 
         for workload in workloads:
-            signature = source_tree_support._conditional_group_exists_nested_callable_workload_signature(
+            signature = collection_replacement_support._conditional_group_exists_nested_callable_workload_signature(
                 workload
             )
             with self.subTest(workload_id=workload.workload_id):
@@ -1032,12 +1032,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             + source_tree_support._conditional_group_exists_quantified_callable_bytes_workloads()
         )
         case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
-            source_tree_support._conditional_group_exists_quantified_callable_correctness_case_signature
+            collection_replacement_support._conditional_group_exists_quantified_callable_correctness_case_signature
         )
         anchored_case_ids: list[str] = []
 
         for workload in workloads:
-            signature = source_tree_support._conditional_group_exists_quantified_callable_workload_signature(
+            signature = collection_replacement_support._conditional_group_exists_quantified_callable_workload_signature(
                 workload
             )
             with self.subTest(workload_id=workload.workload_id):

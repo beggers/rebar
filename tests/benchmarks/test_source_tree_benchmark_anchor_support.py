@@ -46,6 +46,12 @@ _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     }
 )
+_COLLECTION_OWNER_SIGNATURE_HELPER_NAMES = (
+    "_conditional_group_exists_nested_callable_correctness_case_signature",
+    "_conditional_group_exists_nested_callable_workload_signature",
+    "_conditional_group_exists_quantified_callable_correctness_case_signature",
+    "_conditional_group_exists_quantified_callable_workload_signature",
+)
 _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES = (
     _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
     | frozenset({"_is_module_workflow_compiled_pattern_wrong_text_model_workload"})
@@ -1658,6 +1664,20 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         assert function_name in local_function_names
 
 
+def test_source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers(
+) -> None:
+    module_ast = benchmark_test_support._parsed_module_ast(support)
+    local_function_names = {
+        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
+    }
+
+    assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES == ()
+    for function_name in _COLLECTION_OWNER_SIGNATURE_HELPER_NAMES:
+        assert not hasattr(support, function_name)
+        assert function_name not in local_function_names
+        assert hasattr(collection_support, function_name)
+
+
 def test_source_tree_support_module_exports_combined_slice_owner_group() -> None:
     _, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
@@ -2046,10 +2066,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             id="collection-owner-routed-constants",
         ),
         pytest.param(
-            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES,
-            id="collection-owner-routed-functions",
-        ),
-        pytest.param(
             support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
             id="collection-owner-combined-slice-owner-names",
         ),
@@ -2288,13 +2304,13 @@ def test_nested_conditional_callable_live_signatures_cover_exception_and_no_matc
     )
 
     assert (
-        support._conditional_group_exists_nested_callable_correctness_case_signature(
+        collection_support._conditional_group_exists_nested_callable_correctness_case_signature(
             absent_case
         )
         == absent_signature
     )
     assert (
-        support._conditional_group_exists_nested_callable_workload_signature(
+        collection_support._conditional_group_exists_nested_callable_workload_signature(
             absent_workload
         )
         == absent_signature
@@ -2319,13 +2335,13 @@ def test_nested_conditional_callable_live_signatures_cover_exception_and_no_matc
     )
 
     assert (
-        support._conditional_group_exists_nested_callable_correctness_case_signature(
+        collection_support._conditional_group_exists_nested_callable_correctness_case_signature(
             no_match_case
         )
         == no_match_signature
     )
     assert (
-        support._conditional_group_exists_nested_callable_workload_signature(
+        collection_support._conditional_group_exists_nested_callable_workload_signature(
             no_match_workload
         )
         == no_match_signature
@@ -2355,13 +2371,13 @@ def test_quantified_conditional_callable_live_signatures_cover_none_count_and_no
     )
 
     assert (
-        support._conditional_group_exists_quantified_callable_correctness_case_signature(
+        collection_support._conditional_group_exists_quantified_callable_correctness_case_signature(
             none_count_case
         )
         == none_count_signature
     )
     assert (
-        support._conditional_group_exists_quantified_callable_workload_signature(
+        collection_support._conditional_group_exists_quantified_callable_workload_signature(
             none_count_workload
         )
         == none_count_signature
@@ -2386,13 +2402,13 @@ def test_quantified_conditional_callable_live_signatures_cover_none_count_and_no
     )
 
     assert (
-        support._conditional_group_exists_quantified_callable_correctness_case_signature(
+        collection_support._conditional_group_exists_quantified_callable_correctness_case_signature(
             no_match_case
         )
         == no_match_signature
     )
     assert (
-        support._conditional_group_exists_quantified_callable_workload_signature(
+        collection_support._conditional_group_exists_quantified_callable_workload_signature(
             no_match_workload
         )
         == no_match_signature

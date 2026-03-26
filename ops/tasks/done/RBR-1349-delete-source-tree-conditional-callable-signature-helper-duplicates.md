@@ -1,6 +1,6 @@
 ## RBR-1349: Delete source-tree conditional callable signature helper duplicates
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -57,3 +57,14 @@ Created: 2026-03-26
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
   - `bash -lc "! rg -n '^def _conditional_group_exists_(nested|quantified)_callable_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because those four duplicate helper definitions still live on the source-tree owner module, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'source_tree_support\\._conditional_group_exists_(nested|quantified)_callable_(correctness_case_signature|workload_signature)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because the combined suite still routes those helper calls through `source_tree_support`, and that failure belongs exactly to this cleanup
+
+## Completion
+- Deleted the four nested/quantified conditional callable signature helpers from `tests/benchmarks/source_tree_benchmark_anchor_support.py` and cleared `SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES` so the source-tree owner no longer advertises them.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to keep the nested/quantified callable workload selectors on `source_tree_support` while reading the correctness/workload signature helpers from `collection_replacement_support`.
+- Expanded owner-boundary coverage in `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` and `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so the combined suite proves those four helpers come from the collection-replacement owner and are no longer exposed locally on `source_tree_support`.
+- Verification in this run:
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `244 passed in 2.95s`
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_nested_callable or conditional_group_exists_quantified_callable'` passed with `12 passed, 267 deselected, 420 subtests passed in 1.68s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
+  - `bash -lc "! rg -n '^def _conditional_group_exists_(nested|quantified)_callable_(correctness_case_signature|workload_signature)\\(' tests/benchmarks/source_tree_benchmark_anchor_support.py"` passed
+  - `bash -lc "! rg -n 'source_tree_support\\._conditional_group_exists_(nested|quantified)_callable_(correctness_case_signature|workload_signature)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed
