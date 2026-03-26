@@ -1,8 +1,9 @@
 # RBR-1357: Delete source-tree shared compiled-pattern helper aliases
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
+Completed: 2026-03-26
 
 ## Goal
 - Delete the remaining source-tree re-export layer for shared compiled-pattern benchmark helpers so `tests/benchmarks/source_tree_benchmark_anchor_support.py` only owns source-tree-specific inventories/specs while shared helper behavior stays on `tests/benchmarks/benchmark_test_support.py`.
@@ -53,3 +54,12 @@ Created: 2026-03-26
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/benchmark_test_support.py` passed
   - `bash -lc "! rg -n '^(_assert_compiled_pattern_module_success_payload_round_trip|compiled_pattern_contract_expected_build_calls|_compiled_pattern_module_helper_route)\\s*=' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because those three alias assignments still exist, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'source_tree_support\\.(compiled_pattern_contract_expected_build_calls|_compiled_pattern_module_helper_route|_assert_compiled_pattern_module_success_payload_round_trip)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because the combined benchmark suite still routes those shared helpers through `source_tree_support`, and that failure belongs exactly to this cleanup
+
+## Completion Note
+- Deleted the three shared helper alias assignments from `tests/benchmarks/source_tree_benchmark_anchor_support.py`, removed them from the source-tree owner-surface inventory tuples, and rerouted the combined benchmark suite to call the shared helpers from `tests.benchmarks.benchmark_test_support` directly.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'test_source_tree_support_module_exposes_moved_combined_case_surface'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contract or test_run_internal_workload_probe_measures_compiled_pattern_module_success_contract_workloads'`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/benchmark_test_support.py`
+  - `bash -lc "! rg -n '^(_assert_compiled_pattern_module_success_payload_round_trip|compiled_pattern_contract_expected_build_calls|_compiled_pattern_module_helper_route)\\s*=' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'source_tree_support\\.(compiled_pattern_contract_expected_build_calls|_compiled_pattern_module_helper_route|_assert_compiled_pattern_module_success_payload_round_trip)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`

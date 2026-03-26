@@ -101,8 +101,6 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES = (
 SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES = (
     "_compiled_pattern_wrong_text_model_specs",
     "_compiled_pattern_wrong_text_model_source_workloads",
-    "compiled_pattern_contract_expected_build_calls",
-    "_compiled_pattern_module_helper_route",
 )
 
 SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
@@ -121,7 +119,6 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
     "_is_module_workflow_compiled_pattern_literal_success_workload",
     "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
     "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    "_assert_compiled_pattern_module_success_payload_round_trip",
 )
 
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES = (
@@ -138,12 +135,7 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES = froz
     }
 )
 
-SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES = frozenset(
-    {
-        "compiled_pattern_contract_expected_build_calls",
-        "_compiled_pattern_module_helper_route",
-    }
-)
+SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES = frozenset()
 
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
     {
@@ -5939,9 +5931,6 @@ _is_module_workflow_compiled_pattern_verbose_bytes_success_workload = (
 _is_collection_replacement_compiled_pattern_success_workload = (
     benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
 )
-_assert_compiled_pattern_module_success_payload_round_trip = (
-    benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip
-)
 def _is_collection_replacement_compiled_pattern_keyword_error_workload(
     workload: Any,
 ) -> bool:
@@ -6113,12 +6102,6 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS = tupl
 )
 _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call = (
     benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
-)
-compiled_pattern_contract_expected_build_calls = (
-    benchmark_test_support.compiled_pattern_contract_expected_build_calls
-)
-_compiled_pattern_module_helper_route = (
-    benchmark_test_support._compiled_pattern_module_helper_route
 )
 
 COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (

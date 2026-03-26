@@ -4282,12 +4282,12 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
     for source_workload in (
         source_tree_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
-        expected_build_calls = source_tree_support.compiled_pattern_contract_expected_build_calls(
+        expected_build_calls = benchmark_test_support.compiled_pattern_contract_expected_build_calls(
             source_workload,
             label="wrong-text-model",
         )
         expected_callback_result, expected_callback_call, _, _ = (
-            source_tree_support._compiled_pattern_module_helper_route(
+            benchmark_test_support._compiled_pattern_module_helper_route(
                 source_workload,
                 collection_replacement_callback_flags=0,
             )
@@ -4339,7 +4339,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    source_tree_support._assert_compiled_pattern_module_success_payload_round_trip(
+    benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
         source_workload,
         payload,
         round_tripped,

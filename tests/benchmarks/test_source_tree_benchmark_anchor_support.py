@@ -1176,7 +1176,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ):
         assert constant_name in (
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-            | support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         )
     benchmark_test_support.assert_mixed_owner_surface(
         support,
@@ -1190,6 +1189,12 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         ),
     )
+    for removed_name in (
+        "compiled_pattern_contract_expected_build_calls",
+        "_compiled_pattern_module_helper_route",
+    ):
+        assert not hasattr(support, removed_name)
+        assert removed_name not in local_assignment_names
     for constant_name in (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES
     ):
@@ -1244,6 +1249,14 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             benchmark_test_support,
             constant_name,
         )
+    assert not hasattr(
+        support,
+        "_assert_compiled_pattern_module_success_payload_round_trip",
+    )
+    assert (
+        "_assert_compiled_pattern_module_success_payload_round_trip"
+        not in local_assignment_names
+    )
     for constant_name in (
         support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES
     ):
@@ -3039,7 +3052,6 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
 
     assert set(support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES) == (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-        | support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
     )
     benchmark_test_support.assert_mixed_owner_surface(
         support,
@@ -3051,6 +3063,9 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         ),
     )
+    assert support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES == frozenset()
+    assert not hasattr(support, "compiled_pattern_contract_expected_build_calls")
+    assert not hasattr(support, "_compiled_pattern_module_helper_route")
 
     for definition_name in owner_definition_names:
         definition = next(
