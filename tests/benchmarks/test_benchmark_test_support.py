@@ -1111,6 +1111,24 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
         assert standard_definitions[definition.name] is definition
 
 
+def test_select_standard_inventory_definitions_preserves_requested_order_and_identity(
+) -> None:
+    definition_names = (
+        "module-workflow-keyword-flags",
+        "module-workflow-keyword-errors",
+    )
+
+    selected_definitions = support.select_standard_inventory_definitions(
+        support.STANDARD_BENCHMARK_DEFINITIONS,
+        definition_names,
+    )
+
+    assert (
+        selected_definitions
+        == support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+    )
+
+
 def test_benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant(
 ) -> None:
     assert support._owner_definition_manifest_path_names(

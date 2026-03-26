@@ -841,6 +841,22 @@ def assert_standard_inventory_reuses_owner_definitions(
     )
 
 
+def select_standard_inventory_definitions(
+    standard_definitions: Iterable[StandardBenchmarkAnchorContractDefinition],
+    expected_definition_names: tuple[str, ...],
+) -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
+    definitions_by_name = {
+        definition.name: definition
+        for definition in standard_definitions
+        if definition.name in expected_definition_names
+    }
+    assert tuple(definitions_by_name) == expected_definition_names
+    return tuple(
+        definitions_by_name[definition_name]
+        for definition_name in expected_definition_names
+    )
+
+
 def compile_proxy_correctness_case_signature(
     case: Any,
 ) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str] | None:
