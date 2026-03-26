@@ -202,19 +202,9 @@ def _source_tree_contract_workload(
     *,
     spec: _SourceTreeContractBuilderSpec,
 ) -> Workload:
-    payload = workload_to_payload(source_workload)
-    manifest_payload: dict[str, object] = {
-        "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key not in spec.excluded_fields
-        },
-    }
-    if spec.timing_scope is not None:
-        manifest_payload["timing_scope"] = spec.timing_scope
-    if spec.notes:
-        manifest_payload["notes"] = list(spec.notes)
+    manifest_payload = _source_tree_contract_manifest((source_workload,), spec=spec)[
+        "workloads"
+    ][0]
     return workload_from_payload(
         {
             "manifest_id": spec.manifest_id,
