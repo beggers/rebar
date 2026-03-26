@@ -3072,6 +3072,22 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         return (f"kwargs.{keyword_parameter}",)
 
 
+COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES = (
+    (
+        "compiled_pattern_module_compile_contract_builder_spec",
+        CompiledPatternModuleCompileContractCase,
+    ),
+    (
+        "compiled_pattern_module_success_contract_builder_spec",
+        CompiledPatternModuleSuccessOwnerSpec,
+    ),
+    (
+        "compiled_pattern_module_helper_keyword_contract_builder_spec",
+        _CompiledPatternModuleHelperKeywordContractSpec,
+    ),
+)
+
+
 @dataclass(frozen=True, slots=True)
 class _CompiledPatternModuleHelperKeywordContractSurface:
     case_id: str

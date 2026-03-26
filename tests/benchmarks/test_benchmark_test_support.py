@@ -104,23 +104,6 @@ def _inline_standard_definition_assignments(
         and all(isinstance(element, ast.Call) for element in node.value.elts)
     )
 
-
-_COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES = (
-    (
-        support.CompiledPatternModuleCompileContractCase,
-        "compiled_pattern_module_compile_contract_builder_spec",
-    ),
-    (
-        support.CompiledPatternModuleSuccessOwnerSpec,
-        "compiled_pattern_module_success_contract_builder_spec",
-    ),
-    (
-        support._CompiledPatternModuleHelperKeywordContractSpec,
-        "compiled_pattern_module_helper_keyword_contract_builder_spec",
-    ),
-)
-
-
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -3131,7 +3114,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
         if isinstance(node, ast.FunctionDef)
     }
 
-    for owner_type, wrapper_name in _COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES:
+    for wrapper_name, owner_type in support.COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES:
         class_definition = support._module_class_definition(
             support,
             owner_type.__name__,

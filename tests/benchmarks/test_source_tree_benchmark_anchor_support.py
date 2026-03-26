@@ -205,23 +205,6 @@ def _attribute_alias_pairs(
         if attribute_name in attribute_names
     )
 
-
-_COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES = (
-    (
-        "compiled_pattern_module_compile_contract_builder_spec",
-        benchmark_test_support.CompiledPatternModuleCompileContractCase,
-    ),
-    (
-        "compiled_pattern_module_success_contract_builder_spec",
-        benchmark_test_support.CompiledPatternModuleSuccessOwnerSpec,
-    ),
-    (
-        "compiled_pattern_module_helper_keyword_contract_builder_spec",
-        benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
-    ),
-)
-
-
 def _compiled_pattern_contract_builder_spec(
     owner: object,
     *,
@@ -1178,7 +1161,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
-    for function_name, owner_type in _COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES:
+    for (
+        function_name,
+        owner_type,
+    ) in benchmark_test_support.COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES:
         local_builder = getattr(support, function_name, None)
         owner_builder = getattr(owner_type, "contract_builder_spec", None)
 
