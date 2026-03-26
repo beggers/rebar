@@ -40,6 +40,15 @@ def _module_assignment(module: object, name: str) -> ast.Assign:
         )
     )
 
+
+def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
+    return next(
+        node
+        for node in benchmark_test_support._parsed_module_ast(module).body
+        if isinstance(node, ast.FunctionDef) and node.name == function_name
+    )
+
+
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -1249,6 +1258,108 @@ def test_compiled_pattern_module_compile_contract_builder_spec_builds_source_tre
         manifest_timed_samples=2,
         timing_scope="module-helper-call",
         notes=("compile rows stay helper-routed",),
+    )
+
+
+def test_compiled_pattern_module_compile_wrapper_surface_is_owned_locally() -> None:
+    definition_names, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            support
+        )
+    )
+
+    assert {
+        "build_compiled_pattern_module_contract_anchor_lanes",
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+        "live_compiled_pattern_module_success_surface_ids",
+    }.issubset(definition_names)
+    assert {
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    }.issubset(local_assignment_names)
+
+    for function_name in (
+        "build_compiled_pattern_module_contract_anchor_lanes",
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+        "live_compiled_pattern_module_success_surface_ids",
+    ):
+        function_definition = _module_function_definition(support, function_name)
+        assert function_definition.name == function_name
+
+    assignment = _module_assignment(
+        support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+    assert not (
+        isinstance(assignment.value, ast.Attribute)
+        and isinstance(assignment.value.value, ast.Name)
+        and assignment.value.value.id == "benchmark_test_support"
+        and assignment.value.attr
+        == "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+    )
+
+
+def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_owned_locally_and_wrapper_free(
+) -> None:
+    expected_definitions = tuple(
+        owner_spec.anchor_definition()
+        for owner_spec in (
+            *support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        )
+    )
+
+    first_export = getattr(
+        support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+    second_export = getattr(
+        support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+
+    assert first_export is second_export
+    assert (
+        support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
+        == first_export
+    )
+    assert first_export == expected_definitions
+    assert first_export is not expected_definitions
+    assert tuple(definition.name for definition in first_export) == (
+        "module-workflow-compiled-pattern-module-compile-literal-success",
+        "module-workflow-compiled-pattern-module-compile-named-group-success",
+        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword",
+        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
+        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword",
+        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword-named-group",
+        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection",
+        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
+    )
+    assert (
+        vars(support)[
+            "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        ]
+        is first_export
+    )
+
+    builder_definition = _module_function_definition(
+        support,
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+    )
+    assert any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "owner_spec"
+        and node.func.attr == "anchor_definition"
+        for node in ast.walk(builder_definition)
+    )
+    assert not any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "benchmark_test_support"
+        and node.func.attr == "anchor_definition"
+        for node in ast.walk(builder_definition)
     )
 
 

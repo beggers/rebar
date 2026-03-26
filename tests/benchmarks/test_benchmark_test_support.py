@@ -980,7 +980,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
             id="module-workflow-keyword-after-collection-replacement",
         ),
         pytest.param(
-            support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            anchor_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-keyword-errors",
             "module-workflow-compiled-pattern-literal-success",
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
@@ -1041,90 +1041,31 @@ def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
         assert standard_names[next_index] == following_definition_name
 
 
-def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_support_owned_and_wrapper_free(
+def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_compile_wrapper_surface(
 ) -> None:
-    expected_definitions = tuple(
-        owner_spec.anchor_definition()
-        for owner_spec in (
-            *anchor_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-            *anchor_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
-        )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(support)
     )
+    source = (
+        REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
+    ).read_text(encoding="utf-8")
 
-    first_export = getattr(
-        support,
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    )
-    second_export = getattr(
-        support,
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    )
-
-    assert first_export is second_export
-    assert (
-        support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
-        == first_export
-    )
-    assert first_export == expected_definitions
-    assert first_export is not expected_definitions
-    assert tuple(definition.name for definition in first_export) == (
-        "module-workflow-compiled-pattern-module-compile-literal-success",
-        "module-workflow-compiled-pattern-module-compile-named-group-success",
-        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword",
-        "module-workflow-compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
-        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword",
-        "module-workflow-compiled-pattern-module-compile-flags-bool-false-keyword-named-group",
-        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection",
-        "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
-    )
-    assert (
-        vars(support)[
-            "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        ]
-        is first_export
-    )
-
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        support
-    )
-    assert "_standard_benchmark_anchor_contract_definition" not in definition_names
-
-    builder_definition = _module_function_definition(
-        support,
+    assert {
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
-    )
-    assert any(
-        isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Attribute)
-        and isinstance(node.func.value, ast.Name)
-        and node.func.value.id == "owner_spec"
-        and node.func.attr == "anchor_definition"
-        for node in ast.walk(builder_definition)
-    )
-    assert not any(
-        isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Name)
-        and node.func.id == "_standard_benchmark_anchor_contract_definition"
-        for node in ast.walk(builder_definition)
-    )
-
-    for class_name in (
-        "_CompiledPatternModuleCompileSuccessOwnerSpec",
-        "_CompiledPatternModuleCompileKeywordOwnerSpec",
-    ):
-        anchor_definition = _class_method_definition(
-            _module_class_definition(
-                support,
-                class_name,
-            ),
-            "anchor_definition",
-        )
-        assert any(
-            isinstance(node, ast.Call)
-            and isinstance(node.func, ast.Name)
-            and node.func.id == "StandardBenchmarkAnchorContractDefinition"
-            for node in ast.walk(anchor_definition)
-        )
+        "build_compiled_pattern_module_contract_anchor_lanes",
+        "live_compiled_pattern_module_success_surface_ids",
+    }.isdisjoint(definition_names)
+    assert {
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    }.isdisjoint(assignment_names)
+    assert re.search(
+        r"^def (_build_compiled_pattern_module_compile_standard_benchmark_definitions|"
+        r"build_compiled_pattern_module_contract_anchor_lanes|"
+        r"live_compiled_pattern_module_success_surface_ids)\b|"
+        r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
+        source,
+        re.MULTILINE,
+    ) is None
 
 
 def test_module_keyword_flags_workload_stays_pinned() -> None:
@@ -2240,7 +2181,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_assert_compiled_pattern_module_success_payload_round_trip",
         "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
         "include_live_compiled_pattern_module_success_workload",
-        "live_compiled_pattern_module_success_surface_ids",
     }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
@@ -2260,6 +2200,9 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.isdisjoint(assignment_names)
+    assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
+        definition_names | assignment_names
+    )
 
 
 def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> None:
@@ -2857,7 +2800,6 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
         "_is_collection_replacement_compiled_pattern_success_workload",
         "include_live_compiled_pattern_module_success_workload",
-        "live_compiled_pattern_module_success_surface_ids",
     }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
@@ -2865,6 +2807,9 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.isdisjoint(assignment_names)
+    assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
+        definition_names | assignment_names
+    )
     assert not hasattr(
         support.CompiledPatternModuleSuccessOwnerSpec,
         "contract_builder_spec",
@@ -2898,6 +2843,19 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_suc
         r"_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|"
         r"_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|"
         r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
+        source,
+        re.MULTILINE,
+    ) is None
+
+
+def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_success_surface_export(
+) -> None:
+    source = (
+        REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
+    ).read_text(encoding="utf-8")
+
+    assert re.search(
+        r"^def live_compiled_pattern_module_success_surface_ids\b",
         source,
         re.MULTILINE,
     ) is None

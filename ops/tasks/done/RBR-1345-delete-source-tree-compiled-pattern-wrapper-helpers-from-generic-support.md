@@ -1,6 +1,6 @@
 ## RBR-1345: Delete source-tree compiled-pattern wrapper helpers from generic support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -54,3 +54,12 @@ Created: 2026-03-26
   - `PYTHONPATH=. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_success_owner_spec_surface_is_owned_locally or compiled_pattern_module_compile_contract_builder_spec_builds_source_tree_contract or compiled_pattern_wrong_text_model_contract_specs_track_manifest_family or compiled_pattern_module_helper_keyword_contract_builder_spec_handles_exception_field'` passed with `6 passed, 88 deselected in 0.20s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^def (build_compiled_pattern_module_contract_anchor_lanes|_build_compiled_pattern_module_compile_standard_benchmark_definitions|live_compiled_pattern_module_success_surface_ids)\\b|^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\\b' tests/benchmarks/benchmark_test_support.py"` currently fails because those source-tree-only wrapper/helper definitions still live in the generic support module, and that failure belongs exactly to this cleanup
+- Completion note:
+  - Moved `build_compiled_pattern_module_contract_anchor_lanes(...)`, `_build_compiled_pattern_module_compile_standard_benchmark_definitions(...)`, `COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS`, and `live_compiled_pattern_module_success_surface_ids(...)` from `tests/benchmarks/benchmark_test_support.py` to `tests/benchmarks/source_tree_benchmark_anchor_support.py`, while keeping the shared contract case/type/selectors in the generic support module.
+  - Updated `tests/benchmarks/test_benchmark_test_support.py` to fail on any reintroduced generic definitions and updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to prove the moved names are locally defined in the source-tree owner module.
+  - Verification in this run:
+    - `PYTHONPATH=. ./.venv/bin/pytest tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_module or wrong_text_model'` passed with `21 passed, 119 deselected in 0.42s`
+    - `PYTHONPATH=. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_success_owner_spec_surface_is_owned_locally or compiled_pattern_module_compile_contract_builder_spec_builds_source_tree_contract or compiled_pattern_wrong_text_model_contract_specs_track_manifest_family or compiled_pattern_module_helper_keyword_contract_builder_spec_handles_exception_field'` passed with `6 passed, 90 deselected in 0.24s`
+    - `PYTHONPATH=. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_compile_wrapper_surface_is_owned_locally or compiled_pattern_module_compile_standard_benchmark_definitions_are_owned_locally_and_wrapper_free'` passed with `2 passed, 94 deselected in 0.24s`
+    - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+    - `bash -lc "! rg -n '^def (build_compiled_pattern_module_contract_anchor_lanes|_build_compiled_pattern_module_compile_standard_benchmark_definitions|live_compiled_pattern_module_success_surface_ids)\\b|^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\\b' tests/benchmarks/benchmark_test_support.py"` passed

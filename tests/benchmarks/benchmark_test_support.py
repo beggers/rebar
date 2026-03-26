@@ -1763,50 +1763,6 @@ def build_compiled_pattern_module_compile_contract_source_workload_params(
     )
 
 
-def build_compiled_pattern_module_contract_anchor_lanes(
-    *,
-    contract_cases: Iterable[CompiledPatternModuleCompileContractCase],
-    published_case_ids_by_signature: Callable[
-        [Callable[[Any], tuple[Any, ...] | None]],
-        dict[tuple[Any, ...], tuple[str, ...]],
-    ],
-) -> tuple[_CompiledPatternModuleContractAnchorLane, ...]:
-    contract_cases = tuple(contract_cases)
-    return tuple(
-        _CompiledPatternModuleContractAnchorLane(
-            case_id=contract_case.case_id,
-            contract_filename=contract_case.anchor_contract_filename,
-            source_workloads=source_workloads,
-            contract_builder_spec=lambda contract_case=contract_case: (
-                source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-                    contract_case
-                )
-            ),
-            expected_anchor_case_ids=contract_case.expected_anchor_case_ids,
-            anchor_case_ids=published_case_ids_by_signature(
-                contract_case.correctness_case_signature
-            ),
-            workload_signature=contract_case.workload_signature,
-            include_workload=contract_case.include_workload,
-            expected_anchor_pairs=contract_case.expected_anchor_pairs,
-        )
-        for contract_case in contract_cases
-        for source_workloads in (contract_case.source_workloads(),)
-    )
-
-
-def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> tuple[
-    StandardBenchmarkAnchorContractDefinition, ...
-]:
-    return tuple(
-        owner_spec.anchor_definition()
-        for owner_spec in (
-            *source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-            *source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
-        )
-    )
-
-
 def anchored_workload_case_ids(
     manifest_path: pathlib.Path,
     *,
@@ -2797,19 +2753,6 @@ def include_live_compiled_pattern_module_success_workload(workload: Workload) ->
     )
 
 
-def live_compiled_pattern_module_success_surface_ids() -> tuple[str, ...]:
-    from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
-
-    return tuple(
-        workload.workload_id
-        for owner_spec in source_tree_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
-        for workload in selected_manifest_workloads(
-            owner_spec.manifest_path,
-            include_workload=include_live_compiled_pattern_module_success_workload,
-        )
-    )
-
-
 COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-literal-success",
@@ -3736,15 +3679,11 @@ from tests.benchmarks import (
 )
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 
-COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
-    _build_compiled_pattern_module_compile_standard_benchmark_definitions()
-)
-
 STANDARD_BENCHMARK_DEFINITIONS = (
     *COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
     *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
     *MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-    *COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+    *source_tree_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
     *COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
     *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
     *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
