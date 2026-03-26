@@ -742,11 +742,23 @@ def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
+    include_workload = partial(
+        support._is_collection_replacement_literal_replacement_workload,
+        workload_ids=(
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_IDS
+        ),
+        operations=(
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_OPERATIONS
+        ),
+        text_models=(
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_TEXT_MODELS
+        ),
+    )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
+            include_workload=include_workload,
         )
     )
 
@@ -771,11 +783,26 @@ def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_m
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
+    include_workload = partial(
+        support._is_collection_replacement_literal_replacement_workload,
+        workload_ids=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_IDS
+        ),
+        operations=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_OPERATIONS
+        ),
+        text_models=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_TEXT_MODELS
+        ),
+        allowed_counts=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_ALLOWED_COUNTS
+        ),
+    )
     expected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
+            include_workload=include_workload,
         )
     )
 
@@ -796,7 +823,21 @@ def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_m
 
 
 def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_explicit() -> None:
-    include_workload = support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR
+    include_workload = partial(
+        support._is_collection_replacement_literal_replacement_workload,
+        workload_ids=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_IDS
+        ),
+        operations=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_OPERATIONS
+        ),
+        text_models=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_TEXT_MODELS
+        ),
+        allowed_counts=(
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_ALLOWED_COUNTS
+        ),
+    )
     workload_signatures = {
         support._collection_replacement_literal_replacement_workload_signature(
             workload,
@@ -838,7 +879,18 @@ def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_e
 
 
 def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_explicit() -> None:
-    include_workload = support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR
+    include_workload = partial(
+        support._is_collection_replacement_literal_replacement_workload,
+        workload_ids=(
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_IDS
+        ),
+        operations=(
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_OPERATIONS
+        ),
+        text_models=(
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_TEXT_MODELS
+        ),
+    )
     workload_signatures = {
         support._collection_replacement_literal_replacement_workload_signature(
             workload,
@@ -877,6 +929,34 @@ def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_
     )
 
     assert unbenchmarked_case_ids == ()
+
+
+def test_collection_replacement_literal_replacement_selector_aliases_are_absent() -> None:
+    module_name = "_".join(
+        (
+            "",
+            "COLLECTION",
+            "REPLACEMENT",
+            "MODULE",
+            "LITERAL",
+            "REPLACEMENT",
+            "SELECTOR",
+        )
+    )
+    pattern_name = "_".join(
+        (
+            "",
+            "COLLECTION",
+            "REPLACEMENT",
+            "PATTERN",
+            "LITERAL",
+            "REPLACEMENT",
+            "SELECTOR",
+        )
+    )
+
+    assert not hasattr(support, module_name)
+    assert not hasattr(support, pattern_name)
 
 
 def test_collection_replacement_manifest_keeps_grouped_callable_rows_measured() -> None:

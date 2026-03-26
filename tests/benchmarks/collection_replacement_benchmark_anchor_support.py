@@ -721,7 +721,13 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
             ),
-            include_workload=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
+            include_workload=partial(
+                _is_collection_replacement_literal_replacement_workload,
+                workload_ids=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+                operations=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_OPERATIONS,
+                text_models=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_TEXT_MODELS,
+                allowed_counts=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_ALLOWED_COUNTS,
+            ),
             correctness_case_signature=partial(
                 _collection_replacement_literal_replacement_correctness_case_signature,
                 case_ids=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_CASE_IDS,
@@ -735,7 +741,21 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             workload_signature=partial(
                 _collection_replacement_literal_replacement_workload_signature,
-                include_workload=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
+                include_workload=partial(
+                    _is_collection_replacement_literal_replacement_workload,
+                    workload_ids=(
+                        _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_IDS
+                    ),
+                    operations=(
+                        _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_OPERATIONS
+                    ),
+                    text_models=(
+                        _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_TEXT_MODELS
+                    ),
+                    allowed_counts=(
+                        _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_ALLOWED_COUNTS
+                    ),
+                ),
                 workload_kind="module",
             ),
             run_callback_result_parity=True,
@@ -747,7 +767,12 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
             ),
-            include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
+            include_workload=partial(
+                _is_collection_replacement_literal_replacement_workload,
+                workload_ids=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_IDS,
+                operations=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_OPERATIONS,
+                text_models=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_TEXT_MODELS,
+            ),
             correctness_case_signature=partial(
                 _collection_replacement_literal_replacement_correctness_case_signature,
                 case_ids=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_CASE_IDS,
@@ -763,7 +788,18 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             workload_signature=partial(
                 _collection_replacement_literal_replacement_workload_signature,
-                include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
+                include_workload=partial(
+                    _is_collection_replacement_literal_replacement_workload,
+                    workload_ids=(
+                        _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_IDS
+                    ),
+                    operations=(
+                        _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_OPERATIONS
+                    ),
+                    text_models=(
+                        _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_TEXT_MODELS
+                    ),
+                ),
                 workload_kind="direct Pattern",
             ),
             run_callback_result_parity=True,
@@ -1546,20 +1582,6 @@ def _is_collection_replacement_literal_replacement_workload(
         and not workload.kwargs
     )
 
-
-_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR = partial(
-    _is_collection_replacement_literal_replacement_workload,
-    workload_ids=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_IDS,
-    operations=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_OPERATIONS,
-    text_models=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_TEXT_MODELS,
-    allowed_counts=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_ALLOWED_COUNTS,
-)
-_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
-    _is_collection_replacement_literal_replacement_workload,
-    workload_ids=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_IDS,
-    operations=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_OPERATIONS,
-    text_models=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_TEXT_MODELS,
-)
 
 _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS = (
     ("module-sub-callable-grouped-warm-str", "module-sub-callable-grouped-str"),

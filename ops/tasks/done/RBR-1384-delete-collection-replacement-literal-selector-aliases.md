@@ -46,3 +46,11 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed (`154 passed in 1.71s`).
   - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed.
   - `bash -lc "rg -n '_COLLECTION_REPLACEMENT_(MODULE|PATTERN)_LITERAL_REPLACEMENT_SELECTOR' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently reports the two alias definitions plus eight owner/test call sites that this task is intended to delete.
+
+## Completion
+- Deleted `_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR` and `_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR` from the collection-replacement benchmark owner layer and rewired the affected standard contract definitions to use direct inline `partial(...)` calls into `_is_collection_replacement_literal_replacement_workload(...)` with the existing workload-id, operation, text-model, and allowed-count arguments.
+- Updated the benchmark owner tests to assert the alias layer is absent and to keep the module/pattern literal-replacement measured-row and benchmark-gap checks routed through direct predicate wiring instead of stored selector aliases.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed (`155 passed in 1.78s`).
+  - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed.
+  - `bash -lc "! rg -n '_COLLECTION_REPLACEMENT_(MODULE|PATTERN)_LITERAL_REPLACEMENT_SELECTOR' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` passed.
