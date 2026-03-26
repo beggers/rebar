@@ -3670,6 +3670,41 @@ def test_deleted_pattern_boundary_support_stays_unimportable_and_unreferenced() 
     )
 
 
+def test_deleted_benchmark_module_absence_helper_rejects_lingering_import_targets(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    deleted_module_name = "tests.benchmarks.synthetic_deleted_support"
+    deleted_path = tmp_path / "synthetic_deleted_support.py"
+    original_import_module = importlib.import_module
+
+    monkeypatch.setattr(
+        importlib,
+        "import_module",
+        lambda module_name: (
+            (_ for _ in ()).throw(ModuleNotFoundError(module_name))
+            if module_name == deleted_module_name
+            else original_import_module(module_name)
+        ),
+    )
+    monkeypatch.setitem(
+        globals(),
+        "_benchmark_support_import_targets_by_path",
+        lambda: (
+            (
+                pathlib.Path("tests/benchmarks/test_synthetic_owner.py"),
+                frozenset({deleted_module_name}),
+            ),
+        ),
+    )
+
+    with pytest.raises(AssertionError):
+        _assert_deleted_benchmark_module_stays_absent(
+            deleted_module_name=deleted_module_name,
+            deleted_path=deleted_path,
+        )
+
+
 def test_collection_replacement_support_reaches_source_tree_owner_surface_through_benchmark_test_support_alias(
 ) -> None:
     definition_names, assignment_names = (
