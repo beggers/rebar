@@ -4330,6 +4330,43 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
         ),
         (
             support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id(
+                    "module.match"
+                ),
+                workload_id="module-match-success",
+                operation="module.match",
+                pattern="abc",
+                haystack="abczz",
+                flags=re.MULTILINE,
+                use_compiled_pattern=True,
+            ),
+            re.MULTILINE,
+            "module-result",
+            ("module.match", "abczz", 0, {}),
+            ("abczz", re.MULTILINE),
+            False,
+        ),
+        (
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id(
+                    "module.fullmatch"
+                ),
+                workload_id="module-fullmatch-success",
+                operation="module.fullmatch",
+                pattern="a.c",
+                haystack="abc",
+                text_model="bytes",
+                flags=re.DOTALL,
+                use_compiled_pattern=True,
+            ),
+            re.DOTALL,
+            "module-result",
+            ("module.fullmatch", b"abc", 0, {}),
+            (b"abc", re.DOTALL),
+            False,
+        ),
+        (
+            support.synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id("module.subn"),
                 workload_id="module-subn-success",
                 operation="module.subn",
@@ -4423,6 +4460,8 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
     ),
     ids=(
         "module-boundary-search",
+        "module-boundary-match",
+        "module-boundary-fullmatch-bytes",
         "collection-replacement-subn",
         "wrong-text-model-finditer",
         "collection-replacement-findall",
@@ -4451,8 +4490,50 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
 
 
 @pytest.mark.parametrize(
-    ("workload", "expected_result"),
+    ("workload", "expected_result", "expected_match_group0"),
     (
+        pytest.param(
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
+                workload_id="module-search-runtime",
+                operation="module.search",
+                pattern="abc",
+                haystack="zzabczz",
+                use_compiled_pattern=True,
+            ),
+            None,
+            "abc",
+            id="search-preserves-match-result",
+        ),
+        pytest.param(
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.match"),
+                workload_id="module-match-runtime",
+                operation="module.match",
+                pattern="abc",
+                haystack="abczz",
+                use_compiled_pattern=True,
+            ),
+            None,
+            "abc",
+            id="match-preserves-match-result",
+        ),
+        pytest.param(
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id(
+                    "module.fullmatch"
+                ),
+                workload_id="module-fullmatch-runtime",
+                operation="module.fullmatch",
+                pattern="a.c",
+                haystack="abc",
+                text_model="bytes",
+                use_compiled_pattern=True,
+            ),
+            None,
+            b"abc",
+            id="fullmatch-preserves-bytes-match-result",
+        ),
         pytest.param(
             support.synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id("module.finditer"),
@@ -4463,6 +4544,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
                 use_compiled_pattern=True,
             ),
             ["abc", "abc"],
+            None,
             id="finditer-materializes-match-iterator",
         ),
         pytest.param(
@@ -4475,6 +4557,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
                 use_compiled_pattern=True,
             ),
             ["abc", "abc"],
+            None,
             id="findall-preserves-list-result",
         ),
         pytest.param(
@@ -4489,6 +4572,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
                 use_compiled_pattern=True,
             ),
             "xabc",
+            None,
             id="sub-preserves-string-result",
         ),
         pytest.param(
@@ -4503,6 +4587,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
                 use_compiled_pattern=True,
             ),
             ("xabc", 1),
+            None,
             id="subn-preserves-tuple-result",
         ),
     ),
@@ -4510,6 +4595,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
 def test_run_cpython_compiled_pattern_module_helper_workload_preserves_expected_result_shapes(
     workload: object,
     expected_result: object,
+    expected_match_group0: object | None,
 ) -> None:
     result = (
         collection_replacement_support._run_cpython_compiled_pattern_module_helper_workload(
@@ -4517,6 +4603,13 @@ def test_run_cpython_compiled_pattern_module_helper_workload_preserves_expected_
             collection_replacement_callback_flags=0,
         )
     )
+
+    if expected_match_group0 is not None:
+        assert isinstance(result, re.Match)
+        assert result.group(0) == expected_match_group0
+        assert result.string == workload.haystack_payload()
+        assert result.re.pattern == workload.pattern_payload()
+        return
 
     if workload.operation == "module.finditer":
         assert isinstance(result, list)
