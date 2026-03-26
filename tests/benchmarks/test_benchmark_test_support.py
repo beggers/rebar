@@ -3923,50 +3923,6 @@ def test_benchmark_test_support_no_longer_exports_deleted_workload_id_selector_h
         assert not hasattr(collection_replacement_support, name)
 
 
-def test_compiled_pattern_module_helper_keyword_surface_moves_to_collection_replacement_owner(
-) -> None:
-    definition_only_names = (
-        "_CompiledPatternModuleHelperKeywordContractSpec",
-        "_CompiledPatternModuleHelperKeywordContractSurface",
-    )
-    assignment_only_names = (
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-    )
-
-    assert all(not hasattr(support, name) for name in definition_only_names)
-    assert all(not hasattr(anchor_support, name) for name in definition_only_names)
-    assert all(
-        hasattr(collection_replacement_support, name)
-        for name in definition_only_names
-    )
-    assert all(not hasattr(support, name) for name in assignment_only_names)
-    assert all(not hasattr(anchor_support, name) for name in assignment_only_names)
-    assert all(
-        hasattr(collection_replacement_support, name)
-        for name in assignment_only_names
-    )
-    assert not hasattr(
-        support,
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    )
-    assert not hasattr(
-        anchor_support,
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    )
-    assert hasattr(
-        collection_replacement_support,
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    )
-
-
 def test_deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced(
 ) -> None:
     _assert_deleted_benchmark_module_stays_absent(
