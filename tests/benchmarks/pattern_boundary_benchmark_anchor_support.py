@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from rebar_harness import benchmarks
@@ -66,14 +65,6 @@ def _pattern_boundary_wrong_text_model_expected_callback_call(
         "unexpected direct Pattern pattern-boundary wrong-text-model "
         f"workload operation {source_workload.operation!r}"
     )
-
-
-def _run_cpython_pattern_boundary_wrong_text_model_workload(
-    workload: Any,
-) -> object:
-    helper_name = workload.operation.removeprefix("pattern.")
-    compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
-    return getattr(compiled_pattern, helper_name)(workload.haystack_payload())
 
 
 def _pattern_boundary_wrong_text_model_correctness_case_signature(

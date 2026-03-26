@@ -2484,7 +2484,6 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
     assert {
         "_pattern_boundary_wrong_text_model_source_workloads",
         "_pattern_boundary_wrong_text_model_expected_callback_call",
-        "_run_cpython_pattern_boundary_wrong_text_model_workload",
         "_pattern_boundary_wrong_text_model_correctness_case_signature",
         "_pattern_boundary_wrong_text_model_workload_signature",
         "_is_pattern_boundary_wrong_text_model_workload",

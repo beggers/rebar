@@ -35,7 +35,6 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
         definition_names=(
             "_pattern_boundary_wrong_text_model_source_workloads",
             "_pattern_boundary_wrong_text_model_expected_callback_call",
-            "_run_cpython_pattern_boundary_wrong_text_model_workload",
             "_pattern_boundary_wrong_text_model_correctness_case_signature",
             "_pattern_boundary_wrong_text_model_workload_signature",
             "_is_pattern_boundary_wrong_text_model_workload",
@@ -588,9 +587,7 @@ def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime
     )
 
     with pytest.raises(TypeError) as observed_error:
-        pattern_boundary_support._run_cpython_pattern_boundary_wrong_text_model_workload(
-            workload
-        )
+        support.run_benchmark_workload_with_cpython(workload)
 
     assert str(observed_error.value) == str(
         workload.expected_exception["message_substring"]
@@ -640,9 +637,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
         )
 
         with pytest.raises(TypeError) as expected_error:
-            pattern_boundary_support._run_cpython_pattern_boundary_wrong_text_model_workload(
-                workload
-            )
+            support.run_benchmark_workload_with_cpython(workload)
         with pytest.raises(TypeError) as observed_error:
             support.run_benchmark_workload_with_cpython(round_tripped)
 
