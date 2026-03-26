@@ -19,6 +19,9 @@ from rebar_harness.benchmarks import (
 )
 from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
+from tests.benchmarks import (
+    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
@@ -34,7 +37,7 @@ def _explicit_standard_benchmark_definitions(
         *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-        *benchmark_test_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )
 

@@ -18,6 +18,9 @@ from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
 from tests.benchmarks import benchmark_test_support as support
+from tests.benchmarks import (
+    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.python.fixture_parity_support import IndexLike
 
@@ -30,7 +33,7 @@ def _explicit_standard_benchmark_definitions(
         *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-        *support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )
 
@@ -41,7 +44,7 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
 
     support.assert_owner_surface_module_owned_without_local_duplicates(
         sys.modules[__name__],
-        support,
+        pattern_boundary_support,
         definition_names=(
             "_pattern_boundary_wrong_text_model_source_workloads",
             "_pattern_boundary_wrong_text_model_expected_callback_call",
@@ -54,33 +57,34 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
             "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         ),
         extra_owner_name="_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
-        extra_owner_module=source_tree_support,
+        extra_owner_module=pattern_boundary_support,
     )
 
 
 def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() -> None:
-    definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+    definitions = pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
 
     assert isinstance(definitions, tuple)
     assert tuple(definition.name for definition in definitions) == (
-        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+        pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
     )
 
 
 def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory() -> None:
-    owner_definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+    owner_definitions = pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
     standard_definitions_by_name = {
         definition.name: definition
         for definition in _explicit_standard_benchmark_definitions()
-        if definition.name in support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+        if definition.name
+        in pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
     }
 
     assert tuple(standard_definitions_by_name) == (
-        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+        pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
     )
     assert tuple(
         standard_definitions_by_name[definition_name]
-        for definition_name in support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+        for definition_name in pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
     ) == owner_definitions
     assert all(
         standard_definitions_by_name[definition.name] is definition
@@ -265,8 +269,10 @@ def test_pattern_boundary_wrong_text_model_selector_accepts_exact_trio_and_signa
         },
     )
 
-    assert support._is_pattern_boundary_wrong_text_model_workload(workload)
-    assert support._pattern_boundary_wrong_text_model_workload_signature(
+    assert pattern_boundary_support._is_pattern_boundary_wrong_text_model_workload(
+        workload
+    )
+    assert pattern_boundary_support._pattern_boundary_wrong_text_model_workload_signature(
         workload
     ) == (
         "pattern.search",
@@ -325,11 +331,15 @@ def test_pattern_boundary_wrong_text_model_selector_rejects_compiled_pattern_win
         endpos=None,
     )
 
-    assert not support._is_pattern_boundary_wrong_text_model_workload(
+    assert not pattern_boundary_support._is_pattern_boundary_wrong_text_model_workload(
         compiled_pattern_workload
     )
-    assert not support._is_pattern_boundary_wrong_text_model_workload(keyword_workload)
-    assert not support._is_pattern_boundary_wrong_text_model_workload(windowed_workload)
+    assert not pattern_boundary_support._is_pattern_boundary_wrong_text_model_workload(
+        keyword_workload
+    )
+    assert not pattern_boundary_support._is_pattern_boundary_wrong_text_model_workload(
+        windowed_workload
+    )
 
 
 def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str_and_bytes_rows() -> None:
@@ -361,7 +371,7 @@ def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str
         text_model="str",
     )
 
-    assert support._pattern_boundary_wrong_text_model_correctness_case_signature(
+    assert pattern_boundary_support._pattern_boundary_wrong_text_model_correctness_case_signature(
         str_case
     ) == (
         "pattern.search",
@@ -371,7 +381,7 @@ def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str
         0,
         "str",
     )
-    assert support._pattern_boundary_wrong_text_model_correctness_case_signature(
+    assert pattern_boundary_support._pattern_boundary_wrong_text_model_correctness_case_signature(
         bytes_case
     ) == (
         "pattern.match",
@@ -382,7 +392,7 @@ def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str
         "bytes",
     )
     assert (
-        support._pattern_boundary_wrong_text_model_correctness_case_signature(
+        pattern_boundary_support._pattern_boundary_wrong_text_model_correctness_case_signature(
             wrong_haystack_type
         )
         is None
@@ -390,10 +400,10 @@ def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str
 
 
 def test_pattern_boundary_wrong_text_model_source_workloads_stay_exact_and_in_order() -> None:
-    workloads = support._pattern_boundary_wrong_text_model_source_workloads()
+    workloads = pattern_boundary_support._pattern_boundary_wrong_text_model_source_workloads()
 
     assert tuple(workload.workload_id for workload in workloads) == (
-        support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
 
 
@@ -401,7 +411,7 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
     all_workloads = support.selected_manifest_workloads("pattern_boundary.py")
     wrong_text_model_workload_ids = tuple(
         workload.workload_id
-        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
+        for workload in pattern_boundary_support._pattern_boundary_wrong_text_model_source_workloads()
     )
     bounded_wildcard_workload_ids = tuple(
         workload.workload_id
@@ -506,7 +516,7 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
+        for workload in pattern_boundary_support._pattern_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime_contract(
@@ -520,7 +530,7 @@ def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime
         if workload.cache_mode == "warm"
         else [("compile", workload.pattern_payload(), workload.flags), ("purge",)]
     )
-    assert support._pattern_boundary_wrong_text_model_expected_callback_call(
+    assert pattern_boundary_support._pattern_boundary_wrong_text_model_expected_callback_call(
         workload
     ) == (
         workload.operation,
@@ -530,7 +540,9 @@ def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime
     )
 
     with pytest.raises(TypeError) as observed_error:
-        support._run_cpython_pattern_boundary_wrong_text_model_workload(workload)
+        pattern_boundary_support._run_cpython_pattern_boundary_wrong_text_model_workload(
+            workload
+        )
 
     assert str(observed_error.value) == str(
         workload.expected_exception["message_substring"]
@@ -540,10 +552,10 @@ def test_pattern_boundary_wrong_text_model_helpers_preserve_callback_and_runtime
 def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = support._pattern_boundary_wrong_text_model_source_workloads()
+    source_workloads = pattern_boundary_support._pattern_boundary_wrong_text_model_source_workloads()
     manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
-        spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -553,11 +565,11 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     workloads = tuple(load_manifest(manifest_path).workloads)
 
     assert tuple(workload.workload_id for workload in source_workloads) == (
-        support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
     assert tuple(workload.workload_id for workload in workloads) == tuple(
         f"{workload_id}-contract"
-        for workload_id in support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        for workload_id in pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
     )
     assert [workload.use_compiled_pattern for workload in workloads] == [False] * len(
         source_workloads
@@ -580,7 +592,9 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
         )
 
         with pytest.raises(TypeError) as expected_error:
-            support._run_cpython_pattern_boundary_wrong_text_model_workload(workload)
+            pattern_boundary_support._run_cpython_pattern_boundary_wrong_text_model_workload(
+                workload
+            )
         with pytest.raises(TypeError) as observed_error:
             support.run_benchmark_workload_with_cpython(round_tripped)
 
@@ -598,7 +612,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
+        for workload in pattern_boundary_support._pattern_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_contract_workloads(
@@ -608,7 +622,7 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
 ) -> None:
     workload = source_tree_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -633,7 +647,7 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in support._pattern_boundary_wrong_text_model_source_workloads()
+        for workload in pattern_boundary_support._pattern_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contract(
@@ -644,7 +658,7 @@ def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contrac
         label="direct Pattern pattern-boundary wrong-text-model",
     )
     expected_callback_call = (
-        support._pattern_boundary_wrong_text_model_expected_callback_call(
+        pattern_boundary_support._pattern_boundary_wrong_text_model_expected_callback_call(
             source_workload
         )
     )
@@ -654,7 +668,7 @@ def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contrac
         "re",
         source_tree_support._source_tree_contract_workload(
             source_workload,
-            spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+            spec=pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
     )
 

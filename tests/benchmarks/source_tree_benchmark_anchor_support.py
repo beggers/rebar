@@ -354,17 +354,6 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
     ),
 }
 
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
-    benchmark_test_support._SourceTreeContractBuilderSpec(
-    manifest_id="pattern-boundary",
-    excluded_fields=(
-        benchmark_test_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS
-    ),
-    timing_scope="pattern-helper-call",
-)
-)
-
-
 def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
     workload: Any,
 ) -> bool:

@@ -15,6 +15,9 @@ from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
+from tests.benchmarks import (
+    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import (
     test_benchmark_publication_runtime_contracts as publication_runtime_contracts,
@@ -113,7 +116,7 @@ def _explicit_standard_benchmark_definitions(
         *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-        *support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )
 
@@ -1101,7 +1104,7 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
             id="compiled-pattern-module-helper-after-module-compile",
         ),
         pytest.param(
-            support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+            pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-compiled-pattern-verbose-bytes-success",
             "module-workflow-compiled-pattern-wrong-text-model",
             id="pattern-boundary-after-compiled-pattern-helper",
@@ -1319,7 +1322,6 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
     assert {
         "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
         "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
-        "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
     }.issubset(assignment_names)
 
     for assignment in assignment_nodes:
@@ -1602,11 +1604,31 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         expected_alias_pairs=frozenset(
             {
                 ("benchmark_test_support", "support"),
+                (
+                    "pattern_boundary_benchmark_anchor_support",
+                    "pattern_boundary_support",
+                ),
+                ("source_tree_benchmark_anchor_support", "source_tree_support"),
+            }
+        ),
+    )
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.pattern_boundary_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {
+                ("benchmark_test_support", "support"),
+                (
+                    "pattern_boundary_benchmark_anchor_support",
+                    "pattern_boundary_support",
+                ),
                 ("source_tree_benchmark_anchor_support", "source_tree_support"),
             }
         ),
     )
     assert getattr(module, "support") is support
+    assert getattr(module, "pattern_boundary_support") is pattern_boundary_support
     assert getattr(module, "source_tree_support") is anchor_support
     assert {
         "synthetic_workload",
@@ -1627,10 +1649,6 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         assert not hasattr(module, shared_name)
     assert {"_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC"}.isdisjoint(
         definition_names | assignment_names
-    )
-    assert (
-        module.source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC
-        is anchor_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC
     )
 
 
@@ -2420,9 +2438,6 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
     )
 
     assert {
-        "_pattern_boundary_wrong_text_model_source_workloads",
-        "_pattern_boundary_wrong_text_model_expected_callback_call",
-        "_run_cpython_pattern_boundary_wrong_text_model_workload",
         "_pattern_window_positional_indexlike_correctness_case_signature",
         "_pattern_window_positional_indexlike_workload_args",
         "_pattern_window_positional_indexlike_workload_signature",
@@ -2436,17 +2451,22 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "_pattern_verbose_regression_correctness_case_signature",
         "_pattern_verbose_regression_workload_signature",
         "_is_pattern_verbose_regression_workload",
-        "_pattern_boundary_wrong_text_model_correctness_case_signature",
-        "_pattern_boundary_wrong_text_model_workload_signature",
-        "_is_pattern_boundary_wrong_text_model_workload",
     }.issubset(definition_names)
     assert {
         "_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS",
         "_PATTERN_VERBOSE_REGRESSION_PATTERN",
+    }.issubset(assignment_names)
+    assert {
+        "_pattern_boundary_wrong_text_model_source_workloads",
+        "_pattern_boundary_wrong_text_model_expected_callback_call",
+        "_run_cpython_pattern_boundary_wrong_text_model_workload",
+        "_pattern_boundary_wrong_text_model_correctness_case_signature",
+        "_pattern_boundary_wrong_text_model_workload_signature",
+        "_is_pattern_boundary_wrong_text_model_workload",
         "PATTERN_BOUNDARY_MANIFEST_PATH",
         "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
-    }.issubset(assignment_names)
+    }.isdisjoint(definition_names | assignment_names)
 
 
 def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper(
@@ -3296,13 +3316,18 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     shared_owner_names = frozenset(
         {
             "_expected_exception_instance",
-            "_is_pattern_boundary_wrong_text_model_workload",
             "_write_test_manifest",
             "CompiledPatternModuleCompileContractCase",
             "assert_benchmark_workload_matches_expected_result",
             "assert_pattern_helper_wrong_text_model_payload_round_trip",
             "run_benchmark_workload_with_cpython",
             "selected_manifest_workloads",
+        }
+    )
+    pattern_boundary_owner_names = frozenset(
+        {
+            "_is_pattern_boundary_wrong_text_model_workload",
+            "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
         }
     )
     source_tree_owner_names = frozenset(
@@ -3332,6 +3357,25 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
         expected_alias_pairs=frozenset(
             {
                 ("benchmark_test_support", None),
+                (
+                    "pattern_boundary_benchmark_anchor_support",
+                    "pattern_boundary_support",
+                ),
+                ("source_tree_benchmark_anchor_support", "source_tree_support"),
+            }
+        ),
+    )
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.pattern_boundary_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {
+                ("benchmark_test_support", None),
+                (
+                    "pattern_boundary_benchmark_anchor_support",
+                    "pattern_boundary_support",
+                ),
                 ("source_tree_benchmark_anchor_support", "source_tree_support"),
             }
         ),
@@ -3356,6 +3400,10 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
                     "collection_replacement_support",
                 ),
                 (
+                    "pattern_boundary_benchmark_anchor_support",
+                    "pattern_boundary_support",
+                ),
+                (
                     "source_tree_benchmark_anchor_support",
                     "source_tree_support",
                 ),
@@ -3368,10 +3416,15 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
     assert shared_owner_names.isdisjoint(definition_names | assignment_names)
+    assert pattern_boundary_owner_names.isdisjoint(definition_names | assignment_names)
     assert collection_owner_names.isdisjoint(definition_names | assignment_names)
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_benchmark_manifest_validation",
         shared_owner_names,
+    )
+    _assert_benchmark_test_support_aliases_absent(
+        "tests.benchmarks.test_benchmark_manifest_validation",
+        pattern_boundary_owner_names,
     )
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_benchmark_manifest_validation",
@@ -3879,16 +3932,13 @@ def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_
     )
 
 
-def test_deleted_pattern_boundary_support_stays_unimportable_and_unreferenced() -> None:
-    _assert_deleted_benchmark_module_stays_absent(
-        deleted_module_name="tests.benchmarks.pattern_boundary_benchmark_anchor_support",
-        deleted_path=(
-            REPO_ROOT
-            / "tests"
-            / "benchmarks"
-            / "pattern_boundary_benchmark_anchor_support.py"
-        ),
-    )
+def test_pattern_boundary_owner_module_is_importable_through_package_boundary() -> None:
+    module = importlib.import_module("tests.benchmarks.pattern_boundary_benchmark_anchor_support")
+
+    assert module is pattern_boundary_support
+    assert (
+        REPO_ROOT / "tests" / "benchmarks" / "pattern_boundary_benchmark_anchor_support.py"
+    ).exists()
 
 
 def test_deleted_benchmark_module_absence_helper_rejects_lingering_import_targets(

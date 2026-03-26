@@ -18,6 +18,9 @@ from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
+from tests.benchmarks import (
+    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 
 
@@ -1540,7 +1543,7 @@ def test_standard_benchmark_expected_exception_validation_matches_manifest_and_p
         pytest.param(workload, id=workload.workload_id)
         for workload in benchmark_test_support.selected_manifest_workloads(
             BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py",
-            include_workload=benchmark_test_support._is_pattern_boundary_wrong_text_model_workload,
+            include_workload=pattern_boundary_support._is_pattern_boundary_wrong_text_model_workload,
         )
     ),
 )
@@ -1550,7 +1553,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
 ) -> None:
     manifest = source_tree_support._source_tree_contract_manifest(
         (source_workload,),
-        spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=pattern_boundary_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,

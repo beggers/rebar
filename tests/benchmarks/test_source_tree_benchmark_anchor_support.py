@@ -13,6 +13,9 @@ from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
 )
+from tests.benchmarks import (
+    pattern_boundary_benchmark_anchor_support as pattern_boundary_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
 
@@ -3324,7 +3327,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
             frozenset(
                 {
-                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
                 }
@@ -3365,7 +3367,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                 {
                     "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
-                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_assert_compiled_pattern_module_success_payload_round_trip",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
@@ -4089,7 +4090,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-        *benchmark_test_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+        *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )
     start_index = next(

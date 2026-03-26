@@ -53,6 +53,18 @@ Created: 2026-03-26
 - `bash -lc "! rg -n '^_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
 
 ## Notes
+- Completed:
+  - Added `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py` and moved the pattern-boundary manifest path, wrong-text-model selector/runtime/signature helpers, contract spec, and standard benchmark definition tuple onto that owner module.
+  - Removed the moved pattern-boundary owner surface from `tests/benchmarks/benchmark_test_support.py` and deleted the leaked `_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC` from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+  - Rerouted the pattern-boundary owner tests and manifest-validation/import-boundary checks through the new owner module, and updated adjacent standard-definition inventory checks that still referenced the old shared export.
+  - Verification in this run:
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` -> `27 passed`
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'pattern_boundary'` -> `4 passed, 176 deselected`
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'pattern_boundary_wrong_text_model'` -> `3 passed, 61 deselected`
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_contract_builder_consumers_route_owner_surface_through_package_alias and pattern-boundary'` -> `1 passed, 119 deselected`
+    - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> passed
+    - `bash -lc "! rg -n '^(_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS|PATTERN_BOUNDARY_MANIFEST_PATH|PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES|PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS)\\b' tests/benchmarks/benchmark_test_support.py"` -> passed
+    - `bash -lc "! rg -n '^_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` -> passed
 - Queue and JSON check in this run:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git status --short` was empty in this run.
