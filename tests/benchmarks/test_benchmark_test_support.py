@@ -1662,6 +1662,74 @@ def test_owner_surface_module_owned_without_local_duplicates_accepts_extra_owner
     assert observed_modules == [caller_module]
 
 
+@pytest.mark.parametrize(
+    ("local_definition_names", "local_assignment_names"),
+    (
+        pytest.param({"EXTRA_OWNER_ASSIGNMENT"}, set(), id="local-definition"),
+        pytest.param(set(), {"EXTRA_OWNER_ASSIGNMENT"}, id="local-assignment"),
+    ),
+)
+def test_owner_surface_module_owned_without_local_duplicates_rejects_extra_owner_name_when_defined_locally(
+    monkeypatch,
+    local_definition_names: set[str],
+    local_assignment_names: set[str],
+) -> None:
+    caller_module = object()
+    owner_module = SimpleNamespace(owner_helper=object())
+    extra_owner_module = SimpleNamespace(EXTRA_OWNER_ASSIGNMENT=object())
+    observed_modules: list[object] = []
+
+    def _top_level_names(module: object) -> tuple[set[str], set[str]]:
+        observed_modules.append(module)
+        assert module is caller_module
+        return set(local_definition_names), set(local_assignment_names)
+
+    monkeypatch.setattr(
+        support,
+        "top_level_module_definition_and_assignment_names",
+        _top_level_names,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_owner_surface_module_owned_without_local_duplicates(
+            caller_module,
+            owner_module,
+            definition_names=("owner_helper",),
+            extra_owner_name="EXTRA_OWNER_ASSIGNMENT",
+            extra_owner_module=extra_owner_module,
+        )
+
+    assert observed_modules == [caller_module]
+
+
+def test_owner_surface_module_owned_without_local_duplicates_rejects_unpaired_extra_owner_arguments(
+    monkeypatch,
+) -> None:
+    caller_module = object()
+    owner_module = SimpleNamespace(owner_helper=object())
+    extra_owner_module = SimpleNamespace(EXTRA_OWNER_ASSIGNMENT=object())
+
+    monkeypatch.setattr(
+        support,
+        "top_level_module_definition_and_assignment_names",
+        lambda module: (set(), set()),
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_owner_surface_module_owned_without_local_duplicates(
+            caller_module,
+            owner_module,
+            extra_owner_module=extra_owner_module,
+        )
+
+    with pytest.raises(AssertionError):
+        support.assert_owner_surface_module_owned_without_local_duplicates(
+            caller_module,
+            owner_module,
+            extra_owner_name="EXTRA_OWNER_ASSIGNMENT",
+        )
+
+
 def test_assert_mixed_owner_surface_accepts_local_names_and_support_aliases(
     monkeypatch,
 ) -> None:
