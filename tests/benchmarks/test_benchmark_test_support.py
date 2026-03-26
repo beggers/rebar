@@ -1499,14 +1499,15 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         module,
         owner_module="tests.benchmarks.benchmark_test_support",
         package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset({("benchmark_test_support", "support")}),
+        expected_alias_pairs=frozenset(
+            {
+                ("benchmark_test_support", "support"),
+                ("source_tree_benchmark_anchor_support", "source_tree_support"),
+            }
+        ),
     )
     assert getattr(module, "support") is support
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(module),
-        module_name="tests.benchmarks",
-        imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
-    ) == frozenset()
+    assert getattr(module, "source_tree_support") is anchor_support
     assert {
         "synthetic_workload",
         "STANDARD_BENCHMARK_DEFINITIONS",
@@ -3451,6 +3452,7 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
             collection_replacement_support
         )
     )
+    runtime_names = set(dir(collection_replacement_support))
 
     _assert_owner_module_routes_through_package_import(
         collection_replacement_support,
@@ -3463,7 +3465,7 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
         "tests.benchmarks.source_tree_benchmark_anchor_support"
         not in support._module_import_targets(collection_replacement_support)
     )
-    assert "_SourceTreeContractBuilderSpec" not in dir(collection_replacement_support)
+    assert "_SourceTreeContractBuilderSpec" not in runtime_names
     assert "source_tree_support" not in definition_names | assignment_names
     assert (
         collection_replacement_support.benchmark_test_support.source_tree_support
@@ -3471,6 +3473,9 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
     )
     assert COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES.isdisjoint(
         definition_names | assignment_names
+    )
+    assert COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES.isdisjoint(
+        runtime_names
     )
 
 
