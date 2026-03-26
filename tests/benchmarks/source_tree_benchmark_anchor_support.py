@@ -26,7 +26,7 @@ from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
-from tests.conftest import REPO_ROOT, manifest_records_by_id
+from tests.conftest import manifest_records_by_id
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -3230,10 +3230,6 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
 )
 
-def relative_manifest_path(path: pathlib.Path) -> str:
-    return str(path.relative_to(REPO_ROOT))
-
-
 def ordered_operations(workloads: list[Workload]) -> list[str]:
     operations: list[str] = []
     for workload in workloads:
@@ -3241,10 +3237,6 @@ def ordered_operations(workloads: list[Workload]) -> list[str]:
         if operation not in operations:
             operations.append(operation)
     return operations
-
-
-def source_tree_scorecard_case_ids() -> tuple[str, ...]:
-    return tuple(SOURCE_TREE_SCORECARD_EXPECTATIONS)
 
 
 def _append_unique_workload_ids(

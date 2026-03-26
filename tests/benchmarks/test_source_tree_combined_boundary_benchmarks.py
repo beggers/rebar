@@ -199,7 +199,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            [source_tree_support.relative_manifest_path(manifest.path) for manifest in case.manifests],
+            [str(manifest.path.relative_to(REPO_ROOT)) for manifest in case.manifests],
             [
                 "benchmarks/workloads/compile_matrix.py",
                 "benchmarks/workloads/module_boundary.py",
@@ -2467,7 +2467,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     expected_adapter=case.expected_adapter,
                     expected_manifests=case.manifests,
                     expected_manifest_paths=[
-                        source_tree_support.relative_manifest_path(manifest.path)
+                        str(manifest.path.relative_to(REPO_ROOT))
                         for manifest in case.manifests
                     ],
                     expected_selection_mode=case.selection_mode,
@@ -2486,7 +2486,9 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     manifest_summary,
                     manifest_record,
                     manifest=case.target_manifest,
-                    manifest_path=source_tree_support.relative_manifest_path(case.target_manifest.path),
+                    manifest_path=str(
+                        case.target_manifest.path.relative_to(REPO_ROOT)
+                    ),
                     known_gap_count=manifest_expectation.known_gap_count,
                     selection_mode=case.selection_mode,
                     selected_workload_ids=case.selected_workload_ids_for_manifest(
@@ -2821,7 +2823,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            [source_tree_support.relative_manifest_path(manifest.path) for manifest in case.manifests],
+            [str(manifest.path.relative_to(REPO_ROOT)) for manifest in case.manifests],
             [
                 "benchmarks/workloads/module_boundary.py",
                 "benchmarks/workloads/collection_replacement_boundary.py",
@@ -4217,7 +4219,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 )
 
     def test_runner_regenerates_source_tree_scorecards(self) -> None:
-        for case_id in source_tree_support.source_tree_scorecard_case_ids():
+        for case_id in source_tree_support.SOURCE_TREE_SCORECARD_EXPECTATIONS:
             with self.subTest(case_id=case_id):
                 case = source_tree_support.source_tree_scorecard_case(case_id)
                 command = [
@@ -4243,7 +4245,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     expected_adapter=case.expected_adapter,
                     expected_manifests=case.manifests,
                     expected_manifest_paths=[
-                        source_tree_support.relative_manifest_path(manifest.path)
+                        str(manifest.path.relative_to(REPO_ROOT))
                         for manifest in case.manifests
                     ],
                     expected_selection_mode=case.selection_mode,
@@ -4281,8 +4283,8 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                                 manifest_id,
                             ),
                             manifest=manifest,
-                            manifest_path=source_tree_support.relative_manifest_path(
-                                manifest.path
+                            manifest_path=str(
+                                manifest.path.relative_to(REPO_ROOT)
                             ),
                             known_gap_count=manifest_expectation.known_gap_count,
                             selection_mode=case.selection_mode,

@@ -1202,7 +1202,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for function_name in (
         "_source_tree_contract_manifest",
         "_source_tree_contract_workload",
-        "source_tree_scorecard_case_ids",
         "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
@@ -1263,6 +1262,12 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert constant_name not in local_assignment_names
         assert not hasattr(support, constant_name)
         assert hasattr(benchmark_test_support, constant_name)
+    for function_name in (
+        "relative_manifest_path",
+        "source_tree_scorecard_case_ids",
+    ):
+        assert function_name not in local_function_names
+        assert not hasattr(support, function_name)
     benchmark_test_support.assert_mixed_owner_surface(
         support,
         local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
@@ -1805,7 +1810,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
     for function_name in (
         "_source_tree_contract_manifest",
         "_source_tree_contract_workload",
-        "source_tree_scorecard_case_ids",
         "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
@@ -1870,6 +1874,34 @@ def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() ->
     assert "_assert_zero_gap_representative_workload_subset" not in class_method_names
     assert "_assert_representative_workloads" not in class_method_names
     assert "_assert_workloads" not in class_method_names
+
+
+def test_combined_suite_no_longer_routes_deleted_wrapper_helpers_through_source_tree_support(
+) -> None:
+    module_ast = support._parsed_source_tree_combined_suite_ast()
+    deleted_wrapper_names = frozenset(
+        {"relative_manifest_path", "source_tree_scorecard_case_ids"}
+    )
+    source_tree_support_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="source_tree_benchmark_anchor_support",
+        dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+    )
+
+    assert benchmark_test_support._top_level_import_from_alias_pairs(
+        module_ast,
+        module_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+        imported_names=deleted_wrapper_names,
+    ) == frozenset()
+    assert frozenset(
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in source_tree_support_alias_names
+        and node.attr in deleted_wrapper_names
+    ) == frozenset()
 
 
 def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
