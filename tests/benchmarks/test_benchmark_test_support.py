@@ -2093,6 +2093,56 @@ OWNER_ASSIGNMENT = shared_support.SHARED_ALIAS
     )
 
 
+@pytest.mark.parametrize(
+    "module_source",
+    (
+        pytest.param(
+            """
+from tests.benchmarks import benchmark_test_support as shared_support
+
+shared_support = object()
+SHARED_ALIAS = shared_support.SHARED_ALIAS
+""",
+            id="plain-rebind",
+        ),
+        pytest.param(
+            """
+from tests.benchmarks import benchmark_test_support as shared_support
+
+shared_support: object = object()
+SHARED_ALIAS = shared_support.SHARED_ALIAS
+""",
+            id="annotated-rebind",
+        ),
+    ),
+)
+def test_assert_mixed_owner_surface_rejects_support_alias_after_module_alias_rebind(
+    monkeypatch,
+    module_source: str,
+) -> None:
+    shared_alias = object()
+    caller_module = SimpleNamespace(SHARED_ALIAS=shared_alias)
+    module_ast = ast.parse(module_source)
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "SHARED_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_mixed_owner_surface(
+            caller_module,
+            support_alias_assignment_names=("SHARED_ALIAS",),
+        )
+
+
 def test_assert_mixed_owner_surface_rejects_support_alias_with_wrong_attribute_name(
     monkeypatch,
 ) -> None:
