@@ -2753,7 +2753,6 @@ def test_benchmark_test_support_owns_source_tree_combined_routing_helpers(
     )
 
     moved_helper_names = {
-        "_source_tree_combined_suite_module",
         "_parsed_source_tree_combined_suite_ast",
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
     }
@@ -2761,6 +2760,8 @@ def test_benchmark_test_support_owns_source_tree_combined_routing_helpers(
     assert moved_helper_names.issubset(definition_names)
     for helper_name in moved_helper_names:
         assert hasattr(support, helper_name)
+        assert not hasattr(anchor_support, helper_name)
+    assert not hasattr(support, "_source_tree_combined_suite_module")
     assert "_module_alias_names" in definition_names
 
 
@@ -3809,7 +3810,8 @@ def test_source_tree_contract_helper_suites_import_from_support(
             ("source_tree_benchmark_anchor_support", "source_tree_support"),
         }
     )
-    assert expected_imported_names.issubset(dir(module.source_tree_support))
+    assert expected_imported_names.issubset(dir(module.benchmark_test_support))
+    assert expected_imported_names.isdisjoint(dir(module.source_tree_support))
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         module
     )
