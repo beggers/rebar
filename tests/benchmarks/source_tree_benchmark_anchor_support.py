@@ -220,10 +220,11 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     assert aliased_owner_refs == set()
     return combined_suite
 
-def _assert_zero_gap_manifest_state(
+def assert_zero_gap_bytes_representative_subset(
     testcase: Any,
     manifest_id: str,
-) -> tuple[Any, tuple[str, ...], Any, Any, int]:
+    expected_workload_ids: tuple[str, ...],
+) -> None:
     manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
     public_representatives = (
         source_tree_combined_manifest_representative_measured_workload_ids(
@@ -235,7 +236,6 @@ def _assert_zero_gap_manifest_state(
         manifest_definition.representative_known_gap_workload_ids or (),
         (),
     )
-
     case = source_tree_combined_case(manifest_id)
     manifest_expectation = case.manifest_expectation
     testcase.assertEqual(manifest_expectation.known_gap_count, 0)
@@ -246,27 +246,6 @@ def _assert_zero_gap_manifest_state(
     expected_measured_workload_count = len(
         case.selected_workload_ids_for_manifest(manifest_id)
     )
-    return (
-        manifest_definition,
-        public_representatives,
-        case,
-        manifest_expectation,
-        expected_measured_workload_count,
-    )
-
-
-def assert_zero_gap_bytes_representative_subset(
-    testcase: Any,
-    manifest_id: str,
-    expected_workload_ids: tuple[str, ...],
-) -> None:
-    (
-        manifest_definition,
-        public_representatives,
-        case,
-        manifest_expectation,
-        expected_measured_workload_count,
-    ) = _assert_zero_gap_manifest_state(testcase, manifest_id)
     testcase.assertIsNone(
         manifest_definition.representative_known_gap_workload_ids
     )
@@ -309,13 +288,22 @@ def assert_zero_gap_manifest_representative_promotion(
     testcase: Any,
     manifest_id: str,
 ) -> None:
-    (
-        manifest_definition,
-        _public_representatives,
-        case,
-        manifest_expectation,
-        expected_measured_workload_count,
-    ) = _assert_zero_gap_manifest_state(testcase, manifest_id)
+    manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+    testcase.assertIsNone(manifest_definition.known_gap_workload_ids)
+    testcase.assertEqual(
+        manifest_definition.representative_known_gap_workload_ids or (),
+        (),
+    )
+    case = source_tree_combined_case(manifest_id)
+    manifest_expectation = case.manifest_expectation
+    testcase.assertEqual(manifest_expectation.known_gap_count, 0)
+    testcase.assertEqual(
+        manifest_expectation.representative_known_gap_workload_ids,
+        (),
+    )
+    expected_measured_workload_count = len(
+        case.selected_workload_ids_for_manifest(manifest_id)
+    )
     expected_workload_ids = manifest_definition.representative_measured_workload_ids
     testcase.assertIsNotNone(expected_workload_ids)
     assert expected_workload_ids is not None
