@@ -16,6 +16,16 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
+
+
+def _default_source_tree_contract_manifest_timed_samples() -> int:
+    default = support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+        "manifest_timed_samples"
+    ].default
+    assert isinstance(default, int)
+    return default
+
+
 def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
     return frozenset()
 
@@ -1309,7 +1319,7 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
     assert contract_case.contract_builder_spec() == support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
-        manifest_timed_samples=2,
+        manifest_timed_samples=_default_source_tree_contract_manifest_timed_samples(),
         timing_scope="module-helper-call",
         notes=(contract_case.note(),),
     )
@@ -1438,7 +1448,7 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
         ),
-        manifest_timed_samples=2,
+        manifest_timed_samples=_default_source_tree_contract_manifest_timed_samples(),
         timing_scope="module-helper-call",
         notes=spec.notes,
     )
@@ -1471,6 +1481,10 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
             "compiled-pattern-first-argument successful "
             f"{owner_spec.note_surface} rows unresolved until helper invocation.",
         ),
+    )
+    assert (
+        spec.manifest_timed_samples
+        == _default_source_tree_contract_manifest_timed_samples()
     )
 
 
