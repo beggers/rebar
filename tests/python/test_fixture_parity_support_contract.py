@@ -1578,6 +1578,18 @@ def test_module_workflow_keyword_signature_accepts_encoded_indexlike_payloads() 
     )
 
 
+def test_module_workflow_positional_signature_rejects_bool_encoded_indexlike_payloads() -> None:
+    assert fixture_parity_support.module_workflow_positional_args_signature(
+        [{"type": "indexlike", "value": True}]
+    ) == (("dict", "{'type': 'indexlike', 'value': True}"),)
+
+
+def test_module_workflow_keyword_signature_rejects_bool_encoded_indexlike_payloads() -> None:
+    assert fixture_parity_support.module_workflow_keyword_kwargs_signature(
+        {"endpos": {"type": "indexlike", "value": True}}
+    ) == (("endpos", "dict", "{'type': 'indexlike', 'value': True}"),)
+
+
 @pytest.mark.parametrize(
     ("case", "expected_replacement", "expected_text"),
     (
