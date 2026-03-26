@@ -30,6 +30,15 @@ Created: 2026-03-26
 - `python3 -m py_compile tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
 - `bash -lc "! rg -n 'SourceTreeScorecardCase|_SourceTreeScorecardDefinition|SOURCE_TREE_SCORECARD_EXPECTATIONS|source_tree_scorecard_case\\(' tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"`
 
+## Completion
+- Deleted `SourceTreeScorecardCase`, `_SourceTreeScorecardDefinition`, `SOURCE_TREE_SCORECARD_EXPECTATIONS`, and `source_tree_scorecard_case(...)` from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Rebuilt the scorecard-case expectations locally inside `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the suite now derives combined-report assertions from `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS`, `source_tree_combined_manifest_representative_measured_workload_ids(...)`, and `expected_summary_for_manifests(...)` without the extra shared wrapper layer.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_benchmark_test_support.py` so the package-surface assertions now cover only the surviving shared source-tree support surface.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `670 passed, 1573 subtests passed in 14.82s`.
+  - `python3 -m py_compile tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
+  - `bash -lc "! rg -n 'SourceTreeScorecardCase|_SourceTreeScorecardDefinition|SOURCE_TREE_SCORECARD_EXPECTATIONS|source_tree_scorecard_case\\(' tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"` passed.
+
 ## Notes
 - Queue and JSON check in this run:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.

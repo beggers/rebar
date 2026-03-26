@@ -22,12 +22,10 @@ from rebar_harness.benchmarks import (
     determine_phase,
     determine_runner_version,
     published_benchmark_manifests,
-    select_workloads,
     workload_from_payload,
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
-from tests.conftest import manifest_records_by_id
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -3290,26 +3288,6 @@ class SourceTreeDeferredExpectation:
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
-    case_id: str
-    manifest_expectations: dict[str, SourceTreeManifestExpectation]
-    representative_measured_workload_ids: tuple[str, ...]
-    representative_known_gap_workload_ids: tuple[str, ...]
-    expected_first_deferred: SourceTreeDeferredExpectation | None = None
-    expected_workload_order: tuple[str, ...] | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class _SourceTreeScorecardDefinition:
-    manifest_ids: tuple[str, ...]
-    selection_mode: str = "full"
-    representative_measured_workload_ids: tuple[str, ...] = ()
-    representative_known_gap_workload_ids: tuple[str, ...] = ()
-    expected_first_deferred: SourceTreeDeferredExpectation | None = None
-    expected_workload_order: tuple[str, ...] | None = None
-
-
-@dataclass(frozen=True, slots=True)
 class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
     manifest_expectation: SourceTreeManifestExpectation
     manifest_id: str
@@ -3369,104 +3347,6 @@ class SourceTreeCombinedSliceExpectation:
     expected_haystacks: frozenset[str] = frozenset()
     required_row_categories: tuple[str, ...] = ()
     expected_status: str = "measured"
-
-
-SOURCE_TREE_SCORECARD_EXPECTATIONS = {
-    "compile-matrix": _SourceTreeScorecardDefinition(
-        manifest_ids=("compile-matrix",),
-        expected_first_deferred=SourceTreeDeferredExpectation(
-            area="module-boundary",
-            follow_up="RBR-0015",
-        ),
-        representative_measured_workload_ids=(
-            "compile-inline-locale-bytes-warm",
-            "compile-lookbehind-cold",
-            "compile-atomic-group-purged",
-            "compile-parser-stress-cold",
-        ),
-    ),
-    "post-parser-workflows": _SourceTreeScorecardDefinition(
-        manifest_ids=(
-            "module-boundary",
-            "collection-replacement-boundary",
-            "literal-flag-boundary",
-        ),
-        representative_measured_workload_ids=(
-            "module-compile-literal-cold",
-            "module-compile-literal-warm",
-            "module-compile-literal-purged",
-            "module-search-grouped-literal-cold-hit",
-            "module-search-flags-keyword-warm-str",
-            "module-search-duplicate-flags-keyword-warm-str",
-            "module-match-flags-keyword-purged-bytes",
-            "module-fullmatch-flags-keyword-warm-str",
-            "module-fullmatch-unexpected-keyword-purged-str",
-            "module-findall-single-dot-warm-str",
-            "module-sub-template-warm-str",
-            "module-sub-callable-grouped-warm-str",
-            "pattern-subn-grouped-template-warm-str",
-            "pattern-subn-callable-named-grouped-warm-str",
-            "module-search-inline-flag-warm-str-hit",
-            "pattern-search-inline-flag-warm-str-hit",
-            "module-search-locale-purged-bytes-hit",
-            "pattern-search-locale-purged-bytes-hit",
-            "module-search-ignorecase-ascii-cold-gap",
-            "pattern-search-ignorecase-ascii-warm-gap",
-        ),
-        representative_known_gap_workload_ids=(),
-    ),
-    "numbered-backreference-boundary": _SourceTreeScorecardDefinition(
-        manifest_ids=("numbered-backreference-boundary",),
-    ),
-    "nested-group-boundary": _SourceTreeScorecardDefinition(
-        manifest_ids=("nested-group-boundary",),
-    ),
-    "nested-group-replacement-boundary": _SourceTreeScorecardDefinition(
-        manifest_ids=("nested-group-replacement-boundary",),
-    ),
-    "nested-group-callable-replacement-boundary": _SourceTreeScorecardDefinition(
-        manifest_ids=("nested-group-callable-replacement-boundary",),
-    ),
-    "branch-local-backreference-boundary": _SourceTreeScorecardDefinition(
-        manifest_ids=("branch-local-backreference-boundary",),
-    ),
-    "conditional-group-exists-boundary": _SourceTreeScorecardDefinition(
-        manifest_ids=("conditional-group-exists-boundary",),
-    ),
-    "regression-pack-full": _SourceTreeScorecardDefinition(
-        manifest_ids=(
-            "compile-matrix",
-            "module-boundary",
-            "regression-matrix",
-        ),
-        representative_measured_workload_ids=(
-            "compile-inline-locale-bytes-warm",
-            "module-compile-literal-cold",
-            "module-compile-literal-warm",
-            "module-compile-literal-purged",
-            "regression-import-cold",
-            "regression-parser-bytes-backreference-purged",
-            "regression-module-compile-multiline-purged",
-            "regression-module-compile-multiline-purged-bytes",
-            "regression-module-compile-verbose-purged-bytes",
-            "regression-module-search-bytes-cold-miss",
-        ),
-        representative_known_gap_workload_ids=(),
-    ),
-    "regression-pack-smoke": _SourceTreeScorecardDefinition(
-        manifest_ids=("regression-matrix",),
-        selection_mode="smoke",
-        expected_workload_order=(
-            "regression-import-cold",
-            "regression-parser-atomic-lookbehind-cold",
-        ),
-        representative_measured_workload_ids=(
-            "regression-import-cold",
-            "regression-parser-atomic-lookbehind-cold",
-        ),
-        representative_known_gap_workload_ids=(),
-    ),
-}
 
 def _combined_manifest_definition(
     *,
@@ -8496,138 +8376,6 @@ def _public_source_tree_manifest_expectation(
             selected_workload_ids=selected_workload_ids,
         ),
     )
-
-
-def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
-    if case_id not in SOURCE_TREE_SCORECARD_EXPECTATIONS:
-        raise AssertionError(f"unknown source-tree scorecard case {case_id!r}")
-
-    case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
-    manifest_ids = case_definition.manifest_ids
-    manifest_records = manifest_records_by_id(published_benchmark_manifests())
-    manifests: list[BenchmarkManifest] = []
-    for manifest_id in manifest_ids:
-        try:
-            manifests.append(manifest_records[manifest_id])
-        except KeyError as exc:
-            raise AssertionError(
-                f"unknown benchmark manifest id {manifest_id!r}"
-            ) from exc
-    selected_workloads = select_workloads(
-        [workload for manifest in manifests for workload in manifest.workloads],
-        smoke_only=case_definition.selection_mode == "smoke",
-    )
-    manifest_known_gap_counts: dict[str, int] = {}
-    for manifest in manifests:
-        manifest_id = manifest.manifest_id
-        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
-        if manifest_expectation is None:
-            raise AssertionError(
-                "missing known-gap expectation for source-tree scorecard manifest "
-                f"{manifest_id!r}"
-            )
-        manifest_known_gap_counts[manifest_id] = len(
-            _filter_manifest_workload_ids(
-                manifest_expectation.known_gap_workload_ids,
-                selected_workload_ids=(
-                    workload.workload_id
-                    for workload in manifest.selected_workloads(
-                        selection_mode=case_definition.selection_mode
-                    )
-                ),
-            )
-        )
-    manifest_expectations: dict[str, SourceTreeManifestExpectation] = {}
-    for manifest in manifests:
-        manifest_id = manifest.manifest_id
-        selected_workload_ids = tuple(
-            workload.workload_id
-            for workload in manifest.selected_workloads(
-                selection_mode=case_definition.selection_mode
-            )
-        )
-        selected_workload_id_set = (
-            None
-            if selected_workload_ids is None
-            else {str(workload_id) for workload_id in selected_workload_ids}
-        )
-        manifest_expectations[manifest_id] = (
-            _public_source_tree_manifest_expectation(
-                manifest_id,
-                selected_workload_ids=selected_workload_ids,
-            )
-            if manifest_id in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
-            else SourceTreeManifestExpectation(
-                known_gap_count=manifest_known_gap_counts[manifest_id],
-                representative_measured_workload_ids=(
-                    case_definition.representative_measured_workload_ids
-                    if selected_workload_id_set is None
-                    else tuple(
-                        workload_id
-                        for workload_id in case_definition.representative_measured_workload_ids
-                        if workload_id in selected_workload_id_set
-                    )
-                ),
-                representative_known_gap_workload_ids=(
-                    case_definition.representative_known_gap_workload_ids
-                    if selected_workload_id_set is None
-                    else tuple(
-                        workload_id
-                        for workload_id in case_definition.representative_known_gap_workload_ids
-                        if workload_id in selected_workload_id_set
-                    )
-                ),
-            )
-        )
-    representative_measured_workload_ids = (
-        case_definition.representative_measured_workload_ids
-    )
-    representative_known_gap_workload_ids = (
-        case_definition.representative_known_gap_workload_ids
-    )
-    if (
-        len(manifest_ids) == 1
-        and manifest_ids[0] in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
-    ):
-        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_ids[0]]
-        if not representative_measured_workload_ids:
-            representative_measured_workload_ids = (
-                source_tree_combined_manifest_representative_measured_workload_ids(
-                    manifest_ids[0]
-                )
-            )
-        if not representative_known_gap_workload_ids:
-            representative_known_gap_workload_ids = (
-                _filter_manifest_workload_ids(
-                    manifest_expectation.representative_known_gap_workload_ids
-                )
-            )
-    workload_payloads = [
-        workload_to_payload(workload) for workload in selected_workloads
-    ]
-    return SourceTreeScorecardCase(
-        case_id=case_id,
-        expected_adapter=(
-            "rebar.module-surface"
-            if any(workload.family == "module" for workload in selected_workloads)
-            else "rebar.compile"
-        ),
-        expected_phase=determine_phase(workload_payloads),
-        expected_runner_version=determine_runner_version(workload_payloads),
-        expected_summary=expected_summary_for_manifests(
-            manifests,
-            selection_mode=case_definition.selection_mode,
-            manifest_known_gap_counts=manifest_known_gap_counts,
-        ),
-        manifests=manifests,
-        selection_mode=case_definition.selection_mode,
-        manifest_expectations=manifest_expectations,
-        representative_measured_workload_ids=representative_measured_workload_ids,
-        representative_known_gap_workload_ids=representative_known_gap_workload_ids,
-        expected_first_deferred=case_definition.expected_first_deferred,
-        expected_workload_order=case_definition.expected_workload_order,
-    )
-
 
 def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     target_manifest_ids: list[str] = []

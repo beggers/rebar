@@ -2999,7 +2999,7 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
         __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
-        SOURCE_TREE_SCORECARD_EXPECTATIONS=owner_surface,
+        SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
     combined_suite = SimpleNamespace(
@@ -3012,7 +3012,7 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
                 "from tests.benchmarks import benchmark_test_support",
                 "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
                 "",
-                "benchmark_test_support.SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                "source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "source_tree_support.assert_source_tree_benchmark_contract",
             )
         )
@@ -3030,11 +3030,8 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
             alias_name="source_tree_support",
             owner_module=owner_module,
             owner_names=(
-                "SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "assert_source_tree_benchmark_contract",
-            ),
-            expected_direct_benchmark_test_support_refs=frozenset(
-                {"SOURCE_TREE_SCORECARD_EXPECTATIONS"}
             ),
         )
         is combined_suite
@@ -3048,7 +3045,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
         __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
-        SOURCE_TREE_SCORECARD_EXPECTATIONS=owner_surface,
+        SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
     combined_suite = SimpleNamespace(
@@ -3061,7 +3058,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
                 "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
                 "",
                 "source_tree_support_alias = source_tree_support",
-                "source_tree_scorecard_expectations_alias = source_tree_support_alias.SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                "source_tree_combined_manifest_expectations_alias = source_tree_support_alias.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "source_tree_benchmark_contract_alias = source_tree_support_alias.assert_source_tree_benchmark_contract",
             )
         )
@@ -3073,7 +3070,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
         combined_suite_ast=combined_suite_ast,
         local_assignment_names={
             "source_tree_support_alias",
-            "source_tree_scorecard_expectations_alias",
+            "source_tree_combined_manifest_expectations_alias",
             "source_tree_benchmark_contract_alias",
         },
     )
@@ -3083,7 +3080,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
             alias_name="source_tree_support",
             owner_module=owner_module,
             owner_names=(
-                "SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "assert_source_tree_benchmark_contract",
             ),
         )
@@ -3096,7 +3093,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
             "\n".join(
                 (
                     "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
-                    "from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                    "from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 )
             ),
             set(),
@@ -3107,10 +3104,10 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
                 (
                     "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
                     "",
-                    "SOURCE_TREE_SCORECARD_EXPECTATIONS = source_tree_support.SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 )
             ),
-            {"SOURCE_TREE_SCORECARD_EXPECTATIONS"},
+            {"SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS"},
             id="local-owner-rebinding",
         ),
         pytest.param(
@@ -3136,7 +3133,7 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
         __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
-        SOURCE_TREE_SCORECARD_EXPECTATIONS=owner_surface,
+        SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
     combined_suite = SimpleNamespace(
@@ -3157,7 +3154,7 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
             alias_name="source_tree_support",
             owner_module=owner_module,
             owner_names=(
-                "SOURCE_TREE_SCORECARD_EXPECTATIONS",
+                "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "assert_source_tree_benchmark_contract",
             ),
         )

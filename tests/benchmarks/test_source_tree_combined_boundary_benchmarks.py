@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections import Counter
-from functools import partial
+from dataclasses import dataclass
+from functools import cache, partial
 import json
 import pathlib
 import re
@@ -13,6 +14,8 @@ from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BenchmarkManifest,
     Workload,
+    determine_phase,
+    determine_runner_version,
     load_manifest,
     published_benchmark_manifests,
     workload_from_payload,
@@ -54,6 +57,248 @@ def _workload_ids_for_declared_slice(
         if (text_model is None or workload.text_model == text_model)
         and all(category in workload.categories for category in include_categories)
         and all(category not in workload.categories for category in exclude_categories)
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _SourceTreeSuiteScorecardDefinition:
+    manifest_ids: tuple[str, ...]
+    selection_mode: str = "full"
+    representative_measured_workload_ids: tuple[str, ...] = ()
+    representative_known_gap_workload_ids: tuple[str, ...] = ()
+    expected_first_deferred: source_tree_support.SourceTreeDeferredExpectation | None = None
+    expected_workload_order: tuple[str, ...] | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class _SourceTreeSuiteScorecardCase(source_tree_support.SourceTreeBenchmarkCommonCase):
+    case_id: str
+    manifest_expectations: dict[str, source_tree_support.SourceTreeManifestExpectation]
+    representative_measured_workload_ids: tuple[str, ...]
+    representative_known_gap_workload_ids: tuple[str, ...]
+    expected_first_deferred: source_tree_support.SourceTreeDeferredExpectation | None = None
+    expected_workload_order: tuple[str, ...] | None = None
+
+
+_SOURCE_TREE_SUITE_SCORECARD_DEFINITIONS = {
+    "compile-matrix": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("compile-matrix",),
+        expected_first_deferred=source_tree_support.SourceTreeDeferredExpectation(
+            area="module-boundary",
+            follow_up="RBR-0015",
+        ),
+        representative_measured_workload_ids=(
+            "compile-inline-locale-bytes-warm",
+            "compile-lookbehind-cold",
+            "compile-atomic-group-purged",
+            "compile-parser-stress-cold",
+        ),
+    ),
+    "post-parser-workflows": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=(
+            "module-boundary",
+            "collection-replacement-boundary",
+            "literal-flag-boundary",
+        ),
+        representative_measured_workload_ids=(
+            "module-compile-literal-cold",
+            "module-compile-literal-warm",
+            "module-compile-literal-purged",
+            "module-search-grouped-literal-cold-hit",
+            "module-search-flags-keyword-warm-str",
+            "module-search-duplicate-flags-keyword-warm-str",
+            "module-match-flags-keyword-purged-bytes",
+            "module-fullmatch-flags-keyword-warm-str",
+            "module-fullmatch-unexpected-keyword-purged-str",
+            "module-findall-single-dot-warm-str",
+            "module-sub-template-warm-str",
+            "module-sub-callable-grouped-warm-str",
+            "pattern-subn-grouped-template-warm-str",
+            "pattern-subn-callable-named-grouped-warm-str",
+            "module-search-inline-flag-warm-str-hit",
+            "pattern-search-inline-flag-warm-str-hit",
+            "module-search-locale-purged-bytes-hit",
+            "pattern-search-locale-purged-bytes-hit",
+            "module-search-ignorecase-ascii-cold-gap",
+            "pattern-search-ignorecase-ascii-warm-gap",
+        ),
+    ),
+    "numbered-backreference-boundary": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("numbered-backreference-boundary",),
+    ),
+    "nested-group-boundary": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("nested-group-boundary",),
+    ),
+    "nested-group-replacement-boundary": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("nested-group-replacement-boundary",),
+    ),
+    "nested-group-callable-replacement-boundary": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("nested-group-callable-replacement-boundary",),
+    ),
+    "branch-local-backreference-boundary": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("branch-local-backreference-boundary",),
+    ),
+    "conditional-group-exists-boundary": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("conditional-group-exists-boundary",),
+    ),
+    "regression-pack-full": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=(
+            "compile-matrix",
+            "module-boundary",
+            "regression-matrix",
+        ),
+        representative_measured_workload_ids=(
+            "compile-inline-locale-bytes-warm",
+            "module-compile-literal-cold",
+            "module-compile-literal-warm",
+            "module-compile-literal-purged",
+            "regression-import-cold",
+            "regression-parser-bytes-backreference-purged",
+            "regression-module-compile-multiline-purged",
+            "regression-module-compile-multiline-purged-bytes",
+            "regression-module-compile-verbose-purged-bytes",
+            "regression-module-search-bytes-cold-miss",
+        ),
+    ),
+    "regression-pack-smoke": _SourceTreeSuiteScorecardDefinition(
+        manifest_ids=("regression-matrix",),
+        selection_mode="smoke",
+        expected_workload_order=(
+            "regression-import-cold",
+            "regression-parser-atomic-lookbehind-cold",
+        ),
+        representative_measured_workload_ids=(
+            "regression-import-cold",
+            "regression-parser-atomic-lookbehind-cold",
+        ),
+    ),
+}
+
+
+@cache
+def _published_benchmark_manifest_records() -> dict[str, BenchmarkManifest]:
+    return {manifest.manifest_id: manifest for manifest in published_benchmark_manifests()}
+
+
+def _filter_selected_workload_ids(
+    workload_ids: tuple[str, ...] | None,
+    *,
+    selected_workload_ids: tuple[str, ...],
+) -> tuple[str, ...]:
+    if not workload_ids:
+        return ()
+    selected_workload_id_set = set(selected_workload_ids)
+    return tuple(
+        workload_id
+        for workload_id in workload_ids
+        if workload_id in selected_workload_id_set
+    )
+
+
+def _source_tree_scorecard_manifest_expectation(
+    manifest_id: str,
+    *,
+    selected_workload_ids: tuple[str, ...],
+) -> source_tree_support.SourceTreeManifestExpectation:
+    manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        manifest_id
+    ]
+    return source_tree_support.SourceTreeManifestExpectation(
+        known_gap_count=len(
+            _filter_selected_workload_ids(
+                manifest_definition.known_gap_workload_ids,
+                selected_workload_ids=selected_workload_ids,
+            )
+        ),
+        representative_measured_workload_ids=_filter_selected_workload_ids(
+            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            ),
+            selected_workload_ids=selected_workload_ids,
+        ),
+        representative_known_gap_workload_ids=_filter_selected_workload_ids(
+            manifest_definition.representative_known_gap_workload_ids,
+            selected_workload_ids=selected_workload_ids,
+        ),
+    )
+
+
+def _source_tree_suite_scorecard_case(
+    case_id: str,
+) -> _SourceTreeSuiteScorecardCase:
+    case_definition = _SOURCE_TREE_SUITE_SCORECARD_DEFINITIONS.get(case_id)
+    if case_definition is None:
+        raise AssertionError(f"unknown source-tree suite scorecard case {case_id!r}")
+
+    manifest_records = _published_benchmark_manifest_records()
+    manifests = [manifest_records[manifest_id] for manifest_id in case_definition.manifest_ids]
+    selected_workloads = tuple(
+        workload
+        for manifest in manifests
+        for workload in manifest.selected_workloads(
+            selection_mode=case_definition.selection_mode
+        )
+    )
+    selected_workload_ids = tuple(
+        workload.workload_id for workload in selected_workloads
+    )
+    manifest_expectations: dict[str, source_tree_support.SourceTreeManifestExpectation] = {}
+    manifest_known_gap_counts: dict[str, int] = {}
+    for manifest in manifests:
+        manifest_id = manifest.manifest_id
+        manifest_expectation = _source_tree_scorecard_manifest_expectation(
+            manifest_id,
+            selected_workload_ids=tuple(
+                workload.workload_id
+                for workload in manifest.selected_workloads(
+                    selection_mode=case_definition.selection_mode
+                )
+            ),
+        )
+        manifest_expectations[manifest_id] = manifest_expectation
+        manifest_known_gap_counts[manifest_id] = manifest_expectation.known_gap_count
+
+    representative_measured_workload_ids = _filter_selected_workload_ids(
+        case_definition.representative_measured_workload_ids,
+        selected_workload_ids=selected_workload_ids,
+    )
+    representative_known_gap_workload_ids = _filter_selected_workload_ids(
+        case_definition.representative_known_gap_workload_ids,
+        selected_workload_ids=selected_workload_ids,
+    )
+    if len(case_definition.manifest_ids) == 1:
+        manifest_expectation = manifest_expectations[case_definition.manifest_ids[0]]
+        if not representative_measured_workload_ids:
+            representative_measured_workload_ids = (
+                manifest_expectation.representative_measured_workload_ids
+            )
+        if not representative_known_gap_workload_ids:
+            representative_known_gap_workload_ids = (
+                manifest_expectation.representative_known_gap_workload_ids
+            )
+
+    workload_payloads = [workload_to_payload(workload) for workload in selected_workloads]
+    return _SourceTreeSuiteScorecardCase(
+        case_id=case_id,
+        expected_adapter=(
+            "rebar.module-surface"
+            if any(workload.family == "module" for workload in selected_workloads)
+            else "rebar.compile"
+        ),
+        expected_phase=determine_phase(workload_payloads),
+        expected_runner_version=determine_runner_version(workload_payloads),
+        expected_summary=source_tree_support.expected_summary_for_manifests(
+            manifests,
+            selection_mode=case_definition.selection_mode,
+            manifest_known_gap_counts=manifest_known_gap_counts,
+        ),
+        manifests=manifests,
+        selection_mode=case_definition.selection_mode,
+        manifest_expectations=manifest_expectations,
+        representative_measured_workload_ids=representative_measured_workload_ids,
+        representative_known_gap_workload_ids=representative_known_gap_workload_ids,
+        expected_first_deferred=case_definition.expected_first_deferred,
+        expected_workload_order=case_definition.expected_workload_order,
     )
 
 
@@ -2944,7 +3189,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         )
 
     def test_regression_manifest_is_fully_measured_on_the_shared_surface(self) -> None:
-        scorecard_case = source_tree_support.source_tree_scorecard_case("regression-pack-full")
+        scorecard_case = _source_tree_suite_scorecard_case("regression-pack-full")
         self.assertEqual(
             scorecard_case.manifest_expectations["regression-matrix"].known_gap_count,
             0,
@@ -3412,7 +3657,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             )
 
     def test_raw_scorecard_case_definitions_use_direct_manifest_ids(self) -> None:
-        for case_id, case_definition in source_tree_support.SOURCE_TREE_SCORECARD_EXPECTATIONS.items():
+        for case_id, case_definition in _SOURCE_TREE_SUITE_SCORECARD_DEFINITIONS.items():
             with self.subTest(case_id=case_id):
                 self.assertFalse(isinstance(case_definition, dict))
                 self.assertFalse(hasattr(case_definition, "full_manifest_ids"))
@@ -3423,7 +3668,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_full_scorecard_cases_derive_known_gap_counts_from_manifest_inventories(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("post-parser-workflows")
+        case = _source_tree_suite_scorecard_case("post-parser-workflows")
         self.assertEqual(
             case.manifest_expectations["literal-flag-boundary"].known_gap_count,
             0,
@@ -3453,7 +3698,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_post_parser_workflows_promote_ignorecase_ascii_pair_to_measured_representatives(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("post-parser-workflows")
+        case = _source_tree_suite_scorecard_case("post-parser-workflows")
         for workload_id in (
             "module-search-ignorecase-ascii-cold-gap",
             "pattern-search-ignorecase-ascii-warm-gap",
@@ -3468,7 +3713,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_regression_pack_full_promotes_regression_probes_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("regression-pack-full")
+        case = _source_tree_suite_scorecard_case("regression-pack-full")
         for workload_id in (
             "regression-parser-bytes-backreference-purged",
             "regression-module-compile-multiline-purged",
@@ -3489,7 +3734,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "numbered-backreference-boundary"
-        scorecard_case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        scorecard_case = _source_tree_suite_scorecard_case(manifest_id)
         combined_case = source_tree_support.source_tree_combined_case(manifest_id)
 
         self.assertEqual(
@@ -3508,7 +3753,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
     def test_nested_group_manifest_promotes_nested_pair_to_measured(self) -> None:
         manifest_id = "nested-group-boundary"
-        scorecard_case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        scorecard_case = _source_tree_suite_scorecard_case(manifest_id)
         combined_case = source_tree_support.source_tree_combined_case(manifest_id)
 
         self.assertEqual(
@@ -3526,7 +3771,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
 
     def test_case_builders_reuse_cached_source_tree_manifest_records(self) -> None:
-        scorecard_case = source_tree_support.source_tree_scorecard_case("post-parser-workflows")
+        scorecard_case = _source_tree_suite_scorecard_case("post-parser-workflows")
         combined_case = source_tree_support.source_tree_combined_case("literal-flag-boundary")
 
         self.assertEqual(
@@ -3566,7 +3811,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
 
     def test_post_parser_workflows_preserve_expected_manifest_paths(self) -> None:
-        case = source_tree_support.source_tree_scorecard_case("post-parser-workflows")
+        case = _source_tree_suite_scorecard_case("post-parser-workflows")
 
         self.assertEqual(
             [manifest.path.name for manifest in case.manifests],
@@ -3586,7 +3831,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
 
     def test_case_selection_helpers_derive_workload_ids_from_manifests(self) -> None:
-        compile_matrix = source_tree_support.source_tree_scorecard_case("compile-matrix")
+        compile_matrix = _source_tree_suite_scorecard_case("compile-matrix")
         self.assertEqual(
             compile_matrix.selected_workload_ids_for_manifest("compile-matrix"),
             (
@@ -3599,7 +3844,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             ),
         )
 
-        post_parser = source_tree_support.source_tree_scorecard_case("post-parser-workflows")
+        post_parser = _source_tree_suite_scorecard_case("post-parser-workflows")
         self.assertEqual(
             post_parser.selected_workload_ids_for_manifest("module-boundary"),
             tuple(
@@ -3681,7 +3926,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 )
 
     def test_compile_matrix_manifest_reuses_zero_gap_expectation(self) -> None:
-        case = source_tree_support.source_tree_scorecard_case("compile-matrix")
+        case = _source_tree_suite_scorecard_case("compile-matrix")
         manifest_expectation = case.manifest_expectations["compile-matrix"]
         self.assertEqual(manifest_expectation.known_gap_count, 0)
         self.assertEqual(
@@ -3711,7 +3956,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             "conditional-group-exists-boundary",
         ):
             with self.subTest(case_id=case_id):
-                case = source_tree_support.source_tree_scorecard_case(case_id)
+                case = _source_tree_suite_scorecard_case(case_id)
                 self.assertEqual(
                     case.representative_measured_workload_ids,
                     tuple(
@@ -3729,7 +3974,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         expectations = (
             source_tree_support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
         )
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        case = _source_tree_suite_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         expected_negative_count_str_workload_ids = (
             "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-str",
@@ -3913,7 +4158,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         expectations = (
             source_tree_support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
         )
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        case = _source_tree_suite_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         expected_none_count_workload_ids = (
             source_tree_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
@@ -4040,7 +4285,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        case = _source_tree_suite_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         representative_measured_workload_ids = (
             source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
@@ -4135,7 +4380,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        case = _source_tree_suite_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         representative_measured_workload_ids = (
             source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
@@ -4475,7 +4720,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         expectation = (
             source_tree_support._CONDITIONAL_GROUP_EXISTS_ALTERNATION_CALLABLE_REPLACEMENT_EXPECTATION
         )
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        case = _source_tree_suite_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         representative_measured_workload_ids = (
             source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
@@ -4535,7 +4780,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         template_expectation = (
             source_tree_support._CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION
         )
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        case = _source_tree_suite_scorecard_case(manifest_id)
         representative_measured_workload_ids = (
             source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
                 manifest_id
@@ -4574,7 +4819,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         template_expectation = (
             source_tree_support._CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION
         )
-        case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        case = _source_tree_suite_scorecard_case(manifest_id)
         representative_measured_workload_ids = (
             source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
                 manifest_id
@@ -4663,7 +4908,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
             "module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-bytes",
@@ -4689,7 +4934,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_bounded_nested_group_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-nested-group-numbered-warm-bytes",
             "module-subn-callable-nested-group-numbered-warm-bytes",
@@ -4719,7 +4964,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_quantified_nested_group_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-numbered-quantified-nested-group-lower-bound-warm-bytes",
             "module-subn-callable-numbered-quantified-nested-group-first-match-only-warm-bytes",
@@ -4745,7 +4990,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_quantified_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
             "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
@@ -4771,7 +5016,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_replacement_scorecard_promotes_broader_range_branch_local_backreference_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-replacement-boundary")
         expected_workload_ids = (
             "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
             "module-subn-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
@@ -4797,7 +5042,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_replacement_scorecard_promotes_broader_range_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-replacement-boundary")
         expected_workload_ids = (
             "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
             "module-subn-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
@@ -4823,7 +5068,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_broader_range_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
             "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-bytes",
@@ -4849,7 +5094,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_exact_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-numbered-nested-group-alternation-branch-local-backreference-b-branch-warm-bytes",
             "module-subn-callable-numbered-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
@@ -4875,7 +5120,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_nested_broader_range_backtracking_heavy_str_and_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-warm-str",
             "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-warm-str",
@@ -4905,7 +5150,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_nested_broader_range_open_ended_backtracking_heavy_str_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-warm-str",
             "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-warm-str",
@@ -4931,7 +5176,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_nested_broader_range_open_ended_backtracking_heavy_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-warm-bytes",
             "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-warm-bytes",
@@ -4957,7 +5202,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_broader_range_conditional_branch_local_backreference_str_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-conditional-lower-bound-b-branch-warm-str",
             "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-conditional-first-match-only-b-branch-warm-str",
@@ -4983,7 +5228,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_callable_replacement_scorecard_promotes_broader_range_conditional_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-callable-replacement-boundary")
         expected_workload_ids = (
             "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-conditional-lower-bound-b-branch-warm-bytes",
             "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-conditional-first-match-only-b-branch-warm-bytes",
@@ -5009,7 +5254,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_nested_group_replacement_scorecard_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
-        case = source_tree_support.source_tree_scorecard_case("nested-group-replacement-boundary")
+        case = _source_tree_suite_scorecard_case("nested-group-replacement-boundary")
         expected_workload_ids = (
             "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
             "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-bytes",
@@ -5033,9 +5278,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 )
 
     def test_runner_regenerates_source_tree_scorecards(self) -> None:
-        for case_id in source_tree_support.SOURCE_TREE_SCORECARD_EXPECTATIONS:
+        for case_id in _SOURCE_TREE_SUITE_SCORECARD_DEFINITIONS:
             with self.subTest(case_id=case_id):
-                case = source_tree_support.source_tree_scorecard_case(case_id)
+                case = _source_tree_suite_scorecard_case(case_id)
                 command = [
                     argument
                     for manifest in case.manifests

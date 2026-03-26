@@ -1219,7 +1219,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "SourceTreeBenchmarkCommonCase",
         "SourceTreeManifestExpectation",
         "SourceTreeDeferredExpectation",
-        "SourceTreeScorecardCase",
         "SourceTreeCombinedCase",
         "SourceTreeCombinedPatternGroupExpectation",
         "SourceTreeCombinedManifestShapeExpectation",
@@ -1230,7 +1229,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert hasattr(support, class_name)
         assert class_name in local_class_names
     for function_name in (
-        "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
         "expected_summary_for_manifests",
@@ -1261,7 +1259,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert owner_builder is not None
         assert function_name not in local_function_names
     for constant_name in (
-        "SOURCE_TREE_SCORECARD_EXPECTATIONS",
         "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
         "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
     ):
@@ -2029,7 +2026,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         "SourceTreeBenchmarkCommonCase",
         "SourceTreeManifestExpectation",
         "SourceTreeDeferredExpectation",
-        "SourceTreeScorecardCase",
         "SourceTreeCombinedCase",
         "SourceTreeCombinedPatternGroupExpectation",
         "SourceTreeCombinedManifestShapeExpectation",
@@ -2041,7 +2037,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
     for function_name in (
         "_source_tree_contract_manifest",
         "_source_tree_contract_workload",
-        "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_manifest_representative_measured_workload_ids",
         "source_tree_combined_case",
@@ -2156,7 +2151,6 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
     )
     moved_constant_names = frozenset(
         {
-            "SOURCE_TREE_SCORECARD_EXPECTATIONS",
             "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
             "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
         }
