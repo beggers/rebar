@@ -1185,9 +1185,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         local_assignment_names=(
             support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
         ),
-        support_alias_assignment_names=(
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
-        ),
+        support_alias_assignment_names=frozenset(),
     )
     for removed_name in (
         "compiled_pattern_contract_expected_build_calls",
@@ -2096,7 +2094,6 @@ def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_t
             "_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
             "_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
             "_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES",
-            "_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES",
             "_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES",
             "_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
         }
@@ -2106,7 +2103,6 @@ def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_t
             "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
             "SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES",
-            "SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
         }
@@ -3125,11 +3121,8 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
         ),
         local_assignment_names=owner_assignment_names,
-        support_alias_assignment_names=(
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
-        ),
+        support_alias_assignment_names=frozenset(),
     )
-    assert support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES == frozenset()
     assert not hasattr(support, "compiled_pattern_contract_expected_build_calls")
     assert not hasattr(support, "_compiled_pattern_module_helper_route")
 
