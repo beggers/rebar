@@ -947,7 +947,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
         ),
         pytest.param(
-            anchor_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+            support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
             "pattern-window-positional-indexlike",
             id="compiled-pattern-module-helper-after-module-compile",
@@ -2600,8 +2600,8 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
         definition_names | assignment_names
     )
-    assert {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}.isdisjoint(
-        definition_names | assignment_names
+    assert {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}.issubset(
+        assignment_names
     )
 
 

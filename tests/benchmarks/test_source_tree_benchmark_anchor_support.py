@@ -3116,9 +3116,7 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         support_alias_assignment_names=frozenset(),
     )
     assert owner_definition_names == frozenset()
-    assert owner_assignment_names == frozenset(
-        {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}
-    )
+    assert owner_assignment_names == frozenset()
     assert not hasattr(support, "compiled_pattern_contract_expected_build_calls")
     assert not hasattr(support, "_compiled_pattern_module_helper_route")
 

@@ -1,6 +1,6 @@
 # RBR-1363: Move compiled-pattern helper standard definitions onto shared support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -52,3 +52,15 @@ Created: 2026-03-26
   - `rg -n '^COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS\\b' tests/benchmarks/benchmark_test_support.py` currently fails because the shared support module does not yet define that owner block, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n '^COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because the helper definition block still lives on the source-tree owner module, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'source_tree_support\\.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS|anchor_support\\.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS' tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because the shared benchmark support and benchmark-support tests still route that owner block through the source-tree module, and that failure belongs exactly to this cleanup
+
+## Completion
+- Moved `COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS` into `tests/benchmarks/benchmark_test_support.py` and wired `STANDARD_BENCHMARK_DEFINITIONS` to the shared assignment directly.
+- Removed the helper standard-definition assignment from `tests/benchmarks/source_tree_benchmark_anchor_support.py` and cleared it from `SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES`.
+- Updated the benchmark support tests to treat the helper block as shared-support-owned while preserving the compile-block -> helper-block -> pattern-boundary ordering.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'test_standard_benchmark_definitions_keep_owner_blocks_in_order'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally or test_source_tree_standard_definitions_export_stays_owned_by_source_tree'`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `rg -n '^COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS\\b' tests/benchmarks/benchmark_test_support.py`
+  - `bash -lc "! rg -n '^COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'source_tree_support\\.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS|anchor_support\\.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS' tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"`
