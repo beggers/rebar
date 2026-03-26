@@ -209,6 +209,123 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     return combined_suite
 
 
+def assert_source_tree_benchmark_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    summary: dict[str, Any],
+    *,
+    expected_phase: str,
+    expected_runner_version: str,
+    expected_adapter: str,
+    expected_manifests: list[BenchmarkManifest],
+    expected_manifest_paths: list[str],
+    expected_selection_mode: str,
+    tracked_report_path: pathlib.Path | None = None,
+) -> None:
+    expected_manifest_records = [
+        benchmark_test_support._artifact_manifest_record(manifest_path, manifest)
+        for manifest_path, manifest in zip(
+            expected_manifest_paths,
+            expected_manifests,
+            strict=True,
+        )
+    ]
+
+    benchmark_test_support._assert_benchmark_summary_consistent(
+        testcase,
+        scorecard,
+        summary,
+    )
+    testcase.assertEqual(scorecard["schema_version"], "1.0")
+    testcase.assertEqual(scorecard["suite"], "benchmarks")
+    testcase.assertEqual(scorecard["phase"], expected_phase)
+    expected_baseline = {
+        **benchmark_test_support.build_cpython_baseline(version_family="3.12.x"),
+        "re_module": "re",
+    }
+    for key, expected_value in expected_baseline.items():
+        testcase.assertEqual(scorecard["baseline"][key], expected_value)
+    testcase.assertEqual(scorecard["implementation"]["module_name"], "rebar")
+    testcase.assertEqual(scorecard["implementation"]["adapter"], expected_adapter)
+    testcase.assertEqual(
+        scorecard["implementation"]["adapter_mode_requested"],
+        "source-tree-shim",
+    )
+    testcase.assertEqual(
+        scorecard["implementation"]["adapter_mode_resolved"],
+        "source-tree-shim",
+    )
+    testcase.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
+    testcase.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
+    testcase.assertIsNone(scorecard["implementation"]["native_build_tool"])
+    testcase.assertIsNone(scorecard["implementation"]["native_wheel"])
+    testcase.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
+    testcase.assertEqual(scorecard["implementation"]["native_module_name"], "rebar._rebar")
+    if scorecard["implementation"]["native_module_loaded"]:
+        testcase.assertEqual(
+            scorecard["implementation"]["native_scaffold_status"],
+            "scaffold-only",
+        )
+        testcase.assertEqual(
+            scorecard["implementation"]["native_target_cpython_series"],
+            "3.12.x",
+        )
+    else:
+        testcase.assertIsNone(scorecard["implementation"]["native_scaffold_status"])
+        testcase.assertIsNone(
+            scorecard["implementation"]["native_target_cpython_series"]
+        )
+    testcase.assertIn(
+        "not requested",
+        scorecard["implementation"]["native_unavailable_reason"],
+    )
+    testcase.assertEqual(
+        scorecard["environment"]["runner_version"],
+        expected_runner_version,
+    )
+    testcase.assertEqual(
+        scorecard["environment"]["execution_model"],
+        "single-process in-process adapter comparison",
+    )
+    testcase.assertEqual(
+        scorecard["artifacts"]["selection_mode"],
+        expected_selection_mode,
+    )
+    testcase.assertIsNone(scorecard["artifacts"]["raw_samples"])
+    testcase.assertEqual(scorecard["artifacts"]["manifests"], expected_manifest_records)
+    if len(expected_manifest_records) == 1:
+        testcase.assertEqual(
+            scorecard["artifacts"]["manifest"],
+            expected_manifest_records[0]["manifest"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["manifest_id"],
+            expected_manifest_records[0]["manifest_id"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["manifest_schema_version"],
+            expected_manifest_records[0]["manifest_schema_version"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["workload_count"],
+            expected_manifest_records[0]["workload_count"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["smoke_workload_ids"],
+            expected_manifest_records[0]["smoke_workload_ids"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["spec_refs"],
+            expected_manifest_records[0]["spec_refs"],
+        )
+    else:
+        testcase.assertEqual(scorecard["artifacts"]["manifest"], None)
+        testcase.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
+        testcase.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
+    if tracked_report_path is not None:
+        testcase.assertTrue(tracked_report_path.is_file())
+
+
 _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
     "collection-replacement-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",

@@ -2700,7 +2700,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     report_name="benchmarks.json",
                 )
 
-                benchmark_test_support.assert_source_tree_benchmark_contract(
+                source_tree_support.assert_source_tree_benchmark_contract(
                     self,
                     scorecard,
                     summary,
@@ -4688,7 +4688,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     report_name="benchmarks.json",
                 )
 
-                benchmark_test_support.assert_source_tree_benchmark_contract(
+                source_tree_support.assert_source_tree_benchmark_contract(
                     self,
                     scorecard,
                     summary,

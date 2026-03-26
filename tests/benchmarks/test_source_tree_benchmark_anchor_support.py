@@ -1587,7 +1587,8 @@ def test_compiled_pattern_module_success_source_workload_params_follow_owner_spe
     assert observed_params == expected_params
 
 
-def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> None:
+def test_source_tree_support_module_exposes_source_tree_report_contract_helper_locally(
+) -> None:
     module_ast = benchmark_test_support._parsed_module_ast(support)
     local_function_names = {
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
@@ -1597,18 +1598,22 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
         node.name for node in shared_module_ast.body if isinstance(node, ast.FunctionDef)
     }
 
-    moved_function_names = (
+    still_shared_function_names = (
         "_assert_benchmark_summary_consistent",
         "_artifact_manifest_record",
-        "assert_source_tree_benchmark_contract",
         "assert_benchmark_manifest_contract",
         "find_manifest_record",
     )
-    for function_name in moved_function_names:
+    for function_name in still_shared_function_names:
         assert hasattr(benchmark_test_support, function_name)
         assert function_name in shared_function_names
         assert not hasattr(support, function_name)
         assert function_name not in local_function_names
+
+    assert hasattr(support, "assert_source_tree_benchmark_contract")
+    assert "assert_source_tree_benchmark_contract" in local_function_names
+    assert not hasattr(benchmark_test_support, "assert_source_tree_benchmark_contract")
+    assert "assert_source_tree_benchmark_contract" not in shared_function_names
 
 
 def test_source_tree_support_module_exposes_moved_conditional_callable_helpers() -> None:
@@ -2073,7 +2078,6 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
     for function_name in (
         "_assert_benchmark_summary_consistent",
         "_artifact_manifest_record",
-        "assert_source_tree_benchmark_contract",
         "assert_benchmark_manifest_contract",
         "find_manifest_record",
     ):
@@ -2350,7 +2354,36 @@ def test_combined_suite_routes_moved_support_surfaces_through_benchmark_test_sup
     )
 
 
-def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_support(
+def test_combined_suite_routes_source_tree_report_contract_helper_through_owner_module(
+) -> None:
+    module_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
+    source_tree_support_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="source_tree_benchmark_anchor_support",
+        dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+    )
+    helper_names = frozenset({"assert_source_tree_benchmark_contract"})
+
+    assert source_tree_support_alias_names
+    assert benchmark_test_support._top_level_import_from_alias_pairs(
+        module_ast,
+        module_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+        imported_names=helper_names,
+    ) == frozenset()
+    assert frozenset(
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in source_tree_support_alias_names
+        and node.attr in helper_names
+    ) == helper_names
+
+
+def test_combined_suite_imports_remaining_report_contract_helpers_through_benchmark_test_support(
 ) -> None:
     module_ast = benchmark_test_support._parsed_module_ast(
         support._source_tree_combined_suite()
@@ -2363,7 +2396,6 @@ def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_s
     )
     helper_names = frozenset(
         {
-            "assert_source_tree_benchmark_contract",
             "assert_benchmark_manifest_contract",
             "find_manifest_record",
         }
@@ -3033,7 +3065,7 @@ def test_source_tree_report_contract_accepts_single_manifest_native_loaded_score
     tracked_report_path = tmp_path / "synthetic-benchmark-report.py"
     tracked_report_path.write_text("REPORT = {}\n")
 
-    benchmark_test_support.assert_source_tree_benchmark_contract(
+    support.assert_source_tree_benchmark_contract(
         unittest.TestCase(),
         scorecard,
         _summary_view(scorecard),
@@ -3165,7 +3197,7 @@ def test_source_tree_report_contract_accepts_combined_manifest_scorecard_without
         native_module_loaded=False,
     )
 
-    benchmark_test_support.assert_source_tree_benchmark_contract(
+    support.assert_source_tree_benchmark_contract(
         unittest.TestCase(),
         scorecard,
         _summary_view(scorecard),

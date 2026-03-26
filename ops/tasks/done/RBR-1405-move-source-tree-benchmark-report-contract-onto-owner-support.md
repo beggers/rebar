@@ -54,3 +54,8 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_combined_route_helper'` passed with `5 passed, 175 deselected in 0.17s`.
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
   - `bash -lc "rg -n '^def assert_source_tree_benchmark_contract' tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently reports the exact shared-support seam this task is intended to remove: the definition still exists only in `tests/benchmarks/benchmark_test_support.py`.
+
+## Completion
+- Moved `assert_source_tree_benchmark_contract(...)` out of `tests/benchmarks/benchmark_test_support.py` and onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, keeping `_assert_benchmark_summary_consistent(...)` and `_artifact_manifest_record(...)` shared in place.
+- Updated the source-tree benchmark suites to call the owner helper through `source_tree_benchmark_anchor_support`, and tightened the ownership assertions so `assert_source_tree_benchmark_contract` is no longer treated as a `benchmark_test_support`-owned route.
+- Verified with the task pytest targets, targeted owner-boundary pytest coverage, `py_compile`, and `rg` checks confirming the helper definition no longer exists in `tests/benchmarks/benchmark_test_support.py` and now exists in `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
