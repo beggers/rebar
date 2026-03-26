@@ -882,14 +882,21 @@ def _module_function_definition(module: object, function_name: str) -> ast.Funct
     )
 
 
-def _module_assignment(module: object, name: str) -> ast.Assign:
+def _module_assignment(module: object, name: str) -> ast.Assign | ast.AnnAssign:
     return next(
         node
         for node in _parsed_module_ast(module).body
-        if isinstance(node, ast.Assign)
-        and any(
-            isinstance(target, ast.Name) and target.id == name
-            for target in node.targets
+        if (
+            isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name) and target.id == name
+                for target in node.targets
+            )
+        )
+        or (
+            isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.target.id == name
         )
     )
 
@@ -1200,6 +1207,7 @@ def assert_mixed_owner_surface(
         assert assignment_name in parsed_assignment_names
         assert assignment_name not in parsed_function_names
         assignment = _module_assignment(caller_module, assignment_name)
+        assert assignment.value is not None
         assert isinstance(assignment.value, ast.Attribute)
         assert isinstance(assignment.value.value, ast.Name)
         assert assignment.value.value.id in benchmark_test_support_alias_names

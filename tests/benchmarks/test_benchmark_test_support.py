@@ -1162,6 +1162,31 @@ def test_benchmark_test_support_module_keyword_definition_references_owner_manif
     )
 
 
+def test_module_assignment_returns_top_level_annotated_assignment(
+    monkeypatch,
+) -> None:
+    module_ast = ast.parse(
+        """
+ANNOTATED_ALIAS: object = benchmark_test_support.SHARED_ALIAS
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+
+    assignment = support._module_assignment(
+        SimpleNamespace(ANNOTATED_ALIAS=object()),
+        "ANNOTATED_ALIAS",
+    )
+
+    assert isinstance(assignment, ast.AnnAssign)
+    assert isinstance(assignment.target, ast.Name)
+    assert assignment.target.id == "ANNOTATED_ALIAS"
+
+
 def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_constant(
 ) -> None:
     assert tuple(
@@ -1943,6 +1968,36 @@ SHARED_ALIAS = shared_support.SHARED_ALIAS
     )
 
 
+def test_assert_mixed_owner_surface_accepts_support_alias_with_annotated_assignment(
+    monkeypatch,
+) -> None:
+    shared_alias = object()
+    caller_module = SimpleNamespace(SHARED_ALIAS=shared_alias)
+    module_ast = ast.parse(
+        """
+from tests.benchmarks import benchmark_test_support as shared_support
+SHARED_ALIAS: object = shared_support.SHARED_ALIAS
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "SHARED_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+
+    support.assert_mixed_owner_surface(
+        caller_module,
+        support_alias_assignment_names=("SHARED_ALIAS",),
+    )
+
+
 def test_assert_mixed_owner_surface_rejects_support_alias_with_wrong_attribute_name(
     monkeypatch,
 ) -> None:
@@ -1976,6 +2031,37 @@ SHARED_ALIAS = benchmark_test_support.OTHER_ALIAS
         support.assert_mixed_owner_surface(
             caller_module,
             support_alias_assignment_names=("SHARED_ALIAS",),
+        )
+
+
+def test_assert_mixed_owner_surface_rejects_local_annotated_assignment_that_aliases_benchmark_support(
+    monkeypatch,
+) -> None:
+    shared_alias = object()
+    caller_module = SimpleNamespace(OWNER_ASSIGNMENT=shared_alias)
+    module_ast = ast.parse(
+        """
+from tests.benchmarks import benchmark_test_support as shared_support
+OWNER_ASSIGNMENT: object = shared_support.SHARED_ALIAS
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "SHARED_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_mixed_owner_surface(
+            caller_module,
+            local_assignment_names=("OWNER_ASSIGNMENT",),
         )
 
 
