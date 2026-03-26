@@ -503,11 +503,6 @@ def _clear_anchor_support_caches() -> None:
     )
     if source_tree_support is not None:
         _clear_cached_functions(vars(source_tree_support).values())
-    collection_replacement_support = sys.modules.get(
-        "tests.benchmarks.collection_replacement_benchmark_anchor_support"
-    )
-    if collection_replacement_support is not None:
-        _clear_cached_functions(vars(collection_replacement_support).values())
 
 
 @pytest.fixture
@@ -1266,24 +1261,6 @@ def _is_encoded_indexlike_payload(value: object) -> bool:
         and isinstance(value.get("value"), int)
         and not isinstance(value.get("value"), bool)
     )
-
-def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
-    return (
-        getattr(workload, "haystack_text_model", None) is not None
-        and not workload.kwargs
-        and workload.use_compiled_pattern
-        and workload.operation
-        in {
-            "module.split",
-            "module.findall",
-            "module.finditer",
-            "module.sub",
-            "module.subn",
-        }
-        and workload.expected_exception is not None
-        and workload.expected_exception.get("type") == "TypeError"
-    )
-
 
 def _module_workflow_keyword_workload_args(
     workload: Any,

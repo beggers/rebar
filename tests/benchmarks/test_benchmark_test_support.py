@@ -472,7 +472,6 @@ def test_clear_anchor_support_caches_clears_cacheable_objects_from_owner_modules
             self.calls += 1
 
     source_tree_cache = _CacheRecorder()
-    deleted_collection_cache = _CacheRecorder()
 
     monkeypatch.setitem(
         support.sys.modules,
@@ -482,19 +481,10 @@ def test_clear_anchor_support_caches_clears_cacheable_objects_from_owner_modules
             uncached_helper=object(),
         ),
     )
-    monkeypatch.setitem(
-        support.sys.modules,
-        "tests.benchmarks.collection_replacement_benchmark_anchor_support",
-        SimpleNamespace(
-            cached_deleted_helper=deleted_collection_cache,
-            uncached_helper=object(),
-        ),
-    )
 
     support._clear_anchor_support_caches()
 
     assert source_tree_cache.calls == 1
-    assert deleted_collection_cache.calls == 1
 
 
 def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
@@ -1589,16 +1579,13 @@ def test_shared_publication_runtime_manifest_path_constants_point_to_current_wor
     )
 
 
-def test_benchmark_test_support_owns_shared_collection_replacement_classifier_helpers(
+def test_benchmark_test_support_owns_only_shared_collection_replacement_classifier_helpers(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
         support
     )
 
-    assert {
-        "_is_encoded_indexlike_payload",
-        "_is_collection_replacement_wrong_text_model_workload",
-    }.issubset(definition_names)
+    assert {"_is_encoded_indexlike_payload"}.issubset(definition_names)
     assert {
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
@@ -1606,6 +1593,7 @@ def test_benchmark_test_support_owns_shared_collection_replacement_classifier_he
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
     }.isdisjoint(definition_names)
 
 
@@ -1629,6 +1617,7 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
     }.issubset(definition_names)
     assert {
         "_collection_replacement_keyword_parameter_name",
@@ -1637,10 +1626,8 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
     }.isdisjoint(assignment_names)
-    assert {"_is_collection_replacement_wrong_text_model_workload"}.isdisjoint(
-        definition_names
-    )
 
 
 def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_support_alias(
@@ -2412,7 +2399,6 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
         "_is_module_workflow_keyword_error_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
         "_record_numeric_materialization_fields",
         "run_benchmark_workload_with_cpython",
         "compiled_pattern_contract_expected_build_calls",

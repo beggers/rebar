@@ -4046,13 +4046,13 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_compiled_pattern_module_helper_route",
         "_is_collection_replacement_compiled_pattern_success_workload",
+        "_is_collection_replacement_wrong_text_model_workload",
         "_is_module_workflow_compiled_pattern_workload",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
     }.isdisjoint(benchmark_support_refs)
     assert {
-        "_is_collection_replacement_wrong_text_model_workload",
         "freeze_signature_value",
         "selected_manifest_workloads",
     }.issubset(benchmark_support_refs)

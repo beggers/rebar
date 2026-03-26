@@ -1310,14 +1310,30 @@ def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
     )
 
 
+def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
+    return (
+        getattr(workload, "haystack_text_model", None) is not None
+        and not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation
+        in {
+            "module.split",
+            "module.findall",
+            "module.finditer",
+            "module.sub",
+            "module.subn",
+        }
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
+
+
 def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
     return (
         {
             "case_id": "compiled_pattern_module_helper_wrong_text_model",
             "manifest_path": "collection_replacement_boundary.py",
-            "include_workload": (
-                benchmark_test_support._is_collection_replacement_wrong_text_model_workload
-            ),
+            "include_workload": _is_collection_replacement_wrong_text_model_workload,
             "contract_manifest_id": "collection-replacement-boundary",
             "contract_filename": (
                 "python_benchmark_compiled_pattern_collection_replacement_wrong_text_model_contract.py"
@@ -6486,7 +6502,7 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                     ),
                 },
             ),
-            include_workload=benchmark_test_support._is_collection_replacement_wrong_text_model_workload,
+            include_workload=_is_collection_replacement_wrong_text_model_workload,
             correctness_case_signature=(
                 _collection_replacement_wrong_text_model_correctness_case_signature
             ),
@@ -7275,9 +7291,7 @@ def _collection_replacement_wrong_text_model_workload_args(
 def _collection_replacement_wrong_text_model_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
-        workload
-    ):
+    if not _is_collection_replacement_wrong_text_model_workload(workload):
         raise AssertionError(
             "unexpected collection/replacement wrong-text-model workload "
             f"{workload.workload_id!r}"

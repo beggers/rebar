@@ -2575,9 +2575,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         },
     )
 
-    assert benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
-        split_workload
-    )
+    assert support._is_collection_replacement_wrong_text_model_workload(split_workload)
     assert support._collection_replacement_wrong_text_model_workload_signature(
         split_workload
     ) == (
@@ -2589,9 +2587,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         "str",
     )
 
-    assert benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
-        subn_workload
-    )
+    assert support._is_collection_replacement_wrong_text_model_workload(subn_workload)
     assert support._collection_replacement_wrong_text_model_workload_signature(
         subn_workload
     ) == (
@@ -2603,7 +2599,7 @@ def test_compiled_pattern_wrong_text_model_workloads_keep_scope_and_split_sub_si
         "str",
     )
 
-    assert not benchmark_test_support._is_collection_replacement_wrong_text_model_workload(
+    assert not support._is_collection_replacement_wrong_text_model_workload(
         direct_pattern_workload
     )
 
