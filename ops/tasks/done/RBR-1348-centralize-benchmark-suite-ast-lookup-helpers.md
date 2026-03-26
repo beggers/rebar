@@ -1,6 +1,6 @@
 ## RBR-1348: Centralize benchmark-suite AST lookup helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -49,3 +49,11 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'not combined_suite_no_longer_imports_or_reads_collection_owner_surface_directly'` passed with `235 passed, 1 deselected in 1.56s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` was not rerun in this planning pass
   - `bash -lc "! rg -n '^def (_module_assignment|_module_function_definition|_module_class_definition|_class_method_definition)\\b' tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because those duplicated generic lookup helpers still live locally in the two suites, and that failure belongs exactly to this cleanup
+
+## Completion
+- Centralized the shared top-level function, assignment, class, and class-method AST lookup helpers in `tests/benchmarks/benchmark_test_support.py`.
+- Removed the duplicated local lookup helpers from `tests/benchmarks/test_benchmark_test_support.py` and `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`, updating the call sites to use the shared support surface.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'not combined_suite_no_longer_imports_or_reads_collection_owner_surface_directly'`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `bash -lc "! rg -n '^def (_module_assignment|_module_function_definition|_module_class_definition|_class_method_definition)\\b' tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"`

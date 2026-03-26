@@ -26,33 +26,6 @@ from tests.python.fixture_parity_support import IndexLike
 anchor_support_cache_guard = support.anchor_support_cache_guard
 
 
-def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
-    return next(
-        node
-        for node in support._parsed_module_ast(module).body
-        if isinstance(node, ast.FunctionDef) and node.name == function_name
-    )
-
-
-def _module_class_definition(module: object, class_name: str) -> ast.ClassDef:
-    return next(
-        node
-        for node in support._parsed_module_ast(module).body
-        if isinstance(node, ast.ClassDef) and node.name == class_name
-    )
-
-
-def _class_method_definition(
-    class_definition: ast.ClassDef,
-    method_name: str,
-) -> ast.FunctionDef:
-    return next(
-        node
-        for node in class_definition.body
-        if isinstance(node, ast.FunctionDef) and node.name == method_name
-    )
-
-
 def _top_level_package_import_alias_pairs(
     module: object,
     *,
@@ -124,18 +97,6 @@ def _compiled_pattern_module_helper_manifest_id(operation: str) -> str:
     if operation in {"module.search", "module.match", "module.fullmatch"}:
         return "module-boundary"
     return "collection-replacement-boundary"
-
-
-def _module_assignment(module: object, name: str) -> ast.Assign:
-    return next(
-        node
-        for node in support._parsed_module_ast(module).body
-        if isinstance(node, ast.Assign)
-        and any(
-            isinstance(target, ast.Name) and target.id == name
-            for target in node.targets
-        )
-    )
 
 
 def _assignment_target_name(assignment: ast.Assign) -> str:
@@ -950,7 +911,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
         and isinstance(node.iter, ast.Name)
         and node.iter.id == "STANDARD_BENCHMARK_DEFINITIONS"
         for node in ast.walk(
-            _module_function_definition(
+            support._module_function_definition(
                 support,
                 "_standard_benchmark_definition_params",
             )
@@ -1153,7 +1114,7 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
 def test_benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant(
 ) -> None:
     assert support._owner_definition_manifest_path_names(
-        _module_assignment(
+        support._module_assignment(
             support,
             "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
         )
@@ -2575,7 +2536,7 @@ def test_source_tree_combined_suite_deletes_manifest_contract_wrapper_methods() 
     module = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
-    suite_definition = _module_class_definition(
+    suite_definition = support._module_class_definition(
         module,
         "SourceTreeCombinedBoundaryBenchmarkSuiteTest",
     )
@@ -2881,7 +2842,7 @@ def test_compiled_pattern_contract_builder_helpers_live_only_in_source_tree_owne
         "CompiledPatternModuleSuccessOwnerSpec",
         "_CompiledPatternModuleHelperKeywordContractSpec",
     ):
-        class_definition = _module_class_definition(support, class_name)
+        class_definition = support._module_class_definition(support, class_name)
         assert {
             node.name
             for node in class_definition.body

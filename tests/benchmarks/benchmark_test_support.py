@@ -549,6 +549,45 @@ def _module_import_targets(module: object) -> frozenset[str]:
     return _ast_import_targets(_parsed_module_ast(module))
 
 
+def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.FunctionDef) and node.name == function_name
+    )
+
+
+def _module_assignment(module: object, name: str) -> ast.Assign:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == name
+            for target in node.targets
+        )
+    )
+
+
+def _module_class_definition(module: object, class_name: str) -> ast.ClassDef:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ClassDef) and node.name == class_name
+    )
+
+
+def _class_method_definition(
+    class_definition: ast.ClassDef,
+    method_name: str,
+) -> ast.FunctionDef:
+    return next(
+        node
+        for node in class_definition.body
+        if isinstance(node, ast.FunctionDef) and node.name == method_name
+    )
+
+
 def _ast_import_targets(module_ast: ast.Module) -> frozenset[str]:
     targets: set[str] = set()
 

@@ -51,19 +51,6 @@ _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES = (
     | frozenset({"_is_module_workflow_compiled_pattern_wrong_text_model_workload"})
 )
 
-
-def _module_assignment(module: object, name: str) -> ast.Assign:
-    return next(
-        node
-        for node in benchmark_test_support._parsed_module_ast(module).body
-        if isinstance(node, ast.Assign)
-        and any(
-            isinstance(target, ast.Name) and target.id == name
-            for target in node.targets
-        )
-    )
-
-
 def _assert_mixed_owner_surface(
     owner_module: object,
     *,
@@ -97,7 +84,10 @@ def _assert_mixed_owner_surface(
         assert assignment_name in parsed_assignment_names
         assert assignment_name not in parsed_function_names
         assert not hasattr(benchmark_test_support, assignment_name)
-        assignment = _module_assignment(owner_module, assignment_name)
+        assignment = benchmark_test_support._module_assignment(
+            owner_module,
+            assignment_name,
+        )
         assert not (
             isinstance(assignment.value, ast.Attribute)
             and isinstance(assignment.value.value, ast.Name)
@@ -109,7 +99,10 @@ def _assert_mixed_owner_surface(
         assert hasattr(owner_module, assignment_name)
         assert assignment_name in parsed_assignment_names
         assert assignment_name not in parsed_function_names
-        assignment = _module_assignment(owner_module, assignment_name)
+        assignment = benchmark_test_support._module_assignment(
+            owner_module,
+            assignment_name,
+        )
         assert isinstance(assignment.value, ast.Attribute)
         assert isinstance(assignment.value.value, ast.Name)
         assert assignment.value.value.id == "benchmark_test_support"
@@ -118,15 +111,6 @@ def _assert_mixed_owner_surface(
             benchmark_test_support,
             assignment_name,
         )
-
-
-def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
-    return next(
-        node
-        for node in benchmark_test_support._parsed_module_ast(module).body
-        if isinstance(node, ast.FunctionDef) and node.name == function_name
-    )
-
 
 def _synthetic_report_scorecard(
     *,
@@ -1289,7 +1273,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             assert not hasattr(benchmark_test_support, constant_name)
             continue
         assert constant_name in local_assignment_names
-        assignment = _module_assignment(support, constant_name)
+        assignment = benchmark_test_support._module_assignment(
+            support,
+            constant_name,
+        )
         assert not (
             isinstance(assignment.value, ast.Attribute)
             and isinstance(assignment.value.value, ast.Name)
@@ -1303,7 +1290,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ):
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
-        assignment = _module_assignment(support, constant_name)
+        assignment = benchmark_test_support._module_assignment(
+            support,
+            constant_name,
+        )
         assert not (
             isinstance(assignment.value, ast.Attribute)
             and isinstance(assignment.value.value, ast.Name)
@@ -1322,7 +1312,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for constant_name in _LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
-        assignment = _module_assignment(support, constant_name)
+        assignment = benchmark_test_support._module_assignment(
+            support,
+            constant_name,
+        )
         assert not (
             isinstance(assignment.value, ast.Attribute)
             and isinstance(assignment.value.value, ast.Name)
@@ -1371,10 +1364,13 @@ def test_compiled_pattern_module_compile_wrapper_surface_is_owned_locally() -> N
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
         "live_compiled_pattern_module_success_surface_ids",
     ):
-        function_definition = _module_function_definition(support, function_name)
+        function_definition = benchmark_test_support._module_function_definition(
+            support,
+            function_name,
+        )
         assert function_definition.name == function_name
 
-    assignment = _module_assignment(
+    assignment = benchmark_test_support._module_assignment(
         support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
@@ -1430,7 +1426,7 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_owne
         is first_export
     )
 
-    builder_definition = _module_function_definition(
+    builder_definition = benchmark_test_support._module_function_definition(
         support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
@@ -1580,7 +1576,10 @@ def test_compiled_pattern_module_success_owner_spec_surface_is_owned_locally() -
         local_assignment_names
     )
     for constant_name in _LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES:
-        assignment = _module_assignment(support, constant_name)
+        assignment = benchmark_test_support._module_assignment(
+            support,
+            constant_name,
+        )
         assert not (
             isinstance(assignment.value, ast.Attribute)
             and isinstance(assignment.value.value, ast.Name)
@@ -2927,7 +2926,10 @@ def test_source_tree_owner_defines_compiled_pattern_module_compile_surface_local
     assert owner_assignment_names.isdisjoint(local_definition_names)
 
     for assignment_name in owner_assignment_names:
-        assignment = _module_assignment(support, assignment_name)
+        assignment = benchmark_test_support._module_assignment(
+            support,
+            assignment_name,
+        )
         assert not (
             isinstance(assignment.value, ast.Attribute)
             and isinstance(assignment.value.value, ast.Name)
@@ -2975,7 +2977,10 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         assert isinstance(definition, ast.FunctionDef)
 
     for assignment_name in owner_assignment_names:
-        assignment = _module_assignment(support, assignment_name)
+        assignment = benchmark_test_support._module_assignment(
+            support,
+            assignment_name,
+        )
         assert isinstance(assignment, ast.Assign)
 
     assert {
