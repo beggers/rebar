@@ -1287,23 +1287,6 @@ _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
     )
 )
 
-
-def _collection_replacement_wrong_text_model_source_workloads() -> tuple[Any, ...]:
-    return benchmark_test_support._contract_source_workloads(
-        manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload_selectors=(
-            _is_collection_replacement_pattern_wrong_text_model_workload,
-        ),
-        expected_source_workload_ids=(
-            _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
-        ),
-        drift_message=(
-            "direct Pattern collection/replacement wrong-text-model surface "
-            "drifted from the live source workload surface"
-        ),
-    )
-
-
 def _collection_replacement_wrong_text_model_expected_callback_call(
     source_workload: Any,
 ) -> tuple[object, ...]:
@@ -1543,6 +1526,23 @@ def _is_collection_replacement_pattern_wrong_text_model_workload(
         and workload.expected_exception is not None
         and workload.expected_exception.get("type") == "TypeError"
     )
+
+
+_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS = (
+    benchmark_test_support._contract_source_workloads(
+        manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        include_workload_selectors=(
+            _is_collection_replacement_pattern_wrong_text_model_workload,
+        ),
+        expected_source_workload_ids=(
+            _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+        ),
+        drift_message=(
+            "direct Pattern collection/replacement wrong-text-model surface "
+            "drifted from the live source workload surface"
+        ),
+    )
+)
 
 
 def _is_collection_replacement_literal_replacement_workload(

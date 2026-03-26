@@ -121,7 +121,6 @@ def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owne
         sys.modules[__name__],
         support,
         definition_names=(
-            "_collection_replacement_wrong_text_model_source_workloads",
             "_collection_replacement_wrong_text_model_expected_callback_call",
             "_collection_replacement_wrong_text_model_expected_callback_result",
             "_run_cpython_collection_replacement_wrong_text_model_workload",
@@ -133,8 +132,15 @@ def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owne
         ),
         assignment_names=(
             "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+            "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS",
             "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC",
         ),
+    )
+    assert hasattr(
+        support, "_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS"
+    )
+    assert not hasattr(
+        support, "_collection_replacement_wrong_text_model_source_workloads"
     )
 
 
@@ -2914,7 +2920,7 @@ def test_compiled_pattern_success_correctness_case_signature_requires_collection
 
 
 def test_collection_replacement_pattern_wrong_text_model_source_workloads_stay_exact_and_in_order() -> None:
-    workloads = support._collection_replacement_wrong_text_model_source_workloads()
+    workloads = support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS
 
     assert tuple(workload.workload_id for workload in workloads) == (
         support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
@@ -2925,7 +2931,7 @@ def test_collection_replacement_pattern_wrong_text_model_source_workloads_stay_e
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in support._collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS
     ),
 )
 def test_collection_replacement_pattern_wrong_text_model_helpers_preserve_callback_and_runtime_contract(
@@ -2971,7 +2977,7 @@ def test_collection_replacement_pattern_wrong_text_model_helpers_preserve_callba
 def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wrong_text_model_rows_until_helper_invocation(
     tmp_path: pathlib.Path,
 ) -> None:
-    source_workloads = support._collection_replacement_wrong_text_model_source_workloads()
+    source_workloads = support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS
     manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
         spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
@@ -3041,7 +3047,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in support._collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS
     ),
 )
 def test_run_internal_workload_probe_measures_collection_replacement_pattern_wrong_text_model_contract_workloads(
@@ -3077,7 +3083,7 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in support._collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS
     ),
 )
 def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_precompile_contract(
@@ -3116,7 +3122,7 @@ def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_prec
     "workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in support._collection_replacement_wrong_text_model_source_workloads()
+        for workload in support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS
     ),
 )
 def test_pattern_helper_collection_replacement_wrong_text_model_haystack_materializes_at_callback_time(
