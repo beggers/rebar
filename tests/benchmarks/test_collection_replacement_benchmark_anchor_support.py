@@ -18,12 +18,12 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
-from tests.benchmarks import collection_replacement_benchmark_anchor_support as support
-from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
+from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
+source_tree_support = support
 
 
 def _explicit_standard_benchmark_definitions(
@@ -2836,10 +2836,10 @@ def test_compiled_pattern_success_selector_routes_through_source_tree_support_wi
         benchmark_test_support,
         "_is_collection_replacement_compiled_pattern_success_workload",
     )
-    assert not hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
+    assert hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
     assert (
         "_is_collection_replacement_compiled_pattern_success_workload"
-        not in local_definition_names
+        in local_definition_names
     )
     assert (
         "_is_collection_replacement_compiled_pattern_success_workload"

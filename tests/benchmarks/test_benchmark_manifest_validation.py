@@ -15,10 +15,9 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_replacement_support,
-)
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
+
+collection_replacement_support = source_tree_support
 
 
 def _validation_payload(**overrides: object) -> dict[str, object]:

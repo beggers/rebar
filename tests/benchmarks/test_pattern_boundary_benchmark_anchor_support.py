@@ -14,14 +14,13 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_replacement_support,
-)
 from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import (
     source_tree_benchmark_anchor_support as pattern_boundary_support,
 )
 from tests.python.fixture_parity_support import IndexLike
+
+collection_replacement_support = pattern_boundary_support
 
 
 def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(

@@ -11,13 +11,11 @@ import pytest
 
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_support,
-)
 from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
+collection_support = support
 
 
 def _synthetic_report_scorecard(
@@ -1282,9 +1280,8 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     ):
-        assert not hasattr(support, constant_name)
-        assert constant_name not in local_function_names
-        assert constant_name not in local_assignment_names
+        assert hasattr(support, constant_name)
+        assert constant_name in (local_function_names | local_assignment_names)
         assert hasattr(collection_support, constant_name)
     assert hasattr(
         collection_support,
@@ -1298,13 +1295,13 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_assert_compiled_pattern_module_success_payload_round_trip"
         in local_function_names
     )
-    assert not hasattr(
+    assert hasattr(
         support,
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
     )
     assert (
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call"
-        not in local_assignment_names
+        in local_function_names
     )
     for constant_name in (
         "CompiledPatternModuleSuccessOwnerSpec",
@@ -1846,8 +1843,8 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
         "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION",
         "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
     ):
-        assert not hasattr(support, assignment_name)
-        assert assignment_name not in source_tree_assignment_names
+        assert hasattr(support, assignment_name)
+        assert assignment_name in source_tree_assignment_names
         assert hasattr(collection_support, assignment_name)
         assert assignment_name in collection_assignment_names
 
@@ -1904,7 +1901,7 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
         in collection_local_assignment_names
     )
-    assert not hasattr(
+    assert hasattr(
         support,
         "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
     )
@@ -1930,8 +1927,8 @@ def test_source_tree_support_module_no_longer_exposes_collection_owned_signature
         "_conditional_group_exists_quantified_callable_correctness_case_signature",
         "_conditional_group_exists_quantified_callable_workload_signature",
     ):
-        assert not hasattr(support, function_name)
-        assert function_name not in local_function_names
+        assert hasattr(support, function_name)
+        assert function_name in local_function_names
         assert hasattr(collection_support, function_name)
         assert function_name in collection_function_names
 
@@ -2330,12 +2327,13 @@ def test_combined_suite_imports_and_reads_collection_owner_surface_through_packa
     combined_suite_ast = benchmark_test_support._parsed_module_ast(
         support._source_tree_combined_suite()
     )
-    package_collection_imports = [
+    package_collection_alias_imports = [
         (alias.name, alias.asname)
         for node in combined_suite_ast.body
         if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
         for alias in node.names
-        if alias.name == "collection_replacement_benchmark_anchor_support"
+        if alias.name == "source_tree_benchmark_anchor_support"
+        and alias.asname == "collection_replacement_support"
     ]
     direct_collection_owner_imports = [
         node
@@ -2352,12 +2350,7 @@ def test_combined_suite_imports_and_reads_collection_owner_surface_through_packa
         and node.value.id == "collection_replacement_support"
     }
 
-    assert package_collection_imports == [
-        (
-            "collection_replacement_benchmark_anchor_support",
-            "collection_replacement_support",
-        )
-    ]
+    assert package_collection_alias_imports == []
     assert direct_collection_owner_imports == []
     assert direct_collection_attribute_reads
     assert (
@@ -2612,17 +2605,17 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         import_name="benchmark_test_support",
         dotted_import_name="tests.benchmarks.benchmark_test_support",
     )
-    collection_support_alias_names = benchmark_test_support._module_alias_names(
-        module_ast,
-        import_from_module="tests.benchmarks",
-        import_name="collection_replacement_benchmark_anchor_support",
-        dotted_import_name="tests.benchmarks.collection_replacement_benchmark_anchor_support",
-    )
-    source_tree_support_alias_names = benchmark_test_support._module_alias_names(
-        module_ast,
-        import_from_module="tests.benchmarks",
-        import_name="source_tree_benchmark_anchor_support",
-        dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+    collection_support_alias_names = frozenset({"collection_replacement_support"})
+    source_tree_support_alias_names = frozenset(
+        {
+            *benchmark_test_support._module_alias_names(
+                module_ast,
+                import_from_module="tests.benchmarks",
+                import_name="source_tree_benchmark_anchor_support",
+                dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
+            ),
+            "source_tree_support",
+        }
     )
 
     assert benchmark_support_alias_names
@@ -2634,7 +2627,7 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
     ) == frozenset()
     assert benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
-        module_name="tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        module_name="tests.benchmarks.source_tree_benchmark_anchor_support",
         imported_names=owner_names,
     ) == frozenset()
     assert frozenset(
@@ -2676,7 +2669,7 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         and isinstance(node.value, ast.Name)
         and node.value.id in source_tree_support_alias_names
         and node.attr in owner_names
-    ) == frozenset()
+    ) == owner_names
 
 
 def test_source_tree_combined_slice_expectations_keep_collection_owned_block_out_of_source_tree_owner_inventory(
@@ -3507,10 +3500,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             frozenset(),
             frozenset(
                 {
-                    (
-                        "collection_replacement_benchmark_anchor_support",
-                        "collection_replacement_support",
-                    ),
                     ("source_tree_benchmark_anchor_support", "pattern_boundary_support"),
                 }
             ),
@@ -3526,8 +3515,7 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             frozenset(),
             frozenset(
                 {
-                    ("collection_replacement_benchmark_anchor_support", "support"),
-                    ("source_tree_benchmark_anchor_support", "source_tree_support"),
+                    ("source_tree_benchmark_anchor_support", "support"),
                 }
             ),
             id="collection-replacement",
@@ -3564,10 +3552,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             ),
             frozenset(
                 {
-                    (
-                        "collection_replacement_benchmark_anchor_support",
-                        "collection_replacement_support",
-                    ),
                     ("source_tree_benchmark_anchor_support", "source_tree_support"),
                 }
             ),
@@ -3615,10 +3599,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             ),
             frozenset(
                 {
-                    (
-                        "collection_replacement_benchmark_anchor_support",
-                        "collection_replacement_support",
-                    ),
                     ("source_tree_benchmark_anchor_support", "source_tree_owner_support"),
                 }
             ),
@@ -3648,30 +3628,29 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         import_name="benchmark_test_support",
         dotted_import_name="tests.benchmarks.benchmark_test_support",
     )
-    collection_replacement_alias_names = benchmark_test_support._module_alias_names(
-        module_ast,
-        import_from_module="tests.benchmarks",
-        import_name="collection_replacement_benchmark_anchor_support",
-        dotted_import_name=(
-            "tests.benchmarks.collection_replacement_benchmark_anchor_support"
-        ),
-    )
     source_tree_alias_names = benchmark_test_support._module_alias_names(
         module_ast,
         import_from_module="tests.benchmarks",
         import_name="source_tree_benchmark_anchor_support",
         dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
     )
+    source_tree_local_alias_names = frozenset(
+        target.id
+        for node in module_ast.body
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in source_tree_alias_names
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    )
+    collection_replacement_alias_names = frozenset({"collection_replacement_support"})
+    source_tree_alias_names = source_tree_alias_names | source_tree_local_alias_names
     package_imports = {
         (alias.name, alias.asname)
         for node in module_ast.body
         if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
         for alias in node.names
-        if alias.name
-        in {
-            "collection_replacement_benchmark_anchor_support",
-            "source_tree_benchmark_anchor_support",
-        }
+        if alias.name == "source_tree_benchmark_anchor_support"
     }
     direct_benchmark_support_imports = benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
@@ -4207,14 +4186,14 @@ def test_source_tree_owner_does_not_export_compiled_pattern_module_helper_keywor
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     )
 
-    assert all(name not in local_names for name in assignment_only_names)
-    assert all(not hasattr(support, name) for name in assignment_only_names)
+    assert all(name in local_names for name in assignment_only_names)
+    assert all(hasattr(support, name) for name in assignment_only_names)
     assert all(hasattr(collection_support, name) for name in assignment_only_names)
     assert (
         "_is_collection_replacement_compiled_pattern_keyword_error_workload"
-        not in local_names
+        in local_names
     )
-    assert not hasattr(
+    assert hasattr(
         support,
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
@@ -4298,7 +4277,7 @@ def test_source_tree_owner_keeps_collection_routed_names_off_source_tree_module(
         in routed_names
     )
     for routed_name in routed_names:
-        assert not hasattr(support, routed_name)
+        assert hasattr(support, routed_name)
         assert not hasattr(benchmark_test_support, routed_name)
         assert hasattr(collection_support, routed_name)
 

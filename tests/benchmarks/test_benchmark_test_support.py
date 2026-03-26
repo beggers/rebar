@@ -12,9 +12,6 @@ import pytest
 
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support as support
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_replacement_support,
-)
 from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import (
     test_benchmark_publication_runtime_contracts as publication_runtime_contracts,
@@ -24,6 +21,7 @@ from tests.python.fixture_parity_support import IndexLike
 
 # Pytest fixture discovery needs a module-level binding for this shared fixture.
 anchor_support_cache_guard = support.anchor_support_cache_guard
+collection_replacement_support = anchor_support
 
 
 def _assert_owner_module_routes_through_package_import(
@@ -388,10 +386,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     )
     monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
     assert anchor_support.benchmark_test_support is support
-    assert (
-        anchor_support.collection_replacement_support
-        is collection_replacement_support
-    )
+    assert collection_replacement_support is anchor_support
     monkeypatch.setattr(support, "live_manifest_workloads", _live_manifest_workloads)
 
     support._clear_anchor_support_caches()
@@ -2303,7 +2298,6 @@ def test_source_tree_anchor_support_routes_owner_imports_through_package_modules
         "live_manifest_workloads",
         "published_case_ids_by_signature",
         "published_cases_by_id",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
     }.isdisjoint(definition_names | assignment_names)
 
 
@@ -2356,13 +2350,13 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
         imported_names=frozenset(
             {
                 "benchmark_test_support",
-                "collection_replacement_benchmark_anchor_support",
+                "source_tree_benchmark_anchor_support",
             }
         ),
     ) == frozenset(
         {
             ("benchmark_test_support", None),
-            ("collection_replacement_benchmark_anchor_support", "support"),
+            ("source_tree_benchmark_anchor_support", "support"),
         }
     )
     assert not any(
@@ -2370,7 +2364,7 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
         and node.module
         in {
             "tests.benchmarks.benchmark_test_support",
-            "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+            "tests.benchmarks.source_tree_benchmark_anchor_support",
         }
         for node in module_ast.body
     )
@@ -2442,6 +2436,19 @@ def test_deleted_collection_replacement_keyword_contract_wrapper_stays_unimporta
             / "tests"
             / "benchmarks"
             / "test_collection_replacement_keyword_contract_benchmark_support.py"
+        ),
+    )
+
+
+def test_deleted_collection_replacement_owner_module_stays_unimportable_and_unreferenced(
+) -> None:
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name="tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / "collection_replacement_benchmark_anchor_support.py"
         ),
     )
 
@@ -3419,19 +3426,12 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     )
     _assert_owner_module_routes_through_package_import(
         module,
-        owner_module="tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset(
             {
                 ("benchmark_test_support", None),
-                (
-                    "collection_replacement_benchmark_anchor_support",
-                    "collection_replacement_support",
-                ),
-                (
-                    "source_tree_benchmark_anchor_support",
-                    "source_tree_support",
-                ),
+                ("source_tree_benchmark_anchor_support", "source_tree_support"),
             }
         ),
     )
@@ -3476,7 +3476,7 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
     assert not hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
     assert (
         "_is_collection_replacement_compiled_pattern_success_workload"
-        not in consumer_local_names
+        in consumer_local_names
     )
 
 def _assert_benchmark_test_support_aliases_absent(
@@ -3568,19 +3568,12 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
 
     _assert_owner_module_routes_through_package_import(
         combined_suite,
-        owner_module="tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset(
             {
                 ("benchmark_test_support", None),
-                (
-                    "collection_replacement_benchmark_anchor_support",
-                    "collection_replacement_support",
-                ),
-                (
-                    "source_tree_benchmark_anchor_support",
-                    "source_tree_owner_support",
-                )
+                ("source_tree_benchmark_anchor_support", "source_tree_owner_support"),
             }
         ),
     )
@@ -3589,10 +3582,7 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         getattr(combined_suite, "collection_replacement_support")
         is collection_replacement_support
     )
-    assert (
-        combined_suite.source_tree_support.collection_replacement_support
-        is collection_replacement_support
-    )
+    assert not hasattr(combined_suite.source_tree_support, "collection_replacement_support")
     source_tree_owner_refs = {
         node.attr
         for node in ast.walk(module_ast)
@@ -3614,7 +3604,7 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
     assert source_tree_owner_refs == set()
     assert collection_owner_refs == moved_workload_id_names
     for name in moved_workload_id_names:
-        assert not hasattr(anchor_support, name)
+        assert hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
 
 
@@ -3894,18 +3884,18 @@ def test_collection_replacement_support_exports_compiled_pattern_module_helper_k
     )
     assert assignment_only_names <= collection_assignment_names
     assert not hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
-    assert not hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
+    assert hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     assert hasattr(
         collection_replacement_support,
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
     for name in moved_definition_names:
         assert not hasattr(support, name)
-        assert not hasattr(anchor_support, name)
+        assert hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
     for name in assignment_only_names:
         assert not hasattr(support, name)
-        assert not hasattr(anchor_support, name)
+        assert hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
 
 
@@ -4025,45 +4015,9 @@ def test_deleted_benchmark_module_absence_helper_rejects_lingering_import_target
 
 def test_collection_replacement_support_reaches_source_tree_owner_surface_through_benchmark_test_support_alias(
 ) -> None:
-    definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
-            collection_replacement_support
-        )
-    )
-    runtime_names = set(dir(collection_replacement_support))
-
-    _assert_owner_module_routes_through_package_import(
-        collection_replacement_support,
-        owner_module="tests.benchmarks.benchmark_test_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
-    )
+    assert collection_replacement_support is anchor_support
     assert collection_replacement_support.benchmark_test_support is support
-    assert (
-        "tests.benchmarks.source_tree_benchmark_anchor_support"
-        not in support._module_import_targets(collection_replacement_support)
-    )
-    assert "_SourceTreeContractBuilderSpec" not in runtime_names
-    assert "source_tree_support" not in definition_names | assignment_names
-    assert not hasattr(
-        collection_replacement_support.benchmark_test_support,
-        "source_tree_support",
-    )
-    retired_shared_surface_names = {
-        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "StandardBenchmarkAnchorContractDefinition",
-        "_contract_source_workloads",
-        "_definition_anchor_expectations",
-        "_is_collection_replacement_compiled_pattern_success_workload",
-        "_is_module_workflow_keyword_error_workload",
-        "_source_tree_contract_manifest",
-        "_source_tree_contract_workload",
-        "freeze_signature_value",
-        "source_tree_support",
-    }
-    assert retired_shared_surface_names.isdisjoint(definition_names | assignment_names)
-    assert retired_shared_surface_names.isdisjoint(runtime_names)
+    assert not hasattr(collection_replacement_support, "collection_replacement_support")
 
 
 def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_exports(
@@ -4169,7 +4123,7 @@ def test_source_tree_contract_helper_suites_import_from_support(
     ) == frozenset(
         {
             ("benchmark_test_support", None),
-            ("source_tree_benchmark_anchor_support", "source_tree_support"),
+            ("source_tree_benchmark_anchor_support", "support"),
         }
     )
     assert expected_imported_names.issubset(dir(module.source_tree_support))
