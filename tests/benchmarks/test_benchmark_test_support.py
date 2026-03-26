@@ -3342,6 +3342,76 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
         assert wrapper_name not in source_tree_function_names
 
 
+def test_source_tree_contract_builder_spec_constructor_sites_stay_owner_scoped() -> None:
+    constructor_name = "_SourceTreeContractBuilderSpec"
+    call_sites: list[tuple[str, ...]] = []
+
+    for node in support._parsed_module_ast(anchor_support).body:
+        if isinstance(node, ast.Assign):
+            target_name = _assignment_target_name(node)
+            if (
+                isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+                and node.value.func.id == constructor_name
+            ):
+                call_sites.append(("assignment", target_name))
+                continue
+            if isinstance(node.value, ast.Dict):
+                for key_node, value_node in zip(node.value.keys, node.value.values):
+                    if (
+                        isinstance(value_node, ast.Call)
+                        and isinstance(value_node.func, ast.Name)
+                        and value_node.func.id == constructor_name
+                    ):
+                        assert isinstance(key_node, ast.Constant)
+                        call_sites.append(
+                            (
+                                "assignment-dict",
+                                target_name,
+                                str(key_node.value),
+                            )
+                        )
+                continue
+        if isinstance(node, ast.ClassDef):
+            for class_node in node.body:
+                if not isinstance(class_node, ast.FunctionDef):
+                    continue
+                if any(
+                    isinstance(call_node.func, ast.Name)
+                    and call_node.func.id == constructor_name
+                    for call_node in ast.walk(class_node)
+                    if isinstance(call_node, ast.Call)
+                ):
+                    call_sites.append(("method", node.name, class_node.name))
+
+    assert frozenset(call_sites) == frozenset(
+        {
+            ("assignment", "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC"),
+            (
+                "assignment-dict",
+                "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+                "collection-replacement-boundary",
+            ),
+            (
+                "assignment-dict",
+                "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+                "module-boundary",
+            ),
+            (
+                "method",
+                "CompiledPatternModuleCompileContractCase",
+                "contract_builder_spec",
+            ),
+            ("method", "CompiledPatternModuleSuccessOwnerSpec", "contract_builder_spec"),
+            (
+                "method",
+                "_CompiledPatternModuleHelperKeywordContractSpec",
+                "contract_builder_spec",
+            ),
+        }
+    )
+
+
 @pytest.mark.parametrize(
     ("owner",),
     tuple(
