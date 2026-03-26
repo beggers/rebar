@@ -2251,11 +2251,13 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_VERBOSE_REGRESSION_PATTERN",
         "_VERBOSE_REGRESSION_FLAGS",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+    }.issubset(assignment_names)
+    assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.issubset(assignment_names)
+    }.isdisjoint(assignment_names)
 
 
 def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> None:
