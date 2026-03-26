@@ -5203,6 +5203,59 @@ def test_collection_replacement_pattern_wrong_text_model_contract_spec_uses_owne
     )
 
 
+def test_collection_replacement_pattern_wrong_text_model_standard_definition_stays_bound_to_local_contract(
+) -> None:
+    definition = next(
+        definition
+        for definition in support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name == "pattern-helper-collection-replacement-wrong-text-model"
+    )
+
+    assert definition.manifest_paths == (
+        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    )
+    assert (
+        definition.expected_anchor_case_ids
+        == benchmark_test_support._definition_anchor_expectations(
+            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            {
+                "pattern-split-on-bytes-string-warm-str": (
+                    "workflow-pattern-split-str-pattern-on-bytes-string",
+                ),
+                "pattern-sub-on-bytes-string-warm-str": (
+                    "workflow-pattern-sub-str-pattern-on-bytes-string",
+                ),
+                "pattern-subn-on-str-string-purged-bytes": (
+                    "workflow-pattern-subn-bytes-pattern-on-str-string",
+                ),
+            },
+        )
+    )
+    assert (
+        definition.include_workload
+        is support._is_collection_replacement_pattern_wrong_text_model_workload
+    )
+    assert (
+        definition.correctness_case_signature
+        is support._collection_replacement_pattern_wrong_text_model_correctness_case_signature
+    )
+    assert (
+        definition.workload_signature
+        is support._collection_replacement_pattern_wrong_text_model_workload_signature
+    )
+    assert not definition.run_callback_result_parity
+    assert (
+        tuple(
+            workload.workload_id
+            for workload in benchmark_test_support.selected_manifest_workloads(
+                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                include_workload=definition.includes_workload,
+            )
+        )
+        == support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+    )
+
+
 def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() -> None:
     definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
     definition_names = tuple(definition.name for definition in definitions)
