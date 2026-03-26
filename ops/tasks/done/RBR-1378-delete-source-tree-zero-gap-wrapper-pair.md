@@ -46,3 +46,12 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `387 passed, 1821 subtests passed in 13.49s`
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
   - `rg -n "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation|assert_zero_gap_representative_workload_subset" tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently reports the exact wrapper definitions and call sites that this task is intended to delete
+
+## Completion
+- Deleted `assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation` and `assert_zero_gap_representative_workload_subset` from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Rewrote the combined source-tree benchmark suite to assert the same zero-gap scorecard and representative-subset invariants directly at the numbered-backreference, nested-group, and zero-gap bytes call sites.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so the remaining shared support API excludes the deleted wrappers while preserving the "no local combined-suite wrapper" checks.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `387 passed, 1821 subtests passed in 13.64s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
+  - `bash -lc "! rg -n '\\b(assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation|assert_zero_gap_representative_workload_subset)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed

@@ -1189,8 +1189,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "select_source_tree_combined_slice_rows",
         "assert_source_tree_combined_manifest_slice",
         "assert_source_tree_combined_pattern_group",
-        "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
-        "assert_zero_gap_representative_workload_subset",
     ):
         assert hasattr(support, function_name)
         assert function_name in local_function_names
@@ -1765,8 +1763,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         "select_source_tree_combined_slice_rows",
         "assert_source_tree_combined_manifest_slice",
         "assert_source_tree_combined_pattern_group",
-        "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
-        "assert_zero_gap_representative_workload_subset",
     ):
         assert function_name not in local_function_names
 
@@ -2170,8 +2166,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             (
                 "assert_source_tree_combined_manifest_slice",
                 "assert_source_tree_combined_pattern_group",
-                "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
-                "assert_zero_gap_representative_workload_subset",
             ),
             frozenset(),
             id="source-tree-suite-assertion-helpers",

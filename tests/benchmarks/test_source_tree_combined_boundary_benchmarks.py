@@ -2670,15 +2670,41 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_numbered_backreference_manifest_promotes_grouped_segment_pair_to_measured(
         self,
     ) -> None:
-        source_tree_support.assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
-            self,
-            "numbered-backreference-boundary"
+        manifest_id = "numbered-backreference-boundary"
+        scorecard_case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        combined_case = source_tree_support.source_tree_combined_case(manifest_id)
+
+        self.assertEqual(
+            scorecard_case.manifest_expectations[manifest_id].known_gap_count,
+            0,
+        )
+        self.assertEqual(
+            scorecard_case.representative_measured_workload_ids,
+            combined_case.manifest_expectation.representative_measured_workload_ids,
+        )
+        self.assertEqual(scorecard_case.representative_known_gap_workload_ids, ())
+        self.assertEqual(
+            combined_case.manifest_expectation.representative_known_gap_workload_ids,
+            (),
         )
 
     def test_nested_group_manifest_promotes_nested_pair_to_measured(self) -> None:
-        source_tree_support.assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
-            self,
-            "nested-group-boundary"
+        manifest_id = "nested-group-boundary"
+        scorecard_case = source_tree_support.source_tree_scorecard_case(manifest_id)
+        combined_case = source_tree_support.source_tree_combined_case(manifest_id)
+
+        self.assertEqual(
+            scorecard_case.manifest_expectations[manifest_id].known_gap_count,
+            0,
+        )
+        self.assertEqual(
+            scorecard_case.representative_measured_workload_ids,
+            combined_case.manifest_expectation.representative_measured_workload_ids,
+        )
+        self.assertEqual(scorecard_case.representative_known_gap_workload_ids, ())
+        self.assertEqual(
+            combined_case.manifest_expectation.representative_known_gap_workload_ids,
+            (),
         )
 
     def test_case_builders_reuse_cached_source_tree_manifest_records(self) -> None:
@@ -2783,11 +2809,32 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 manifest_definition.zero_gap_bytes_representative_subsets
             ):
                 with self.subTest(manifest_id=manifest_id):
-                    source_tree_support.assert_zero_gap_representative_workload_subset(
-                        self,
-                        manifest_id,
-                        expected_workload_ids,
+                    case = source_tree_support.source_tree_combined_case(manifest_id)
+                    public_representatives = (
+                        source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                            manifest_id
+                        )
                     )
+                    self.assertEqual(case.manifest_expectation.known_gap_count, 0)
+                    self.assertEqual(
+                        case.manifest_expectation.representative_known_gap_workload_ids,
+                        (),
+                    )
+
+                    explicit_representatives = (
+                        case.manifest_expectation.representative_measured_workload_ids
+                    )
+                    for workload_id in expected_workload_ids:
+                        with self.subTest(
+                            manifest_id=manifest_id,
+                            workload_id=workload_id,
+                        ):
+                            self.assertIn(workload_id, public_representatives)
+                            if explicit_representatives:
+                                self.assertIn(workload_id, explicit_representatives)
+
+                    if not explicit_representatives:
+                        self.assertEqual(explicit_representatives, ())
 
     def test_combined_cases_treat_counted_repeat_manifest_pair_as_fully_measured(
         self,

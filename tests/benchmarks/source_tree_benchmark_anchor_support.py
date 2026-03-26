@@ -491,55 +491,6 @@ def assert_source_tree_combined_pattern_group(
             testcase.assertGreater(workload["implementation_ns"], 0)
 
 
-def assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
-    testcase: Any,
-    manifest_id: str,
-) -> None:
-    case = source_tree_scorecard_case(manifest_id)
-    combined_case = source_tree_combined_case(manifest_id)
-
-    testcase.assertEqual(
-        case.manifest_expectations[manifest_id].known_gap_count,
-        0,
-    )
-    testcase.assertEqual(
-        case.representative_measured_workload_ids,
-        combined_case.manifest_expectation.representative_measured_workload_ids,
-    )
-    testcase.assertEqual(case.representative_known_gap_workload_ids, ())
-
-
-def assert_zero_gap_representative_workload_subset(
-    testcase: Any,
-    manifest_id: str,
-    expected_workload_ids: tuple[str, ...],
-) -> None:
-    case = source_tree_combined_case(manifest_id)
-    public_representatives = (
-        source_tree_combined_manifest_representative_measured_workload_ids(
-            manifest_id
-        )
-    )
-
-    testcase.assertEqual(case.manifest_expectation.known_gap_count, 0)
-    testcase.assertEqual(
-        case.manifest_expectation.representative_known_gap_workload_ids,
-        (),
-    )
-
-    explicit_representatives = (
-        case.manifest_expectation.representative_measured_workload_ids
-    )
-    for workload_id in expected_workload_ids:
-        with testcase.subTest(manifest_id=manifest_id, workload_id=workload_id):
-            testcase.assertIn(workload_id, public_representatives)
-            if explicit_representatives:
-                testcase.assertIn(workload_id, explicit_representatives)
-
-    if not explicit_representatives:
-        testcase.assertEqual(explicit_representatives, ())
-
-
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
