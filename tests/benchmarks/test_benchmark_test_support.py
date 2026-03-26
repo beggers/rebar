@@ -104,30 +104,6 @@ def _inline_standard_definition_assignments(
         and all(isinstance(element, ast.Call) for element in node.value.elts)
     )
 
-_BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES = frozenset(
-    {
-        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-        "_expected_exception_instance",
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-        "_is_pattern_boundary_wrong_text_model_workload",
-        "_write_test_manifest",
-        "CompiledPatternModuleCompileContractCase",
-        "assert_benchmark_workload_matches_expected_result",
-        "assert_pattern_helper_wrong_text_model_payload_round_trip",
-        "run_benchmark_workload_with_cpython",
-        "selected_manifest_workloads",
-    }
-)
-
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -3034,6 +3010,29 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
+    forbidden_owner_names = frozenset(
+        {
+            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+            "_expected_exception_instance",
+            "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+            "_is_pattern_boundary_wrong_text_model_workload",
+            "_write_test_manifest",
+            "CompiledPatternModuleCompileContractCase",
+            "assert_benchmark_workload_matches_expected_result",
+            "assert_pattern_helper_wrong_text_model_payload_round_trip",
+            "run_benchmark_workload_with_cpython",
+            "selected_manifest_workloads",
+        }
+    )
 
     _assert_owner_module_routes_through_package_import(
         module,
@@ -3046,8 +3045,10 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
-    assert _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES.isdisjoint(
-        definition_names | assignment_names
+    assert forbidden_owner_names.isdisjoint(definition_names | assignment_names)
+    _assert_benchmark_test_support_aliases_absent(
+        "tests.benchmarks.test_benchmark_manifest_validation",
+        forbidden_owner_names,
     )
 
 
@@ -3134,10 +3135,6 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
                 "_is_collection_replacement_compiled_pattern_keyword_error_workload",
             }
         ),
-    )
-    _assert_benchmark_test_support_aliases_absent(
-        "tests.benchmarks.test_benchmark_manifest_validation",
-        _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES,
     )
 
 
