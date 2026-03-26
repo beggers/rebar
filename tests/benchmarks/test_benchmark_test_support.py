@@ -3284,6 +3284,39 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     )
 
 
+def test_rehomed_source_tree_contract_tests_stay_owned_by_combined_boundary_suite(
+) -> None:
+    generic_module = importlib.import_module(
+        "tests.benchmarks.test_benchmark_manifest_validation"
+    )
+    owner_module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    rehomed_definition_names = frozenset(
+        {
+            "test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preserve_success_and_keyword_payload_round_trip_until_helper_invocation",
+            "test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation",
+            "test_standard_benchmark_compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation",
+            "test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation",
+            "test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio",
+        }
+    )
+
+    generic_definition_names, generic_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(generic_module)
+    )
+    owner_definition_names, owner_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(owner_module)
+    )
+
+    assert rehomed_definition_names.isdisjoint(
+        generic_definition_names | generic_assignment_names
+    )
+    assert rehomed_definition_names.issubset(
+        owner_definition_names | owner_assignment_names
+    )
+
+
 def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_source_tree_support(
 ) -> None:
     owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
