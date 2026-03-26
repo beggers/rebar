@@ -1,8 +1,9 @@
 ## RBR-1358: Centralize benchmark report-contract helpers onto shared support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
+Completed: 2026-03-26
 
 ## Goal
 - Delete the remaining source-tree-owned benchmark report-contract helper layer so shared scorecard/manifest validation helpers live on `tests/benchmarks/benchmark_test_support.py` and the source-tree owner module stops acting as a transit surface for them.
@@ -58,3 +59,14 @@ Created: 2026-03-26
   - `rg -n '^def (_assert_benchmark_summary_consistent|_artifact_manifest_record|assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record)\\b' tests/benchmarks/benchmark_test_support.py` currently fails because the shared support module does not yet define those helpers, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n '^def (_assert_benchmark_summary_consistent|_artifact_manifest_record|assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because those five helper definitions still live on the source-tree owner module, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'source_tree_support\\.(assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because both benchmark suites still route the public report-contract helpers through `source_tree_support`, and that failure belongs exactly to this cleanup
+
+## Completion Note
+- Moved `_assert_benchmark_summary_consistent`, `_artifact_manifest_record`, `assert_source_tree_benchmark_contract`, `assert_benchmark_manifest_contract`, and `find_manifest_record` into `tests/benchmarks/benchmark_test_support.py`, then deleted their local definitions and owner-surface inventory routing from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to call those shared helpers through `tests.benchmarks.benchmark_test_support` directly while keeping the remaining source-tree-specific helpers routed through `source_tree_support`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'test_source_tree_support_module_exposes_moved_report_contract_helpers or test_combined_suite_routes_moved_support_surfaces_through_source_tree_support or test_source_tree_support_module_imports_shared_support_through_tests_benchmarks_package_only or test_source_tree_owner_imports_shared_support_through_tests_benchmarks_package_only'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_runner_regenerates_source_tree_scorecards or test_single_manifest_benchmark_scorecards_still_cover_their_target_manifests'`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `rg -n '^def (_assert_benchmark_summary_consistent|_artifact_manifest_record|assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record)\\b' tests/benchmarks/benchmark_test_support.py`
+  - `bash -lc "! rg -n '^def (_assert_benchmark_summary_consistent|_artifact_manifest_record|assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'source_tree_support\\.(assert_source_tree_benchmark_contract|assert_benchmark_manifest_contract|find_manifest_record)\\b' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"`

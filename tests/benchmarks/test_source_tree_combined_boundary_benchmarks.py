@@ -2396,7 +2396,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     report_name="benchmarks.json",
                 )
 
-                source_tree_support.assert_source_tree_benchmark_contract(
+                benchmark_test_support.assert_source_tree_benchmark_contract(
                     self,
                     scorecard,
                     summary,
@@ -2415,8 +2415,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
 
                 manifest_id = case.manifest_id
                 manifest_summary = scorecard["manifests"][manifest_id]
-                manifest_record = source_tree_support.find_manifest_record(scorecard, manifest_id)
-                source_tree_support.assert_benchmark_manifest_contract(
+                manifest_record = benchmark_test_support.find_manifest_record(
+                    scorecard,
+                    manifest_id,
+                )
+                benchmark_test_support.assert_benchmark_manifest_contract(
                     self,
                     manifest_summary,
                     manifest_record,
@@ -4086,7 +4089,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     report_name="benchmarks.json",
                 )
 
-                source_tree_support.assert_source_tree_benchmark_contract(
+                benchmark_test_support.assert_source_tree_benchmark_contract(
                     self,
                     scorecard,
                     summary,
@@ -4125,10 +4128,13 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 for manifest_id, manifest_expectation in case.manifest_expectations.items():
                     manifest = case.manifest_for_id(manifest_id)
                     with self.subTest(manifest_id=manifest_id):
-                        source_tree_support.assert_benchmark_manifest_contract(
+                        benchmark_test_support.assert_benchmark_manifest_contract(
                             self,
                             scorecard["manifests"][manifest_id],
-                            source_tree_support.find_manifest_record(scorecard, manifest_id),
+                            benchmark_test_support.find_manifest_record(
+                                scorecard,
+                                manifest_id,
+                            ),
                             manifest=manifest,
                             manifest_path=source_tree_support.relative_manifest_path(
                                 manifest.path

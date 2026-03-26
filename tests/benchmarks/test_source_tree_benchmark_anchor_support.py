@@ -1568,10 +1568,23 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
     local_function_names = {
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
+    shared_module_ast = benchmark_test_support._parsed_module_ast(benchmark_test_support)
+    shared_function_names = {
+        node.name for node in shared_module_ast.body if isinstance(node, ast.FunctionDef)
+    }
 
-    for function_name in support.SOURCE_TREE_MOVED_REPORT_CONTRACT_HELPER_NAMES:
-        assert hasattr(support, function_name)
-        assert function_name in local_function_names
+    moved_function_names = (
+        "_assert_benchmark_summary_consistent",
+        "_artifact_manifest_record",
+        "assert_source_tree_benchmark_contract",
+        "assert_benchmark_manifest_contract",
+        "find_manifest_record",
+    )
+    for function_name in moved_function_names:
+        assert hasattr(benchmark_test_support, function_name)
+        assert function_name in shared_function_names
+        assert not hasattr(support, function_name)
+        assert function_name not in local_function_names
 
 
 def test_source_tree_support_module_exposes_moved_conditional_callable_helpers() -> None:
@@ -1831,7 +1844,13 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
 
-    for function_name in support.SOURCE_TREE_MOVED_REPORT_CONTRACT_HELPER_NAMES:
+    for function_name in (
+        "_assert_benchmark_summary_consistent",
+        "_artifact_manifest_record",
+        "assert_source_tree_benchmark_contract",
+        "assert_benchmark_manifest_contract",
+        "find_manifest_record",
+    ):
         assert function_name not in local_function_names
 
 
@@ -1998,10 +2017,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             id="compiled-pattern-module-success",
         ),
         pytest.param(
-            support.SOURCE_TREE_ROUTED_REPORT_CONTRACT_HELPER_NAMES,
-            id="report-contract-helpers",
-        ),
-        pytest.param(
             support.SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES,
             id="source-tree-suite-assertion-helpers",
         ),
@@ -2027,6 +2042,44 @@ def test_combined_suite_routes_moved_support_surfaces_through_source_tree_suppor
         owner_module=support,
         owner_names=routed_names,
     )
+
+
+def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_support(
+) -> None:
+    module_ast = support._parsed_source_tree_combined_suite_ast()
+    benchmark_support_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    )
+    helper_names = frozenset(
+        {
+            "assert_source_tree_benchmark_contract",
+            "assert_benchmark_manifest_contract",
+            "find_manifest_record",
+        }
+    )
+
+    assert benchmark_support_alias_names
+    assert benchmark_test_support._top_level_import_from_alias_pairs(
+        module_ast,
+        module_name="tests.benchmarks.benchmark_test_support",
+        imported_names=helper_names,
+    ) == frozenset()
+    assert _attribute_alias_pairs(
+        module_ast,
+        module_alias_names=benchmark_support_alias_names,
+        attribute_names=helper_names,
+    ) == frozenset()
+    assert frozenset(
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in benchmark_support_alias_names
+        and node.attr in helper_names
+    ) == helper_names
 
 
 def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_test_module(
@@ -2447,7 +2500,7 @@ def test_benchmark_summary_consistent_counts_unimplemented_and_regression_rows()
         },
     )
 
-    support._assert_benchmark_summary_consistent(
+    benchmark_test_support._assert_benchmark_summary_consistent(
         unittest.TestCase(),
         scorecard,
         _summary_view(scorecard),
@@ -2459,7 +2512,7 @@ def test_source_tree_report_contract_accepts_single_manifest_native_loaded_score
     tmp_path: pathlib.Path,
 ) -> None:
     monkeypatch.setattr(
-        support,
+        benchmark_test_support,
         "build_cpython_baseline",
         lambda version_family: {
             "python": "synthetic",
@@ -2493,7 +2546,10 @@ def test_source_tree_report_contract_accepts_single_manifest_native_loaded_score
             else tuple(workload_by_id[workload_id] for workload_id in selected_workload_ids)
         ),
     )
-    manifest_record = support._artifact_manifest_record(manifest_path, manifest)
+    manifest_record = benchmark_test_support._artifact_manifest_record(
+        manifest_path,
+        manifest,
+    )
     scorecard = _synthetic_report_scorecard(
         workloads=(
             {
@@ -2532,7 +2588,7 @@ def test_source_tree_report_contract_accepts_single_manifest_native_loaded_score
     tracked_report_path = tmp_path / "synthetic-benchmark-report.py"
     tracked_report_path.write_text("REPORT = {}\n")
 
-    support.assert_source_tree_benchmark_contract(
+    benchmark_test_support.assert_source_tree_benchmark_contract(
         unittest.TestCase(),
         scorecard,
         _summary_view(scorecard),
@@ -2550,7 +2606,7 @@ def test_source_tree_report_contract_accepts_combined_manifest_scorecard_without
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        support,
+        benchmark_test_support,
         "build_cpython_baseline",
         lambda version_family: {
             "python": "synthetic",
@@ -2621,7 +2677,7 @@ def test_source_tree_report_contract_accepts_combined_manifest_scorecard_without
         ),
     ]
     manifest_records = [
-        support._artifact_manifest_record(manifest_path, manifest)
+        benchmark_test_support._artifact_manifest_record(manifest_path, manifest)
         for manifest_path, manifest in zip(manifest_paths, manifests, strict=True)
     ]
     scorecard = _synthetic_report_scorecard(
@@ -2664,7 +2720,7 @@ def test_source_tree_report_contract_accepts_combined_manifest_scorecard_without
         native_module_loaded=False,
     )
 
-    support.assert_source_tree_benchmark_contract(
+    benchmark_test_support.assert_source_tree_benchmark_contract(
         unittest.TestCase(),
         scorecard,
         _summary_view(scorecard),
@@ -2710,7 +2766,10 @@ def test_manifest_contract_helpers_validate_selected_workloads_and_lookup() -> N
             else tuple(workload_by_id[workload_id] for workload_id in selected_workload_ids)
         ),
     )
-    manifest_record = support._artifact_manifest_record(manifest_path, manifest)
+    manifest_record = benchmark_test_support._artifact_manifest_record(
+        manifest_path,
+        manifest,
+    )
     manifest_summary = {
         "workload_count": 3,
         "selected_workload_count": 2,
@@ -2727,10 +2786,10 @@ def test_manifest_contract_helpers_validate_selected_workloads_and_lookup() -> N
     }
     scorecard = {"artifacts": {"manifests": [manifest_record]}}
 
-    support.assert_benchmark_manifest_contract(
+    benchmark_test_support.assert_benchmark_manifest_contract(
         unittest.TestCase(),
         manifest_summary,
-        support.find_manifest_record(scorecard, manifest.manifest_id),
+        benchmark_test_support.find_manifest_record(scorecard, manifest.manifest_id),
         manifest=manifest,
         manifest_path=manifest_path,
         known_gap_count=1,
@@ -2747,7 +2806,7 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
         AssertionError,
         match="missing manifest record for 'missing-boundary'",
     ):
-        support.find_manifest_record(
+        benchmark_test_support.find_manifest_record(
             {
                 "artifacts": {
                     "manifests": [
@@ -2762,7 +2821,7 @@ def test_find_manifest_record_rejects_missing_manifest_id() -> None:
         )
 
 
-def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_package_only(
+def test_source_tree_support_module_imports_shared_support_through_tests_benchmarks_package_only(
 ) -> None:
     module_ast = benchmark_test_support._parsed_module_ast(support)
     package_imports = {
