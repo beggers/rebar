@@ -2608,6 +2608,46 @@ def test_source_tree_combined_routing_helpers_live_on_shared_support() -> None:
     assert hasattr(support, "_assert_source_tree_combined_routes_owner_names_through_module_alias")
 
 
+def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface() -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    moved_names = frozenset(
+        {
+            "SourceTreeBenchmarkCommonCase",
+            "SourceTreeManifestExpectation",
+            "SourceTreeDeferredExpectation",
+            "SourceTreeCombinedCase",
+            "SourceTreeCombinedPatternGroupExpectation",
+            "SourceTreeCombinedManifestShapeExpectation",
+            "SourceTreeCombinedFullyMeasuredManifestExpectation",
+            "SourceTreeCombinedManifestExpectationDefinition",
+            "SourceTreeCombinedSliceExpectation",
+            "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+            "source_tree_combined_manifest_representative_measured_workload_ids",
+            "source_tree_combined_target_manifest_ids",
+            "source_tree_combined_case",
+            "select_source_tree_combined_slice_rows",
+            "assert_source_tree_benchmark_contract",
+        }
+    )
+
+    assert moved_names.isdisjoint(dir(support))
+    assert moved_names.issubset(definition_names | assignment_names)
+    assert moved_names.issubset(dir(module.source_tree_support))
+    assert (
+        module.source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+        is module.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+    )
+    assert (
+        module.source_tree_support.assert_source_tree_benchmark_contract
+        is module.assert_source_tree_benchmark_contract
+    )
+
+
 @pytest.mark.parametrize(
     (
         "module_source",
@@ -3220,7 +3260,7 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert getattr(combined_suite, "source_tree_support") is anchor_support
+    assert getattr(combined_suite, "source_tree_support") is not anchor_support
     assert not hasattr(combined_suite.source_tree_support, "collection_replacement_support")
     source_tree_owner_refs = {
         node.attr
@@ -3233,7 +3273,9 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
     assert moved_workload_id_names.isdisjoint(local_names)
     assert source_tree_owner_refs == moved_workload_id_names
     for name in moved_workload_id_names:
-        assert hasattr(anchor_support, name)
+        assert getattr(combined_suite.source_tree_support, name) is getattr(
+            anchor_support, name
+        )
         assert hasattr(collection_replacement_support, name)
 
 
@@ -3712,7 +3754,7 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert module.source_tree_support is anchor_support
+    assert module.source_tree_support is not anchor_support
     assert owner_names.isdisjoint(definition_names | assignment_names)
     assert owner_names.issubset(dir(module.source_tree_support))
 
@@ -3749,6 +3791,10 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
     monkeypatch,
     anchor_support_cache_guard: None,
 ) -> None:
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+
     monkeypatch.setattr(
         support,
         "published_benchmark_manifests",
@@ -3759,9 +3805,10 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
     support._clear_anchor_support_caches()
 
     assert support._published_benchmark_manifest_ids() == frozenset({"module-boundary"})
+    assert not hasattr(support, "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS")
     assert (
         "synthetic-new-boundary"
-        not in support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+        not in combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
     )
 
     monkeypatch.setattr(
@@ -3775,7 +3822,7 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
     assert support._published_benchmark_manifest_ids() == frozenset({"module-boundary"})
     assert (
         "synthetic-new-boundary"
-        not in support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+        not in combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
     )
 
     support._clear_anchor_support_caches()
@@ -3783,9 +3830,12 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
     assert support._published_benchmark_manifest_ids() == frozenset(
         {"synthetic-new-boundary"}
     )
-    assert "synthetic-new-boundary" in support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
     assert (
-        support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        "synthetic-new-boundary"
+        in combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+    )
+    assert (
+        combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             "synthetic-new-boundary"
         ]
         is support._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION

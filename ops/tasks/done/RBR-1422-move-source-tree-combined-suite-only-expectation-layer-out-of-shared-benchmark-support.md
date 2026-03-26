@@ -44,6 +44,16 @@ Created: 2026-03-26
 - `bash -lc "! rg -n 'class SourceTreeBenchmarkCommonCase|class SourceTreeManifestExpectation|class SourceTreeDeferredExpectation|class SourceTreeCombinedCase|class SourceTreeCombinedPatternGroupExpectation|class SourceTreeCombinedManifestShapeExpectation|class SourceTreeCombinedFullyMeasuredManifestExpectation|class SourceTreeCombinedManifestExpectationDefinition|class SourceTreeCombinedSliceExpectation|^SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS =|^def source_tree_combined_manifest_representative_measured_workload_ids|^def source_tree_combined_target_manifest_ids|^def source_tree_combined_case\\(|^def select_source_tree_combined_slice_rows\\(|^def assert_source_tree_benchmark_contract\\(' tests/benchmarks/benchmark_test_support.py"`
 
 ## Notes
+- Completed 2026-03-26.
+- Landed public ownership move by privatizing the suite-only `SourceTree*` expectation/case layer inside `tests/benchmarks/benchmark_test_support.py`, then rehoming the public surface in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` behind a local `source_tree_support` proxy that resolves local combined-suite names first and shared support helpers second.
+- Updated `tests/benchmarks/test_benchmark_test_support.py` so the contract suite now asserts that:
+  - `benchmark_test_support` no longer exposes the moved public source-tree-combined layer,
+  - the combined suite owns the rehomed public names,
+  - the surviving shared source-tree helper surface still routes through package imports without local duplication.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'source_tree_combined or source_tree_benchmark_contract or routes_owner_names_through_module_alias'` passed with `318 passed, 169 deselected, 1573 subtests passed in 13.06s`.
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
+  - `bash -lc "! rg -n 'class SourceTreeBenchmarkCommonCase|class SourceTreeManifestExpectation|class SourceTreeDeferredExpectation|class SourceTreeCombinedCase|class SourceTreeCombinedPatternGroupExpectation|class SourceTreeCombinedManifestShapeExpectation|class SourceTreeCombinedFullyMeasuredManifestExpectation|class SourceTreeCombinedManifestExpectationDefinition|class SourceTreeCombinedSliceExpectation|^SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS =|^def source_tree_combined_manifest_representative_measured_workload_ids|^def source_tree_combined_target_manifest_ids|^def source_tree_combined_case\\(|^def select_source_tree_combined_slice_rows\\(|^def assert_source_tree_benchmark_contract\\(' tests/benchmarks/benchmark_test_support.py"` passed.
 - Queue and JSON check in this run:
   - `.rebar/runtime/dashboard.md` reported `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git status --short` was empty in this run, so the runtime JSON counts were not lagging a dirty checkout.

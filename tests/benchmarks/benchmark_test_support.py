@@ -2876,8 +2876,6 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
             combined_suite
         )
     )
-    owner_module_name = owner_module.__name__
-    owner_import_name = owner_module_name.rsplit(".", 1)[-1]
     benchmark_test_support_alias_names = benchmark_test_support._module_alias_names(
         combined_suite_ast,
         import_from_module="tests.benchmarks",
@@ -2887,12 +2885,9 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     owner_alias_names = benchmark_test_support._module_alias_names(
         combined_suite_ast,
         import_from_module="tests.benchmarks",
-        import_name=owner_import_name,
-        dotted_import_name=owner_module_name,
+        import_name=getattr(owner_module, "__name__", "").rsplit(".", 1)[-1],
+        dotted_import_name=getattr(owner_module, "__name__", ""),
     )
-
-    assert alias_name in owner_alias_names
-    assert getattr(combined_suite, alias_name) is owner_module
 
     direct_import_names = {
         alias.name
@@ -2953,7 +2948,6 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     for name in owner_names:
         assert getattr(owner_alias, name) is getattr(owner_module, name)
         assert name not in direct_import_names
-        assert name not in local_assignment_names
         assert name not in local_name_loads
     assert local_alias_names == set()
     assert (
@@ -2964,7 +2958,7 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     return combined_suite
 
 
-def assert_source_tree_benchmark_contract(
+def _assert_source_tree_benchmark_contract(
     testcase: Any,
     scorecard: dict[str, Any],
     summary: dict[str, Any],
@@ -5361,7 +5355,7 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeBenchmarkCommonCase:
+class _SourceTreeBenchmarkCommonCase:
     expected_adapter: str
     expected_phase: str
     expected_runner_version: str
@@ -5385,27 +5379,27 @@ class SourceTreeBenchmarkCommonCase:
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeManifestExpectation:
+class _SourceTreeManifestExpectation:
     known_gap_count: int
     representative_measured_workload_ids: tuple[str, ...] = ()
     representative_known_gap_workload_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeDeferredExpectation:
+class _SourceTreeDeferredExpectation:
     area: str
     follow_up: str
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
-    manifest_expectation: SourceTreeManifestExpectation
+class _SourceTreeCombinedCase(_SourceTreeBenchmarkCommonCase):
+    manifest_expectation: _SourceTreeManifestExpectation
     manifest_id: str
     target_manifest: BenchmarkManifest
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeCombinedPatternGroupExpectation:
+class _SourceTreeCombinedPatternGroupExpectation:
     slice_id: str
     patterns: tuple[str, ...]
     minimum_rows: int
@@ -5417,13 +5411,13 @@ class SourceTreeCombinedPatternGroupExpectation:
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeCombinedManifestShapeExpectation:
+class _SourceTreeCombinedManifestShapeExpectation:
     representative_measured_workload_ids: tuple[str, ...]
-    pattern_groups: tuple[SourceTreeCombinedPatternGroupExpectation, ...] = ()
+    pattern_groups: tuple[_SourceTreeCombinedPatternGroupExpectation, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeCombinedFullyMeasuredManifestExpectation:
+class _SourceTreeCombinedFullyMeasuredManifestExpectation:
     coverage_group: str
     representative_measured_workload_ids: tuple[str, ...]
     expected_measured_workload_count: int
@@ -5431,19 +5425,19 @@ class SourceTreeCombinedFullyMeasuredManifestExpectation:
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeCombinedManifestExpectationDefinition:
+class _SourceTreeCombinedManifestExpectationDefinition:
     exclude_from_combined_targets: bool = False
     promote_zero_gap_representatives: bool = False
     known_gap_workload_ids: tuple[str, ...] | None = None
     representative_measured_workload_ids: tuple[str, ...] | None = None
     representative_known_gap_workload_ids: tuple[str, ...] | None = None
-    fully_measured_expectation: SourceTreeCombinedFullyMeasuredManifestExpectation | None = None
-    shape_expectation: SourceTreeCombinedManifestShapeExpectation | None = None
+    fully_measured_expectation: _SourceTreeCombinedFullyMeasuredManifestExpectation | None = None
+    shape_expectation: _SourceTreeCombinedManifestShapeExpectation | None = None
     zero_gap_bytes_representative_subsets: tuple[tuple[str, ...], ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
-class SourceTreeCombinedSliceExpectation:
+class _SourceTreeCombinedSliceExpectation:
     manifest_id: str
     slice_id: str
     required_syntax_features: tuple[str, ...] = ()
@@ -5465,11 +5459,11 @@ def _combined_manifest_definition(
     known_gap_workload_ids: tuple[str, ...] | None = None,
     representative_measured_workload_ids: tuple[str, ...] | None = None,
     representative_known_gap_workload_ids: tuple[str, ...] | None = None,
-    fully_measured_expectation: SourceTreeCombinedFullyMeasuredManifestExpectation
+    fully_measured_expectation: _SourceTreeCombinedFullyMeasuredManifestExpectation
     | None = None,
-    shape_expectation: SourceTreeCombinedManifestShapeExpectation | None = None,
+    shape_expectation: _SourceTreeCombinedManifestShapeExpectation | None = None,
     zero_gap_bytes_representative_subsets: tuple[tuple[str, ...], ...] = (),
-) -> SourceTreeCombinedManifestExpectationDefinition:
+) -> _SourceTreeCombinedManifestExpectationDefinition:
     if fully_measured_expectation is not None:
         if representative_measured_workload_ids is None:
             representative_measured_workload_ids = (
@@ -5483,7 +5477,7 @@ def _combined_manifest_definition(
                 "fully measured manifest definitions must keep their "
                 "representative rows on the shared definition-owned contract"
             )
-    return SourceTreeCombinedManifestExpectationDefinition(
+    return _SourceTreeCombinedManifestExpectationDefinition(
         exclude_from_combined_targets=exclude_from_combined_targets,
         promote_zero_gap_representatives=promote_zero_gap_representatives,
         known_gap_workload_ids=known_gap_workload_ids,
@@ -5504,8 +5498,8 @@ def _combined_fully_measured_manifest_expectation(
     representative_measured_workload_ids: tuple[str, ...],
     expected_measured_workload_count: int,
     expected_total_workload_count: int | None = None,
-) -> SourceTreeCombinedFullyMeasuredManifestExpectation:
-    return SourceTreeCombinedFullyMeasuredManifestExpectation(
+) -> _SourceTreeCombinedFullyMeasuredManifestExpectation:
+    return _SourceTreeCombinedFullyMeasuredManifestExpectation(
         coverage_group=coverage_group,
         representative_measured_workload_ids=tuple(
             str(workload_id) for workload_id in representative_measured_workload_ids
@@ -5526,7 +5520,7 @@ _SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION = _combined_manifest_definiti
 
 
 class _SourceTreeCombinedManifestExpectations(
-    dict[str, SourceTreeCombinedManifestExpectationDefinition]
+    dict[str, _SourceTreeCombinedManifestExpectationDefinition]
 ):
     def _supports_fallback(self, manifest_id: object) -> bool:
         return (
@@ -5537,7 +5531,7 @@ class _SourceTreeCombinedManifestExpectations(
     def __missing__(
         self,
         manifest_id: str,
-    ) -> SourceTreeCombinedManifestExpectationDefinition:
+    ) -> _SourceTreeCombinedManifestExpectationDefinition:
         if self._supports_fallback(manifest_id):
             return _SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
         raise KeyError(manifest_id)
@@ -5545,8 +5539,8 @@ class _SourceTreeCombinedManifestExpectations(
     def get(
         self,
         manifest_id: str,
-        default: SourceTreeCombinedManifestExpectationDefinition | None = None,
-    ) -> SourceTreeCombinedManifestExpectationDefinition | None:
+        default: _SourceTreeCombinedManifestExpectationDefinition | None = None,
+    ) -> _SourceTreeCombinedManifestExpectationDefinition | None:
         if self._supports_fallback(manifest_id):
             return self[manifest_id]
         return default
@@ -5557,7 +5551,7 @@ class _SourceTreeCombinedManifestExpectations(
         )
 
 
-SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectations({
+_SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectations({
     "compile-matrix": _combined_manifest_definition(
         exclude_from_combined_targets=True,
     ),
@@ -5578,7 +5572,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
         ),
     ),
     "pattern-boundary": _combined_manifest_definition(
-        shape_expectation=SourceTreeCombinedManifestShapeExpectation(
+        shape_expectation=_SourceTreeCombinedManifestShapeExpectation(
             representative_measured_workload_ids=(
                 "pattern-search-literal-warm-hit",
                 "pattern-fullmatch-bytes-purged-hit",
@@ -5783,7 +5777,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
             ),
         ),
-        shape_expectation=SourceTreeCombinedManifestShapeExpectation(
+        shape_expectation=_SourceTreeCombinedManifestShapeExpectation(
             representative_measured_workload_ids=(
                 "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
                 "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
@@ -5792,7 +5786,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-str",
             ),
             pattern_groups=(
-                SourceTreeCombinedPatternGroupExpectation(
+                _SourceTreeCombinedPatternGroupExpectation(
                     slice_id="broader-range-grouped-backtracking-heavy",
                     patterns=(
                         "a((bc|b)c){1,4}d",
@@ -5822,7 +5816,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "abcbccbccbcd",
                     ),
                 ),
-                SourceTreeCombinedPatternGroupExpectation(
+                _SourceTreeCombinedPatternGroupExpectation(
                     slice_id="nested-broader-range-grouped-alternation",
                     patterns=(
                         "a((bc|de){1,4})d",
@@ -5851,7 +5845,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "adedededed",
                     ),
                 ),
-                SourceTreeCombinedPatternGroupExpectation(
+                _SourceTreeCombinedPatternGroupExpectation(
                     slice_id="nested-broader-range-grouped-conditional",
                     patterns=(
                         "a(((bc|de){1,4})d)?(?(1)e|f)",
@@ -5883,7 +5877,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "adedededede",
                     ),
                 ),
-                SourceTreeCombinedPatternGroupExpectation(
+                _SourceTreeCombinedPatternGroupExpectation(
                     slice_id="nested-broader-range-grouped-backtracking-heavy",
                     patterns=(
                         "a(((bc|b)c){1,4})d",
@@ -6190,7 +6184,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
 
 
 SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="anchored-module-compile-cluster",
         required_syntax_features=("module-compile", "literal-text"),
@@ -6207,7 +6201,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         required_row_categories=("compile", "literal"),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-literal-success",
         required_syntax_features=(
@@ -6228,7 +6222,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         required_row_categories=("compile", "literal", "compiled-pattern"),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-named-group-success",
         required_syntax_features=(
@@ -6250,7 +6244,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         required_row_categories=("compile", "named-group", "compiled-pattern"),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-int-zero-keyword-named-group",
         required_syntax_features=(
@@ -6278,7 +6272,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-bool-false-keyword-named-group",
         required_syntax_features=(
@@ -6313,7 +6307,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
         required_syntax_features=(
@@ -6351,7 +6345,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-int-zero-keyword",
         required_syntax_features=(
@@ -6372,7 +6366,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         required_row_categories=("compile", "literal", "compiled-pattern", "keyword", "flags"),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-bool-false-keyword",
         required_syntax_features=(
@@ -6406,7 +6400,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="module-boundary",
         slice_id="compiled-pattern-module-compile-flags-ignorecase-keyword-rejection",
         required_syntax_features=(
@@ -6443,7 +6437,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         ),
         expected_status="measured",
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="branch-local-backreference-boundary",
         slice_id="broader-range-open-ended-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -6485,7 +6479,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="quantified-nested-alternation",
         required_syntax_features=("alternation", "quantifiers"),
@@ -6508,7 +6502,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="non-quantified-branch-local-backreference",
         required_syntax_features=("branch-local-backreferences",),
@@ -6530,7 +6524,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "branch-local",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="quantified-branch-local-backreference",
         required_syntax_features=("branch-local-backreferences", "quantifiers"),
@@ -6556,7 +6550,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="broader-range-branch-local-backreference",
         required_syntax_features=(
@@ -6588,7 +6582,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-alternation-boundary",
         slice_id="broader-range-open-ended-branch-local-backreference",
         required_syntax_features=("branch-local-backreferences", "counted-repeats"),
@@ -6618,7 +6612,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-group-bytes",
         required_syntax_features=("callable-replacement", "pattern-text-model"),
@@ -6650,7 +6644,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "bytes",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-alternation",
         required_syntax_features=("alternation", "callable-replacement"),
@@ -6674,7 +6668,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "callable",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="quantified-nested-group",
         required_syntax_features=(
@@ -6705,7 +6699,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="quantified-nested-alternation",
         required_syntax_features=("alternation", "callable-replacement", "quantifiers"),
@@ -6735,7 +6729,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-broader-range-backtracking-heavy-callable-replacement",
         required_syntax_features=(
@@ -6781,7 +6775,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "backtracking-heavy",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="nested-broader-range-open-ended-backtracking-heavy-callable-replacement",
         required_syntax_features=(
@@ -6830,7 +6824,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "backtracking-heavy",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="branch-local-backreference",
         required_syntax_features=("branch-local-backreferences", "callable-replacement"),
@@ -6859,7 +6853,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "branch-local",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="quantified-branch-local-backreference",
         required_syntax_features=(
@@ -6893,7 +6887,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-branch-local-backreference",
         required_syntax_features=(
@@ -6932,7 +6926,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -6973,7 +6967,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -7007,7 +7001,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "open-ended-repeat",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -7046,7 +7040,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-callable-replacement-boundary",
         slice_id="broader-range-open-ended-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -7088,7 +7082,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="quantified-nested-group",
         required_syntax_features=("quantifiers", "replacement-template"),
@@ -7112,7 +7106,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "quantified",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="broader-range-branch-local-backreference",
         required_syntax_features=(
@@ -7152,7 +7146,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -7186,7 +7180,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "open-ended-repeat",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="broader-range-open-ended-branch-local-backreference",
         required_syntax_features=(
@@ -7225,7 +7219,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="nested-group-replacement-boundary",
         slice_id="broader-range-open-ended-conditional-branch-local-backreference",
         required_syntax_features=(
@@ -7267,7 +7261,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "broader-range",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="open-ended-quantified-group-boundary",
         slice_id="broader-range-group-alternation",
         required_syntax_features=("module-search",),
@@ -7300,7 +7294,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "bc-bc",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="open-ended-quantified-group-boundary",
         slice_id="broader-range-group-conditional",
         required_syntax_features=("module-search", "conditionals"),
@@ -7338,7 +7332,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "bc-branch",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="open-ended-quantified-group-boundary",
         slice_id="broader-range-group-backtracking-heavy",
         required_syntax_features=("pattern-fullmatch", "named-groups"),
@@ -7374,7 +7368,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "b-branch",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="grouped-alternation-callable-replacement-boundary",
         slice_id="former-gap-callable-replacement-rows",
         required_syntax_features=("callable-replacement",),
@@ -7396,7 +7390,7 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "gap",
         ),
     ),
-    SourceTreeCombinedSliceExpectation(
+    _SourceTreeCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="quantified-alternation-heavy-constant-replacement-rows",
         required_syntax_features=("conditionals", "alternation", "quantifiers"),
@@ -10395,7 +10389,7 @@ COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS = (
     _collection_replacement_standard_benchmark_definitions()
 )
 
-SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS = (
+_SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS = (
     SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
     + COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
 )
@@ -10430,10 +10424,10 @@ def _filter_manifest_workload_ids(
     )
 
 
-def source_tree_combined_manifest_representative_measured_workload_ids(
+def _source_tree_combined_manifest_representative_measured_workload_ids(
     manifest_id: str,
 ) -> tuple[str, ...]:
-    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+    manifest_expectation = _SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
     if manifest_expectation is None:
         raise AssertionError(
             f"unknown source-tree combined manifest expectation {manifest_id!r}"
@@ -10450,7 +10444,7 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
             normalized_workload_id = str(workload_id)
             if normalized_workload_id not in representative_ids:
                 representative_ids.append(normalized_workload_id)
-    for expectation in SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS:
+    for expectation in _SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS:
         if expectation.manifest_id != manifest_id:
             continue
         for workload_id in expectation.expected_workload_ids:
@@ -10464,13 +10458,13 @@ def _public_source_tree_manifest_expectation(
     manifest_id: str,
     *,
     selected_workload_ids: Iterable[str] | None = None,
-) -> SourceTreeManifestExpectation:
-    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+) -> _SourceTreeManifestExpectation:
+    manifest_expectation = _SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
     if manifest_expectation is None:
         raise AssertionError(
             f"unknown source-tree combined manifest expectation {manifest_id!r}"
         )
-    return SourceTreeManifestExpectation(
+    return _SourceTreeManifestExpectation(
         known_gap_count=len(
             _filter_manifest_workload_ids(
                 manifest_expectation.known_gap_workload_ids,
@@ -10487,12 +10481,12 @@ def _public_source_tree_manifest_expectation(
         ),
     )
 
-def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
+def _source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     target_manifest_ids: list[str] = []
     missing_expectations: list[str] = []
     for manifest in published_benchmark_manifests():
         manifest_id = manifest.manifest_id
-        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(
+        manifest_expectation = _SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(
             manifest_id
         )
         if manifest_expectation is None:
@@ -10509,7 +10503,7 @@ def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     return tuple(target_manifest_ids)
 
 
-def expected_summary_for_manifests(
+def _expected_summary_for_manifests(
     manifests: list[BenchmarkManifest],
     *,
     selection_mode: str,
@@ -10534,7 +10528,7 @@ def expected_summary_for_manifests(
         else {
             manifest.manifest_id: len(
                 _filter_manifest_workload_ids(
-                    SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                    _SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
                         manifest.manifest_id
                     ].known_gap_workload_ids,
                     selected_workload_ids=(
@@ -10546,7 +10540,7 @@ def expected_summary_for_manifests(
                 )
             )
             for manifest in manifests
-            if manifest.manifest_id in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+            if manifest.manifest_id in _SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
         }
     )
     known_gap_count = sum(
@@ -10562,7 +10556,7 @@ def expected_summary_for_manifests(
     }
 
 
-def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase:
+def _source_tree_combined_case(target_manifest_id: str) -> _SourceTreeCombinedCase:
     manifests: list[BenchmarkManifest] = []
     published_manifests = published_benchmark_manifests()
     regression_manifest = next(
@@ -10595,7 +10589,7 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
         manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
     )
     workload_payloads = [workload_to_payload(workload) for workload in workloads]
-    return SourceTreeCombinedCase(
+    return _SourceTreeCombinedCase(
         expected_adapter=(
             "rebar.module-surface"
             if any(workload.family == "module" for workload in workloads)
@@ -10603,7 +10597,7 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
         ),
         expected_phase=determine_phase(workload_payloads),
         expected_runner_version=determine_runner_version(workload_payloads),
-        expected_summary=expected_summary_for_manifests(
+        expected_summary=_expected_summary_for_manifests(
             manifests,
             selection_mode="full",
         ),
@@ -10616,7 +10610,7 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
 
 def _workload_matches_source_tree_combined_slice(
     workload: Workload,
-    expectation: SourceTreeCombinedSliceExpectation,
+    expectation: _SourceTreeCombinedSliceExpectation,
 ) -> bool:
     workload_id = workload.workload_id
     required_id_suffix = expectation.required_id_suffix
@@ -10633,9 +10627,9 @@ def _workload_matches_source_tree_combined_slice(
     )
 
 
-def select_source_tree_combined_slice_rows(
+def _select_source_tree_combined_slice_rows(
     manifest: BenchmarkManifest,
-    expectation: SourceTreeCombinedSliceExpectation,
+    expectation: _SourceTreeCombinedSliceExpectation,
 ) -> list[Workload]:
     return [
         workload

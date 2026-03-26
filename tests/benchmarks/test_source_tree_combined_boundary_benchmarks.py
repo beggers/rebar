@@ -37,7 +37,58 @@ from tests.python.fixture_parity_support import (
     callable_match_group_signature,
 )
 
-source_tree_support = benchmark_test_support
+class _SourceTreeSupportProxy:
+    def __getattr__(self, name: str) -> object:
+        if name in globals():
+            return globals()[name]
+        return getattr(benchmark_test_support, name)
+
+    def __dir__(self) -> list[str]:
+        return sorted(set(globals()) | set(dir(benchmark_test_support)))
+
+
+SourceTreeBenchmarkCommonCase = benchmark_test_support._SourceTreeBenchmarkCommonCase
+SourceTreeManifestExpectation = benchmark_test_support._SourceTreeManifestExpectation
+SourceTreeDeferredExpectation = benchmark_test_support._SourceTreeDeferredExpectation
+SourceTreeCombinedCase = benchmark_test_support._SourceTreeCombinedCase
+SourceTreeCombinedPatternGroupExpectation = (
+    benchmark_test_support._SourceTreeCombinedPatternGroupExpectation
+)
+SourceTreeCombinedManifestShapeExpectation = (
+    benchmark_test_support._SourceTreeCombinedManifestShapeExpectation
+)
+SourceTreeCombinedFullyMeasuredManifestExpectation = (
+    benchmark_test_support._SourceTreeCombinedFullyMeasuredManifestExpectation
+)
+SourceTreeCombinedManifestExpectationDefinition = (
+    benchmark_test_support._SourceTreeCombinedManifestExpectationDefinition
+)
+SourceTreeCombinedSliceExpectation = benchmark_test_support._SourceTreeCombinedSliceExpectation
+SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = (
+    benchmark_test_support._SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+)
+SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS = (
+    benchmark_test_support._SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+)
+_combined_manifest_definition = benchmark_test_support._combined_manifest_definition
+_combined_fully_measured_manifest_expectation = (
+    benchmark_test_support._combined_fully_measured_manifest_expectation
+)
+expected_summary_for_manifests = benchmark_test_support._expected_summary_for_manifests
+source_tree_combined_manifest_representative_measured_workload_ids = (
+    benchmark_test_support._source_tree_combined_manifest_representative_measured_workload_ids
+)
+source_tree_combined_target_manifest_ids = (
+    benchmark_test_support._source_tree_combined_target_manifest_ids
+)
+source_tree_combined_case = benchmark_test_support._source_tree_combined_case
+select_source_tree_combined_slice_rows = (
+    benchmark_test_support._select_source_tree_combined_slice_rows
+)
+assert_source_tree_benchmark_contract = (
+    benchmark_test_support._assert_source_tree_benchmark_contract
+)
+source_tree_support = _SourceTreeSupportProxy()
 
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
