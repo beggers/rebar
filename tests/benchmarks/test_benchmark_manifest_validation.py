@@ -958,15 +958,15 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
     "spec",
     tuple(
         pytest.param(spec, id=str(spec["case_id"]))
-        for spec in benchmark_test_support._compiled_pattern_wrong_text_model_specs()
+        for spec in source_tree_support._compiled_pattern_wrong_text_model_specs()
     ),
 )
 def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation(
     tmp_path: pathlib.Path,
     spec: dict[str, object],
 ) -> None:
-    source_workloads = (
-        benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
+    source_workloads = source_tree_support._compiled_pattern_wrong_text_model_source_workloads(
+        spec
     )
     manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
@@ -1001,14 +1001,14 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        benchmark_test_support._assert_wrong_text_model_payload_round_trip(
+        source_tree_support._assert_wrong_text_model_payload_round_trip(
             source_workload,
             payload,
             round_tripped,
         )
 
         with pytest.raises(TypeError) as expected_error:
-            benchmark_test_support._run_cpython_compiled_pattern_module_helper_workload(
+            source_tree_support._run_cpython_compiled_pattern_module_helper_workload(
                 workload,
                 collection_replacement_callback_flags=0,
             )

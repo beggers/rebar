@@ -255,6 +255,147 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpe
 )
 
 
+def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
+    workload: Any,
+) -> bool:
+    return (
+        benchmark_test_support._is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is not None
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
+
+
+def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
+    return (
+        {
+            "case_id": "compiled_pattern_module_helper_wrong_text_model",
+            "manifest_path": "collection_replacement_boundary.py",
+            "include_workload": (
+                benchmark_test_support._is_collection_replacement_wrong_text_model_workload
+            ),
+            "contract_manifest_id": "collection-replacement-boundary",
+            "contract_filename": (
+                "python_benchmark_compiled_pattern_collection_replacement_wrong_text_model_contract.py"
+            ),
+            "expected_source_workload_ids": (
+                benchmark_test_support._COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+            ),
+        },
+        {
+            "case_id": "compiled_pattern_module_boundary_wrong_text_model",
+            "manifest_path": "module_boundary.py",
+            "include_workload": (
+                _is_module_workflow_compiled_pattern_wrong_text_model_workload
+            ),
+            "contract_manifest_id": "module-boundary",
+            "contract_filename": (
+                "python_benchmark_compiled_pattern_module_boundary_wrong_text_model_contract.py"
+            ),
+            "expected_source_workload_ids": (
+                benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+            ),
+        },
+    )
+
+
+def _compiled_pattern_wrong_text_model_source_workloads(
+    spec: dict[str, object],
+) -> tuple[Workload, ...]:
+    return benchmark_test_support.selected_manifest_workloads(
+        spec["manifest_path"],
+        include_workload=spec["include_workload"],
+    )
+
+
+def _run_cpython_compiled_pattern_module_helper_workload(
+    workload: Workload,
+    *,
+    collection_replacement_callback_flags: int,
+) -> object:
+    compiled_pattern = re.compile(
+        workload.pattern_payload(),
+        workload.flags,
+    )
+    _, _, cpython_call_args, materialize_cpython_result = (
+        benchmark_test_support._compiled_pattern_module_helper_route(
+            workload,
+            collection_replacement_callback_flags=collection_replacement_callback_flags,
+        )
+    )
+    helper = getattr(re, workload.operation.removeprefix("module."))
+    result = helper(compiled_pattern, *cpython_call_args)
+    if materialize_cpython_result:
+        return list(result)
+    return result
+
+
+def _module_workflow_compiled_pattern_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
+        return None
+    if case.helper not in {"search", "match", "fullmatch"}:
+        return None
+    if not case.args:
+        return None
+    case_text_model = case.text_model or "str"
+    return (
+        f"module.{case.helper}",
+        case_pattern(case),
+        benchmark_test_support.freeze_signature_value(list(case.args)),
+        case.use_compiled_pattern,
+        case.flags or 0,
+        case_text_model,
+    )
+
+
+def _module_workflow_compiled_pattern_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not benchmark_test_support._is_module_workflow_compiled_pattern_workload(
+        workload
+    ):
+        raise AssertionError(
+            "unexpected module-workflow compiled-pattern workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        benchmark_test_support.freeze_signature_value(
+            [workload.haystack_payload()]
+        ),
+        workload.use_compiled_pattern,
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _assert_wrong_text_model_payload_round_trip(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+    expected_haystack_type = (
+        str if source_workload.haystack_text_model == "str" else bytes
+    )
+
+    assert payload["use_compiled_pattern"] is True
+    assert round_tripped.use_compiled_pattern is True
+    assert payload["timing_scope"] == "module-helper-call"
+    assert round_tripped.timing_scope == "module-helper-call"
+    assert payload["haystack_text_model"] == source_workload.haystack_text_model
+    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
+    if source_workload.replacement is not None:
+        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (

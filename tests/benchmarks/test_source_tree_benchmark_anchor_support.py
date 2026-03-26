@@ -3168,6 +3168,10 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
+                    "_compiled_pattern_wrong_text_model_specs",
+                    "_compiled_pattern_wrong_text_model_source_workloads",
+                    "_run_cpython_compiled_pattern_module_helper_workload",
+                    "_assert_wrong_text_model_payload_round_trip",
                 }
             ),
             frozenset(
@@ -3196,6 +3200,9 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
+                    "_compiled_pattern_wrong_text_model_specs",
+                    "_compiled_pattern_wrong_text_model_source_workloads",
+                    "_assert_wrong_text_model_payload_round_trip",
                 }
             ),
             frozenset(
@@ -3499,20 +3506,30 @@ def test_source_tree_owner_no_longer_keeps_contract_builder_spec_local() -> None
 
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(
 ) -> None:
-    owner_definition_names = frozenset()
+    owner_definition_names = frozenset(
+        {
+            "_compiled_pattern_wrong_text_model_specs",
+            "_compiled_pattern_wrong_text_model_source_workloads",
+            "_run_cpython_compiled_pattern_module_helper_workload",
+            "_assert_wrong_text_model_payload_round_trip",
+            "_module_workflow_compiled_pattern_correctness_case_signature",
+            "_module_workflow_compiled_pattern_workload_signature",
+            "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+        }
+    )
     owner_assignment_names = frozenset()
     module_ast = benchmark_test_support._parsed_module_ast(support)
 
     benchmark_test_support.assert_mixed_owner_surface(
         support,
-        local_function_names=frozenset(),
+        local_function_names=owner_definition_names,
         local_assignment_names=owner_assignment_names,
         support_alias_assignment_names=frozenset(),
     )
-    assert owner_definition_names == frozenset()
-    assert owner_assignment_names == frozenset()
     assert not hasattr(support, "compiled_pattern_contract_expected_build_calls")
     assert not hasattr(support, "_compiled_pattern_module_helper_route")
+    for definition_name in owner_definition_names:
+        assert not hasattr(benchmark_test_support, definition_name)
 
     for definition_name in owner_definition_names:
         definition = next(
@@ -3537,6 +3554,21 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         and node.value.id == "benchmark_test_support"
         and node.attr in owner_definition_names | owner_assignment_names
     } == set()
+    assert {
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "benchmark_test_support"
+    } >= {
+        "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_compiled_pattern_module_helper_route",
+        "_is_collection_replacement_wrong_text_model_workload",
+        "_is_module_workflow_compiled_pattern_workload",
+        "freeze_signature_value",
+        "selected_manifest_workloads",
+    }
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:

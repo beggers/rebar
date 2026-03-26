@@ -2265,7 +2265,6 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
         "compiled_pattern_contract_expected_build_calls",
         "assert_zero_gap_manifest_workloads_measured",
         "_write_test_manifest",
-        "_assert_wrong_text_model_payload_round_trip",
         "live_manifest_workloads",
         "manifest_workloads",
         "published_cases_by_id",
@@ -2667,9 +2666,8 @@ def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_sur
 
     assert {
         "_compiled_pattern_module_helper_route",
-        "_run_cpython_compiled_pattern_module_helper_workload",
-        "_module_workflow_compiled_pattern_correctness_case_signature",
-        "_module_workflow_compiled_pattern_workload_signature",
+        "_module_workflow_compiled_pattern_success_correctness_case_signature",
+        "_module_workflow_compiled_pattern_success_workload_signature",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
@@ -2684,11 +2682,13 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
 
     assert {
         "_compiled_pattern_module_helper_route",
-        "_run_cpython_compiled_pattern_module_helper_workload",
-        "_assert_wrong_text_model_payload_round_trip",
-        "_module_workflow_compiled_pattern_correctness_case_signature",
-        "_module_workflow_compiled_pattern_workload_signature",
         "_is_module_workflow_compiled_pattern_workload",
+        "_module_workflow_compiled_pattern_success_correctness_case_signature",
+        "_module_workflow_compiled_pattern_success_workload_signature",
+        "_source_tree_benchmark_anchor_support_module",
+        "_source_tree_compiled_pattern_wrong_text_model_include_workload",
+        "_source_tree_compiled_pattern_wrong_text_model_correctness_case_signature",
+        "_source_tree_compiled_pattern_wrong_text_model_workload_signature",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
@@ -2707,11 +2707,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_VERBOSE_REGRESSION_FLAGS",
     }.issubset(assignment_names)
     assert {
-        "_compiled_pattern_wrong_text_model_specs",
-        "_compiled_pattern_wrong_text_model_source_workloads",
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
-    }.issubset(definition_names | assignment_names)
-    assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
@@ -2719,6 +2714,25 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     }.issubset(assignment_names)
     assert {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}.issubset(
         assignment_names
+    )
+    assert not hasattr(support, "_compiled_pattern_wrong_text_model_specs")
+    assert not hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
+    assert not hasattr(
+        support,
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+    )
+    assert not hasattr(
+        support,
+        "_run_cpython_compiled_pattern_module_helper_workload",
+    )
+    assert not hasattr(support, "_assert_wrong_text_model_payload_round_trip")
+    assert not hasattr(
+        support,
+        "_module_workflow_compiled_pattern_correctness_case_signature",
+    )
+    assert not hasattr(
+        support,
+        "_module_workflow_compiled_pattern_workload_signature",
     )
 
 
@@ -4083,7 +4097,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_materializes_findit
     )
 
     result = (
-        support._run_cpython_compiled_pattern_module_helper_workload(
+        anchor_support._run_cpython_compiled_pattern_module_helper_workload(
         workload,
         collection_replacement_callback_flags=0,
         )
@@ -4107,7 +4121,7 @@ def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_re
     )
 
     result = (
-        support._run_cpython_compiled_pattern_module_helper_workload(
+        anchor_support._run_cpython_compiled_pattern_module_helper_workload(
         workload,
         collection_replacement_callback_flags=0,
         )
@@ -4131,7 +4145,9 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounde
         },
     )
 
-    assert support._is_module_workflow_compiled_pattern_wrong_text_model_workload(workload)
+    assert anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        workload
+    )
 
 
 def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missing_guard_fields(
@@ -4177,17 +4193,17 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missin
     )
 
     assert not (
-        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_pattern_argument
         )
     )
     assert not (
-        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             missing_haystack_text_model
         )
     )
     assert not (
-        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_exception_type
         )
     )
@@ -4229,7 +4245,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         )
     )
     assert (
-        support._module_workflow_compiled_pattern_workload_signature(
+        support._module_workflow_compiled_pattern_success_workload_signature(
             literal_workload
         )
         == ("module.search", "abc", ("zzabczz",), True, 0, "str")
@@ -4241,7 +4257,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         )
     )
     assert (
-        support._module_workflow_compiled_pattern_workload_signature(
+        support._module_workflow_compiled_pattern_success_workload_signature(
             wildcard_workload
         )
         == ("module.fullmatch", b"a.c", (b"abc",), True, 0, "bytes")
@@ -4253,7 +4269,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         )
     )
     assert (
-        support._module_workflow_compiled_pattern_workload_signature(
+        support._module_workflow_compiled_pattern_success_workload_signature(
             verbose_workload
         )
         == (
@@ -4324,19 +4340,19 @@ def test_module_workflow_compiled_pattern_correctness_case_signature_requires_co
     )
 
     assert (
-        support._module_workflow_compiled_pattern_correctness_case_signature(
+        anchor_support._module_workflow_compiled_pattern_correctness_case_signature(
             matching_case
         )
         == ("module.search", "abc", ("zzabczz",), True, 0, "str")
     )
     assert (
-        support._module_workflow_compiled_pattern_correctness_case_signature(
+        anchor_support._module_workflow_compiled_pattern_correctness_case_signature(
             missing_args_case
         )
         is None
     )
     assert (
-        support._module_workflow_compiled_pattern_correctness_case_signature(
+        anchor_support._module_workflow_compiled_pattern_correctness_case_signature(
             unsupported_helper_case
         )
         is None

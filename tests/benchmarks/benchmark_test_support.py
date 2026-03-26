@@ -1452,19 +1452,6 @@ def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
     )
 
 
-def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
-    workload: Any,
-) -> bool:
-    return (
-        not workload.kwargs
-        and workload.use_compiled_pattern
-        and workload.operation in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
-        and getattr(workload, "haystack_text_model", None) is not None
-        and workload.expected_exception is not None
-        and workload.expected_exception.get("type") == "TypeError"
-    )
-
-
 def _module_workflow_keyword_workload_args(
     workload: Any,
 ) -> tuple[Any, ...]:
@@ -3189,46 +3176,6 @@ _VERBOSE_REGRESSION_PATTERN = (
 _VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
 
 
-def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
-    return (
-        {
-            "case_id": "compiled_pattern_module_helper_wrong_text_model",
-            "manifest_path": "collection_replacement_boundary.py",
-            "include_workload": _is_collection_replacement_wrong_text_model_workload,
-            "contract_manifest_id": "collection-replacement-boundary",
-            "contract_filename": (
-                "python_benchmark_compiled_pattern_collection_replacement_wrong_text_model_contract.py"
-            ),
-            "expected_source_workload_ids": (
-                _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
-            ),
-        },
-        {
-            "case_id": "compiled_pattern_module_boundary_wrong_text_model",
-            "manifest_path": "module_boundary.py",
-            "include_workload": (
-                _is_module_workflow_compiled_pattern_wrong_text_model_workload
-            ),
-            "contract_manifest_id": "module-boundary",
-            "contract_filename": (
-                "python_benchmark_compiled_pattern_module_boundary_wrong_text_model_contract.py"
-            ),
-            "expected_source_workload_ids": (
-                _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
-            ),
-        },
-    )
-
-
-def _compiled_pattern_wrong_text_model_source_workloads(
-    spec: dict[str, object],
-) -> tuple[Workload, ...]:
-    return selected_manifest_workloads(
-        spec["manifest_path"],
-        include_workload=spec["include_workload"],
-    )
-
-
 def _compiled_pattern_module_helper_route(
     workload: Workload,
     *,
@@ -3335,29 +3282,7 @@ def _compiled_pattern_module_helper_route(
     )
 
 
-def _run_cpython_compiled_pattern_module_helper_workload(
-    workload: Workload,
-    *,
-    collection_replacement_callback_flags: int,
-) -> object:
-    compiled_pattern = re.compile(
-        workload.pattern_payload(),
-        workload.flags,
-    )
-    _, _, cpython_call_args, materialize_cpython_result = (
-        _compiled_pattern_module_helper_route(
-            workload,
-            collection_replacement_callback_flags=collection_replacement_callback_flags,
-        )
-    )
-    helper = getattr(re, workload.operation.removeprefix("module."))
-    result = helper(compiled_pattern, *cpython_call_args)
-    if materialize_cpython_result:
-        return list(result)
-    return result
-
-
-def _module_workflow_compiled_pattern_correctness_case_signature(
+def _module_workflow_compiled_pattern_success_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
     if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
@@ -3388,7 +3313,7 @@ def _module_workflow_compiled_pattern_workload_args(
     return (workload.haystack_payload(),)
 
 
-def _module_workflow_compiled_pattern_workload_signature(
+def _module_workflow_compiled_pattern_success_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
     if not _is_module_workflow_compiled_pattern_workload(workload):
@@ -3452,28 +3377,32 @@ def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
     )
 
 
-def _assert_wrong_text_model_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_haystack_type = (
-        str if source_workload.haystack_text_model == "str" else bytes
+@cache
+def _source_tree_benchmark_anchor_support_module() -> Any:
+    return importlib.import_module(
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
     )
 
-    assert payload["use_compiled_pattern"] is True
-    assert round_tripped.use_compiled_pattern is True
-    assert payload["timing_scope"] == "module-helper-call"
-    assert round_tripped.timing_scope == "module-helper-call"
-    assert payload["haystack_text_model"] == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
-    if source_workload.replacement is not None:
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+def _source_tree_compiled_pattern_wrong_text_model_include_workload(
+    workload: Any,
+) -> bool:
+    return _source_tree_benchmark_anchor_support_module(
+    )._is_module_workflow_compiled_pattern_wrong_text_model_workload(workload)
+
+
+def _source_tree_compiled_pattern_wrong_text_model_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _source_tree_benchmark_anchor_support_module(
+    )._module_workflow_compiled_pattern_correctness_case_signature(case)
+
+
+def _source_tree_compiled_pattern_wrong_text_model_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    return _source_tree_benchmark_anchor_support_module(
+    )._module_workflow_compiled_pattern_workload_signature(workload)
 
 
 def _is_collection_replacement_compiled_pattern_success_workload(
@@ -3734,9 +3663,9 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
         correctness_case_signature=(
-            _module_workflow_compiled_pattern_correctness_case_signature
+            _module_workflow_compiled_pattern_success_correctness_case_signature
         ),
-        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        workload_signature=_module_workflow_compiled_pattern_success_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -3760,9 +3689,9 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
             _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
         ),
         correctness_case_signature=(
-            _module_workflow_compiled_pattern_correctness_case_signature
+            _module_workflow_compiled_pattern_success_correctness_case_signature
         ),
-        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        workload_signature=_module_workflow_compiled_pattern_success_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -3781,9 +3710,9 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
         correctness_case_signature=(
-            _module_workflow_compiled_pattern_correctness_case_signature
+            _module_workflow_compiled_pattern_success_correctness_case_signature
         ),
-        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        workload_signature=_module_workflow_compiled_pattern_success_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -3803,11 +3732,11 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
             },
         ),
-        include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
+        include_workload=_source_tree_compiled_pattern_wrong_text_model_include_workload,
         correctness_case_signature=(
-            _module_workflow_compiled_pattern_correctness_case_signature
+            _source_tree_compiled_pattern_wrong_text_model_correctness_case_signature
         ),
-        workload_signature=_module_workflow_compiled_pattern_workload_signature,
+        workload_signature=_source_tree_compiled_pattern_wrong_text_model_workload_signature,
     ),
 )
 
