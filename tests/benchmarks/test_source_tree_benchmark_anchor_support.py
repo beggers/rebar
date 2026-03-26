@@ -1574,10 +1574,18 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
     source_tree_function_names = {
         node.name for node in source_tree_ast.body if isinstance(node, ast.FunctionDef)
     }
+    _, source_tree_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(support)
+    )
     collection_ast = benchmark_test_support._parsed_module_ast(collection_support)
     collection_function_names = {
         node.name for node in collection_ast.body if isinstance(node, ast.FunctionDef)
     }
+    _, collection_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            collection_support
+        )
+    )
 
     for function_name in (
         "_conditional_group_exists_callable_str_slice_workloads",
@@ -1587,18 +1595,27 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
         "_conditional_group_exists_nested_callable_bytes_workloads",
         "_conditional_group_exists_quantified_callable_bytes_workloads",
         "_conditional_group_exists_alternation_callable_bytes_workloads",
-        "_conditional_group_exists_template_replacement_expectation",
-        "_conditional_group_exists_callable_replacement_expectations",
-        "_conditional_group_exists_alternation_callable_replacement_expectation",
-        "_conditional_group_exists_nested_callable_replacement_expectation",
-        "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
-        "_conditional_group_exists_quantified_callable_replacement_expectation",
-        "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
     ):
         assert not hasattr(support, function_name)
         assert function_name not in source_tree_function_names
         assert hasattr(collection_support, function_name)
         assert function_name in collection_function_names
+
+    for assignment_name in (
+        "_CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTED_SLICE_IDS",
+        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS",
+        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_ACTUAL_SLICE_IDS",
+        "_CONDITIONAL_GROUP_EXISTS_ALTERNATION_CALLABLE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
+    ):
+        assert not hasattr(support, assignment_name)
+        assert assignment_name not in source_tree_assignment_names
+        assert hasattr(collection_support, assignment_name)
+        assert assignment_name in collection_assignment_names
 
 
 def test_source_tree_support_module_exposes_routed_collection_owner_surface() -> None:
@@ -1629,16 +1646,22 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         "_conditional_group_exists_nested_callable_bytes_workloads",
         "_conditional_group_exists_quantified_callable_bytes_workloads",
         "_conditional_group_exists_alternation_callable_bytes_workloads",
-        "_conditional_group_exists_template_replacement_expectation",
-        "_conditional_group_exists_callable_replacement_expectations",
-        "_conditional_group_exists_alternation_callable_replacement_expectation",
-        "_conditional_group_exists_nested_callable_replacement_expectation",
-        "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
-        "_conditional_group_exists_quantified_callable_replacement_expectation",
-        "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
     ):
         assert hasattr(collection_support, function_name)
         assert function_name in collection_function_names
+    for assignment_name in (
+        "_CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTED_SLICE_IDS",
+        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS",
+        "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_ACTUAL_SLICE_IDS",
+        "_CONDITIONAL_GROUP_EXISTS_ALTERNATION_CALLABLE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION",
+        "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
+    ):
+        assert hasattr(collection_support, assignment_name)
+        assert assignment_name in collection_local_assignment_names
     assert hasattr(
         collection_support,
         "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
@@ -1974,13 +1997,6 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
         "_conditional_group_exists_nested_callable_bytes_workloads",
         "_conditional_group_exists_quantified_callable_bytes_workloads",
         "_conditional_group_exists_alternation_callable_bytes_workloads",
-        "_conditional_group_exists_template_replacement_expectation",
-        "_conditional_group_exists_callable_replacement_expectations",
-        "_conditional_group_exists_alternation_callable_replacement_expectation",
-        "_conditional_group_exists_nested_callable_replacement_expectation",
-        "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
-        "_conditional_group_exists_quantified_callable_replacement_expectation",
-        "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
     ):
         assert function_name not in local_function_names
 
@@ -2157,13 +2173,15 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
                 "_conditional_group_exists_nested_callable_bytes_workloads",
                 "_conditional_group_exists_quantified_callable_bytes_workloads",
                 "_conditional_group_exists_alternation_callable_bytes_workloads",
-                "_conditional_group_exists_template_replacement_expectation",
-                "_conditional_group_exists_callable_replacement_expectations",
-                "_conditional_group_exists_alternation_callable_replacement_expectation",
-                "_conditional_group_exists_nested_callable_replacement_expectation",
-                "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
-                "_conditional_group_exists_quantified_callable_replacement_expectation",
-                "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
+                "_CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION",
+                "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTED_SLICE_IDS",
+                "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS",
+                "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_ACTUAL_SLICE_IDS",
+                "_CONDITIONAL_GROUP_EXISTS_ALTERNATION_CALLABLE_REPLACEMENT_EXPECTATION",
+                "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_REPLACEMENT_EXPECTATION",
+                "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
+                "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION",
+                "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
             ),
             frozenset(),
             id="conditional-callable-helpers",
@@ -2374,11 +2392,11 @@ def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() 
         "alternation-heavy-callable-replacement-rows",
     )
     callable_expectations = (
-        collection_support._conditional_group_exists_callable_replacement_expectations()
+        collection_support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
     )
 
     assert (
-        collection_support._conditional_group_exists_template_replacement_expectation().slice_id
+        collection_support._CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION.slice_id
         == "minimal-template-replacement-rows"
     )
     assert tuple(
@@ -2388,30 +2406,30 @@ def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() 
         expectation.manifest_id for expectation in callable_expectations
     } == {"conditional-group-exists-boundary"}
     assert (
-        collection_support._conditional_group_exists_alternation_callable_replacement_expectation().slice_id
+        collection_support._CONDITIONAL_GROUP_EXISTS_ALTERNATION_CALLABLE_REPLACEMENT_EXPECTATION.slice_id
         == "alternation-heavy-callable-replacement-rows"
     )
     assert (
-        collection_support._conditional_group_exists_nested_callable_replacement_expectation().slice_id
+        collection_support._CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_REPLACEMENT_EXPECTATION.slice_id
         == "nested-callable-replacement-str-rows"
     )
     assert (
-        collection_support._conditional_group_exists_nested_callable_bytes_replacement_expectation().slice_id
+        collection_support._CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.slice_id
         == "nested-callable-replacement-bytes-rows"
     )
     assert (
-        collection_support._conditional_group_exists_quantified_callable_replacement_expectation().slice_id
+        collection_support._CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION.slice_id
         == "quantified-callable-replacement-str-rows"
     )
     assert (
-        collection_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().slice_id
+        collection_support._CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.slice_id
         == "quantified-callable-replacement-bytes-rows"
     )
 
 
 def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
     callable_expectations = (
-        collection_support._conditional_group_exists_callable_replacement_expectations()
+        collection_support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
     )
     expected_callable_workload_ids = tuple(
         workload_id
@@ -2489,7 +2507,7 @@ def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
 def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> None:
     expected_callable_workload_ids = tuple(
         workload_id
-        for expectation in collection_support._conditional_group_exists_callable_replacement_expectations()
+        for expectation in collection_support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
         for workload_id in expectation.expected_workload_ids
     )
     synthetic_workloads = (

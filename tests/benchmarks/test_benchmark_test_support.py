@@ -275,7 +275,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
                 workload_id
                 for expectation in (
                     collection_replacement_support
-                    ._conditional_group_exists_callable_replacement_expectations()
+                    ._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
                 )
                 for workload_id in expectation.expected_workload_ids
                 if not workload_id.endswith("-bytes")
@@ -293,7 +293,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
                 workload_id
                 for expectation in (
                     collection_replacement_support
-                    ._conditional_group_exists_callable_replacement_expectations()
+                    ._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
                 )
                 for workload_id in expectation.expected_workload_ids
                 if workload_id.endswith("-bytes")
@@ -307,7 +307,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         ),
         (
             collection_replacement_support._conditional_group_exists_nested_callable_bytes_workloads,
-            collection_replacement_support._conditional_group_exists_nested_callable_bytes_replacement_expectation().expected_workload_ids,
+            collection_replacement_support._CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.expected_workload_ids,
             (
                 support._synthetic_workload(
                     "conditional-nested-callable-bytes",
@@ -317,7 +317,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         ),
         (
             collection_replacement_support._conditional_group_exists_quantified_callable_bytes_workloads,
-            collection_replacement_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().expected_workload_ids,
+            collection_replacement_support._CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.expected_workload_ids,
             (
                 support._synthetic_workload(
                     "conditional-quantified-callable-bytes",

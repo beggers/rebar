@@ -1209,7 +1209,7 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
 ) -> None:
     callable_expectations = {
         expectation.slice_id: expectation.expected_workload_ids
-        for expectation in support._conditional_group_exists_callable_replacement_expectations()
+        for expectation in support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
     }
     minimal_callable_workload_ids = (
         callable_expectations["minimal-callable-replacement-rows"]
@@ -1229,7 +1229,7 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
         callable_expectations["alternation-heavy-callable-replacement-rows"],
     )
     template_workload_ids = (
-        support._conditional_group_exists_template_replacement_expectation().expected_workload_ids
+        support._CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION.expected_workload_ids
     )
     template_workloads = benchmark_test_support.live_manifest_workloads(
         "conditional_group_exists_boundary.py",
@@ -1296,16 +1296,16 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
             include_categories=("negative-count",),
         ),
         "nested-callable-str": (
-            support._conditional_group_exists_nested_callable_replacement_expectation().expected_workload_ids
+            support._CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_REPLACEMENT_EXPECTATION.expected_workload_ids
         ),
         "nested-callable-bytes": (
-            support._conditional_group_exists_nested_callable_bytes_replacement_expectation().expected_workload_ids
+            support._CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.expected_workload_ids
         ),
         "quantified-callable-str": (
-            support._conditional_group_exists_quantified_callable_replacement_expectation().expected_workload_ids
+            support._CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION.expected_workload_ids
         ),
         "quantified-callable-bytes": (
-            support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().expected_workload_ids
+            support._CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION.expected_workload_ids
         ),
     }
     expected_workload_ids_by_label = {
