@@ -713,6 +713,21 @@ def _module_alias_names(
     return frozenset(alias_names)
 
 
+def _top_level_import_from_alias_pairs(
+    module_ast: ast.Module,
+    *,
+    module_name: str,
+    imported_names: frozenset[str],
+) -> frozenset[tuple[str, str | None]]:
+    return frozenset(
+        (alias.name, alias.asname)
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == module_name
+        for alias in node.names
+        if alias.name in imported_names
+    )
+
+
 def _module_attribute_alias_targets(
     module_ast: ast.AST,
     *,

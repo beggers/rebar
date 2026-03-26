@@ -26,21 +26,6 @@ from tests.python.fixture_parity_support import IndexLike
 anchor_support_cache_guard = support.anchor_support_cache_guard
 
 
-def _top_level_package_import_alias_pairs(
-    module: object,
-    *,
-    package_module: str,
-    imported_names: frozenset[str],
-) -> frozenset[tuple[str, str | None]]:
-    return frozenset(
-        (alias.name, alias.asname)
-        for node in support._parsed_module_ast(module).body
-        if isinstance(node, ast.ImportFrom) and node.module == package_module
-        for alias in node.names
-        if alias.name in imported_names
-    )
-
-
 def _assert_owner_module_routes_through_package_import(
     module: object,
     *,
@@ -50,9 +35,9 @@ def _assert_owner_module_routes_through_package_import(
 ) -> None:
     assert package_module in support._module_import_targets(module)
     assert owner_module not in support._module_import_targets(module)
-    assert _top_level_package_import_alias_pairs(
-        module,
-        package_module=package_module,
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(module),
+        module_name=package_module,
         imported_names=frozenset(name for name, _ in expected_alias_pairs),
     ) == expected_alias_pairs
 
@@ -1416,9 +1401,9 @@ def test_non_owner_collection_replacement_benchmark_support_routes_shared_classi
         )
     )
 
-    assert _top_level_package_import_alias_pairs(
-        collection_replacement_support,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(collection_replacement_support),
+        module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", None)})
     assert {
@@ -1451,9 +1436,9 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         expected_alias_pairs=frozenset({("benchmark_test_support", "support")}),
     )
     assert getattr(module, "support") is support
-    assert _top_level_package_import_alias_pairs(
-        module,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(module),
+        module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
     assert getattr(module, "source_tree_support") is anchor_support
@@ -1508,9 +1493,9 @@ def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
     module_ast = support._parsed_module_ast(module)
     local_names = definition_names | assignment_names
 
-    assert _top_level_package_import_alias_pairs(
-        module,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(module),
+        module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", "support")})
     assert not any(
@@ -1587,8 +1572,8 @@ def test_owner_module_package_import_helper_rejects_missing_package_alias_or_dir
 
     monkeypatch.setattr(support, "_module_import_targets", lambda _: import_targets)
     monkeypatch.setattr(
-        current_module,
-        "_top_level_package_import_alias_pairs",
+        support,
+        "_top_level_import_from_alias_pairs",
         lambda *args, **kwargs: observed_alias_pairs,
     )
 
@@ -1955,9 +1940,9 @@ def test_source_tree_anchor_support_routes_owner_imports_through_package_modules
         support.top_level_module_definition_and_assignment_names(anchor_support)
     )
 
-    assert _top_level_package_import_alias_pairs(
-        anchor_support,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(anchor_support),
+        module_name="tests.benchmarks",
         imported_names=frozenset(
             {
                 "benchmark_test_support",
@@ -2011,9 +1996,9 @@ def test_benchmark_test_support_routes_owner_definition_imports_through_package_
         support.top_level_module_definition_and_assignment_names(support)
     )
 
-    assert _top_level_package_import_alias_pairs(
-        support,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(support),
+        module_name="tests.benchmarks",
         imported_names=frozenset(
             {
                 "collection_replacement_benchmark_anchor_support",
@@ -2056,9 +2041,9 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
         support.top_level_module_definition_and_assignment_names(module)
     )
 
-    assert _top_level_package_import_alias_pairs(
-        module,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(module),
+        module_name="tests.benchmarks",
         imported_names=frozenset(
             {
                 "benchmark_test_support",
@@ -2120,9 +2105,9 @@ def test_shared_collection_replacement_classifier_contract_tests_import_from_sup
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
 
-    assert _top_level_package_import_alias_pairs(
-        owner_suite,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(owner_suite),
+        module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", None)})
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
@@ -2556,9 +2541,9 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
 
-    assert _top_level_package_import_alias_pairs(
-        combined_suite,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(combined_suite),
+        module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", None)})
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
@@ -2884,9 +2869,9 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert _top_level_package_import_alias_pairs(
-        module,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(module),
+        module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
     assert support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES.isdisjoint(
@@ -3329,9 +3314,9 @@ def test_source_tree_contract_helper_suites_import_from_support(
 ) -> None:
     module = importlib.import_module(module_name)
 
-    assert _top_level_package_import_alias_pairs(
-        module,
-        package_module="tests.benchmarks",
+    assert support._top_level_import_from_alias_pairs(
+        support._parsed_module_ast(module),
+        module_name="tests.benchmarks",
         imported_names=frozenset(
             {"benchmark_test_support", "source_tree_benchmark_anchor_support"}
         ),

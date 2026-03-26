@@ -190,21 +190,6 @@ def _summary_view(scorecard: dict[str, object]) -> dict[str, object]:
     }
 
 
-def _top_level_import_alias_pairs(
-    module_ast: ast.Module,
-    *,
-    module_name: str,
-    imported_names: frozenset[str],
-) -> frozenset[tuple[str, str | None]]:
-    return frozenset(
-        (alias.name, alias.asname)
-        for node in module_ast.body
-        if isinstance(node, ast.ImportFrom) and node.module == module_name
-        for alias in node.names
-        if alias.name in imported_names
-    )
-
-
 def _attribute_alias_pairs(
     module_ast: ast.Module,
     *,
@@ -2927,7 +2912,7 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         for alias in node.names
         if alias.name == "source_tree_benchmark_anchor_support"
     }
-    direct_benchmark_support_imports = _top_level_import_alias_pairs(
+    direct_benchmark_support_imports = benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
         module_name="tests.benchmarks.benchmark_test_support",
         imported_names=expected_benchmark_support_names,
@@ -3023,7 +3008,7 @@ def test_source_tree_contract_builder_consumer_guard_detects_direct_imports_and_
         {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
     )
 
-    assert _top_level_import_alias_pairs(
+    assert benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
         module_name="tests.benchmarks.benchmark_test_support",
         imported_names=contract_builder_names,
