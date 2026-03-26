@@ -73,6 +73,182 @@ class StandardBenchmarkAnchorContractDefinition:
         )
 
 
+@dataclass(frozen=True, slots=True)
+class _SourceTreeContractBuilderSpec:
+    manifest_id: str
+    excluded_fields: frozenset[str]
+    manifest_timed_samples: int = 2
+    timing_scope: str | None = None
+    notes: tuple[str, ...] = ()
+
+
+def _source_tree_contract_workload(
+    source_workload: Workload,
+    *,
+    spec: _SourceTreeContractBuilderSpec,
+) -> Workload:
+    manifest_payload = _source_tree_contract_manifest((source_workload,), spec=spec)[
+        "workloads"
+    ][0]
+    return workload_from_payload(
+        {
+            "manifest_id": spec.manifest_id,
+            "workload_id": str(manifest_payload["id"]),
+            **{key: value for key, value in manifest_payload.items() if key != "id"},
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _source_tree_contract_manifest(
+    source_workloads: tuple[Workload, ...],
+    *,
+    spec: _SourceTreeContractBuilderSpec,
+) -> dict[str, object]:
+    workloads: list[dict[str, object]] = []
+    for source_workload in source_workloads:
+        payload = workload_to_payload(source_workload)
+        manifest_payload: dict[str, object] = {
+            "id": f"{source_workload.workload_id}-contract",
+            **{
+                key: value
+                for key, value in payload.items()
+                if key not in spec.excluded_fields
+            },
+        }
+        if spec.timing_scope is not None:
+            manifest_payload["timing_scope"] = spec.timing_scope
+        if spec.notes:
+            manifest_payload["notes"] = list(spec.notes)
+        workloads.append(manifest_payload)
+    return {
+        "schema_version": 1,
+        "manifest_id": spec.manifest_id,
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": spec.manifest_timed_samples,
+        },
+        "workloads": workloads,
+    }
+
+
+@cache
+def _parsed_source_tree_combined_suite_ast() -> ast.Module:
+    return _parsed_module_ast(
+        importlib.import_module(
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+        )
+    )
+
+
+def _assert_source_tree_combined_routes_owner_names_through_module_alias(
+    *,
+    alias_name: str,
+    owner_module: object,
+    owner_names: tuple[str, ...],
+    expected_direct_benchmark_test_support_refs: frozenset[str] = frozenset(),
+) -> object:
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    _, local_assignment_names = top_level_module_definition_and_assignment_names(
+        combined_suite
+    )
+    owner_module_name = owner_module.__name__
+    owner_import_name = owner_module_name.rsplit(".", 1)[-1]
+    benchmark_test_support_alias_names = _module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    )
+    owner_alias_names = _module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name=owner_import_name,
+        dotted_import_name=owner_module_name,
+    )
+
+    assert alias_name in owner_alias_names
+    assert getattr(combined_suite, alias_name) is owner_module
+
+    direct_import_names = {
+        alias.name
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    local_alias_names: set[str] = set()
+    for node in combined_suite_ast.body:
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if isinstance(value, ast.Name) and value.id in owner_names:
+            local_alias_names.update(targets)
+            continue
+
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id
+            in (owner_alias_names | benchmark_test_support_alias_names)
+            and value.attr in owner_names
+        ):
+            local_alias_names.update(targets)
+
+    local_name_loads = {
+        node.id
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Name)
+        and isinstance(node.ctx, ast.Load)
+        and node.id in owner_names
+    }
+    direct_benchmark_test_support_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in benchmark_test_support_alias_names
+        and node.attr in owner_names
+    }
+    aliased_owner_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in (owner_alias_names - {alias_name})
+        and node.attr in owner_names
+    }
+    owner_alias = getattr(combined_suite, alias_name)
+    for name in owner_names:
+        assert getattr(owner_alias, name) is getattr(owner_module, name)
+        assert name not in direct_import_names
+        assert name not in local_assignment_names
+        assert name not in local_name_loads
+    assert local_alias_names == set()
+    assert (
+        direct_benchmark_test_support_refs
+        == expected_direct_benchmark_test_support_refs
+    )
+    assert aliased_owner_refs == set()
+    return combined_suite
+
+
 class RecordingBenchmarkCompiledPattern:
     def __init__(self, calls: list[tuple[object, ...]]) -> None:
         self._calls = calls
@@ -2056,7 +2232,7 @@ class CompiledPatternModuleCompileContractCase:
         return self.expected_build_calls_builder(source_workload)
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
-        return source_tree_support._SourceTreeContractBuilderSpec(
+        return _SourceTreeContractBuilderSpec(
             manifest_id="module-boundary",
             excluded_fields=self.manifest_excluded_fields(),
             manifest_timed_samples=2,
@@ -3581,7 +3757,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
         return callback_call
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
-        return source_tree_support._SourceTreeContractBuilderSpec(
+        return _SourceTreeContractBuilderSpec(
             manifest_id=self.contract_manifest_id,
             excluded_fields=COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
             timing_scope="module-helper-call",
@@ -3905,7 +4081,7 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         excluded_fields = COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
         if not self.preserve_expected_exception:
             excluded_fields = excluded_fields | {"expected_exception"}
-        return source_tree_support._SourceTreeContractBuilderSpec(
+        return _SourceTreeContractBuilderSpec(
             manifest_id="collection-replacement-boundary",
             excluded_fields=excluded_fields,
             manifest_timed_samples=self.manifest_timed_samples,
@@ -4865,7 +5041,7 @@ from tests.benchmarks import (
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 
 _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
-    "collection-replacement-boundary": source_tree_support._SourceTreeContractBuilderSpec(
+    "collection-replacement-boundary": _SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
         excluded_fields=COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         timing_scope="module-helper-call",
@@ -4875,7 +5051,7 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
             "collection/replacement rows unresolved until helper invocation.",
         ),
     ),
-    "module-boundary": source_tree_support._SourceTreeContractBuilderSpec(
+    "module-boundary": _SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         timing_scope="module-helper-call",
@@ -4888,7 +5064,7 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
 }
 
 _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
-    source_tree_support._SourceTreeContractBuilderSpec(
+    _SourceTreeContractBuilderSpec(
         manifest_id="pattern-boundary",
         excluded_fields=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
         timing_scope="pattern-helper-call",

@@ -833,7 +833,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
     case_group: benchmark_test_support.CompiledPatternModuleCompileContractCase,
     source_workload: Workload,
 ) -> None:
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
         spec=case_group.contract_builder_spec(),
     )
@@ -863,7 +863,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
     contract_case: benchmark_test_support.CompiledPatternModuleCompileContractCase,
 ) -> None:
     source_workloads = contract_case.source_workloads()
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=contract_case.contract_builder_spec(),
     )
@@ -929,7 +929,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
         if case.case_id == "bool-false"
     )
     source_workload = contract_case.source_workloads()[0]
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
         spec=contract_case.contract_builder_spec(),
     )
@@ -968,7 +968,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
     source_workloads = (
         benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     )
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=benchmark_test_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
             str(spec["contract_manifest_id"])
@@ -1028,7 +1028,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
     owner_spec: object,
 ) -> None:
     source_workloads = owner_spec.source_workloads()
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=owner_spec.contract_builder_spec(),
     )
@@ -1084,7 +1084,7 @@ def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows
     contract_surface: object,
 ) -> None:
     source_workloads = contract_surface.source_workloads()
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
         spec=contract_surface.spec.contract_builder_spec(),
     )
@@ -1152,7 +1152,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
         if workload.workload_id
         == "module-sub-count-bool-false-keyword-warm-str-compiled-pattern"
     )
-    success_workload = source_tree_support._source_tree_contract_workload(
+    success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
         spec=success_surface.spec.contract_builder_spec(),
     )
@@ -1175,7 +1175,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
         if workload.workload_id
         == "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern"
     )
-    keyword_error_workload = source_tree_support._source_tree_contract_workload(
+    keyword_error_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_error_source_workload,
         spec=keyword_error_surface.spec.contract_builder_spec(),
     )
@@ -1275,7 +1275,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
         if workload.workload_id
         == "module-subn-count-keyword-purged-bytes-compiled-pattern"
     )
-    success_workload = source_tree_support._source_tree_contract_workload(
+    success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
         spec=success_surface.spec.contract_builder_spec(),
     )
@@ -1305,7 +1305,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
         if workload.workload_id
         == "module-subn-count-alias-keyword-purged-bytes-compiled-pattern"
     )
-    keyword_error_workload = source_tree_support._source_tree_contract_workload(
+    keyword_error_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_error_source_workload,
         spec=keyword_error_surface.spec.contract_builder_spec(),
     )
@@ -1545,7 +1545,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
     tmp_path: pathlib.Path,
     source_workload: Workload,
 ) -> None:
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
         spec=benchmark_test_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
