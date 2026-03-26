@@ -1,6 +1,6 @@
 ## RBR-1350: Move source-tree owner inventory constants onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -56,3 +56,11 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata or compiled_pattern_module_success_owner_spec_surface_is_owned_locally or compiled_pattern_module_success_source_workload_params_follow_owner_specs or source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally'` passed with `5 passed, 91 deselected in 0.13s`
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^(_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES|_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES|_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES|_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES|_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES)\\b' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because those six mirrored constants still live on the test module, and that failure belongs exactly to this cleanup
+
+## Completion Note
+- Moved the remaining source-tree owner inventories onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, including the routed compiled-pattern module-success owner-spec tuple and the five owner-surface name inventories.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to consume the owner-owned `SOURCE_TREE_*` constants directly and deleted the six mirrored test-local assignments.
+- Verification:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata or compiled_pattern_module_success_owner_spec_surface_is_owned_locally or compiled_pattern_module_success_source_workload_params_follow_owner_specs or source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally'` passed with `5 passed, 91 deselected in 0.27s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+  - `bash -lc "! rg -n '^(_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES|_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES|_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES|_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES|_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES)\\b' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` passed

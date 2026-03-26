@@ -16,45 +16,11 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
-
-_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
-    support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
-    support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-)
-_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES = (
-    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
-    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
-    "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
-    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-)
-_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES = frozenset(
-    {
-        "_compiled_pattern_wrong_text_model_specs",
-        "_compiled_pattern_wrong_text_model_source_workloads",
-    }
-)
-_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES = frozenset(
-    {
-        "compiled_pattern_contract_expected_build_calls",
-        "_compiled_pattern_module_helper_route",
-    }
-)
-_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
-    {
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
-        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
-    }
-)
 _COLLECTION_OWNER_SIGNATURE_HELPER_NAMES = (
     "_conditional_group_exists_nested_callable_correctness_case_signature",
     "_conditional_group_exists_nested_callable_workload_signature",
     "_conditional_group_exists_quantified_callable_correctness_case_signature",
     "_conditional_group_exists_quantified_callable_workload_signature",
-)
-_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES = (
-    _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-    | frozenset({"_is_module_workflow_compiled_pattern_wrong_text_model_workload"})
 )
 
 def _assert_mixed_owner_surface(
@@ -1245,19 +1211,19 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
     ):
         assert constant_name in (
-            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-            | _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+            | support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         )
     _assert_mixed_owner_surface(
         support,
         local_function_names=(
-            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
         ),
         local_assignment_names=(
-            _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
+            support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
         ),
         support_alias_assignment_names=(
-            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         ),
     )
     for constant_name in (
@@ -1315,7 +1281,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             benchmark_test_support,
             constant_name,
         )
-    for constant_name in _LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES:
+    for constant_name in (
+        support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES
+    ):
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
         assignment = benchmark_test_support._module_assignment(
@@ -1496,7 +1464,7 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
     ("owner_spec",),
     tuple(
         pytest.param(owner_spec, id=owner_spec.case_id)
-        for owner_spec in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for owner_spec in support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
     ),
 )
 def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata(
@@ -1558,7 +1526,7 @@ def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_ex
     ("owner_spec",),
     tuple(
         pytest.param(owner_spec, id=owner_spec.case_id)
-        for owner_spec in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for owner_spec in support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
     ),
 )
 def test_compiled_pattern_module_success_owner_specs_pin_live_source_workload_ids(
@@ -1578,10 +1546,14 @@ def test_compiled_pattern_module_success_owner_spec_surface_is_owned_locally() -
         support
     )
 
-    assert set(_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES).issubset(
+    assert set(
+        support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES
+    ).issubset(
         local_assignment_names
     )
-    for constant_name in _LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES:
+    for constant_name in (
+        support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES
+    ):
         assignment = benchmark_test_support._module_assignment(
             support,
             constant_name,
@@ -1602,7 +1574,7 @@ def test_compiled_pattern_module_success_source_workload_params_follow_owner_spe
             source_workload.workload_id,
             f"{owner_spec.case_id}-{source_workload.workload_id}",
         )
-        for owner_spec in _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for owner_spec in support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
         for source_workload in owner_spec.source_workloads()
     )
     observed_params = tuple(
@@ -2978,22 +2950,26 @@ def test_source_tree_owner_defines_compiled_pattern_module_compile_surface_local
 
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(
 ) -> None:
-    owner_definition_names = _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES
-    owner_assignment_names = _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
+    owner_definition_names = (
+        support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES
+    )
+    owner_assignment_names = (
+        support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
+    )
     module_ast = benchmark_test_support._parsed_module_ast(support)
 
     assert set(support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES) == (
-        _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-        | _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
+        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+        | support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
     )
     _assert_mixed_owner_surface(
         support,
         local_function_names=(
-            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
         ),
         local_assignment_names=owner_assignment_names,
         support_alias_assignment_names=(
-            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
+            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         ),
     )
 
