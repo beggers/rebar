@@ -104,22 +104,6 @@ def _inline_standard_definition_assignments(
         and all(isinstance(element, ast.Call) for element in node.value.elts)
     )
 
-
-COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES = frozenset(
-    {
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    }
-)
-
 _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES = frozenset(
     {
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
@@ -2958,8 +2942,20 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert getattr(module, "benchmark_test_support") is support
-    assert COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES.isdisjoint(
-        local_names
+    assert all(
+        name not in local_names
+        for name in (
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+            "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+        )
     )
 
 
@@ -3108,7 +3104,20 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
 ) -> None:
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-        COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES,
+        frozenset(
+            {
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+                "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+            }
+        ),
     )
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_benchmark_manifest_validation",
@@ -3358,16 +3367,32 @@ def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_c
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
-
-    moved_names = COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES
-    function_names = {
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    assignment_only_names = {
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     }
-    assignment_only_names = moved_names - function_names
 
-    assert function_names <= definition_names
+    assert (
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload"
+        in definition_names
+    )
     assert assignment_only_names <= assignment_names
-    for name in moved_names:
+    assert hasattr(
+        support,
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    )
+    assert not hasattr(
+        anchor_support,
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    )
+    for name in assignment_only_names:
         assert hasattr(support, name)
         assert not hasattr(anchor_support, name)
 
@@ -3393,10 +3418,27 @@ def test_benchmark_test_support_exports_generic_workload_id_selector_helpers() -
 
 def test_compiled_pattern_module_helper_keyword_shared_surface_stays_shared_support_owned(
 ) -> None:
-    assert all(hasattr(support, name) for name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES)
-    assert all(
-        not hasattr(anchor_support, name)
-        for name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES
+    assignment_only_names = (
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+    )
+
+    assert all(hasattr(support, name) for name in assignment_only_names)
+    assert all(not hasattr(anchor_support, name) for name in assignment_only_names)
+    assert hasattr(
+        support,
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    )
+    assert not hasattr(
+        anchor_support,
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
 
 

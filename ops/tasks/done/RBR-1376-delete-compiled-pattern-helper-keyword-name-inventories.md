@@ -43,6 +43,7 @@ Created: 2026-03-26
   - Those inventories only feed ownership assertions inside the benchmark-support test modules; they do not drive runtime harness behavior or published benchmark selection.
   - The current green test slice already passes without any runtime consumer depending on those registries, which makes them a bounded structural cleanup target rather than live harness logic.
 - Verification status in this planning run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed with `277 passed in 1.55s`
+  - Completed in this run by deleting the three module-level bookkeeping inventories and rewriting the affected ownership checks in place with exact per-test assertions.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed with `277 passed in 1.86s`
   - `python3 -m py_compile tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
-  - `bash -lc "! rg -n 'COMPILED_PATTERN_MODULE_HELPER_KEYWORD_(SHARED_SURFACE_NAMES|COMBINED_SUITE_OWNER_NAMES)\\s*=' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"` currently fails because those bookkeeping inventories still exist, and that failure belongs exactly to this cleanup
+  - `bash -lc "! rg -n 'COMPILED_PATTERN_MODULE_HELPER_KEYWORD_(SHARED_SURFACE_NAMES|COMBINED_SUITE_OWNER_NAMES)\\s*=' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"` now passes

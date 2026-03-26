@@ -16,33 +16,6 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
-
-COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES = frozenset(
-    {
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    }
-)
-COMPILED_PATTERN_MODULE_HELPER_KEYWORD_COMBINED_SUITE_OWNER_NAMES = frozenset(
-    {
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    }
-)
 def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
     return frozenset()
 
@@ -1254,15 +1227,26 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ):
         assert not hasattr(support, removed_name)
         assert removed_name not in local_assignment_names
-    for constant_name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES:
+    for constant_name in (
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    ):
         assert not hasattr(support, constant_name)
         assert constant_name not in local_function_names
         assert constant_name not in local_assignment_names
         assert hasattr(benchmark_test_support, constant_name)
-    for constant_name in (
+    assert hasattr(
+        benchmark_test_support,
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-    ):
-        assert constant_name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES
+    )
     assert not hasattr(
         support,
         "_assert_compiled_pattern_module_success_payload_round_trip",
@@ -2278,6 +2262,18 @@ def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_s
 def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_through_benchmark_test_support(
 ) -> None:
     module_ast = support._parsed_source_tree_combined_suite_ast()
+    owner_names = frozenset(
+        {
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+            "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+        }
+    )
     benchmark_support_alias_names = benchmark_test_support._module_alias_names(
         module_ast,
         import_from_module="tests.benchmarks",
@@ -2295,12 +2291,12 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
     assert benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
         module_name="tests.benchmarks.benchmark_test_support",
-        imported_names=COMPILED_PATTERN_MODULE_HELPER_KEYWORD_COMBINED_SUITE_OWNER_NAMES,
+        imported_names=owner_names,
     ) == frozenset()
     assert _attribute_alias_pairs(
         module_ast,
         module_alias_names=benchmark_support_alias_names,
-        attribute_names=COMPILED_PATTERN_MODULE_HELPER_KEYWORD_COMBINED_SUITE_OWNER_NAMES,
+        attribute_names=owner_names,
     ) == frozenset()
     assert frozenset(
         node.attr
@@ -2308,15 +2304,15 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
         and node.value.id in benchmark_support_alias_names
-        and node.attr in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_COMBINED_SUITE_OWNER_NAMES
-    ) == COMPILED_PATTERN_MODULE_HELPER_KEYWORD_COMBINED_SUITE_OWNER_NAMES
+        and node.attr in owner_names
+    ) == owner_names
     assert frozenset(
         node.attr
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
         and node.value.id in source_tree_support_alias_names
-        and node.attr in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_COMBINED_SUITE_OWNER_NAMES
+        and node.attr in owner_names
     ) == frozenset()
 
 
@@ -3524,17 +3520,32 @@ def test_source_tree_owner_does_not_export_compiled_pattern_module_helper_keywor
         benchmark_test_support.top_level_module_definition_and_assignment_names(support)
     )
     local_names = definition_names | assignment_names
+    assignment_only_names = (
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+    )
 
-    assert COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES.isdisjoint(
-        local_names
+    assert all(name not in local_names for name in assignment_only_names)
+    assert all(not hasattr(support, name) for name in assignment_only_names)
+    assert all(hasattr(benchmark_test_support, name) for name in assignment_only_names)
+    assert (
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload"
+        not in local_names
     )
-    assert all(
-        not hasattr(support, name)
-        for name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES
+    assert not hasattr(
+        support,
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
-    assert all(
-        hasattr(benchmark_test_support, name)
-        for name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES
+    assert hasattr(
+        benchmark_test_support,
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
 
 
