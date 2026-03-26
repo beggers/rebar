@@ -34,6 +34,15 @@ Created: 2026-03-26
 - Do not change benchmark workload files, generated reports, README/status prose, or tracked project-state documents.
 
 ## Notes
+- Completed 2026-03-26 by moving the compiled-pattern module-helper keyword contract specs, source workload selectors, and param tables from `tests/benchmarks/benchmark_test_support.py` into `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, reusing the shared contract dataclass/surface primitives but keeping the owner-local workload selection on the collection-replacement side.
+- Updated the ownership assertions and consumer tests in `tests/benchmarks/test_benchmark_test_support.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `tests/benchmarks/test_benchmark_manifest_validation.py` to import the moved surface from the collection-replacement owner module; also refreshed the adjacent owner-route assertions in `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so the benchmark support contract tests no longer expect the old shared-support ownership.
+- Final verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_module_helper_keyword'` passed with `2 passed, 176 deselected in 0.33s`.
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword'` passed with `66 passed, 213 deselected in 0.45s`.
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_helper_keyword'` passed with `4 passed, 60 deselected in 0.23s`.
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_helper_keyword'` passed with `4 passed, 115 deselected in 0.54s`.
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed.
+  - `bash -lc "! rg -n '_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_(CONTRACT_SPEC|ERROR_CONTRACT_SPEC|SOURCE_WORKLOADS|PRECOMPILE_ANCHOR_SOURCE_WORKLOADS|ERROR_SOURCE_WORKLOADS|CONTRACT_SURFACES|CONTRACT_SURFACE_PARAMS|CONTRACT_SOURCE_WORKLOAD_PARAMS|PRECOMPILE_SOURCE_WORKLOAD_PARAMS)' tests/benchmarks/benchmark_test_support.py"` passed, confirming the moved contract surface no longer lives in shared benchmark support.
 - Queue and JSON check in this run:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git ls-files '*.json' | wc -l` returned `0`.

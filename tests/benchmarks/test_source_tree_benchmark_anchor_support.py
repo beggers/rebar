@@ -1256,9 +1256,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert not hasattr(support, constant_name)
         assert constant_name not in local_function_names
         assert constant_name not in local_assignment_names
-        assert hasattr(benchmark_test_support, constant_name)
+        assert hasattr(collection_support, constant_name)
     assert hasattr(
-        benchmark_test_support,
+        collection_support,
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
     )
     assert not hasattr(
@@ -1489,12 +1489,12 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     ("spec", "expected_excluded_fields"),
     (
         pytest.param(
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
+            collection_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
             benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
             id="preserve-expected-exception",
         ),
         pytest.param(
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+            collection_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
             (
                 benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
                 | frozenset({"expected_exception"})
@@ -2361,7 +2361,7 @@ def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_s
     ) == helper_names
 
 
-def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_through_benchmark_test_support(
+def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_through_collection_support(
 ) -> None:
     module_ast = support._parsed_source_tree_combined_suite_ast()
     owner_names = frozenset(
@@ -2382,6 +2382,12 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         import_name="benchmark_test_support",
         dotted_import_name="tests.benchmarks.benchmark_test_support",
     )
+    collection_support_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="collection_replacement_benchmark_anchor_support",
+        dotted_import_name="tests.benchmarks.collection_replacement_benchmark_anchor_support",
+    )
     source_tree_support_alias_names = benchmark_test_support._module_alias_names(
         module_ast,
         import_from_module="tests.benchmarks",
@@ -2390,9 +2396,15 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
     )
 
     assert benchmark_support_alias_names
+    assert collection_support_alias_names
     assert benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
         module_name="tests.benchmarks.benchmark_test_support",
+        imported_names=owner_names,
+    ) == frozenset()
+    assert benchmark_test_support._top_level_import_from_alias_pairs(
+        module_ast,
+        module_name="tests.benchmarks.collection_replacement_benchmark_anchor_support",
         imported_names=owner_names,
     ) == frozenset()
     assert frozenset(
@@ -2404,11 +2416,27 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         if attribute_name in owner_names
     ) == frozenset()
     assert frozenset(
+        (target_name, attribute_name)
+        for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
+            module_ast,
+            module_alias_names=collection_support_alias_names,
+        ).items()
+        if attribute_name in owner_names
+    ) == frozenset()
+    assert frozenset(
         node.attr
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
         and node.value.id in benchmark_support_alias_names
+        and node.attr in owner_names
+    ) == frozenset()
+    assert frozenset(
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in collection_support_alias_names
         and node.attr in owner_names
     ) == owner_names
     assert frozenset(
@@ -3286,7 +3314,15 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
                     }
                 ),
-                frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
+                frozenset(
+                    {
+                        (
+                            "collection_replacement_benchmark_anchor_support",
+                            "collection_replacement_support",
+                        ),
+                        ("source_tree_benchmark_anchor_support", "source_tree_support"),
+                    }
+                ),
                 id="manifest-validation",
             ),
         pytest.param(
@@ -3798,7 +3834,7 @@ def test_source_tree_owner_does_not_export_compiled_pattern_module_helper_keywor
 
     assert all(name not in local_names for name in assignment_only_names)
     assert all(not hasattr(support, name) for name in assignment_only_names)
-    assert all(hasattr(benchmark_test_support, name) for name in assignment_only_names)
+    assert all(hasattr(collection_support, name) for name in assignment_only_names)
     assert (
         "_is_collection_replacement_compiled_pattern_keyword_error_workload"
         not in local_names
@@ -3808,7 +3844,7 @@ def test_source_tree_owner_does_not_export_compiled_pattern_module_helper_keywor
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
     assert hasattr(
-        benchmark_test_support,
+        collection_support,
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
 

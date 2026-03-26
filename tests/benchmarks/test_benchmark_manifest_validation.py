@@ -15,6 +15,9 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
+from tests.benchmarks import (
+    collection_replacement_benchmark_anchor_support as collection_replacement_support,
+)
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 
 
@@ -1076,7 +1079,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
 
 @pytest.mark.parametrize(
     "contract_surface",
-    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS,
+    collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS,
     ids=lambda contract_surface: contract_surface.case_id,
 )
 def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation(
@@ -1134,14 +1137,14 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
     success_surface = next(
         surface
         for surface in (
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+            collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         )
         if surface.case_id == "success"
     )
     keyword_error_surface = next(
         surface
         for surface in (
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+            collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         )
         if surface.case_id == "keyword-error"
     )
@@ -1224,7 +1227,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
             benchmark_test_support.run_benchmark_workload_with_cpython(workload),
         )
         for workload in (
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+            collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
         )
         if workload.operation in {"module.sub", "module.subn"}
         and type(workload.kwargs.get("count")) is bool
@@ -1265,7 +1268,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
     success_surface = next(
         surface
         for surface in (
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+            collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         )
         if surface.case_id == "success"
     )
@@ -1295,7 +1298,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
     keyword_error_surface = next(
         surface
         for surface in (
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+            collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         )
         if surface.case_id == "keyword-error"
     )

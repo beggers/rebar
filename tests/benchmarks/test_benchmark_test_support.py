@@ -3262,26 +3262,16 @@ def test_pattern_boundary_anchor_support_reuses_shared_pattern_case_builder() ->
     assert "_pattern_case" not in definition_names | assignment_names
 
 
-def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_test_support(
+def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imports(
 ) -> None:
     module = importlib.import_module("tests.benchmarks.test_benchmark_manifest_validation")
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
-    forbidden_owner_names = frozenset(
+    shared_owner_names = frozenset(
         {
             "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
             "_expected_exception_instance",
-            "_is_collection_replacement_compiled_pattern_keyword_error_workload",
             "_is_pattern_boundary_wrong_text_model_workload",
             "_write_test_manifest",
             "CompiledPatternModuleCompileContractCase",
@@ -3291,6 +3281,20 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
             "selected_manifest_workloads",
         }
     )
+    collection_owner_names = frozenset(
+        {
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+            "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+        }
+    )
 
     _assert_owner_module_routes_through_package_import(
         module,
@@ -3298,15 +3302,38 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {
+                ("benchmark_test_support", None),
+                (
+                    "collection_replacement_benchmark_anchor_support",
+                    "collection_replacement_support",
+                ),
+                (
+                    "source_tree_benchmark_anchor_support",
+                    "source_tree_support",
+                ),
+            }
+        ),
+    )
     assert support._top_level_import_from_alias_pairs(
         support._parsed_module_ast(module),
         module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
-    assert forbidden_owner_names.isdisjoint(definition_names | assignment_names)
+    assert shared_owner_names.isdisjoint(definition_names | assignment_names)
+    assert collection_owner_names.isdisjoint(definition_names | assignment_names)
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_benchmark_manifest_validation",
-        forbidden_owner_names,
+        shared_owner_names,
+    )
+    _assert_benchmark_test_support_aliases_absent(
+        "tests.benchmarks.test_benchmark_manifest_validation",
+        collection_owner_names,
     )
 
 
@@ -3602,11 +3629,11 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
     )
     + (
         pytest.param(
-            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+            collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
             id="module-helper-keyword-success",
         ),
         pytest.param(
-            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
+            collection_replacement_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
             id="module-helper-keyword-error",
         ),
     ),
@@ -3677,10 +3704,15 @@ def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() 
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_contract_spec")
 
 
-def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_contract_surface(
+def test_collection_replacement_support_exports_compiled_pattern_module_helper_keyword_contract_surface(
 ) -> None:
-    definition_names, assignment_names = (
+    support_definition_names, support_assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
+    )
+    collection_definition_names, collection_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            collection_replacement_support
+        )
     )
     assignment_only_names = {
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
@@ -3694,7 +3726,8 @@ def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_c
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     }
 
-    assert assignment_only_names <= assignment_names
+    assert assignment_only_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert assignment_only_names <= collection_assignment_names
     assert not hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     assert not hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     assert hasattr(
@@ -3702,9 +3735,9 @@ def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_c
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
     for name in assignment_only_names:
-        assert hasattr(support, name)
+        assert not hasattr(support, name)
         assert not hasattr(anchor_support, name)
-        assert not hasattr(collection_replacement_support, name)
+        assert hasattr(collection_replacement_support, name)
 
 
 def test_benchmark_test_support_no_longer_exports_deleted_workload_id_selector_helpers(
@@ -3727,7 +3760,7 @@ def test_benchmark_test_support_no_longer_exports_deleted_workload_id_selector_h
         assert not hasattr(collection_replacement_support, name)
 
 
-def test_compiled_pattern_module_helper_keyword_shared_surface_stays_shared_support_owned(
+def test_compiled_pattern_module_helper_keyword_surface_moves_to_collection_replacement_owner(
 ) -> None:
     assignment_only_names = (
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
@@ -3741,10 +3774,10 @@ def test_compiled_pattern_module_helper_keyword_shared_surface_stays_shared_supp
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     )
 
-    assert all(hasattr(support, name) for name in assignment_only_names)
+    assert all(not hasattr(support, name) for name in assignment_only_names)
     assert all(not hasattr(anchor_support, name) for name in assignment_only_names)
     assert all(
-        not hasattr(collection_replacement_support, name)
+        hasattr(collection_replacement_support, name)
         for name in assignment_only_names
     )
     assert not hasattr(
