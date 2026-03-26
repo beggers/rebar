@@ -5245,6 +5245,57 @@ def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory(
     )
 
 
+def test_pattern_boundary_wrong_text_model_standard_definition_stays_bound_to_local_contract(
+) -> None:
+    definition = next(
+        definition
+        for definition in support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name == "pattern-boundary-wrong-text-model"
+    )
+
+    assert definition.manifest_paths == (support.PATTERN_BOUNDARY_MANIFEST_PATH,)
+    assert (
+        definition.expected_anchor_case_ids
+        == benchmark_test_support._definition_anchor_expectations(
+            support.PATTERN_BOUNDARY_MANIFEST_PATH,
+            {
+                "pattern-search-on-bytes-string-warm-str": (
+                    "workflow-pattern-search-str-pattern-on-bytes-string",
+                ),
+                "pattern-match-on-str-string-purged-bytes": (
+                    "workflow-pattern-match-bytes-pattern-on-str-string",
+                ),
+                "pattern-fullmatch-on-bytes-string-warm-str": (
+                    "workflow-pattern-fullmatch-str-pattern-on-bytes-string",
+                ),
+            },
+        )
+    )
+    assert (
+        definition.include_workload
+        is support._is_pattern_boundary_wrong_text_model_workload
+    )
+    assert (
+        definition.correctness_case_signature
+        is support._pattern_boundary_wrong_text_model_correctness_case_signature
+    )
+    assert (
+        definition.workload_signature
+        is support._pattern_boundary_wrong_text_model_workload_signature
+    )
+    assert not definition.run_callback_result_parity
+    assert (
+        tuple(
+            workload.workload_id
+            for workload in benchmark_test_support.selected_manifest_workloads(
+                support.PATTERN_BOUNDARY_MANIFEST_PATH,
+                include_workload=definition.includes_workload,
+            )
+        )
+        == support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+    )
+
+
 def test_pattern_bounded_wildcard_selector_and_signature_stay_pinned() -> None:
     workload = benchmark_test_support.synthetic_workload(
         manifest_id="pattern-boundary",
