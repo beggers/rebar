@@ -334,7 +334,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
     assert (
-        anchor_support._conditional_group_exists_alternation_callable_bytes_workloads()
+        collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
         == source_tree_workloads
     )
     assert manifest_load_calls == [manifest_path]
@@ -354,7 +354,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
     assert (
-        anchor_support._conditional_group_exists_alternation_callable_bytes_workloads()
+        collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
         == source_tree_workloads
     )
     assert manifest_load_calls == [manifest_path]
@@ -376,7 +376,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
     assert (
-        anchor_support._conditional_group_exists_alternation_callable_bytes_workloads()
+        collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
         == source_tree_workloads
     )
     assert manifest_load_calls == [manifest_path, manifest_path]

@@ -673,6 +673,11 @@ def _clear_anchor_support_caches() -> None:
     )
     if source_tree_support is not None:
         _clear_cached_functions(vars(source_tree_support).values())
+    collection_replacement_support = sys.modules.get(
+        "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+    )
+    if collection_replacement_support is not None:
+        _clear_cached_functions(vars(collection_replacement_support).values())
 
 
 @pytest.fixture

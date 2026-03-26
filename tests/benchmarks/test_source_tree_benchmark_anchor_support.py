@@ -1570,16 +1570,22 @@ def test_source_tree_support_module_exposes_moved_report_contract_helpers() -> N
 
 
 def test_source_tree_support_module_exposes_moved_conditional_callable_helpers() -> None:
-    module_ast = benchmark_test_support._parsed_module_ast(support)
-    local_function_names = {
-        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
+    source_tree_ast = benchmark_test_support._parsed_module_ast(support)
+    source_tree_function_names = {
+        node.name for node in source_tree_ast.body if isinstance(node, ast.FunctionDef)
+    }
+    collection_ast = benchmark_test_support._parsed_module_ast(collection_support)
+    collection_function_names = {
+        node.name for node in collection_ast.body if isinstance(node, ast.FunctionDef)
     }
 
     for function_name in (
-        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES
+        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES
     ):
-        assert hasattr(support, function_name)
-        assert function_name in local_function_names
+        assert not hasattr(support, function_name)
+        assert function_name not in source_tree_function_names
+        assert hasattr(collection_support, function_name)
+        assert function_name in collection_function_names
 
 
 def test_source_tree_support_module_exposes_routed_collection_owner_surface() -> None:
@@ -1604,6 +1610,16 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         assert hasattr(support, function_name)
         assert function_name in local_function_names
 
+    collection_module_ast = benchmark_test_support._parsed_module_ast(collection_support)
+    collection_function_names = {
+        node.name for node in collection_module_ast.body if isinstance(node, ast.FunctionDef)
+    }
+    for function_name in (
+        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES
+    ):
+        assert hasattr(collection_support, function_name)
+        assert function_name in collection_function_names
+
 
 def test_source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers(
 ) -> None:
@@ -1612,6 +1628,7 @@ def test_source_tree_support_module_no_longer_exposes_collection_owned_signature
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
 
+    assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES == ()
     assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES == ()
     for function_name in (
         collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES
@@ -1856,7 +1873,7 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
     }
 
     for function_name in (
-        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES
+        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES
     ):
         assert function_name not in local_function_names
 
@@ -1992,34 +2009,51 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
 
 
 @pytest.mark.parametrize(
-    ("routed_names", "expected_direct_benchmark_test_support_refs"),
+    (
+        "alias_name",
+        "owner_module",
+        "routed_names",
+        "expected_direct_benchmark_test_support_refs",
+    ),
     [
         pytest.param(
+            "source_tree_support",
+            support,
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES,
             frozenset(),
             id="compiled-pattern-module-compile",
         ),
         pytest.param(
+            "source_tree_support",
+            support,
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES,
             frozenset(),
             id="compiled-pattern-wrong-text-model",
         ),
         pytest.param(
+            "source_tree_support",
+            support,
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES,
             frozenset(),
             id="compiled-pattern-module-helper-keyword",
         ),
         pytest.param(
+            "source_tree_support",
+            support,
             support.SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES,
             frozenset(),
             id="source-tree-suite-assertion-helpers",
         ),
         pytest.param(
-            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES,
+            "collection_replacement_support",
+            collection_support,
+            collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES,
             frozenset(),
             id="conditional-callable-helpers",
         ),
         pytest.param(
+            "source_tree_support",
+            support,
             support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES,
             frozenset(
                 support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES
@@ -2027,6 +2061,8 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             id="collection-owner-routed-constants",
         ),
         pytest.param(
+            "source_tree_support",
+            support,
             support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
             frozenset(),
             id="collection-owner-combined-slice-owner-names",
@@ -2034,12 +2070,14 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
     ],
 )
 def test_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
+    alias_name: str,
+    owner_module: object,
     routed_names: tuple[str, ...],
     expected_direct_benchmark_test_support_refs: frozenset[str],
 ) -> None:
     support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="source_tree_support",
-        owner_module=support,
+        alias_name=alias_name,
+        owner_module=owner_module,
         owner_names=routed_names,
         expected_direct_benchmark_test_support_refs=(
             expected_direct_benchmark_test_support_refs
@@ -2130,11 +2168,11 @@ def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() 
         "alternation-heavy-callable-replacement-rows",
     )
     callable_expectations = (
-        support._conditional_group_exists_callable_replacement_expectations()
+        collection_support._conditional_group_exists_callable_replacement_expectations()
     )
 
     assert (
-        support._conditional_group_exists_template_replacement_expectation().slice_id
+        collection_support._conditional_group_exists_template_replacement_expectation().slice_id
         == "minimal-template-replacement-rows"
     )
     assert tuple(
@@ -2144,30 +2182,30 @@ def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() 
         expectation.manifest_id for expectation in callable_expectations
     } == {"conditional-group-exists-boundary"}
     assert (
-        support._conditional_group_exists_alternation_callable_replacement_expectation().slice_id
+        collection_support._conditional_group_exists_alternation_callable_replacement_expectation().slice_id
         == "alternation-heavy-callable-replacement-rows"
     )
     assert (
-        support._conditional_group_exists_nested_callable_replacement_expectation().slice_id
+        collection_support._conditional_group_exists_nested_callable_replacement_expectation().slice_id
         == "nested-callable-replacement-str-rows"
     )
     assert (
-        support._conditional_group_exists_nested_callable_bytes_replacement_expectation().slice_id
+        collection_support._conditional_group_exists_nested_callable_bytes_replacement_expectation().slice_id
         == "nested-callable-replacement-bytes-rows"
     )
     assert (
-        support._conditional_group_exists_quantified_callable_replacement_expectation().slice_id
+        collection_support._conditional_group_exists_quantified_callable_replacement_expectation().slice_id
         == "quantified-callable-replacement-str-rows"
     )
     assert (
-        support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().slice_id
+        collection_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().slice_id
         == "quantified-callable-replacement-bytes-rows"
     )
 
 
 def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
     callable_expectations = (
-        support._conditional_group_exists_callable_replacement_expectations()
+        collection_support._conditional_group_exists_callable_replacement_expectations()
     )
     expected_callable_workload_ids = tuple(
         workload_id
@@ -2175,25 +2213,25 @@ def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
         for workload_id in expectation.expected_workload_ids
     )
     expected_callable_str_workload_ids, expected_callable_bytes_workload_ids = (
-        support._split_workload_ids_by_text_model(expected_callable_workload_ids)
+        collection_support._split_workload_ids_by_text_model(expected_callable_workload_ids)
     )
 
-    callable_str_workloads = support._conditional_group_exists_callable_str_slice_workloads()
+    callable_str_workloads = collection_support._conditional_group_exists_callable_str_slice_workloads()
     callable_bytes_workloads = (
-        support._conditional_group_exists_callable_bytes_slice_workloads()
+        collection_support._conditional_group_exists_callable_bytes_slice_workloads()
     )
-    nested_str_workloads = support._conditional_group_exists_nested_callable_str_workloads()
+    nested_str_workloads = collection_support._conditional_group_exists_nested_callable_str_workloads()
     nested_bytes_workloads = (
-        support._conditional_group_exists_nested_callable_bytes_workloads()
+        collection_support._conditional_group_exists_nested_callable_bytes_workloads()
     )
     quantified_str_workloads = (
-        support._conditional_group_exists_quantified_callable_str_workloads()
+        collection_support._conditional_group_exists_quantified_callable_str_workloads()
     )
     quantified_bytes_workloads = (
-        support._conditional_group_exists_quantified_callable_bytes_workloads()
+        collection_support._conditional_group_exists_quantified_callable_bytes_workloads()
     )
     alternation_bytes_workloads = (
-        support._conditional_group_exists_alternation_callable_bytes_workloads()
+        collection_support._conditional_group_exists_alternation_callable_bytes_workloads()
     )
 
     assert tuple(
@@ -2243,7 +2281,7 @@ def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
 def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> None:
     expected_callable_workload_ids = tuple(
         workload_id
-        for expectation in support._conditional_group_exists_callable_replacement_expectations()
+        for expectation in collection_support._conditional_group_exists_callable_replacement_expectations()
         for workload_id in expectation.expected_workload_ids
     )
     synthetic_workloads = (
@@ -2277,7 +2315,7 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
         ),
     )
 
-    assert support._split_workload_ids_by_text_model(
+    assert collection_support._split_workload_ids_by_text_model(
         expected_callable_workload_ids
     ) == (
         tuple(
@@ -2291,12 +2329,12 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
             if workload_id.endswith("-bytes")
         ),
     )
-    assert support._mirrored_bytes_workload_ids(
+    assert collection_support._mirrored_bytes_workload_ids(
         collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
     ) == (
         collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
     )
-    assert support._selected_workload_ids(
+    assert collection_support._selected_workload_ids(
         synthetic_workloads,
         text_model="str",
         required_categories=("negative-count",),
@@ -2304,18 +2342,18 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
         "callable-negative-count-warm-str",
         "callable-negative-none-count-warm-str",
     )
-    assert support._selected_workload_ids(
+    assert collection_support._selected_workload_ids(
         synthetic_workloads,
         text_model="str",
         required_categories=("negative-count",),
         excluded_categories=("none-count",),
     ) == ("callable-negative-count-warm-str",)
-    assert support._selected_workload_ids(
+    assert collection_support._selected_workload_ids(
         synthetic_workloads,
         text_model="bytes",
         required_categories=("negative-count",),
     ) == ("callable-negative-count-warm-bytes",)
-    assert support._selected_workload_ids(
+    assert collection_support._selected_workload_ids(
         synthetic_workloads,
         text_model="str",
         required_categories=("no-match",),

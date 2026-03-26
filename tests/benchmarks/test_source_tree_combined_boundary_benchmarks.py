@@ -360,7 +360,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
         template_expectation = (
-            source_tree_support._conditional_group_exists_template_replacement_expectation()
+            collection_replacement_support._conditional_group_exists_template_replacement_expectation()
         )
         case = source_tree_support.source_tree_combined_case(manifest_id)
         matched_rows = tuple(
@@ -552,7 +552,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        expectation = source_tree_support._conditional_group_exists_nested_callable_replacement_expectation()
+        expectation = collection_replacement_support._conditional_group_exists_nested_callable_replacement_expectation()
         case = source_tree_support.source_tree_combined_case(manifest_id)
         matched_rows = tuple(
             source_tree_support.select_source_tree_combined_slice_rows(case.target_manifest, expectation)
@@ -620,7 +620,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        expectation = source_tree_support._conditional_group_exists_quantified_callable_replacement_expectation()
+        expectation = collection_replacement_support._conditional_group_exists_quantified_callable_replacement_expectation()
         case = source_tree_support.source_tree_combined_case(manifest_id)
         matched_rows = tuple(
             source_tree_support.select_source_tree_combined_slice_rows(case.target_manifest, expectation)
@@ -691,7 +691,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_nested_callable_str_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = source_tree_support._conditional_group_exists_nested_callable_str_workloads()
+        source_workloads = collection_replacement_support._conditional_group_exists_nested_callable_str_workloads()
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -760,7 +760,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_nested_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = source_tree_support._conditional_group_exists_nested_callable_bytes_workloads()
+        source_workloads = collection_replacement_support._conditional_group_exists_nested_callable_bytes_workloads()
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -862,8 +862,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         workloads = (
-            source_tree_support._conditional_group_exists_nested_callable_str_workloads()
-            + source_tree_support._conditional_group_exists_nested_callable_bytes_workloads()
+            collection_replacement_support._conditional_group_exists_nested_callable_str_workloads()
+            + collection_replacement_support._conditional_group_exists_nested_callable_bytes_workloads()
         )
         case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
             collection_replacement_support._conditional_group_exists_nested_callable_correctness_case_signature
@@ -894,7 +894,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_quantified_callable_str_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = source_tree_support._conditional_group_exists_quantified_callable_str_workloads()
+        source_workloads = collection_replacement_support._conditional_group_exists_quantified_callable_str_workloads()
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -963,7 +963,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_quantified_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = source_tree_support._conditional_group_exists_quantified_callable_bytes_workloads()
+        source_workloads = collection_replacement_support._conditional_group_exists_quantified_callable_bytes_workloads()
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -1028,8 +1028,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         workloads = (
-            source_tree_support._conditional_group_exists_quantified_callable_str_workloads()
-            + source_tree_support._conditional_group_exists_quantified_callable_bytes_workloads()
+            collection_replacement_support._conditional_group_exists_quantified_callable_str_workloads()
+            + collection_replacement_support._conditional_group_exists_quantified_callable_bytes_workloads()
         )
         case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
             collection_replacement_support._conditional_group_exists_quantified_callable_correctness_case_signature
@@ -1060,13 +1060,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_callable_str_slice_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = source_tree_support._conditional_group_exists_callable_str_slice_workloads()
+        source_workloads = collection_replacement_support._conditional_group_exists_callable_str_slice_workloads()
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
             tuple(
                 workload_id
-                for expectation in source_tree_support._conditional_group_exists_callable_replacement_expectations()
+                for expectation in collection_replacement_support._conditional_group_exists_callable_replacement_expectations()
                 for workload_id in expectation.expected_workload_ids
                 if not workload_id.endswith("-bytes")
             ),
@@ -1134,13 +1134,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_callable_bytes_slice_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = source_tree_support._conditional_group_exists_callable_bytes_slice_workloads()
+        source_workloads = collection_replacement_support._conditional_group_exists_callable_bytes_slice_workloads()
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
             tuple(
                 workload_id
-                for expectation in source_tree_support._conditional_group_exists_callable_replacement_expectations()
+                for expectation in collection_replacement_support._conditional_group_exists_callable_replacement_expectations()
                 for workload_id in expectation.expected_workload_ids
                 if workload_id.endswith("-bytes")
             ),
@@ -1208,7 +1208,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         for source_workload in (
-            source_tree_support._conditional_group_exists_alternation_callable_bytes_workloads()
+            collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
         ):
             with self.subTest(workload_id=source_workload.workload_id):
                 payload = workload_to_payload(source_workload)
@@ -2865,7 +2865,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        expectations = source_tree_support._conditional_group_exists_callable_replacement_expectations()
+        expectations = collection_replacement_support._conditional_group_exists_callable_replacement_expectations()
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         expected_negative_count_str_workload_ids = (
@@ -2904,10 +2904,10 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             if workload_id in expected_callable_workload_ids
         )
         expected_str_workload_ids, expected_bytes_workload_ids = (
-            source_tree_support._split_workload_ids_by_text_model(expected_callable_workload_ids)
+            collection_replacement_support._split_workload_ids_by_text_model(expected_callable_workload_ids)
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            source_tree_support._split_workload_ids_by_text_model(representative_callable_workload_ids)
+            collection_replacement_support._split_workload_ids_by_text_model(representative_callable_workload_ids)
         )
         manifest_negative_count_str_workload_ids = tuple(
             workload.workload_id
@@ -3034,7 +3034,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        expectations = source_tree_support._conditional_group_exists_callable_replacement_expectations()
+        expectations = collection_replacement_support._conditional_group_exists_callable_replacement_expectations()
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         expected_none_count_workload_ids = (
@@ -3056,7 +3056,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             if workload_id in expected_none_count_workload_ids
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            source_tree_support._split_workload_ids_by_text_model(representative_none_count_workload_ids)
+            collection_replacement_support._split_workload_ids_by_text_model(representative_none_count_workload_ids)
         )
         manifest_none_count_str_workload_ids = tuple(
             workload.workload_id
@@ -3152,8 +3152,8 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         manifest_id = "conditional-group-exists-boundary"
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
-        str_expectation = source_tree_support._conditional_group_exists_nested_callable_replacement_expectation()
-        bytes_expectation = source_tree_support._conditional_group_exists_nested_callable_bytes_replacement_expectation()
+        str_expectation = collection_replacement_support._conditional_group_exists_nested_callable_replacement_expectation()
+        bytes_expectation = collection_replacement_support._conditional_group_exists_nested_callable_bytes_replacement_expectation()
         str_rows = tuple(
             source_tree_support.select_source_tree_combined_slice_rows(manifest, str_expectation)
         )
@@ -3170,7 +3170,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            source_tree_support._split_workload_ids_by_text_model(representative_nested_workload_ids)
+            collection_replacement_support._split_workload_ids_by_text_model(representative_nested_workload_ids)
         )
 
         def normalized_text_model_payload(value: str | bytes | None) -> str | None:
@@ -3231,9 +3231,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         manifest_id = "conditional-group-exists-boundary"
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
-        str_expectation = source_tree_support._conditional_group_exists_quantified_callable_replacement_expectation()
+        str_expectation = collection_replacement_support._conditional_group_exists_quantified_callable_replacement_expectation()
         bytes_expectation = (
-            source_tree_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation()
+            collection_replacement_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation()
         )
         str_rows = tuple(
             source_tree_support.select_source_tree_combined_slice_rows(manifest, str_expectation)
@@ -3251,45 +3251,45 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            source_tree_support._split_workload_ids_by_text_model(representative_quantified_workload_ids)
+            collection_replacement_support._split_workload_ids_by_text_model(representative_quantified_workload_ids)
         )
-        manifest_negative_count_str_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_negative_count_str_workload_ids = collection_replacement_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("negative-count",),
         )
-        manifest_negative_count_bytes_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_negative_count_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("negative-count",),
         )
-        manifest_negative_count_no_match_str_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_negative_count_no_match_str_workload_ids = collection_replacement_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("negative-count", "no-match"),
         )
-        manifest_negative_count_no_match_bytes_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_negative_count_no_match_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("negative-count", "no-match"),
         )
-        manifest_none_count_str_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_none_count_str_workload_ids = collection_replacement_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("none-count",),
         )
-        manifest_none_count_bytes_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_none_count_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("none-count",),
         )
-        manifest_plain_no_match_str_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_plain_no_match_str_workload_ids = collection_replacement_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("no-match",),
             excluded_categories=("negative-count",),
         )
-        manifest_plain_no_match_bytes_workload_ids = source_tree_support._selected_workload_ids(
+        manifest_plain_no_match_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("no-match",),
@@ -3413,21 +3413,21 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(len(manifest_plain_no_match_str_workload_ids), 8)
         self.assertEqual(
             manifest_negative_count_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(manifest_negative_count_str_workload_ids),
+            collection_replacement_support._mirrored_bytes_workload_ids(manifest_negative_count_str_workload_ids),
         )
         self.assertEqual(
             manifest_negative_count_no_match_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(
+            collection_replacement_support._mirrored_bytes_workload_ids(
                 manifest_negative_count_no_match_str_workload_ids
             ),
         )
         self.assertEqual(
             manifest_none_count_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(manifest_none_count_str_workload_ids),
+            collection_replacement_support._mirrored_bytes_workload_ids(manifest_none_count_str_workload_ids),
         )
         self.assertEqual(
             manifest_plain_no_match_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(manifest_plain_no_match_str_workload_ids),
+            collection_replacement_support._mirrored_bytes_workload_ids(manifest_plain_no_match_str_workload_ids),
         )
         self.assertEqual(
             representative_negative_count_str_workload_ids,
@@ -3435,7 +3435,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_negative_count_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(representative_negative_count_str_workload_ids),
+            collection_replacement_support._mirrored_bytes_workload_ids(representative_negative_count_str_workload_ids),
         )
         self.assertEqual(
             representative_negative_count_no_match_str_workload_ids,
@@ -3443,7 +3443,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_negative_count_no_match_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(
+            collection_replacement_support._mirrored_bytes_workload_ids(
                 representative_negative_count_no_match_str_workload_ids
             ),
         )
@@ -3453,7 +3453,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_none_count_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(representative_none_count_str_workload_ids),
+            collection_replacement_support._mirrored_bytes_workload_ids(representative_none_count_str_workload_ids),
         )
         self.assertEqual(
             representative_plain_no_match_str_workload_ids,
@@ -3461,7 +3461,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_plain_no_match_bytes_workload_ids,
-            source_tree_support._mirrored_bytes_workload_ids(representative_plain_no_match_str_workload_ids),
+            collection_replacement_support._mirrored_bytes_workload_ids(representative_plain_no_match_str_workload_ids),
         )
         self.assertEqual(
             representative_negative_count_str_workload_ids[
@@ -3523,7 +3523,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
         expectation = (
-            source_tree_support._conditional_group_exists_alternation_callable_replacement_expectation()
+            collection_replacement_support._conditional_group_exists_alternation_callable_replacement_expectation()
         )
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
@@ -3584,7 +3584,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
         template_expectation = (
-            source_tree_support._conditional_group_exists_template_replacement_expectation()
+            collection_replacement_support._conditional_group_exists_template_replacement_expectation()
         )
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         matched_rows = tuple(
@@ -3624,7 +3624,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
         template_expectation = (
-            source_tree_support._conditional_group_exists_template_replacement_expectation()
+            collection_replacement_support._conditional_group_exists_template_replacement_expectation()
         )
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         expected_negative_count_str_workload_ids = (
@@ -3645,10 +3645,10 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             if workload_id in template_expectation.expected_workload_ids
         )
         expected_str_workload_ids, expected_bytes_workload_ids = (
-            source_tree_support._split_workload_ids_by_text_model(template_expectation.expected_workload_ids)
+            collection_replacement_support._split_workload_ids_by_text_model(template_expectation.expected_workload_ids)
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            source_tree_support._split_workload_ids_by_text_model(representative_template_workload_ids)
+            collection_replacement_support._split_workload_ids_by_text_model(representative_template_workload_ids)
         )
 
         self.assertEqual(

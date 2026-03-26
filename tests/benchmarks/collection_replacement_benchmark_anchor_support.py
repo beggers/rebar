@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from functools import partial
+from functools import cache, partial
 import re
 from types import SimpleNamespace
 from typing import Any
@@ -1799,6 +1799,216 @@ COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_WORKLOAD_ID_NAMES = (
     "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
     "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
 )
+
+COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
+    "_conditional_group_exists_callable_str_slice_workloads",
+    "_conditional_group_exists_callable_bytes_slice_workloads",
+    "_conditional_group_exists_quantified_callable_str_workloads",
+    "_conditional_group_exists_nested_callable_str_workloads",
+    "_conditional_group_exists_nested_callable_bytes_workloads",
+    "_conditional_group_exists_quantified_callable_bytes_workloads",
+    "_conditional_group_exists_alternation_callable_bytes_workloads",
+    "_split_workload_ids_by_text_model",
+    "_selected_workload_ids",
+    "_mirrored_bytes_workload_ids",
+    "_conditional_group_exists_template_replacement_expectation",
+    "_conditional_group_exists_callable_replacement_expectations",
+    "_conditional_group_exists_alternation_callable_replacement_expectation",
+    "_conditional_group_exists_nested_callable_replacement_expectation",
+    "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
+    "_conditional_group_exists_quantified_callable_replacement_expectation",
+    "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
+)
+
+
+def _conditional_group_exists_source_tree_slice_expectations() -> tuple[Any, ...]:
+    from tests.benchmarks import (
+        source_tree_benchmark_anchor_support as source_tree_support,
+    )
+
+    return source_tree_support.source_tree_combined_slice_expectations(
+        "conditional-group-exists-boundary"
+    )
+
+
+@cache
+def _conditional_group_exists_callable_str_slice_workloads() -> tuple[Any, ...]:
+    expected_workload_ids = tuple(
+        workload_id
+        for expectation in _conditional_group_exists_callable_replacement_expectations()
+        for workload_id in expectation.expected_workload_ids
+        if not workload_id.endswith("-bytes")
+    )
+    return benchmark_test_support.live_manifest_workloads(
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expected_workload_ids,
+    )
+
+
+@cache
+def _conditional_group_exists_callable_bytes_slice_workloads() -> tuple[Any, ...]:
+    expected_workload_ids = tuple(
+        workload_id
+        for expectation in _conditional_group_exists_callable_replacement_expectations()
+        for workload_id in expectation.expected_workload_ids
+        if workload_id.endswith("-bytes")
+    )
+    return benchmark_test_support.live_manifest_workloads(
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expected_workload_ids,
+    )
+
+
+def _conditional_group_exists_quantified_callable_str_workloads() -> tuple[Any, ...]:
+    expectation = _conditional_group_exists_quantified_callable_replacement_expectation()
+    return benchmark_test_support.live_manifest_workloads(
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
+    )
+
+
+def _conditional_group_exists_nested_callable_str_workloads() -> tuple[Any, ...]:
+    expectation = _conditional_group_exists_nested_callable_replacement_expectation()
+    return benchmark_test_support.live_manifest_workloads(
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
+    )
+
+
+@cache
+def _conditional_group_exists_nested_callable_bytes_workloads() -> tuple[Any, ...]:
+    expectation = _conditional_group_exists_nested_callable_bytes_replacement_expectation()
+    return benchmark_test_support.live_manifest_workloads(
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
+    )
+
+
+@cache
+def _conditional_group_exists_quantified_callable_bytes_workloads() -> tuple[Any, ...]:
+    expectation = (
+        _conditional_group_exists_quantified_callable_bytes_replacement_expectation()
+    )
+    return benchmark_test_support.live_manifest_workloads(
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        expectation.expected_workload_ids,
+    )
+
+
+@cache
+def _conditional_group_exists_alternation_callable_bytes_workloads() -> tuple[Any, ...]:
+    return benchmark_test_support.live_manifest_workloads(
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
+        CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+    )
+
+
+def _split_workload_ids_by_text_model(
+    workload_ids: tuple[str, ...],
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    return (
+        tuple(
+            workload_id
+            for workload_id in workload_ids
+            if not workload_id.endswith("-bytes")
+        ),
+        tuple(
+            workload_id
+            for workload_id in workload_ids
+            if workload_id.endswith("-bytes")
+        ),
+    )
+
+
+def _selected_workload_ids(
+    workloads: Iterable[Any],
+    *,
+    text_model: str,
+    required_categories: tuple[str, ...],
+    excluded_categories: tuple[str, ...] = (),
+) -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for workload in workloads
+        if workload.text_model == text_model
+        and all(category in workload.categories for category in required_categories)
+        and all(category not in workload.categories for category in excluded_categories)
+    )
+
+
+def _mirrored_bytes_workload_ids(str_workload_ids: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(
+        f"{workload_id.removesuffix('-str')}-bytes" for workload_id in str_workload_ids
+    )
+
+
+def _conditional_group_exists_template_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in _conditional_group_exists_source_tree_slice_expectations()
+        if expectation.slice_id == "minimal-template-replacement-rows"
+    )
+
+
+def _conditional_group_exists_callable_replacement_expectations() -> tuple[Any, ...]:
+    expected_slice_ids = (
+        "minimal-callable-replacement-rows",
+        "minimal-callable-replacement-exception-rows",
+        "minimal-callable-replacement-none-count-exception-rows",
+        "alternation-heavy-callable-replacement-rows",
+    )
+    expectations = tuple(
+        expectation
+        for expectation in _conditional_group_exists_source_tree_slice_expectations()
+        if expectation.slice_id in expected_slice_ids
+    )
+    actual_slice_ids = tuple(expectation.slice_id for expectation in expectations)
+    if actual_slice_ids != expected_slice_ids:
+        raise AssertionError(
+            "conditional callable replacement slice expectations drifted: "
+            f"expected {expected_slice_ids!r}, got {actual_slice_ids!r}"
+        )
+    return expectations
+
+
+def _conditional_group_exists_alternation_callable_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in _conditional_group_exists_source_tree_slice_expectations()
+        if expectation.slice_id == "alternation-heavy-callable-replacement-rows"
+    )
+
+
+def _conditional_group_exists_nested_callable_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in _conditional_group_exists_source_tree_slice_expectations()
+        if expectation.slice_id == "nested-callable-replacement-str-rows"
+    )
+
+
+def _conditional_group_exists_nested_callable_bytes_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in _conditional_group_exists_source_tree_slice_expectations()
+        if expectation.slice_id == "nested-callable-replacement-bytes-rows"
+    )
+
+
+def _conditional_group_exists_quantified_callable_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in _conditional_group_exists_source_tree_slice_expectations()
+        if expectation.slice_id == "quantified-callable-replacement-str-rows"
+    )
+
+
+def _conditional_group_exists_quantified_callable_bytes_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in _conditional_group_exists_source_tree_slice_expectations()
+        if expectation.slice_id == "quantified-callable-replacement-bytes-rows"
+    )
 
 
 CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS = (
