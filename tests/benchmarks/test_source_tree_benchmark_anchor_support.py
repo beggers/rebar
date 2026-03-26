@@ -17,67 +17,6 @@ from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
-def _assert_mixed_owner_surface(
-    owner_module: object,
-    *,
-    local_function_names: frozenset[str],
-    local_assignment_names: frozenset[str],
-    support_alias_assignment_names: frozenset[str],
-) -> None:
-    module_ast = benchmark_test_support._parsed_module_ast(owner_module)
-    parsed_function_names = {
-        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
-    }
-    _, parsed_assignment_names = (
-        benchmark_test_support.top_level_module_definition_and_assignment_names(
-            owner_module
-        )
-    )
-
-    assert local_function_names
-    assert local_function_names.isdisjoint(local_assignment_names)
-    assert local_function_names.isdisjoint(support_alias_assignment_names)
-    assert local_assignment_names.isdisjoint(support_alias_assignment_names)
-
-    for function_name in local_function_names:
-        assert hasattr(owner_module, function_name)
-        assert function_name in parsed_function_names
-        assert function_name not in parsed_assignment_names
-        assert not hasattr(benchmark_test_support, function_name)
-
-    for assignment_name in local_assignment_names:
-        assert hasattr(owner_module, assignment_name)
-        assert assignment_name in parsed_assignment_names
-        assert assignment_name not in parsed_function_names
-        assert not hasattr(benchmark_test_support, assignment_name)
-        assignment = benchmark_test_support._module_assignment(
-            owner_module,
-            assignment_name,
-        )
-        assert not (
-            isinstance(assignment.value, ast.Attribute)
-            and isinstance(assignment.value.value, ast.Name)
-            and assignment.value.value.id == "benchmark_test_support"
-            and assignment.value.attr == assignment_name
-        )
-
-    for assignment_name in support_alias_assignment_names:
-        assert hasattr(owner_module, assignment_name)
-        assert assignment_name in parsed_assignment_names
-        assert assignment_name not in parsed_function_names
-        assignment = benchmark_test_support._module_assignment(
-            owner_module,
-            assignment_name,
-        )
-        assert isinstance(assignment.value, ast.Attribute)
-        assert isinstance(assignment.value.value, ast.Name)
-        assert assignment.value.value.id == "benchmark_test_support"
-        assert assignment.value.attr == assignment_name
-        assert getattr(owner_module, assignment_name) is getattr(
-            benchmark_test_support,
-            assignment_name,
-        )
-
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -1208,7 +1147,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
             | support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         )
-    _assert_mixed_owner_surface(
+    benchmark_test_support.assert_mixed_owner_surface(
         support,
         local_function_names=(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
@@ -3002,7 +2941,7 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
         | support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
     )
-    _assert_mixed_owner_surface(
+    benchmark_test_support.assert_mixed_owner_surface(
         support,
         local_function_names=(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES

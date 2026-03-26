@@ -1,8 +1,9 @@
 ## RBR-1353: Extract a shared mixed owner-surface helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
+Completed: 2026-03-26
 
 ## Goal
 - Delete the remaining file-local mixed owner-surface assertion helper in `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` by moving that repeated "some names stay local, some assignments stay benchmark-test-support aliases" check onto shared benchmark test support.
@@ -52,3 +53,10 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally'` passed with `2 passed, 95 deselected in 0.13s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^def _assert_mixed_owner_surface' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because the private helper still exists, and that failure belongs exactly to this cleanup
+- Completion note:
+  - Added `assert_mixed_owner_surface()` to `tests/benchmarks/benchmark_test_support.py`, rewired the source-tree benchmark owner-surface tests to call it, and added direct support-level owner-surface coverage in `tests/benchmarks/test_benchmark_test_support.py`.
+  - Verification in this run:
+    - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exposes_moved_combined_case_surface or source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally'` passed with `2 passed, 95 deselected in 0.25s`
+    - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'owner_surface'` passed with `13 passed, 136 deselected in 0.35s`
+    - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+    - `bash -lc "! rg -n '^def _assert_mixed_owner_surface' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` passed

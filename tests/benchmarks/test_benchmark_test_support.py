@@ -1662,6 +1662,73 @@ def test_owner_surface_module_owned_without_local_duplicates_accepts_extra_owner
     assert observed_modules == [caller_module]
 
 
+def test_assert_mixed_owner_surface_accepts_local_names_and_support_aliases(
+    monkeypatch,
+) -> None:
+    shared_alias = object()
+
+    def owner_helper() -> None:
+        return None
+
+    caller_module = SimpleNamespace(
+        owner_helper=owner_helper,
+        OWNER_ASSIGNMENT=object(),
+        SHARED_ALIAS=shared_alias,
+    )
+    module_ast = ast.parse(
+        """
+def owner_helper():
+    return None
+
+OWNER_ASSIGNMENT = object()
+SHARED_ALIAS = benchmark_test_support.SHARED_ALIAS
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "SHARED_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+
+    support.assert_mixed_owner_surface(
+        caller_module,
+        local_function_names=("owner_helper",),
+        local_assignment_names=("OWNER_ASSIGNMENT",),
+        support_alias_assignment_names=("SHARED_ALIAS",),
+    )
+
+
+def test_assert_mixed_owner_surface_rejects_overlapping_name_sets(
+    monkeypatch,
+) -> None:
+    module_ast = ast.parse(
+        """
+def duplicated_name():
+    return None
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_mixed_owner_surface(
+            object(),
+            local_function_names=("duplicated_name",),
+            local_assignment_names=("duplicated_name",),
+        )
+
+
 def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
 ) -> None:
     module = importlib.import_module(

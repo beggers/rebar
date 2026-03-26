@@ -758,6 +758,69 @@ def assert_owner_surface_module_owned_without_local_duplicates(
     assert extra_owner_name not in local_names
 
 
+def assert_mixed_owner_surface(
+    caller_module: object,
+    *,
+    local_function_names: Iterable[str] = (),
+    local_assignment_names: Iterable[str] = (),
+    support_alias_assignment_names: Iterable[str] = (),
+) -> None:
+    module_ast = _parsed_module_ast(caller_module)
+    parsed_function_names = {
+        node.name
+        for node in module_ast.body
+        if isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef))
+    }
+    _, parsed_assignment_names = (
+        top_level_module_definition_and_assignment_names(caller_module)
+    )
+    expected_local_function_names = set(local_function_names)
+    expected_local_assignment_names = set(local_assignment_names)
+    expected_support_alias_assignment_names = set(support_alias_assignment_names)
+    shared_module = sys.modules[__name__]
+
+    assert expected_local_function_names.isdisjoint(expected_local_assignment_names)
+    assert expected_local_function_names.isdisjoint(
+        expected_support_alias_assignment_names
+    )
+    assert expected_local_assignment_names.isdisjoint(
+        expected_support_alias_assignment_names
+    )
+
+    for function_name in expected_local_function_names:
+        assert hasattr(caller_module, function_name)
+        assert function_name in parsed_function_names
+        assert function_name not in parsed_assignment_names
+        assert not hasattr(shared_module, function_name)
+
+    for assignment_name in expected_local_assignment_names:
+        assert hasattr(caller_module, assignment_name)
+        assert assignment_name in parsed_assignment_names
+        assert assignment_name not in parsed_function_names
+        assert not hasattr(shared_module, assignment_name)
+        assignment = _module_assignment(caller_module, assignment_name)
+        assert not (
+            isinstance(assignment.value, ast.Attribute)
+            and isinstance(assignment.value.value, ast.Name)
+            and assignment.value.value.id == "benchmark_test_support"
+            and assignment.value.attr == assignment_name
+        )
+
+    for assignment_name in expected_support_alias_assignment_names:
+        assert hasattr(caller_module, assignment_name)
+        assert assignment_name in parsed_assignment_names
+        assert assignment_name not in parsed_function_names
+        assignment = _module_assignment(caller_module, assignment_name)
+        assert isinstance(assignment.value, ast.Attribute)
+        assert isinstance(assignment.value.value, ast.Name)
+        assert assignment.value.value.id == "benchmark_test_support"
+        assert assignment.value.attr == assignment_name
+        assert getattr(caller_module, assignment_name) is getattr(
+            shared_module,
+            assignment_name,
+        )
+
+
 def assert_standard_inventory_reuses_owner_definitions(
     owner_definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
     standard_definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
