@@ -36,16 +36,17 @@ Created: 2026-03-26
 
 ## Notes
 - ID check in this run:
-  - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`
+  - `.rebar/runtime/dashboard.md` reports `ready: 1`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`
   - `git ls-files '*.json' | wc -l` returned `0`
   - `rg --files -g '*.json' | wc -l` returned `0`
   - `rg -n 'RBR-1380|RBR-1381|RBR-1382' ops/state/current_status.md ops/state/backlog.md` returned no matches in this run
 - No blocked architecture task existed to reopen, refine, or normalize first in this run.
 - Candidate selection in this run:
   - `_CollectionReplacementLiteralReplacementRoute` and `_CollectionReplacementPatternCollectionRoute` still expose six wrapper methods that only project `workload_case_pairs` back into workload-id tuples, case-id tuples, and `_workload_case_pair_anchor_expectations(...)`.
-  - The remaining consumers are bounded to the collection-replacement owner module itself plus `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`.
+  - The remaining owner-module call sites are bounded and explicit: `_CollectionReplacementPatternCollectionRoute.correctness_case_signature`, `_CollectionReplacementPatternCollectionRoute.includes_workload`, `_collection_replacement_literal_replacement_correctness_case_signature`, five `StandardBenchmarkAnchorContractDefinition(... expected_anchor_case_ids=...)` declarations, and the two literal-replacement selector partials.
+  - The remaining test-side consumers are already limited to direct tuple projections and direct shared-anchor-helper calls inside `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`.
   - Removing those wrappers continues the post-JSON benchmark-support simplification pass without changing any feature boundary or benchmark report surface.
 - Verification status in this planning run:
-  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `147 passed in 1.75s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `152 passed in 1.75s`
   - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '\\b(def (workload_ids|case_ids|anchor_expectations)|\\.(workload_ids|case_ids|anchor_expectations)\\()' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently fails with the exact route methods and call sites this task is intended to delete
