@@ -284,10 +284,85 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     published_cases_calls: list[str] = []
     source_tree_live_manifest_calls: list[tuple[pathlib.Path, tuple[str, ...]]] = []
     published_cases = {"case-1": object()}
-    source_tree_workloads = (support._synthetic_workload("source-tree-anchored", ("bytes",)),)
-    expected_workload_ids = (
-        collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+    helper_workloads = (
+        (
+            collection_replacement_support._conditional_group_exists_callable_str_slice_workloads,
+            tuple(
+                workload_id
+                for expectation in (
+                    collection_replacement_support
+                    ._conditional_group_exists_callable_replacement_expectations()
+                )
+                for workload_id in expectation.expected_workload_ids
+                if not workload_id.endswith("-bytes")
+            ),
+            (
+                support._synthetic_workload(
+                    "conditional-callable-str-slice",
+                    ("callable-str",),
+                ),
+            ),
+        ),
+        (
+            collection_replacement_support._conditional_group_exists_callable_bytes_slice_workloads,
+            tuple(
+                workload_id
+                for expectation in (
+                    collection_replacement_support
+                    ._conditional_group_exists_callable_replacement_expectations()
+                )
+                for workload_id in expectation.expected_workload_ids
+                if workload_id.endswith("-bytes")
+            ),
+            (
+                support._synthetic_workload(
+                    "conditional-callable-bytes-slice",
+                    ("callable-bytes",),
+                ),
+            ),
+        ),
+        (
+            collection_replacement_support._conditional_group_exists_nested_callable_bytes_workloads,
+            collection_replacement_support._conditional_group_exists_nested_callable_bytes_replacement_expectation().expected_workload_ids,
+            (
+                support._synthetic_workload(
+                    "conditional-nested-callable-bytes",
+                    ("nested-bytes",),
+                ),
+            ),
+        ),
+        (
+            collection_replacement_support._conditional_group_exists_quantified_callable_bytes_workloads,
+            collection_replacement_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().expected_workload_ids,
+            (
+                support._synthetic_workload(
+                    "conditional-quantified-callable-bytes",
+                    ("quantified-bytes",),
+                ),
+            ),
+        ),
+        (
+            collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads,
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+            (
+                support._synthetic_workload(
+                    "conditional-alternation-callable-bytes",
+                    ("alternation-bytes",),
+                ),
+            ),
+        ),
     )
+    expected_source_tree_calls = [
+        (
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            workload_ids,
+        )
+        for _, workload_ids, _ in helper_workloads
+    ]
+    helper_workloads_by_expected_ids = {
+        workload_ids: result for _, workload_ids, result in helper_workloads
+    }
 
     def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
         manifest_load_calls.append(path)
@@ -310,7 +385,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         workload_ids: tuple[str, ...],
     ) -> tuple[object, ...]:
         source_tree_live_manifest_calls.append((manifest_path, workload_ids))
-        return source_tree_workloads
+        return helper_workloads_by_expected_ids[workload_ids]
 
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
     monkeypatch.setattr(
@@ -333,40 +408,24 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
-    assert (
-        collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
-        == source_tree_workloads
-    )
+    for helper, workload_ids, expected_workloads in helper_workloads:
+        assert helper() == expected_workloads, workload_ids
     assert manifest_load_calls == [manifest_path]
     assert published_case_id_calls == [support._synthetic_workload_signature]
     assert published_cases_calls == ["called"]
-    assert source_tree_live_manifest_calls == [
-        (
-            benchmarks.BENCHMARK_WORKLOADS_ROOT
-            / "conditional_group_exists_boundary.py",
-            expected_workload_ids,
-        )
-    ]
+    assert source_tree_live_manifest_calls == expected_source_tree_calls
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
     assert support.published_case_ids_by_signature(
         support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
-    assert (
-        collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
-        == source_tree_workloads
-    )
+    for helper, workload_ids, expected_workloads in helper_workloads:
+        assert helper() == expected_workloads, workload_ids
     assert manifest_load_calls == [manifest_path]
     assert published_case_id_calls == [support._synthetic_workload_signature]
     assert published_cases_calls == ["called"]
-    assert source_tree_live_manifest_calls == [
-        (
-            benchmarks.BENCHMARK_WORKLOADS_ROOT
-            / "conditional_group_exists_boundary.py",
-            expected_workload_ids,
-        )
-    ]
+    assert source_tree_live_manifest_calls == expected_source_tree_calls
 
     support._clear_anchor_support_caches()
 
@@ -375,28 +434,17 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
-    assert (
-        collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
-        == source_tree_workloads
-    )
+    for helper, workload_ids, expected_workloads in helper_workloads:
+        assert helper() == expected_workloads, workload_ids
     assert manifest_load_calls == [manifest_path, manifest_path]
     assert published_case_id_calls == [
         support._synthetic_workload_signature,
         support._synthetic_workload_signature,
     ]
     assert published_cases_calls == ["called", "called"]
-    assert source_tree_live_manifest_calls == [
-        (
-            benchmarks.BENCHMARK_WORKLOADS_ROOT
-            / "conditional_group_exists_boundary.py",
-            expected_workload_ids,
-        ),
-        (
-            benchmarks.BENCHMARK_WORKLOADS_ROOT
-            / "conditional_group_exists_boundary.py",
-            expected_workload_ids,
-        ),
-    ]
+    assert source_tree_live_manifest_calls == (
+        expected_source_tree_calls + expected_source_tree_calls
+    )
 
 
 def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
