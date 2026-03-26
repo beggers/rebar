@@ -1372,13 +1372,6 @@ def _is_encoded_indexlike_payload(value: object) -> bool:
         and not isinstance(value.get("value"), bool)
     )
 
-
-def _collection_replacement_owner_support() -> Any:
-    return importlib.import_module(
-        "tests.benchmarks.collection_replacement_benchmark_anchor_support"
-    )
-
-
 def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
     return (
         getattr(workload, "haystack_text_model", None) is not None
@@ -3658,7 +3651,9 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         self,
         source_workload: Workload,
     ) -> tuple[str, ...]:
-        collection_replacement_support = _collection_replacement_owner_support()
+        collection_replacement_support = importlib.import_module(
+            "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+        )
         if self.materializes_positional_keyword_field:
             field_names: list[str] = []
             positional_keyword_field = (
@@ -3757,7 +3752,9 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         self,
         workload: Workload,
     ) -> object:
-        collection_replacement_support = _collection_replacement_owner_support()
+        collection_replacement_support = importlib.import_module(
+            "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+        )
         compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
         helper_name = workload.operation.removeprefix("module.")
         helper = getattr(re, helper_name)
@@ -3910,8 +3907,12 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
     selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=lambda workload: _collection_replacement_owner_support()._is_collection_replacement_compiled_pattern_module_helper_keyword_workload(
-            workload
+        include_workload=(
+            lambda workload: importlib.import_module(
+                "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+            )._is_collection_replacement_compiled_pattern_module_helper_keyword_workload(
+                workload
+            )
         ),
     )
 )
@@ -3948,8 +3949,12 @@ if (
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
     selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=lambda workload: _collection_replacement_owner_support()._is_collection_replacement_compiled_pattern_keyword_error_workload(
-            workload
+        include_workload=(
+            lambda workload: importlib.import_module(
+                "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+            )._is_collection_replacement_compiled_pattern_keyword_error_workload(
+                workload
+            )
         ),
     )
 )

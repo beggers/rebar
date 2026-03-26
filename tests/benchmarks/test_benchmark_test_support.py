@@ -2774,6 +2774,7 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     )
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_specs")
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
+    assert not hasattr(support, "_collection_replacement_owner_support")
     assert not hasattr(support, "_source_tree_benchmark_anchor_support_module")
     assert not hasattr(
         support,
