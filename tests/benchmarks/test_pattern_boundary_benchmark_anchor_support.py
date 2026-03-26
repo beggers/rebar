@@ -340,6 +340,36 @@ def test_pattern_boundary_wrong_text_model_selector_rejects_compiled_pattern_win
     )
 
 
+def test_pattern_boundary_wrong_text_model_workload_signature_rejects_nonmatching_rows(
+) -> None:
+    workload = SimpleNamespace(
+        workload_id="pattern-findall-not-wrong-text-model",
+        operation="pattern.findall",
+        flags=0,
+        text_model="str",
+        haystack_text_model="bytes",
+        use_compiled_pattern=False,
+        expected_exception={
+            "type": "TypeError",
+            "message_substring": "wrong text model",
+        },
+        kwargs={},
+        pos=None,
+        endpos=None,
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=(
+            "unexpected pattern-boundary wrong-text-model workload "
+            "'pattern-findall-not-wrong-text-model'"
+        ),
+    ):
+        pattern_boundary_support._pattern_boundary_wrong_text_model_workload_signature(
+            workload
+        )
+
+
 def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str_and_bytes_rows() -> None:
     str_case = support._module_pattern_case(
         case_id="workflow-pattern-search-str-wrong-text-model",
@@ -395,6 +425,26 @@ def test_pattern_boundary_wrong_text_model_correctness_case_signatures_cover_str
         )
         is None
     )
+
+
+def test_pattern_boundary_wrong_text_model_expected_callback_call_rejects_unexpected_operation(
+) -> None:
+    workload = SimpleNamespace(
+        workload_id="pattern-findall-on-bytes-string-warm-str",
+        operation="pattern.findall",
+        haystack_payload=lambda: b"abc",
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=(
+            "unexpected direct Pattern pattern-boundary wrong-text-model "
+            "workload operation 'pattern.findall'"
+        ),
+    ):
+        pattern_boundary_support._pattern_boundary_wrong_text_model_expected_callback_call(
+            workload
+        )
 
 
 def test_pattern_boundary_wrong_text_model_source_workloads_stay_exact_and_in_order() -> None:
