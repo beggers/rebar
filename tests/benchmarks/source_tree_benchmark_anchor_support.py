@@ -2863,39 +2863,6 @@ def _public_source_tree_manifest_expectation(
     )
 
 
-def _single_manifest_scorecard_fallback_expectation(
-    manifest_id: str,
-    *,
-    case_definition: _SourceTreeScorecardDefinition,
-    manifest_known_gap_counts: dict[str, int],
-    selected_workload_ids: Iterable[str] | None = None,
-) -> SourceTreeManifestExpectation:
-    selected_workload_id_set = (
-        {str(workload_id) for workload_id in selected_workload_ids}
-        if selected_workload_ids is not None
-        else None
-    )
-
-    def _filter_case_workload_ids(workload_ids: tuple[str, ...]) -> tuple[str, ...]:
-        if selected_workload_id_set is None:
-            return workload_ids
-        return tuple(
-            workload_id
-            for workload_id in workload_ids
-            if workload_id in selected_workload_id_set
-        )
-
-    return SourceTreeManifestExpectation(
-        known_gap_count=manifest_known_gap_counts[manifest_id],
-        representative_measured_workload_ids=_filter_case_workload_ids(
-            case_definition.representative_measured_workload_ids
-        ),
-        representative_known_gap_workload_ids=_filter_case_workload_ids(
-            case_definition.representative_known_gap_workload_ids
-        ),
-    )
-
-
 def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     if case_id not in SOURCE_TREE_SCORECARD_EXPECTATIONS:
         raise AssertionError(f"unknown source-tree scorecard case {case_id!r}")
@@ -2944,17 +2911,37 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
                 selection_mode=case_definition.selection_mode
             )
         )
+        selected_workload_id_set = (
+            None
+            if selected_workload_ids is None
+            else {str(workload_id) for workload_id in selected_workload_ids}
+        )
         manifest_expectations[manifest_id] = (
             _public_source_tree_manifest_expectation(
                 manifest_id,
                 selected_workload_ids=selected_workload_ids,
             )
             if manifest_id in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
-            else _single_manifest_scorecard_fallback_expectation(
-                manifest_id,
-                case_definition=case_definition,
-                manifest_known_gap_counts=manifest_known_gap_counts,
-                selected_workload_ids=selected_workload_ids,
+            else SourceTreeManifestExpectation(
+                known_gap_count=manifest_known_gap_counts[manifest_id],
+                representative_measured_workload_ids=(
+                    case_definition.representative_measured_workload_ids
+                    if selected_workload_id_set is None
+                    else tuple(
+                        workload_id
+                        for workload_id in case_definition.representative_measured_workload_ids
+                        if workload_id in selected_workload_id_set
+                    )
+                ),
+                representative_known_gap_workload_ids=(
+                    case_definition.representative_known_gap_workload_ids
+                    if selected_workload_id_set is None
+                    else tuple(
+                        workload_id
+                        for workload_id in case_definition.representative_known_gap_workload_ids
+                        if workload_id in selected_workload_id_set
+                    )
+                ),
             )
         )
     representative_measured_workload_ids = (
