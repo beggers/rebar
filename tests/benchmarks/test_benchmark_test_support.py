@@ -2601,16 +2601,35 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     )
 
 
-def test_source_tree_combined_routing_helpers_live_on_shared_support() -> None:
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        support
+def test_source_tree_combined_routing_helper_is_deleted_from_shared_support() -> None:
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(support)
     )
 
-    assert "_assert_source_tree_combined_routes_owner_names_through_module_alias" in definition_names
-    assert hasattr(support, "_assert_source_tree_combined_routes_owner_names_through_module_alias")
+    assert "_assert_source_tree_combined_routes_owner_names_through_module_alias" not in (
+        definition_names | assignment_names
+    )
+    assert not hasattr(
+        support, "_assert_source_tree_combined_routes_owner_names_through_module_alias"
+    )
 
 
-def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface() -> None:
+def test_source_tree_combined_suite_deletes_proxy_boundary_symbols() -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+
+    assert "_SourceTreeSupportProxy" not in definition_names
+    assert "source_tree_support" not in assignment_names
+    assert not hasattr(module, "_SourceTreeSupportProxy")
+    assert not hasattr(module, "source_tree_support")
+
+
+def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface_locally(
+) -> None:
     module = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
@@ -2671,109 +2690,16 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface() 
     assert private_owner_names.isdisjoint(dir(support))
     assert private_owner_names.issubset(definition_names | assignment_names)
     assert exported_owner_aliases.issubset(definition_names | assignment_names)
-    assert private_owner_names.issubset(dir(module.source_tree_support))
-    assert exported_owner_aliases.issubset(dir(module.source_tree_support))
+    assert private_owner_names.isdisjoint(dir(module.benchmark_test_support))
+    assert exported_owner_aliases.isdisjoint(dir(module.benchmark_test_support))
     assert (
-        module.source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
-        is module.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
-    )
-    assert (
-        module.source_tree_support.assert_source_tree_benchmark_contract
-        is module.assert_source_tree_benchmark_contract
-    )
-
-
-def test_source_tree_support_proxy_prefers_owner_aliases_and_falls_back_to_shared_support(
-    monkeypatch,
-) -> None:
-    module = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    owner_value = object()
-    shared_value = object()
-    shared_only_value = object()
-
-    monkeypatch.setattr(
-        module,
-        "SOURCE_TREE_PROXY_OWNER_ONLY_SENTINEL",
-        owner_value,
-        raising=False,
-    )
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_PROXY_OWNER_ONLY_SENTINEL",
-        shared_value,
-        raising=False,
-    )
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_PROXY_SHARED_ONLY_SENTINEL",
-        shared_only_value,
-        raising=False,
-    )
-
-    assert module.source_tree_support.SOURCE_TREE_PROXY_OWNER_ONLY_SENTINEL is owner_value
-    assert (
-        module.source_tree_support.SOURCE_TREE_PROXY_SHARED_ONLY_SENTINEL
-        is shared_only_value
-    )
-
-
-def test_source_tree_support_proxy_dir_tracks_owner_and_shared_surface_without_duplicates(
-    monkeypatch,
-) -> None:
-    module = importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    owner_only_value = object()
-    shared_only_value = object()
-    overlapping_owner_value = object()
-    overlapping_shared_value = object()
-
-    monkeypatch.setattr(
-        module,
-        "SOURCE_TREE_PROXY_DIR_OWNER_ONLY_SENTINEL",
-        owner_only_value,
-        raising=False,
-    )
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_PROXY_DIR_SHARED_ONLY_SENTINEL",
-        shared_only_value,
-        raising=False,
-    )
-    monkeypatch.setattr(
-        module,
-        "SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL",
-        overlapping_owner_value,
-        raising=False,
-    )
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL",
-        overlapping_shared_value,
-        raising=False,
-    )
-
-    proxy_dir = dir(module.source_tree_support)
-
-    assert (
-        module.source_tree_support.SOURCE_TREE_PROXY_DIR_OWNER_ONLY_SENTINEL
-        is owner_only_value
+        module.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+        is module._SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
     )
     assert (
-        module.source_tree_support.SOURCE_TREE_PROXY_DIR_SHARED_ONLY_SENTINEL
-        is shared_only_value
+        module.assert_source_tree_benchmark_contract
+        is module._assert_source_tree_benchmark_contract
     )
-    assert (
-        module.source_tree_support.SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL
-        is overlapping_owner_value
-    )
-    assert "SOURCE_TREE_PROXY_DIR_OWNER_ONLY_SENTINEL" in proxy_dir
-    assert "SOURCE_TREE_PROXY_DIR_SHARED_ONLY_SENTINEL" in proxy_dir
-    assert "SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL" in proxy_dir
-    assert proxy_dir.count("SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL") == 1
-    assert proxy_dir == sorted(set(proxy_dir))
 
 
 @pytest.mark.parametrize(
@@ -2913,203 +2839,6 @@ MODULE_ALIAS = benchmark_test_support.MODULE_ALIAS
     }
 
 
-def _patch_source_tree_combined_route_helper_dependencies(
-    monkeypatch,
-    *,
-    combined_suite: object,
-    combined_suite_ast: ast.Module,
-    local_assignment_names: set[str],
-) -> None:
-    original_import_module = anchor_support.importlib.import_module
-    monkeypatch.setattr(
-        anchor_support.importlib,
-        "import_module",
-        lambda module_name: (
-            combined_suite
-            if module_name
-            == "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-            else original_import_module(module_name)
-        ),
-    )
-    monkeypatch.setattr(support, "_parsed_module_ast", lambda module: combined_suite_ast)
-    monkeypatch.setattr(
-        support,
-        "top_level_module_definition_and_assignment_names",
-        lambda module: (set(), local_assignment_names),
-    )
-
-
-def test_source_tree_combined_route_helper_allows_owner_local_surface_without_shared_refs(
-    monkeypatch,
-) -> None:
-    owner_surface = object()
-    owner_contract_surface = object()
-    owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-        SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
-        assert_source_tree_benchmark_contract=owner_contract_surface,
-    )
-    combined_suite = SimpleNamespace(
-        benchmark_test_support=support,
-        source_tree_support=owner_module,
-    )
-    combined_suite_ast = ast.parse(
-        "\n".join(
-            (
-                "from tests.benchmarks import benchmark_test_support",
-                "",
-                "class _SourceTreeSupportProxy:",
-                "    def __getattr__(self, name):",
-                "        return getattr(benchmark_test_support, name)",
-                "",
-                "source_tree_support = _SourceTreeSupportProxy()",
-                "",
-                "benchmark_test_support.manifest_workloads",
-            )
-        )
-    )
-
-    _patch_source_tree_combined_route_helper_dependencies(
-        monkeypatch,
-        combined_suite=combined_suite,
-        combined_suite_ast=combined_suite_ast,
-        local_assignment_names=set(),
-    )
-
-    assert (
-        anchor_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-            alias_name="source_tree_support",
-            owner_module=owner_module,
-            owner_names=(
-                "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                "assert_source_tree_benchmark_contract",
-            ),
-        )
-        is combined_suite
-    )
-
-
-def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface_refs(
-    monkeypatch,
-) -> None:
-    owner_surface = object()
-    owner_contract_surface = object()
-    owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-        SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
-        assert_source_tree_benchmark_contract=owner_contract_surface,
-    )
-    combined_suite = SimpleNamespace(
-        source_tree_support=owner_module,
-        source_tree_support_alias=owner_module,
-    )
-    combined_suite_ast = ast.parse(
-        "\n".join(
-            (
-                "from tests.benchmarks import benchmark_test_support as source_tree_support",
-                "",
-                "source_tree_support_alias = source_tree_support",
-                "source_tree_combined_manifest_expectations_alias = source_tree_support_alias.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                "source_tree_benchmark_contract_alias = source_tree_support_alias.assert_source_tree_benchmark_contract",
-            )
-        )
-    )
-
-    _patch_source_tree_combined_route_helper_dependencies(
-        monkeypatch,
-        combined_suite=combined_suite,
-        combined_suite_ast=combined_suite_ast,
-        local_assignment_names={
-            "source_tree_support_alias",
-            "source_tree_combined_manifest_expectations_alias",
-            "source_tree_benchmark_contract_alias",
-        },
-    )
-
-    with pytest.raises(AssertionError):
-        anchor_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-            alias_name="source_tree_support",
-            owner_module=owner_module,
-            owner_names=(
-                "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                "assert_source_tree_benchmark_contract",
-            ),
-        )
-
-
-@pytest.mark.parametrize(
-    ("module_source", "local_assignment_names"),
-    (
-        pytest.param(
-            "\n".join(
-                (
-                    "from tests.benchmarks.test_source_tree_combined_boundary_benchmarks import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                )
-            ),
-            set(),
-            id="direct-owner-import",
-        ),
-        pytest.param(
-            "\n".join(
-                (
-                    "from tests.benchmarks import benchmark_test_support",
-                    "source_tree_support = benchmark_test_support",
-                    "",
-                    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                )
-            ),
-            {"SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS"},
-            id="local-owner-rebinding",
-        ),
-        pytest.param(
-            "\n".join(
-                (
-                    "from tests.benchmarks import benchmark_test_support",
-                    "source_tree_support = benchmark_test_support",
-                    "",
-                    "benchmark_test_support.assert_source_tree_benchmark_contract",
-                )
-            ),
-            set(),
-            id="benchmark-test-support-report-contract-ref",
-        ),
-    ),
-)
-def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
-    monkeypatch,
-    module_source: str,
-    local_assignment_names: set[str],
-) -> None:
-    owner_surface = object()
-    owner_contract_surface = object()
-    owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-        SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
-        assert_source_tree_benchmark_contract=owner_contract_surface,
-    )
-    combined_suite = SimpleNamespace(
-        benchmark_test_support=support,
-        source_tree_support=owner_module,
-    )
-    combined_suite_ast = ast.parse(module_source)
-
-    _patch_source_tree_combined_route_helper_dependencies(
-        monkeypatch,
-        combined_suite=combined_suite,
-        combined_suite_ast=combined_suite_ast,
-        local_assignment_names=local_assignment_names,
-    )
-
-    with pytest.raises(AssertionError):
-        anchor_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-            alias_name="source_tree_support",
-            owner_module=owner_module,
-            owner_names=(
-                "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                "assert_source_tree_benchmark_contract",
-            ),
-        )
-
 
 def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates(
 ) -> None:
@@ -3192,7 +2921,10 @@ def test_pattern_boundary_contract_helpers_reuse_shared_pattern_case_builder() -
     )
 
     assert hasattr(support, "_module_pattern_case")
-    assert combined_module.source_tree_support._module_pattern_case is support._module_pattern_case
+    assert (
+        combined_module.benchmark_test_support._module_pattern_case
+        is support._module_pattern_case
+    )
 
 
 def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imports(
@@ -3283,7 +3015,7 @@ def test_rehomed_collection_replacement_tests_stay_owned_by_combined_boundary_su
     assert combined_rehomed_names.issubset(combined_suite_names)
 
 
-def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_source_tree_support(
+def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_combined_suite(
 ) -> None:
     owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
         anchor_support
@@ -3368,7 +3100,6 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
-    module_ast = support._parsed_module_ast(combined_suite)
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(combined_suite)
     )
@@ -3396,22 +3127,10 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert getattr(combined_suite, "source_tree_support") is not anchor_support
-    assert not hasattr(combined_suite.source_tree_support, "collection_replacement_support")
-    source_tree_owner_refs = {
-        node.attr
-        for node in ast.walk(module_ast)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id == "source_tree_support"
-        and node.attr in moved_workload_id_names
-    }
-    assert moved_workload_id_names.isdisjoint(local_names)
-    assert source_tree_owner_refs == moved_workload_id_names
+    assert moved_workload_id_names.issubset(local_names)
+    assert moved_workload_id_names.isdisjoint(dir(combined_suite.benchmark_test_support))
     for name in moved_workload_id_names:
-        assert getattr(combined_suite.source_tree_support, name) is getattr(
-            anchor_support, name
-        )
+        assert getattr(combined_suite, name) is getattr(collection_replacement_support, name)
         assert hasattr(collection_replacement_support, name)
 
 
@@ -3890,9 +3609,8 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert module.source_tree_support is not anchor_support
     assert owner_names.isdisjoint(definition_names | assignment_names)
-    assert owner_names.issubset(dir(module.source_tree_support))
+    assert owner_names.issubset(dir(module.benchmark_test_support))
 
 
 @pytest.mark.parametrize(
@@ -3917,7 +3635,7 @@ def test_source_tree_contract_helper_suites_import_from_support(
         module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == expected_alias_pairs
-    assert expected_imported_names.issubset(dir(module.source_tree_support))
+    assert expected_imported_names.issubset(dir(module.benchmark_test_support))
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         module
     )

@@ -52,3 +52,13 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'source_tree_support_proxy or source_tree_combined_routes_owner_names_through_module_alias or source_tree_combined_suite_owns_rehomed_manifest_expectation_surface'` passed with `3 passed, 486 deselected in 0.25s`.
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
   - `bash -lc "rg -n 'class _SourceTreeSupportProxy|^source_tree_support = _SourceTreeSupportProxy\\(|_assert_source_tree_combined_routes_owner_names_through_module_alias|source_tree_support_proxy' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py"` currently finds the exact proxy/routing layer this task deletes.
+
+## Completion
+- Completed 2026-03-26.
+- Deleted `_SourceTreeSupportProxy`, removed the suite-local `source_tree_support` route, and rewrote the combined benchmark suite onto direct local names plus the explicit `benchmark_test_support` module alias.
+- Deleted `_assert_source_tree_combined_routes_owner_names_through_module_alias(...)` from shared benchmark support and replaced the proxy-specific support tests with direct-boundary assertions.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'source_tree_combined or source_tree_support_proxy'`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n 'class _SourceTreeSupportProxy|^source_tree_support = _SourceTreeSupportProxy\\(|^def _assert_source_tree_combined_routes_owner_names_through_module_alias\\(|test_source_tree_support_proxy_|test_source_tree_combined_routing_helpers_live_on_shared_support|test_source_tree_combined_route_helper_' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py"`
+  - `bash -lc "! rg -n '\\bsource_tree_support\\.' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
