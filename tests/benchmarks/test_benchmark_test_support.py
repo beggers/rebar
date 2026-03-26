@@ -3548,7 +3548,7 @@ def test_compiled_pattern_contract_builder_owner_methods_return_live_specs(
     assert built_spec.timing_scope == "module-helper-call"
 
 
-def test_build_source_tree_contract_builder_spec_resolves_owner_surface_at_call_time(
+def test_compiled_pattern_owner_builder_methods_resolve_owner_surface_at_call_time(
     monkeypatch,
 ) -> None:
     benchmark_package = importlib.import_module("tests.benchmarks")
@@ -3562,22 +3562,32 @@ def test_build_source_tree_contract_builder_spec_resolves_owner_surface_at_call_
         SimpleNamespace(_SourceTreeContractBuilderSpec=_build_fake_spec),
     )
 
-    built_spec = support._build_source_tree_contract_builder_spec(
-        manifest_id="synthetic-boundary",
-        excluded_fields=frozenset({"expected_exception"}),
-        manifest_timed_samples=3,
-        timing_scope="module-helper-call",
-        notes=("synthetic note",),
+    owner_spec = support.CompiledPatternModuleSuccessOwnerSpec(
+        case_id="synthetic-boundary",
+        manifest_path=support.MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload_selectors=(),
+        contract_manifest_id="synthetic-boundary",
+        contract_filename="synthetic_contract.py",
+        note_surface="synthetic surface",
+        expected_source_workload_ids=(),
+        preserved_payload_fields=(),
+        preserve_replacement_payload_typing=False,
     )
+    built_spec = owner_spec.contract_builder_spec()
 
     assert built_spec == (
         "fake-source-tree-contract-spec",
         {
             "manifest_id": "synthetic-boundary",
-            "excluded_fields": frozenset({"expected_exception"}),
-            "manifest_timed_samples": 3,
+            "excluded_fields": (
+                support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+            ),
             "timing_scope": "module-helper-call",
-            "notes": ("synthetic note",),
+            "notes": (
+                "Ensures benchmark manifests keep the bounded "
+                "compiled-pattern-first-argument successful "
+                "synthetic surface rows unresolved until helper invocation.",
+            ),
         },
     )
 
