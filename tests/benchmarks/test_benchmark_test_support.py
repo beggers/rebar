@@ -3001,6 +3001,11 @@ def test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_te
         module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
     ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
+    assert {
+        "_SourceTreeContractBuilderSpec",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+    }.isdisjoint(support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES)
     assert support.BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES.isdisjoint(
         definition_names | assignment_names
     )
