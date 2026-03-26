@@ -1,6 +1,6 @@
 ## RBR-1338: Move source-tree contract-spec builders onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -51,3 +51,11 @@ Created: 2026-03-26
 - Verification status in this planning run:
   - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled-pattern-module-compile or compiled-pattern-wrong-text-model or compiled-pattern-module-helper-keyword or compiled-pattern-module-success' -q` passed with `4 passed, 79 deselected in 0.45s`
   - `bash -lc "test \"$(rg -n 'source_tree_benchmark_anchor_support as source_tree_support' tests/benchmarks/benchmark_test_support.py | wc -l)\" -eq 1"` currently fails because `tests/benchmarks/benchmark_test_support.py` still contains four nested owner imports in addition to the single module-level import, and that failure belongs exactly to this cleanup
+- Completed in this run:
+  - Moved the four remaining source-tree-only contract builder constructors onto `tests/benchmarks/source_tree_benchmark_anchor_support.py` as owner-local helper definitions, removed the generic module's inline `_SourceTreeContractBuilderSpec` construction, and routed the three surviving class methods through the existing `source_tree_support` module alias.
+  - Tightened ownership assertions so the owner module locally defines the moved constructor helpers and `tests/benchmarks/benchmark_test_support.py` no longer defines the wrong-text-model contract builder or nests per-method owner imports.
+- Verification in this run:
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled-pattern-module-compile or compiled-pattern-wrong-text-model or compiled-pattern-module-helper-keyword or compiled-pattern-module-success' -q` passed with `4 passed, 79 deselected in 0.59s`
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_builder_methods_route_through_owner_module_alias or benchmark_test_support_drops_local_wrong_text_model_contract_builder or benchmark_test_support_owns_compiled_pattern_helper_surface or benchmark_test_support_owns_compiled_pattern_module_success_surface' -q` passed with `4 passed, 129 deselected in 0.43s`
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation' -q` passed with `2 passed, 62 deselected in 0.24s`
+  - `bash -lc "test \"$(rg -n 'source_tree_benchmark_anchor_support as source_tree_support' tests/benchmarks/benchmark_test_support.py | wc -l)\" -eq 1"` passed

@@ -198,6 +198,37 @@ def _inline_standard_definition_assignments(
     )
 
 
+def _assert_method_routes_through_source_tree_support(
+    class_name: str,
+    method_name: str,
+    *,
+    expected_helper_name: str,
+) -> None:
+    method_definition = _class_method_definition(
+        _module_class_definition(support, class_name),
+        method_name,
+    )
+
+    assert not any(
+        isinstance(node, ast.ImportFrom) for node in ast.walk(method_definition)
+    )
+    return_statement = next(
+        node for node in method_definition.body if isinstance(node, ast.Return)
+    )
+    assert isinstance(return_statement.value, ast.Call)
+    assert isinstance(return_statement.value.func, ast.Attribute)
+    assert isinstance(return_statement.value.func.value, ast.Name)
+    assert return_statement.value.func.value.id == "source_tree_support"
+    assert return_statement.value.func.attr == expected_helper_name
+    assert not any(
+        isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "source_tree_support"
+        and node.attr == "_SourceTreeContractBuilderSpec"
+        for node in ast.walk(method_definition)
+    )
+
+
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -2267,7 +2298,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_run_cpython_compiled_pattern_module_helper_workload",
         "_compiled_pattern_wrong_text_model_specs",
         "_compiled_pattern_wrong_text_model_source_workloads",
-        "_compiled_pattern_wrong_text_model_contract_spec",
         "_assert_wrong_text_model_payload_round_trip",
         "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
         "_module_workflow_compiled_pattern_correctness_case_signature",
@@ -2793,6 +2823,36 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
         == "expected_callback_call"
     )
+
+
+def test_compiled_pattern_contract_builder_methods_route_through_owner_module_alias(
+) -> None:
+    _assert_method_routes_through_source_tree_support(
+        "CompiledPatternModuleCompileContractCase",
+        "contract_builder_spec",
+        expected_helper_name="compiled_pattern_module_compile_contract_builder_spec",
+    )
+    _assert_method_routes_through_source_tree_support(
+        "CompiledPatternModuleSuccessOwnerSpec",
+        "contract_builder_spec",
+        expected_helper_name="compiled_pattern_module_success_contract_builder_spec",
+    )
+    _assert_method_routes_through_source_tree_support(
+        "_CompiledPatternModuleHelperKeywordContractSpec",
+        "contract_builder_spec",
+        expected_helper_name=(
+            "compiled_pattern_module_helper_keyword_contract_builder_spec"
+        ),
+    )
+
+
+def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() -> None:
+    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert "_compiled_pattern_wrong_text_model_contract_spec" not in definition_names
+    assert not hasattr(support, "_compiled_pattern_wrong_text_model_contract_spec")
 
 
 def test_deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced(

@@ -128,6 +128,13 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
     "_assert_compiled_pattern_module_success_payload_round_trip",
 )
 
+SOURCE_TREE_LOCAL_CONTRACT_BUILDER_FUNCTION_NAMES = (
+    "compiled_pattern_module_compile_contract_builder_spec",
+    "_compiled_pattern_wrong_text_model_contract_spec",
+    "compiled_pattern_module_success_contract_builder_spec",
+    "compiled_pattern_module_helper_keyword_contract_builder_spec",
+)
+
 SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES = (
     "OPTIONAL_GROUP_MANIFEST_PATH",
     "NESTED_GROUP_MANIFEST_PATH",
@@ -250,6 +257,74 @@ def _source_tree_contract_manifest(
             for workload in source_workloads
         ],
     }
+
+
+def compiled_pattern_module_compile_contract_builder_spec(
+    contract_case: Any,
+) -> _SourceTreeContractBuilderSpec:
+    return _SourceTreeContractBuilderSpec(
+        manifest_id="module-boundary",
+        excluded_fields=contract_case.manifest_excluded_fields(),
+        manifest_timed_samples=2,
+        timing_scope="module-helper-call",
+        notes=(contract_case.note(),),
+    )
+
+
+def _compiled_pattern_wrong_text_model_contract_spec(
+    spec: dict[str, object],
+) -> _SourceTreeContractBuilderSpec:
+    notes: tuple[str, ...]
+    if spec["contract_manifest_id"] == "collection-replacement-boundary":
+        notes = (
+            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument wrong-text-model collection/replacement rows unresolved until helper invocation.",
+        )
+    else:
+        notes = (
+            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument wrong-text-model module-boundary rows unresolved until helper invocation.",
+        )
+    return _SourceTreeContractBuilderSpec(
+        manifest_id=str(spec["contract_manifest_id"]),
+        excluded_fields=(
+            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+        ),
+        timing_scope="module-helper-call",
+        notes=notes,
+    )
+
+
+def compiled_pattern_module_success_contract_builder_spec(
+    owner_spec: Any,
+) -> _SourceTreeContractBuilderSpec:
+    return _SourceTreeContractBuilderSpec(
+        manifest_id=owner_spec.contract_manifest_id,
+        excluded_fields=(
+            benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+        ),
+        timing_scope="module-helper-call",
+        notes=(
+            "Ensures benchmark manifests keep the bounded "
+            "compiled-pattern-first-argument successful "
+            f"{owner_spec.note_surface} rows unresolved until helper invocation.",
+        ),
+    )
+
+
+def compiled_pattern_module_helper_keyword_contract_builder_spec(
+    spec: Any,
+) -> _SourceTreeContractBuilderSpec:
+    excluded_fields = (
+        benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+    )
+    if not spec.preserve_expected_exception:
+        excluded_fields = excluded_fields | {"expected_exception"}
+    return _SourceTreeContractBuilderSpec(
+        manifest_id="collection-replacement-boundary",
+        excluded_fields=excluded_fields,
+        manifest_timed_samples=spec.manifest_timed_samples,
+        timing_scope="module-helper-call",
+        notes=spec.notes,
+    )
 
 
 _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
@@ -5548,9 +5623,6 @@ _compiled_pattern_wrong_text_model_specs = (
 )
 _compiled_pattern_wrong_text_model_source_workloads = (
     benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads
-)
-_compiled_pattern_wrong_text_model_contract_spec = (
-    benchmark_test_support._compiled_pattern_wrong_text_model_contract_spec
 )
 compiled_pattern_contract_expected_build_calls = (
     benchmark_test_support.compiled_pattern_contract_expected_build_calls

@@ -1130,6 +1130,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
+    for function_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_FUNCTION_NAMES:
+        assert hasattr(support, function_name)
+        assert function_name in local_function_names
     for constant_name in support.SOURCE_TREE_MOVED_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
