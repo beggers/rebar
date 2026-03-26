@@ -4157,6 +4157,72 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
     )
 
 
+@pytest.mark.parametrize(
+    (
+        "definition_index",
+        "expected_name",
+        "expected_include_workload",
+        "expected_correctness_case_signature",
+        "expected_workload_signature",
+    ),
+    (
+        pytest.param(
+            0,
+            "module-workflow-compiled-pattern-literal-success",
+            support._is_module_workflow_compiled_pattern_literal_success_workload,
+            support._module_workflow_compiled_pattern_success_correctness_case_signature,
+            support._module_workflow_compiled_pattern_success_workload_signature,
+            id="literal-success",
+        ),
+        pytest.param(
+            1,
+            "module-workflow-compiled-pattern-bounded-wildcard-success",
+            support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            support._module_workflow_compiled_pattern_success_correctness_case_signature,
+            support._module_workflow_compiled_pattern_success_workload_signature,
+            id="bounded-wildcard-success",
+        ),
+        pytest.param(
+            2,
+            "module-workflow-compiled-pattern-verbose-bytes-success",
+            support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+            support._module_workflow_compiled_pattern_success_correctness_case_signature,
+            support._module_workflow_compiled_pattern_success_workload_signature,
+            id="verbose-bytes-success",
+        ),
+    ),
+)
+def test_compiled_pattern_module_helper_standard_definitions_stay_bound_to_local_module_boundary_contracts(
+    definition_index: int,
+    expected_name: str,
+    expected_include_workload: object,
+    expected_correctness_case_signature: object,
+    expected_workload_signature: object,
+) -> None:
+    definition = support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS[
+        definition_index
+    ]
+    selected_workloads = benchmark_test_support.selected_manifest_workloads(
+        benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload=definition.includes_workload,
+    )
+
+    assert definition.name == expected_name
+    assert definition.manifest_paths == (
+        benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+    )
+    assert definition.include_workload is expected_include_workload
+    assert (
+        definition.correctness_case_signature
+        is expected_correctness_case_signature
+    )
+    assert definition.workload_signature is expected_workload_signature
+    assert definition.run_callback_result_parity is True
+    assert tuple(workload.workload_id for workload in selected_workloads) == tuple(
+        workload_id for _, workload_id in definition.expected_anchor_case_ids
+    )
+
+
 def test_source_tree_wrong_text_model_standard_definition_stays_bound_to_local_module_boundary_contract(
 ) -> None:
     definition = support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS[0]
