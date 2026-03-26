@@ -2378,7 +2378,7 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
     assert "source_tree_support" in local_assignment_names
 
 
-def test_combined_suite_imports_and_reads_collection_owner_surface_through_package_alias(
+def test_combined_suite_reads_collection_owner_surface_through_source_tree_alias(
 ) -> None:
     combined_suite_ast = benchmark_test_support._parsed_module_ast(
         support._source_tree_combined_suite()
@@ -2391,30 +2391,23 @@ def test_combined_suite_imports_and_reads_collection_owner_surface_through_packa
         if alias.name == "source_tree_benchmark_anchor_support"
         and alias.asname == "collection_replacement_support"
     ]
-    direct_collection_attribute_reads = {
+    source_tree_collection_attribute_reads = {
         node.attr
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id == "collection_replacement_support"
+        and node.value.id == "source_tree_support"
     }
 
     assert package_collection_alias_imports == []
-    assert direct_collection_attribute_reads
+    assert source_tree_collection_attribute_reads
     assert (
         "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
-        in direct_collection_attribute_reads
+        in source_tree_collection_attribute_reads
     )
-
-
-def test_moved_collection_replacement_workload_ids_in_combined_suite_use_direct_owner_import(
-) -> None:
-    support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="collection_replacement_support",
-        owner_module=support,
-        owner_names=_collection_routed_owner_assignment_names(),
+    assert "collection_replacement_support" not in dir(
+        support._source_tree_combined_suite()
     )
-
 
 def test_source_tree_support_defines_combined_route_helpers_locally() -> None:
     module_ast = benchmark_test_support._parsed_module_ast(support)
@@ -2540,45 +2533,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             frozenset(),
             id="source-tree-report-contract-helper",
         ),
-        pytest.param(
-            "collection_replacement_support",
-            collection_support,
-            (
-                "_CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION",
-                "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTED_SLICE_IDS",
-                "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS",
-                "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_ACTUAL_SLICE_IDS",
-                "_CONDITIONAL_GROUP_EXISTS_ALTERNATION_CALLABLE_REPLACEMENT_EXPECTATION",
-                "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_REPLACEMENT_EXPECTATION",
-                "_CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
-                "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_REPLACEMENT_EXPECTATION",
-                "_CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_REPLACEMENT_EXPECTATION",
-            ),
-            frozenset(),
-            id="conditional-callable-helpers",
-        ),
-        pytest.param(
-            "collection_replacement_support",
-            collection_support,
-            (
-                "_text_model_agnostic_callable_match_group_signature",
-                "_conditional_group_exists_nested_callable_correctness_case_signature",
-                "_conditional_group_exists_nested_callable_workload_signature",
-                "_conditional_group_exists_quantified_callable_correctness_case_signature",
-                "_conditional_group_exists_quantified_callable_workload_signature",
-            ),
-            frozenset(),
-            id="conditional-callable-signature-helpers",
-        ),
-        pytest.param(
-            "collection_replacement_support",
-            collection_support,
-            (
-                "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
-            ),
-            frozenset(),
-            id="collection-owner-combined-slice-owner-names",
-        ),
     ],
 )
 def test_combined_suite_routes_moved_support_surfaces_through_benchmark_test_support(
@@ -2662,7 +2616,6 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         import_name="benchmark_test_support",
         dotted_import_name="tests.benchmarks.benchmark_test_support",
     )
-    collection_support_alias_names = frozenset({"collection_replacement_support"})
     source_tree_support_alias_names = frozenset(
         {
             *benchmark_test_support._module_alias_names(
@@ -2676,7 +2629,6 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
     )
 
     assert benchmark_support_alias_names
-    assert collection_support_alias_names
     assert benchmark_test_support._top_level_import_from_alias_pairs(
         module_ast,
         module_name="tests.benchmarks.benchmark_test_support",
@@ -2699,7 +2651,7 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         (target_name, attribute_name)
         for target_name, attribute_name in benchmark_test_support._module_attribute_alias_targets(
             module_ast,
-            module_alias_names=collection_support_alias_names,
+            module_alias_names=source_tree_support_alias_names,
         ).items()
         if attribute_name in owner_names
     ) == frozenset()
@@ -2716,7 +2668,7 @@ def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_t
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id in collection_support_alias_names
+        and node.value.id in source_tree_support_alias_names
         and node.attr in owner_names
     ) == owner_names
     assert frozenset(
@@ -3667,7 +3619,6 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         for target in node.targets
         if isinstance(target, ast.Name)
     )
-    collection_replacement_alias_names = frozenset({"collection_replacement_support"})
     source_tree_alias_names = source_tree_alias_names | source_tree_local_alias_names
     package_imports = {
         (alias.name, alias.asname)
@@ -3723,7 +3674,7 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id in collection_replacement_alias_names
+        and node.value.id in source_tree_alias_names
         and node.attr in expected_collection_replacement_names
     ) == expected_collection_replacement_names
 

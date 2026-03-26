@@ -3462,10 +3462,6 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         ),
     )
     assert getattr(combined_suite, "source_tree_support") is anchor_support
-    assert (
-        getattr(combined_suite, "collection_replacement_support")
-        is collection_replacement_support
-    )
     assert not hasattr(combined_suite.source_tree_support, "collection_replacement_support")
     source_tree_owner_refs = {
         node.attr
@@ -3475,18 +3471,8 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         and node.value.id == "source_tree_support"
         and node.attr in moved_workload_id_names
     }
-    collection_owner_refs = {
-        node.attr
-        for node in ast.walk(module_ast)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id == "collection_replacement_support"
-        and node.attr in moved_workload_id_names
-    }
-
     assert moved_workload_id_names.isdisjoint(local_names)
-    assert source_tree_owner_refs == set()
-    assert collection_owner_refs == moved_workload_id_names
+    assert source_tree_owner_refs == moved_workload_id_names
     for name in moved_workload_id_names:
         assert hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
