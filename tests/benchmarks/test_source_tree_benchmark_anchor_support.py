@@ -1173,11 +1173,15 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
     for constant_name in (
-        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+        "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
     ):
-        assert hasattr(support, constant_name)
-        assert constant_name in local_assignment_names
-        assert not hasattr(benchmark_test_support, constant_name)
+        assert constant_name not in local_assignment_names
+        assert not hasattr(support, constant_name)
+        assert hasattr(benchmark_test_support, constant_name)
     for constant_name in (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
     ):
@@ -1269,7 +1273,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ("contract_case",),
     tuple(
         pytest.param(contract_case, id=contract_case.case_id)
-        for contract_case in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for contract_case in (
+            benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        )
     ),
 )
 def test_compiled_pattern_module_compile_contract_builder_surface_builds_expected_spec(
@@ -1331,8 +1337,8 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_owne
     expected_definitions = tuple(
         owner_spec.anchor_definition()
         for owner_spec in (
-            *support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-            *support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+            *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
         )
     )
 
@@ -1811,7 +1817,13 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         and isinstance(node.value, ast.Name)
         and node.value.id == "benchmark_test_support"
         and node.attr
-        in support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES
+        in {
+            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+            "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+            "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+            "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        }
     }
 
     for constant_name in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES:
@@ -1819,7 +1831,13 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
     assert local_constant_alias_names == set()
-    assert direct_compiled_pattern_contract_refs == set()
+    assert direct_compiled_pattern_contract_refs == {
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+        "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+        "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+    }
 
 
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
@@ -1986,7 +2004,15 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
     [
         pytest.param(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES,
-            frozenset(),
+            frozenset(
+                {
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                }
+            ),
             id="compiled-pattern-module-compile",
         ),
         pytest.param(
@@ -2906,7 +2932,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
                 {
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
                 }
@@ -2919,6 +2944,11 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             ),
             frozenset(
                 {
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
@@ -3063,45 +3093,25 @@ def test_source_tree_contract_builder_consumer_guard_detects_direct_imports_and_
     ) == expected_local_aliases
 
 
-def test_source_tree_owner_defines_compiled_pattern_module_compile_surface_locally(
+def test_source_tree_owner_retires_compiled_pattern_module_compile_surface_to_shared_support(
 ) -> None:
-    owner_assignment_names = {
+    shared_assignment_names = {
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
         "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
     }
-    module_ast = benchmark_test_support._parsed_module_ast(support)
     local_definition_names, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
             support
         )
     )
 
-    assert owner_assignment_names.issubset(local_assignment_names)
-    assert owner_assignment_names.isdisjoint(local_definition_names)
-
-    for assignment_name in owner_assignment_names:
-        assignment = benchmark_test_support._module_assignment(
-            support,
-            assignment_name,
-        )
-        assert not (
-            isinstance(assignment.value, ast.Attribute)
-            and isinstance(assignment.value.value, ast.Name)
-            and assignment.value.value.id == "benchmark_test_support"
-            and assignment.value.attr == assignment_name
-        )
-
-    assert {
-        node.attr
-        for node in ast.walk(module_ast)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id == "benchmark_test_support"
-        and node.attr in owner_assignment_names
-    } == set()
+    assert shared_assignment_names.isdisjoint(local_definition_names | local_assignment_names)
+    for assignment_name in shared_assignment_names:
+        assert not hasattr(support, assignment_name)
+        assert hasattr(benchmark_test_support, assignment_name)
 
 
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(

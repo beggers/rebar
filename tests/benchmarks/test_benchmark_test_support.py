@@ -3165,7 +3165,7 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_suc
     ) is None
 
 
-def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_compile_owner_surface(
+def test_benchmark_test_support_defines_compiled_pattern_module_compile_owner_surface(
 ) -> None:
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
@@ -3179,7 +3179,7 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_com
         r"_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES)\b",
         source,
         re.MULTILINE,
-    ) is None
+    ) is not None
 
 
 def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
@@ -3226,7 +3226,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
     ("owner",),
     tuple(
         pytest.param(owner, id=f"module-compile-{owner.case_id}")
-        for owner in anchor_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for owner in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
     )
     + tuple(
         pytest.param(owner, id=f"module-success-{owner.case_id}")
@@ -3390,7 +3390,7 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
     )
     _assert_owner_module_routes_through_package_import(
         module,
-        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
+        owner_module="tests.benchmarks.benchmark_test_support",
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset(
             {
