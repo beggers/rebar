@@ -4,6 +4,7 @@ import ast
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from functools import cache
+from functools import partial
 import importlib
 import pathlib
 import re
@@ -717,6 +718,39 @@ _COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = tuple(
     )
     for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
     for source_workload in owner_spec.source_workloads()
+)
+
+_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS = (
+    benchmark_test_support._compiled_pattern_module_compile_success_owner_specs()
+)
+
+_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
+    benchmark_test_support._compiled_pattern_module_compile_keyword_owner_specs()
+)
+
+_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
+    benchmark_test_support.build_compiled_pattern_module_compile_contract_cases(
+        manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        expected_build_calls_builder=partial(
+            benchmark_test_support.compiled_pattern_contract_expected_build_calls,
+            label="module.compile contract",
+        ),
+        success_owner_specs=_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+        keyword_owner_specs=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+    )
+)
+
+_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
+    benchmark_test_support.build_compiled_pattern_module_compile_contract_source_workload_params(
+        _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    )
+)
+
+_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
+    benchmark_test_support.build_compiled_pattern_module_contract_anchor_lanes(
+        contract_cases=_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+        published_case_ids_by_signature=benchmark_test_support.published_case_ids_by_signature,
+    )
 )
 
 

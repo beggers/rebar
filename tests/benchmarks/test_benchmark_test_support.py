@@ -3295,7 +3295,6 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     )
     shared_owner_names = frozenset(
         {
-            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
             "_expected_exception_instance",
             "_is_pattern_boundary_wrong_text_model_workload",
             "_write_test_manifest",
@@ -3304,6 +3303,11 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
             "assert_pattern_helper_wrong_text_model_payload_round_trip",
             "run_benchmark_workload_with_cpython",
             "selected_manifest_workloads",
+        }
+    )
+    source_tree_owner_names = frozenset(
+        {
+            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
         }
     )
     collection_owner_names = frozenset(
@@ -3325,7 +3329,20 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
         module,
         owner_module="tests.benchmarks.benchmark_test_support",
         package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
+        expected_alias_pairs=frozenset(
+            {
+                ("benchmark_test_support", None),
+                ("source_tree_benchmark_anchor_support", "source_tree_support"),
+            }
+        ),
+    )
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {("source_tree_benchmark_anchor_support", "source_tree_support")}
+        ),
     )
     _assert_owner_module_routes_through_package_import(
         module,
@@ -3355,6 +3372,10 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_benchmark_manifest_validation",
         shared_owner_names,
+    )
+    _assert_benchmark_test_support_aliases_absent(
+        "tests.benchmarks.test_benchmark_manifest_validation",
+        source_tree_owner_names,
     )
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_benchmark_manifest_validation",
@@ -3588,7 +3609,7 @@ def test_source_tree_support_owns_compiled_pattern_module_success_owner_specs() 
         re.MULTILINE,
     ) is not None
 
-def test_benchmark_test_support_defines_compiled_pattern_module_compile_owner_surface(
+def test_benchmark_test_support_no_longer_defines_compiled_pattern_module_compile_owner_surface(
 ) -> None:
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
@@ -3602,7 +3623,7 @@ def test_benchmark_test_support_defines_compiled_pattern_module_compile_owner_su
         r"_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES)\b",
         source,
         re.MULTILINE,
-    ) is not None
+    ) is None
 
 
 def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
@@ -3654,7 +3675,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
     ("owner",),
     tuple(
         pytest.param(owner, id=f"module-compile-{owner.case_id}")
-        for owner in support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for owner in anchor_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
     )
     + tuple(
         pytest.param(owner, id=f"module-success-{owner.case_id}")
@@ -3970,11 +3991,25 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
             }
         ),
     )
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {
+                (
+                    "source_tree_benchmark_anchor_support",
+                    "source_tree_owner_support",
+                ),
+            }
+        ),
+    )
     assert {
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
         "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
     }.isdisjoint(definition_names | assignment_names)
 
 

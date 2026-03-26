@@ -826,7 +826,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
     ("case_group", "source_workload"),
     tuple(
         pytest.param(case_group, source_workload, id=source_workload.workload_id)
-        for case_group in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case_group in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         for source_workload in case_group.source_workloads()
         if source_workload.expected_exception
     ),
@@ -858,7 +858,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
 
 @pytest.mark.parametrize(
     "contract_case",
-    benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
+    source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
     ids=lambda contract_case: contract_case.case_id,
 )
 def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preserve_success_and_keyword_payload_round_trip_until_helper_invocation(
@@ -928,7 +928,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
 ) -> None:
     contract_case = next(
         case
-        for case in benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == "bool-false"
     )
     source_workload = contract_case.source_workloads()[0]

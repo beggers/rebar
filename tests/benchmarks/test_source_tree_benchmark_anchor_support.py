@@ -1220,9 +1220,14 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
     ):
-        assert constant_name not in local_assignment_names
-        assert not hasattr(support, constant_name)
-        assert hasattr(benchmark_test_support, constant_name)
+        if constant_name == "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS":
+            assert constant_name not in local_assignment_names
+            assert not hasattr(support, constant_name)
+            assert hasattr(benchmark_test_support, constant_name)
+            continue
+        assert constant_name in local_assignment_names
+        assert hasattr(support, constant_name)
+        assert not hasattr(benchmark_test_support, constant_name)
     for function_name in (
         "relative_manifest_path",
         "source_tree_scorecard_case_ids",
@@ -1232,7 +1237,15 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     benchmark_test_support.assert_mixed_owner_surface(
         support,
         local_function_names=frozenset(),
-        local_assignment_names=frozenset(),
+        local_assignment_names=frozenset(
+            {
+                "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+                "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+                "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+            }
+        ),
         support_alias_assignment_names=frozenset(),
     )
     for removed_name in (
@@ -1310,7 +1323,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     tuple(
         pytest.param(contract_case, id=contract_case.case_id)
         for contract_case in (
-            benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+            support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         )
     ),
 )
@@ -1365,7 +1378,7 @@ def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_sh
         support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
-    assert not hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
+    assert hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
 
 
 def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shared_support_owned(
@@ -1373,8 +1386,8 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shar
     expected_definitions = tuple(
         owner_spec.anchor_definition()
         for owner_spec in (
-            *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-            *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+            *support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
         )
     )
 
@@ -2042,7 +2055,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id == "benchmark_test_support"
+        and node.value.id == "source_tree_owner_support"
         and node.attr
         in {
             "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
@@ -3699,7 +3712,7 @@ def test_source_tree_contract_builder_consumer_guard_detects_direct_imports_and_
 
 def test_source_tree_owner_retires_compiled_pattern_module_compile_surface_to_shared_support(
 ) -> None:
-    shared_assignment_names = {
+    source_tree_assignment_names = {
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
@@ -3712,10 +3725,11 @@ def test_source_tree_owner_retires_compiled_pattern_module_compile_surface_to_sh
         )
     )
 
-    assert shared_assignment_names.isdisjoint(local_definition_names | local_assignment_names)
-    for assignment_name in shared_assignment_names:
-        assert not hasattr(support, assignment_name)
-        assert hasattr(benchmark_test_support, assignment_name)
+    assert source_tree_assignment_names.isdisjoint(local_definition_names)
+    assert source_tree_assignment_names.issubset(local_assignment_names)
+    for assignment_name in source_tree_assignment_names:
+        assert hasattr(support, assignment_name)
+        assert not hasattr(benchmark_test_support, assignment_name)
 
 
 def test_source_tree_owner_no_longer_keeps_contract_builder_spec_local() -> None:
@@ -3989,7 +4003,7 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
         not in assignment_names
     )
-    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" not in assignment_names
+    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" in assignment_names
     assert (
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
         in shared_definition_names
@@ -3998,7 +4012,7 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
         in shared_assignment_names
     )
-    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" in shared_assignment_names
+    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" not in shared_assignment_names
     assert not hasattr(
         support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
@@ -4007,7 +4021,7 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
         support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
-    assert not hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
+    assert hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
     assert hasattr(
         benchmark_test_support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
@@ -4016,7 +4030,7 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
         benchmark_test_support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
-    assert hasattr(
+    assert not hasattr(
         benchmark_test_support,
         "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
     )
