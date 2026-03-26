@@ -4398,14 +4398,14 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
         for workload in benchmark_test_support.selected_manifest_workloads(
             benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
             include_workload=(
-                source_tree_support._is_collection_replacement_compiled_pattern_keyword_error_workload
+                benchmark_test_support._is_collection_replacement_compiled_pattern_keyword_error_workload
             ),
         )
     )
     expected_source_workload_ids = tuple(
         workload.workload_id
         for workload in (
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         )
     )
     manifest_workload_count = len(
@@ -4429,7 +4429,7 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
     tuple(
         pytest.param(workload, id=workload.workload_id)
         for workload in (
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
         )
     ),
 )
@@ -4439,14 +4439,14 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
 ) -> None:
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec(),
+        spec=benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec(),
     )
     benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
         expected_field_names=(
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
                 source_workload
             )
         ),
@@ -4455,7 +4455,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
 
 @pytest.mark.parametrize(
     ("contract_surface", "source_workload"),
-    source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS,
 )
 @pytest.mark.parametrize(
     ("import_name", "adapter_name"),
@@ -4495,7 +4495,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
 
 @pytest.mark.parametrize(
     ("contract_surface", "source_workload"),
-    source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS,
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS,
 )
 def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing(
     contract_surface: object,
@@ -4529,7 +4529,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
     tuple(
         pytest.param(workload, id=workload.workload_id)
         for workload in (
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
         )
     ),
 )
@@ -4540,13 +4540,13 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     contract_surface = next(
         surface
         for surface in (
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
         )
         if surface.case_id == "keyword-error"
     )
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec(),
+        spec=benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec(),
     )
     observed_field_names = benchmark_test_support._record_numeric_materialization_fields(monkeypatch)
 
@@ -4561,7 +4561,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
             callback()
 
         assert observed_field_names == list(
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_materialized_field_names(
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_materialized_field_names(
                 source_workload
             )
         )

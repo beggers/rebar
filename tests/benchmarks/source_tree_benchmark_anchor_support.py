@@ -93,16 +93,7 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES = (
     "_compiled_pattern_wrong_text_model_source_workloads",
 )
 
-SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-    "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-)
+SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = ()
 
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
     {
@@ -143,11 +134,21 @@ SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
     "published_cases_by_id",
     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
     "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
     "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
     "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+    "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
     "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
 )
@@ -167,10 +168,20 @@ SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
         "RecordingBenchmarkModule",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
         "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
         "_is_collection_replacement_keyword_workload",
         "_is_collection_replacement_wrong_text_model_workload",
         "_is_module_workflow_keyword_error_workload",
@@ -5189,175 +5200,7 @@ def _grouped_alternation_replacement_correctness_case_signature(
 _is_collection_replacement_compiled_pattern_success_workload = (
     benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
 )
-def _is_collection_replacement_compiled_pattern_keyword_error_workload(
-    workload: Any,
-) -> bool:
-    return (
-        benchmark_test_support._is_collection_replacement_keyword_workload(workload)
-        and workload.use_compiled_pattern
-        and workload.operation in {"module.split", "module.sub", "module.subn"}
-        and workload.expected_exception is not None
-        and getattr(workload, "haystack_text_model", None) is None
-    )
 
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC = (
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec(
-        contract_filename=(
-            "python_benchmark_compiled_pattern_collection_replacement_keyword_contract.py"
-        ),
-        expected_source_workload_ids=(
-            "module-split-maxsplit-keyword-purged-str-compiled-pattern",
-            "module-split-maxsplit-indexlike-keyword-purged-bytes-compiled-pattern",
-            "module-split-maxsplit-bool-keyword-purged-bytes-compiled-pattern",
-            "module-sub-count-keyword-warm-str-compiled-pattern",
-            "module-sub-count-indexlike-keyword-warm-bytes-compiled-pattern",
-            "module-sub-count-bool-keyword-warm-str-compiled-pattern",
-            "module-sub-count-bool-false-keyword-warm-str-compiled-pattern",
-            "module-subn-count-keyword-purged-bytes-compiled-pattern",
-            "module-subn-count-indexlike-keyword-purged-str-compiled-pattern",
-            "module-subn-count-bool-keyword-purged-bytes-compiled-pattern",
-            "module-subn-count-bool-true-keyword-purged-bytes-compiled-pattern",
-        ),
-        manifest_timed_samples=2,
-        preserve_expected_exception=False,
-        materializes_positional_keyword_field=False,
-        notes=(
-            "Ensures benchmark manifests keep compiled-pattern-first-argument "
-            "collection/replacement keyword carriers unresolved until helper "
-            "invocation.",
-        ),
-        precompile_anchor_ids=(
-            "module-split-maxsplit-keyword-purged-str-compiled-pattern",
-            "module-sub-count-keyword-warm-str-compiled-pattern",
-            "module-subn-count-keyword-purged-bytes-compiled-pattern",
-        ),
-    )
-)
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec(
-        contract_filename=(
-            "python_benchmark_compiled_pattern_collection_replacement_keyword_error_contract.py"
-        ),
-        expected_source_workload_ids=(
-            "module-split-duplicate-maxsplit-keyword-purged-str-compiled-pattern",
-            "module-split-unexpected-keyword-purged-bytes-compiled-pattern",
-            "module-sub-duplicate-count-keyword-warm-str-compiled-pattern",
-            "module-sub-unexpected-keyword-purged-str-compiled-pattern",
-            "module-sub-unexpected-keyword-after-positional-count-purged-str-compiled-pattern",
-            "module-sub-count-alias-keyword-purged-str-compiled-pattern",
-            "module-subn-duplicate-count-keyword-warm-bytes-compiled-pattern",
-            "module-subn-unexpected-keyword-purged-bytes-compiled-pattern",
-            "module-subn-unexpected-keyword-after-positional-count-purged-bytes-compiled-pattern",
-            "module-subn-count-alias-keyword-purged-bytes-compiled-pattern",
-        ),
-        manifest_timed_samples=1,
-        preserve_expected_exception=True,
-        materializes_positional_keyword_field=True,
-    )
-)
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
-    benchmark_test_support.selected_manifest_workloads(
-        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=(
-            benchmark_test_support._is_collection_replacement_compiled_pattern_module_helper_keyword_workload
-        ),
-    )
-)
-if (
-    tuple(
-        workload.workload_id
-        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
-    )
-    != _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_source_workload_ids
-):
-    raise AssertionError(
-        "compiled-pattern module-helper keyword contract source workloads drifted "
-        "from the live source workload surface"
-    )
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS = tuple(
-    workload
-    for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
-    if workload.workload_id
-    in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.precompile_anchor_ids
-)
-if (
-    tuple(
-        workload.workload_id
-        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS
-    )
-    != _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.precompile_anchor_ids
-):
-    raise AssertionError(
-        "compiled-pattern module-helper keyword precompile anchors drifted "
-        "from the live source workload surface"
-    )
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
-    benchmark_test_support.selected_manifest_workloads(
-        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=(
-            _is_collection_replacement_compiled_pattern_keyword_error_workload
-        ),
-    )
-)
-if (
-    tuple(
-        workload.workload_id
-        for workload in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-    )
-    != _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.expected_source_workload_ids
-):
-    raise AssertionError(
-        "compiled-pattern module-helper keyword-error source workloads drifted "
-        "from the live source workload surface"
-    )
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES = (
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSurface(
-        case_id="success",
-        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
-        source_workloads_value=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS,
-        precompile_source_workloads_value=(
-            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS
-        ),
-    ),
-    benchmark_test_support._CompiledPatternModuleHelperKeywordContractSurface(
-        case_id="keyword-error",
-        spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
-        source_workloads_value=(
-            _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS
-        ),
-    ),
-)
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS = tuple(
-    pytest.param(surface, id=surface.case_id)
-    for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
-)
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS = tuple(
-    pytest.param(
-        surface,
-        source_workload,
-        id=f"{surface.case_id}-{source_workload.workload_id}",
-    )
-    for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
-    for source_workload in surface.source_workloads()
-)
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS = tuple(
-    pytest.param(
-        surface,
-        source_workload,
-        id=f"{surface.case_id}-{source_workload.workload_id}",
-    )
-    for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
-    for source_workload in surface.precompile_source_workloads()
-)
 COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
     _build_compiled_pattern_module_compile_standard_benchmark_definitions()
 )

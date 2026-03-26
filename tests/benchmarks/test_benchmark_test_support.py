@@ -3234,11 +3234,11 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
     )
     + (
         pytest.param(
-            anchor_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
             id="module-helper-keyword-success",
         ),
         pytest.param(
-            anchor_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
+            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
             id="module-helper-keyword-error",
         ),
     ),
@@ -3265,7 +3265,8 @@ def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() 
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_contract_spec")
 
 
-def test_benchmark_test_support_drops_source_tree_helper_keyword_contract_surface() -> None:
+def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_contract_surface(
+) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
@@ -3282,10 +3283,16 @@ def test_benchmark_test_support_drops_source_tree_helper_keyword_contract_surfac
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     }
+    function_names = {
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    }
+    assignment_only_names = moved_names - function_names
 
-    assert moved_names.isdisjoint(definition_names | assignment_names)
+    assert function_names <= definition_names
+    assert assignment_only_names <= assignment_names
     for name in moved_names:
-        assert not hasattr(support, name)
+        assert hasattr(support, name)
+        assert not hasattr(anchor_support, name)
 
 
 def test_deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced(

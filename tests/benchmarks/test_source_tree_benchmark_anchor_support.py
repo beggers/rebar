@@ -1200,41 +1200,32 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ):
         assert not hasattr(support, removed_name)
         assert removed_name not in local_assignment_names
-    for constant_name in (
+    assert (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES
-    ):
-        assert hasattr(support, constant_name)
-        if constant_name == "_is_collection_replacement_compiled_pattern_keyword_error_workload":
-            assert constant_name in local_function_names
-            assert not hasattr(benchmark_test_support, constant_name)
-            continue
-        assert constant_name in local_assignment_names
-        assignment = benchmark_test_support._module_assignment(
-            support,
-            constant_name,
-        )
-        assert not (
-            isinstance(assignment.value, ast.Attribute)
-            and isinstance(assignment.value.value, ast.Name)
-            and assignment.value.value.id == "benchmark_test_support"
-            and assignment.value.attr == constant_name
-        )
-    for constant_name in (
+        == ()
+    )
+    moved_names = (
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    )
+    for constant_name in moved_names:
+        assert constant_name in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+        assert not hasattr(support, constant_name)
+        assert constant_name not in local_function_names
+        assert constant_name not in local_assignment_names
+        assert hasattr(benchmark_test_support, constant_name)
+    for constant_name in (
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
     ):
-        assert hasattr(support, constant_name)
-        assert constant_name in local_assignment_names
-        assignment = benchmark_test_support._module_assignment(
-            support,
-            constant_name,
-        )
-        assert not (
-            isinstance(assignment.value, ast.Attribute)
-            and isinstance(assignment.value.value, ast.Name)
-            and assignment.value.value.id == "benchmark_test_support"
-            and assignment.value.attr == constant_name
-        )
+        assert constant_name in moved_names
     assert not hasattr(
         support,
         "_assert_compiled_pattern_module_success_payload_round_trip",
@@ -1463,12 +1454,12 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     ("spec", "expected_excluded_fields"),
     (
         pytest.param(
-            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
             benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
             id="preserve-expected-exception",
         ),
         pytest.param(
-            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
             (
                 benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
                 | frozenset({"expected_exception"})
@@ -2893,9 +2884,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             "tests.benchmarks.test_benchmark_manifest_validation",
             frozenset(
                 {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
                     "_compiled_pattern_wrong_text_model_specs",
                     "_compiled_pattern_wrong_text_model_source_workloads",
                 }
@@ -2908,6 +2896,9 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             ),
             frozenset(
                 {
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
                     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_assert_wrong_text_model_payload_round_trip",
@@ -2920,12 +2911,7 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
         ),
         pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-                }
-            ),
+            frozenset(),
             frozenset(
                 {
                     "_compiled_pattern_module_contract_case",
@@ -2936,6 +2922,14 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                 {
                     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
                     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                    "_is_collection_replacement_compiled_pattern_keyword_error_workload",
                     "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
                     "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
                     "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
