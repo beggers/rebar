@@ -1578,6 +1578,19 @@ def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
     )
 
 
+def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
+    workload: Any,
+) -> bool:
+    return (
+        not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
+        and getattr(workload, "haystack_text_model", None) is not None
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
+
+
 def _module_workflow_keyword_workload_args(
     workload: Any,
 ) -> tuple[Any, ...]:
@@ -3267,6 +3280,11 @@ _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = 
     "module-sub-on-bytes-string-warm-str-compiled-pattern",
     "module-subn-on-str-string-purged-bytes-compiled-pattern",
 )
+_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
+    "module-search-on-bytes-string-warm-str-compiled-pattern",
+    "module-match-on-str-string-purged-bytes-compiled-pattern",
+    "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+)
 _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
     {"module.search", "module.match", "module.fullmatch"}
 )
@@ -3274,6 +3292,46 @@ _VERBOSE_REGRESSION_PATTERN = (
     r"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $"
 )
 _VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
+
+
+def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
+    return (
+        {
+            "case_id": "compiled_pattern_module_helper_wrong_text_model",
+            "manifest_path": "collection_replacement_boundary.py",
+            "include_workload": _is_collection_replacement_wrong_text_model_workload,
+            "contract_manifest_id": "collection-replacement-boundary",
+            "contract_filename": (
+                "python_benchmark_compiled_pattern_collection_replacement_wrong_text_model_contract.py"
+            ),
+            "expected_source_workload_ids": (
+                _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+            ),
+        },
+        {
+            "case_id": "compiled_pattern_module_boundary_wrong_text_model",
+            "manifest_path": "module_boundary.py",
+            "include_workload": (
+                _is_module_workflow_compiled_pattern_wrong_text_model_workload
+            ),
+            "contract_manifest_id": "module-boundary",
+            "contract_filename": (
+                "python_benchmark_compiled_pattern_module_boundary_wrong_text_model_contract.py"
+            ),
+            "expected_source_workload_ids": (
+                _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+            ),
+        },
+    )
+
+
+def _compiled_pattern_wrong_text_model_source_workloads(
+    spec: dict[str, object],
+) -> tuple[Workload, ...]:
+    return selected_manifest_workloads(
+        spec["manifest_path"],
+        include_workload=spec["include_workload"],
+    )
 
 
 def _compiled_pattern_module_helper_route(

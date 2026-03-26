@@ -1178,6 +1178,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
     ):
         assert constant_name not in local_assignment_names
         assert not hasattr(support, constant_name)
@@ -2882,12 +2883,7 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
         ),
         pytest.param(
             "tests.benchmarks.test_benchmark_manifest_validation",
-            frozenset(
-                {
-                    "_compiled_pattern_wrong_text_model_specs",
-                    "_compiled_pattern_wrong_text_model_source_workloads",
-                }
-            ),
+            frozenset(),
             frozenset(
                 {
                     "_compiled_pattern_module_helper_keyword_contract_surface",
@@ -2901,6 +2897,8 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
                     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+                    "_compiled_pattern_wrong_text_model_specs",
+                    "_compiled_pattern_wrong_text_model_source_workloads",
                     "_assert_wrong_text_model_payload_round_trip",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
@@ -3116,6 +3114,10 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
         local_assignment_names=owner_assignment_names,
         support_alias_assignment_names=frozenset(),
+    )
+    assert owner_definition_names == frozenset()
+    assert owner_assignment_names == frozenset(
+        {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}
     )
     assert not hasattr(support, "compiled_pattern_contract_expected_build_calls")
     assert not hasattr(support, "_compiled_pattern_module_helper_route")

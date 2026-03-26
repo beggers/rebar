@@ -958,7 +958,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
     "spec",
     tuple(
         pytest.param(spec, id=str(spec["case_id"]))
-        for spec in source_tree_support._compiled_pattern_wrong_text_model_specs()
+        for spec in benchmark_test_support._compiled_pattern_wrong_text_model_specs()
     ),
 )
 def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation(
@@ -966,7 +966,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
     spec: dict[str, object],
 ) -> None:
     source_workloads = (
-        source_tree_support._compiled_pattern_wrong_text_model_source_workloads(spec)
+        benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     )
     manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,

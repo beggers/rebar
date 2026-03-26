@@ -88,23 +88,18 @@ SOURCE_TREE_MOVED_CONSTANT_NAMES = (
 
 SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES = ()
 
-SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES = (
-    "_compiled_pattern_wrong_text_model_specs",
-    "_compiled_pattern_wrong_text_model_source_workloads",
-)
+SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES = ()
 
 SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = ()
 
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
     {
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     }
 )
 
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES = (
     frozenset(SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES)
-    | frozenset({"_is_module_workflow_compiled_pattern_wrong_text_model_workload"})
 )
 
 SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES = ()
@@ -148,6 +143,10 @@ SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
     "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+    "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+    "_compiled_pattern_wrong_text_model_specs",
+    "_compiled_pattern_wrong_text_model_source_workloads",
+    "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
     "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
     "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
@@ -222,10 +221,14 @@ SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
         "_is_pattern_window_positional_indexlike_workload",
         "_module_workflow_compiled_pattern_correctness_case_signature",
         "_module_workflow_compiled_pattern_workload_signature",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_pattern_bounded_wildcard_correctness_case_signature",
         "_pattern_bounded_wildcard_workload_signature",
         "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
         "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+        "_compiled_pattern_wrong_text_model_specs",
+        "_compiled_pattern_wrong_text_model_source_workloads",
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
         "_pattern_boundary_wrong_text_model_correctness_case_signature",
         "_pattern_boundary_wrong_text_model_workload_signature",
         "_pattern_keyword_window_correctness_case_signature",
@@ -386,62 +389,6 @@ def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> t
             *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
             *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
         )
-    )
-
-def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
-    return (
-        {
-            "case_id": "compiled_pattern_module_helper_wrong_text_model",
-            "manifest_path": "collection_replacement_boundary.py",
-            "include_workload": (
-                benchmark_test_support._is_collection_replacement_wrong_text_model_workload
-            ),
-            "contract_manifest_id": "collection-replacement-boundary",
-            "contract_filename": (
-                "python_benchmark_compiled_pattern_collection_replacement_wrong_text_model_contract.py"
-            ),
-            "expected_source_workload_ids": (
-                benchmark_test_support._COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
-            ),
-        },
-        {
-            "case_id": "compiled_pattern_module_boundary_wrong_text_model",
-            "manifest_path": "module_boundary.py",
-            "include_workload": _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-            "contract_manifest_id": "module-boundary",
-            "contract_filename": (
-                "python_benchmark_compiled_pattern_module_boundary_wrong_text_model_contract.py"
-            ),
-            "expected_source_workload_ids": _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS,
-        },
-    )
-
-
-def _compiled_pattern_wrong_text_model_source_workloads(
-    spec: dict[str, object],
-) -> tuple[Workload, ...]:
-    return benchmark_test_support.selected_manifest_workloads(
-        spec["manifest_path"],
-        include_workload=spec["include_workload"],
-    )
-_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
-    "module-search-on-bytes-string-warm-str-compiled-pattern",
-    "module-match-on-str-string-purged-bytes-compiled-pattern",
-    "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
-)
-
-
-def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
-    workload: object,
-) -> bool:
-    return (
-        not workload.kwargs
-        and workload.use_compiled_pattern
-        and workload.operation
-        in benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
-        and getattr(workload, "haystack_text_model", None) is not None
-        and workload.expected_exception is not None
-        and workload.expected_exception.get("type") == "TypeError"
     )
 def _assert_zero_gap_manifest_state(
     testcase: Any,
@@ -5303,7 +5250,9 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
             },
         ),
-        include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
+        include_workload=(
+            benchmark_test_support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+        ),
         correctness_case_signature=(
             benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
         ),

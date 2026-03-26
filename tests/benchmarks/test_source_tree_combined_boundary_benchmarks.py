@@ -4230,7 +4230,7 @@ def test_compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured(
     "spec",
     tuple(
         pytest.param(spec, id=str(spec["case_id"]))
-        for spec in source_tree_support._compiled_pattern_wrong_text_model_specs()
+        for spec in benchmark_test_support._compiled_pattern_wrong_text_model_specs()
     ),
 )
 @pytest.mark.parametrize(
@@ -4246,7 +4246,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     adapter_name: str,
 ) -> None:
     for source_workload in (
-        source_tree_support._compiled_pattern_wrong_text_model_source_workloads(spec)
+        benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
         workload = benchmark_test_support._source_tree_contract_workload(
             source_workload,
@@ -4277,14 +4277,14 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     "spec",
     tuple(
         pytest.param(spec, id=str(spec["case_id"]))
-        for spec in source_tree_support._compiled_pattern_wrong_text_model_specs()
+        for spec in benchmark_test_support._compiled_pattern_wrong_text_model_specs()
     ),
 )
 def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contract(
     spec: dict[str, object],
 ) -> None:
     for source_workload in (
-        source_tree_support._compiled_pattern_wrong_text_model_source_workloads(spec)
+        benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
         expected_build_calls = benchmark_test_support.compiled_pattern_contract_expected_build_calls(
             source_workload,

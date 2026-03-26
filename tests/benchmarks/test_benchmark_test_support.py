@@ -2579,6 +2579,7 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
         "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
         "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
@@ -2588,7 +2589,8 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert {
         "_compiled_pattern_wrong_text_model_specs",
         "_compiled_pattern_wrong_text_model_source_workloads",
-    }.isdisjoint(definition_names | assignment_names)
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+    }.issubset(definition_names | assignment_names)
     assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
@@ -2598,11 +2600,9 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
         definition_names | assignment_names
     )
-    assert {
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
-        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
-    }.isdisjoint(definition_names | assignment_names)
+    assert {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}.isdisjoint(
+        definition_names | assignment_names
+    )
 
 
 def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> None:
@@ -3713,9 +3713,7 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounde
         },
     )
 
-    assert anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
-        workload
-    )
+    assert support._is_module_workflow_compiled_pattern_wrong_text_model_workload(workload)
 
 
 def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missing_guard_fields(
@@ -3761,17 +3759,17 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missin
     )
 
     assert not (
-        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_pattern_argument
         )
     )
     assert not (
-        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             missing_haystack_text_model
         )
     )
     assert not (
-        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_exception_type
         )
     )
