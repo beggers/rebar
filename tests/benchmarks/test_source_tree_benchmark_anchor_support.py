@@ -3096,6 +3096,20 @@ def test_source_tree_owner_retires_compiled_pattern_module_compile_surface_to_sh
         assert hasattr(benchmark_test_support, assignment_name)
 
 
+def test_source_tree_owner_retires_contract_builder_spec_to_shared_support() -> None:
+    local_definition_names, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            support
+        )
+    )
+
+    assert "_SourceTreeContractBuilderSpec" not in (
+        local_definition_names | local_assignment_names
+    )
+    assert not hasattr(support, "_SourceTreeContractBuilderSpec")
+    assert hasattr(benchmark_test_support, "_SourceTreeContractBuilderSpec")
+
+
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(
 ) -> None:
     owner_definition_names = (
