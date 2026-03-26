@@ -3648,13 +3648,19 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
+    initial_published_manifests = lambda: (
+        SimpleNamespace(manifest_id="module-boundary"),
+    )
 
     monkeypatch.setattr(
         support,
         "published_benchmark_manifests",
-        lambda: (
-            SimpleNamespace(manifest_id="module-boundary"),
-        ),
+        initial_published_manifests,
+    )
+    monkeypatch.setattr(
+        combined_suite,
+        "published_benchmark_manifests",
+        initial_published_manifests,
     )
     support._clear_anchor_support_caches()
 
@@ -3667,12 +3673,18 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
         not in combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
     )
 
+    refreshed_published_manifests = lambda: (
+        SimpleNamespace(manifest_id="synthetic-new-boundary"),
+    )
     monkeypatch.setattr(
         support,
         "published_benchmark_manifests",
-        lambda: (
-            SimpleNamespace(manifest_id="synthetic-new-boundary"),
-        ),
+        refreshed_published_manifests,
+    )
+    monkeypatch.setattr(
+        combined_suite,
+        "published_benchmark_manifests",
+        refreshed_published_manifests,
     )
 
     assert combined_suite._published_benchmark_manifest_ids() == frozenset(
@@ -3698,6 +3710,48 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
         ]
         is combined_suite._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
     )
+
+
+def test_source_tree_combined_manifest_expectations_get_preserves_fallback_contract(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    default_value = combined_suite._combined_manifest_definition(
+        representative_measured_workload_ids=("custom-default",),
+    )
+    published_manifests = lambda: (
+        SimpleNamespace(manifest_id="module-boundary"),
+        SimpleNamespace(manifest_id="synthetic-fallback-boundary"),
+    )
+
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        published_manifests,
+    )
+    monkeypatch.setattr(
+        combined_suite,
+        "published_benchmark_manifests",
+        published_manifests,
+    )
+    support._clear_anchor_support_caches()
+
+    expectations = combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+
+    assert "synthetic-fallback-boundary" in expectations
+    assert expectations.get("synthetic-fallback-boundary") is (
+        combined_suite._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
+    )
+    assert expectations.get("synthetic-fallback-boundary", default_value) is (
+        combined_suite._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
+    )
+    assert "synthetic-missing-boundary" not in expectations
+    assert expectations.get("synthetic-missing-boundary") is None
+    assert expectations.get("synthetic-missing-boundary", default_value) is default_value
+    assert 7 not in expectations
 
 
 def test_compiled_pattern_module_compile_wrapper_suite_is_deleted_and_unimportable(
