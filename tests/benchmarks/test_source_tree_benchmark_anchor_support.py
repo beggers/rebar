@@ -3324,6 +3324,40 @@ def test_source_tree_owner_retired_shared_support_names_stay_out_of_top_level_na
     )
 
 
+def test_source_tree_owner_retired_shared_support_names_resolve_to_one_live_owner(
+) -> None:
+    collection_owned_names = {
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
+    }
+    ownership_by_name = {
+        name: {
+            owner_name
+            for owner_name, owner_module in (
+                ("benchmark_test_support", benchmark_test_support),
+                ("collection_replacement_support", collection_support),
+            )
+            if hasattr(owner_module, name)
+        }
+        for name in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    }
+
+    assert all(owners for owners in ownership_by_name.values())
+    assert all(len(owners) == 1 for owners in ownership_by_name.values())
+    assert {
+        name
+        for name, owners in ownership_by_name.items()
+        if owners == {"collection_replacement_support"}
+    } == collection_owned_names
+    assert {
+        name
+        for name, owners in ownership_by_name.items()
+        if owners == {"benchmark_test_support"}
+    } == (
+        set(support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES)
+        - collection_owned_names
+    )
+
+
 def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() -> None:
     owner_definitions = support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS
     definition_names = tuple(definition.name for definition in owner_definitions)
