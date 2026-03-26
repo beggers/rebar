@@ -695,7 +695,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_nested_callable_str_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = collection_replacement_support._conditional_group_exists_nested_callable_str_workloads()
+        source_workloads = benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+        )
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -764,7 +768,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_nested_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = collection_replacement_support._conditional_group_exists_nested_callable_bytes_workloads()
+        source_workloads = benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+        )
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -866,8 +874,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         workloads = (
-            collection_replacement_support._conditional_group_exists_nested_callable_str_workloads()
-            + collection_replacement_support._conditional_group_exists_nested_callable_bytes_workloads()
+            benchmark_test_support.live_manifest_workloads(
+                benchmarks.BENCHMARK_WORKLOADS_ROOT
+                / "conditional_group_exists_boundary.py",
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+            )
+            + benchmark_test_support.live_manifest_workloads(
+                benchmarks.BENCHMARK_WORKLOADS_ROOT
+                / "conditional_group_exists_boundary.py",
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+            )
         )
         case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
             collection_replacement_support._conditional_group_exists_nested_callable_correctness_case_signature
@@ -898,7 +914,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_quantified_callable_str_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = collection_replacement_support._conditional_group_exists_quantified_callable_str_workloads()
+        source_workloads = benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        )
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -967,7 +987,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_quantified_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = collection_replacement_support._conditional_group_exists_quantified_callable_bytes_workloads()
+        source_workloads = benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+        )
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -1032,8 +1056,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         workloads = (
-            collection_replacement_support._conditional_group_exists_quantified_callable_str_workloads()
-            + collection_replacement_support._conditional_group_exists_quantified_callable_bytes_workloads()
+            benchmark_test_support.live_manifest_workloads(
+                benchmarks.BENCHMARK_WORKLOADS_ROOT
+                / "conditional_group_exists_boundary.py",
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+            )
+            + benchmark_test_support.live_manifest_workloads(
+                benchmarks.BENCHMARK_WORKLOADS_ROOT
+                / "conditional_group_exists_boundary.py",
+                collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+            )
         )
         case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
             collection_replacement_support._conditional_group_exists_quantified_callable_correctness_case_signature
@@ -1064,7 +1096,19 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_callable_str_slice_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = collection_replacement_support._conditional_group_exists_callable_str_slice_workloads()
+        source_workloads = benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            tuple(
+                workload_id
+                for expectation in (
+                    collection_replacement_support
+                    ._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
+                )
+                for workload_id in expectation.expected_workload_ids
+                if not workload_id.endswith("-bytes")
+            ),
+        )
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -1138,7 +1182,19 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_callable_bytes_slice_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = collection_replacement_support._conditional_group_exists_callable_bytes_slice_workloads()
+        source_workloads = benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            tuple(
+                workload_id
+                for expectation in (
+                    collection_replacement_support
+                    ._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
+                )
+                for workload_id in expectation.expected_workload_ids
+                if workload_id.endswith("-bytes")
+            ),
+        )
 
         self.assertEqual(
             tuple(workload.workload_id for workload in source_workloads),
@@ -1211,8 +1267,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_alternation_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        for source_workload in (
-            collection_replacement_support._conditional_group_exists_alternation_callable_bytes_workloads()
+        for source_workload in benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
         ):
             with self.subTest(workload_id=source_workload.workload_id):
                 payload = workload_to_payload(source_workload)

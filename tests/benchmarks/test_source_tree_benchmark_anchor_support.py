@@ -8,6 +8,7 @@ import unittest
 
 import pytest
 
+from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_support,
@@ -1657,8 +1658,8 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
     ):
         assert not hasattr(support, function_name)
         assert function_name not in source_tree_function_names
-        assert hasattr(collection_support, function_name)
-        assert function_name in collection_function_names
+        assert not hasattr(collection_support, function_name)
+        assert function_name not in collection_function_names
 
     for assignment_name in (
         "_CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION",
@@ -1706,8 +1707,8 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         "_conditional_group_exists_quantified_callable_bytes_workloads",
         "_conditional_group_exists_alternation_callable_bytes_workloads",
     ):
-        assert hasattr(collection_support, function_name)
-        assert function_name in collection_function_names
+        assert not hasattr(collection_support, function_name)
+        assert function_name not in collection_function_names
     for assignment_name in (
         "_CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION",
         "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTED_SLICE_IDS",
@@ -2225,13 +2226,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             "collection_replacement_support",
             collection_support,
             (
-                "_conditional_group_exists_callable_str_slice_workloads",
-                "_conditional_group_exists_callable_bytes_slice_workloads",
-                "_conditional_group_exists_quantified_callable_str_workloads",
-                "_conditional_group_exists_nested_callable_str_workloads",
-                "_conditional_group_exists_nested_callable_bytes_workloads",
-                "_conditional_group_exists_quantified_callable_bytes_workloads",
-                "_conditional_group_exists_alternation_callable_bytes_workloads",
                 "_CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION",
                 "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTED_SLICE_IDS",
                 "_CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS",
@@ -2500,23 +2494,36 @@ def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
             expected_callable_workload_ids
         )
     )
-
-    callable_str_workloads = collection_support._conditional_group_exists_callable_str_slice_workloads()
-    callable_bytes_workloads = (
-        collection_support._conditional_group_exists_callable_bytes_slice_workloads()
+    manifest_path = (
+        benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
     )
-    nested_str_workloads = collection_support._conditional_group_exists_nested_callable_str_workloads()
-    nested_bytes_workloads = (
-        collection_support._conditional_group_exists_nested_callable_bytes_workloads()
+    callable_str_workloads = benchmark_test_support.live_manifest_workloads(
+        manifest_path,
+        expected_callable_str_workload_ids,
     )
-    quantified_str_workloads = (
-        collection_support._conditional_group_exists_quantified_callable_str_workloads()
+    callable_bytes_workloads = benchmark_test_support.live_manifest_workloads(
+        manifest_path,
+        expected_callable_bytes_workload_ids,
     )
-    quantified_bytes_workloads = (
-        collection_support._conditional_group_exists_quantified_callable_bytes_workloads()
+    nested_str_workloads = benchmark_test_support.live_manifest_workloads(
+        manifest_path,
+        collection_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
     )
-    alternation_bytes_workloads = (
-        collection_support._conditional_group_exists_alternation_callable_bytes_workloads()
+    nested_bytes_workloads = benchmark_test_support.live_manifest_workloads(
+        manifest_path,
+        collection_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+    )
+    quantified_str_workloads = benchmark_test_support.live_manifest_workloads(
+        manifest_path,
+        collection_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+    )
+    quantified_bytes_workloads = benchmark_test_support.live_manifest_workloads(
+        manifest_path,
+        collection_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+    )
+    alternation_bytes_workloads = benchmark_test_support.live_manifest_workloads(
+        manifest_path,
+        collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
     )
 
     assert tuple(

@@ -1467,39 +1467,54 @@ def test_conditional_collection_replacement_callable_slice_workload_helpers_matc
         for workload_id in expectation.expected_workload_ids
         if workload_id.endswith("-bytes")
     )
-    helper_expectations = (
+    deleted_helper_names = (
+        "_conditional_group_exists_callable_str_slice_workloads",
+        "_conditional_group_exists_callable_bytes_slice_workloads",
+        "_conditional_group_exists_alternation_callable_bytes_workloads",
+        "_conditional_group_exists_nested_callable_str_workloads",
+        "_conditional_group_exists_nested_callable_bytes_workloads",
+        "_conditional_group_exists_quantified_callable_str_workloads",
+        "_conditional_group_exists_quantified_callable_bytes_workloads",
+    )
+    for helper_name in deleted_helper_names:
+        assert not hasattr(support, helper_name)
+
+    workload_expectations = (
         (
-            support._conditional_group_exists_callable_str_slice_workloads,
             callable_str_expected_workload_ids,
+            "str",
         ),
         (
-            support._conditional_group_exists_callable_bytes_slice_workloads,
             callable_bytes_expected_workload_ids,
+            "bytes",
         ),
         (
-            support._conditional_group_exists_alternation_callable_bytes_workloads,
             support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+            "bytes",
         ),
         (
-            support._conditional_group_exists_nested_callable_str_workloads,
             support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+            "str",
         ),
         (
-            support._conditional_group_exists_nested_callable_bytes_workloads,
             support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+            "bytes",
         ),
         (
-            support._conditional_group_exists_quantified_callable_str_workloads,
             support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+            "str",
         ),
         (
-            support._conditional_group_exists_quantified_callable_bytes_workloads,
             support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+            "bytes",
         ),
     )
-
-    for helper, expected_workload_ids in helper_expectations:
-        workloads = helper()
+    for expected_workload_ids, text_model in workload_expectations:
+        workloads = benchmark_test_support.live_manifest_workloads(
+            benchmarks.BENCHMARK_WORKLOADS_ROOT
+            / "conditional_group_exists_boundary.py",
+            expected_workload_ids,
+        )
         assert (
             tuple(workload.workload_id for workload in workloads)
             == expected_workload_ids
@@ -1507,6 +1522,7 @@ def test_conditional_collection_replacement_callable_slice_workload_helpers_matc
         assert {workload.manifest_id for workload in workloads} == {
             "conditional-group-exists-boundary"
         }
+        assert {workload.text_model for workload in workloads} == {text_model}
 
 
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
