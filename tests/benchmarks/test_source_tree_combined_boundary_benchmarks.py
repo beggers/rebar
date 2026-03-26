@@ -8289,6 +8289,106 @@ def _select_source_tree_combined_slice_rows(
     ]
 
 
+_KNOWN_GAP_STATUSES = frozenset({"known-gap", "unimplemented"})
+
+
+def _assert_benchmark_summary_consistent(
+    testcase: object,
+    scorecard: dict[str, object],
+    summary: dict[str, object],
+) -> None:
+    workloads = scorecard["workloads"]
+    expected_summary = {
+        key: scorecard["summary"][key]
+        for key in (
+            "known_gap_count",
+            "measured_workloads",
+            "module_workloads",
+            "parser_workloads",
+            "regression_workloads",
+            "total_workloads",
+        )
+    }
+    testcase.assertEqual(summary, expected_summary)
+    testcase.assertEqual(summary["total_workloads"], len(workloads))
+    testcase.assertEqual(
+        summary["measured_workloads"] + summary["known_gap_count"],
+        summary["total_workloads"],
+    )
+    testcase.assertEqual(
+        summary["parser_workloads"],
+        scorecard["families"]["parser"]["workload_count"],
+    )
+    testcase.assertEqual(
+        summary["module_workloads"],
+        scorecard["families"]["module"]["workload_count"],
+    )
+    testcase.assertEqual(
+        summary["regression_workloads"],
+        sum(1 for workload in workloads if workload["manifest_id"] == "regression-matrix"),
+    )
+
+    for cache_mode, expected_count in scorecard["summary"]["workloads_by_cache_mode"].items():
+        testcase.assertEqual(
+            expected_count,
+            sum(1 for workload in workloads if workload["cache_mode"] == cache_mode),
+        )
+
+    if summary["measured_workloads"] > 0:
+        testcase.assertIsInstance(scorecard["summary"]["baseline_median_ns"], int)
+        testcase.assertGreater(scorecard["summary"]["baseline_median_ns"], 0)
+        testcase.assertGreater(scorecard["summary"]["baseline_median_ops_per_second"], 0)
+        testcase.assertIsInstance(scorecard["summary"]["implementation_median_ns"], int)
+        testcase.assertGreater(scorecard["summary"]["implementation_median_ns"], 0)
+        testcase.assertGreater(
+            scorecard["summary"]["implementation_median_ops_per_second"],
+            0,
+        )
+
+    for family_id, family_summary in scorecard["families"].items():
+        family_workloads = [workload for workload in workloads if workload["family"] == family_id]
+        testcase.assertEqual(family_summary["workload_count"], len(family_workloads))
+        testcase.assertEqual(
+            family_summary["known_gap_count"],
+            sum(
+                1
+                for workload in family_workloads
+                if workload["status"] in _KNOWN_GAP_STATUSES
+            ),
+        )
+        for cache_mode, cache_summary in family_summary["cache_modes"].items():
+            testcase.assertEqual(
+                cache_summary["workload_count"],
+                sum(
+                    1
+                    for workload in family_workloads
+                    if workload["cache_mode"] == cache_mode
+                ),
+            )
+
+    for cache_mode, cache_summary in scorecard["cache_modes"].items():
+        cache_workloads = [workload for workload in workloads if workload["cache_mode"] == cache_mode]
+        testcase.assertEqual(cache_summary["workload_count"], len(cache_workloads))
+        testcase.assertEqual(
+            cache_summary["known_gap_count"],
+            sum(1 for workload in cache_workloads if workload["status"] in _KNOWN_GAP_STATUSES),
+        )
+
+
+def _artifact_manifest_record(
+    manifest_path: str,
+    manifest: BenchmarkManifest,
+) -> dict[str, object]:
+    return {
+        "manifest": manifest_path,
+        "manifest_id": manifest.manifest_id,
+        "manifest_schema_version": manifest.schema_version,
+        "workload_count": len(manifest.workloads),
+        "smoke_workload_ids": manifest.smoke_workload_ids(),
+        "spec_refs": list(manifest.spec_refs),
+    }
+
+
 def _assert_source_tree_benchmark_contract(
     testcase: object,
     scorecard: dict[str, object],
@@ -8303,7 +8403,7 @@ def _assert_source_tree_benchmark_contract(
     tracked_report_path: pathlib.Path | None = None,
 ) -> None:
     expected_manifest_records = [
-        benchmark_test_support._artifact_manifest_record(manifest_path, manifest)
+        _artifact_manifest_record(manifest_path, manifest)
         for manifest_path, manifest in zip(
             expected_manifest_paths,
             expected_manifests,
@@ -8311,7 +8411,7 @@ def _assert_source_tree_benchmark_contract(
         )
     ]
 
-    benchmark_test_support._assert_benchmark_summary_consistent(
+    _assert_benchmark_summary_consistent(
         testcase,
         scorecard,
         summary,

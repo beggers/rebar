@@ -2460,6 +2460,23 @@ def test_source_tree_combined_suite_owns_rehomed_pattern_boundary_wrong_text_mod
     assert moved_owner_names.isdisjoint(dir(module.benchmark_test_support))
 
 
+def test_source_tree_combined_suite_owns_benchmark_contract_helpers_locally() -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    moved_owner_names = {
+        "_KNOWN_GAP_STATUSES",
+        "_assert_benchmark_summary_consistent",
+        "_artifact_manifest_record",
+    }
+
+    assert moved_owner_names.issubset(definition_names | assignment_names)
+    assert moved_owner_names.isdisjoint(dir(module.benchmark_test_support))
+
+
 def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
