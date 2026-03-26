@@ -68,6 +68,23 @@ def _group_callable_replacement(
 
     return replacement
 
+
+def _workload_ids_for_declared_slice(
+    workloads: tuple[Workload, ...],
+    *,
+    text_model: str | None = None,
+    include_categories: tuple[str, ...] = (),
+    exclude_categories: tuple[str, ...] = (),
+) -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for workload in workloads
+        if (text_model is None or workload.text_model == text_model)
+        and all(category in workload.categories for category in include_categories)
+        and all(category not in workload.categories for category in exclude_categories)
+    )
+
+
 def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -1076,71 +1093,85 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
         callable_expectations["minimal-callable-replacement-rows"]
         + callable_expectations["minimal-callable-replacement-exception-rows"]
     )
-    minimal_callable_str_ids, minimal_callable_bytes_ids = (
-        support._split_workload_ids_by_text_model(minimal_callable_workload_ids)
+    minimal_callable_workloads = benchmark_test_support.live_manifest_workloads(
+        "conditional_group_exists_boundary.py",
+        minimal_callable_workload_ids,
     )
-    none_count_str_ids, none_count_bytes_ids = (
-        support._split_workload_ids_by_text_model(
-            tuple(
-                workload_id
-                for workload_id in (
-                    callable_expectations[
-                        "minimal-callable-replacement-none-count-exception-rows"
-                    ]
-                    + callable_expectations[
-                        "alternation-heavy-callable-replacement-rows"
-                    ]
-                )
-                if "none-count" in workload_id
-            )
-        )
+    callable_none_count_candidate_workloads = benchmark_test_support.live_manifest_workloads(
+        "conditional_group_exists_boundary.py",
+        callable_expectations["minimal-callable-replacement-none-count-exception-rows"]
+        + callable_expectations["alternation-heavy-callable-replacement-rows"],
     )
-    alternation_str_ids, alternation_bytes_ids = (
-        support._split_workload_ids_by_text_model(
-            callable_expectations["alternation-heavy-callable-replacement-rows"]
-        )
+    alternation_workloads = benchmark_test_support.live_manifest_workloads(
+        "conditional_group_exists_boundary.py",
+        callable_expectations["alternation-heavy-callable-replacement-rows"],
     )
     template_workload_ids = (
         support._conditional_group_exists_template_replacement_expectation().expected_workload_ids
     )
-    template_str_ids, template_bytes_ids = support._split_workload_ids_by_text_model(
-        template_workload_ids
+    template_workloads = benchmark_test_support.live_manifest_workloads(
+        "conditional_group_exists_boundary.py",
+        template_workload_ids,
+    )
+    callable_none_count_str_ids = _workload_ids_for_declared_slice(
+        callable_none_count_candidate_workloads,
+        text_model="str",
+        include_categories=("none-count",),
+    )
+    callable_none_count_bytes_ids = _workload_ids_for_declared_slice(
+        callable_none_count_candidate_workloads,
+        text_model="bytes",
+        include_categories=("none-count",),
     )
 
     observed_workload_ids_by_label = {
-        "callable-bytes": tuple(
-            workload_id
-            for workload_id in minimal_callable_bytes_ids
-            if "negative-count" not in workload_id
+        "callable-bytes": _workload_ids_for_declared_slice(
+            minimal_callable_workloads,
+            text_model="bytes",
+            exclude_categories=("negative-count",),
         ),
-        "callable-negative-count-str": tuple(
-            workload_id
-            for workload_id in minimal_callable_str_ids
-            if "negative-count" in workload_id
+        "callable-negative-count-str": _workload_ids_for_declared_slice(
+            minimal_callable_workloads,
+            text_model="str",
+            include_categories=("negative-count",),
         ),
-        "callable-negative-count-bytes": tuple(
-            workload_id
-            for workload_id in minimal_callable_bytes_ids
-            if "negative-count" in workload_id
+        "callable-negative-count-bytes": _workload_ids_for_declared_slice(
+            minimal_callable_workloads,
+            text_model="bytes",
+            include_categories=("negative-count",),
         ),
-        "callable-none-count-all": none_count_str_ids + none_count_bytes_ids,
-        "callable-none-count-str": none_count_str_ids,
-        "callable-none-count-bytes": none_count_bytes_ids,
-        "callable-alternation-all": callable_expectations[
-            "alternation-heavy-callable-replacement-rows"
-        ],
-        "callable-alternation-str": alternation_str_ids,
-        "callable-alternation-bytes": alternation_bytes_ids,
+        "callable-none-count-all": (
+            callable_none_count_str_ids + callable_none_count_bytes_ids
+        ),
+        "callable-none-count-str": callable_none_count_str_ids,
+        "callable-none-count-bytes": callable_none_count_bytes_ids,
+        "callable-alternation-all": _workload_ids_for_declared_slice(
+            alternation_workloads,
+            include_categories=("alternation-heavy",),
+        ),
+        "callable-alternation-str": _workload_ids_for_declared_slice(
+            alternation_workloads,
+            text_model="str",
+            include_categories=("alternation-heavy",),
+        ),
+        "callable-alternation-bytes": _workload_ids_for_declared_slice(
+            alternation_workloads,
+            text_model="bytes",
+            include_categories=("alternation-heavy",),
+        ),
         "template-round-trip": tuple(
-            workload_id
-            for workload_id in template_workload_ids
-            if workload_id.endswith("-bytes") or "negative-count" in workload_id
+            workload.workload_id
+            for workload in template_workloads
+            if workload.text_model == "bytes" or "negative-count" in workload.categories
         ),
-        "template-bytes": template_bytes_ids,
-        "template-negative-count-str": tuple(
-            workload_id
-            for workload_id in template_str_ids
-            if "negative-count" in workload_id
+        "template-bytes": _workload_ids_for_declared_slice(
+            template_workloads,
+            text_model="bytes",
+        ),
+        "template-negative-count-str": _workload_ids_for_declared_slice(
+            template_workloads,
+            text_model="str",
+            include_categories=("negative-count",),
         ),
         "nested-callable-str": (
             support._conditional_group_exists_nested_callable_replacement_expectation().expected_workload_ids
