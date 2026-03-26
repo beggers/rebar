@@ -976,7 +976,9 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
     )
     manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
-        spec=source_tree_support._compiled_pattern_wrong_text_model_contract_spec(spec),
+        spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+            str(spec["contract_manifest_id"])
+        ],
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,

@@ -1151,6 +1151,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for function_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_FUNCTION_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
+    for constant_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
     for constant_name in support.SOURCE_TREE_MOVED_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
@@ -1167,9 +1170,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
     ):
         assert hasattr(support, constant_name)
-        if constant_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_FUNCTION_NAMES:
-            assert constant_name in local_function_names
-            continue
         assert constant_name in local_assignment_names
         assert getattr(support, constant_name) is getattr(
             benchmark_test_support,
@@ -1270,21 +1270,23 @@ def test_compiled_pattern_module_compile_contract_builder_spec_builds_source_tre
         ),
     ),
 )
-def test_compiled_pattern_wrong_text_model_contract_spec_tracks_manifest_family(
+def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
     contract_manifest_id: str,
     expected_note_fragment: str,
 ) -> None:
-    spec = support._compiled_pattern_wrong_text_model_contract_spec(
-        {"contract_manifest_id": contract_manifest_id}
-    )
+    spec = support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+        contract_manifest_id
+    ]
 
-    assert spec.manifest_id == contract_manifest_id
-    assert (
-        spec.excluded_fields
-        == benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    assert spec == support._SourceTreeContractBuilderSpec(
+        manifest_id=contract_manifest_id,
+        excluded_fields=(
+            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+        ),
+        manifest_timed_samples=2,
+        timing_scope="module-helper-call",
+        notes=spec.notes,
     )
-    assert spec.manifest_timed_samples == 2
-    assert spec.timing_scope == "module-helper-call"
     assert spec.notes
     assert expected_note_fragment in spec.notes[0]
     assert "wrong-text-model" in spec.notes[0]

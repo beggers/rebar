@@ -4253,7 +4253,9 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     ):
         workload = source_tree_support._source_tree_contract_workload(
             source_workload,
-            spec=source_tree_support._compiled_pattern_wrong_text_model_contract_spec(spec),
+            spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+                str(spec["contract_manifest_id"])
+            ],
         )
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
@@ -4303,7 +4305,9 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
             "re",
             source_tree_support._source_tree_contract_workload(
                 source_workload,
-                spec=source_tree_support._compiled_pattern_wrong_text_model_contract_spec(spec),
+                spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+                    str(spec["contract_manifest_id"])
+                ],
             ),
         )
 
