@@ -22,7 +22,9 @@ from tests.python.fixture_parity_support import IndexLike
 # Pytest fixture discovery needs a module-level binding for this shared fixture.
 anchor_support_cache_guard = support.anchor_support_cache_guard
 anchor_support = support
-collection_replacement_support = support
+collection_replacement_support = importlib.import_module(
+    "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+)
 
 
 def _assert_owner_module_routes_through_package_import(
@@ -2615,7 +2617,36 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface() 
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
     )
-    moved_names = frozenset(
+    private_owner_names = frozenset(
+        {
+            "_SourceTreeBenchmarkCommonCase",
+            "_SourceTreeManifestExpectation",
+            "_SourceTreeDeferredExpectation",
+            "_SourceTreeCombinedCase",
+            "_SourceTreeCombinedPatternGroupExpectation",
+            "_SourceTreeCombinedManifestShapeExpectation",
+            "_SourceTreeCombinedFullyMeasuredManifestExpectation",
+            "_SourceTreeCombinedManifestExpectationDefinition",
+            "_SourceTreeCombinedManifestExpectations",
+            "_SourceTreeCombinedSliceExpectation",
+            "_combined_manifest_definition",
+            "_combined_fully_measured_manifest_expectation",
+            "_published_benchmark_manifest_ids",
+            "_SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION",
+            "_SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+            "_SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS",
+            "_filter_manifest_workload_ids",
+            "_public_source_tree_manifest_expectation",
+            "_source_tree_combined_manifest_representative_measured_workload_ids",
+            "_source_tree_combined_target_manifest_ids",
+            "_expected_summary_for_manifests",
+            "_source_tree_combined_case",
+            "_workload_matches_source_tree_combined_slice",
+            "_select_source_tree_combined_slice_rows",
+            "_assert_source_tree_benchmark_contract",
+        }
+    )
+    exported_owner_aliases = frozenset(
         {
             "SourceTreeBenchmarkCommonCase",
             "SourceTreeManifestExpectation",
@@ -2627,6 +2658,8 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface() 
             "SourceTreeCombinedManifestExpectationDefinition",
             "SourceTreeCombinedSliceExpectation",
             "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+            "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS",
+            "expected_summary_for_manifests",
             "source_tree_combined_manifest_representative_measured_workload_ids",
             "source_tree_combined_target_manifest_ids",
             "source_tree_combined_case",
@@ -2635,9 +2668,11 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface() 
         }
     )
 
-    assert moved_names.isdisjoint(dir(support))
-    assert moved_names.issubset(definition_names | assignment_names)
-    assert moved_names.issubset(dir(module.source_tree_support))
+    assert private_owner_names.isdisjoint(dir(support))
+    assert private_owner_names.issubset(definition_names | assignment_names)
+    assert exported_owner_aliases.issubset(definition_names | assignment_names)
+    assert private_owner_names.issubset(dir(module.source_tree_support))
+    assert exported_owner_aliases.issubset(dir(module.source_tree_support))
     assert (
         module.source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
         is module.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
@@ -2837,13 +2872,13 @@ def _patch_source_tree_combined_route_helper_dependencies(
     )
 
 
-def test_source_tree_combined_route_helper_allows_expected_benchmark_test_support_refs(
+def test_source_tree_combined_route_helper_allows_owner_local_surface_without_shared_refs(
     monkeypatch,
 ) -> None:
     owner_surface = object()
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.benchmark_test_support",
+        __name__="tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
         SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
@@ -2855,10 +2890,14 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
         "\n".join(
             (
                 "from tests.benchmarks import benchmark_test_support",
-                "source_tree_support = benchmark_test_support",
                 "",
-                "source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                "source_tree_support.assert_source_tree_benchmark_contract",
+                "class _SourceTreeSupportProxy:",
+                "    def __getattr__(self, name):",
+                "        return getattr(benchmark_test_support, name)",
+                "",
+                "source_tree_support = _SourceTreeSupportProxy()",
+                "",
+                "benchmark_test_support.manifest_workloads",
             )
         )
     )
@@ -2878,12 +2917,6 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
                 "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "assert_source_tree_benchmark_contract",
             ),
-            expected_direct_benchmark_test_support_refs=frozenset(
-                {
-                    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-                    "assert_source_tree_benchmark_contract",
-                }
-            ),
         )
         is combined_suite
     )
@@ -2895,7 +2928,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
     owner_surface = object()
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.benchmark_test_support",
+        __name__="tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
         SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
@@ -2943,8 +2976,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
         pytest.param(
             "\n".join(
                 (
-                    "from tests.benchmarks import benchmark_test_support as source_tree_support",
-                    "from tests.benchmarks.benchmark_test_support import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+                    "from tests.benchmarks.test_source_tree_combined_boundary_benchmarks import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 )
             ),
             set(),
@@ -2953,7 +2985,8 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
         pytest.param(
             "\n".join(
                 (
-                    "from tests.benchmarks import benchmark_test_support as source_tree_support",
+                    "from tests.benchmarks import benchmark_test_support",
+                    "source_tree_support = benchmark_test_support",
                     "",
                     "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 )
@@ -2983,7 +3016,7 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
     owner_surface = object()
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.benchmark_test_support",
+        __name__="tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
         SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
@@ -3840,7 +3873,9 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
     )
     support._clear_anchor_support_caches()
 
-    assert support._published_benchmark_manifest_ids() == frozenset({"module-boundary"})
+    assert combined_suite._published_benchmark_manifest_ids() == frozenset(
+        {"module-boundary"}
+    )
     assert not hasattr(support, "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS")
     assert (
         "synthetic-new-boundary"
@@ -3855,7 +3890,9 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
         ),
     )
 
-    assert support._published_benchmark_manifest_ids() == frozenset({"module-boundary"})
+    assert combined_suite._published_benchmark_manifest_ids() == frozenset(
+        {"module-boundary"}
+    )
     assert (
         "synthetic-new-boundary"
         not in combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
@@ -3863,7 +3900,7 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
 
     support._clear_anchor_support_caches()
 
-    assert support._published_benchmark_manifest_ids() == frozenset(
+    assert combined_suite._published_benchmark_manifest_ids() == frozenset(
         {"synthetic-new-boundary"}
     )
     assert (
@@ -3874,7 +3911,7 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
         combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             "synthetic-new-boundary"
         ]
-        is support._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
+        is combined_suite._SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
     )
 
 
