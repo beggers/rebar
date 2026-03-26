@@ -2293,9 +2293,9 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
         pytest.param(
             "source_tree_support",
             support,
-            (),
+            ("assert_source_tree_benchmark_contract",),
             frozenset(),
-            id="source-tree-suite-assertion-helpers",
+            id="source-tree-report-contract-helper",
         ),
         pytest.param(
             "collection_replacement_support",
@@ -2352,35 +2352,6 @@ def test_combined_suite_routes_moved_support_surfaces_through_benchmark_test_sup
             expected_direct_benchmark_test_support_refs
         ),
     )
-
-
-def test_combined_suite_routes_source_tree_report_contract_helper_through_owner_module(
-) -> None:
-    module_ast = benchmark_test_support._parsed_module_ast(
-        support._source_tree_combined_suite()
-    )
-    source_tree_support_alias_names = benchmark_test_support._module_alias_names(
-        module_ast,
-        import_from_module="tests.benchmarks",
-        import_name="source_tree_benchmark_anchor_support",
-        dotted_import_name="tests.benchmarks.source_tree_benchmark_anchor_support",
-    )
-    helper_names = frozenset({"assert_source_tree_benchmark_contract"})
-
-    assert source_tree_support_alias_names
-    assert benchmark_test_support._top_level_import_from_alias_pairs(
-        module_ast,
-        module_name="tests.benchmarks.source_tree_benchmark_anchor_support",
-        imported_names=helper_names,
-    ) == frozenset()
-    assert frozenset(
-        node.attr
-        for node in ast.walk(module_ast)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id in source_tree_support_alias_names
-        and node.attr in helper_names
-    ) == helper_names
 
 
 def test_combined_suite_imports_remaining_report_contract_helpers_through_benchmark_test_support(
