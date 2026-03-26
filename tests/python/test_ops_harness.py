@@ -139,7 +139,10 @@ class OpsHarnessTest(unittest.TestCase):
         config = rebar_ops.load_config()
         agents = {agent.name: agent for agent in rebar_ops.load_agent_specs(config)}
 
-        for name, interval_seconds in (("implementation-faithfulness", 21600),):
+        for name, interval_seconds in (
+            ("feature-planning", 3600),
+            ("implementation-faithfulness", 21600),
+        ):
             self.assertIn(name, agents)
             self.assertEqual(agents[name].dispatch["mode"], "interval")
             self.assertEqual(agents[name].dispatch["interval_seconds"], interval_seconds)
@@ -147,7 +150,6 @@ class OpsHarnessTest(unittest.TestCase):
         for name in (
             "supervisor",
             "architecture",
-            "feature-planning",
             "qa-testing",
             "cleanup",
             "reporting",
@@ -264,6 +266,7 @@ class OpsHarnessTest(unittest.TestCase):
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
         agents = rebar_ops.load_agent_specs(config)
+        supported_efforts = set(rebar_ops.REASONING_EFFORT_ORDER)
 
         for agent in agents:
             with self.subTest(agent=agent.name):
@@ -276,7 +279,7 @@ class OpsHarnessTest(unittest.TestCase):
                 reasoning_effort = reasoning_settings[0].removeprefix(
                     'model_reasoning_effort="'
                 ).removesuffix('"')
-                self.assertIn(reasoning_effort, {"high", "xhigh"})
+                self.assertIn(reasoning_effort, supported_efforts)
 
     def test_build_codex_command_caps_reasoning_effort_to_loop_default(self) -> None:
         rebar_ops = load_rebar_ops_module()
