@@ -3762,16 +3762,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
             collection_replacement_support._CompiledPatternModuleHelperKeywordContractSpec,
         ),
     ):
-        owner_module = (
-            collection_replacement_support
-            if owner_type
-            is collection_replacement_support._CompiledPatternModuleHelperKeywordContractSpec
-            else (
-                anchor_support
-                if owner_type is anchor_support.CompiledPatternModuleSuccessOwnerSpec
-                else support
-            )
-        )
+        owner_module = importlib.import_module(owner_type.__module__)
         class_definition = support._module_class_definition(
             owner_module,
             owner_type.__name__,
@@ -4151,6 +4142,41 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
     }.isdisjoint(definition_names | assignment_names)
+
+
+def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_import_source_tree_exports(
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    owner_names = {
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+        "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+        "_compiled_pattern_module_helper_route",
+        "_compiled_pattern_wrong_text_model_source_workloads",
+    }
+
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {
+                (
+                    "source_tree_benchmark_anchor_support",
+                    "source_tree_owner_support",
+                ),
+            }
+        ),
+    )
+    assert module.source_tree_owner_support is anchor_support
+    assert module.source_tree_support is anchor_support
+    assert owner_names.isdisjoint(definition_names | assignment_names)
+    assert owner_names.issubset(dir(module.source_tree_owner_support))
+    assert owner_names.isdisjoint(dir(module.benchmark_test_support))
 
 
 @pytest.mark.parametrize(
