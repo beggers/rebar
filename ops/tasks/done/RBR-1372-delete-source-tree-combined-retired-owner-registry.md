@@ -1,6 +1,6 @@
 ## RBR-1372: Delete source-tree combined retired owner registry
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -46,3 +46,12 @@ Created: 2026-03-26
   - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
   - `bash -lc "! rg -n '^SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES\\s*=' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because the exported registry constant still exists, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES' tests/benchmarks/test_benchmark_test_support.py"` currently fails because the benchmark-support tests still depend on that registry, and that failure belongs exactly to this cleanup
+
+## Completion
+- Deleted `SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES` from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Replaced the combined-suite ownership assertions in `tests/benchmarks/test_benchmark_test_support.py` with direct checks against `COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES`, while keeping benchmark manifest validation on its explicit owner-only surface set.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_consumer_suites_reuse_shared_support_without_local_duplicates or compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces or compiled_pattern_module_helper_keyword_shared_surface_stays_listed_in_source_tree_retired_owner_registries'` -> `3 passed, 166 deselected`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py`
+  - `bash -lc "! rg -n '^SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES\\s*=' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES' tests/benchmarks/test_benchmark_test_support.py"`

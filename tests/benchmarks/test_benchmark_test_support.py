@@ -2958,7 +2958,7 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert getattr(module, "benchmark_test_support") is support
-    assert anchor_support.SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES.isdisjoint(
+    assert COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES.isdisjoint(
         local_names
     )
 
@@ -3065,22 +3065,7 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         not in consumer_local_names
     )
 
-@pytest.mark.parametrize(
-    ("module_name", "forbidden_owner_names"),
-    (
-        pytest.param(
-            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-            anchor_support.SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
-            id="source-tree-combined",
-        ),
-        pytest.param(
-            "tests.benchmarks.test_benchmark_manifest_validation",
-            _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES,
-            id="manifest-validation",
-        ),
-    ),
-)
-def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces(
+def _assert_benchmark_test_support_aliases_absent(
     module_name: str,
     forbidden_owner_names: frozenset[str],
 ) -> None:
@@ -3117,6 +3102,18 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
             alias_pairs.update((value.attr, target_name) for target_name in targets)
 
     assert alias_pairs == set()
+
+
+def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces(
+) -> None:
+    _assert_benchmark_test_support_aliases_absent(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+        COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES,
+    )
+    _assert_benchmark_test_support_aliases_absent(
+        "tests.benchmarks.test_benchmark_manifest_validation",
+        _BENCHMARK_MANIFEST_VALIDATION_OWNER_ONLY_SURFACE_NAMES,
+    )
 
 
 def test_collection_replacement_owner_surface_reaches_combined_suite_without_source_tree_workload_id_aliases(
@@ -3396,13 +3393,9 @@ def test_benchmark_test_support_exports_generic_workload_id_selector_helpers() -
 
 def test_compiled_pattern_module_helper_keyword_shared_surface_stays_listed_in_source_tree_retired_owner_registries(
 ) -> None:
-    for retired_owner_names in (
-        anchor_support.SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES,
-        frozenset(anchor_support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES),
-    ):
-        assert COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES <= (
-            retired_owner_names
-        )
+    assert COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES <= frozenset(
+        anchor_support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    )
 
 
 def test_deleted_compiled_pattern_module_helper_support_stays_unimportable_and_unreferenced(
