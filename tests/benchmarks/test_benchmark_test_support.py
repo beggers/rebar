@@ -1154,7 +1154,7 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
 ) -> None:
     owner_definitions = support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
     definition_names = tuple(definition.name for definition in owner_definitions)
-    standard_definitions = {
+    standard_definitions_by_name = {
         definition.name: definition
         for definition in support.STANDARD_BENCHMARK_DEFINITIONS
         if definition.name in definition_names
@@ -1164,27 +1164,13 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
         "module-workflow-keyword-flags",
         "module-workflow-keyword-errors",
     )
-    assert tuple(standard_definitions) == definition_names
+    assert tuple(standard_definitions_by_name) == definition_names
+    assert tuple(
+        standard_definitions_by_name[definition_name]
+        for definition_name in definition_names
+    ) == owner_definitions
     for definition in owner_definitions:
-        assert standard_definitions[definition.name] is definition
-
-
-def test_select_standard_inventory_definitions_preserves_requested_order_and_identity(
-) -> None:
-    definition_names = (
-        "module-workflow-keyword-flags",
-        "module-workflow-keyword-errors",
-    )
-
-    selected_definitions = support.select_standard_inventory_definitions(
-        support.STANDARD_BENCHMARK_DEFINITIONS,
-        definition_names,
-    )
-
-    assert (
-        selected_definitions
-        == support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
-    )
+        assert standard_definitions_by_name[definition.name] is definition
 
 
 def test_benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant(

@@ -1212,43 +1212,6 @@ def assert_mixed_owner_surface(
         )
 
 
-def assert_standard_inventory_reuses_owner_definitions(
-    owner_definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
-    standard_definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
-    expected_definition_names: tuple[str, ...],
-) -> None:
-    assert isinstance(owner_definitions, tuple)
-    assert tuple(definition.name for definition in owner_definitions) == (
-        expected_definition_names
-    )
-    assert tuple(definition.name for definition in standard_definitions) == (
-        expected_definition_names
-    )
-    assert standard_definitions == owner_definitions
-    assert all(
-        standard_definition is owner_definition
-        for standard_definition, owner_definition in zip(
-            standard_definitions, owner_definitions, strict=True
-        )
-    )
-
-
-def select_standard_inventory_definitions(
-    standard_definitions: Iterable[StandardBenchmarkAnchorContractDefinition],
-    expected_definition_names: tuple[str, ...],
-) -> tuple[StandardBenchmarkAnchorContractDefinition, ...]:
-    definitions_by_name = {
-        definition.name: definition
-        for definition in standard_definitions
-        if definition.name in expected_definition_names
-    }
-    assert tuple(definitions_by_name) == expected_definition_names
-    return tuple(
-        definitions_by_name[definition_name]
-        for definition_name in expected_definition_names
-    )
-
-
 def compile_proxy_correctness_case_signature(
     case: Any,
 ) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str] | None:

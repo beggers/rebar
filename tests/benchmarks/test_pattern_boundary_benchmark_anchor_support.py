@@ -52,15 +52,22 @@ def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() 
 
 def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory() -> None:
     owner_definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
-    standard_definitions = support.select_standard_inventory_definitions(
-        support.STANDARD_BENCHMARK_DEFINITIONS,
-        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES,
-    )
+    standard_definitions_by_name = {
+        definition.name: definition
+        for definition in support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name in support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+    }
 
-    support.assert_standard_inventory_reuses_owner_definitions(
-        owner_definitions,
-        standard_definitions,
-        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES,
+    assert tuple(standard_definitions_by_name) == (
+        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+    )
+    assert tuple(
+        standard_definitions_by_name[definition_name]
+        for definition_name in support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+    ) == owner_definitions
+    assert all(
+        standard_definitions_by_name[definition.name] is definition
+        for definition in owner_definitions
     )
 
 

@@ -793,15 +793,20 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
     owner_definition_names = tuple(
         definition.name for definition in owner_definitions
     )
-    standard_definitions = benchmark_test_support.select_standard_inventory_definitions(
-        benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS,
-        owner_definition_names,
-    )
+    standard_definitions_by_name = {
+        definition.name: definition
+        for definition in benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS
+        if definition.name in owner_definition_names
+    }
 
-    benchmark_test_support.assert_standard_inventory_reuses_owner_definitions(
-        owner_definitions,
-        standard_definitions,
-        owner_definition_names,
+    assert tuple(standard_definitions_by_name) == owner_definition_names
+    assert tuple(
+        standard_definitions_by_name[definition_name]
+        for definition_name in owner_definition_names
+    ) == owner_definitions
+    assert all(
+        standard_definitions_by_name[definition.name] is definition
+        for definition in owner_definitions
     )
 
 
