@@ -3996,7 +3996,7 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
         "tests.benchmarks.source_tree_benchmark_anchor_support"
         not in support._module_import_targets(collection_replacement_support)
     )
-    assert "_SourceTreeContractBuilderSpec" in runtime_names
+    assert "_SourceTreeContractBuilderSpec" not in runtime_names
     assert "source_tree_support" not in definition_names | assignment_names
     assert not hasattr(
         collection_replacement_support.benchmark_test_support,

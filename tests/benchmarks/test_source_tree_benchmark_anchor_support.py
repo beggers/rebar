@@ -1301,7 +1301,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     ):
         assert hasattr(support, constant_name)
-    assert "CompiledPatternModuleSuccessOwnerSpec" in local_function_names
+    assert "CompiledPatternModuleSuccessOwnerSpec" in local_class_names
     for constant_name in (
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
@@ -2058,7 +2058,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id == "source_tree_owner_support"
+        and node.value.id == "source_tree_support"
         and node.attr
         in {
             "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
@@ -3408,6 +3408,11 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                 {
                     "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
                     "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
+                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
                     "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
                     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
                     "_assert_compiled_pattern_module_success_payload_round_trip",
@@ -3424,15 +3429,7 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-                    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
-                }
-            ),
+            frozenset(),
             frozenset(
                 {
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
